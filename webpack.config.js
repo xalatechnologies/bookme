@@ -3,11 +3,17 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
   mode: 'development',
-  entry: './src/main.tsx',
+  context: path.resolve(__dirname),
+  entry: path.resolve(__dirname, 'src', 'main.tsx'),
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: 'bundle.js',
     publicPath: '/',
+    clean: true,
+  },
+  cache: false,
+  watchOptions: {
+    ignored: /node_modules/,
   },
   resolve: {
     extensions: ['.tsx', '.ts', '.js'],
@@ -30,14 +36,17 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: './index.html',
+      template: path.resolve(__dirname, 'index.html'),
     }),
   ],
   devServer: {
-    port: 4001,
+    port: 3000,
     host: 'localhost',
     open: true,
     hot: true,
     historyApiFallback: true,
+    static: {
+      directory: path.resolve(__dirname, 'dist'),
+    },
   },
 };
