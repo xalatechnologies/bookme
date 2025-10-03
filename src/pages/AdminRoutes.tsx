@@ -1,0 +1,34 @@
+"use client";
+
+import React from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
+import AdminLayout from "@/components/admin/layout/AdminLayout";
+import Overview from "@/pages/admin/Overview";
+import FacilitiesPage from "@/pages/admin/FacilitiesPage";
+import BookingsPage from "@/pages/admin/BookingsPage";
+import ApprovalsPage from "@/pages/admin/ApprovalsPage";
+
+interface IAdminRoutesProps {
+  readonly children?: never;
+}
+
+const AdminRoutes = (_props: IAdminRoutesProps): JSX.Element => {
+  return (
+    <Routes>
+      <Route path="/" element={<AdminLayout><Navigate to="/admin/overview" replace /></AdminLayout>} />
+      <Route path="/overview" element={<AdminLayout><Overview /></AdminLayout>} />
+      <Route path="/facilities" element={<AdminLayout><FacilitiesPage /></AdminLayout>} />
+      <Route path="/bookings" element={<AdminLayout><BookingsPage /></AdminLayout>} />
+      <Route path="/approvals" element={<AdminLayout><ApprovalsPage /></AdminLayout>} />
+      <Route path="/users-roles" element={<AdminLayout><div className="p-6">Brukere og roller - Kommer snart</div></AdminLayout>} />
+      <Route path="/notifications" element={<AdminLayout><div className="p-6">Varsler - Kommer snart</div></AdminLayout>} />
+      <Route path="/integrations" element={<AdminLayout><div className="p-6">Integrasjoner - Kommer snart</div></AdminLayout>} />
+      <Route path="/reports" element={<AdminLayout><div className="p-6">Rapporter - Kommer snart</div></AdminLayout>} />
+      <Route path="/audit-logs" element={<AdminLayout><div className="p-6">Revisjonslogg - Kommer snart</div></AdminLayout>} />
+      <Route path="/data-retention" element={<AdminLayout><div className="p-6">Sletteplan - Kommer snart</div></AdminLayout>} />
+      <Route path="/settings" element={<AdminLayout><div className="p-6">Innstillinger - Kommer snart</div></AdminLayout>} />
+    </Routes>
+  );
+};
+
+export default AdminRoutes;
