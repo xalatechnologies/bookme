@@ -13,13 +13,13 @@
     "isolatedModules": true,
     "jsx": "react-jsx",
     "jsxImportSource": "react",
-    "skipLibCheck": true,
     "incremental": true,
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
     },
-    "types": ["react", "react-dom", "node"]
+    "types": ["react", "react-dom", "node"],
+    "typeRoots": ["./node_modules/@types", "./src/types"]
   },
   "include": ["src/**/*", "src/types.d.ts"],
   "exclude": ["node_modules"]

@@ -92,7 +92,7 @@ src/
 ```bash
 # Klon repository
 git clone <repository-url>
-cd bookme-portal
+cd bookme-1
 
 # Installer avhengigheter
 npm install
