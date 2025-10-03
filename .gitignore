@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Reference project (exclude from tracking)
+drammen-booking-portal-2/
