@@ -15,18 +15,29 @@ BookMe Portal er en omfattende plattform for fasilitetsadministrasjon og booking
 - **Flere visningsmodi**: Rutenett, liste, kart og kalendervisninger for optimal brukeropplevelse
 - **Flerspråkstøtte**: Norsk (primær) og engelsk med sømløs språkbytte
 - **Responsivt design**: Mobil-først tilnærming som sikrer optimal opplevelse på alle enheter
+- **Persistent lagring**: Brukerinnstillinger og data lagres lokalt og overlever sideoppdateringer
 
 ### Brukeropplevelse
 - **Mørk modus-støtte**: Komplett implementering av lys/mørk tema
 - **Tilgjengelighet**: WCAG-kompatibel med tastaturnavigasjon og skjermleserstøtte
 - **Ytelsesoptimalisert**: Lazy loading, bildeoptimalisering og effektiv rendering
 - **Moderne brukergrensesnitt**: Rent, profesjonelt grensesnitt med Radix UI-primitiver
+- **Sanntidssynkronisering**: Endringer i admin-refleksjoner umiddelbart på frontend
+
+### Administrasjonsfunksjoner
+- **Fasilitetsadministrasjon**: Full CRUD-funksjonalitet for fasiliteter
+- **Sanntidsredigering**: Inline-redigering av fasilitetsdetaljer
+- **Bildestyring**: Upload og administrasjon av fasilitetsbilder
+- **Kartintegrasjon**: Geokodering og koordinatadministrasjon
+- **Brukerprofil**: Profiladministrasjon med avatar-upload
+- **Innstillinger**: Omfattende innstillingsside med persistent lagring
 
 ### Teknisk arkitektur
 - **Type-sikker utvikling**: Streng TypeScript-implementering med omfattende typedekning
 - **Komponentbasert arkitektur**: Modulære, gjenbrukbare komponenter som følger enterprise-mønstre
-- **Tilstandshåndtering**: Kontekstbasert tilstandshåndtering med planlagt Zustand-integrasjon
+- **Tilstandshåndtering**: Kontekstbasert tilstandshåndtering med Zustand-integrasjon
 - **Internasjonalisering**: Tilpasset i18n-system med fallback-støtte
+- **Persistent datalagring**: localStorage-integrasjon for brukerinnstillinger og applikasjonsdata
 
 ## Teknologistakk
 
@@ -62,6 +73,7 @@ src/
 ├── contexts/                  # React Context-leverandører
 │   ├── LanguageContext.tsx    # Internasjonaliseringskontekst
 │   ├── AuthContext.tsx        # Autentiseringstilstand
+│   ├── AdminAuthContext.tsx   # Admin autentisering med persistent lagring
 │   └── BookingContext.tsx     # Booking-flytstilstand
 ├── data/                      # Mock-data og typedefinisjoner
 │   ├── coreFacilities.ts      # Fasilitetsdata
@@ -114,7 +126,7 @@ npm run clean
 
 | Skript | Beskrivelse |
 |--------|-------------|
-| `npm run dev` | Start utviklingsserver på port 4001 |
+| `npm run dev` | Start utviklingsserver på port 7000 |
 | `npm run build` | Opprett optimalisert produksjonsbygg |
 | `npm run lint` | Kjør ESLint-typekontroll og kodekvalitetssjekker |
 | `npm run clean` | Fjern byggeartefakter og midlertidige filer |
@@ -206,6 +218,7 @@ Applikasjonen inkluderer omfattende mock-data for utvikling og testing:
 - Komplette detaljer inkludert prising, amenities og tilgjengelighet
 - Geografiske koordinater for kartintegrasjon
 - Høykvalitetsbilder for hver fasilitetstype
+- Dynamisk redigering og oppretting av nye fasiliteter
 
 #### Bookingsystem
 - Eksempelbookinger med forskjellige statuser og tidsperioder
@@ -217,6 +230,12 @@ Applikasjonen inkluderer omfattende mock-data for utvikling og testing:
 - 10 forskjellige tjenestekategorier
 - Utstyr, catering og tekniske tjenester
 - Prisstrukturer og tilgjengelighetsplaner
+
+#### Persistent lagring
+- Brukerinnstillinger lagres i localStorage
+- Fasilitetsdata synkroniseres mellom admin og frontend
+- Profilinformasjon (navn, e-post, avatar) persisteres
+- Endringer overlever sideoppdateringer og browser-restart
 
 ### Fremtidig backend-integrasjon
 Applikasjonen er arkitektert for sømløs backend-integrasjon med:
@@ -256,6 +275,9 @@ Applikasjonen er arkitektert for sømløs backend-integrasjon med:
 - [ ] Kode følger prosjektarkitekturmønstre
 - [ ] Tilgjengelighetskrav oppfylt
 - [ ] Ytelseshensyn adressert
+- [ ] Persistent lagring implementert hvor nødvendig
+- [ ] Error handling for localStorage-operasjoner
+- [ ] Data synkronisering mellom admin og frontend
 
 ## Teststrategi
 
@@ -310,6 +332,8 @@ VITE_ENVIRONMENT=production
 - **Bundle-optimalisering**: Tree shaking og eliminering av død kode
 - **Cachingstrategi**: Effektiv caching av statiske ressurser
 - **Kartytelse**: Statiske kart i listevisninger for bedre ytelse
+- **Persistent lagring**: localStorage-optimalisering for rask datahenting
+- **Sanntidssynkronisering**: Effektiv tilstandshåndtering mellom komponenter
 
 ### Overvåking og analyse
 - **Core Web Vitals**: Overvåking av LCP, FID og CLS-metrikker
@@ -324,6 +348,7 @@ VITE_ENVIRONMENT=production
 - **CSRF-beskyttelse**: Token-basert forespørselsvalidering
 - **Content Security Policy**: Restriktive CSP-headers
 - **Avhengighetssikkerhet**: Regelmessige sikkerhetsrevisjoner av avhengigheter
+- **Sikker datalagring**: localStorage-sikkerhet med error handling og fallback
 
 ### Databeskyttelse
 - **Personverncompliance**: GDPR-kompatibel datahåndtering
