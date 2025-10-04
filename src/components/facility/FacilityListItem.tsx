@@ -4,15 +4,16 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { MapPin, Users, Heart, Share2 } from "lucide-react";
 
-import type { Facility } from '@/data/coreFacilities';
+import type { IFacility } from '@/stores/facilityStore';
+import { useFieldConfigStore } from '@/stores/fieldConfigStore';
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { FacilityMiniMap } from "@/components/map/FacilityMiniMap";
 
 interface FacilityListItemProps {
-  readonly facility: Facility;
-  readonly onAddressClick: (e: React.MouseEvent, facility: Facility) => void;
+  readonly facility: IFacility;
+  readonly onAddressClick: (e: React.MouseEvent, facility: IFacility) => void;
 }
 
 export const FacilityListItem: React.FC<FacilityListItemProps> = ({
@@ -21,6 +22,10 @@ export const FacilityListItem: React.FC<FacilityListItemProps> = ({
 }): JSX.Element => {
   const navigate = useNavigate();
   const [isFavorited, setIsFavorited] = useState(false);
+  
+  // Get field configs for this facility
+  const { getFieldConfigsForFacility } = useFieldConfigStore();
+  const fieldConfigs = getFieldConfigsForFacility(facility.id);
 
   const handleShare = async (e: React.MouseEvent): Promise<void> => {
     e.stopPropagation();
@@ -69,7 +74,7 @@ export const FacilityListItem: React.FC<FacilityListItemProps> = ({
       }}
     >
       <CardContent className="p-0">
-        <div className="grid grid-cols-12" style={{ height: '280px' }}>
+        <div className="grid grid-cols-12">
           {/* Image Section - 3 columns */}
           <div className="col-span-3 relative">
             <div className="relative h-full overflow-hidden">
@@ -93,7 +98,7 @@ export const FacilityListItem: React.FC<FacilityListItemProps> = ({
             {/* Top section */}
             <div>
               {/* Facility Name */}
-              <h3 className="text-2xl font-bold text-gray-900 mb-3 line-clamp-2">
+              <h3 className="text-2xl font-bold text-gray-900 mb-3">
                 {facility.name}
               </h3>
 
@@ -101,7 +106,7 @@ export const FacilityListItem: React.FC<FacilityListItemProps> = ({
               <div className="flex items-center gap-3 mb-4 text-gray-600 hover:text-blue-600 transition-colors group/location">
                 <MapPin className="h-5 w-5 text-gray-400 group-hover/location:text-blue-500" />
                 <span 
-                  className="text-base font-medium line-clamp-1 cursor-pointer" 
+                  className="text-base font-medium cursor-pointer" 
                   onClick={e => onAddressClick(e, facility)}
                 >
                   {facility.address}
@@ -109,7 +114,7 @@ export const FacilityListItem: React.FC<FacilityListItemProps> = ({
               </div>
 
               {/* Description */}
-              <p className="text-gray-700 text-base leading-relaxed mb-4 line-clamp-3">
+              <p className="text-gray-700 text-base leading-relaxed mb-4">
                 {facility.description}
               </p>
 
@@ -138,10 +143,49 @@ export const FacilityListItem: React.FC<FacilityListItemProps> = ({
 
             {/* Bottom section */}
             <div className="flex items-center justify-between">
-              {/* Capacity */}
-              <div className="flex items-center gap-2 text-gray-600">
-                <Users className="h-5 w-5" />
-                <span className="font-medium text-base">{facility.capacity} personer</span>
+              {/* Dynamic fields based on configuration */}
+              <div className="flex items-center gap-4 text-gray-600">
+                {fieldConfigs
+                  .filter(field => field.visible)
+                  .slice(0, 2) // Show max 2 fields in list view
+                  .map(field => {
+                    const getFieldValue = (): string | number => {
+                      if (field.key === 'capacity') return facility.capacity || 0;
+                      if (field.key === 'area') return facility.area || '';
+                      if (field.key === 'pricePerHour') return facility.pricePerHour || 0;
+                      if (field.key === 'rating') return facility.rating || 0;
+                      if (field.key === 'reviewCount') return facility.reviewCount || 0;
+                      return typeof field.value === 'boolean' ? (field.value ? 'Ja' : 'Nei') : field.value;
+                    };
+
+                    const getIcon = (): JSX.Element => {
+                      if (field.key === 'capacity') return <Users className="h-5 w-5" />;
+                      if (field.key === 'area') return <MapPin className="h-5 w-5" />;
+                      if (field.key === 'pricePerHour') return <span className="text-gray-400">💰</span>;
+                      if (field.key === 'rating') return <span className="text-yellow-500">★</span>;
+                      if (field.key === 'reviewCount') return <span className="text-gray-400">📝</span>;
+                      return <span className="text-gray-400">📋</span>;
+                    };
+
+                    const getUnit = (): string => {
+                      if (field.key === 'capacity') return 'personer';
+                      if (field.key === 'area') return 'm²';
+                      if (field.key === 'pricePerHour') return 'kr/time';
+                      if (field.key === 'rating') return '/5';
+                      if (field.key === 'reviewCount') return 'anmeldelser';
+                      return '';
+                    };
+
+                    return (
+                      <div key={field.id} className="flex items-center gap-2">
+                        {getIcon()}
+                        <span className="font-medium text-base">
+                          {getFieldValue()}
+                          {getUnit() && ` ${getUnit()}`}
+                        </span>
+                      </div>
+                    );
+                  })}
               </div>
 
               {/* Action Buttons - aligned to the right */}

@@ -3,7 +3,10 @@
 import React, { useState } from "react";
 import { Heart, Share2, MapPin, Users, Star } from "lucide-react";
 
-import type { Facility } from "@/data/coreFacilities";
+import type { IFacility } from "@/stores/facilityStore";
+
+// Alias for backward compatibility
+type Facility = IFacility;
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";

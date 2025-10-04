@@ -5,6 +5,7 @@ import { CheckCircle, XCircle, Users, MapPin, Wifi, Car, Camera, Volume2 } from 
 
 import type { Zone } from '@/components/booking/types';
 import { useTranslation } from '@/i18n';
+import { useFieldConfigStore } from '@/stores/fieldConfigStore';
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
@@ -34,6 +35,10 @@ export const FacilityInfoTabs: React.FC<FacilityInfoTabsProps> = ({
   facilityName
 }): JSX.Element => {
   const { t } = useTranslation();
+  
+  // Get field configs for this facility
+  const { getFieldConfigsForFacility } = useFieldConfigStore();
+  const fieldConfigs = getFieldConfigsForFacility(facilityId);
 
   const getAmenityIcon = (amenity: string) => {
     const amenityLower = amenity.toLowerCase();
@@ -61,28 +66,99 @@ export const FacilityInfoTabs: React.FC<FacilityInfoTabsProps> = ({
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-4">
-              <div className="flex items-center">
-                <Users className="h-5 w-5 text-gray-400 mr-3" />
-                <div>
-                  <span className="font-medium">Kapasitet:</span>
-                  <span className="ml-2 text-gray-600">{capacity} personer</span>
-                </div>
-              </div>
-              
-              <div className="flex items-center">
-                <MapPin className="h-5 w-5 text-gray-400 mr-3" />
-                <div>
-                  <span className="font-medium">Adresse:</span>
-                  <span className="ml-2 text-gray-600">{address}</span>
-                </div>
-              </div>
+              {/* Dynamic fields from configuration - first column */}
+              {fieldConfigs
+                .filter(field => field.visible)
+                .slice(0, Math.ceil(fieldConfigs.filter(field => field.visible).length / 2))
+                .map(field => {
+                  const getFieldValue = (): string | number => {
+                    if (field.key === 'capacity') return capacity;
+                    if (field.key === 'area') return area;
+                    if (field.key === 'pricePerHour') return typeof field.value === 'boolean' ? (field.value ? 'Ja' : 'Nei') : field.value;
+                    if (field.key === 'rating') return typeof field.value === 'boolean' ? (field.value ? 'Ja' : 'Nei') : field.value;
+                    if (field.key === 'reviewCount') return typeof field.value === 'boolean' ? (field.value ? 'Ja' : 'Nei') : field.value;
+                    return typeof field.value === 'boolean' ? (field.value ? 'Ja' : 'Nei') : field.value;
+                  };
+
+                  const getIcon = (): JSX.Element => {
+                    if (field.key === 'capacity') return <Users className="h-5 w-5 text-gray-400 mr-3" />;
+                    if (field.key === 'area') return <MapPin className="h-5 w-5 text-gray-400 mr-3" />;
+                    if (field.key === 'pricePerHour') return <span className="text-gray-400 mr-3">💰</span>;
+                    if (field.key === 'rating') return <span className="text-yellow-500 mr-3">★</span>;
+                    if (field.key === 'reviewCount') return <span className="text-gray-400 mr-3">📝</span>;
+                    return <span className="text-gray-400 mr-3">📋</span>;
+                  };
+
+                  const getUnit = (): string => {
+                    if (field.key === 'capacity') return 'personer';
+                    if (field.key === 'area') return 'm²';
+                    if (field.key === 'pricePerHour') return 'kr/time';
+                    if (field.key === 'rating') return '/5';
+                    if (field.key === 'reviewCount') return 'anmeldelser';
+                    return '';
+                  };
+
+                  return (
+                    <div key={field.id} className="flex items-center">
+                      {getIcon()}
+                      <div>
+                        <span className="font-medium">{field.label}:</span>
+                        <span className="ml-2 text-gray-600">
+                          {getFieldValue()}
+                          {getUnit() && ` ${getUnit()}`}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
             </div>
             
             <div className="space-y-4">
-              <div>
-                <span className="font-medium">Areal:</span>
-                <span className="ml-2 text-gray-600">{area}</span>
-              </div>
+              {/* Dynamic fields from configuration - second column */}
+              {fieldConfigs
+                .filter(field => field.visible)
+                .slice(Math.ceil(fieldConfigs.filter(field => field.visible).length / 2))
+                .map(field => {
+                  const getFieldValue = (): string | number => {
+                    if (field.key === 'capacity') return capacity;
+                    if (field.key === 'area') return area;
+                    if (field.key === 'pricePerHour') return typeof field.value === 'boolean' ? (field.value ? 'Ja' : 'Nei') : field.value;
+                    if (field.key === 'rating') return typeof field.value === 'boolean' ? (field.value ? 'Ja' : 'Nei') : field.value;
+                    if (field.key === 'reviewCount') return typeof field.value === 'boolean' ? (field.value ? 'Ja' : 'Nei') : field.value;
+                    return typeof field.value === 'boolean' ? (field.value ? 'Ja' : 'Nei') : field.value;
+                  };
+
+                  const getIcon = (): JSX.Element => {
+                    if (field.key === 'capacity') return <Users className="h-5 w-5 text-gray-400 mr-3" />;
+                    if (field.key === 'area') return <MapPin className="h-5 w-5 text-gray-400 mr-3" />;
+                    if (field.key === 'pricePerHour') return <span className="text-gray-400 mr-3">💰</span>;
+                    if (field.key === 'rating') return <span className="text-yellow-500 mr-3">★</span>;
+                    if (field.key === 'reviewCount') return <span className="text-gray-400 mr-3">📝</span>;
+                    return <span className="text-gray-400 mr-3">📋</span>;
+                  };
+
+                  const getUnit = (): string => {
+                    if (field.key === 'capacity') return 'personer';
+                    if (field.key === 'area') return 'm²';
+                    if (field.key === 'pricePerHour') return 'kr/time';
+                    if (field.key === 'rating') return '/5';
+                    if (field.key === 'reviewCount') return 'anmeldelser';
+                    return '';
+                  };
+
+                  return (
+                    <div key={field.id} className="flex items-center">
+                      {getIcon()}
+                      <div>
+                        <span className="font-medium">{field.label}:</span>
+                        <span className="ml-2 text-gray-600">
+                          {getFieldValue()}
+                          {getUnit() && ` ${getUnit()}`}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
               
               {equipment.length > 0 && (
                 <div>

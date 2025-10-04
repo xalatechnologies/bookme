@@ -1,22 +1,22 @@
 # CSS Style Guide
 
-We always use the latest version of TailwindCSS with Flowbite for all CSS styling. This guide establishes comprehensive standards for CSS class usage, Flowbite integration, and Tailwind CSS best practices.
+We always use the latest version of TailwindCSS with shadcn/ui for all CSS styling. This guide establishes comprehensive standards for CSS class usage, shadcn/ui integration, and Tailwind CSS best practices.
 
 ## Core Principles
 
-### 1. Flowbite-First Approach
-- **ALWAYS** use Flowbite components and utilities before custom CSS
-- Leverage Flowbite's pre-built design system for consistency
-- Only extend or customize when Flowbite doesn't provide the needed functionality
-- Follow Flowbite's color palette and design tokens
+### 1. shadcn/ui-First Approach
+- **ALWAYS** use shadcn/ui components and utilities before custom CSS
+- Leverage shadcn/ui's pre-built design system for consistency
+- Only extend or customize when shadcn/ui doesn't provide the needed functionality
+- Follow shadcn/ui's color palette and design tokens
 
 ### 2. TailwindCSS Integration
-- Use TailwindCSS v4+ with Flowbite plugin
+- Use TailwindCSS v4+ with shadcn/ui plugin
 - Implement utility-first methodology
 - Avoid custom CSS classes unless absolutely necessary
 - Maintain responsive design principles
 
-## Flowbite CSS Classes and Utilities
+## shadcn/ui CSS Classes and Utilities
 
 ### Color System
 ```css
@@ -26,10 +26,10 @@ We always use the latest version of TailwindCSS with Flowbite for all CSS stylin
 .border-blue-50 to .border-blue-950
 
 /* Semantic Colors */
-.text-success-50 to .text-success-950    /* Green variants */
-.text-warning-50 to .text-warning-950    /* Yellow variants */
-.text-danger-50 to .text-danger-950      /* Red variants */
-.text-info-50 to .text-info-950          /* Cyan variants */
+.text-green-50 to .text-green-950    /* Green variants */
+.text-yellow-50 to .text-yellow-950    /* Yellow variants */
+.text-red-50 to .text-red-950      /* Red variants */
+.text-cyan-50 to .text-cyan-950          /* Cyan variants */
 
 /* Dark Mode Support */
 .dark\:text-gray-100
@@ -39,7 +39,7 @@ We always use the latest version of TailwindCSS with Flowbite for all CSS stylin
 
 ### Typography Classes
 ```css
-/* Flowbite Typography Scale */
+/* shadcn/ui Typography Scale */
 .text-xs      /* 12px */
 .text-sm      /* 14px */
 .text-base    /* 16px */
@@ -69,7 +69,7 @@ We always use the latest version of TailwindCSS with Flowbite for all CSS stylin
 
 ### Spacing System
 ```css
-/* Flowbite Spacing Scale (based on 4px grid) */
+/* shadcn/ui Spacing Scale (based on 4px grid) */
 .p-0    /* 0px */
 .p-1    /* 4px */
 .p-2    /* 8px */
@@ -167,7 +167,7 @@ We always use the latest version of TailwindCSS with Flowbite for all CSS stylin
 
 ### Shadow Classes
 ```css
-/* Flowbite Shadow Scale */
+/* shadcn/ui Shadow Scale */
 .shadow-none
 .shadow-sm       /* 0 1px 2px rgba(0, 0, 0, 0.05) */
 .shadow          /* 0 1px 3px rgba(0, 0, 0, 0.1) */
@@ -204,7 +204,7 @@ xl:   /* 1280px and up */
 
 ### Multi-line Example
 ```html
-<div class="flowbite-card bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-md p-4
+<div class="shadcn-card bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-md p-4
             hover:shadow-lg hover:border-blue-300 dark:hover:border-blue-600
             focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
             xs:p-6
@@ -217,7 +217,7 @@ xl:   /* 1280px and up */
              sm:text-xl
              md:text-2xl
              lg:text-3xl">
-    Flowbite Card Title
+    shadcn/ui Card Title
   </h3>
   <p class="text-gray-600 dark:text-gray-400 text-sm
             sm:text-base
@@ -457,7 +457,7 @@ module.exports = {
   padding: 12px 24px;
 }
 
-/* Good: Flowbite/Tailwind classes */
+/* Good: shadcn/ui/Tailwind classes */
 .bg-gradient-to-r .from-blue-500 .to-blue-700 .rounded-lg .px-6 .py-3
 ```
 
@@ -484,7 +484,7 @@ module.exports = {
 ## Troubleshooting
 
 ### Common Issues
-1. **Classes not applying**: Check Tailwind config includes Flowbite content paths
+1. **Classes not applying**: Check Tailwind config includes shadcn/ui content paths
 2. **Dark mode not working**: Ensure dark mode is enabled in Tailwind config
 3. **Responsive classes not working**: Verify breakpoint syntax and mobile-first approach
 4. **Purged classes**: Add dynamic classes to safelist in Tailwind config

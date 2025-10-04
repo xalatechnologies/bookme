@@ -2,12 +2,12 @@
 
 ## Type Definitions
 
-### Flowbite Component Props
+### shadcn/ui Component Props
 ```typescript
-// ✅ Import and extend Flowbite types
-import type { ButtonProps, CardProps, ModalProps } from 'flowbite-react';
+// ✅ Import and extend shadcn/ui types
+import type { ButtonProps, CardProps, ModalProps } from '@/components/ui/button';
 
-// ✅ Extend Flowbite props for custom components
+// ✅ Extend shadcn/ui props for custom components
 interface CustomButtonProps extends ButtonProps {
   loading?: boolean;
   icon?: React.ComponentType<{ className?: string }>;
@@ -45,7 +45,8 @@ interface ModalComponentProps extends Omit<ModalProps, 'onClose'> {
 ### Functional Components
 ```typescript
 import { FC, ReactNode } from 'react';
-import { Card, Button } from 'flowbite-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 
 // ✅ Explicit return type for components
 interface ProductCardProps {
@@ -65,10 +66,12 @@ const ProductCard: FC<ProductCardProps> = ({ product, onAddToCart }) => {
 
   return (
     <Card className="max-w-sm">
-      <img src={product.image} alt={product.name} />
-      <h5 className="text-xl font-bold">{product.name}</h5>
-      <span className="text-2xl font-bold">${product.price}</span>
-      <Button onClick={handleAddToCart}>Add to Cart</Button>
+      <CardContent className="p-4">
+        <img src={product.image} alt={product.name} />
+        <h5 className="text-xl font-bold">{product.name}</h5>
+        <span className="text-2xl font-bold">${product.price}</span>
+        <Button onClick={handleAddToCart}>Add to Cart</Button>
+      </CardContent>
     </Card>
   );
 };
@@ -76,7 +79,9 @@ const ProductCard: FC<ProductCardProps> = ({ product, onAddToCart }) => {
 
 ### Generic Components
 ```typescript
-// ✅ Generic table component with Flowbite
+// ✅ Generic table component with shadcn/ui
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+
 interface TableColumn<T> {
   key: keyof T;
   header: string;
@@ -95,31 +100,31 @@ function DataTable<T extends { id: string }>({
   onRowClick
 }: DataTableProps<T>): JSX.Element {
   return (
-    <Table hoverable>
-      <Table.Head>
+    <Table>
+      <TableHeader>
         {columns.map((column) => (
-          <Table.HeadCell key={String(column.key)}>
+          <TableHead key={String(column.key)}>
             {column.header}
-          </Table.HeadCell>
+          </TableHead>
         ))}
-      </Table.Head>
-      <Table.Body>
+      </TableHeader>
+      <TableBody>
         {data.map((item) => (
-          <Table.Row
+          <TableRow
             key={item.id}
             onClick={() => onRowClick?.(item)}
             className={onRowClick ? 'cursor-pointer' : ''}
           >
             {columns.map((column) => (
-              <Table.Cell key={String(column.key)}>
+              <TableCell key={String(column.key)}>
                 {column.render
                   ? column.render(item[column.key], item)
                   : String(item[column.key])}
-              </Table.Cell>
+              </TableCell>
             ))}
-          </Table.Row>
+          </TableRow>
         ))}
-      </Table.Body>
+      </TableBody>
     </Table>
   );
 }
@@ -403,7 +408,7 @@ function processUserData(data: unknown): User | null {
 ### Error Boundaries
 ```typescript
 import { Component, ErrorInfo, ReactNode } from 'react';
-import { Alert } from 'flowbite-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 interface ErrorBoundaryState {
   hasError: boolean;
@@ -436,9 +441,11 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
       }
 
       return (
-        <Alert color="failure">
-          <span className="font-medium">Something went wrong!</span>
-          <p>{this.state.error.message}</p>
+        <Alert variant="destructive">
+          <AlertDescription>
+            <span className="font-medium">Something went wrong!</span>
+            <p>{this.state.error.message}</p>
+          </AlertDescription>
         </Alert>
       );
     }

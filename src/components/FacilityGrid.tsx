@@ -1,7 +1,7 @@
 import React from 'react';
 import { FacilityCard } from '@/components/facility/FacilityCard';
 import { useTranslation } from '@/i18n';
-import { coreFacilities } from '@/data/coreFacilities';
+import { useFacilityStore } from '@/stores/facilityStore';
 
 interface FacilityGridProps {
   readonly searchQuery?: string;
@@ -17,10 +17,12 @@ export const FacilityGrid = ({
   onViewDetails 
 }: FacilityGridProps): JSX.Element => {
   const { t } = useTranslation();
+  const { getPublishedFacilities } = useFacilityStore();
+  const facilities = getPublishedFacilities();
 
   // Filter facilities based on search and type
   const filteredFacilities = React.useMemo(() => {
-    return coreFacilities.filter((facility) => {
+    return facilities.filter((facility) => {
       const matchesSearch = searchQuery === '' || 
         facility.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         facility.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -31,7 +33,7 @@ export const FacilityGrid = ({
 
       return matchesSearch && matchesType;
     });
-  }, [searchQuery, selectedType]);
+  }, [searchQuery, selectedType, facilities]);
 
   if (filteredFacilities.length === 0) {
     return (

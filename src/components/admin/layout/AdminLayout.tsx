@@ -10,13 +10,11 @@ interface IAdminLayoutProps {
 
 const AdminLayout = ({ children }: IAdminLayoutProps): JSX.Element => {
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white">
       <AdminHeader />
-      <div className="grid grid-cols-[260px_minmax(0,1fr)]">
-        <aside className="border-r border-gray-200 dark:border-gray-700">
-          <AdminSidebar />
-        </aside>
-        <main className="p-5">
+      <div className="flex h-[calc(100vh-73px)]">
+        <AdminSidebar />
+        <main className="flex-1 p-6 overflow-y-auto">
           {children}
         </main>
       </div>

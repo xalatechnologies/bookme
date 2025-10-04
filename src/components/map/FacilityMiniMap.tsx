@@ -5,10 +5,10 @@ import React, { useState } from 'react';
 import { MapPin } from 'lucide-react';
 
 // Internal imports
-import type { Facility } from '@/data/coreFacilities';
+import type { IFacility } from '@/stores/facilityStore';
 
 interface FacilityMiniMapProps {
-  readonly facility: Facility;
+  readonly facility: IFacility;
   readonly mapboxToken: string;
 }
 
@@ -20,7 +20,8 @@ export const FacilityMiniMap: React.FC<FacilityMiniMapProps> = ({
   const [imageError, setImageError] = useState<boolean>(false);
 
   // Generate static map URL using Mapbox Static Images API
-  const staticMapUrl = `https://api.mapbox.com/styles/v1/mapbox/streets-v12/static/pin-s+2563eb(${facility.coordinates.lng},${facility.coordinates.lat})/${facility.coordinates.lng},${facility.coordinates.lat},14,0/300x280@2x?access_token=${mapboxToken}`;
+  // Use a larger size to ensure good quality at different heights
+  const staticMapUrl = `https://api.mapbox.com/styles/v1/mapbox/streets-v12/static/pin-s+2563eb(${facility.coordinates.lng},${facility.coordinates.lat})/${facility.coordinates.lng},${facility.coordinates.lat},14,0/400x400@2x?access_token=${mapboxToken}`;
 
   const handleImageLoad = (): void => {
     setImageLoaded(true);

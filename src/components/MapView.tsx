@@ -5,7 +5,7 @@ import React, { useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 
 // Internal imports
-import { coreFacilities } from '@/data/coreFacilities';
+import { useFacilityStore } from '@/stores/facilityStore';
 import { FacilityFilters } from '@/types/facility';
 
 // Sibling imports
@@ -30,6 +30,9 @@ export const MapView: React.FC<MapViewProps> = ({ facilityType, location, viewMo
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
   const [isInitialized, setIsInitialized] = useState<boolean>(false);
+  
+  const { getPublishedFacilities } = useFacilityStore();
+  const facilities = getPublishedFacilities();
 
   // Create filters from props
   const filters: FacilityFilters = {
@@ -38,7 +41,7 @@ export const MapView: React.FC<MapViewProps> = ({ facilityType, location, viewMo
   };
 
   // Filter facilities based on current filters
-  let filteredFacilities = coreFacilities;
+  let filteredFacilities = facilities;
   if (filters.facilityType) {
     filteredFacilities = filteredFacilities.filter(f => f.type === filters.facilityType);
   }

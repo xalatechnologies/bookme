@@ -5,10 +5,9 @@ import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 // Internal imports
-import { coreFacilities } from '@/data/coreFacilities';
+import { useFacilityStore, type IFacility } from '@/stores/facilityStore';
 import { dummyZones, getZonesForFacility } from '@/data/zones/dummyZones';
 import type { Zone } from '@/types/booking';
-import type { Facility } from '@/data/coreFacilities';
 
 interface UseCalendarViewProps {
   readonly facilityType?: string;
@@ -18,7 +17,7 @@ interface UseCalendarViewProps {
 }
 
 interface FacilityWithZones {
-  readonly facility: Facility;
+  readonly facility: IFacility;
   readonly zones: readonly Zone[];
 }
 
@@ -39,10 +38,13 @@ export const useCalendarView = ({
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  
+  const { getPublishedFacilities } = useFacilityStore();
+  const facilities = getPublishedFacilities();
 
   // Filter facilities based on criteria
   const filteredFacilities = useMemo(() => {
-    let filtered = coreFacilities;
+    let filtered = facilities;
 
     if (facilityType && facilityType !== "all") {
       filtered = filtered.filter(f => f.type === facilityType);
@@ -65,7 +67,7 @@ export const useCalendarView = ({
     }
 
     return filtered;
-  }, [facilityType, location, accessibility, capacity]);
+  }, [facilityType, location, accessibility, capacity, facilities]);
 
   // Get facilities with their zones
   const facilitiesWithZones = useMemo((): readonly FacilityWithZones[] => {

@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 
 import { FacilityFilters } from "@/types/facility";
-import { coreFacilities } from "@/data/coreFacilities";
+import { useFacilityStore } from "@/stores/facilityStore";
 
 import { FacilityCard } from "./facility/FacilityCard";
 import { FacilityListItem } from "./facility/FacilityListItem";
@@ -20,11 +20,13 @@ export const InfiniteScrollFacilities: React.FC<InfiniteScrollFacilitiesProps> =
   viewMode,
   setViewMode
 }): JSX.Element => {
-  const [filteredFacilities, setFilteredFacilities] = useState(coreFacilities);
+  const { getPublishedFacilities } = useFacilityStore();
+  const [filteredFacilities, setFilteredFacilities] = useState(() => getPublishedFacilities());
 
   // Apply filters
   useEffect(() => {
-    let filtered = [...coreFacilities];
+    const facilities = getPublishedFacilities();
+    let filtered = [...facilities];
 
     if (filters.searchTerm) {
       filtered = filtered.filter(facility =>
@@ -52,7 +54,7 @@ export const InfiniteScrollFacilities: React.FC<InfiniteScrollFacilitiesProps> =
     }
 
     setFilteredFacilities(filtered);
-  }, [filters]);
+  }, [filters, getPublishedFacilities]);
 
   const handleAddressClick = (e: React.MouseEvent, facility: any): void => {
     e.stopPropagation();

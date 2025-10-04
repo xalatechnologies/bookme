@@ -5,8 +5,11 @@ import React from "react";
 
 // Internal imports
 import type { SelectedTimeSlot, AvailabilityStatus } from '@/types/booking';
-import type { Facility } from '@/data/coreFacilities';
+import type { IFacility } from '@/stores/facilityStore';
 import { getZonesForFacility } from '@/data/zones/dummyZones';
+
+// Alias for backward compatibility
+type Facility = IFacility;
 
 // Sibling imports
 import { AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";

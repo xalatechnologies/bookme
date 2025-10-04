@@ -2,12 +2,12 @@ import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Users, Clock, Euro, Phone, Mail, Calendar } from "lucide-react";
-import type { Facility } from "@/data/coreFacilities";
+import { MapPin, Clock, Euro, Phone, Mail, Calendar } from "lucide-react";
+import type { IFacility } from "@/stores/facilityStore";
 import { useTranslation } from "@/i18n";
 
 interface FacilityContactInfoProps {
-  readonly facility: Facility;
+  readonly facility: IFacility;
 }
 
 export const FacilityContactInfo: React.FC<FacilityContactInfoProps> = ({ facility }) => {
@@ -31,14 +31,6 @@ export const FacilityContactInfo: React.FC<FacilityContactInfoProps> = ({ facili
           <CardTitle className="text-lg">Rask info</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex items-center gap-3">
-            <Users className="h-5 w-5 text-gray-400" />
-            <div>
-              <p className="text-sm text-gray-500">Kapasitet</p>
-              <p className="font-medium">{facility.capacity} personer</p>
-            </div>
-          </div>
-          
           <div className="flex items-center gap-3">
             <Euro className="h-5 w-5 text-gray-400" />
             <div>
@@ -142,12 +134,12 @@ export const FacilityContactInfo: React.FC<FacilityContactInfoProps> = ({ facili
         <CardContent className="space-y-3">
           <div className="flex items-center gap-3">
             <Phone className="h-4 w-4 text-gray-400" />
-            <span className="text-sm">+47 32 04 70 00</span>
+            <span className="text-sm">{facility.emergencyContact || "+47 32 04 70 00"}</span>
           </div>
           
           <div className="flex items-center gap-3">
             <Mail className="h-4 w-4 text-gray-400" />
-            <span className="text-sm">booking@drammen.kommune.no</span>
+            <span className="text-sm">{facility.contactEmail || "booking@drammen.kommune.no"}</span>
           </div>
         </CardContent>
       </Card>

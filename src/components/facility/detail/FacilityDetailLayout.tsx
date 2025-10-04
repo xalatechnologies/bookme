@@ -2,8 +2,11 @@
 
 import React from "react";
 
-import type { Facility } from "@/data/coreFacilities";
+import type { IFacility } from "@/stores/facilityStore";
 import type { Zone } from "@/components/booking/types";
+
+// Alias for backward compatibility
+type Facility = IFacility;
 
 import { AirBnbStyleGallery } from "../AirBnbStyleGallery";
 import { FacilityHeader } from "../FacilityHeader";
@@ -38,6 +41,7 @@ export const FacilityDetailLayout = ({
         <FacilityHeader 
           name={facility.name} 
           address={facility.address} 
+          type={facility.type}
           onShare={onShare} 
           isFavorited={isFavorited} 
           onToggleFavorite={onToggleFavorite} 
@@ -68,9 +72,9 @@ export const FacilityDetailLayout = ({
             <FacilityContactInfo 
               facilityName={facility.name} 
               address={facility.address} 
-              openingHours="08:00 - 22:00" 
-              capacity={facility.capacity} 
-              area={`${facility.capacity} personer`}
+              openingHours={facility.openingHours || "08:00 - 22:00"}
+              contactEmail={facility.contactEmail}
+              emergencyContact={facility.emergencyContact}
             />
           </div>
         </div>

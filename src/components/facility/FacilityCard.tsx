@@ -5,14 +5,15 @@ import { useNavigate } from 'react-router-dom';
 import { MapPin, Users, Heart, Share2 } from 'lucide-react';
 
 import { useTranslation } from '@/i18n';
-import type { Facility } from '@/data/coreFacilities';
+import type { IFacility } from '@/stores/facilityStore';
+import { useFieldConfigStore } from '@/stores/fieldConfigStore';
 
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 
 interface FacilityCardProps {
-  readonly facility: Facility;
-  readonly onAddressClick: (e: React.MouseEvent, facility: Facility) => void;
+  readonly facility: IFacility;
+  readonly onAddressClick: (e: React.MouseEvent, facility: IFacility) => void;
   readonly viewMode?: "grid" | "list";
 }
 
@@ -25,6 +26,14 @@ export const FacilityCard = ({
   const navigate = useNavigate();
   const [isFavorited, setIsFavorited] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  
+  // Get field configs for this facility
+  const { getFieldConfigsForFacility } = useFieldConfigStore();
+  const fieldConfigs = getFieldConfigsForFacility(facility.id);
+
+  const handleCardClick = (): void => {
+    navigate(`/facilities/${facility.id}`);
+  };
 
   const handleShare = async (e: React.MouseEvent): Promise<void> => {
     e.stopPropagation();
@@ -61,7 +70,7 @@ export const FacilityCard = ({
   return (
     <Card 
       className="group overflow-hidden hover:shadow-2xl transition-all duration-500 hover:translate-y-[-8px] border-0 shadow-lg bg-white relative cursor-pointer focus:outline-none focus:ring-4 focus:ring-blue-500 focus:ring-opacity-50 h-full flex flex-col"
-      onClick={() => navigate(`/facilities/${facility.id}`)}
+      onClick={handleCardClick}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       role="button"
@@ -70,7 +79,7 @@ export const FacilityCard = ({
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
-          navigate(`/facilities/${facility.id}`);
+          handleCardClick();
         }
       }}
     >
@@ -153,10 +162,48 @@ export const FacilityCard = ({
           </div>
         )}
 
-        {/* Capacity */}
-        <div className="flex items-center gap-3 text-gray-600 mt-auto">
-          <Users className="h-5 w-5" />
-          <span className="text-base font-medium">Kapasitet: {facility.capacity}</span>
+        {/* Dynamic fields based on configuration */}
+        <div className="space-y-2 mt-auto">
+          {fieldConfigs
+            .filter(field => field.visible)
+            .map(field => {
+              const getFieldValue = (): string | number => {
+                if (field.key === 'capacity') return facility.capacity || 0;
+                if (field.key === 'area') return facility.area || '';
+                if (field.key === 'pricePerHour') return facility.pricePerHour || 0;
+                if (field.key === 'rating') return facility.rating || 0;
+                if (field.key === 'reviewCount') return facility.reviewCount || 0;
+                return typeof field.value === 'boolean' ? (field.value ? 'Ja' : 'Nei') : field.value;
+              };
+
+              const getIcon = (): JSX.Element => {
+                if (field.key === 'capacity') return <Users className="h-5 w-5" />;
+                if (field.key === 'area') return <MapPin className="h-5 w-5" />;
+                if (field.key === 'pricePerHour') return <span className="text-gray-400">💰</span>;
+                if (field.key === 'rating') return <span className="text-yellow-500">★</span>;
+                if (field.key === 'reviewCount') return <span className="text-gray-400">📝</span>;
+                return <span className="text-gray-400">📋</span>;
+              };
+
+              const getUnit = (): string => {
+                if (field.key === 'capacity') return 'personer';
+                if (field.key === 'area') return 'm²';
+                if (field.key === 'pricePerHour') return 'kr/time';
+                if (field.key === 'rating') return '/5';
+                if (field.key === 'reviewCount') return 'anmeldelser';
+                return '';
+              };
+
+              return (
+                <div key={field.id} className="flex items-center gap-3 text-gray-600">
+                  {getIcon()}
+                  <span className="text-base font-medium">
+                    {field.label}: {getFieldValue()}
+                    {getUnit() && ` ${getUnit()}`}
+                  </span>
+                </div>
+              );
+            })}
         </div>
       </div>
 

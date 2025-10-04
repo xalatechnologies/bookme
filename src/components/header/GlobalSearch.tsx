@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { Search, MapPin, Building, Clock, Users } from "lucide-react";
 
 import { useLanguage } from "@/contexts/LanguageContext";
-import { coreFacilities } from "@/data/coreFacilities";
+import { useFacilityStore } from "@/stores/facilityStore";
 
 import { Input } from "@/components/ui/input";
 import { Command, CommandEmpty, CommandGroup, CommandItem, CommandList } from "@/components/ui/command";
@@ -33,6 +33,8 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({ onResultClick }): JS
   const inputRef = useRef<HTMLInputElement>(null);
   const { language } = useLanguage();
   const navigate = useNavigate();
+  const { getPublishedFacilities } = useFacilityStore();
+  const facilities = getPublishedFacilities();
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -54,7 +56,7 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({ onResultClick }): JS
 
     const searchLower = searchTerm.toLowerCase().trim();
     
-    const facilityResults: SearchResult[] = coreFacilities
+    const facilityResults: SearchResult[] = facilities
       .filter(facility => {
         const matchesName = facility.name.toLowerCase().includes(searchLower);
         const matchesDescription = facility.description?.toLowerCase().includes(searchLower);
@@ -78,28 +80,28 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({ onResultClick }): JS
       }));
 
     // Add location results (unique locations from facilities)
-    const uniqueLocations = Array.from(new Set(coreFacilities.map(f => f.location)))
+    const uniqueLocations = Array.from(new Set(facilities.map(f => f.location)))
       .filter(location => location.toLowerCase().includes(searchLower))
       .slice(0, 3)
       .map(location => ({
         id: `location-${location}`,
         type: 'location' as const,
         title: location,
-        subtitle: `${coreFacilities.filter(f => f.location === location).length} lokaler tilgjengelig`,
+        subtitle: `${facilities.filter(f => f.location === location).length} lokaler tilgjengelig`,
         icon: <MapPin className="h-5 w-5" />,
         url: '/',
         searchParams: { location: location.toLowerCase().replace(/\s+/g, '-') }
       }));
 
     // Add category results (unique types from facilities)
-    const uniqueTypes = Array.from(new Set(coreFacilities.map(f => f.type)))
+    const uniqueTypes = Array.from(new Set(facilities.map(f => f.type)))
       .filter(type => type.toLowerCase().includes(searchLower))
       .slice(0, 3)
       .map(type => ({
         id: `category-${type}`,
         type: 'category' as const,
         title: type,
-        subtitle: `${coreFacilities.filter(f => f.type === type).length} lokaler tilgjengelig`,
+        subtitle: `${facilities.filter(f => f.type === type).length} lokaler tilgjengelig`,
         icon: <Users className="h-5 w-5" />,
         url: '/',
         searchParams: { facilityType: type.toLowerCase().replace(/\s+/g, '-') }

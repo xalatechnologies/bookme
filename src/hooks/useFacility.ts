@@ -4,10 +4,10 @@
 import { useState, useEffect } from 'react';
 
 // Internal imports
-import { coreFacilities, type Facility } from '@/data/coreFacilities';
+import { useFacilityStore, type IFacility } from '@/stores/facilityStore';
 
 interface FacilityState {
-  readonly facility: Facility | null;
+  readonly facility: IFacility | null;
   readonly loading: boolean;
   readonly error: string | null;
   readonly notFound: boolean;
@@ -21,6 +21,8 @@ export const useFacility = (id: string | number): FacilityState => {
     notFound: false
   });
 
+  const { getFacilityById } = useFacilityStore();
+
   useEffect(() => {
     const fetchFacility = async (): Promise<void> => {
       try {
@@ -30,7 +32,7 @@ export const useFacility = (id: string | number): FacilityState => {
         await new Promise(resolve => setTimeout(resolve, 100));
 
         const facilityId = typeof id === 'number' ? id.toString() : id;
-        const facility = coreFacilities.find(f => f.id === facilityId);
+        const facility = getFacilityById(facilityId);
 
         if (!facility) {
           setState({
@@ -61,7 +63,7 @@ export const useFacility = (id: string | number): FacilityState => {
     if (id) {
       fetchFacility();
     }
-  }, [id]);
+  }, [id, getFacilityById]);
 
   return state;
 };

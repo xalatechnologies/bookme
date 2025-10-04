@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Phone, Mail, Clock, Shield, Users } from "lucide-react";
+import { Phone, Mail, Clock, Shield } from "lucide-react";
 
 import { useLanguage } from "@/contexts/LanguageContext";
 
@@ -12,16 +12,16 @@ interface FacilityContactInfoProps {
   readonly facilityName: string;
   readonly address: string;
   readonly openingHours: string | readonly any[];
-  readonly capacity: number;
-  readonly area: string;
+  readonly contactEmail?: string;
+  readonly emergencyContact?: string;
 }
 
 export const FacilityContactInfo: React.FC<FacilityContactInfoProps> = ({
   facilityName,
   address,
   openingHours,
-  capacity,
-  area
+  contactEmail,
+  emergencyContact
 }): JSX.Element => {
   const { language } = useLanguage();
 
@@ -77,7 +77,7 @@ export const FacilityContactInfo: React.FC<FacilityContactInfoProps> = ({
             <Mail className="h-4 w-4 text-gray-400 mr-3" />
             <div>
               <p className="font-semibold text-gray-900">{t.facilityManager}</p>
-              <p className="text-sm text-gray-600">drammen.booking@kommune.no</p>
+              <p className="text-sm text-gray-600">{contactEmail || "drammen.booking@kommune.no"}</p>
             </div>
           </div>
         </div>
@@ -103,25 +103,8 @@ export const FacilityContactInfo: React.FC<FacilityContactInfoProps> = ({
             <Shield className="h-4 w-4 text-gray-400 mr-3" />
             <div>
               <p className="font-semibold text-gray-900">{t.emergencyContact}</p>
-              <p className="text-sm text-gray-600">+47 32 04 70 00</p>
+              <p className="text-sm text-gray-600">{emergencyContact || "+47 32 04 70 00"}</p>
             </div>
-          </div>
-        </div>
-
-        <Separator />
-
-        {/* Capacity and Area */}
-        <div className="space-y-3">
-          <div className="flex items-center">
-            <Users className="h-4 w-4 text-gray-400 mr-3" />
-            <div>
-              <p className="font-semibold text-gray-900">Kapasitet</p>
-              <p className="text-sm text-gray-600">{capacity} personer</p>
-            </div>
-          </div>
-          <div className="ml-7">
-            <p className="font-semibold text-gray-900">Areal</p>
-            <p className="text-sm text-gray-600">{area}</p>
           </div>
         </div>
 

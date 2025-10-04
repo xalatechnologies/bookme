@@ -1,38 +1,90 @@
 "use client";
 
 import React from "react";
+import { useNavigate } from "react-router-dom";
+import { Plus, Calendar, CheckCircle } from "lucide-react";
+import KPICard from "@/components/admin/dashboard/KPICard";
+import ApprovalQueue from "@/components/admin/dashboard/ApprovalQueue";
+import RecentEvents from "@/components/admin/dashboard/RecentEvents";
+import TodaysBookings from "@/components/admin/dashboard/TodaysBookings";
+import SystemAlerts from "@/components/admin/dashboard/SystemAlerts";
+import { 
+  kpiCards, 
+  approvalRequests, 
+  recentEvents, 
+  todaysBookings, 
+  systemAlerts 
+} from "@/data/admin/dashboardData";
 
 interface IOverviewProps {
   readonly children?: never;
 }
 
 const Overview = (_props: IOverviewProps): JSX.Element => {
+  const navigate = useNavigate();
+
+  const handleNewFacility = (): void => {
+    navigate('/admin/facilities/new');
+  };
+
+  const handleNewBooking = (): void => {
+    // TODO: Implement new booking navigation
+  };
+
   return (
-    <div className="space-y-4">
-      <header className="space-y-1">
-        <h1 className="text-lg font-semibold">Oversikt</h1>
-        <p className="text-sm text-gray-600 dark:text-gray-400">Velkommen til BookMe Admin-dashbordet. Her finner du en rask oversikt over systemet.</p>
+    <div className="space-y-8">
+      {/* Header Section */}
+      <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="space-y-1">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+            Dashboard
+          </h1>
+          <p className="text-gray-600 dark:text-gray-400">
+            Velkommen tilbake! Her er en oversikt over systemet ditt.
+          </p>
+        </div>
+        <div className="flex gap-3">
+          <button 
+            onClick={handleNewFacility}
+            className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
+          >
+            <Plus className="w-4 h-4" />
+            Nytt lokale
+          </button>
+          <button 
+            onClick={handleNewBooking}
+            className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors"
+          >
+            <Calendar className="w-4 h-4" />
+            Ny booking
+          </button>
+        </div>
       </header>
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <div className="p-4 rounded border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm">
-          <h3 className="text-sm font-semibold">Totalt antall lokaler</h3>
-          <p className="text-sm text-gray-600 dark:text-gray-400">Antall aktive lokaler i systemet.</p>
-          <p className="text-4xl font-bold mt-2">124</p>
+
+      {/* KPI Cards Section */}
+      <section className="space-y-4">
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+          Nøkkeltall
+        </h2>
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          {kpiCards.map((card) => (
+            <KPICard key={card.id} card={card} />
+          ))}
         </div>
-        <div className="p-4 rounded border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm">
-          <h3 className="text-sm font-semibold">Nye bookinger i dag</h3>
-          <p className="text-sm text-gray-600 dark:text-gray-400">Antall bookinger mottatt i dag.</p>
-          <p className="text-4xl font-bold mt-2">18</p>
+      </section>
+
+      {/* Operational Sections */}
+      <div className="grid gap-6 lg:grid-cols-2">
+        {/* Left Column */}
+        <div className="space-y-6">
+          <ApprovalQueue requests={approvalRequests} />
+          <RecentEvents events={recentEvents} />
         </div>
-        <div className="p-4 rounded border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm">
-          <h3 className="text-sm font-semibold">Ventende godkjenninger</h3>
-          <p className="text-sm text-gray-600 dark:text-gray-400">Antall bookinger som krever godkjenning.</p>
-          <p className="text-4xl font-bold mt-2">5</p>
-        </div>
-        <div className="p-4 rounded border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm">
-          <h3 className="text-sm font-semibold">Aktive brukere</h3>
-          <p className="text-sm text-gray-600 dark:text-gray-400">Antall unike brukere logget inn siste 24 timer.</p>
-          <p className="text-4xl font-bold mt-2">78</p>
+
+        {/* Right Column */}
+        <div className="space-y-6">
+          <TodaysBookings bookings={todaysBookings} />
+          <SystemAlerts alerts={systemAlerts} />
         </div>
       </div>
     </div>

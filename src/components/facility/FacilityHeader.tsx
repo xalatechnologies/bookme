@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 interface FacilityHeaderProps {
   readonly name: string;
   readonly address: string;
+  readonly type: string;
   readonly onShare: () => void;
   readonly isFavorited: boolean;
   readonly onToggleFavorite: () => void;
@@ -19,19 +20,18 @@ interface FacilityHeaderProps {
 export const FacilityHeader = ({ 
   name, 
   address,
+  type,
   onShare,
   isFavorited,
   onToggleFavorite
 }: FacilityHeaderProps): JSX.Element => {
   const { t, language } = useTranslation();
 
-  const facilityTypeLabel: string = language === 'NO' ? 'Kulturhus' : 'Cultural Center';
-
   return (
     <div>
       <div className="flex items-center gap-3 mb-3">
         <Badge variant="outline" className="bg-[#1e3a8a] bg-opacity-10 text-[#1e3a8a] border-[#1e3a8a]">
-          {facilityTypeLabel}
+          {type}
         </Badge>
       </div>
       

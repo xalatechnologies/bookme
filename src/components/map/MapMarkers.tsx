@@ -5,7 +5,10 @@ import React, { useEffect, useRef } from 'react';
 import mapboxgl from 'mapbox-gl';
 
 // Internal imports
-import type { Facility } from '@/data/coreFacilities';
+import type { IFacility } from '@/stores/facilityStore';
+
+// Alias for backward compatibility
+type Facility = IFacility;
 
 interface FacilityLocation {
   readonly id: string;
