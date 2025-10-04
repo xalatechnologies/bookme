@@ -47,8 +47,7 @@ const AdminSidebar = (_props: IAdminSidebarProps): JSX.Element => {
       title: "Administrasjon",
       items: [
         { id: "facilities", label: "Lokaler", path: "/admin/facilities", icon: Building2 },
-        { id: "bookings", label: "Bookinger", path: "/admin/bookings", icon: Calendar },
-        { id: "approvals", label: "Godkjenninger", path: "/admin/approvals", icon: CheckCircle },
+        { id: "bookings", label: "Bookinger & Godkjenninger", path: "/admin/bookings", icon: Calendar },
         { id: "users-roles", label: "Brukere og roller", path: "/admin/users-roles", icon: Users },
       ]
     },
@@ -70,7 +69,7 @@ const AdminSidebar = (_props: IAdminSidebarProps): JSX.Element => {
 
   return (
     <div className={`h-full flex flex-col bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 transition-all duration-300 ${
-      isCollapsed ? "w-16" : "w-64"
+      isCollapsed ? "w-16" : "w-72"
     }`}>
       {/* Navigation Content */}
       <nav className="flex-1 p-4 space-y-6 overflow-y-auto">
@@ -114,7 +113,7 @@ const AdminSidebar = (_props: IAdminSidebarProps): JSX.Element => {
                         
                         {/* Label */}
                         {!isCollapsed && (
-                          <span className="truncate">{item.label}</span>
+                          <span className="whitespace-nowrap">{item.label}</span>
                         )}
                       </>
                     )}

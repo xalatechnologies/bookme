@@ -7,7 +7,6 @@ import Overview from "@/pages/admin/Overview";
 import FacilitiesPage from "@/pages/admin/FacilitiesPage";
 import FacilityEditPage from "@/pages/admin/FacilityEditPage";
 import BookingsPage from "@/pages/admin/BookingsPage";
-import ApprovalsPage from "@/pages/admin/ApprovalsPage";
 import SettingsPage from "@/pages/admin/SettingsPage";
 
 interface IAdminRoutesProps {
@@ -23,7 +22,6 @@ const AdminRoutes = (_props: IAdminRoutesProps): JSX.Element => {
       <Route path="/facilities/new" element={<AdminLayout><FacilityEditPage /></AdminLayout>} />
       <Route path="/facilities/:id/edit" element={<AdminLayout><FacilityEditPage /></AdminLayout>} />
       <Route path="/bookings" element={<AdminLayout><BookingsPage /></AdminLayout>} />
-      <Route path="/approvals" element={<AdminLayout><ApprovalsPage /></AdminLayout>} />
       <Route path="/users-roles" element={<AdminLayout><div className="p-6">Brukere og roller - Kommer snart</div></AdminLayout>} />
       <Route path="/notifications" element={<AdminLayout><div className="p-6">Varsler - Kommer snart</div></AdminLayout>} />
       <Route path="/integrations" element={<AdminLayout><div className="p-6">Integrasjoner - Kommer snart</div></AdminLayout>} />
