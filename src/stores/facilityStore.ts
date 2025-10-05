@@ -234,6 +234,40 @@ const initialFacilities: readonly IFacility[] = [
   },
   {
     id: "6",
+    name: "Solberghallen",
+    description: "Solberghallen (Solberg Sport- og Kultursenter AS) er en idrettshall for inneidretter, foreninger, skoler, SFO, og private videregående skoler i Drammen kommune.",
+    type: "Idrettshall",
+    location: "Solbergelva",
+    address: "Gamle Riksvei 102A, 3057 Solbergelva",
+    capacity: 100,
+    pricePerHour: 750,
+    amenities: ["Dusj", "fotball", "basketball", "Garderober"],
+    images: [
+      "https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=800&h=600&fit=crop&crop=center"
+    ],
+    availability: {
+      monday: { start: "08:00", end: "22:00" },
+      tuesday: { start: "08:00", end: "22:00" },
+      wednesday: { start: "08:00", end: "22:00" },
+      thursday: { start: "08:00", end: "22:00" },
+      friday: { start: "08:00", end: "22:00" },
+      saturday: { start: "09:00", end: "20:00" },
+      sunday: { start: "10:00", end: "18:00" }
+    },
+    coordinates: {
+      lat: 59.7420,
+      lng: 10.1980
+    },
+    rating: 4.6,
+    reviewCount: 145,
+    status: "published",
+    owner: "Amin Ismail",
+    lastUpdated: "04.10.2025, 23:50:38. Oppdatert av: Admin User",
+    createdAt: "2023-07-15",
+    updatedAt: "2023-10-20"
+  },
+  {
+    id: "7",
     name: "Åssiden Tennisbane",
     description: "Innendørs tennisbane med profesjonell underlag. Perfekt for tennisturneringer og trening året rundt.",
     type: "Tennisbane",

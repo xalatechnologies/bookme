@@ -24,6 +24,14 @@ BookMe Portal er en omfattende plattform for fasilitetsadministrasjon og booking
 - **Moderne brukergrensesnitt**: Rent, profesjonelt grensesnitt med Radix UI-primitiver
 - **Sanntidssynkronisering**: Endringer i admin-refleksjoner umiddelbart på frontend
 
+### Brukerportal
+- **Personlig dashboard**: Tilpasset oversikt med aktive bookinger og anbefalte lokaler
+- **Bookingadministrasjon**: Komplett oversikt over egne bookinger med status og handlinger
+- **Forespørsler**: Administrasjon av booking-forespørsler med statussporing
+- **Kvitteringer**: Finansiell oversikt med betalingshistorikk og eksportfunksjoner
+- **Favoritter**: Personlig samling av favorittlokaler med tilgjengelighetssporing
+- **Profil og innstillinger**: Omfattende profiladministrasjon med sikkerhetsfunksjoner
+
 ### Administrasjonsfunksjoner
 - **Fasilitetsadministrasjon**: Full CRUD-funksjonalitet for fasiliteter
 - **Sanntidsredigering**: Inline-redigering av fasilitetsdetaljer
@@ -31,6 +39,8 @@ BookMe Portal er en omfattende plattform for fasilitetsadministrasjon og booking
 - **Kartintegrasjon**: Geokodering og koordinatadministrasjon
 - **Brukerprofil**: Profiladministrasjon med avatar-upload
 - **Innstillinger**: Omfattende innstillingsside med persistent lagring
+- **Bruker- og rolleadministrasjon**: Komplett RBAC-system med tilgangskontroll
+- **Systemadministrasjon**: Notifikasjoner, integrasjoner, rapporter og audit logs
 
 ### Teknisk arkitektur
 - **Type-sikker utvikling**: Streng TypeScript-implementering med omfattende typedekning
@@ -69,11 +79,13 @@ src/
 │   ├── map/                   # Kartintegrasjonskomponenter
 │   ├── auth/                  # Autentiseringskomponenter
 │   ├── admin/                 # Administrative grensesnittkomponenter
+│   ├── user/                  # Brukerportalkomponenter
 │   └── shared/                # Delte verktøykomponenter
 ├── contexts/                  # React Context-leverandører
 │   ├── LanguageContext.tsx    # Internasjonaliseringskontekst
 │   ├── AuthContext.tsx        # Autentiseringstilstand
 │   ├── AdminAuthContext.tsx   # Admin autentisering med persistent lagring
+│   ├── UserProfileContext.tsx # Brukerprofil med persistent lagring
 │   └── BookingContext.tsx     # Booking-flytstilstand
 ├── data/                      # Mock-data og typedefinisjoner
 │   ├── coreFacilities.ts      # Fasilitetsdata
@@ -86,6 +98,8 @@ src/
 ├── hooks/                     # Tilpassede React-hooks
 ├── lib/                       # Verktøyfunksjoner og konfigurasjoner
 ├── pages/                     # Hovedapplikasjonssider
+│   ├── admin/                 # Administrasjonssider
+│   └── user/                  # Brukerportalsider
 ├── services/                  # API-tjenester og datahenting
 ├── stores/                    # Tilstandshåndtering (Zustand-stores)
 ├── types/                     # TypeScript-typedefinisjoner
@@ -162,6 +176,60 @@ Dette prosjektet følger strenge kodestandarder for enterprise-utvikling:
 - **Konsistent spacing**: Bruk Tailwind spacing-system eksklusivt
 - **Tilgjengelighet**: WCAG 2.1 AA-compliance påkrevd
 
+## Brukerportal
+
+### Dashboard
+- **Personlig velkomst**: Tilpasset hilsen med brukerstatistikk
+- **Aktive bookinger**: Oversikt over kommende bookinger med direkte handlinger
+- **Anbefalte lokaler**: Intelligente anbefalinger basert på brukerhistorikk
+- **Systemmeldinger**: Viktige oppdateringer og statusmeldinger
+
+### Bookingadministrasjon
+- **Mine bookinger**: Komplett oversikt med filtrering og sortering
+- **Statussporing**: Visuell indikator for bookingstatus med fargekoding
+- **Hurtighandlinger**: Avbestilling, kalenderintegrasjon og deling
+- **Detaljvisning**: Sidepanel med komplett bookinginformasjon
+
+### Forespørsler og kvitteringer
+- **Forespørselsadministrasjon**: Statussporing av booking-forespørsler
+- **Kvitteringsoversikt**: Finansiell oversikt med betalingshistorikk
+- **Eksportfunksjoner**: CSV-eksport for regnskapsføring
+- **Statistikkpanel**: Brukerstatistikk og kostnadsanalyse
+
+### Profil og sikkerhet
+- **Profiladministrasjon**: Komplett profilredigering med avatar-upload
+- **Sikkerhetsinnstillinger**: Passordendring, 2FA og påloggingshistorikk
+- **Preferanser**: Språk, tema, notifikasjoner og dashboardvisning
+- **Personvern**: Datadownload, midlertidig deaktivering og kontosletting
+
+## Administrasjonsportal
+
+### Dashboard og oversikt
+- **KPI-kort**: Klikkbare kort med trendindikatorer og detaljvisning
+- **Godkjenningskø**: Oversikt over ventende godkjenninger
+- **Siste hendelser**: Aktivitetslogg med brukerinteraksjoner
+- **Systemvarsler**: Viktige systemmeldinger og statusoppdateringer
+
+### Fasilitetsadministrasjon
+- **CRUD-operasjoner**: Fullstendig administrasjon av fasiliteter
+- **Inline-redigering**: Direkte redigering av fasilitetsdetaljer
+- **Bildestyring**: Upload, galleri og sletting av fasilitetsbilder
+- **Kartintegrasjon**: Geokodering og koordinatadministrasjon
+- **Konfigurerbare felt**: Dynamisk administrasjon av informasjonsfelt
+
+### Bruker- og rolleadministrasjon
+- **Brukeradministrasjon**: Komplett brukeroversikt med filtrering og sortering
+- **Rollebasert tilgangskontroll**: RBAC-system med tilpassede roller
+- **Bulk-operasjoner**: Massehandlinger for brukeradministrasjon
+- **Tilgangshistorikk**: Audit trail for brukerendringer
+
+### Systemadministrasjon
+- **Notifikasjonssystem**: E-postmaler og systemhendelser
+- **Integrasjoner**: Eksterne systemer og API-nøkler
+- **Rapporter**: Brukeraktivitet og systemstatistikk
+- **Audit logs**: Omfattende logging av systemendringer
+- **Databehandling**: GDPR-compliance og dataretensjon
+
 ## Internasjonalisering
 
 Applikasjonen støtter flerspråkfunksjonalitet med et robust i18n-system:
@@ -214,7 +282,7 @@ Kart er konfigurert med norske koordinater (Drammen-regionen) og bruker tilpasse
 Applikasjonen inkluderer omfattende mock-data for utvikling og testing:
 
 #### Fasiliteter
-- 6 forskjellige fasilitettyper med realistisk informasjon
+- 7 forskjellige fasilitettyper med realistisk informasjon
 - Komplette detaljer inkludert prising, amenities og tilgjengelighet
 - Geografiske koordinater for kartintegrasjon
 - Høykvalitetsbilder for hver fasilitetstype
@@ -236,6 +304,7 @@ Applikasjonen inkluderer omfattende mock-data for utvikling og testing:
 - Fasilitetsdata synkroniseres mellom admin og frontend
 - Profilinformasjon (navn, e-post, avatar) persisteres
 - Endringer overlever sideoppdateringer og browser-restart
+- Race condition-løsning for pålitelig datalagring
 
 ### Fremtidig backend-integrasjon
 Applikasjonen er arkitektert for sømløs backend-integrasjon med:
@@ -278,6 +347,7 @@ Applikasjonen er arkitektert for sømløs backend-integrasjon med:
 - [ ] Persistent lagring implementert hvor nødvendig
 - [ ] Error handling for localStorage-operasjoner
 - [ ] Data synkronisering mellom admin og frontend
+- [ ] Race condition-løsning implementert
 
 ## Teststrategi
 
@@ -334,6 +404,7 @@ VITE_ENVIRONMENT=production
 - **Kartytelse**: Statiske kart i listevisninger for bedre ytelse
 - **Persistent lagring**: localStorage-optimalisering for rask datahenting
 - **Sanntidssynkronisering**: Effektiv tilstandshåndtering mellom komponenter
+- **Race condition-løsning**: Pålitelig datalagring uten konflikter
 
 ### Overvåking og analyse
 - **Core Web Vitals**: Overvåking av LCP, FID og CLS-metrikker

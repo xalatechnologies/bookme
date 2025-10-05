@@ -36,19 +36,20 @@ const KPICard = ({ card }: IKPICardProps): JSX.Element => {
   };
 
   const getCardColorClasses = (): string => {
+    // Reduced colors - only accent colors for specific categories
     switch (card.color) {
       case "blue":
-        return "bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800";
+        return "bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600";
       case "green":
-        return "bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800";
+        return "bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:border-green-300 dark:hover:border-green-600";
       case "yellow":
-        return "bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800";
+        return "bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:border-yellow-300 dark:hover:border-yellow-600";
       case "red":
-        return "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800";
+        return "bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:border-red-300 dark:hover:border-red-600";
       case "purple":
-        return "bg-purple-50 dark:bg-purple-900/20 border-purple-200 dark:border-purple-800";
+        return "bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:border-purple-300 dark:hover:border-purple-600";
       default:
-        return "bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700";
+        return "bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600";
     }
   };
 
@@ -72,7 +73,7 @@ const KPICard = ({ card }: IKPICardProps): JSX.Element => {
     >
       <div className="flex items-start justify-between">
         <div className="flex-1">
-          <div className="flex items-center gap-3 mb-2">
+          <div className="flex items-center gap-3 mb-3">
             <div className={`p-2 rounded-lg ${
               card.color === "blue" ? "bg-blue-100 dark:bg-blue-800" :
               card.color === "green" ? "bg-green-100 dark:bg-green-800" :
@@ -81,7 +82,7 @@ const KPICard = ({ card }: IKPICardProps): JSX.Element => {
               card.color === "purple" ? "bg-purple-100 dark:bg-purple-800" :
               "bg-gray-100 dark:bg-gray-700"
             }`}>
-              <IconComponent className={`w-5 h-5 ${
+              <IconComponent className={`w-6 h-6 ${
                 card.color === "blue" ? "text-blue-600 dark:text-blue-400" :
                 card.color === "green" ? "text-green-600 dark:text-green-400" :
                 card.color === "yellow" ? "text-yellow-600 dark:text-yellow-400" :
@@ -95,8 +96,8 @@ const KPICard = ({ card }: IKPICardProps): JSX.Element => {
             </h3>
           </div>
           
-          <div className="mb-2">
-            <p className="text-3xl font-bold text-gray-900 dark:text-white">
+          <div className="mb-3">
+            <p className="text-4xl font-bold text-gray-900 dark:text-white">
               {card.value.toLocaleString()}
             </p>
           </div>
@@ -110,7 +111,7 @@ const KPICard = ({ card }: IKPICardProps): JSX.Element => {
             <span className={`text-sm font-medium ${getTrendColor()}`}>
               {card.trend.percentage}% {card.trend.direction === "up" ? "opp" : card.trend.direction === "down" ? "ned" : "uendret"}
             </span>
-            <span className="text-xs text-gray-500 dark:text-gray-400">
+            <span className="text-xs text-gray-400 dark:text-gray-500">
               {card.trend.period}
             </span>
           </div>

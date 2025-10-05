@@ -21,7 +21,15 @@ import {
   X,
   Trash2,
   Settings,
-  Plus
+  Plus,
+  TrendingUp,
+  Users,
+  FileText,
+  ChevronDown,
+  Calendar as CalendarIcon,
+  Building2,
+  UserCheck,
+  Timer
 } from "lucide-react";
 
 interface IBooking {
@@ -49,6 +57,8 @@ interface IBookingKPICardProps {
   readonly value: number;
   readonly color: "blue" | "orange" | "green" | "red" | "gray";
   readonly icon: React.ComponentType<{ className?: string }>;
+  readonly subtext: string;
+  readonly onClick?: () => void;
   readonly trend?: {
     readonly value: number;
     readonly isPositive: boolean;
@@ -74,32 +84,181 @@ interface IBookingDetailModalProps {
   readonly onDelete: (id: string) => void;
 }
 
-const BookingKPICard = ({ title, value, color, icon: Icon, trend }: IBookingKPICardProps): JSX.Element => {
+interface IFilterModalProps {
+  readonly isOpen: boolean;
+  readonly onClose: () => void;
+  readonly onApplyFilters: (filters: IFilterState) => void;
+}
+
+interface IFilterState {
+  readonly dateFrom: string;
+  readonly dateTo: string;
+  readonly facilityType: string;
+  readonly handler: string;
+  readonly duration: string;
+}
+
+const BookingKPICard = ({ title, value, color, icon: Icon, subtext, onClick, trend }: IBookingKPICardProps): JSX.Element => {
   const colorClasses = {
-    blue: "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800",
-    orange: "bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400 border-orange-200 dark:border-orange-800",
-    green: "bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 border-green-200 dark:border-green-800",
-    red: "bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 border-red-200 dark:border-red-800",
-    gray: "bg-gray-50 dark:bg-gray-900/20 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-800"
+    blue: "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800 hover:bg-blue-100 dark:hover:bg-blue-900/30",
+    orange: "bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400 border-orange-200 dark:border-orange-800 hover:bg-orange-100 dark:hover:bg-orange-900/30",
+    green: "bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 border-green-200 dark:border-green-800 hover:bg-green-100 dark:hover:bg-green-900/30",
+    red: "bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 border-red-200 dark:border-red-800 hover:bg-red-100 dark:hover:bg-red-900/30",
+    gray: "bg-gray-50 dark:bg-gray-900/20 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-800 hover:bg-gray-100 dark:hover:bg-gray-900/30"
   };
 
   return (
-    <Card className={`${colorClasses[color]} border`}>
+    <Card 
+      className={`${colorClasses[color]} border transition-all duration-200 cursor-pointer hover:shadow-md hover:scale-105 ${
+        onClick ? 'hover:shadow-lg' : ''
+      }`}
+      onClick={onClick}
+    >
       <CardContent className="p-4">
         <div className="flex items-center justify-between">
-          <div>
+          <div className="flex-1">
             <p className="text-sm font-medium opacity-80">{title}</p>
             <p className="text-2xl font-bold">{value}</p>
+            <p className="text-xs opacity-70 mt-1">{subtext}</p>
             {trend && (
-              <p className={`text-xs ${trend.isPositive ? 'text-green-600' : 'text-red-600'}`}>
+              <p className={`text-xs ${trend.isPositive ? 'text-green-600' : 'text-red-600'} mt-1`}>
                 {trend.isPositive ? '+' : ''}{trend.value}% fra i går
               </p>
             )}
           </div>
-          <Icon className="h-8 w-8 opacity-60" />
+          <Icon className="h-8 w-8 opacity-60 flex-shrink-0" />
         </div>
       </CardContent>
     </Card>
+  );
+};
+
+const FilterModal = ({ isOpen, onClose, onApplyFilters }: IFilterModalProps): JSX.Element => {
+  const [filters, setFilters] = useState<IFilterState>({
+    dateFrom: "",
+    dateTo: "",
+    facilityType: "",
+    handler: "",
+    duration: ""
+  });
+
+  const handleApply = (): void => {
+    onApplyFilters(filters);
+    onClose();
+  };
+
+  const handleReset = (): void => {
+    setFilters({
+      dateFrom: "",
+      dateTo: "",
+      facilityType: "",
+      handler: "",
+      duration: ""
+    });
+  };
+
+  if (!isOpen) return <></>;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full mx-4">
+        <div className="p-6">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+              Avanserte filtre
+            </h2>
+            <Button variant="ghost" size="sm" onClick={onClose}>
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Dato fra
+              </label>
+              <Input
+                type="date"
+                value={filters.dateFrom}
+                onChange={(e) => setFilters({ ...filters, dateFrom: e.target.value })}
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Dato til
+              </label>
+              <Input
+                type="date"
+                value={filters.dateTo}
+                onChange={(e) => setFilters({ ...filters, dateTo: e.target.value })}
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Lokaletype
+              </label>
+              <select
+                value={filters.facilityType}
+                onChange={(e) => setFilters({ ...filters, facilityType: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+              >
+                <option value="">Alle typer</option>
+                <option value="idrettshall">Idrettshall</option>
+                <option value="kulturhus">Kulturhus</option>
+                <option value="møterom">Møterom</option>
+                <option value="hall">Hall</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Behandler
+              </label>
+              <select
+                value={filters.handler}
+                onChange={(e) => setFilters({ ...filters, handler: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+              >
+                <option value="">Alle behandlere</option>
+                <option value="admin">Admin</option>
+                <option value="saksbehandler">Saksbehandler</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Varighet
+              </label>
+              <select
+                value={filters.duration}
+                onChange={(e) => setFilters({ ...filters, duration: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+              >
+                <option value="">Alle varigheter</option>
+                <option value="1">1 time</option>
+                <option value="2">2 timer</option>
+                <option value="4">4 timer</option>
+                <option value="8">8 timer</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="flex justify-end space-x-3 mt-6">
+            <Button variant="outline" onClick={handleReset}>
+              Tilbakestill
+            </Button>
+            <Button variant="outline" onClick={onClose}>
+              Avbryt
+            </Button>
+            <Button onClick={handleApply}>
+              Bruk filtre
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 
@@ -122,12 +281,22 @@ const BookingRow = ({ booking, onApprove, onReject, onViewDetails, onDelete, isS
     return `${formattedDate} kl. ${time}`;
   };
 
+  const getStatusBorderColor = (status: IBooking["status"]): string => {
+    const borderColors = {
+      pending: "hover:border-orange-300 dark:hover:border-orange-600",
+      approved: "hover:border-green-300 dark:hover:border-green-600",
+      rejected: "hover:border-red-300 dark:hover:border-red-600",
+      cancelled: "hover:border-gray-300 dark:hover:border-gray-600"
+    };
+    return borderColors[status];
+  };
+
   return (
-    <div className={`p-4 border rounded-lg transition-colors ${
+    <div className={`p-4 border rounded-lg transition-all duration-200 shadow-sm hover:shadow-md ${
       isSelected 
         ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800' 
-        : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50'
-    } ${booking.status === 'pending' ? 'bg-yellow-50/50 dark:bg-yellow-900/10' : ''}`}>
+        : `bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 ${getStatusBorderColor(booking.status)}`
+    } ${booking.status === 'pending' ? 'bg-yellow-50/30 dark:bg-yellow-900/5' : ''}`}>
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
           <input
@@ -137,7 +306,7 @@ const BookingRow = ({ booking, onApprove, onReject, onViewDetails, onDelete, isS
             className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
           />
           <div className="flex-1 min-w-0">
-            <div className="flex items-center space-x-2 mb-1">
+            <div className="flex items-center justify-between mb-1">
               <h4 className="font-medium text-gray-900 dark:text-white truncate">
                 {booking.title}
               </h4>
@@ -188,6 +357,7 @@ const BookingRow = ({ booking, onApprove, onReject, onViewDetails, onDelete, isS
             size="sm"
             variant="outline"
             onClick={() => onViewDetails(booking.id)}
+            className="text-gray-600 hover:text-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50"
           >
             <Eye className="h-4 w-4 mr-1" />
             Detaljer
@@ -317,6 +487,14 @@ const BookingsPage = (): JSX.Element => {
   const [selectedBookings, setSelectedBookings] = useState<Set<string>>(new Set());
   const [selectedBooking, setSelectedBooking] = useState<IBooking | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState<boolean>(false);
+  const [isFilterModalOpen, setIsFilterModalOpen] = useState<boolean>(false);
+  const [appliedFilters, setAppliedFilters] = useState<IFilterState>({
+    dateFrom: "",
+    dateTo: "",
+    facilityType: "",
+    handler: "",
+    duration: ""
+  });
 
   // Mock data - replace with real data from API
   const bookings: readonly IBooking[] = [
@@ -478,7 +656,7 @@ const BookingsPage = (): JSX.Element => {
 
   return (
     <RequireRole roles={["org-admin", "facility-manager", "case-worker"]}>
-      <div className="space-y-6">
+      <div className="space-y-12">
         {/* Header */}
         <header className="space-y-1">
           <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">
@@ -496,24 +674,32 @@ const BookingsPage = (): JSX.Element => {
             value={kpiData.total}
             color="blue"
             icon={Calendar}
+            subtext="Aktive siste 30 dager"
+            onClick={() => setActiveTab("all")}
           />
           <BookingKPICard
             title="Ventende godkjenninger"
             value={kpiData.pending}
             color="orange"
             icon={AlertCircle}
+            subtext="Trenger behandling"
+            onClick={() => setActiveTab("pending")}
           />
           <BookingKPICard
             title="Godkjent i dag"
             value={kpiData.approvedToday}
             color="green"
             icon={CheckCircle}
+            subtext="Behandlet i dag"
+            onClick={() => setActiveTab("approved")}
           />
           <BookingKPICard
             title="Avvist i dag"
             value={kpiData.rejectedToday}
             color="red"
             icon={XCircle}
+            subtext="Avvist i dag"
+            onClick={() => setActiveTab("rejected")}
           />
         </div>
 
@@ -539,20 +725,26 @@ const BookingsPage = (): JSX.Element => {
               </div>
 
               {/* Search and Filters */}
-              <div className="flex flex-col sm:flex-row gap-3">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                  <Input
-                    placeholder="Søk bookinger..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10 w-full sm:w-64"
-                  />
+              <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <div className="relative flex-1">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    <Input
+                      placeholder="Søk bookinger..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="pl-10"
+                    />
+                  </div>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => setIsFilterModalOpen(true)}
+                  >
+                    <Filter className="h-4 w-4 mr-2" />
+                    Filter
+                  </Button>
                 </div>
-                <Button variant="outline" size="sm">
-                  <Filter className="h-4 w-4 mr-2" />
-                  Filter
-                </Button>
               </div>
             </div>
 
@@ -624,6 +816,9 @@ const BookingsPage = (): JSX.Element => {
                 <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                   Administrer regler og flyter for godkjenning av bookinger
                 </p>
+                <p className="text-xs text-gray-500 dark:text-gray-500 mt-2">
+                  Definer hvordan ulike typer bookinger behandles og hvem som må godkjenne dem.
+                </p>
               </div>
               <Button size="sm">
                 <Plus className="h-4 w-4 mr-2" />
@@ -634,17 +829,27 @@ const BookingsPage = (): JSX.Element => {
           <CardContent>
             <div className="space-y-4">
               {[
-                { name: "Skolebookinger", description: "Automatisk godkjenning for skoler", status: "Aktiv" },
-                { name: "Idrettslag", description: "Manuell godkjenning påkrevd", status: "Aktiv" },
-                { name: "Kommersiell leie", description: "Godkjenning av saksbehandler påkrevd", status: "Aktiv" }
+                { name: "Skolebookinger", description: "Automatisk godkjenning for skoler", status: "Aktiv", isActive: true },
+                { name: "Idrettslag", description: "Manuell godkjenning påkrevd", status: "Aktiv", isActive: true },
+                { name: "Kommersiell leie", description: "Godkjenning av saksbehandler påkrevd", status: "Aktiv", isActive: true }
               ].map((workflow, index) => (
-                <div key={index} className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
-                  <div>
-                    <h4 className="font-medium text-gray-900 dark:text-white">{workflow.name}</h4>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">{workflow.description}</p>
+                <div 
+                  key={index} 
+                  className={`flex items-center justify-between p-4 border rounded-lg transition-all duration-200 cursor-pointer hover:shadow-md ${
+                    workflow.isActive 
+                      ? 'border-gray-200 dark:border-gray-700 hover:border-green-300 dark:hover:border-green-600' 
+                      : 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50'
+                  }`}
+                >
+                  <div className="flex items-center space-x-3">
+                    <div className={`w-3 h-3 rounded-full ${workflow.isActive ? 'bg-green-500' : 'bg-gray-400'}`} />
+                    <div>
+                      <h4 className="font-medium text-gray-900 dark:text-white">{workflow.name}</h4>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">{workflow.description}</p>
+                    </div>
                   </div>
                   <div className="flex items-center space-x-3">
-                    <Badge className="bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300">
+                    <Badge className={workflow.isActive ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300" : "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300"}>
                       {workflow.status}
                     </Badge>
                     <Button size="sm" variant="outline">
@@ -669,6 +874,13 @@ const BookingsPage = (): JSX.Element => {
           onApprove={handleApprove}
           onReject={handleReject}
           onDelete={handleDelete}
+        />
+
+        {/* Filter Modal */}
+        <FilterModal
+          isOpen={isFilterModalOpen}
+          onClose={() => setIsFilterModalOpen(false)}
+          onApplyFilters={setAppliedFilters}
         />
       </div>
     </RequireRole>

@@ -7,7 +7,11 @@ import {
   Users, 
   TrendingUp, 
   TrendingDown, 
-  Minus 
+  Minus,
+  Home,
+  User,
+  Clock,
+  AlertTriangle
 } from "lucide-react";
 import { 
   IKPICard, 
@@ -28,7 +32,7 @@ export const kpiCards: readonly IKPICard[] = [
       percentage: 12,
       period: "siden i går"
     },
-    icon: Building2,
+    icon: Home, // 🏠 icon
     color: "blue",
     href: "/admin/facilities"
   },
@@ -42,7 +46,7 @@ export const kpiCards: readonly IKPICard[] = [
       percentage: 8,
       period: "siden i går"
     },
-    icon: Calendar,
+    icon: Calendar, // 📅 icon
     color: "green",
     href: "/admin/bookings"
   },
@@ -56,9 +60,9 @@ export const kpiCards: readonly IKPICard[] = [
       percentage: 25,
       period: "siden i går"
     },
-    icon: CheckCircle,
+    icon: AlertTriangle, // ⚠️ icon
     color: "yellow",
-    href: "/admin/approvals"
+    href: "/admin/bookings?filter=pending"
   },
   {
     id: "active-users",
@@ -70,7 +74,7 @@ export const kpiCards: readonly IKPICard[] = [
       percentage: 15,
       period: "siden i går"
     },
-    icon: Users,
+    icon: User, // 👤 icon
     color: "purple",
     href: "/admin/users-roles"
   }

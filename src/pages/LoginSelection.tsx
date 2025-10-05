@@ -18,7 +18,7 @@ export const LoginSelection = (): JSX.Element => {
     if (userType === "admin") {
       navigate("/admin");
     } else {
-      navigate("/login");
+      navigate("/user");
     }
   };
 

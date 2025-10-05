@@ -8,6 +8,8 @@ import ApprovalQueue from "@/components/admin/dashboard/ApprovalQueue";
 import RecentEvents from "@/components/admin/dashboard/RecentEvents";
 import TodaysBookings from "@/components/admin/dashboard/TodaysBookings";
 import SystemAlerts from "@/components/admin/dashboard/SystemAlerts";
+import DailyTasks from "@/components/admin/dashboard/DailyTasks";
+import TrendCard from "@/components/admin/dashboard/TrendCard";
 import { 
   kpiCards, 
   approvalRequests, 
@@ -15,6 +17,7 @@ import {
   todaysBookings, 
   systemAlerts 
 } from "@/data/admin/dashboardData";
+import { trendCards } from "@/data/admin/trendData";
 
 interface IOverviewProps {
   readonly children?: never;
@@ -61,6 +64,9 @@ const Overview = (_props: IOverviewProps): JSX.Element => {
         </div>
       </header>
 
+      {/* Daily Tasks - Top Priority */}
+      <DailyTasks />
+
       {/* KPI Cards Section */}
       <section className="space-y-4">
         <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
@@ -69,6 +75,24 @@ const Overview = (_props: IOverviewProps): JSX.Element => {
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {kpiCards.map((card) => (
             <KPICard key={card.id} card={card} />
+          ))}
+        </div>
+      </section>
+
+      {/* Trend Cards */}
+      <section className="space-y-4">
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+          Trends og utvikling
+        </h2>
+        <div className="grid gap-6 lg:grid-cols-2">
+          {trendCards.map((trendCard, index) => (
+            <TrendCard
+              key={index}
+              title={trendCard.title}
+              data={trendCard.data}
+              icon={trendCard.icon}
+              color={trendCard.color}
+            />
           ))}
         </div>
       </section>
