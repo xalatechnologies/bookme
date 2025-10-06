@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Map, Calendar } from "lucide-react";
 import { useFacilityStore } from "@/stores/facilityStore";
+import { useFavoritesStore } from "@/stores/favoritesStore";
 import FacilityCardUser from "@/components/facility/FacilityCardUser";
 import FacilityListItemUser from "@/components/facility/FacilityListItemUser";
 import ViewToggleUser from "@/components/facility/ViewToggleUser";
@@ -35,6 +36,7 @@ const UserFacilities = (): JSX.Element => {
 
   // Get facilities from store
   const { getPublishedFacilities } = useFacilityStore();
+  const { isFavorite } = useFavoritesStore();
   const storeFacilities = getPublishedFacilities();
 
   // Convert store facilities to user format
@@ -50,7 +52,7 @@ const UserFacilities = (): JSX.Element => {
     price: `${facility.pricePerHour} kr/time`,
     description: facility.description,
     availability: "available" as const, // TODO: Implement real availability check
-    isFavorite: false, // TODO: Implement favorites from user store
+    isFavorite: isFavorite(facility.id), // Use real favorite status from store
     coordinates: facility.coordinates
   }));
 

@@ -14,21 +14,21 @@
 - [ ] **Navngivning og struktur** som i `code-style.md`:
   - Components PascalCase, utils camelCase, typer PascalCase, konstante SCREAMING_SNAKE_CASE.
   - Mappestruktur per `coding-standards.md` (ui, icons, blocks, features).
-- [ ] **Flowbite-integrasjon** pr `flowbite-integration-guide.md`:
-  - Avhengigheter: `flowbite`, `flowbite-react`, `flowbite-react-next`.
-  - `tailwind.config` med Flowbite-plugin og `content`-paths. Eget `CustomFlowbiteTheme`.
-  - `app/layout.tsx` wrapper med `<Flowbite>` og egen `ThemeProvider`.
-- [ ] **HTML/CSS/Icons-stil** etter `code-style/html-style.md`, `css-style.md`, `flowbite-icons.md`.
+- [ ] **shadcn/ui-integrasjon** pr `ui-components.md`:
+  - Avhengigheter: `@radix-ui/*`, `class-variance-authority`, `clsx`, `tailwind-merge`.
+  - `components.json` konfigurert med shadcn/ui paths og theming.
+  - `app/layout.tsx` med `ThemeProvider` og CSS variables for theming.
+- [ ] **HTML/CSS/Icons-stil** etter `code-style/html-style.md`, `css-style.md`, `ui-components.md`.
 - [ ] **WCAG 2.2 AA** obligatorisk: tastatur, aria, kontrast. Ingen tapp-feller.
 - [ ] **Security & Privacy**: grunnleggende ISO 27001-hygiene, ingen secrets i klient, .env håndteres via Vercel Secrets/GitHub Secrets.
 - [ ] **Kvalitetsporter i CI**: Lint + typecheck må være grønne. Testdekning min 80% på utils og adaptere. Playwright smoke på mock.
 
-Akseptanse: `pnpm dev` starter i mock-modus, Storybook kjører, lint og typecheck grønne, Flowbite tema aktivt.
+Akseptanse: `pnpm dev` starter i mock-modus, Storybook kjører, lint og typecheck grønne, shadcn/ui tema aktivt.
 
 ## Fase 1 — Monorepo og baselayers
 - [ ] Struktur
   - `/apps/web` Next.js 15 App Router, `"use client"` kun der nødvendig.
-  - `/packages/ui` Tailwind preset, Flowbite wrappers, tilgjengelige UI-komponenter.
+  - `/packages/ui` Tailwind preset, shadcn/ui komponenter, tilgjengelige UI-komponenter.
   - `/packages/types` domene-typer + zod-schema.
   - `/packages/utils` dato/tid (Luxon), valuta, prisberegning, featureFlags.
   - `/packages/mocks` faker-seed og MSW helpers.
@@ -135,7 +135,7 @@ Akseptanse: Ny utvikler kan starte på <15 min og bytte til live uten UI-endring
 
 ### Qoder prompt-mal
 Rolle: Senior Fullstack. Følg standardene. Returner patch-diff.
-Kontekst: Next.js 15, Tailwind, Flowbite, MSW, React Query, zod, Luxon. Frontend-first, mock.
+Kontekst: Next.js 15, Tailwind, shadcn/ui, MSW, React Query, zod, Luxon. Frontend-first, mock.
 Oppgave: [konkret sjekkpunkt fra fasen]
 Akseptanse: [tilsvarende akseptansekriterier]
 Output: Kodeendringer, tester, Storybook, korte commit-meldinger.

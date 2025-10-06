@@ -5,6 +5,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 import { LanguageProvider } from '@/contexts/LanguageContext';
 import { AdminAuthProvider } from '@/contexts/AdminAuthContext';
+import ScrollToTop from '@/components/ScrollToTop';
 
 import { Index } from '@/pages/Index';
 import { FacilityDetail } from '@/pages/facilities/[id]';
@@ -17,6 +18,7 @@ export const App = (): React.JSX.Element => {
     <LanguageProvider>
       <AdminAuthProvider>
         <BrowserRouter>
+          <ScrollToTop />
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/facilities/:id" element={<FacilityDetail />} />

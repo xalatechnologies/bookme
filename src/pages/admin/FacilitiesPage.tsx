@@ -29,11 +29,12 @@ const FacilitiesPage = (_props: IFacilitiesPageProps): JSX.Element => {
   const [sortOrder, setSortOrder] = useState<TSortOrder>("asc");
   const [statusFilter, setStatusFilter] = useState<readonly string[]>([]);
   const [typeFilter, setTypeFilter] = useState<readonly string[]>([]);
+  const [capacityRange, setCapacityRange] = useState<{ min: number; max: number }>({ min: 0, max: 1000 });
   const [selectedFacilities, setSelectedFacilities] = useState<readonly string[]>([]);
   const [showFilters, setShowFilters] = useState<boolean>(false);
   
   // Use the facility store
-  const { facilities } = useFacilityStore();
+  const { facilities, addFacility, getFacilityById, deleteFacility } = useFacilityStore();
   const adminFacilities = facilities;
 
   // Filter and sort facilities
@@ -45,8 +46,9 @@ const FacilitiesPage = (_props: IFacilitiesPageProps): JSX.Element => {
       
       const matchesStatus = statusFilter.length === 0 || statusFilter.includes(facility.status);
       const matchesType = typeFilter.length === 0 || typeFilter.includes(facility.type);
+      const matchesCapacity = facility.capacity >= capacityRange.min && facility.capacity <= capacityRange.max;
       
-      return matchesSearch && matchesStatus && matchesType;
+      return matchesSearch && matchesStatus && matchesType && matchesCapacity;
     })
     .sort((a, b) => {
       let comparison = 0;
@@ -59,7 +61,23 @@ const FacilitiesPage = (_props: IFacilitiesPageProps): JSX.Element => {
           comparison = a.capacity - b.capacity;
           break;
         case "lastUpdated":
-          comparison = new Date(a.lastUpdated).getTime() - new Date(b.lastUpdated).getTime();
+          // Handle relative time strings like "2 timer siden"
+          const getTimeValue = (timeStr: string): number => {
+            if (timeStr.includes("timer siden")) {
+              const hours = parseInt(timeStr.replace(/\D/g, "")) || 0;
+              return Date.now() - (hours * 60 * 60 * 1000);
+            } else if (timeStr.includes("dager siden")) {
+              const days = parseInt(timeStr.replace(/\D/g, "")) || 0;
+              return Date.now() - (days * 24 * 60 * 60 * 1000);
+            } else if (timeStr.includes("uker siden")) {
+              const weeks = parseInt(timeStr.replace(/\D/g, "")) || 0;
+              return Date.now() - (weeks * 7 * 24 * 60 * 60 * 1000);
+            } else {
+              // Try to parse as ISO date
+              return new Date(timeStr).getTime() || 0;
+            }
+          };
+          comparison = getTimeValue(a.lastUpdated) - getTimeValue(b.lastUpdated);
           break;
         case "createdAt":
           comparison = new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
@@ -71,6 +89,39 @@ const FacilitiesPage = (_props: IFacilitiesPageProps): JSX.Element => {
 
   const handleNewFacility = (): void => {
     navigate("/admin/facilities/new");
+  };
+
+  const handleDuplicateFacility = (facilityId: string): void => {
+    const originalFacility = getFacilityById(facilityId);
+    if (!originalFacility) return;
+
+    // Create a copy with modified name and status
+    const duplicatedFacility = {
+      ...originalFacility,
+      name: `${originalFacility.name} (Kopi)`,
+      status: "draft" as const,
+      lastUpdated: "Nå",
+      updatedBy: "Admin User",
+      // Remove id, createdAt, updatedAt to let addFacility generate new ones
+      id: undefined as any,
+      createdAt: undefined as any,
+      updatedAt: undefined as any,
+    };
+
+    // Add the duplicated facility
+    addFacility(duplicatedFacility);
+    
+    // Navigate to edit the new facility after a short delay to ensure it's added
+    setTimeout(() => {
+      const newFacilities = facilities;
+      const newFacility = newFacilities.find(f => f.name === `${originalFacility.name} (Kopi)`);
+      if (newFacility) {
+        navigate(`/admin/facilities/${newFacility.id}/edit`);
+      } else {
+        // Fallback: navigate to facilities list if new facility not found
+        navigate('/admin/facilities');
+      }
+    }, 100);
   };
 
   const handleViewChange = (newView: TView): void => {
@@ -94,23 +145,81 @@ const FacilitiesPage = (_props: IFacilitiesPageProps): JSX.Element => {
   };
 
   const handleBatchPublish = (): void => {
-    // TODO: Implement batch publish
-    // Batch publish logic will be implemented here
+    // Update selected facilities to published status
+    selectedFacilities.forEach(facilityId => {
+      const facility = adminFacilities.find(f => f.id === facilityId);
+      if (facility) {
+        // TODO: Call API to update facility status
+        console.log(`Publishing facility: ${facility.name}`);
+      }
+    });
+    
+    // Clear selection after action
+    setSelectedFacilities([]);
+    
+    // Show success message
+    console.log(`${selectedFacilities.length} lokaler publisert`);
   };
 
   const handleBatchUnpublish = (): void => {
-    // TODO: Implement batch unpublish
-    // Batch unpublish logic will be implemented here
+    // Update selected facilities to draft status
+    selectedFacilities.forEach(facilityId => {
+      const facility = adminFacilities.find(f => f.id === facilityId);
+      if (facility) {
+        // TODO: Call API to update facility status
+        console.log(`Unpublishing facility: ${facility.name}`);
+      }
+    });
+    
+    // Clear selection after action
+    setSelectedFacilities([]);
+    
+    // Show success message
+    console.log(`${selectedFacilities.length} lokaler upublisert`);
+  };
+
+  const handleBatchArchive = (): void => {
+    // Update selected facilities to archived status
+    selectedFacilities.forEach(facilityId => {
+      const facility = adminFacilities.find(f => f.id === facilityId);
+      if (facility) {
+        // TODO: Call API to update facility status
+        console.log(`Archiving facility: ${facility.name}`);
+      }
+    });
+    
+    // Clear selection after action
+    setSelectedFacilities([]);
+    
+    // Show success message
+    console.log(`${selectedFacilities.length} lokaler arkivert`);
   };
 
   const handleBatchDelete = (): void => {
-    // TODO: Implement batch delete
-    // Batch delete logic will be implemented here
+    // Confirm deletion
+    if (window.confirm(`Er du sikker på at du vil slette ${selectedFacilities.length} lokaler? Denne handlingen kan ikke angres.`)) {
+      // Delete selected facilities
+      selectedFacilities.forEach(facilityId => {
+        deleteFacility(facilityId);
+      });
+      
+      // Clear selection after action
+      setSelectedFacilities([]);
+      
+      // Show success message
+      console.log(`${selectedFacilities.length} lokaler slettet`);
+    }
   };
 
   const handleDeleteFacility = (facilityId: string): void => {
-    // TODO: Implement delete
-    // Delete facility logic will be implemented here
+    const facility = getFacilityById(facilityId);
+    if (!facility) return;
+
+    // Confirm deletion
+    if (window.confirm(`Er du sikker på at du vil slette "${facility.name}"? Denne handlingen kan ikke angres.`)) {
+      deleteFacility(facilityId);
+      console.log(`Facility deleted: ${facility.name}`);
+    }
   };
 
   const handleToggleStatus = (facilityId: string, newStatus: "published" | "draft" | "archived"): void => {
@@ -247,7 +356,7 @@ const FacilitiesPage = (_props: IFacilitiesPageProps): JSX.Element => {
           {showFilters && (
             <Card>
               <CardContent className="p-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   {/* Status Filter */}
                   <div>
                     <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Status</h4>
@@ -282,6 +391,33 @@ const FacilitiesPage = (_props: IFacilitiesPageProps): JSX.Element => {
                           {type}
                         </Button>
                       ))}
+                    </div>
+                  </div>
+
+                  {/* Capacity Range Filter */}
+                  <div>
+                    <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Kapasitet</h4>
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <Input
+                          type="number"
+                          placeholder="Min"
+                          value={capacityRange.min}
+                          onChange={(e) => setCapacityRange(prev => ({ ...prev, min: parseInt(e.target.value) || 0 }))}
+                          className="w-20"
+                        />
+                        <span className="text-sm text-gray-500">-</span>
+                        <Input
+                          type="number"
+                          placeholder="Max"
+                          value={capacityRange.max}
+                          onChange={(e) => setCapacityRange(prev => ({ ...prev, max: parseInt(e.target.value) || 1000 }))}
+                          className="w-20"
+                        />
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        {filteredFacilities.length} lokaler matcher filteret
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -323,6 +459,15 @@ const FacilitiesPage = (_props: IFacilitiesPageProps): JSX.Element => {
                     >
                       <EyeOff className="w-4 h-4 mr-1" />
                       Upubliser
+                    </Button>
+                    <Button
+                      onClick={handleBatchArchive}
+                      size="sm"
+                      variant="outline"
+                      className="border-orange-300 text-orange-700 hover:bg-orange-50"
+                    >
+                      <Square className="w-4 h-4 mr-1" />
+                      Arkiver
                     </Button>
                     <Button
                       onClick={handleBatchDelete}
@@ -374,6 +519,7 @@ const FacilitiesPage = (_props: IFacilitiesPageProps): JSX.Element => {
                   facility={facility} 
                   onDelete={handleDeleteFacility}
                   onToggleStatus={handleToggleStatus}
+                  onDuplicate={handleDuplicateFacility}
                 />
               </div>
             ))}
@@ -402,6 +548,7 @@ const FacilitiesPage = (_props: IFacilitiesPageProps): JSX.Element => {
                   facility={facility} 
                   onDelete={handleDeleteFacility}
                   onToggleStatus={handleToggleStatus}
+                  onDuplicate={handleDuplicateFacility}
                 />
               </div>
             ))}

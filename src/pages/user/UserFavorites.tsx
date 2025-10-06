@@ -32,6 +32,7 @@ import {
 import FacilityCardUser from "@/components/facility/FacilityCardUser";
 import FacilityListItemUser from "@/components/facility/FacilityListItemUser";
 import { useFacilityStore } from "@/stores/facilityStore";
+import { useFavoritesStore } from "@/stores/favoritesStore";
 
 interface IFavoriteFacility {
   readonly id: string;
@@ -80,31 +81,37 @@ const UserFavorites = (): JSX.Element => {
     localStorage.setItem("favorites-view-mode", mode);
   };
 
-  // Get facilities from store and convert to favorites format
+  // Get facilities and favorites from stores
   const { getPublishedFacilities } = useFacilityStore();
+  const { favorites: favoriteEntries, removeFavorite } = useFavoritesStore();
   const storeFacilities = getPublishedFacilities();
 
-  // Convert store facilities to favorites format with mock favorite data
-  const favorites: readonly IFavoriteFacility[] = storeFacilities.map((facility, index) => ({
-    id: facility.id,
-    name: facility.name,
-    type: facility.type,
-    address: facility.address,
-    capacity: facility.capacity,
-    price: `${facility.pricePerHour} kr/time`,
-    pricePerHour: facility.pricePerHour,
-    image: facility.images[0] || "/placeholder.svg",
-    rating: facility.rating,
-    addedAt: new Date(Date.now() - (index * 24 * 60 * 60 * 1000)).toISOString(), // Mock: spread over last few days
-    lastVisited: new Date(Date.now() - (index * 12 * 60 * 60 * 1000)).toISOString(), // Mock: recent visits
-    usageCount: Math.floor(Math.random() * 5) + 1, // Mock: 1-5 visits
-    amenities: facility.amenities,
-    description: facility.description,
-    availability: (["available", "busy", "full"] as const)[index % 3], // Mock: rotate availability
-    location: facility.location,
-    isFavorite: true,
-    coordinates: facility.coordinates
-  }));
+  // Get only facilities that are actually favorited
+  const favorites: readonly IFavoriteFacility[] = storeFacilities
+    .filter(facility => favoriteEntries.some(fav => fav.facilityId === facility.id))
+    .map(facility => {
+      const favoriteEntry = favoriteEntries.find(fav => fav.facilityId === facility.id)!;
+      return {
+        id: facility.id,
+        name: facility.name,
+        type: facility.type,
+        address: facility.address,
+        capacity: facility.capacity,
+        price: `${facility.pricePerHour} kr/time`,
+        pricePerHour: facility.pricePerHour,
+        image: facility.images[0] || "/placeholder.svg",
+        rating: facility.rating,
+        addedAt: favoriteEntry.addedAt,
+        lastVisited: favoriteEntry.lastVisited,
+        usageCount: favoriteEntry.usageCount,
+        amenities: facility.amenities,
+        description: facility.description,
+        availability: "available" as const, // TODO: Implement real availability check
+        location: facility.location,
+        isFavorite: true,
+        coordinates: facility.coordinates
+      };
+    });
 
   const typeFilters = [
     { value: "all", label: "Alle typer", color: "gray" },
@@ -215,16 +222,25 @@ const UserFavorites = (): JSX.Element => {
     setRemovingFacility(facilityId);
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 500));
+    // Remove from favorites store
+    removeFavorite(facilityId);
     setRemovingFacility(null);
-    // TODO: Implement actual removal
   };
 
   const handleViewFacility = (facilityId: string): void => {
+    // Track usage and last visited when viewing details
+    const { incrementUsage, updateLastVisited } = useFavoritesStore.getState();
+    incrementUsage(facilityId);
+    updateLastVisited(facilityId);
     // TODO: Navigate to facility detail page
     console.log("View facility:", facilityId);
   };
 
   const handleBookNow = (facilityId: string): void => {
+    // Track usage when booking
+    const { incrementUsage, updateLastVisited } = useFavoritesStore.getState();
+    incrementUsage(facilityId);
+    updateLastVisited(facilityId);
     // TODO: Navigate to booking page
     console.log("Book facility:", facilityId);
   };

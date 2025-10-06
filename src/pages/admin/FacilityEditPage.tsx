@@ -122,42 +122,7 @@ const FacilityEditPage = (_props: IFacilityEditPageProps): JSX.Element => {
   useEffect(() => {
     if (id === "new" || window.location.pathname.includes('/facilities/new')) {
       // Create new facility template
-      const newFacility: IEditedFacility = {
-        id: "new",
-        name: "",
-        description: "",
-        type: "Møterom",
-        location: "",
-        address: "",
-        capacity: 0,
-        pricePerHour: 0,
-        amenities: [],
-        images: ["/placeholder.svg"],
-        availability: {
-          monday: { start: "08:00", end: "22:00" },
-          tuesday: { start: "08:00", end: "22:00" },
-          wednesday: { start: "08:00", end: "22:00" },
-          thursday: { start: "08:00", end: "22:00" },
-          friday: { start: "08:00", end: "22:00" },
-          saturday: { start: "08:00", end: "22:00" },
-          sunday: { start: "08:00", end: "22:00" }
-        },
-        coordinates: { lat: 59.744, lng: 10.204 },
-        rating: 0,
-        reviewCount: 0,
-        area: "",
-        accessibilityFeatures: [],
-        status: "draft",
-        owner: currentAdminUser,
-        lastUpdated: generateTimestamp(),
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        updatedBy: currentAdminUser,
-        rules: "",
-        contactEmail: "",
-        openingHours: "",
-        emergencyContact: ""
-      };
+      const newFacility = createNewFacilityTemplate();
       setEditedFacility(newFacility);
       setIsLoading(false);
     } else {
@@ -184,6 +149,45 @@ const FacilityEditPage = (_props: IFacilityEditPageProps): JSX.Element => {
       }
     }
   }, [id, getFacilityById, fieldConfigs, updateFieldValue, currentAdminUser]);
+
+  // Helper function to create new facility template
+  const createNewFacilityTemplate = (): IEditedFacility => ({
+    id: "new",
+    name: "",
+    description: "",
+    type: "Møterom",
+    location: "",
+    address: "",
+    capacity: 0,
+    pricePerHour: 0,
+    amenities: [],
+    images: [],
+    availability: {
+      monday: { start: "08:00", end: "22:00" },
+      tuesday: { start: "08:00", end: "22:00" },
+      wednesday: { start: "08:00", end: "22:00" },
+      thursday: { start: "08:00", end: "22:00" },
+      friday: { start: "08:00", end: "22:00" },
+      saturday: { start: "09:00", end: "20:00" },
+      sunday: { start: "10:00", end: "18:00" }
+    },
+    coordinates: { lat: 59.744, lng: 10.204 },
+    rating: 0,
+    reviewCount: 0,
+    area: "",
+    accessibilityFeatures: [],
+    status: "draft",
+    owner: currentAdminUser,
+    lastUpdated: generateTimestamp(),
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    updatedBy: currentAdminUser,
+    rules: "",
+    contactEmail: "",
+    openingHours: "",
+    emergencyContact: ""
+  });
+
 
   if (isLoading) {
     return (
@@ -278,6 +282,7 @@ const FacilityEditPage = (_props: IFacilityEditPageProps): JSX.Element => {
         capacity: editedFacility.capacity,
         amenities: editedFacility.amenities,
         images: editedFacility.images,
+        coordinates: editedFacility.coordinates,
         status: editedFacility.status,
         owner: editedFacility.owner,
         lastUpdated: generateTimestamp(),
@@ -521,6 +526,38 @@ const FacilityEditPage = (_props: IFacilityEditPageProps): JSX.Element => {
     }
   };
 
+  const handleMoveImage = (fromIndex: number, toIndex: number): void => {
+    if (editedFacility && fromIndex !== toIndex) {
+      const newImages = [...editedFacility.images];
+      const [movedImage] = newImages.splice(fromIndex, 1);
+      newImages.splice(toIndex, 0, movedImage);
+      
+      setEditedFacility({
+        ...editedFacility,
+        images: newImages,
+        lastUpdated: generateTimestamp(),
+        updatedBy: currentAdminUser
+      });
+      setHasUnsavedChanges(true);
+    }
+  };
+
+  const handleDragStart = (e: React.DragEvent, index: number): void => {
+    e.dataTransfer.setData('text/plain', index.toString());
+    e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleDragOver = (e: React.DragEvent): void => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  };
+
+  const handleDrop = (e: React.DragEvent, dropIndex: number): void => {
+    e.preventDefault();
+    const dragIndex = parseInt(e.dataTransfer.getData('text/plain'));
+    handleMoveImage(dragIndex, dropIndex);
+  };
+
   const addZone = (): void => {
     const newZone: IZone = {
       id: Date.now().toString(),
@@ -719,11 +756,18 @@ const FacilityEditPage = (_props: IFacilityEditPageProps): JSX.Element => {
           {editedFacility.images.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {editedFacility.images.map((image, index) => (
-                <div key={index} className="relative group">
+                <div 
+                  key={index} 
+                  className="relative group cursor-move"
+                  draggable
+                  onDragStart={(e) => handleDragStart(e, index)}
+                  onDragOver={handleDragOver}
+                  onDrop={(e) => handleDrop(e, index)}
+                >
                   <img
                     src={image}
                     alt={`${editedFacility.name} ${index + 1}`}
-                    className="w-full h-48 object-cover rounded-lg"
+                    className="w-full h-48 object-cover rounded-lg border-2 border-transparent hover:border-blue-300 dark:hover:border-blue-600 transition-colors"
                   />
                   <Button
                     onClick={() => handleRemoveImage(index)}
@@ -738,6 +782,11 @@ const FacilityEditPage = (_props: IFacilityEditPageProps): JSX.Element => {
                       <Badge className="bg-blue-600 text-white">Hovedbilde</Badge>
                     </div>
                   )}
+                  <div className="absolute top-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="bg-black/50 text-white px-2 py-1 rounded text-xs font-medium">
+                      Dra for å endre rekkefølge
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>
@@ -856,7 +905,7 @@ const FacilityEditPage = (_props: IFacilityEditPageProps): JSX.Element => {
                     </div>
                   </div>
                   <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-                    Du kan finne koordinater på <a href="https://www.google.com/maps" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Google Maps</a> ved å høyreklikke på stedet.
+                    Du kan finne koordinater på <a href="https://www.mapbox.com" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Mapbox</a> eller <a href="https://www.openstreetmap.org" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">OpenStreetMap</a> ved å høyreklikke på stedet.
                   </p>
                 </div>
               )}

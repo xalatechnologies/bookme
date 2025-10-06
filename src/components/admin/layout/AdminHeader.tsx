@@ -13,6 +13,11 @@ interface IAdminHeaderProps {
 const AdminHeader = (_props: IAdminHeaderProps): JSX.Element => {
   return (
     <header className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
+      {/* Skip to content link */}
+      <a href="#main-content" className="skip-to-content">
+        Hopp til hovedinnhold
+      </a>
+      
       {/* Logo */}
       <Logo />
       

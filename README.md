@@ -58,7 +58,7 @@ BookMe Portal er en omfattende plattform for fasilitetsadministrasjon og booking
 - **UI-komponenter**: Radix UI-primitiver med tilpasset styling
 - **Routing**: React Router DOM for klient-side navigasjon
 - **Kart**: Mapbox GL JS for interaktive kart
-- **Byggeverktøy**: Webpack med optimaliserte produksjonsbygg
+- **Byggeverktøy**: Vite med optimaliserte produksjonsbygg
 
 ### Utviklingsverktøy
 - **Linting**: ESLint med TypeScript-spesifikke regler
@@ -123,7 +123,7 @@ cd bookme-1
 # Installer avhengigheter
 npm install
 
-# Start utviklingsserver
+# Start Vite utviklingsserver
 npm run dev
 
 # Bygg for produksjon
@@ -140,10 +140,30 @@ npm run clean
 
 | Skript | Beskrivelse |
 |--------|-------------|
-| `npm run dev` | Start utviklingsserver på port 7000 |
+| `npm run dev` | Start Vite utviklingsserver på port 3000 |
 | `npm run build` | Opprett optimalisert produksjonsbygg |
 | `npm run lint` | Kjør ESLint-typekontroll og kodekvalitetssjekker |
 | `npm run clean` | Fjern byggeartefakter og midlertidige filer |
+
+## Utviklingsworkflow
+
+### Rask utvikling med Vite
+For optimal utviklingshastighet, følg disse retningslinjene:
+
+#### ✅ Anbefalte metoder:
+1. **Hot Reload**: La Vite kjøre kontinuerlig - små kodeendringer oppdateres automatisk på millisekunder
+2. **Rebuild uten restart**: `npm run dev -- --force` - tvinger rebuild uten å drepe hele prosessen
+3. **Port-spesifikk stopp**: `npx kill-port 3000` - stopper kun prosessen på port 3000
+4. **Vite intern restart**: Bruk IDE's integrerte restart-funksjoner når mulig
+
+#### ❌ Unngå:
+- `pkill -f "vite"` - dreper alle Vite-prosesser og er ineffektivt
+- Konstant restart av hele utviklingsserveren for små endringer
+
+#### Ytelsestips:
+- Vite's HMR (Hot Module Replacement) håndterer de fleste endringer automatisk
+- Kun restart når du endrer konfigurasjonsfiler eller installerer nye pakker
+- Bruk `--force` flagget for å tvinge rebuild av avhengigheter
 
 ## Kodestandarder
 

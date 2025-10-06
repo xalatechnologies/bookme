@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { MapPin, Trash2, Eye, Plus, User, Clock, Users, AlertTriangle, CheckCircle, XCircle } from "lucide-react";
+import { MapPin, Trash2, Eye, Plus, User, Clock, Users, AlertTriangle, CheckCircle, XCircle, Copy } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -13,9 +13,10 @@ interface IAdminFacilityCardProps {
   readonly facility: IFacility;
   readonly onDelete?: (facilityId: string) => void;
   readonly onToggleStatus?: (facilityId: string, newStatus: "published" | "draft" | "archived") => void;
+  readonly onDuplicate?: (facilityId: string) => void;
 }
 
-const AdminFacilityCard = ({ facility, onDelete, onToggleStatus }: IAdminFacilityCardProps): JSX.Element => {
+const AdminFacilityCard = ({ facility, onDelete, onToggleStatus, onDuplicate }: IAdminFacilityCardProps): JSX.Element => {
   const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [editValue, setEditValue] = useState<string>("");
@@ -76,6 +77,13 @@ const AdminFacilityCard = ({ facility, onDelete, onToggleStatus }: IAdminFacilit
   const handleView = (e: React.MouseEvent): void => {
     e.stopPropagation();
     navigate(`/facilities/${facility.id}`);
+  };
+
+  const handleDuplicate = (e: React.MouseEvent): void => {
+    e.stopPropagation();
+    if (onDuplicate) {
+      onDuplicate(facility.id);
+    }
   };
 
   const handleInlineEdit = (e: React.MouseEvent, field: string): void => {
@@ -143,6 +151,15 @@ const AdminFacilityCard = ({ facility, onDelete, onToggleStatus }: IAdminFacilit
             aria-label="Se i hovedapplikasjon"
           >
             <Eye className="h-4 w-4" />
+          </Button>
+          <Button
+            onClick={handleDuplicate}
+            size="sm"
+            variant="outline"
+            className="h-8 w-8 p-0 bg-blue-500/90 backdrop-blur-sm shadow-lg hover:bg-blue-600 text-white border-blue-600"
+            aria-label="Dupliser lokale"
+          >
+            <Copy className="h-4 w-4" />
           </Button>
           <Button
             onClick={handleDelete}

@@ -49,6 +49,7 @@ interface IFacilityStore {
   readonly facilities: readonly IFacility[];
   readonly updateFacility: (id: string, updates: Partial<IFacility>) => void;
   readonly addFacility: (facility: Omit<IFacility, 'id' | 'createdAt' | 'updatedAt'>) => void;
+  readonly deleteFacility: (id: string) => void;
   readonly getFacilityById: (id: string) => IFacility | undefined;
   readonly getPublishedFacilities: () => readonly IFacility[];
   readonly getAdminFacilities: () => readonly IFacility[];
@@ -309,11 +310,13 @@ export const useFacilityStore = create<IFacilityStore>()(
         facilities: initialFacilities,
         
         updateFacility: (id: string, updates: Partial<IFacility>): void => {
-          set((state) => ({
-            facilities: state.facilities.map((facility) =>
+          set((state) => {
+            const updatedFacilities = state.facilities.map((facility) =>
               facility.id === id ? { ...facility, ...updates } : facility
-            ),
-          }));
+            );
+            console.log("Updated facility in store:", updatedFacilities.find(f => f.id === id));
+            return { facilities: updatedFacilities };
+          });
         },
 
         addFacility: (facility: Omit<IFacility, 'id' | 'createdAt' | 'updatedAt'>): void => {
@@ -332,6 +335,17 @@ export const useFacilityStore = create<IFacilityStore>()(
             };
             console.log("Updated facilities array length:", newState.facilities.length);
             console.log("All facilities:", newState.facilities);
+            return newState;
+          });
+        },
+
+        deleteFacility: (id: string): void => {
+          console.log("deleteFacility called with id:", id);
+          set((state) => {
+            const newState = {
+              facilities: state.facilities.filter((facility) => facility.id !== id),
+            };
+            console.log("Facility deleted. Remaining facilities:", newState.facilities.length);
             return newState;
           });
         },

@@ -14,6 +14,7 @@ import {
   XCircle
 } from "lucide-react";
 import FacilityCardBase from "./FacilityCardBase";
+import { useFavoritesStore } from "@/stores/favoritesStore";
 
 interface IFacilityCardUserProps {
   readonly id: string;
@@ -32,8 +33,10 @@ interface IFacilityCardUserProps {
 
 const FacilityCardUser = (props: IFacilityCardUserProps): JSX.Element => {
   const navigate = useNavigate();
-  const [isFavorite, setIsFavorite] = useState<boolean>(props.isFavorite || false);
   const [isAnimating, setIsAnimating] = useState<boolean>(false);
+  
+  // Use favorites store instead of local state
+  const { isFavorite, toggleFavorite, incrementUsage, updateLastVisited } = useFavoritesStore();
 
   const {
     id,
@@ -50,20 +53,35 @@ const FacilityCardUser = (props: IFacilityCardUserProps): JSX.Element => {
   } = props;
 
   const handleViewDetails = (): void => {
+    // Track usage and last visited when viewing details
+    incrementUsage(id);
+    updateLastVisited(id);
     navigate(`/facilities/${id}`);
   };
 
   const handleBookNow = (): void => {
+    // Track usage when booking
+    incrementUsage(id);
+    updateLastVisited(id);
     // TODO: Navigate to booking flow
     navigate(`/facilities/${id}/book`);
   };
 
+  /**
+   * Handle favorite toggle with visual feedback
+   * 
+   * This function manages the favorite state toggle with proper event handling
+   * and visual feedback. It prevents event bubbling to avoid triggering
+   * parent click handlers and provides smooth animation feedback.
+   * 
+   * @param e - Mouse event from button click
+   */
   const handleToggleFavorite = (e: React.MouseEvent): void => {
     e.stopPropagation();
     setIsAnimating(true);
-    setIsFavorite(!isFavorite);
+    toggleFavorite(id);
     
-    // TODO: Save to backend
+    // Reset animation after a short delay for smooth UX
     setTimeout(() => setIsAnimating(false), 300);
   };
 
@@ -125,19 +143,19 @@ const FacilityCardUser = (props: IFacilityCardUserProps): JSX.Element => {
       price={price}
       description={description}
     >
-      {/* Top Right Actions */}
-      <div className="absolute top-3 right-3 flex flex-col space-y-2">
+      {/* Top Right Actions - Positioned above hover overlay for accessibility */}
+      <div className="absolute top-3 right-3 flex flex-col space-y-2 z-20">
         <Button
           size="sm"
           variant="secondary"
-          className={`w-8 h-8 p-0 bg-white/90 hover:bg-white transition-all ${
+          className={`w-8 h-8 p-0 bg-white/90 hover:bg-white transition-all z-30 ${
             isAnimating ? "scale-110" : ""
           }`}
           onClick={handleToggleFavorite}
         >
           <Heart 
             className={`h-4 w-4 transition-colors ${
-              isFavorite 
+              isFavorite(id)
                 ? "text-red-500 fill-current" 
                 : "text-gray-600 hover:text-red-500"
             }`} 
@@ -147,7 +165,7 @@ const FacilityCardUser = (props: IFacilityCardUserProps): JSX.Element => {
         <Button
           size="sm"
           variant="secondary"
-          className="w-8 h-8 p-0 bg-white/90 hover:bg-white"
+          className="w-8 h-8 p-0 bg-white/90 hover:bg-white z-30"
           onClick={handleShare}
         >
           <Share2 className="h-4 w-4 text-gray-600 hover:text-blue-600" />
@@ -159,8 +177,8 @@ const FacilityCardUser = (props: IFacilityCardUserProps): JSX.Element => {
         {getAvailabilityBadge()}
       </div>
       
-      {/* Action Buttons Overlay */}
-      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-end justify-center pb-4 opacity-0 group-hover:opacity-100">
+      {/* Action Buttons Overlay - Lower z-index to not interfere with top actions */}
+      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-end justify-center pb-4 opacity-0 group-hover:opacity-100 z-10">
         <div className="flex space-x-2">
           <Button
             size="sm"

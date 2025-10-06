@@ -3,9 +3,9 @@
 ## Component Hierarchy
 
 ### Priority Order
-1. **Flowbite React Components** - First choice for all UI elements
-2. **Extended Flowbite Components** - Custom props/styling on Flowbite base
-3. **Custom Components** - Only when Flowbite doesn't provide functionality
+1. **shadcn/ui Components** - First choice for all UI elements (built on Radix UI + Tailwind)
+2. **Extended shadcn/ui Components** - Custom variants/styling on shadcn/ui base
+3. **Custom Components** - Only when shadcn/ui doesn't provide functionality
 
 ## Core Components Usage
 
@@ -13,89 +13,122 @@
 
 #### Navbar
 ```typescript
-import { Navbar, Avatar, Dropdown } from 'flowbite-react';
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Menu, X } from "lucide-react";
 
 // ✅ Standard navbar with user menu
-<Navbar fluid rounded>
-  <Navbar.Brand href="/">
-    <img src="/logo.svg" className="mr-3 h-6 sm:h-9" alt="Logo" />
-    <span className="self-center whitespace-nowrap text-xl font-semibold">
-      Brand Name
-    </span>
-  </Navbar.Brand>
-  
-  <div className="flex md:order-2">
-    <Dropdown
-      arrowIcon={false}
-      inline
-      label={<Avatar alt="User" img="/user-avatar.jpg" rounded />}
-    >
-      <Dropdown.Header>
-        <span className="block text-sm">John Doe</span>
-        <span className="block truncate text-sm font-medium">john@example.com</span>
-      </Dropdown.Header>
-      <Dropdown.Item>Dashboard</Dropdown.Item>
-      <Dropdown.Item>Settings</Dropdown.Item>
-      <Dropdown.Divider />
-      <Dropdown.Item>Sign out</Dropdown.Item>
-    </Dropdown>
-    <Navbar.Toggle />
+<nav className="border-b bg-background">
+  <div className="flex h-16 items-center px-4">
+    <div className="flex items-center space-x-4">
+      <img src="/logo.svg" className="h-8 w-8" alt="Logo" />
+      <span className="text-xl font-semibold">Brand Name</span>
+    </div>
+    
+    <div className="ml-auto flex items-center space-x-4">
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+            <Avatar className="h-8 w-8">
+              <AvatarImage src="/user-avatar.jpg" alt="User" />
+              <AvatarFallback>JD</AvatarFallback>
+            </Avatar>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="w-56" align="end">
+          <div className="flex items-center justify-start gap-2 p-2">
+            <div className="flex flex-col space-y-1 leading-none">
+              <p className="font-medium">John Doe</p>
+              <p className="text-xs text-muted-foreground">john@example.com</p>
+            </div>
+          </div>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem>Dashboard</DropdownMenuItem>
+          <DropdownMenuItem>Settings</DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem>Sign out</DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
   </div>
-  
-  <Navbar.Collapse>
-    <Navbar.Link href="/" active>Home</Navbar.Link>
-    <Navbar.Link href="/about">About</Navbar.Link>
-    <Navbar.Link href="/services">Services</Navbar.Link>
-    <Navbar.Link href="/contact">Contact</Navbar.Link>
-  </Navbar.Collapse>
-</Navbar>
+</nav>
 ```
 
 #### Sidebar
 ```typescript
-import { Sidebar } from 'flowbite-react';
-import { HiChartPie, HiInbox, HiUser, HiShoppingBag } from 'react-icons/hi';
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
+import { LayoutDashboard, Inbox, Users, ShoppingBag } from "lucide-react";
 
 // ✅ Admin sidebar navigation
-<Sidebar aria-label="Admin sidebar">
-  <Sidebar.Items>
-    <Sidebar.ItemGroup>
-      <Sidebar.Item href="/dashboard" icon={HiChartPie}>
-        Dashboard
-      </Sidebar.Item>
-      <Sidebar.Item href="/inbox" icon={HiInbox} label="3">
-        Inbox
-      </Sidebar.Item>
-      <Sidebar.Item href="/users" icon={HiUser}>
-        Users
-      </Sidebar.Item>
-      <Sidebar.Item href="/products" icon={HiShoppingBag}>
-        Products
-      </Sidebar.Item>
-    </Sidebar.ItemGroup>
-  </Sidebar.Items>
-</Sidebar>
+<aside className="flex h-full w-64 flex-col border-r bg-background">
+  <nav className="flex-1 space-y-2 p-4">
+    <div className="space-y-1">
+      <Button
+        variant="ghost"
+        className="w-full justify-start"
+        asChild
+      >
+        <a href="/dashboard" className="flex items-center">
+          <LayoutDashboard className="mr-2 h-4 w-4" />
+          Dashboard
+        </a>
+      </Button>
+      <Button
+        variant="ghost"
+        className="w-full justify-start"
+        asChild
+      >
+        <a href="/inbox" className="flex items-center">
+          <Inbox className="mr-2 h-4 w-4" />
+          Inbox
+          <Badge variant="secondary" className="ml-auto">3</Badge>
+        </a>
+      </Button>
+      <Button
+        variant="ghost"
+        className="w-full justify-start"
+        asChild
+      >
+        <a href="/users" className="flex items-center">
+          <Users className="mr-2 h-4 w-4" />
+          Users
+        </a>
+      </Button>
+      <Button
+        variant="ghost"
+        className="w-full justify-start"
+        asChild
+      >
+        <a href="/products" className="flex items-center">
+          <ShoppingBag className="mr-2 h-4 w-4" />
+          Products
+        </a>
+      </Button>
+    </div>
+  </nav>
+</aside>
 ```
 
 ### Form Components
 
 #### Complete Form Example
 ```typescript
-import { 
-  Label, 
-  TextInput, 
-  Select, 
-  Textarea, 
-  Checkbox, 
-  Button, 
-  Alert 
-} from 'flowbite-react';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 // ✅ Comprehensive form with validation
 <form className="space-y-6" onSubmit={handleSubmit}>
-  <div>
-    <Label htmlFor="firstName" value="First Name" />
-    <TextInput
+  <div className="space-y-2">
+    <Label htmlFor="firstName">First Name</Label>
+    <Input
       id="firstName"
       type="text"
       placeholder="Enter your first name"
@@ -105,9 +138,9 @@ import {
     />
   </div>
   
-  <div>
-    <Label htmlFor="email" value="Email Address" />
-    <TextInput
+  <div className="space-y-2">
+    <Label htmlFor="email">Email Address</Label>
+    <Input
       id="email"
       type="email"
       placeholder="name@company.com"
@@ -117,23 +150,25 @@ import {
     />
   </div>
   
-  <div>
-    <Label htmlFor="role" value="Select Role" />
+  <div className="space-y-2">
+    <Label htmlFor="role">Select Role</Label>
     <Select
-      id="role"
-      required
       value={formData.role}
-      onChange={(e) => setFormData({...formData, role: e.target.value})}
+      onValueChange={(value) => setFormData({...formData, role: value})}
     >
-      <option value="">Choose a role</option>
-      <option value="admin">Administrator</option>
-      <option value="user">User</option>
-      <option value="moderator">Moderator</option>
+      <SelectTrigger>
+        <SelectValue placeholder="Choose a role" />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value="admin">Administrator</SelectItem>
+        <SelectItem value="user">User</SelectItem>
+        <SelectItem value="moderator">Moderator</SelectItem>
+      </SelectContent>
     </Select>
   </div>
   
-  <div>
-    <Label htmlFor="bio" value="Bio" />
+  <div className="space-y-2">
+    <Label htmlFor="bio">Bio</Label>
     <Textarea
       id="bio"
       placeholder="Tell us about yourself..."
@@ -143,15 +178,15 @@ import {
     />
   </div>
   
-  <div className="flex items-center gap-2">
+  <div className="flex items-center space-x-2">
     <Checkbox
       id="terms"
       checked={formData.acceptTerms}
-      onChange={(e) => setFormData({...formData, acceptTerms: e.target.checked})}
+      onCheckedChange={(checked) => setFormData({...formData, acceptTerms: checked as boolean})}
     />
-    <Label htmlFor="terms" className="flex">
-      I agree with the&nbsp;
-      <a href="/terms" className="text-cyan-600 hover:underline">
+    <Label htmlFor="terms" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+      I agree with the{" "}
+      <a href="/terms" className="text-primary hover:underline">
         terms and conditions
       </a>
     </Label>

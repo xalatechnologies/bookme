@@ -71,7 +71,7 @@ Formålet er å bygge en skybasert plattform for å booke lokaler, der organisas
 
 ## Teknologi
 - **Front-end:** Next.js 15 (App Router) + TypeScript
-- **UI-komponenter:** Flowbite React + Tailwind CSS
+- **UI-komponenter:** shadcn/ui (Radix UI + Tailwind CSS)
 - **Backend:** Supabase (self-hosted) for auth, database og storage
 - **ORM:** Prisma
 - **API:** tRPC for type-sikre kall

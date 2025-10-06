@@ -61,8 +61,8 @@ const UserSidebar = (_props: IUserSidebarProps): JSX.Element => {
     {
       title: "Konto",
       items: [
-        { id: "profile", label: "Profil & innstillinger", path: "/user/profile", icon: User },
-        { id: "notifications", label: "Varsler & preferanser", path: "/user/notifications", icon: Bell },
+        { id: "profile", label: "Innstillinger", path: "/user/profile", icon: User },
+        { id: "notifications", label: "Varsler", path: "/user/notifications", icon: Bell },
       ]
     },
     {

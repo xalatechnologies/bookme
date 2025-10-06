@@ -17,6 +17,7 @@ import {
   XCircle
 } from "lucide-react";
 import { FacilityMiniMap } from "@/components/map/FacilityMiniMap";
+import { useFavoritesStore } from "@/stores/favoritesStore";
 
 interface IFacilityListItemUserProps {
   readonly id: string;
@@ -36,8 +37,10 @@ interface IFacilityListItemUserProps {
 
 const FacilityListItemUser = (props: IFacilityListItemUserProps): JSX.Element => {
   const navigate = useNavigate();
-  const [isFavorite, setIsFavorite] = useState<boolean>(props.isFavorite || false);
   const [isAnimating, setIsAnimating] = useState<boolean>(false);
+  
+  // Use favorites store instead of local state
+  const { isFavorite, toggleFavorite, incrementUsage, updateLastVisited } = useFavoritesStore();
 
   const {
     id,
@@ -55,19 +58,25 @@ const FacilityListItemUser = (props: IFacilityListItemUserProps): JSX.Element =>
   } = props;
 
   const handleViewDetails = (): void => {
+    // Track usage and last visited when viewing details
+    incrementUsage(id);
+    updateLastVisited(id);
     navigate(`/facilities/${id}`);
   };
 
   const handleBookNow = (): void => {
+    // Track usage when booking
+    incrementUsage(id);
+    updateLastVisited(id);
     navigate(`/facilities/${id}/book`);
   };
 
   const handleToggleFavorite = (e: React.MouseEvent): void => {
     e.stopPropagation();
     setIsAnimating(true);
-    setIsFavorite(!isFavorite);
+    toggleFavorite(id);
     
-    // TODO: Save to backend
+    // Reset animation after a short delay
     setTimeout(() => setIsAnimating(false), 300);
   };
 
@@ -136,14 +145,14 @@ const FacilityListItemUser = (props: IFacilityListItemUserProps): JSX.Element =>
           <Button
             size="sm"
             variant="secondary"
-            className={`absolute top-2 right-2 w-7 h-7 p-0 bg-white/90 hover:bg-white transition-all ${
+            className={`absolute top-2 right-2 w-7 h-7 p-0 bg-white/90 hover:bg-white transition-all z-30 ${
               isAnimating ? "scale-110" : ""
             }`}
             onClick={handleToggleFavorite}
           >
             <Heart 
               className={`h-3 w-3 transition-colors ${
-                isFavorite 
+                isFavorite(id)
                   ? "text-red-500 fill-current" 
                   : "text-gray-600 hover:text-red-500"
               }`} 
@@ -248,7 +257,7 @@ const FacilityListItemUser = (props: IFacilityListItemUserProps): JSX.Element =>
                 location: address,
                 address,
                 capacity,
-                pricePerHour: parseInt(price.replace(/[^\d]/g, "")) || 0,
+                pricePerHour: parseInt(price?.replace(/[^\d]/g, "") || "0") || 0,
                 amenities,
                 images: [image],
                 availability: {
