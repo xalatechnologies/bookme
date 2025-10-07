@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import { CheckCircle, XCircle, Users, MapPin, Wifi, Car, Camera, Volume2 } from 'lucide-react';
+import { CheckCircle, XCircle, Users, MapPin, Wifi, Car, Camera, Volume2, Calendar } from 'lucide-react';
 
 import type { Zone } from '@/components/booking/types';
 import { useTranslation } from '@/i18n';

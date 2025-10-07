@@ -12,6 +12,7 @@ import { AirBnbStyleGallery } from "../AirBnbStyleGallery";
 import { FacilityHeader } from "../FacilityHeader";
 import { FacilityInfoTabs } from "./FacilityInfoTabs";
 import { FacilityContactInfo } from "../FacilityContactInfo";
+import { FacilityCalendar } from "@/components/calendar/FacilityCalendar";
 
 interface FacilityDetailLayoutProps {
   readonly facility: Facility;
@@ -79,6 +80,17 @@ export const FacilityDetailLayout = ({
           </div>
         </div>
       </div>
+
+      {/* Full Width Calendar Section - Like drammen-booking-portal-2 */}
+      {zones.length > 0 && (
+        <FacilityCalendar
+          facilityId={facility.id.toString()}
+          facilityName={facility.name}
+          zones={zones}
+          isLoading={false}
+          error={undefined}
+        />
+      )}
     </div>
   );
 };

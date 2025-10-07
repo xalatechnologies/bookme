@@ -93,16 +93,7 @@ export const FacilityDetail = (): JSX.Element => {
             onToggleFavorite={() => setIsFavorited(!isFavorited)}
           />
 
-          {/* Full Width Calendar Section */}
-          <FacilityDetailCalendar 
-            zones={zones}
-            facilityId={facility.id}
-            facilityName={facility.name}
-            currentPattern={currentPattern}
-            onPatternChange={setCurrentPattern}
-            onPatternApply={handlePatternApply}
-            timeSlotDuration={1}
-          />
+          {/* Calendar is now integrated in the tabs */}
         </div>
 
         {/* Mobile Booking Panel */}

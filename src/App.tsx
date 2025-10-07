@@ -5,6 +5,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 import { LanguageProvider } from '@/contexts/LanguageContext';
 import { AdminAuthProvider } from '@/contexts/AdminAuthContext';
+import { CartProvider } from '@/contexts/CartContext';
 import ScrollToTop from '@/components/ScrollToTop';
 
 import { Index } from '@/pages/Index';
@@ -17,16 +18,18 @@ export const App = (): React.JSX.Element => {
   return (
     <LanguageProvider>
       <AdminAuthProvider>
-        <BrowserRouter>
-          <ScrollToTop />
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/facilities/:id" element={<FacilityDetail />} />
-            <Route path="/login-selection" element={<LoginSelection />} />
-            <Route path="/user/*" element={<UserRoutes />} />
-            <Route path="/admin/*" element={<AdminRoutes />} />
-          </Routes>
-        </BrowserRouter>
+        <CartProvider>
+          <BrowserRouter>
+            <ScrollToTop />
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/facilities/:id" element={<FacilityDetail />} />
+              <Route path="/login-selection" element={<LoginSelection />} />
+              <Route path="/user/*" element={<UserRoutes />} />
+              <Route path="/admin/*" element={<AdminRoutes />} />
+            </Routes>
+          </BrowserRouter>
+        </CartProvider>
       </AdminAuthProvider>
     </LanguageProvider>
   );

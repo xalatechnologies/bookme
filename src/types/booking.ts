@@ -1,5 +1,7 @@
 "use client";
 
+import type { RecurrencePattern } from '@/utils/recurrenceEngine';
+
 export interface Zone {
   readonly id: string;
   readonly name: string;
@@ -19,6 +21,7 @@ export interface Zone {
 }
 
 export interface SelectedTimeSlot {
+  readonly id: string;
   readonly zoneId: string;
   readonly date: Date;
   readonly timeSlot: string;
@@ -26,6 +29,10 @@ export interface SelectedTimeSlot {
   readonly facilityName: string;
   readonly zoneName: string;
   readonly pricePerHour: number;
+  readonly duration: number; // Duration in hours
+  readonly isRecurring?: boolean; // Whether this is part of a recurring booking
+  readonly recurrencePattern?: RecurrencePattern; // Recurrence pattern if applicable
+  readonly parentBookingId?: string; // ID of the parent recurring booking
 }
 
 export interface BookingConflict {
@@ -50,4 +57,33 @@ export interface DragState {
     readonly timeSlot: string;
   };
   readonly previewSlots: readonly SelectedTimeSlot[];
+}
+
+/**
+ * Booking type enumeration
+ */
+export type BookingType = 'one-time' | 'recurring';
+
+/**
+ * Recurring booking configuration
+ */
+export interface RecurringBookingConfig {
+  readonly type: BookingType;
+  readonly pattern: RecurrencePattern;
+  readonly maxOccurrences?: number;
+  readonly endDate?: Date;
+}
+
+/**
+ * Booking form data for recurring bookings
+ */
+export interface RecurringBookingFormData {
+  readonly bookingType: BookingType;
+  readonly recurrenceConfig?: RecurringBookingConfig;
+  readonly purpose: string;
+  readonly attendees: number;
+  readonly activityType: string;
+  readonly additionalInfo?: string;
+  readonly actorType: 'private-person' | 'lag-foreninger' | 'paraply' | 'private-firma' | 'kommunale-enheter';
+  readonly termsAccepted: boolean;
 }

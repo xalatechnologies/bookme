@@ -2,9 +2,10 @@
 
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Menu, Clock, Shield } from "lucide-react";
+import { Menu, ShoppingCart, Shield } from "lucide-react";
 
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useCart } from "@/contexts/CartContext";
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -29,8 +30,8 @@ export const GlobalHeader = (): JSX.Element => {
   const [privacyOpen, setPrivacyOpen] = useState(false);
   const { language, toggleLanguage } = useLanguage();
 
-  // Mock functions for now
-  const getItemCount = (): number => 0;
+  // Get cart data
+  const { itemCount, totalPrice } = useCart();
   const isAuthenticated = false;
   const logout = (): void => {};
 
@@ -44,7 +45,7 @@ export const GlobalHeader = (): JSX.Element => {
     logout();
   };
 
-  const itemCount = getItemCount();
+  // itemCount is now from useCart hook
 
   return (
     <header className="bg-white dark:bg-gray-900 py-3 shadow-md sticky top-0 z-10 border-b border-gray-200 dark:border-gray-700 w-full">
@@ -91,11 +92,11 @@ export const GlobalHeader = (): JSX.Element => {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            {/* Selected Times Icon with Dropdown */}
+            {/* Cart Icon with Dropdown */}
             <Popover open={cartOpen} onOpenChange={setCartOpen}>
               <PopoverTrigger asChild>
                 <Button variant="ghost" className="relative hover:bg-gray-100">
-                  <Clock className="h-6 w-6" />
+                  <ShoppingCart className="h-6 w-6" />
                   {itemCount > 0 && (
                     <Badge 
                       className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center text-xs bg-red-500 text-white rounded-full animate-pulse"
