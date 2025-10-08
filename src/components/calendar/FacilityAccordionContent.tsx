@@ -1,19 +1,19 @@
 "use client";
 
-// External imports
+// External libraries
 import React from "react";
 
-// Internal imports
+// Internal libraries/utilities
 import type { SelectedTimeSlot, AvailabilityStatus } from '@/types/booking';
 import type { IFacility } from '@/stores/facilityStore';
 import { getZonesForFacility } from '@/data/zones/dummyZones';
+import { AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+
+// Sibling imports
+import { FacilityCalendar } from "./FacilityCalendar";
 
 // Alias for backward compatibility
 type Facility = IFacility;
-
-// Sibling imports
-import { AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Calendar } from "@/components/shared/Calendar";
 
 interface FacilityAccordionContentProps {
   readonly facility: Facility;
@@ -42,9 +42,9 @@ export const FacilityAccordionContent: React.FC<FacilityAccordionContentProps> =
     <AccordionItem 
       key={facility.id} 
       value={`facility-${facility.id}`}
-      className="border rounded-lg bg-white shadow-sm"
+      className="border-0 bg-white"
     >
-      <AccordionTrigger className="px-6 py-4 hover:no-underline">
+      <AccordionTrigger className="px-6 py-4 hover:no-underline border-b border-gray-200">
         <div className="flex items-center justify-between w-full pr-4">
           <div className="text-left">
             <h3 className="text-xl font-semibold text-gray-900">{facility.name}</h3>
@@ -57,17 +57,20 @@ export const FacilityAccordionContent: React.FC<FacilityAccordionContentProps> =
         </div>
       </AccordionTrigger>
       
-      <AccordionContent className="px-6 pb-6">
-        <Calendar
+      <AccordionContent className="p-0">
+        <FacilityCalendar
+          facilityId={facility.id}
+          facilityName={facility.name}
           zones={zones}
           selectedSlots={selectedSlots}
           onSlotClick={onSlotClick}
           onBulkSlotSelection={onBulkSlotSelection}
           getAvailabilityStatus={getAvailabilityStatus}
           isSlotSelected={isSlotSelected}
-          timeSlotDuration={1}
-          showZoneSelector={zones.length > 1}
-          compact={false}
+          onAddToCart={() => {}}
+          onCompleteBooking={() => {}}
+          isLoading={false}
+          error={null}
         />
       </AccordionContent>
     </AccordionItem>

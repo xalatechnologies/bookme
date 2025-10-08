@@ -14,6 +14,7 @@ import { ISelectedTimeSlot } from "@/components/booking/types";
 export type TimeSlotStatus = 
   | "available"     // Green - can be selected
   | "booked"        // Red - already booked
+  | "busy"          // Red - already booked (alias for booked)
   | "unavailable"   // Gray - not available (past, weekend, holiday)
   | "selected"      // Blue - currently selected
   | "conflict";     // Orange - has conflicts
@@ -63,12 +64,14 @@ export interface ICalendarGridProps {
   readonly facilityId: string;
   readonly zoneId: string;
   readonly week: ICalendarWeek;
-  readonly selectedSlots: readonly string[]; // Array of slot IDs
-  readonly onSlotClick: (slotId: string, status: TimeSlotStatus) => void;
+  readonly selectedSlots: readonly ISelectedTimeSlot[]; // Array of selected time slot objects
+  readonly onSlotClick: (zoneId: string, date: Date, timeSlot: string, status: TimeSlotStatus) => void;
   readonly onBulkSelect: (slots: readonly ISelectedTimeSlot[]) => void;
   readonly pricePerHour?: number;
   readonly isLoading?: boolean;
   readonly error?: string;
+  readonly getAvailabilityStatus?: (zoneId: string, date: Date, timeSlot: string) => { status: string; conflict?: any };
+  readonly isSlotSelected?: (zoneId: string, date: Date, timeSlot: string) => boolean;
 }
 
 /**

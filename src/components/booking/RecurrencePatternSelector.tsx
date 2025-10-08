@@ -1,6 +1,11 @@
 "use client";
 
+// External libraries
 import React, { useState, useEffect } from 'react';
+import { format } from 'date-fns';
+import { CalendarIcon } from 'lucide-react';
+
+// Internal libraries/utilities
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -9,10 +14,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { CalendarIcon } from 'lucide-react';
-import { format } from 'date-fns';
-import type { RecurrencePattern } from '@/utils/recurrenceEngine';
 import { recurrenceEngine } from '@/utils/recurrenceEngine';
+
+// Types
+import type { RecurrencePattern } from '@/utils/recurrenceEngine';
 
 interface RecurrencePatternSelectorProps {
   readonly pattern: RecurrencePattern | null;

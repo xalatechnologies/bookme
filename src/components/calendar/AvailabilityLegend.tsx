@@ -1,8 +1,13 @@
 "use client";
 
+// External libraries
 import React from "react";
+
+// Internal libraries/utilities
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+
+// Types
 import { IAvailabilityLegendProps } from "./types";
 
 /**
@@ -69,35 +74,22 @@ export const AvailabilityLegend: React.FC<IAvailabilityLegendProps> = ({
         </CardTitle>
       </CardHeader>
       <CardContent className="pt-0">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        <div className="flex flex-wrap gap-3">
           {legendItems.map((item) => (
-            <div
+            <Badge 
               key={item.status}
-              className="flex items-center gap-3 p-2 rounded-lg border"
+              className={`${item.className} text-xs font-medium`}
             >
-              <Badge className={`${item.className} text-xs font-medium`}>
-                {item.label}
-              </Badge>
-              <div className="flex-1 min-w-0">
-                <p className="text-xs text-gray-600 leading-tight">
-                  {item.description}
-                </p>
-              </div>
-            </div>
+              {item.label}
+            </Badge>
           ))}
         </div>
 
         {/* Additional Information */}
         <div className="mt-4 pt-3 border-t border-gray-100">
-          <div className="text-xs text-gray-500 space-y-1">
-            <p>• Klikk på ledige tidspunkter for å velge dem</p>
-            <p>• Du kan velge flere tidspunkter samtidig</p>
-            {showHolidayInfo && (
-              <p>• Røde dager markerer helligdager og ferier</p>
-            )}
-            {showConflictInfo && (
-              <p>• Oransje tidspunkter har konflikter som må løses</p>
-            )}
+          <div className="text-xs text-gray-500 flex flex-wrap gap-4">
+            <span>• Klikk på ledige tidspunkter for å velge dem</span>
+            <span>• Du kan velge flere tidspunkter samtidig ved å dra og slippe</span>
           </div>
         </div>
       </CardContent>

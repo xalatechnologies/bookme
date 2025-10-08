@@ -1,9 +1,14 @@
 "use client";
 
+// External libraries
 import React from 'react';
+import { Calendar, Repeat } from 'lucide-react';
+
+// Internal libraries/utilities
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Calendar, Repeat } from 'lucide-react';
+
+// Types
 import type { BookingType } from '@/types/booking';
 
 interface BookingTypeSelectorProps {
@@ -50,56 +55,32 @@ export function BookingTypeSelector({
   ];
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-lg font-semibold text-gray-900">
-          Bookingtype
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-2 gap-3">
-          {types.map((type) => {
-            const Icon = type.icon;
-            const isSelected = selectedType === type.id;
-            
-            return (
-              <Button
-                key={type.id}
-                variant={isSelected ? 'default' : 'outline'}
-                onClick={() => !disabled && onTypeChange(type.id)}
-                disabled={disabled}
-                className={`h-auto p-4 flex flex-col items-center space-y-2 transition-all duration-200 ${
-                  isSelected 
-                    ? 'bg-blue-600 hover:bg-blue-700 text-white border-blue-600' 
-                    : 'hover:bg-gray-50 border-gray-200'
-                } ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
-                aria-pressed={isSelected}
-                aria-label={`Velg ${type.label}`}
-              >
-                <Icon className={`w-5 h-5 ${isSelected ? 'text-white' : 'text-gray-600'}`} />
-                <div className="text-center">
-                  <span className={`font-medium block ${isSelected ? 'text-white' : 'text-gray-900'}`}>
-                    {type.label}
-                  </span>
-                  <span className={`text-sm ${isSelected ? 'text-blue-100' : 'text-gray-600'}`}>
-                    {type.description}
-                  </span>
-                </div>
-              </Button>
-            );
-          })}
-        </div>
+    <div className="flex gap-2">
+      {types.map((type) => {
+        const Icon = type.icon;
+        const isSelected = selectedType === type.id;
         
-        {/* Additional information */}
-        <div className="mt-4 p-3 bg-gray-50 rounded-lg">
-          <p className="text-sm text-gray-600">
-            <strong>Enkelt booking:</strong> Book et spesifikt tidspunkt for en enkelt gang.
-          </p>
-          <p className="text-sm text-gray-600 mt-1">
-            <strong>Gjentakende booking:</strong> Book samme tidspunkt som gjentas over tid (ukentlig, månedlig, etc.).
-          </p>
-        </div>
-      </CardContent>
-    </Card>
+        return (
+          <Button
+            key={type.id}
+            variant={isSelected ? 'default' : 'outline'}
+            onClick={() => !disabled && onTypeChange(type.id)}
+            disabled={disabled}
+            className={`flex items-center gap-2 px-4 py-2 transition-all duration-200 ${
+              isSelected 
+                ? 'bg-blue-600 hover:bg-blue-700 text-white border-blue-600' 
+                : 'hover:bg-gray-50 border-gray-200'
+            } ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+            aria-pressed={isSelected}
+            aria-label={`Velg ${type.label}`}
+          >
+            <Icon className={`w-4 h-4 ${isSelected ? 'text-white' : 'text-gray-600'}`} />
+            <span className={`font-medium ${isSelected ? 'text-white' : 'text-gray-900'}`}>
+              {type.label}
+            </span>
+          </Button>
+        );
+      })}
+    </div>
   );
 }

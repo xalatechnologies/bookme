@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus, Calendar, CheckCircle } from "lucide-react";
+import { Plus, CheckCircle } from "lucide-react";
 import KPICard from "@/components/admin/dashboard/KPICard";
 import ApprovalQueue from "@/components/admin/dashboard/ApprovalQueue";
 import RecentEvents from "@/components/admin/dashboard/RecentEvents";
@@ -30,10 +30,6 @@ const Overview = (_props: IOverviewProps): JSX.Element => {
     navigate('/admin/facilities/new');
   };
 
-  const handleNewBooking = (): void => {
-    // TODO: Implement new booking navigation
-  };
-
   return (
     <div className="space-y-8">
       {/* Header Section */}
@@ -53,13 +49,6 @@ const Overview = (_props: IOverviewProps): JSX.Element => {
           >
             <Plus className="w-4 h-4" />
             Nytt lokale
-          </button>
-          <button 
-            onClick={handleNewBooking}
-            className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors"
-          >
-            <Calendar className="w-4 h-4" />
-            Ny booking
           </button>
         </div>
       </header>

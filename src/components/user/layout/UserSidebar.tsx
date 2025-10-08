@@ -6,7 +6,7 @@ import {
   LayoutDashboard, 
   Building2, 
   Calendar, 
-  Clock,
+  History,
   Receipt,
   Heart,
   User,
@@ -46,8 +46,9 @@ const UserSidebar = (_props: IUserSidebarProps): JSX.Element => {
     {
       title: "Booking",
       items: [
-        { id: "bookings", label: "Mine bookinger", path: "/user/bookings", icon: Calendar },
-        { id: "requests", label: "Mine forespørsler", path: "/user/requests", icon: Clock },
+        { id: "bookings", label: "Bookinger", path: "/user/bookings", icon: Calendar },
+        { id: "calendar", label: "Kalender", path: "/user/calendar", icon: Calendar },
+        { id: "history", label: "Historikk", path: "/user/history", icon: History },
         { id: "receipts", label: "Kvitteringer", path: "/user/receipts", icon: Receipt },
       ]
     },

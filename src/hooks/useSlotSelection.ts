@@ -1,29 +1,40 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useCallback } from "react";
 import { ISelectedTimeSlot } from "@/components/booking/types";
 import { RecurringTimeSlot, RecurrencePattern } from "@/utils/recurrenceEngine";
-import { recurrenceEngine } from "@/utils/recurrenceEngine";
+import { useSlotSelectionStore } from "@/stores/slotSelectionStore";
 
 /**
  * Slot selection hook for calendar time slot management
  * 
  * Provides functionality to manage selected time slots including
- * adding, removing, and bulk operations. Handles state management
- * and provides callbacks for UI interactions.
+ * adding, removing, and bulk operations. Uses Zustand store for
+ * persistent state management.
  * 
  * Features:
  * - Single slot selection/deselection
  * - Bulk slot operations
  * - Clear all selections
- * - Optimized state updates
+ * - Persistent state with localStorage
  * - Date normalization
  * 
  * @returns Slot selection state and handlers
  */
 export const useSlotSelection = () => {
-  const [selectedSlots, setSelectedSlots] = useState<readonly ISelectedTimeSlot[]>([]);
-  const [recurringSlots, setRecurringSlots] = useState<readonly RecurringTimeSlot[]>([]);
+  const {
+    selectedSlots,
+    recurringSlots,
+    addSlot,
+    removeSlot,
+    clearSelection,
+    setSelectedSlots: setSelectedSlotsStore,
+    addRecurringSlots,
+    clearRecurringSlots,
+    generateRecurringSlots: generateRecurringSlotsStore,
+    getAllSlots,
+    isSlotSelected: isSlotSelectedStore
+  } = useSlotSelectionStore();
 
   /**
    * Ensure date is a proper Date object
@@ -53,31 +64,23 @@ export const useSlotSelection = () => {
     facilityId: string = "",
     pricePerHour: number = 0
   ): void => {
-    if (availability !== "available") {
-      console.log("Slot not available:", { zoneId, date, timeSlot, availability });
+    if (availability !== "available" && availability !== "selected") {
       return;
     }
 
     const slotDate = ensureDate(date);
-    const isSelected = selectedSlots.some(slot => {
-      const selectedDate = ensureDate(slot.date);
-      return slot.zoneId === zoneId &&
-        selectedDate.toDateString() === slotDate.toDateString() &&
-        slot.timeSlot === timeSlot;
-    });
+    
+    // Check if slot is already selected
+    const isSelected = isSlotSelectedStore(zoneId, slotDate, timeSlot);
 
     if (isSelected) {
       // Remove slot
-      setSelectedSlots(prev => prev.filter(slot => {
-        const existingSlotDate = ensureDate(slot.date);
-        return !(slot.zoneId === zoneId &&
-          existingSlotDate.toDateString() === slotDate.toDateString() &&
-          slot.timeSlot === timeSlot);
-      }));
+      removeSlot(zoneId, slotDate, timeSlot);
     } else {
       // Add slot
+      const dayString = slotDate.toISOString().split('T')[0]; // YYYY-MM-DD format
       const newSlot: ISelectedTimeSlot = {
-        id: `${zoneId}-${slotDate.getTime()}-${timeSlot}`,
+        id: `${facilityId}-${zoneId}-${dayString}-${timeSlot}`,
         facilityId,
         zoneId,
         date: slotDate,
@@ -86,11 +89,9 @@ export const useSlotSelection = () => {
         pricePerHour,
       };
       
-      console.log("Adding slot with pricePerHour:", pricePerHour, "slot:", newSlot);
-      
-      setSelectedSlots(prev => [...prev, newSlot]);
+      addSlot(newSlot);
     }
-  }, [selectedSlots, ensureDate]);
+  }, [ensureDate, isSlotSelectedStore, removeSlot, addSlot]);
 
   /**
    * Handle bulk slot selection
@@ -98,63 +99,35 @@ export const useSlotSelection = () => {
    * @param newSlots - Array of slots to add
    */
   const handleBulkSlotSelection = useCallback((newSlots: readonly ISelectedTimeSlot[]): void => {
-    console.log("Bulk slot selection called with:", newSlots.length, "slots");
-    console.log("Current selected slots:", selectedSlots.length);
-    
     if (newSlots.length === 0) {
       return;
     }
 
-    // Ensure all dates are Date objects
-    const normalizedSlots = newSlots.map(slot => ({
-      ...slot,
-      date: ensureDate(slot.date)
-    }));
+    // Ensure all dates are Date objects and generate proper IDs
+    const normalizedSlots = newSlots.map(slot => {
+      const slotDate = ensureDate(slot.date);
+      const dayString = slotDate.toISOString().split('T')[0]; // YYYY-MM-DD format
+      return {
+        ...slot,
+        date: slotDate,
+        id: `${slot.facilityId}-${slot.zoneId}-${dayString}-${slot.timeSlot}`
+      };
+    });
 
-    // Filter out slots that already exist
-    const newSlotsToAdd = normalizedSlots.filter(newSlot => 
-      !selectedSlots.some(existingSlot => {
-        const existingDate = ensureDate(existingSlot.date);
-        const newSlotDate = ensureDate(newSlot.date);
-        return existingSlot.zoneId === newSlot.zoneId &&
-          existingDate.toDateString() === newSlotDate.toDateString() &&
-          existingSlot.timeSlot === newSlot.timeSlot;
-      })
-    );
-
-    console.log("New slots to add:", newSlotsToAdd.length);
-    console.log("New slots pricePerHour:", newSlotsToAdd.map(s => ({ id: s.id, pricePerHour: s.pricePerHour })));
-
-    if (newSlotsToAdd.length > 0) {
-      setSelectedSlots(prev => {
-        const updated = [...prev, ...newSlotsToAdd];
-        console.log("Updated selected slots:", updated.length);
-        console.log("Final slots with pricePerHour:", updated.map(s => ({ id: s.id, pricePerHour: s.pricePerHour })));
-        return updated;
-      });
-    }
-  }, [selectedSlots, ensureDate]);
-
-  /**
-   * Clear all selected slots
-   */
-  const clearSelection = useCallback((): void => {
-    setSelectedSlots([]);
-  }, []);
+    // Add each slot individually (the store will handle duplicates)
+    normalizedSlots.forEach(slot => {
+      addSlot(slot);
+    });
+  }, [ensureDate, addSlot]);
 
   /**
    * Set selected slots (for external control)
    * 
    * @param slots - Array of slots to set
    */
-  const setSelectedSlotsExternal = useCallback((slots: readonly ISelectedTimeSlot[]): void => {
-    // Ensure all dates are Date objects
-    const normalizedSlots = slots.map(slot => ({
-      ...slot,
-      date: ensureDate(slot.date)
-    }));
-    setSelectedSlots(normalizedSlots);
-  }, [ensureDate]);
+  const setSelectedSlots = useCallback((slots: readonly ISelectedTimeSlot[]): void => {
+    setSelectedSlotsStore(slots);
+  }, [setSelectedSlotsStore]);
 
   /**
    * Generate recurring slots from a pattern
@@ -174,51 +147,8 @@ export const useSlotSelection = () => {
     pricePerHour: number,
     maxOccurrences: number = 52
   ): void => {
-    const generatedSlots = recurrenceEngine.generateOccurrences(
-      pattern,
-      startDate,
-      zoneId,
-      facilityId,
-      pricePerHour,
-      maxOccurrences
-    );
-    
-    setRecurringSlots(generatedSlots);
-  }, []);
-
-  /**
-   * Clear all recurring slots
-   */
-  const clearRecurringSlots = useCallback((): void => {
-    setRecurringSlots([]);
-  }, []);
-
-  /**
-   * Get all slots (regular + recurring)
-   */
-  const getAllSlots = useCallback((): readonly ISelectedTimeSlot[] => {
-    const regularSlots = selectedSlots.map(slot => ({
-      ...slot,
-      isRecurring: false
-    }));
-    
-    const recurringSlotsConverted = recurringSlots.map(slot => ({
-      id: slot.id,
-      zoneId: slot.zoneId,
-      date: slot.date,
-      timeSlot: slot.timeSlot,
-      facilityId: slot.facilityId,
-      facilityName: '', // Will be filled by parent component
-      zoneName: '', // Will be filled by parent component
-      pricePerHour: slot.pricePerHour,
-      duration: slot.duration,
-      isRecurring: slot.isRecurring,
-      recurrencePattern: slot.recurrencePattern,
-      parentBookingId: slot.parentBookingId
-    }));
-    
-    return [...regularSlots, ...recurringSlotsConverted];
-  }, [selectedSlots, recurringSlots]);
+    generateRecurringSlotsStore(pattern, startDate, zoneId, facilityId, pricePerHour, maxOccurrences);
+  }, [generateRecurringSlotsStore]);
 
   return {
     selectedSlots,
@@ -226,7 +156,7 @@ export const useSlotSelection = () => {
     handleSlotClick,
     handleBulkSlotSelection,
     clearSelection,
-    setSelectedSlots: setSelectedSlotsExternal,
+    setSelectedSlots,
     generateRecurringSlots,
     clearRecurringSlots,
     getAllSlots,

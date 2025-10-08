@@ -1,18 +1,18 @@
 "use client";
 
-// External imports
+// External libraries
 import React, { useState, useCallback } from "react";
 import { isSameDay } from 'date-fns';
 
-// Internal imports
+// Internal libraries/utilities
 import type { SelectedTimeSlot, AvailabilityStatus } from '@/types/booking';
 import { useCalendarView } from '@/hooks/useCalendarView';
 import { useSlotSelection } from '@/hooks/useSlotSelection';
-
-// Sibling imports
 import { Card } from './ui/card';
 import { ViewHeader } from "./search/ViewHeader";
 import { Accordion } from "./ui/accordion";
+
+// Sibling imports
 import { FacilityAccordionContent } from "./calendar/FacilityAccordionContent";
 
 interface CalendarViewProps {
@@ -188,74 +188,83 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 my-[12px]">
-      <ViewHeader 
-        facilityCount={facilitiesWithZones.length}
-        isLoading={isLoading}
-        viewMode={viewMode}
-        setViewMode={setViewMode}
-      />
+    <div className="w-full">
+      {/* Header Section */}
+      <div className="max-w-7xl mx-auto px-4 my-[12px]">
+        <ViewHeader 
+          facilityCount={facilitiesWithZones.length}
+          isLoading={isLoading}
+          viewMode={viewMode}
+          setViewMode={setViewMode}
+        />
+      </div>
 
       {facilitiesWithZones.length === 0 ? (
-        <Card className="p-8">
-          <div className="text-center">
-            <div className="text-6xl mb-4">📅</div>
-            <h3 className="text-2xl font-bold text-gray-900 mb-2">Ingen fasiliteter funnet</h3>
-            <p className="text-gray-600">Prøv å justere søkekriteriene dine</p>
-          </div>
-        </Card>
+        <div className="max-w-7xl mx-auto px-4">
+          <Card className="p-8">
+            <div className="text-center">
+              <div className="text-6xl mb-4">📅</div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">Ingen fasiliteter funnet</h3>
+              <p className="text-gray-600">Prøv å justere søkekriteriene dine</p>
+            </div>
+          </Card>
+        </div>
       ) : (
-        <div className="space-y-6">
+        <div className="w-full">
           {/* Selected Slots Summary */}
           {selectedSlots.length > 0 && (
-            <Card className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h4 className="font-semibold text-gray-900">Valgte tidspunkt: {selectedSlots.length}</h4>
-                  <p className="text-sm text-gray-600">
-                    Total pris: {selectedSlots.reduce((sum, slot) => sum + slot.pricePerHour, 0)} kr
-                  </p>
+            <div className="max-w-7xl mx-auto px-4 mb-6">
+              <Card className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h4 className="font-semibold text-gray-900">Valgte tidspunkt: {selectedSlots.length}</h4>
+                    <p className="text-sm text-gray-600">
+                      Total pris: {selectedSlots.reduce((sum, slot) => sum + slot.pricePerHour, 0)} kr
+                    </p>
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={clearSelection}
+                      className="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-md"
+                    >
+                      Fjern alle
+                    </button>
+                    <button
+                      onClick={() => navigate('/checkout')}
+                      className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md font-medium"
+                    >
+                      Gå til bestilling
+                    </button>
+                  </div>
                 </div>
-                <div className="flex gap-2">
-                  <button
-                    onClick={clearSelection}
-                    className="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-md"
-                  >
-                    Fjern alle
-                  </button>
-                  <button
-                    onClick={() => navigate('/checkout')}
-                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md font-medium"
-                  >
-                    Gå til bestilling
-                  </button>
-                </div>
-              </div>
-            </Card>
+              </Card>
+            </div>
           )}
 
-          {/* Accordion for each facility */}
-          <Accordion 
-            type="multiple" 
-            defaultValue={[`facility-${facilitiesWithZones[0]?.facility.id}`]} 
-            className="w-full space-y-4"
-          >
-            {facilitiesWithZones.map(({ facility }) => (
-              <FacilityAccordionContent
-                key={facility.id}
-                facility={facility}
-                selectedSlots={selectedSlots}
-                onSlotClick={handleEnhancedSlotClick}
-                onBulkSlotSelection={handleEnhancedBulkSlotSelection}
-                getAvailabilityStatus={getAvailabilityStatus}
-                isSlotSelected={isSlotSelected}
-                onClearSlots={clearSelection}
-                onRemoveSlot={(zoneId: string, date: Date, timeSlot: string) => {
-                  handleEnhancedSlotClick(zoneId, date, timeSlot, 'available');
-                }}
-              />
-            ))}
-          </Accordion>
+          {/* Full Width Calendar Section - Like facilities page */}
+          <div className="w-full">
+            <Accordion 
+              type="multiple" 
+              defaultValue={[`facility-${facilitiesWithZones[0]?.facility.id}`]} 
+              className="w-full"
+            >
+              {facilitiesWithZones.map(({ facility }) => (
+                <FacilityAccordionContent
+                  key={facility.id}
+                  facility={facility}
+                  selectedSlots={selectedSlots}
+                  onSlotClick={handleEnhancedSlotClick}
+                  onBulkSlotSelection={handleEnhancedBulkSlotSelection}
+                  getAvailabilityStatus={getAvailabilityStatus}
+                  isSlotSelected={isSlotSelected}
+                  onClearSlots={clearSelection}
+                  onRemoveSlot={(zoneId: string, date: Date, timeSlot: string) => {
+                    handleEnhancedSlotClick(zoneId, date, timeSlot, 'available');
+                  }}
+                />
+              ))}
+            </Accordion>
+          </div>
         </div>
       )}
     </div>

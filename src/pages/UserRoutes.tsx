@@ -5,8 +5,9 @@ import { Routes, Route } from "react-router-dom";
 import UserLayout from "@/components/user/layout/UserLayout";
 import UserDashboard from "@/pages/user/UserDashboard";
 import UserFacilities from "@/pages/user/UserFacilities";
-import UserBookings from "@/pages/user/UserBookings";
-import UserRequests from "@/pages/user/UserRequests";
+import Bookings from "@/pages/user/Bookings";
+import CalendarPage from "@/pages/user/CalendarPage";
+import HistoryPage from "@/pages/user/HistoryPage";
 import UserReceipts from "@/pages/user/UserReceipts";
 import UserFavorites from "@/pages/user/UserFavorites";
 import UserProfile from "@/pages/user/UserProfile";
@@ -19,8 +20,11 @@ const UserRoutes = (): JSX.Element => {
       <Routes>
         <Route path="/" element={<UserDashboard />} />
         <Route path="/facilities" element={<UserFacilities />} />
-        <Route path="/bookings" element={<UserBookings />} />
-        <Route path="/requests" element={<UserRequests />} />
+        <Route path="/bookings" element={<Bookings />} />
+        <Route path="/mine-bookinger" element={<Bookings />} />
+        <Route path="/mine-foresporsler" element={<Bookings />} />
+        <Route path="/calendar" element={<CalendarPage />} />
+        <Route path="/history" element={<HistoryPage />} />
         <Route path="/receipts" element={<UserReceipts />} />
         <Route path="/favorites" element={<UserFavorites />} />
         <Route path="/profile" element={<UserProfile />} />

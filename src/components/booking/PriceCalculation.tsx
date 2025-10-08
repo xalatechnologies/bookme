@@ -1,9 +1,14 @@
 "use client";
 
+// External libraries
 import React, { useMemo } from "react";
+import { Calculator, Info } from "lucide-react";
+
+// Internal libraries/utilities
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calculator, Info } from "lucide-react";
+
+// Types
 import { IPriceCalculationProps, ActorType, ActivityType } from "./types";
 
 /**
@@ -189,35 +194,15 @@ export const PriceCalculation: React.FC<IPriceCalculationProps> = ({
   }, [selectedSlots, actorType, activityType]);
 
   if (selectedSlots.length === 0) {
-    return (
-      <Card className="w-full">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-sm font-medium text-gray-700 flex items-center gap-2">
-            <Calculator className="h-4 w-4" />
-            Prisberegning
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="pt-0">
-          <div className="text-center py-8">
-            <Calculator className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-            <p className="text-gray-500 text-sm">
-              Velg tidspunkter for å se pris
-            </p>
-          </div>
-        </CardContent>
-      </Card>
-    );
+    return null;
   }
 
   return (
-    <Card className="w-full">
-      <CardHeader className="pb-3">
-        <CardTitle className="text-sm font-medium text-gray-700 flex items-center gap-2">
-          <Calculator className="h-4 w-4" />
-          Prisberegning
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="pt-0 space-y-4">
+    <div className="space-y-4">
+      <h4 className="text-sm font-medium text-gray-700 flex items-center gap-2">
+        <Calculator className="h-4 w-4" />
+        Prisberegning
+      </h4>
         {/* Price Breakdown */}
         <div className="space-y-2">
           {pricing.breakdown.map((item, index) => (
@@ -271,8 +256,7 @@ export const PriceCalculation: React.FC<IPriceCalculationProps> = ({
             <div className="text-sm text-gray-500">Beregner pris...</div>
           </div>
         )}
-      </CardContent>
-    </Card>
+    </div>
   );
 };
 

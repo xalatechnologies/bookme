@@ -1,23 +1,31 @@
 "use client";
 
+// External libraries
 import React, { useState, useMemo, useEffect, useCallback } from "react";
 import { format, addDays, startOfWeek, isToday, isWeekend, isPast } from "date-fns";
 import { nb } from "date-fns/locale";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Users, ChevronLeft, ChevronRight } from "lucide-react";
+import { toast } from "react-toastify";
+
+// Internal libraries/utilities
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { useCart } from "@/contexts/CartContext";
+import { useSlotSelection } from "@/hooks/useSlotSelection";
+import { useAvailabilityStatus } from "@/hooks/useAvailabilityStatus";
+
+// Sibling imports
 import { WeekNavigation } from "./WeekNavigation";
 import { TimeSlotGrid } from "./TimeSlotGrid";
 import { AvailabilityLegend } from "./AvailabilityLegend";
 import { BookingForm } from "@/components/booking/BookingForm";
 import { BookingTypeSelector } from "@/components/booking/BookingTypeSelector";
 import { RecurrencePatternSelector } from "@/components/booking/RecurrencePatternSelector";
-import { ISelectedTimeSlot, ActorType, ActivityType, IZone, BookingType } from "@/components/booking/types";
+
+// Types
+import { ISelectedTimeSlot, IZone, BookingType } from "@/components/booking/types";
 import type { RecurrencePattern } from "@/utils/recurrenceEngine";
-import { useCart } from "@/contexts/CartContext";
-import { Users, ChevronLeft, ChevronRight } from "lucide-react";
-import { useSlotSelection } from "@/hooks/useSlotSelection";
-import { useAvailabilityStatus } from "@/hooks/useAvailabilityStatus";
 
 /**
  * Facility calendar component
@@ -43,6 +51,13 @@ export interface IFacilityCalendarProps {
   readonly zones: readonly IZone[];
   readonly isLoading?: boolean;
   readonly error?: string;
+  readonly selectedSlots?: readonly ISelectedTimeSlot[];
+  readonly onSlotClick?: (zoneId: string, date: Date, timeSlot: string, status: string) => void;
+  readonly onBulkSlotSelection?: (slots: readonly ISelectedTimeSlot[]) => void;
+  readonly getAvailabilityStatus?: (zoneId: string, date: Date, timeSlot: string) => { status: string; conflict?: any };
+  readonly isSlotSelected?: (zoneId: string, date: Date, timeSlot: string) => boolean;
+  readonly onAddToCart?: (bookingData: any) => void;
+  readonly onCompleteBooking?: (bookingData: any) => void;
 }
 
 export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
@@ -51,6 +66,13 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
   zones,
   isLoading = false,
   error,
+  selectedSlots: externalSelectedSlots,
+  onSlotClick: externalOnSlotClick,
+  onBulkSlotSelection: externalOnBulkSlotSelection,
+  getAvailabilityStatus: externalGetAvailabilityStatus,
+  isSlotSelected: externalIsSlotSelected,
+  onAddToCart: externalOnAddToCart,
+  onCompleteBooking: externalOnCompleteBooking,
 }) => {
   const { addItem } = useCart();
   
@@ -73,48 +95,42 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
   
   // Set default zone when zones are loaded
   useEffect(() => {
-    if (zones && zones.length > 0) {
-      if (!selectedZoneId) {
-        console.log("Setting default zone:", zones[0].id, "with price:", zones[0].pricePerHour);
-        setSelectedZoneId(zones[0].id);
-      } else {
-        console.log("Zone already selected:", selectedZoneId);
-      }
+    if (zones && zones.length > 0 && !selectedZoneId) {
+      setSelectedZoneId(zones[0].id);
     }
   }, [zones, selectedZoneId]);
   
   // Use slot selection hook
   const {
-    selectedSlots,
+    selectedSlots: internalSelectedSlots,
     recurringSlots,
-    handleSlotClick,
-    handleBulkSlotSelection,
-    clearSelection,
+    handleSlotClick: internalHandleSlotClick,
+    handleBulkSlotSelection: internalHandleBulkSlotSelection,
+    clearSelection: internalClearSelection,
     setSelectedSlots,
     generateRecurringSlots,
     clearRecurringSlots,
     getAllSlots,
   } = useSlotSelection();
+
+  // Use external props if available, otherwise use internal state
+  const selectedSlots = externalSelectedSlots || internalSelectedSlots;
+  const handleSlotClick = externalOnSlotClick || internalHandleSlotClick;
+  const handleBulkSlotSelection = externalOnBulkSlotSelection || internalHandleBulkSlotSelection;
+  const clearSelection = internalClearSelection;
   
   // Get selected zone
   const selectedZone = zones?.find(zone => zone.id === selectedZoneId);
   
-  // Debug logging
-  console.log("Selected zone ID:", selectedZoneId);
-  console.log("Selected zone found:", !!selectedZone);
-  console.log("Selected zone:", selectedZone);
-  console.log("Selected zone pricePerHour:", selectedZone?.pricePerHour);
-  console.log("Zones count:", zones?.length);
-  console.log("Zones[0] pricePerHour:", zones?.[0]?.pricePerHour);
 
   /**
    * Handle slots change from BookingForm
    * 
    * @param slots - New array of selected slots
    */
-  const handleSlotsChange = (slots: readonly ISelectedTimeSlot[]): void => {
+  const handleSlotsChange = useCallback((slots: readonly ISelectedTimeSlot[]): void => {
     setSelectedSlots(slots);
-  };
+  }, [setSelectedSlots]);
 
   // Update selected zone when zones change
   useEffect(() => {
@@ -152,38 +168,24 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
   /**
    * Handle time slot click with zone context
    * 
-   * @param slotId - ID of the clicked slot
+   * @param zoneId - Zone ID of the clicked slot
+   * @param date - Date of the clicked slot
+   * @param timeSlot - Time slot string
    * @param status - Current status of the slot
    */
-  const handleSlotClickWithZone = (slotId: string, status: string): void => {
+  const handleSlotClickWithZone = useCallback((zoneId: string, date: Date, timeSlot: string, status: string): void => {
     if (status === "available" || status === "selected") {
-      const [facId, zone, timestamp, timeSlot] = slotId.split("-");
-      const date = new Date(parseInt(timestamp));
-      
-      console.log("Slot click with zone:", { 
-        slotId, 
-        status, 
-        selectedZone: selectedZone?.name, 
-        pricePerHour: selectedZone?.pricePerHour 
-      });
-      
       // Call the slot selection hook with proper parameters
-      handleSlotClick(zone, date, timeSlot, status, facilityId, selectedZone?.pricePerHour || 0);
+      handleSlotClick(zoneId, date, timeSlot, status, facilityId, selectedZone?.pricePerHour || 0);
     }
-  };
+  }, [handleSlotClick, facilityId, selectedZone?.pricePerHour]);
 
   /**
    * Handle bulk slot selection with zone context
    * 
    * @param slots - Array of selected time slots
    */
-  const handleBulkSelectWithZone = (slots: readonly ISelectedTimeSlot[]): void => {
-    console.log("Bulk select with zone:", { 
-      slotsCount: slots.length, 
-      selectedZone: selectedZone?.name, 
-      pricePerHour: selectedZone?.pricePerHour 
-    });
-    
+  const handleBulkSelectWithZone = useCallback((slots: readonly ISelectedTimeSlot[]): void => {
     // Update slots with current zone context
     const updatedSlots: ISelectedTimeSlot[] = slots.map(slot => ({
       ...slot,
@@ -191,104 +193,151 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
       pricePerHour: selectedZone?.pricePerHour || 0,
     }));
     
-    console.log("Updated slots with pricePerHour:", updatedSlots.map(s => ({ 
-      id: s.id, 
-      pricePerHour: s.pricePerHour,
-      zoneId: s.zoneId,
-      timeSlot: s.timeSlot
-    })));
-    
     handleBulkSlotSelection(updatedSlots);
-  };
+  }, [facilityId, selectedZone?.pricePerHour, handleBulkSlotSelection]);
 
   /**
    * Handle previous week navigation
    */
-  const handlePreviousWeek = (): void => {
+  const handlePreviousWeek = useCallback((): void => {
     setCurrentWeekStart(prev => addDays(prev, -7));
-  };
+  }, []);
 
   /**
    * Handle next week navigation
    */
-  const handleNextWeek = (): void => {
+  const handleNextWeek = useCallback((): void => {
     setCurrentWeekStart(prev => addDays(prev, 7));
-  };
+  }, []);
 
   /**
    * Handle current week navigation
    */
-  const handleCurrentWeek = (): void => {
+  const handleCurrentWeek = useCallback((): void => {
     setCurrentWeekStart(startOfWeek(new Date(), { weekStartsOn: 1 }));
-  };
+  }, []);
 
+  /**
+   * Get all selected slots (regular + recurring)
+   * Memoized for performance
+   */
+  const allSelectedSlots = useMemo(() => {
+    if (!selectedZone) return [];
+    
+    const enrichedSlots = selectedSlots.map(slot => ({
+      ...slot,
+      facilityName,
+      zoneName: selectedZone.name
+    }));
+    
+    return enrichedSlots;
+  }, [selectedSlots, facilityName, selectedZone?.id, selectedZone?.name]);
+
+  /**
+   * Calculate pricing for booking
+   */
+  const calculatePricing = useCallback((slots: ISelectedTimeSlot[]): {
+    readonly basePrice: number;
+    readonly vatRate: number;
+    readonly vatAmount: number;
+    readonly finalPrice: number;
+  } => {
+    const basePrice = slots.reduce((total, slot) => {
+      return total + (slot.pricePerHour * slot.duration);
+    }, 0);
+    
+    const vatRate = 0.25;
+    const vatAmount = basePrice * vatRate;
+    const finalPrice = basePrice + vatAmount;
+    
+    return { basePrice, vatRate, vatAmount, finalPrice };
+  }, []);
+
+  /**
+   * Create cart item from booking data
+   */
+  const createCartItem = useCallback((bookingData: {
+    readonly purpose: string;
+    readonly attendees: number;
+    readonly activityType: string;
+    readonly additionalInfo: string;
+    readonly actorType: string;
+  }, pricing: {
+    readonly basePrice: number;
+    readonly vatRate: number;
+    readonly vatAmount: number;
+    readonly finalPrice: number;
+  }): {
+    readonly facilityId: string;
+    readonly facilityName: string;
+    readonly zoneId: string;
+    readonly zoneName: string;
+    readonly timeSlots: ISelectedTimeSlot[];
+    readonly purpose: string;
+    readonly attendees: number;
+    readonly activityType: string;
+    readonly additionalInfo: string;
+    readonly actorType: string;
+    readonly bookingType: BookingType;
+    readonly recurrencePattern: RecurrencePattern | null;
+    readonly pricing: {
+      readonly basePrice: number;
+      readonly totalPrice: number;
+      readonly vatAmount: number;
+      readonly finalPrice: number;
+    };
+  } => {
+    if (!selectedZone) throw new Error("No zone selected");
+    
+    return {
+      facilityId,
+      facilityName,
+      zoneId: selectedZone.id,
+      zoneName: selectedZone.name,
+      timeSlots: allSelectedSlots,
+      purpose: bookingData.purpose,
+      attendees: bookingData.attendees,
+      activityType: bookingData.activityType,
+      additionalInfo: bookingData.additionalInfo,
+      actorType: bookingData.actorType,
+      bookingType: bookingType,
+      recurrencePattern: recurrencePattern,
+      pricing: {
+        basePrice: pricing.basePrice,
+        totalPrice: pricing.basePrice,
+        vatAmount: pricing.vatAmount,
+        finalPrice: pricing.finalPrice,
+      },
+    };
+  }, [selectedZone, allSelectedSlots, facilityId, facilityName, bookingType, recurrencePattern]);
 
   /**
    * Handle add to cart
    * 
    * @param bookingData - Booking form data
    */
-  const handleAddToCart = (bookingData: any): void => {
+  const handleAddToCart = useCallback((bookingData: {
+    readonly purpose: string;
+    readonly attendees: number;
+    readonly activityType: string;
+    readonly additionalInfo: string;
+    readonly actorType: string;
+  }): void => {
     try {
       if (!selectedZone) return;
       
-      // Calculate total price from all selected slots (regular + recurring)
-      const basePrice = allSelectedSlots.reduce((total, slot) => {
-        const slotPrice = slot.pricePerHour * slot.duration;
-        console.log("Slot price calculation:", { 
-          slotId: slot.id, 
-          pricePerHour: slot.pricePerHour, 
-          duration: slot.duration, 
-          slotPrice,
-          isRecurring: slot.isRecurring
-        });
-        return total + slotPrice;
-      }, 0);
+      const pricing = calculatePricing(allSelectedSlots);
+      const cartItem = createCartItem(bookingData, pricing);
       
-      // Calculate VAT (25% in Norway)
-      const vatRate = 0.25;
-      const vatAmount = basePrice * vatRate;
-      const finalPrice = basePrice + vatAmount;
-      
-      console.log("Price calculation:", { 
-        basePrice, 
-        vatAmount, 
-        finalPrice 
-      });
-      
-      // Create cart item
-      const cartItem = {
-        facilityId,
-        facilityName,
-        zoneId: selectedZone.id,
-        zoneName: selectedZone.name,
-        timeSlots: allSelectedSlots,
-        purpose: bookingData.purpose,
-        attendees: bookingData.attendees,
-        activityType: bookingData.activityType,
-        additionalInfo: bookingData.additionalInfo,
-        actorType: bookingData.actorType,
-        bookingType: bookingType,
-        recurrencePattern: recurrencePattern,
-        pricing: {
-          basePrice: basePrice,
-          totalPrice: basePrice,
-          vatAmount: vatAmount,
-          finalPrice: finalPrice, // Price including VAT
-        },
-      };
-
       addItem(cartItem);
-      
-      // Clear all slots
       clearSelection();
       clearRecurringSlots();
-      
-      console.log("Added to cart:", cartItem);
+      toast.success("Booking lagt til i kurven!");
     } catch (error) {
-      console.error("Error adding to cart:", error);
+      const errorMessage = error instanceof Error ? error.message : "En feil oppstod ved lagring";
+      toast.error(`Kunne ikke legge til i kurv: ${errorMessage}`);
     }
-  };
+  }, [selectedZone, allSelectedSlots, calculatePricing, createCartItem, addItem, clearSelection, clearRecurringSlots]);
 
   /**
    * Handle booking type change
@@ -330,26 +379,18 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
   }, [selectedZone, generateRecurringSlots, clearRecurringSlots, facilityId]);
 
   /**
-   * Get all selected slots (regular + recurring)
-   */
-  const allSelectedSlots = useMemo(() => {
-    if (!selectedZone) return [];
-    
-    return getAllSlots().map(slot => ({
-      ...slot,
-      facilityName,
-      zoneName: selectedZone.name
-    }));
-  }, [getAllSlots, facilityName, selectedZone]);
-
-  /**
    * Handle complete booking
    * 
    * @param bookingData - Booking form data
    */
-  const handleCompleteBooking = (bookingData: any): void => {
+  const handleCompleteBooking = (bookingData: {
+    readonly purpose: string;
+    readonly attendees: number;
+    readonly activityType: string;
+    readonly additionalInfo: string;
+    readonly actorType: string;
+  }): void => {
     // TODO: Implement direct booking logic
-    console.log("Complete booking:", bookingData);
   };
 
   if (isLoading) {
@@ -402,9 +443,9 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
 
   return (
     <div className="bg-gray-50 py-8">
-      <div className="container mx-auto px-4 max-w-7xl">
+      <div className="w-full px-4">
         <div className="space-y-6">
-          {/* Zone Selection */}
+          {/* Zone Selection and Booking Type */}
           <Card className="w-full">
             <CardContent className="p-4">
               <div className="flex items-center justify-between gap-4">
@@ -424,6 +465,14 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
                       </Badge>
                     </Button>
                   ))}
+                </div>
+                
+                {/* Booking Type Selector - Moved to top right */}
+                <div className="flex gap-2">
+                  <BookingTypeSelector
+                    selectedType={bookingType}
+                    onTypeChange={handleBookingTypeChange}
+                  />
                 </div>
               </div>
             </CardContent>
@@ -457,14 +506,15 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
                     facilityId={facilityId}
                     zoneId={selectedZone.id}
                     week={calendarWeek}
-                    selectedSlots={selectedSlots.map(slot => slot.id)}
+                    selectedSlots={allSelectedSlots}
                     onSlotClick={handleSlotClickWithZone}
                     onBulkSelect={handleBulkSelectWithZone}
                     pricePerHour={selectedZone?.pricePerHour || 0}
                     isLoading={isLoading}
                     error={error}
+                    getAvailabilityStatus={externalGetAvailabilityStatus}
+                    isSlotSelected={externalIsSlotSelected}
                   />
-                  {console.log("TimeSlotGrid pricePerHour:", selectedZone?.pricePerHour || 0)}
                 </CardContent>
               </Card>
 
@@ -475,12 +525,6 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
             {/* Right Column - Booking Form (40%) */}
             <div className="lg:col-span-2">
               <div className="sticky top-6 space-y-4">
-                {/* Booking Type Selector */}
-                <BookingTypeSelector
-                  selectedType={bookingType}
-                  onTypeChange={handleBookingTypeChange}
-                />
-                
                 {/* Recurrence Pattern Selector (only for recurring bookings) */}
                 {bookingType === 'recurring' && (
                   <RecurrencePatternSelector

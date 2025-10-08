@@ -1,10 +1,15 @@
 "use client";
 
+// External libraries
 import React from "react";
 import { format, addDays, startOfWeek } from "date-fns";
 import { nb } from "date-fns/locale";
-import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, Calendar } from "lucide-react";
+
+// Internal libraries/utilities
+import { Button } from "@/components/ui/button";
+
+// Types
 import { IWeekNavigationProps } from "./types";
 
 /**

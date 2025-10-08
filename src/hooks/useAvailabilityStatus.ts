@@ -9,7 +9,7 @@ import { ISelectedTimeSlot } from "@/components/booking/types";
  * Contains the status of a time slot and any conflict information
  */
 interface IAvailabilityStatus {
-  readonly status: "available" | "busy" | "unavailable" | "conflict";
+  readonly status: "available" | "busy" | "unavailable" | "conflict" | "selected";
   readonly conflict?: {
     readonly id: string;
     readonly type: string;
@@ -47,6 +47,36 @@ export const useAvailabilityStatus = (selectedSlots: readonly ISelectedTimeSlot[
    */
   const getAvailabilityStatus = useMemo(() => {
     return (zoneId: string, date: Date, timeSlot: string): IAvailabilityStatus => {
+      // Check if the slot is selected first - optimized with early return
+      const isSelected = selectedSlots.some(slot => {
+        // Fast path: check zoneId first (most likely to differ)
+        if (slot.zoneId !== zoneId) return false;
+        if (slot.timeSlot !== timeSlot) return false;
+        
+        // Only parse date if other checks pass
+        let slotDate: Date;
+        if (slot.date instanceof Date) {
+          slotDate = slot.date;
+        } else if (typeof slot.date === 'string') {
+          slotDate = new Date(slot.date);
+        } else if (typeof slot.date === 'number') {
+          slotDate = new Date(slot.date);
+        } else {
+          return false; // Invalid date, not selected
+        }
+        
+        // Validate the parsed date
+        if (isNaN(slotDate.getTime())) {
+          return false; // Invalid date, not selected
+        }
+        
+        return slotDate.toDateString() === date.toDateString();
+      });
+      
+      if (isSelected) {
+        return { status: "selected" };
+      }
+      
       // Check if the time slot is in the past
       const now = new Date();
       const timeHour = parseInt(timeSlot.split(':')[0]);
@@ -117,7 +147,7 @@ export const useAvailabilityStatus = (selectedSlots: readonly ISelectedTimeSlot[
 
       return { status: "available" };
     };
-  }, []);
+  }, [selectedSlots]);
 
   /**
    * Check if a time slot is selected
@@ -130,12 +160,29 @@ export const useAvailabilityStatus = (selectedSlots: readonly ISelectedTimeSlot[
   const isSlotSelected = useMemo(() => {
     return (zoneId: string, date: Date, timeSlot: string): boolean => {
       return selectedSlots.some(slot => {
-        // Ensure slot.date is a proper Date object
-        const slotDate = slot.date instanceof Date ? slot.date : new Date(slot.date);
+        // Fast path: check zoneId and timeSlot first
+        if (slot.zoneId !== zoneId || slot.timeSlot !== timeSlot) {
+          return false;
+        }
         
-        return slot.zoneId === zoneId &&
-          slotDate.toDateString() === date.toDateString() &&
-          slot.timeSlot === timeSlot;
+        // Only parse date if other checks pass
+        let slotDate: Date;
+        if (slot.date instanceof Date) {
+          slotDate = slot.date;
+        } else if (typeof slot.date === 'string') {
+          slotDate = new Date(slot.date);
+        } else if (typeof slot.date === 'number') {
+          slotDate = new Date(slot.date);
+        } else {
+          return false; // Invalid date, not selected
+        }
+        
+        // Validate the parsed date
+        if (isNaN(slotDate.getTime())) {
+          return false; // Invalid date, not selected
+        }
+        
+        return slotDate.toDateString() === date.toDateString();
       });
     };
   }, [selectedSlots]);

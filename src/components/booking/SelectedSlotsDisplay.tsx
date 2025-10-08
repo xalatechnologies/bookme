@@ -1,12 +1,17 @@
 "use client";
 
+// External libraries
 import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { nb } from "date-fns/locale";
 import { X, Trash2, Calendar, Clock } from "lucide-react";
+
+// Internal libraries/utilities
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+
+// Types
 import { ISelectedSlotsDisplayProps } from "./types";
 
 /**
@@ -37,9 +42,33 @@ export const SelectedSlotsDisplay: React.FC<ISelectedSlotsDisplayProps> = ({
    * @returns Formatted string for display
    */
   const formatTimeSlot = (slot: ISelectedTimeSlot): string => {
-    const date = format(slot.date, "dd. MMM", { locale: nb });
+    // Ensure date is a proper Date object (handle localStorage serialization)
+    let date: Date;
+    
+    if (slot.date instanceof Date) {
+      date = slot.date;
+    } else if (typeof slot.date === 'string') {
+      // Handle string dates from localStorage
+      date = new Date(slot.date);
+    } else if (typeof slot.date === 'number') {
+      // Handle timestamp numbers
+      date = new Date(slot.date);
+    } else {
+      // Fallback to current date if invalid
+      console.error("Invalid date in slot:", slot);
+      date = new Date();
+    }
+    
+    // Validate the date
+    if (isNaN(date.getTime())) {
+      console.error("Invalid date after parsing:", { slot, parsedDate: date });
+      date = new Date(); // Fallback to current date
+    }
+    
+    
+    const formattedDate = format(date, "dd. MMM", { locale: nb });
     const time = slot.timeSlot.split('-')[0]; // Get start time
-    return `${date} kl. ${time}`;
+    return `${formattedDate} kl. ${time}`;
   };
 
   /**
@@ -66,52 +95,37 @@ export const SelectedSlotsDisplay: React.FC<ISelectedSlotsDisplayProps> = ({
 
   if (selectedSlots.length === 0) {
     return (
-      <Card className="w-full">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-sm font-medium text-gray-700 flex items-center gap-2">
-            <Calendar className="h-4 w-4" />
-            Valgte tidspunkter
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="pt-0">
-          <div className="text-center py-8">
-            <Calendar className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-            <p className="text-gray-500 text-sm">
-              Ingen tidspunkter valgt
-            </p>
-            <p className="text-gray-400 text-xs mt-1">
-              Velg tidspunkter i kalenderen for å se dem her
-            </p>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="text-center py-6">
+        <Calendar className="h-12 w-12 text-gray-300 mx-auto mb-3" />
+        <p className="text-gray-500 text-sm">
+          Velg tidspunkter og få en prisberegning.
+        </p>
+      </div>
     );
   }
 
   return (
-    <Card className="w-full">
-      <CardHeader className="pb-3">
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-sm font-medium text-gray-700 flex items-center gap-2">
-            <Calendar className="h-4 w-4" />
-            Valgte tidspunkter ({selectedSlots.length})
-          </CardTitle>
-          {selectedSlots.length > 0 && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={onClearAll}
-              disabled={isLoading}
-              className="text-red-600 hover:text-red-700 hover:bg-red-50"
-            >
-              <Trash2 className="h-3 w-3 mr-1" />
-              Fjern alle
-            </Button>
-          )}
-        </div>
-      </CardHeader>
-      <CardContent className="pt-0">
-        <div className="space-y-2 max-h-64 overflow-y-auto">
+    <div className="space-y-3">
+      <div className="flex items-center justify-between">
+        <h4 className="text-sm font-medium text-gray-700 flex items-center gap-2">
+          <Calendar className="h-4 w-4" />
+          Valgte tidspunkter ({selectedSlots.length})
+        </h4>
+        {selectedSlots.length > 0 && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onClearAll}
+            disabled={isLoading}
+            className="text-red-600 hover:text-red-700 hover:bg-red-50"
+          >
+            <Trash2 className="h-3 w-3 mr-1" />
+            Fjern alle
+          </Button>
+        )}
+      </div>
+      
+      <div className="space-y-2 max-h-64 overflow-y-auto">
           {selectedSlots.map((slot) => (
             <div
               key={slot.id}
@@ -162,9 +176,8 @@ export const SelectedSlotsDisplay: React.FC<ISelectedSlotsDisplayProps> = ({
               {selectedSlots.reduce((total, slot) => total + (slot.pricePerHour * slot.duration), 0)} kr
             </span>
           </div>
-        </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 };
 

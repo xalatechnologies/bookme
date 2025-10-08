@@ -137,8 +137,9 @@ export const useDragSelection = () => {
           
           // Only include available slots in the preview
           if (status === "available") {
+            const dayString = currentDay.toISOString().split('T')[0]; // YYYY-MM-DD format
             previewSlots.push({
-              id: `${zoneId}-${currentDay.getTime()}-${currentTimeSlot}`,
+              id: `${facilityId}-${zoneId}-${dayString}-${currentTimeSlot}`,
               facilityId,
               zoneId,
               date: currentDay,

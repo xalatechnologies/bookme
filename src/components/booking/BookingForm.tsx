@@ -1,17 +1,23 @@
 "use client";
 
+// External libraries
 import React, { useState } from "react";
+
+// Internal libraries/utilities
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { IBookingFormData, ActorType, ActivityType } from "./types";
+
+// Sibling imports
 import { SelectedSlotsDisplay } from "./SelectedSlotsDisplay";
 import { PriceCalculation } from "./PriceCalculation";
 import { BookingActionButtons } from "./BookingActionButtons";
-import { ISelectedTimeSlot } from "./types";
+
+// Types
+import { IBookingFormData, ActorType, ActivityType, ISelectedTimeSlot } from "./types";
 
 /**
  * Booking form component
@@ -59,6 +65,7 @@ export const BookingForm: React.FC<IBookingFormProps> = ({
     additionalInfo: "",
     actorType: "private-person",
     termsAccepted: false,
+    bookingType: "one-time",
   });
 
   /**
@@ -96,8 +103,8 @@ export const BookingForm: React.FC<IBookingFormProps> = ({
     return (
       formData.purpose.trim().length > 0 &&
       formData.attendees > 0 &&
-      formData.activityType !== "" &&
-      formData.actorType !== "" &&
+      formData.activityType !== "annet" &&
+      formData.actorType !== "private-person" &&
       selectedSlots.length > 0
     );
   };
@@ -122,23 +129,7 @@ export const BookingForm: React.FC<IBookingFormProps> = ({
 
   return (
     <div className="space-y-6">
-      {/* Selected Slots Display */}
-      <SelectedSlotsDisplay
-        selectedSlots={selectedSlots}
-        onRemoveSlot={handleRemoveSlot}
-        onClearAll={handleClearAll}
-        isLoading={isLoading}
-      />
-
-      {/* Price Calculation */}
-      <PriceCalculation
-        selectedSlots={selectedSlots}
-        actorType={formData.actorType}
-        activityType={formData.activityType}
-        isLoading={isLoading}
-      />
-
-      {/* Booking Form */}
+      {/* Booking Form - Moved to top */}
       <Card className="w-full">
         <CardHeader className="pb-3">
           <CardTitle className="text-sm font-medium text-gray-700">
@@ -250,6 +241,32 @@ export const BookingForm: React.FC<IBookingFormProps> = ({
         onCompleteBooking={handleCompleteBooking}
         onClearSlots={handleClearAll}
       />
+
+      {/* Selected Slots Display and Price Calculation - Combined */}
+      <Card className="w-full">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-sm font-medium text-gray-700">
+            {selectedSlots.length > 0 ? "Valgte tidspunkter og prisberegning" : "Velg tidspunkter og få en prisberegning"}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="pt-0 space-y-4">
+          {/* Selected Slots Display */}
+          <SelectedSlotsDisplay
+            selectedSlots={selectedSlots}
+            onRemoveSlot={handleRemoveSlot}
+            onClearAll={handleClearAll}
+            isLoading={isLoading}
+          />
+
+          {/* Price Calculation */}
+          <PriceCalculation
+            selectedSlots={selectedSlots}
+            actorType={formData.actorType}
+            activityType={formData.activityType}
+            isLoading={isLoading}
+          />
+        </CardContent>
+      </Card>
 
       {/* Error Display */}
       {error && (

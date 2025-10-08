@@ -1,11 +1,16 @@
 "use client";
 
-import React from "react";
+// External libraries
+import React, { useMemo, useCallback } from "react";
 import { format, addDays, isToday, isWeekend, isPast } from "date-fns";
 import { nb } from "date-fns/locale";
-import { ICalendarGridProps, TimeSlotStatus } from "./types";
+
+// Internal libraries/utilities
 import { useDragSelection } from "@/hooks/useDragSelection";
 import { useAvailabilityStatus } from "@/hooks/useAvailabilityStatus";
+
+// Types
+import { ICalendarGridProps, TimeSlotStatus } from "./types";
 
 /**
  * Time slot grid component for calendar
@@ -33,40 +38,35 @@ export const TimeSlotGrid: React.FC<ICalendarGridProps> = ({
   pricePerHour = 0,
   isLoading = false,
   error,
+  getAvailabilityStatus: externalGetAvailabilityStatus,
+  isSlotSelected: externalIsSlotSelected,
 }) => {
-  // Generate time slots from 08:00 to 22:00 (14 slots)
-  const timeSlots = Array.from({ length: 14 }, (_, i) => {
-    const hour = 8 + i;
-    const nextHour = hour + 1;
-    return `${hour.toString().padStart(2, '0')}:00-${nextHour.toString().padStart(2, '0')}:00`;
-  });
-
-  // Convert selectedSlots to ISelectedTimeSlot format
-  const selectedTimeSlots = selectedSlots.map(slotId => {
-    const [facId, zone, timestamp, timeSlot] = slotId.split("-");
-    return {
-      id: slotId,
-      facilityId: facId,
-      zoneId: zone,
-      date: new Date(parseInt(timestamp)),
-      timeSlot,
-      duration: 1,
-      pricePerHour: 0,
-    };
-  });
+  // Generate time slots from 08:00 to 22:00 (14 slots) - memoized
+  const timeSlots = useMemo(() => 
+    Array.from({ length: 14 }, (_, i) => {
+      const hour = 8 + i;
+      const nextHour = hour + 1;
+      return `${hour.toString().padStart(2, '0')}:00-${nextHour.toString().padStart(2, '0')}:00`;
+    }), []
+  );
 
   // Use hooks for drag selection and availability
   const { dragState, startDrag, updateDrag, endDrag, cancelDrag, isSlotInPreview } = useDragSelection();
-  const { getAvailabilityStatus, isSlotSelected } = useAvailabilityStatus(selectedTimeSlots);
+  const { getAvailabilityStatus: internalGetAvailabilityStatus, isSlotSelected: internalIsSlotSelected } = useAvailabilityStatus(selectedSlots);
+
+  // Use external props if available, otherwise use internal state
+  const getAvailabilityStatus = externalGetAvailabilityStatus || internalGetAvailabilityStatus;
+  const isSlotSelected = externalIsSlotSelected || internalIsSlotSelected;
 
   /**
    * Get status for a specific time slot using availability hook
+   * Memoized for performance
    * 
    * @param day - Calendar day
    * @param timeSlot - Time slot string
    * @returns Status of the time slot
    */
-  const getSlotStatus = (day: Date, timeSlot: string): TimeSlotStatus => {
+  const getSlotStatus = useCallback((day: Date, timeSlot: string): TimeSlotStatus => {
     const { status } = getAvailabilityStatus(zoneId, day, timeSlot);
     const isSelected = isSlotSelected(zoneId, day, timeSlot);
     
@@ -75,16 +75,17 @@ export const TimeSlotGrid: React.FC<ICalendarGridProps> = ({
     }
     
     return status as TimeSlotStatus;
-  };
+  }, [zoneId, getAvailabilityStatus, isSlotSelected]);
 
   /**
    * Get CSS classes for a time slot based on status
+   * Memoized for performance
    * 
    * @param status - Time slot status
    * @param isInPreview - Whether slot is in drag preview
    * @returns CSS class string
    */
-  const getSlotClasses = (status: TimeSlotStatus, isInPreview: boolean = false): string => {
+  const getSlotClasses = useCallback((status: TimeSlotStatus, isInPreview: boolean = false): string => {
     const baseClasses = "p-3 text-center rounded-lg transition-all duration-200 cursor-pointer border-2 font-medium text-sm";
     
     if (isInPreview) {
@@ -97,7 +98,7 @@ export const TimeSlotGrid: React.FC<ICalendarGridProps> = ({
       case "busy":
         return `${baseClasses} bg-red-100 border-red-300 text-red-700 cursor-not-allowed line-through`;
       case "selected":
-        return `${baseClasses} bg-blue-100 border-blue-400 text-blue-800 shadow-md`;
+        return `${baseClasses} bg-blue-600 border-blue-700 text-white shadow-md`;
       case "unavailable":
         return `${baseClasses} bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed line-through`;
       case "conflict":
@@ -105,7 +106,7 @@ export const TimeSlotGrid: React.FC<ICalendarGridProps> = ({
       default:
         return `${baseClasses} bg-gray-100 border-gray-200 text-gray-600`;
     }
-  };
+  }, []);
 
   /**
    * Handle mouse down for drag selection
@@ -114,14 +115,14 @@ export const TimeSlotGrid: React.FC<ICalendarGridProps> = ({
    * @param timeSlot - Time slot string
    * @param event - Mouse event
    */
-  const handleMouseDown = (day: Date, timeSlot: string, event: React.MouseEvent): void => {
+  const handleMouseDown = useCallback((day: Date, timeSlot: string, event: React.MouseEvent): void => {
     const { status } = getAvailabilityStatus(zoneId, day, timeSlot);
     
-    if (status === "available" && onBulkSelect) {
+    if (status === "available" && !!onBulkSelect) {
       event.preventDefault();
       startDrag(zoneId, day, timeSlot, event);
     }
-  };
+  }, [zoneId, getAvailabilityStatus, onBulkSelect, startDrag]);
 
   /**
    * Handle mouse enter for drag selection
@@ -129,32 +130,28 @@ export const TimeSlotGrid: React.FC<ICalendarGridProps> = ({
    * @param day - Calendar day
    * @param timeSlot - Time slot string
    */
-  const handleMouseEnter = (day: Date, timeSlot: string): void => {
-    if (dragState.isDragging && onBulkSelect) {
+  const handleMouseEnter = useCallback((day: Date, timeSlot: string): void => {
+    if (dragState.isDragging && !!onBulkSelect) {
       updateDrag(zoneId, day, timeSlot, timeSlots, week.days, getAvailabilityStatus, facilityId, pricePerHour);
     }
-  };
+  }, [dragState.isDragging, onBulkSelect, updateDrag, zoneId, timeSlots, week.days, getAvailabilityStatus, facilityId, pricePerHour]);
 
   /**
    * Handle mouse up for drag selection
    */
-  const handleMouseUp = (event: React.MouseEvent): void => {
-    if (dragState.isDragging && onBulkSelect) {
-      console.log("Ending drag selection, preview slots:", dragState.previewSlots.length);
+  const handleMouseUp = useCallback((event: React.MouseEvent): void => {
+    if (dragState.isDragging && !!onBulkSelect) {
       event.preventDefault();
       event.stopPropagation();
       
       const previewSlots = endDrag();
       
       if (previewSlots.length > 0) {
-        console.log("Adding bulk slots:", previewSlots.length);
         // Pass the full slot objects, not just IDs
         onBulkSelect(previewSlots);
       }
-    } else {
-      console.log("Mouse up but not dragging or no bulk select handler");
     }
-  };
+  }, [dragState.isDragging, onBulkSelect, endDrag]);
 
   /**
    * Handle time slot click
@@ -163,28 +160,25 @@ export const TimeSlotGrid: React.FC<ICalendarGridProps> = ({
    * @param timeSlot - Time slot string
    * @param event - Mouse event
    */
-  const handleSlotClick = (day: Date, timeSlot: string, event: React.MouseEvent): void => {
+  const handleSlotClick = useCallback((day: Date, timeSlot: string, event: React.MouseEvent): void => {
     // Prevent click if we just finished dragging
     if (dragState.isDragging) {
-      console.log("Preventing click during drag");
       event.preventDefault();
       event.stopPropagation();
       return;
     }
     
-    const slotId = `${facilityId}-${zoneId}-${day.getTime()}-${timeSlot}`;
     const { status } = getAvailabilityStatus(zoneId, day, timeSlot);
     
     // Check if slot is already selected
-    const isSelected = selectedSlots.includes(slotId);
-    const actualStatus = isSelected ? "selected" : status;
-    
-    console.log("Slot click:", { slotId, status, isSelected, actualStatus });
+    const isSelected = isSlotSelected(zoneId, day, timeSlot);
+    const actualStatus = isSelected ? "selected" : (status as TimeSlotStatus);
     
     if (status === "available" || isSelected) {
-      onSlotClick(slotId, actualStatus);
+      // Pass the actual Date object and parameters directly instead of a complex slotId
+      onSlotClick(zoneId, day, timeSlot, actualStatus);
     }
-  };
+  }, [dragState.isDragging, getAvailabilityStatus, zoneId, isSlotSelected, onSlotClick]);
 
   /**
    * Get day header classes
@@ -217,14 +211,14 @@ export const TimeSlotGrid: React.FC<ICalendarGridProps> = ({
 
   return (
     <div 
-      className="overflow-x-auto"
+      className="w-full"
       onMouseLeave={cancelDrag}
       onMouseUp={handleMouseUp}
       style={{ userSelect: 'none' }}
     >
-      <div className="min-w-[800px]">
+      <div className="w-full">
         {/* Day Headers - Compact like drammen */}
-        <div className="grid grid-cols-7 gap-2 mb-4">
+        <div className="grid grid-cols-7 gap-1 mb-4">
           {week.days.map((day, index) => {
             const isToday = format(day.date, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd');
             
@@ -251,11 +245,11 @@ export const TimeSlotGrid: React.FC<ICalendarGridProps> = ({
         {/* Time Slot Rows - Compact like drammen */}
         <div className="space-y-1">
           {timeSlots.map((timeSlot, timeIndex) => (
-            <div key={timeSlot} className="grid grid-cols-7 gap-2">
+            <div key={timeSlot} className="grid grid-cols-7 gap-1">
               {week.days.map((day, dayIndex) => {
                 const status = getSlotStatus(day.date, timeSlot);
                 const isInPreview = isSlotInPreview(zoneId, day.date, timeSlot);
-                const slotId = `${facilityId}-${zoneId}-${day.date.getTime()}-${timeSlot}`;
+                // No need to generate slotId anymore since we pass parameters directly
                 
                 return (
                   <div key={dayIndex} className="relative">
@@ -282,7 +276,7 @@ export const TimeSlotGrid: React.FC<ICalendarGridProps> = ({
                           status === "selected" ? 'text-white' : 
                           isInPreview ? 'text-blue-800' : 'text-gray-700'
                         }`}>
-                          {status === "selected" ? "✓" : timeSlot.split('-')[0]}
+                          {timeSlot.split('-')[0]}
                         </span>
                         {isInPreview && status !== "selected" && (
                           <span className="text-sm text-blue-800 ml-1">◯</span>
