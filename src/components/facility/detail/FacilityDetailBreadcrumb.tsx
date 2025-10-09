@@ -8,9 +8,10 @@ import { Button } from '@/components/ui/button';
 
 interface FacilityDetailBreadcrumbProps {
   readonly facilityName: string;
+  readonly showBookingPage?: boolean;
 }
 
-export const FacilityDetailBreadcrumb = ({ facilityName }: FacilityDetailBreadcrumbProps): JSX.Element => {
+export const FacilityDetailBreadcrumb = ({ facilityName, showBookingPage = false }: FacilityDetailBreadcrumbProps): JSX.Element => {
   const navigate = useNavigate();
 
   return (
@@ -27,7 +28,18 @@ export const FacilityDetailBreadcrumb = ({ facilityName }: FacilityDetailBreadcr
             Hjem
           </Button>
           <span className="text-gray-400">/</span>
-          <span className="text-gray-900 font-medium">{facilityName}</span>
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="text-gray-600 hover:text-gray-900 p-0 h-auto font-normal" 
+            onClick={() => navigate("/user/facilities")}
+          >
+            Lokaler
+          </Button>
+          <span className="text-gray-400">/</span>
+          <span className="text-gray-900 font-medium">
+            {showBookingPage ? `Book ${facilityName}` : facilityName}
+          </span>
         </nav>
       </div>
     </div>

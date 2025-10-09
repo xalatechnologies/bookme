@@ -284,43 +284,6 @@ export const useSlotSelectionStore = create<ISlotSelectionState>()(
       {
         name: "slot-selection-store", // localStorage key
         version: 1, // Version for migration if needed
-        // Custom serialization to handle Date objects
-        serialize: (state) => {
-          const serialized = {
-            ...state,
-            state: {
-              ...state.state,
-              selectedSlots: state.state.selectedSlots.map(slot => ({
-                ...slot,
-                date: slot.date instanceof Date ? slot.date.toISOString() : slot.date
-              })),
-              recurringSlots: state.state.recurringSlots.map(slot => ({
-                ...slot,
-                date: slot.date instanceof Date ? slot.date.toISOString() : slot.date
-              }))
-            }
-          };
-          return JSON.stringify(serialized);
-        },
-        // Custom deserialization to handle Date objects
-        deserialize: (str) => {
-          const parsed = JSON.parse(str);
-          const deserialized = {
-            ...parsed,
-            state: {
-              ...parsed.state,
-              selectedSlots: parsed.state.selectedSlots.map((slot: any) => ({
-                ...slot,
-                date: new Date(slot.date)
-              })),
-              recurringSlots: parsed.state.recurringSlots.map((slot: any) => ({
-                ...slot,
-                date: new Date(slot.date)
-              }))
-            }
-          };
-          return deserialized;
-        }
       }
     ),
     {

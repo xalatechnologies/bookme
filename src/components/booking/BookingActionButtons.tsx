@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ShoppingCart, CreditCard, Trash2 } from "lucide-react";
@@ -30,6 +31,7 @@ export const BookingActionButtons: React.FC<IBookingActionButtonsProps> = ({
   onCompleteBooking,
   onClearSlots,
 }) => {
+  const navigate = useNavigate();
   const [termsAccepted, setTermsAccepted] = React.useState<boolean>(false);
 
   /**
@@ -65,6 +67,7 @@ export const BookingActionButtons: React.FC<IBookingActionButtonsProps> = ({
   const handleCompleteBooking = (): void => {
     if (canProceed()) {
       onCompleteBooking();
+      navigate("/checkout");
     }
   };
 

@@ -20,6 +20,7 @@ interface FacilityDetailLayoutProps {
   readonly onShare: () => void;
   readonly isFavorited: boolean;
   readonly onToggleFavorite: () => void;
+  readonly showBookingInterface?: boolean;
 }
 
 export const FacilityDetailLayout = ({
@@ -27,7 +28,8 @@ export const FacilityDetailLayout = ({
   zones,
   onShare,
   isFavorited,
-  onToggleFavorite
+  onToggleFavorite,
+  showBookingInterface = false
 }: FacilityDetailLayoutProps): JSX.Element => {
   
   return (
@@ -63,7 +65,7 @@ export const FacilityDetailLayout = ({
             area={`${facility.capacity} personer`}
             suitableFor={[]} 
             facilityId={facility.id.toString()} 
-            facilityName={facility.name} 
+            facilityName={facility.name}
           />
         </div>
 
@@ -81,7 +83,7 @@ export const FacilityDetailLayout = ({
         </div>
       </div>
 
-      {/* Full Width Calendar Section - Like drammen-booking-portal-2 */}
+      {/* Full Width Calendar Section */}
       {zones.length > 0 && (
         <FacilityCalendar
           facilityId={facility.id.toString()}

@@ -2,6 +2,7 @@
 
 // External libraries
 import React, { useState, useMemo, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import { format, addDays, startOfWeek, isToday, isWeekend, isPast } from "date-fns";
 import { nb } from "date-fns/locale";
 import { Users, ChevronLeft, ChevronRight } from "lucide-react";
@@ -74,6 +75,7 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
   onAddToCart: externalOnAddToCart,
   onCompleteBooking: externalOnCompleteBooking,
 }) => {
+  const navigate = useNavigate();
   const { addItem } = useCart();
   
   // State for current week
@@ -308,6 +310,7 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
         vatAmount: pricing.vatAmount,
         finalPrice: pricing.finalPrice,
       },
+      status: 'pending' as const, // Set status to pending for new bookings
     };
   }, [selectedZone, allSelectedSlots, facilityId, facilityName, bookingType, recurrencePattern]);
 
@@ -390,7 +393,82 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
     readonly additionalInfo: string;
     readonly actorType: string;
   }): void => {
-    // TODO: Implement direct booking logic
+    if (!selectedZone || allSelectedSlots.length === 0) {
+      toast.error("Ingen tidspunkter valgt for booking.");
+      return;
+    }
+
+    // Calculate pricing like in handleAddToCart
+    const basePrice = allSelectedSlots.reduce((total, slot) => {
+      return total + (slot.pricePerHour * slot.duration);
+    }, 0);
+
+    // Apply actor type multiplier
+    const getActorMultiplier = (actorType: string): number => {
+      switch (actorType) {
+        case "private-person":
+          return 1.0;
+        case "lag-foreninger":
+          return 0.8;
+        case "paraply":
+          return 0.7;
+        case "private-firma":
+          return 1.2;
+        case "kommunale-enheter":
+          return 0.5;
+        default:
+          return 1.0;
+      }
+    };
+
+    // Apply activity type adjustments
+    const getActivityAdjustment = (activityType: string): number => {
+      switch (activityType) {
+        case "kultur":
+          return -50;
+        case "møte":
+          return 100;
+        case "arrangement":
+          return 200;
+        default:
+          return 0;
+      }
+    };
+
+    const actorMultiplier = getActorMultiplier(bookingData.actorType);
+    const adjustedPrice = basePrice * actorMultiplier;
+    const activityAdjustment = getActivityAdjustment(bookingData.activityType);
+    const finalBasePrice = adjustedPrice + activityAdjustment;
+    const vatAmount = finalBasePrice * 0.25;
+    const finalPrice = finalBasePrice + vatAmount;
+
+    // Add to cart with calculated pricing
+    const cartItem = {
+      facilityId,
+      facilityName,
+      zoneId: selectedZone.id,
+      zoneName: selectedZone.name,
+      timeSlots: allSelectedSlots,
+      pricing: {
+        basePrice: finalBasePrice,
+        totalPrice: finalBasePrice,
+        vatAmount: vatAmount,
+        finalPrice: finalPrice,
+        breakdown: [],
+        requiresApproval: false,
+      },
+      formData: bookingData,
+      bookingType: bookingType,
+      recurrencePattern: recurrencePattern,
+      status: 'pending' as const, // Set status to pending for new bookings
+    };
+    
+    addItem(cartItem);
+    clearSelection();
+    toast.success("Booking lagt i handlekurv!");
+    
+    // Navigate to checkout using React Router
+    navigate("/checkout");
   };
 
   if (isLoading) {

@@ -61,9 +61,9 @@ export const BookingForm: React.FC<IBookingFormProps> = ({
   const [formData, setFormData] = useState<IBookingFormData>({
     purpose: "",
     attendees: 1,
-    activityType: "annet",
+    activityType: "",
     additionalInfo: "",
-    actorType: "private-person",
+    actorType: "",
     termsAccepted: false,
     bookingType: "one-time",
   });
@@ -103,8 +103,8 @@ export const BookingForm: React.FC<IBookingFormProps> = ({
     return (
       formData.purpose.trim().length > 0 &&
       formData.attendees > 0 &&
-      formData.activityType !== "annet" &&
-      formData.actorType !== "private-person" &&
+      formData.activityType.trim().length > 0 &&
+      formData.actorType.trim().length > 0 &&
       selectedSlots.length > 0
     );
   };

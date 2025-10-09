@@ -1,11 +1,12 @@
 "use client";
 
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Menu, ShoppingCart, Shield } from "lucide-react";
 
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useCart } from "@/contexts/CartContext";
+import { useUserProfile } from "@/contexts/UserProfileContext";
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -25,6 +26,7 @@ import { CartDropdown } from "@/components/header/CartDropdown";
 
 export const GlobalHeader = (): JSX.Element => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
   const [privacyOpen, setPrivacyOpen] = useState(false);
@@ -32,8 +34,18 @@ export const GlobalHeader = (): JSX.Element => {
 
   // Get cart data
   const { itemCount, totalPrice } = useCart();
-  const isAuthenticated = false;
-  const logout = (): void => {};
+  const { profile } = useUserProfile();
+  
+  // Check if we're on a booking page, user pages, or checkout
+  const isBookingPage = location.pathname.includes('/book');
+  const isUserPage = location.pathname.startsWith('/user');
+  const isCheckoutPage = location.pathname === '/checkout';
+  const isAuthenticated = isBookingPage || isUserPage || isCheckoutPage;
+  
+  const logout = (): void => {
+    // TODO: Implement logout logic
+    navigate('/');
+  };
 
   // Function to handle login navigation
   const handleLogin = (): void => {
@@ -122,6 +134,11 @@ export const GlobalHeader = (): JSX.Element => {
               isLoggedIn={isAuthenticated} 
               handleLogin={handleLogin} 
               handleLogout={handleLogout}
+              userProfile={isAuthenticated ? {
+                firstName: profile.firstName,
+                lastName: profile.lastName,
+                email: profile.email
+              } : undefined}
             />
           </div>
         </div>
@@ -145,6 +162,11 @@ export const GlobalHeader = (): JSX.Element => {
         handleLogin={handleLogin}
         handleLogout={handleLogout}
         closeMobileMenu={() => setMobileMenuOpen(false)}
+        userProfile={isAuthenticated ? {
+          firstName: profile.firstName,
+          lastName: profile.lastName,
+          email: profile.email
+        } : undefined}
       />
     </header>
   );

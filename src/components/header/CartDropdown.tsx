@@ -1,6 +1,7 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ShoppingCart, X, Trash2, Calendar, Clock } from "lucide-react";
+import { ShoppingCart, X, Trash2, Calendar, Clock, CreditCard } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { format } from "date-fns";
 import { nb } from "date-fns/locale";
@@ -10,6 +11,7 @@ interface CartDropdownProps {
 }
 
 export const CartDropdown = ({ onClose }: CartDropdownProps): JSX.Element => {
+  const navigate = useNavigate();
   const { items, totalPrice, removeItem, clearCart } = useCart();
 
   /**
@@ -115,12 +117,13 @@ export const CartDropdown = ({ onClose }: CartDropdownProps): JSX.Element => {
             <div className="space-y-2">
               <Button
                 onClick={() => {
-                  // TODO: Navigate to checkout
-                  console.log("Navigate to checkout");
+                  onClose();
+                  navigate("/checkout");
                 }}
                 className="w-full"
                 size="sm"
               >
+                <CreditCard className="h-4 w-4 mr-2" />
                 Gå til bestilling
               </Button>
               

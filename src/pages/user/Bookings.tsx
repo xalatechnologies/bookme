@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, useMemo, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useMemo, useCallback, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -32,6 +32,7 @@ import {
   Download,
   MoreHorizontal
 } from "lucide-react";
+import { toast } from "react-toastify";
 
 interface IBooking {
   readonly id: string;
@@ -52,85 +53,119 @@ interface IBooking {
   readonly submittedAt?: string;
   readonly rejectionReason?: string;
   readonly type: "booking" | "request";
+  readonly bookingType?: "one-time" | "recurring";
+  readonly zoneName?: string;
+  readonly attendees?: number;
+  readonly activityType?: string;
+  readonly actorType?: string;
 }
 
 const Bookings = (): JSX.Element => {
   const navigate = useNavigate();
-  const [activeStatus, setActiveStatus] = useState<string>("confirmed");
+  const location = useLocation();
+  const [activeStatus, setActiveStatus] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [dateFrom, setDateFrom] = useState<string>("");
   const [dateTo, setDateTo] = useState<string>("");
   const [selectedFacility, setSelectedFacility] = useState<string>("all");
-  const [selectedStatuses, setSelectedStatuses] = useState<string[]>(["confirmed"]);
+  const [selectedStatuses, setSelectedStatuses] = useState<string[]>(["all"]);
   const [sortBy, setSortBy] = useState<string>("date-asc");
   const [showFilters, setShowFilters] = useState<boolean>(false);
   const [selectedBookings, setSelectedBookings] = useState<string[]>([]);
   const [showBulkActions, setShowBulkActions] = useState<boolean>(false);
   const [expandedBooking, setExpandedBooking] = useState<string | null>(null);
   const [showDetailsPanel, setShowDetailsPanel] = useState<boolean>(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState<boolean>(false);
+  const [bookingsToDelete, setBookingsToDelete] = useState<string[]>([]);
   const [selectedBooking, setSelectedBooking] = useState<IBooking | null>(null);
+  const [refreshTrigger, setRefreshTrigger] = useState<number>(0);
 
-  // Mock data - combine bookings and requests
-  const allBookings: IBooking[] = [
-    {
-      id: "1",
-      facility: "Drammenshallen",
-      date: "2024-01-20",
-      time: "10:00-12:00",
-      duration: "2 timer",
-      status: "confirmed",
-      location: "Drammen",
-      price: "2 400 kr",
-      description: "Fotballtrening",
-      purpose: "Ungdomsfotball",
-      contactPerson: "Ola Nordmann",
-      paymentStatus: "paid",
-      type: "booking"
-    },
-    {
-      id: "2",
-      facility: "Kulturhuset",
-      date: "2024-01-22",
-      time: "18:00-20:00",
-      duration: "2 timer",
-      status: "pending",
-      location: "Drammen",
-      price: "1 200 kr",
-      description: "Konsert",
-      purpose: "Musikkarrangement",
-      contactPerson: "Kari Hansen",
-      submittedAt: "2024-01-15",
-      type: "request"
-    },
-    {
-      id: "3",
-      facility: "Idrettshallen",
-      date: "2024-01-18",
-      time: "14:00-16:00",
-      duration: "2 timer",
-      status: "rejected",
-      location: "Drammen",
-      price: "1 800 kr",
-      description: "Basketball",
-      purpose: "Klubbaktivitet",
-      rejectionReason: "Lokale ikke tilgjengelig",
-      submittedAt: "2024-01-10",
-      type: "request"
-    },
-    {
-      id: "4",
-      facility: "Svømmehallen",
-      date: "2024-01-16",
-      time: "08:00-10:00",
-      duration: "2 timer",
-      status: "cancelled",
-      location: "Drammen",
-      price: "2 000 kr",
-      description: "Svømmetrening",
-      purpose: "Treningsaktivitet",
-      contactPerson: "Erik Olsen",
-      type: "booking"
+  // Handle success parameter from checkout
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    if (searchParams.get('success') === 'true') {
+      toast.success("Booking sendt! Du vil få bekreftelse på e-post når den er godkjent.");
+      
+      // Trigger re-render to show new bookings from localStorage
+      setRefreshTrigger(prev => prev + 1);
+      
+      // Switch to pending status to show the new booking
+      setActiveStatus("pending");
+      setSelectedStatuses(["pending"]);
+      // Clean up URL
+      navigate("/user/bookings", { replace: true });
     }
+  }, [location.search, navigate]);
+
+  // Get pending bookings from localStorage
+  const getPendingBookings = useCallback((): IBooking[] => {
+    try {
+      return JSON.parse(localStorage.getItem('pendingBookings') || '[]');
+    } catch {
+      return [];
+    }
+  }, [refreshTrigger]); // Re-run when refreshTrigger changes
+
+  // Get processed bookings from localStorage (approved/rejected)
+  const getProcessedBookings = useCallback((): IBooking[] => {
+    try {
+      const processedBookings = JSON.parse(localStorage.getItem('processedBookings') || '[]');
+      return processedBookings.map((booking: any) => ({
+        id: booking.id,
+        facility: booking.facility,
+        date: booking.startDate || booking.date,
+        time: `${booking.startTime}-${booking.endTime}`,
+        duration: booking.duration ? `${booking.duration} timer` : '2 timer',
+        status: booking.status === 'approved' ? 'confirmed' : booking.status === 'rejected' ? 'rejected' : 'cancelled',
+        location: 'Drammen', // This could be dynamic
+        price: booking.price ? `${booking.price.toLocaleString('nb-NO')} kr` : '0 kr',
+        description: booking.purpose || 'Booking',
+        purpose: booking.purpose,
+        contactPerson: booking.bookerName || 'Ukjent',
+        paymentStatus: booking.status === 'approved' ? 'paid' : 'pending',
+        facilityImage: undefined,
+        rejectionReason: booking.status === 'rejected' ? 'Avvist av administrator' : undefined,
+        createdAt: booking.requestedAt || new Date().toISOString(),
+        updatedAt: booking.processedAt || new Date().toISOString()
+      }));
+    } catch {
+      return [];
+    }
+  }, [refreshTrigger]);
+
+  // Remove pending booking from localStorage
+  const removePendingBooking = useCallback((bookingId: string): void => {
+    try {
+      const existingPending = JSON.parse(localStorage.getItem('pendingBookings') || '[]');
+      const updatedPending = existingPending.filter((booking: IBooking) => booking.id !== bookingId);
+      localStorage.setItem('pendingBookings', JSON.stringify(updatedPending));
+      setRefreshTrigger(prev => prev + 1);
+    } catch (error) {
+      console.error('Error removing pending booking:', error);
+    }
+  }, []);
+
+  // Update pending booking status
+  const updatePendingBookingStatus = useCallback((bookingId: string, newStatus: 'confirmed' | 'rejected' | 'cancelled'): void => {
+    try {
+      const existingPending = JSON.parse(localStorage.getItem('pendingBookings') || '[]');
+      const updatedPending = existingPending.map((booking: IBooking) => 
+        booking.id === bookingId ? { ...booking, status: newStatus } : booking
+      );
+      localStorage.setItem('pendingBookings', JSON.stringify(updatedPending));
+      setRefreshTrigger(prev => prev + 1);
+    } catch (error) {
+      console.error('Error updating pending booking status:', error);
+    }
+  }, []);
+
+
+  // Real bookings only - combine pending and processed bookings
+  const allBookings: IBooking[] = [
+    // Pending bookings from localStorage
+    ...getPendingBookings(),
+    // Processed bookings from localStorage (approved/rejected)
+    ...getProcessedBookings()
   ];
 
   const statusOptions = [
@@ -141,7 +176,16 @@ const Bookings = (): JSX.Element => {
     { value: "cancelled", label: "Avlyst", count: allBookings.filter(b => b.status === "cancelled").length, color: "red" }
   ];
 
-  const facilities = ["Drammenshallen", "Kulturhuset", "Idrettshallen", "Svømmehallen"];
+  // Get facilities from actual bookings
+  const facilities = useMemo(() => {
+    const facilitySet = new Set<string>();
+    allBookings.forEach(booking => {
+      if (booking.facility) {
+        facilitySet.add(booking.facility);
+      }
+    });
+    return Array.from(facilitySet).sort();
+  }, [allBookings]);
 
   const filteredBookings = useMemo(() => {
     let filtered = allBookings;
@@ -217,13 +261,45 @@ const Bookings = (): JSX.Element => {
     }
   }, [selectedBookings.length, filteredBookings]);
 
+  const handleDeleteSelected = useCallback(() => {
+    setBookingsToDelete(selectedBookings);
+    setShowDeleteConfirm(true);
+  }, [selectedBookings]);
+
+  const handleDeleteSingle = useCallback((bookingId: string) => {
+    setBookingsToDelete([bookingId]);
+    setShowDeleteConfirm(true);
+  }, []);
+
+  const confirmDelete = useCallback(() => {
+    // Remove bookings from localStorage (for pending bookings)
+    const pendingBookings = getPendingBookings();
+    const updatedPending = pendingBookings.filter(booking => !bookingsToDelete.includes(booking.id));
+    localStorage.setItem('pendingBookings', JSON.stringify(updatedPending));
+    
+    // Clear selected bookings
+    setSelectedBookings([]);
+    setShowDeleteConfirm(false);
+    setBookingsToDelete([]);
+    
+    // Refresh the component
+    setRefreshTrigger(prev => prev + 1);
+    
+    toast.success(`${bookingsToDelete.length} booking${bookingsToDelete.length > 1 ? 'er' : ''} slettet`);
+  }, [bookingsToDelete, getPendingBookings]);
+
+  const cancelDelete = useCallback(() => {
+    setShowDeleteConfirm(false);
+    setBookingsToDelete([]);
+  }, []);
+
   const handleClearFilters = useCallback(() => {
     setSearchQuery("");
     setDateFrom("");
     setDateTo("");
     setSelectedFacility("all");
-    setSelectedStatuses(["confirmed"]);
-    setActiveStatus("confirmed");
+    setSelectedStatuses(["all"]);
+    setActiveStatus("all");
     setSortBy("date-asc");
   }, []);
 
@@ -277,12 +353,21 @@ const Bookings = (): JSX.Element => {
       }
     ];
 
+    // Add delete button for all statuses
+    const deleteAction = {
+      icon: Trash2,
+      label: "Slett",
+      onClick: () => handleDeleteSingle(booking.id),
+      primary: false
+    };
+
     switch (booking.status) {
       case "pending":
         return [
           ...baseActions,
           { icon: Edit, label: "Rediger", onClick: () => console.log("Edit", booking.id) },
-          { icon: RotateCcw, label: "Trekk tilbake", onClick: () => console.log("Withdraw", booking.id) }
+          { icon: RotateCcw, label: "Trekk tilbake", onClick: () => console.log("Withdraw", booking.id) },
+          deleteAction
         ];
       case "confirmed":
         return [
@@ -290,16 +375,18 @@ const Bookings = (): JSX.Element => {
           { icon: Edit, label: "Endre tidspunkt", onClick: () => console.log("Reschedule", booking.id) },
           { icon: X, label: "Avlys", onClick: () => console.log("Cancel", booking.id) },
           { icon: Share2, label: "Del", onClick: () => console.log("Share", booking.id) },
-          { icon: CalendarPlus, label: "Legg til i kalender", onClick: () => console.log("Add to calendar", booking.id) }
+          { icon: CalendarPlus, label: "Legg til i kalender", onClick: () => console.log("Add to calendar", booking.id) },
+          deleteAction
         ];
       case "rejected":
       case "cancelled":
         return [
           ...baseActions,
-          { icon: Plus, label: "Send ny forespørsel", onClick: () => console.log("New request", booking.id) }
+          { icon: Plus, label: "Send ny forespørsel", onClick: () => console.log("New request", booking.id) },
+          deleteAction
         ];
       default:
-        return baseActions;
+        return [...baseActions, deleteAction];
     }
   };
 
@@ -316,7 +403,7 @@ const Bookings = (): JSX.Element => {
           </p>
         </div>
         <Button 
-          onClick={() => navigate('/facilities')}
+          onClick={() => navigate('/user/facilities')}
           className="flex items-center gap-2"
         >
           <Plus className="w-4 h-4" />
@@ -447,11 +534,13 @@ const Bookings = (): JSX.Element => {
                 {selectedBookings.length} valgt
               </span>
               <Button
-                variant="outline"
+                variant="destructive"
                 size="sm"
-                onClick={() => console.log("Bulk action", selectedBookings)}
+                onClick={handleDeleteSelected}
+                className="flex items-center gap-2"
               >
-                Bulk-handlinger
+                <Trash2 className="h-4 w-4" />
+                Slett valgte
               </Button>
             </div>
           )}
@@ -474,7 +563,7 @@ const Bookings = (): JSX.Element => {
               <p className="text-gray-600 mb-4">
                 Prøv å justere søkekriteriene eller utforsk tilgjengelige lokaler.
               </p>
-              <Button onClick={() => navigate('/facilities')}>
+              <Button onClick={() => navigate('/user/facilities')}>
                 Utforsk lokaler
               </Button>
             </CardContent>
@@ -638,6 +727,56 @@ const Bookings = (): JSX.Element => {
                   </div>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Dialog */}
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+                <Trash2 className="w-5 h-5 text-red-600" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900">
+                  Slett booking{bookingsToDelete.length > 1 ? 'er' : ''}
+                </h3>
+                <p className="text-sm text-gray-600">
+                  Er du sikker på at du vil slette {bookingsToDelete.length} booking{bookingsToDelete.length > 1 ? 'er' : ''}?
+                </p>
+              </div>
+            </div>
+            
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-6">
+              <div className="flex items-start gap-2">
+                <AlertTriangle className="w-4 h-4 text-yellow-600 mt-0.5 flex-shrink-0" />
+                <div className="text-sm text-yellow-800">
+                  <p className="font-medium">Advarsel:</p>
+                  <p>Denne handlingen kan ikke angres. Booking{bookingsToDelete.length > 1 ? 'ene' : 'en'} vil bli permanent slettet.</p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="flex gap-3 justify-end">
+              <Button
+                variant="outline"
+                onClick={cancelDelete}
+                className="flex items-center gap-2"
+              >
+                <X className="w-4 h-4" />
+                Avbryt
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={confirmDelete}
+                className="flex items-center gap-2"
+              >
+                <Trash2 className="w-4 h-4" />
+                Slett {bookingsToDelete.length > 1 ? 'alle' : 'booking'}
+              </Button>
             </div>
           </div>
         </div>

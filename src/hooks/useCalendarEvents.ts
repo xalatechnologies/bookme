@@ -7,6 +7,6 @@ export function useCalendarEvents(q: ICalendarQuery) {
     queryKey: ["calendar", q],
     queryFn: () => calendarService.list(q),
     staleTime: 30_000,
-    keepPreviousData: true
+    placeholderData: (previousData) => previousData,
   });
 }

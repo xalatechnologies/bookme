@@ -43,9 +43,9 @@ export interface IBookingFormData {
   readonly bookingType: BookingType;
   readonly purpose: string;
   readonly attendees: number;
-  readonly activityType: ActivityType;
+  readonly activityType: ActivityType | "";
   readonly additionalInfo?: string;
-  readonly actorType: ActorType;
+  readonly actorType: ActorType | "";
   readonly termsAccepted: boolean;
   readonly recurrencePattern?: RecurrencePattern; // For recurring bookings
 }
@@ -117,8 +117,8 @@ export interface ISelectedSlotsDisplayProps {
  */
 export interface IPriceCalculationProps {
   readonly selectedSlots: readonly ISelectedTimeSlot[];
-  readonly actorType: ActorType;
-  readonly activityType: ActivityType;
+  readonly actorType: ActorType | "";
+  readonly activityType: ActivityType | "";
   readonly isLoading?: boolean;
 }
 

@@ -48,6 +48,7 @@ export interface ICartItem {
     readonly vatAmount: number;
     readonly finalPrice: number;
   };
+  readonly status: 'pending' | 'confirmed' | 'rejected' | 'cancelled'; // Booking status
   readonly createdAt: string; // ISO date string
   readonly updatedAt: string; // ISO date string
 }

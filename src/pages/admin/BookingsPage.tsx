@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useCallback, useEffect } from "react";
 import { RequireRole } from "@/components/admin/guards/RequireRole";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -488,6 +488,7 @@ const BookingsPage = (): JSX.Element => {
   const [selectedBooking, setSelectedBooking] = useState<IBooking | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState<boolean>(false);
   const [isFilterModalOpen, setIsFilterModalOpen] = useState<boolean>(false);
+  const [refreshTrigger, setRefreshTrigger] = useState<number>(0);
   const [appliedFilters, setAppliedFilters] = useState<IFilterState>({
     dateFrom: "",
     dateTo: "",
@@ -496,81 +497,48 @@ const BookingsPage = (): JSX.Element => {
     duration: ""
   });
 
-  // Mock data - replace with real data from API
-  const bookings: readonly IBooking[] = [
-    {
-      id: "245",
-      title: "Booking #245 – Drammen Idrettshall",
-      facility: "Drammen Idrettshall",
-      facilityId: "1",
-      bookerName: "Ola Nordmann",
-      bookerEmail: "ola@example.com",
-      purpose: "Fotballtrening",
-      startDate: "2024-01-15",
-      endDate: "2024-01-15",
-      startTime: "18:00",
-      endTime: "20:00",
-      status: "pending",
-      requestedAt: "2024-01-10T10:30:00Z",
-      price: 500,
-      duration: 2
-    },
-    {
-      id: "244",
-      title: "Booking #244 – Solberghallen",
-      facility: "Solberghallen",
-      facilityId: "2",
-      bookerName: "Kari Hansen",
-      bookerEmail: "kari@example.com",
-      purpose: "Basketballkamp",
-      startDate: "2024-01-14",
-      endDate: "2024-01-14",
-      startTime: "19:00",
-      endTime: "21:00",
-      status: "approved",
-      requestedAt: "2024-01-09T14:20:00Z",
-      processedBy: "Admin User",
-      processedAt: "2024-01-09T15:30:00Z",
-      price: 800,
-      duration: 2
-    },
-    {
-      id: "243",
-      title: "Booking #243 – Drammen Kulturhus",
-      facility: "Drammen Kulturhus",
-      facilityId: "3",
-      bookerName: "Erik Larsen",
-      bookerEmail: "erik@example.com",
-      purpose: "Konsert",
-      startDate: "2024-01-13",
-      endDate: "2024-01-13",
-      startTime: "20:00",
-      endTime: "23:00",
-      status: "rejected",
-      requestedAt: "2024-01-08T09:15:00Z",
-      processedBy: "Admin User",
-      processedAt: "2024-01-08T11:45:00Z",
-      price: 1200,
-      duration: 3
-    },
-    {
-      id: "242",
-      title: "Booking #242 – Drammen Idrettshall",
-      facility: "Drammen Idrettshall",
-      facilityId: "1",
-      bookerName: "Lisa Johansen",
-      bookerEmail: "lisa@example.com",
-      purpose: "Volleyballtrening",
-      startDate: "2024-01-12",
-      endDate: "2024-01-12",
-      startTime: "17:00",
-      endTime: "19:00",
-      status: "cancelled",
-      requestedAt: "2024-01-07T16:00:00Z",
-      price: 400,
-      duration: 2
+  // Get pending bookings from localStorage (user bookings)
+  const getPendingBookings = useCallback((): IBooking[] => {
+    try {
+      const pendingBookings = JSON.parse(localStorage.getItem('pendingBookings') || '[]');
+      return pendingBookings.map((booking: any, index: number) => ({
+        id: booking.id || (index + 1).toString(),
+        title: `Booking #${booking.id || (index + 1)} – ${booking.facility}`,
+        facility: booking.facility,
+        facilityId: booking.facilityId || '1',
+        bookerName: booking.contactPerson || 'Ukjent bruker',
+        bookerEmail: 'bruker@example.com', // This should come from user profile
+        purpose: booking.purpose || booking.description || 'Booking',
+        startDate: booking.date || new Date().toISOString().split('T')[0],
+        endDate: booking.date || new Date().toISOString().split('T')[0],
+        startTime: booking.time ? booking.time.split('-')[0] : '10:00',
+        endTime: booking.time ? booking.time.split('-')[1] : '12:00',
+        status: booking.status || 'pending',
+        requestedAt: booking.submittedAt || new Date().toISOString(),
+        price: booking.price ? parseInt(booking.price.replace(/\D/g, '')) : 0,
+        duration: booking.duration ? parseInt(booking.duration) : 2
+      }));
+    } catch (error) {
+      console.error('Error loading pending bookings:', error);
+      return [];
     }
-  ];
+  }, []);
+
+  // Get approved/rejected bookings from localStorage
+  const getProcessedBookings = useCallback((): IBooking[] => {
+    try {
+      return JSON.parse(localStorage.getItem('processedBookings') || '[]');
+    } catch (error) {
+      console.error('Error loading processed bookings:', error);
+      return [];
+    }
+  }, []);
+
+  // Real bookings only - refresh when trigger changes
+  const bookings: readonly IBooking[] = useMemo(() => [
+    ...getPendingBookings(),
+    ...getProcessedBookings()
+  ], [getPendingBookings, getProcessedBookings, refreshTrigger]);
 
   const filteredBookings = useMemo(() => {
     let filtered = bookings;
@@ -609,13 +577,67 @@ const BookingsPage = (): JSX.Element => {
     return { total, pending, approvedToday, rejectedToday };
   }, [bookings]);
 
-  const handleApprove = (id: string): void => {
-    // TODO: Implement approval logic
-  };
+  const handleApprove = useCallback((id: string): void => {
+    try {
+      // Find the booking
+      const booking = bookings.find(b => b.id === id);
+      if (!booking) return;
 
-  const handleReject = (id: string): void => {
-    // TODO: Implement rejection logic
-  };
+      // Remove from pending bookings
+      const pendingBookings = JSON.parse(localStorage.getItem('pendingBookings') || '[]');
+      const updatedPending = pendingBookings.filter((b: any) => b.id !== id);
+      localStorage.setItem('pendingBookings', JSON.stringify(updatedPending));
+
+      // Add to processed bookings with approved status
+      const processedBookings = JSON.parse(localStorage.getItem('processedBookings') || '[]');
+      const approvedBooking = {
+        ...booking,
+        status: 'approved',
+        processedBy: 'Admin', // This should be the actual admin user
+        processedAt: new Date().toISOString()
+      };
+      processedBookings.push(approvedBooking);
+      localStorage.setItem('processedBookings', JSON.stringify(processedBookings));
+
+      // Refresh the component
+      setRefreshTrigger(prev => prev + 1);
+      
+      console.log(`Booking ${id} approved successfully`);
+    } catch (error) {
+      console.error('Error approving booking:', error);
+    }
+  }, [bookings]);
+
+  const handleReject = useCallback((id: string): void => {
+    try {
+      // Find the booking
+      const booking = bookings.find(b => b.id === id);
+      if (!booking) return;
+
+      // Remove from pending bookings
+      const pendingBookings = JSON.parse(localStorage.getItem('pendingBookings') || '[]');
+      const updatedPending = pendingBookings.filter((b: any) => b.id !== id);
+      localStorage.setItem('pendingBookings', JSON.stringify(updatedPending));
+
+      // Add to processed bookings with rejected status
+      const processedBookings = JSON.parse(localStorage.getItem('processedBookings') || '[]');
+      const rejectedBooking = {
+        ...booking,
+        status: 'rejected',
+        processedBy: 'Admin', // This should be the actual admin user
+        processedAt: new Date().toISOString()
+      };
+      processedBookings.push(rejectedBooking);
+      localStorage.setItem('processedBookings', JSON.stringify(processedBookings));
+
+      // Refresh the component
+      setRefreshTrigger(prev => prev + 1);
+      
+      console.log(`Booking ${id} rejected successfully`);
+    } catch (error) {
+      console.error('Error rejecting booking:', error);
+    }
+  }, [bookings]);
 
   const handleViewDetails = (id: string): void => {
     const booking = bookings.find(b => b.id === id);

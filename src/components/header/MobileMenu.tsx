@@ -9,6 +9,11 @@ interface MobileMenuProps {
   readonly handleLogin: () => void;
   readonly handleLogout: () => void;
   readonly closeMobileMenu: () => void;
+  readonly userProfile?: {
+    readonly firstName: string;
+    readonly lastName: string;
+    readonly email: string;
+  };
 }
 
 const MobileMenu = ({
@@ -17,7 +22,8 @@ const MobileMenu = ({
   setLanguage,
   handleLogin,
   handleLogout,
-  closeMobileMenu
+  closeMobileMenu,
+  userProfile
 }: MobileMenuProps): JSX.Element => {
   if (!isOpen) return <></>;
 
@@ -44,9 +50,23 @@ const MobileMenu = ({
           
           {isLoggedIn ? (
             <>
+              {userProfile && (
+                <div className="px-3 py-2 bg-gray-50 rounded-lg mb-2">
+                  <p className="text-sm font-medium text-gray-900">
+                    {userProfile.firstName} {userProfile.lastName}
+                  </p>
+                  <p className="text-xs text-gray-500">{userProfile.email}</p>
+                </div>
+              )}
               <Button variant="ghost" className="w-full justify-start">
                 <User className="mr-2 h-4 w-4" />
                 Min profil
+              </Button>
+              <Button variant="ghost" className="w-full justify-start">
+                Mine bookinger
+              </Button>
+              <Button variant="ghost" className="w-full justify-start">
+                Lokaler
               </Button>
               <Button variant="ghost" className="w-full justify-start" onClick={handleLogout}>
                 Logg ut

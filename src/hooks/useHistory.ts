@@ -6,6 +6,6 @@ export function useHistory(q: IHistoryQuery) {
   return useQuery({
     queryKey: ["history", q],
     queryFn: () => historyService.list(q),
-    keepPreviousData: true
+    placeholderData: (previousData) => previousData,
   });
 }

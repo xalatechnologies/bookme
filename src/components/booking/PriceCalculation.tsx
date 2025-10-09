@@ -39,7 +39,9 @@ export const PriceCalculation: React.FC<IPriceCalculationProps> = ({
    * @param actorType - Type of actor
    * @returns Multiplier for base price
    */
-  const getActorMultiplier = (actorType: ActorType): number => {
+  const getActorMultiplier = (actorType: ActorType | ""): number => {
+    if (!actorType) return 1.0; // Default multiplier for empty string
+    
     switch (actorType) {
       case "private-person":
         return 1.0; // Full price
@@ -62,7 +64,9 @@ export const PriceCalculation: React.FC<IPriceCalculationProps> = ({
    * @param activityType - Type of activity
    * @returns Price adjustment amount
    */
-  const getActivityAdjustment = (activityType: ActivityType): number => {
+  const getActivityAdjustment = (activityType: ActivityType | ""): number => {
+    if (!activityType) return 0; // Default adjustment for empty string
+    
     switch (activityType) {
       case "sport":
         return 0; // No adjustment
@@ -87,7 +91,9 @@ export const PriceCalculation: React.FC<IPriceCalculationProps> = ({
    * @param actorType - Type of actor
    * @returns Description string
    */
-  const getActorDescription = (actorType: ActorType): string => {
+  const getActorDescription = (actorType: ActorType | ""): string => {
+    if (!actorType) return "Velg aktør type";
+    
     switch (actorType) {
       case "lag-foreninger":
         return "Lag/foreninger (20% rabatt)";
@@ -108,7 +114,9 @@ export const PriceCalculation: React.FC<IPriceCalculationProps> = ({
    * @param activityType - Type of activity
    * @returns Description string
    */
-  const getActivityDescription = (activityType: ActivityType): string => {
+  const getActivityDescription = (activityType: ActivityType | ""): string => {
+    if (!activityType) return "Velg aktivitetstype";
+    
     switch (activityType) {
       case "kultur":
         return "Kultur (50 kr rabatt)";

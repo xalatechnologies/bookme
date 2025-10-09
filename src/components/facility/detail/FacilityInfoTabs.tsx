@@ -346,6 +346,7 @@ export const FacilityInfoTabs: React.FC<FacilityInfoTabsProps> = ({
           </div>
         </div>
       </TabsContent>
+
     </Tabs>
   );
 };

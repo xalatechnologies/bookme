@@ -45,6 +45,7 @@ export const useCartStore = create<ICartState>()(
             ...item,
             id: `cart_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
             bookingType: item.bookingType || 'one-time', // Default to one-time if not specified
+            status: item.status || 'pending', // Default to pending status
             createdAt: now,
             updatedAt: now,
           };
