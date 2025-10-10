@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { SupportTicketForm } from "@/components/support/SupportTicketForm";
 import { 
   HelpCircle, 
   Search, 
@@ -12,7 +13,9 @@ import {
   Mail, 
   FileText,
   ChevronDown,
-  ChevronRight
+  ChevronRight,
+  Plus,
+  Ticket
 } from "lucide-react";
 
 interface IFAQItem {
@@ -25,6 +28,7 @@ interface IFAQItem {
 const UserHelp = (): JSX.Element => {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [expandedFAQ, setExpandedFAQ] = useState<string | null>(null);
+  const [showSupportTicket, setShowSupportTicket] = useState<boolean>(false);
 
   const faqItems: readonly IFAQItem[] = [
     {
@@ -90,7 +94,7 @@ const UserHelp = (): JSX.Element => {
       </div>
 
       {/* Contact Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <Card className="hover:shadow-md transition-shadow">
           <CardContent className="p-6 text-center">
             <Phone className="h-12 w-12 text-blue-600 dark:text-blue-400 mx-auto mb-4" />
@@ -132,6 +136,26 @@ const UserHelp = (): JSX.Element => {
             </p>
             <Button variant="outline" className="w-full">
               Start chat
+            </Button>
+          </CardContent>
+        </Card>
+
+        <Card className="hover:shadow-md transition-shadow">
+          <CardContent className="p-6 text-center">
+            <Ticket className="h-12 w-12 text-orange-600 dark:text-orange-400 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+              Support ticket
+            </h3>
+            <p className="text-gray-600 dark:text-gray-400 mb-4">
+              Send en detaljert henvendelse
+            </p>
+            <Button 
+              variant="outline" 
+              className="w-full"
+              onClick={() => setShowSupportTicket(true)}
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Opprett ticket
             </Button>
           </CardContent>
         </Card>
@@ -241,6 +265,22 @@ const UserHelp = (): JSX.Element => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Support Ticket Modal */}
+      {showSupportTicket && (
+        <SupportTicketForm
+          isOpen={showSupportTicket}
+          onClose={() => setShowSupportTicket(false)}
+          onSubmit={(ticketData) => {
+            // Handle support ticket creation
+            console.log('Creating support ticket:', ticketData);
+            setShowSupportTicket(false);
+          }}
+          userId="current-user"
+          userName="Current User"
+          userEmail="user@example.com"
+        />
+      )}
     </div>
   );
 };

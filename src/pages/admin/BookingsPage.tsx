@@ -29,8 +29,15 @@ import {
   Calendar as CalendarIcon,
   Building2,
   UserCheck,
-  Timer
+  Timer,
+  MessageCircle,
+  HelpCircle,
+  Repeat
 } from "lucide-react";
+import { MessageInbox } from "@/components/messaging/MessageInbox";
+import { SupportTicketList } from "@/components/support/SupportTicketList";
+import { useMessageStore } from "@/stores/messageStore";
+import { useSupportStore } from "@/stores/supportStore";
 
 interface IBooking {
   readonly id: string;
@@ -496,6 +503,11 @@ const BookingsPage = (): JSX.Element => {
     handler: "",
     duration: ""
   });
+  
+  // New feature states
+  const [showMessages, setShowMessages] = useState<boolean>(false);
+  const [showSupport, setShowSupport] = useState<boolean>(false);
+  const [showRecurringBookings, setShowRecurringBookings] = useState<boolean>(false);
 
   // Get pending bookings from localStorage (user bookings)
   const getPendingBookings = useCallback((): IBooking[] => {
@@ -680,13 +692,43 @@ const BookingsPage = (): JSX.Element => {
     <RequireRole roles={["org-admin", "facility-manager", "case-worker"]}>
       <div className="space-y-12">
         {/* Header */}
-        <header className="space-y-1">
-          <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">
-            Bookinger & Godkjenninger
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400">
-            Administrer alle bookinger og godkjenningsprosesser i systemet.
-          </p>
+        <header className="space-y-4">
+          <div className="space-y-1">
+            <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">
+              Bookinger & Godkjenninger
+            </h1>
+            <p className="text-gray-600 dark:text-gray-400">
+              Administrer alle bookinger og godkjenningsprosesser i systemet.
+            </p>
+          </div>
+          
+          {/* Admin Action Buttons */}
+          <div className="flex flex-wrap gap-2">
+            <Button 
+              variant="outline"
+              onClick={() => setShowMessages(true)}
+              className="flex items-center gap-2"
+            >
+              <MessageCircle className="h-4 w-4" />
+              Meldinger
+            </Button>
+            <Button 
+              variant="outline"
+              onClick={() => setShowSupport(true)}
+              className="flex items-center gap-2"
+            >
+              <HelpCircle className="h-4 w-4" />
+              Support-tickets
+            </Button>
+            <Button 
+              variant="outline"
+              onClick={() => setShowRecurringBookings(true)}
+              className="flex items-center gap-2"
+            >
+              <Repeat className="h-4 w-4" />
+              Gjentakende bookinger
+            </Button>
+          </div>
         </header>
 
         {/* KPI Cards */}
@@ -905,6 +947,72 @@ const BookingsPage = (): JSX.Element => {
           onApplyFilters={setAppliedFilters}
         />
       </div>
+
+      {/* Admin Feature Modals */}
+      {showMessages && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg w-full max-w-6xl h-[90vh] overflow-hidden">
+            <div className="p-4 border-b">
+              <div className="flex items-center justify-between">
+                <h2 className="text-xl font-semibold">Admin - Meldinger</h2>
+                <Button variant="outline" onClick={() => setShowMessages(false)}>
+                  Lukk
+                </Button>
+              </div>
+            </div>
+            <div className="h-full overflow-y-auto">
+              <MessageInbox
+                userId="admin"
+                onThreadSelect={(threadId) => console.log('Select thread:', threadId)}
+                onCreateThread={() => console.log('Create thread')}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showSupport && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg w-full max-w-6xl h-[90vh] overflow-hidden">
+            <div className="p-4 border-b">
+              <div className="flex items-center justify-between">
+                <h2 className="text-xl font-semibold">Admin - Support-tickets</h2>
+                <Button variant="outline" onClick={() => setShowSupport(false)}>
+                  Lukk
+                </Button>
+              </div>
+            </div>
+            <div className="h-full overflow-y-auto">
+              <SupportTicketList
+                isAdmin={true}
+                onTicketSelect={(ticketId) => console.log('Select ticket:', ticketId)}
+                onCreateTicket={() => console.log('Create ticket')}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showRecurringBookings && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg w-full max-w-6xl h-[90vh] overflow-hidden">
+            <div className="p-4 border-b">
+              <div className="flex items-center justify-between">
+                <h2 className="text-xl font-semibold">Admin - Gjentakende bookinger</h2>
+                <Button variant="outline" onClick={() => setShowRecurringBookings(false)}>
+                  Lukk
+                </Button>
+              </div>
+            </div>
+            <div className="h-full overflow-y-auto p-4">
+              <p className="text-gray-600">
+                Her kan du administrere alle gjentakende bookinger i systemet.
+                Denne funksjonaliteten vil bli implementert i en senere versjon.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </RequireRole>
   );
 };

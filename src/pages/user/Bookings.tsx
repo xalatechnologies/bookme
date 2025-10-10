@@ -30,9 +30,18 @@ import {
   CalendarPlus,
   RotateCcw,
   Download,
-  MoreHorizontal
+  MoreHorizontal,
+  Repeat,
+  Users,
+  MessageCircle
 } from "lucide-react";
 import { toast } from "react-toastify";
+import { RecurringBookingModal } from "@/components/booking/RecurringBookingModal";
+import { GroupBookingFlow } from "@/components/group/GroupBookingFlow";
+import { MessageInbox } from "@/components/messaging/MessageInbox";
+import { useRecurringBookingStore } from "@/stores/recurringBookingStore";
+import { useGroupStore } from "@/stores/groupStore";
+import { useMessageStore } from "@/stores/messageStore";
 
 interface IBooking {
   readonly id: string;
@@ -79,6 +88,19 @@ const Bookings = (): JSX.Element => {
   const [bookingsToDelete, setBookingsToDelete] = useState<string[]>([]);
   const [selectedBooking, setSelectedBooking] = useState<IBooking | null>(null);
   const [refreshTrigger, setRefreshTrigger] = useState<number>(0);
+  
+  // New feature states
+  const [showRecurringModal, setShowRecurringModal] = useState<boolean>(false);
+  const [showGroupBookingModal, setShowGroupBookingModal] = useState<boolean>(false);
+  const [showMessages, setShowMessages] = useState<boolean>(false);
+  const [selectedFacilityForBooking, setSelectedFacilityForBooking] = useState<{
+    id: string;
+    name: string;
+    zoneId: string;
+    zoneName: string;
+    timeSlots: string[];
+    pricePerHour: number;
+  } | null>(null);
 
   // Handle success parameter from checkout
   useEffect(() => {
@@ -402,13 +424,39 @@ const Bookings = (): JSX.Element => {
             Samlet oversikt over alle dine bookinger og forespørsler
           </p>
         </div>
-        <Button 
-          onClick={() => navigate('/user/facilities')}
-          className="flex items-center gap-2"
-        >
-          <Plus className="w-4 h-4" />
-          Ny booking
-        </Button>
+        <div className="flex flex-col sm:flex-row gap-2">
+          <Button 
+            onClick={() => navigate('/user/facilities')}
+            className="flex items-center gap-2"
+          >
+            <Plus className="w-4 h-4" />
+            Ny booking
+          </Button>
+          <Button 
+            variant="outline"
+            onClick={() => setShowRecurringModal(true)}
+            className="flex items-center gap-2"
+          >
+            <Repeat className="w-4 h-4" />
+            Gjentakende
+          </Button>
+          <Button 
+            variant="outline"
+            onClick={() => setShowGroupBookingModal(true)}
+            className="flex items-center gap-2"
+          >
+            <Users className="w-4 h-4" />
+            Gruppe
+          </Button>
+          <Button 
+            variant="outline"
+            onClick={() => setShowMessages(true)}
+            className="flex items-center gap-2"
+          >
+            <MessageCircle className="w-4 h-4" />
+            Meldinger
+          </Button>
+        </div>
       </header>
 
       {/* Status Panel */}
@@ -781,6 +829,98 @@ const Bookings = (): JSX.Element => {
           </div>
         </div>
       )}
+
+      {/* New Feature Modals */}
+      {showRecurringModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg w-full max-w-4xl h-[90vh] overflow-hidden">
+            <div className="p-4 border-b">
+              <div className="flex items-center justify-between">
+                <h2 className="text-xl font-semibold">Gjentakende booking</h2>
+                <Button variant="outline" onClick={() => {
+                  setShowRecurringModal(false);
+                  setSelectedFacilityForBooking(null);
+                }}>
+                  Lukk
+                </Button>
+              </div>
+            </div>
+            <div className="h-full overflow-y-auto p-4">
+              <div className="text-center py-12">
+                <Repeat className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-lg font-semibold mb-2">Velg lokale først</h3>
+                <p className="text-muted-foreground mb-4">
+                  For å opprette en gjentakende booking, må du først velge et lokale.
+                </p>
+                <Button onClick={() => {
+                  setShowRecurringModal(false);
+                  navigate('/user/facilities');
+                }}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Utforsk lokaler
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showGroupBookingModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg w-full max-w-4xl h-[90vh] overflow-hidden">
+            <div className="p-4 border-b">
+              <div className="flex items-center justify-between">
+                <h2 className="text-xl font-semibold">Gruppebokering</h2>
+                <Button variant="outline" onClick={() => {
+                  setShowGroupBookingModal(false);
+                  setSelectedFacilityForBooking(null);
+                }}>
+                  Lukk
+                </Button>
+              </div>
+            </div>
+            <div className="h-full overflow-y-auto p-4">
+              <div className="text-center py-12">
+                <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-lg font-semibold mb-2">Velg lokale først</h3>
+                <p className="text-muted-foreground mb-4">
+                  For å opprette en gruppebokering, må du først velge et lokale.
+                </p>
+                <Button onClick={() => {
+                  setShowGroupBookingModal(false);
+                  navigate('/user/facilities');
+                }}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Utforsk lokaler
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showMessages && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg w-full max-w-4xl h-[80vh] overflow-hidden">
+            <div className="p-4 border-b">
+              <div className="flex items-center justify-between">
+                <h2 className="text-xl font-semibold">Meldinger</h2>
+                <Button variant="outline" onClick={() => setShowMessages(false)}>
+                  Lukk
+                </Button>
+              </div>
+            </div>
+            <div className="h-full overflow-y-auto">
+              <MessageInbox
+                userId="current-user"
+                onThreadSelect={(threadId) => console.log('Select thread:', threadId)}
+                onCreateThread={() => console.log('Create thread')}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };
