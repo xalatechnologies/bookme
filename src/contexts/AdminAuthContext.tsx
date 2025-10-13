@@ -8,7 +8,6 @@ interface IUser {
   readonly id: string;
   readonly name: string;
   readonly email: string;
-  readonly avatar?: string;
   readonly roles: readonly TRole[];
 }
 

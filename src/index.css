@@ -1,32 +1,6 @@
-/* React Big Calendar Styles */
-@import 'react-big-calendar/lib/css/react-big-calendar.css';
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-/* Custom Calendar Styles */
-.rbc-calendar {
-  height: 100%;
-  min-height: 600px;
-}
-
-.rbc-calendar .rbc-toolbar {
-  display: none; /* Hide default toolbar since we have our own */
-}
-
-.rbc-calendar .rbc-month-view,
-.rbc-calendar .rbc-time-view {
-  height: 100%;
-}
-
-.rbc-calendar .rbc-month-view {
-  min-height: 500px;
-}
-
-.rbc-calendar .rbc-time-view {
-  min-height: 500px;
-}
 
 @layer base {
   :root {

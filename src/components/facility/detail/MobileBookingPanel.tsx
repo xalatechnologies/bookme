@@ -51,7 +51,7 @@ export const MobileBookingPanel: React.FC<MobileBookingPanelProps> = ({
             <div className="space-y-4">
               <div className="text-center text-gray-600">
                 <p>Booking funksjonalitet kommer snart...</p>
-                <p className="text-sm mt-2">Kapasitet: {capacity} | Areal: {area}</p>
+                <p className="text-sm mt-2">Kapasitet: {capacity} | Areal: {area} m²</p>
                 <p className="text-sm">Åpningstider: {openingHours}</p>
               </div>
               <Button className="w-full" disabled>

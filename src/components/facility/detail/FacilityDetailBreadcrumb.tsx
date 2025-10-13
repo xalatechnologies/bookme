@@ -32,7 +32,7 @@ export const FacilityDetailBreadcrumb = ({ facilityName, showBookingPage = false
             variant="ghost" 
             size="sm" 
             className="text-gray-600 hover:text-gray-900 p-0 h-auto font-normal" 
-            onClick={() => navigate("/user/facilities")}
+            onClick={() => navigate("/")}
           >
             Lokaler
           </Button>

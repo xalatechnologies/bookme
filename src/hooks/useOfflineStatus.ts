@@ -100,7 +100,7 @@ export const useOfflineStatus = () => {
   /**
    * Process individual offline action
    */
-  const processOfflineAction = async (action: any): Promise<void> => {
+  const processOfflineAction = async (action: { type: string; data?: unknown }): Promise<void> => {
     // This would implement the actual sync logic based on action type
     console.log('Processing offline action:', action);
     

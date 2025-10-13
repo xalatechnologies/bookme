@@ -12,18 +12,16 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
 import { FieldConfigModal } from "@/components/admin/facilities/FieldConfigModal";
+import { ReadOnlyCalendar } from "@/components/calendar/ReadOnlyCalendar";
+import { Zone } from "@/types/booking";
+import { useZoneStore } from "@/stores/zoneStore";
 
 interface IFacilityEditPageProps {
   readonly children?: never;
 }
 
-interface IZone {
-  readonly id: string;
-  readonly name: string;
-  readonly capacity: number;
-  readonly description: string;
-  readonly isEditing: boolean;
-}
+// Use Zone type from types/booking.ts
+type IZone = Zone;
 
 interface IFaqItem {
   readonly id: string;
@@ -100,7 +98,7 @@ const FacilityEditPage = (_props: IFacilityEditPageProps): JSX.Element => {
     });
   };
   
-  const [zones, setZones] = useState<readonly IZone[]>([]);
+  const { addZone: storeAddZone, updateZone: storeUpdateZone, deleteZone: storeDeleteZone, getZonesForFacility: storeGetZonesForFacility } = useZoneStore();
   const [faqItems, setFaqItems] = useState<readonly IFaqItem[]>([]);
   const [openingHours, setOpeningHours] = useState<IOpeningHoursMap>({
     monday: { start: "08:00", end: "22:00" },
@@ -129,6 +127,9 @@ const FacilityEditPage = (_props: IFacilityEditPageProps): JSX.Element => {
       const facility = getFacilityById(id || "");
       if (facility) {
         setEditedFacility(facility);
+        
+        // Load zones for this facility from store only
+        // No dummy data loading - zones should be created manually
         
         // Update field configs with facility values
         fieldConfigs.forEach(field => {
@@ -185,6 +186,8 @@ const FacilityEditPage = (_props: IFacilityEditPageProps): JSX.Element => {
     rules: "",
     contactEmail: "",
     openingHours: "",
+    openingHoursStart: "08:00",
+    openingHoursEnd: "22:00",
     emergencyContact: ""
   });
 
@@ -261,6 +264,8 @@ const FacilityEditPage = (_props: IFacilityEditPageProps): JSX.Element => {
           rules: editedFacility.rules,
           contactEmail: editedFacility.contactEmail,
           openingHours: editedFacility.openingHours,
+          openingHoursStart: editedFacility.openingHoursStart,
+          openingHoursEnd: editedFacility.openingHoursEnd,
           emergencyContact: editedFacility.emergencyContact
         });
         
@@ -290,6 +295,8 @@ const FacilityEditPage = (_props: IFacilityEditPageProps): JSX.Element => {
         rules: editedFacility.rules,
         contactEmail: editedFacility.contactEmail,
         openingHours: editedFacility.openingHours,
+        openingHoursStart: editedFacility.openingHoursStart,
+        openingHoursEnd: editedFacility.openingHoursEnd,
         emergencyContact: editedFacility.emergencyContact
       });
     }
@@ -559,14 +566,28 @@ const FacilityEditPage = (_props: IFacilityEditPageProps): JSX.Element => {
   };
 
   const addZone = (): void => {
-    const newZone: IZone = {
+    const facilityId = editedFacility?.id || "new";
+    
+    const newZone: Zone = {
       id: Date.now().toString(),
       name: "Ny sone",
+      facilityId: facilityId,
       capacity: 0,
+      pricePerHour: 0,
+      area: 0,
       description: "",
-      isEditing: true
+      amenities: [],
+      availability: {
+        monday: { start: "08:00", end: "22:00" },
+        tuesday: { start: "08:00", end: "22:00" },
+        wednesday: { start: "08:00", end: "22:00" },
+        thursday: { start: "08:00", end: "22:00" },
+        friday: { start: "08:00", end: "22:00" },
+        saturday: { start: "09:00", end: "20:00" },
+        sunday: { start: "10:00", end: "18:00" }
+      }
     };
-    setZones([...zones, newZone]);
+    storeAddZone(newZone);
     setEditedFacility((prev: IEditedFacility | null): IEditedFacility | null => {
       if (!prev) return null;
       return {
@@ -578,10 +599,8 @@ const FacilityEditPage = (_props: IFacilityEditPageProps): JSX.Element => {
     setHasUnsavedChanges(true);
   };
 
-  const updateZone = (zoneId: string, field: keyof IZone, value: string | number): void => {
-    setZones(zones.map((zone: IZone): IZone => 
-      zone.id === zoneId ? { ...zone, [field]: value } : zone
-    ));
+  const updateZone = (zoneId: string, field: keyof Zone, value: string | number | string[]): void => {
+    storeUpdateZone(zoneId, { [field]: value });
     setEditedFacility((prev: IEditedFacility | null): IEditedFacility | null => {
       if (!prev) return null;
       return {
@@ -594,7 +613,7 @@ const FacilityEditPage = (_props: IFacilityEditPageProps): JSX.Element => {
   };
 
   const deleteZone = (zoneId: string): void => {
-    setZones(zones.filter((zone: IZone): boolean => zone.id !== zoneId));
+    storeDeleteZone(zoneId);
     setEditedFacility((prev: IEditedFacility | null): IEditedFacility | null => {
       if (!prev) return null;
       return {
@@ -980,13 +999,15 @@ const FacilityEditPage = (_props: IFacilityEditPageProps): JSX.Element => {
                     </Button>
                   </div>
                   
-                  {zones.length === 0 ? (
-                    <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-                      Ingen soner definert. Legg til en sone for å begynne.
-                    </div>
-                  ) : (
-                    <div className="space-y-4">
-                      {zones.map((zone) => (
+                  {(() => {
+                    const facilityZones = storeGetZonesForFacility(editedFacility?.id || "");
+                    return facilityZones.length === 0 ? (
+                      <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                        Ingen soner definert. Legg til en sone for å begynne.
+                      </div>
+                    ) : (
+                      <div className="space-y-4">
+                        {facilityZones.map((zone) => (
                         <Card key={zone.id}>
                           <CardContent className="p-4">
                             <div className="flex items-center justify-between mb-3">
@@ -1005,31 +1026,61 @@ const FacilityEditPage = (_props: IFacilityEditPageProps): JSX.Element => {
                                 <Trash2 className="w-4 h-4" />
                               </Button>
                             </div>
+                            <div className="mb-4">
+                              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Sone informasjon</label>
+                              <textarea
+                                value={zone.description || ""}
+                                onChange={(e) => updateZone(zone.id, "description", e.target.value)}
+                                className="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                                rows={3}
+                                placeholder="Beskrivelse av sonen..."
+                              />
+                            </div>
                             <div className="grid grid-cols-2 gap-4">
                               <div>
                                 <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Kapasitet</label>
                                 <Input
                                   type="number"
                                   value={zone.capacity}
-                                  onChange={(e) => updateZone(zone.id, "capacity", e.target.value)}
+                                  onChange={(e) => updateZone(zone.id, "capacity", parseInt(e.target.value) || 0)}
                                   className="mt-1"
+                                  placeholder="Antall personer"
                                 />
                               </div>
                               <div>
-                                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Beskrivelse</label>
+                                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Pris per time</label>
                                 <Input
-                                  value={zone.description}
-                                  onChange={(e) => updateZone(zone.id, "description", e.target.value)}
+                                  type="number"
+                                  value={zone.pricePerHour}
+                                  onChange={(e) => updateZone(zone.id, "pricePerHour", parseInt(e.target.value) || 0)}
                                   className="mt-1"
-                                  placeholder="Beskrivelse av sonen"
+                                  placeholder="Pris per time"
                                 />
+                              </div>
+                            </div>
+                            <div className="mt-4">
+                              <div>
+                                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Areal</label>
+                                <div className="relative mt-1">
+                                  <Input
+                                    type="number"
+                                    value={zone.area || 0}
+                                    onChange={(e) => updateZone(zone.id, "area", parseInt(e.target.value) || 0)}
+                                    className="pr-8"
+                                    placeholder="0"
+                                  />
+                                  <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                    <span className="text-gray-500 text-sm">m²</span>
+                                  </div>
+                                </div>
                               </div>
                             </div>
                           </CardContent>
                         </Card>
-                      ))}
-                    </div>
-                  )}
+                        ))}
+                      </div>
+                    );
+                  })()}
                 </div>
               </TabsContent>
 
@@ -1179,14 +1230,28 @@ const FacilityEditPage = (_props: IFacilityEditPageProps): JSX.Element => {
                     
                     <div>
                       <h4 className="font-medium text-gray-900 dark:text-white mb-2">Åpningstider</h4>
-                      <div className="flex items-center gap-2">
-                        <Clock className="w-4 h-4 text-gray-400" />
-                        <Input
-                          value={editedFacility.openingHours || ""}
-                          onChange={(e) => handleInputChange("openingHours", e.target.value)}
-                          className="text-sm border-none p-0 h-auto"
-                          placeholder="Sett inn åpningstider..."
-                        />
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-2">
+                          <Clock className="w-4 h-4 text-gray-400" />
+                          <div className="flex items-center gap-2">
+                            <Input
+                              type="time"
+                              value={editedFacility.openingHoursStart || "08:00"}
+                              onChange={(e) => handleInputChange("openingHoursStart", e.target.value)}
+                              className="text-sm border border-gray-300 rounded px-2 py-1 w-24"
+                            />
+                            <span className="text-gray-500">til</span>
+                            <Input
+                              type="time"
+                              value={editedFacility.openingHoursEnd || "22:00"}
+                              onChange={(e) => handleInputChange("openingHoursEnd", e.target.value)}
+                              className="text-sm border border-gray-300 rounded px-2 py-1 w-24"
+                            />
+                          </div>
+                        </div>
+                        <p className="text-xs text-gray-500">
+                          Kalenderen vil kun vise tidsluker innenfor disse åpningstidene
+                        </p>
                       </div>
                     </div>
                     
@@ -1308,114 +1373,15 @@ const FacilityEditPage = (_props: IFacilityEditPageProps): JSX.Element => {
           </div>
         </div>
 
-        {/* Calendar Section - Matches frontend exactly */}
+        {/* Calendar Section - Using ReadOnlyCalendar component */}
         <div className="mt-12">
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between mb-6">
-                <div>
-                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-                    Book {editedFacility.name}
-                  </h2>
-                  <p className="text-gray-600 dark:text-gray-400">
-                    Velg dato og tidspunkt for din booking
-                  </p>
-                </div>
-                <div className="flex gap-2">
-                  <Button variant="outline" size="sm">
-                    <ArrowLeft className="w-4 h-4 mr-2" />
-                    Forrige uke
-                  </Button>
-                  <Button variant="outline" size="sm">
-                    Neste uke
-                    <ArrowLeft className="w-4 h-4 ml-2 rotate-180" />
-                  </Button>
-                </div>
-              </div>
-
-              {/* Zone Tabs */}
-              <div className="flex gap-2 mb-6">
-                <Button variant="default" size="sm">
-                  Hovedsal
-                </Button>
-                <Button variant="outline" size="sm">
-                  Sidescene
-                </Button>
-              </div>
-
-              {/* Calendar Grid */}
-              <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
-                {/* Calendar Header */}
-                <div className="grid grid-cols-8 border-b border-gray-200 dark:border-gray-700">
-                  <div className="p-3 text-center font-medium text-gray-500 dark:text-gray-400"></div>
-                  <div className="p-3 text-center font-medium text-gray-900 dark:text-white">Man</div>
-                  <div className="p-3 text-center font-medium text-gray-900 dark:text-white">Tir</div>
-                  <div className="p-3 text-center font-medium text-gray-900 dark:text-white">Ons</div>
-                  <div className="p-3 text-center font-medium text-gray-900 dark:text-white">Tor</div>
-                  <div className="p-3 text-center font-medium text-gray-900 dark:text-white">Fre</div>
-                  <div className="p-3 text-center font-medium text-gray-900 dark:text-white">Lør</div>
-                  <div className="p-3 text-center font-medium text-gray-900 dark:text-white">Søn</div>
-                </div>
-
-                {/* Time Slots */}
-                {Array.from({ length: 14 }, (_, i) => {
-                  const hour = 8 + i;
-                  const timeString = `${hour.toString().padStart(2, '0')}:00`;
-                  return (
-                    <div key={hour} className="grid grid-cols-8 border-b border-gray-100 dark:border-gray-700 last:border-b-0">
-                      <div className="p-3 text-center text-sm text-gray-500 dark:text-gray-400 border-r border-gray-200 dark:border-gray-700">
-                        {timeString}
-                      </div>
-                      {Array.from({ length: 7 }, (_, dayIndex) => {
-                        const isWeekend = dayIndex >= 5;
-                        const isBooked = Math.random() > 0.7 && isWeekend;
-                        const isSelected = false;
-                        
-                        return (
-                          <div
-                            key={dayIndex}
-                            className={`p-3 text-center cursor-pointer transition-colors ${
-                              isBooked
-                                ? 'bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-300'
-                                : isSelected
-                                ? 'bg-blue-100 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300'
-                                : 'bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-300 hover:bg-green-200 dark:hover:bg-green-900/30'
-                            }`}
-                            onClick={() => {
-                              // TODO: Implement booking logic
-                              // Booking logic will be implemented here
-                            }}
-                          >
-                            {isBooked ? 'Opptatt' : 'Ledig'}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  );
-                })}
-              </div>
-
-              {/* Legend */}
-              <div className="flex items-center justify-center gap-6 mt-6 text-sm">
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 bg-green-100 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded"></div>
-                  <span className="text-gray-700 dark:text-gray-300">Ledig</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 bg-red-100 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded"></div>
-                  <span className="text-gray-700 dark:text-gray-300">Opptatt</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded"></div>
-                  <span className="text-gray-700 dark:text-gray-300">Valgt</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded"></div>
-                  <span className="text-gray-700 dark:text-gray-300">Ikke tilgjengelig</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <ReadOnlyCalendar
+            facilityId={editedFacility.id}
+            facilityName={editedFacility.name}
+            zones={storeGetZonesForFacility(editedFacility.id)}
+            openingHoursStart={editedFacility.openingHoursStart || "08:00"}
+            openingHoursEnd={editedFacility.openingHoursEnd || "22:00"}
+          />
         </div>
       </div>
 

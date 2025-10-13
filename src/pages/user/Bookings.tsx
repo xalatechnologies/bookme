@@ -30,18 +30,14 @@ import {
   CalendarPlus,
   RotateCcw,
   Download,
-  MoreHorizontal,
   Repeat,
-  Users,
-  MessageCircle
+  Users
 } from "lucide-react";
 import { toast } from "react-toastify";
 import { RecurringBookingModal } from "@/components/booking/RecurringBookingModal";
 import { GroupBookingFlow } from "@/components/group/GroupBookingFlow";
-import { MessageInbox } from "@/components/messaging/MessageInbox";
 import { useRecurringBookingStore } from "@/stores/recurringBookingStore";
 import { useGroupStore } from "@/stores/groupStore";
-import { useMessageStore } from "@/stores/messageStore";
 
 interface IBooking {
   readonly id: string;
@@ -92,7 +88,6 @@ const Bookings = (): JSX.Element => {
   // New feature states
   const [showRecurringModal, setShowRecurringModal] = useState<boolean>(false);
   const [showGroupBookingModal, setShowGroupBookingModal] = useState<boolean>(false);
-  const [showMessages, setShowMessages] = useState<boolean>(false);
   const [selectedFacilityForBooking, setSelectedFacilityForBooking] = useState<{
     id: string;
     name: string;
@@ -366,49 +361,45 @@ const Bookings = (): JSX.Element => {
   };
 
   const getActionButtons = (booking: IBooking) => {
-    const baseActions = [
+    // Only show "Se" and "Slett" buttons directly on the card
+    return [
       {
         icon: Eye,
         label: "Se",
         onClick: () => handleOpenDetails(booking),
         primary: true
+      },
+      {
+        icon: Trash2,
+        label: "Slett",
+        onClick: () => handleDeleteSingle(booking.id),
+        primary: false
       }
     ];
+  };
 
-    // Add delete button for all statuses
-    const deleteAction = {
-      icon: Trash2,
-      label: "Slett",
-      onClick: () => handleDeleteSingle(booking.id),
-      primary: false
-    };
-
+  const getAdditionalActions = (booking: IBooking) => {
+    // Additional actions that will be shown in the details panel
     switch (booking.status) {
       case "pending":
         return [
-          ...baseActions,
           { icon: Edit, label: "Rediger", onClick: () => console.log("Edit", booking.id) },
-          { icon: RotateCcw, label: "Trekk tilbake", onClick: () => console.log("Withdraw", booking.id) },
-          deleteAction
+          { icon: RotateCcw, label: "Trekk tilbake", onClick: () => console.log("Withdraw", booking.id) }
         ];
       case "confirmed":
         return [
-          ...baseActions,
           { icon: Edit, label: "Endre tidspunkt", onClick: () => console.log("Reschedule", booking.id) },
           { icon: X, label: "Avlys", onClick: () => console.log("Cancel", booking.id) },
           { icon: Share2, label: "Del", onClick: () => console.log("Share", booking.id) },
-          { icon: CalendarPlus, label: "Legg til i kalender", onClick: () => console.log("Add to calendar", booking.id) },
-          deleteAction
+          { icon: CalendarPlus, label: "Legg til i kalender", onClick: () => console.log("Add to calendar", booking.id) }
         ];
       case "rejected":
       case "cancelled":
         return [
-          ...baseActions,
-          { icon: Plus, label: "Send ny forespørsel", onClick: () => console.log("New request", booking.id) },
-          deleteAction
+          { icon: Plus, label: "Send ny forespørsel", onClick: () => console.log("New request", booking.id) }
         ];
       default:
-        return [...baseActions, deleteAction];
+        return [];
     }
   };
 
@@ -447,14 +438,6 @@ const Bookings = (): JSX.Element => {
           >
             <Users className="w-4 h-4" />
             Gruppe
-          </Button>
-          <Button 
-            variant="outline"
-            onClick={() => setShowMessages(true)}
-            className="flex items-center gap-2"
-          >
-            <MessageCircle className="w-4 h-4" />
-            Meldinger
           </Button>
         </div>
       </header>
@@ -552,7 +535,7 @@ const Bookings = (): JSX.Element => {
               </Button>
               <Button
                 variant="outline"
-                onClick={() => navigate('/calendar')}
+                onClick={() => navigate('/user/calendar')}
                 className="flex items-center gap-2"
               >
                 <Calendar className="w-4 h-4" />
@@ -672,19 +655,14 @@ const Bookings = (): JSX.Element => {
                         variant={action.primary ? "default" : "outline"}
                         size="sm"
                         onClick={action.onClick}
-                        className="flex items-center gap-2"
+                        className={`flex items-center justify-center p-2 ${
+                          action.label === "Slett" ? "text-red-600 hover:text-red-700 hover:bg-red-50" : ""
+                        }`}
+                        title={action.label}
                       >
                         <action.icon className="w-4 h-4" />
-                        <span className="hidden sm:inline">{action.label}</span>
                       </Button>
                     ))}
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleOpenDetails(booking)}
-                    >
-                      <MoreHorizontal className="w-4 h-4" />
-                    </Button>
                   </div>
                 </div>
               </CardContent>
@@ -759,20 +737,47 @@ const Bookings = (): JSX.Element => {
                 )}
                 
                 <div className="pt-4 border-t">
-                  <div className="grid grid-cols-2 gap-2">
-                    {getActionButtons(selectedBooking).map((action, index) => (
-                      <Button
-                        key={index}
-                        variant={action.primary ? "default" : "outline"}
-                        size="sm"
-                        onClick={action.onClick}
-                        className="flex items-center justify-center gap-1 text-xs"
-                      >
-                        <action.icon className="w-3 h-3" />
-                        <span className="truncate">{action.label}</span>
-                      </Button>
-                    ))}
+                  <h4 className="font-medium text-gray-900 mb-3">Handlinger</h4>
+                  
+                  {/* Basic actions */}
+                  <div className="mb-4">
+                    <h5 className="text-sm font-medium text-gray-700 mb-2">Grunnleggende</h5>
+                    <div className="grid grid-cols-2 gap-2">
+                      {getActionButtons(selectedBooking).map((action, index) => (
+                        <Button
+                          key={index}
+                          variant={action.primary ? "default" : "outline"}
+                          size="sm"
+                          onClick={action.onClick}
+                          className="flex items-center justify-center gap-1 text-xs"
+                        >
+                          <action.icon className="w-3 h-3" />
+                          <span className="truncate">{action.label}</span>
+                        </Button>
+                      ))}
+                    </div>
                   </div>
+
+                  {/* Additional actions */}
+                  {getAdditionalActions(selectedBooking).length > 0 && (
+                    <div>
+                      <h5 className="text-sm font-medium text-gray-700 mb-2">Ekstra handlinger</h5>
+                      <div className="grid grid-cols-2 gap-2">
+                        {getAdditionalActions(selectedBooking).map((action, index) => (
+                          <Button
+                            key={`additional-${index}`}
+                            variant="outline"
+                            size="sm"
+                            onClick={action.onClick}
+                            className="flex items-center justify-center gap-1 text-xs"
+                          >
+                            <action.icon className="w-3 h-3" />
+                            <span className="truncate">{action.label}</span>
+                          </Button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -899,27 +904,6 @@ const Bookings = (): JSX.Element => {
         </div>
       )}
 
-      {showMessages && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg w-full max-w-4xl h-[80vh] overflow-hidden">
-            <div className="p-4 border-b">
-              <div className="flex items-center justify-between">
-                <h2 className="text-xl font-semibold">Meldinger</h2>
-                <Button variant="outline" onClick={() => setShowMessages(false)}>
-                  Lukk
-                </Button>
-              </div>
-            </div>
-            <div className="h-full overflow-y-auto">
-              <MessageInbox
-                userId="current-user"
-                onThreadSelect={(threadId) => console.log('Select thread:', threadId)}
-                onCreateThread={() => console.log('Create thread')}
-              />
-            </div>
-          </div>
-        </div>
-      )}
 
     </div>
   );

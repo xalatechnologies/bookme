@@ -273,12 +273,12 @@ const UserHelp = (): JSX.Element => {
           onClose={() => setShowSupportTicket(false)}
           onSubmit={(ticketData) => {
             // Handle support ticket creation
-            console.log('Creating support ticket:', ticketData);
             setShowSupportTicket(false);
           }}
-          userId="current-user"
-          userName="Current User"
-          userEmail="user@example.com"
+          userId="tenant-1"
+          userName="Hamid Rahmani"
+          userEmail="hamid.rahmani@example.com"
+          userType="tenant"
         />
       )}
     </div>

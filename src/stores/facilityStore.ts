@@ -42,6 +42,8 @@ export interface IFacility {
   readonly rules?: string;
   readonly contactEmail?: string;
   readonly openingHours?: string;
+  readonly openingHoursStart?: string;
+  readonly openingHoursEnd?: string;
   readonly emergencyContact?: string;
 }
 
@@ -314,13 +316,11 @@ export const useFacilityStore = create<IFacilityStore>()(
             const updatedFacilities = state.facilities.map((facility) =>
               facility.id === id ? { ...facility, ...updates } : facility
             );
-            console.log("Updated facility in store:", updatedFacilities.find(f => f.id === id));
             return { facilities: updatedFacilities };
           });
         },
 
         addFacility: (facility: Omit<IFacility, 'id' | 'createdAt' | 'updatedAt'>): void => {
-          console.log("addFacility called with:", facility);
           const now = new Date().toISOString();
           const newFacility: IFacility = {
             ...facility,
@@ -328,26 +328,17 @@ export const useFacilityStore = create<IFacilityStore>()(
             createdAt: now,
             updatedAt: now,
           };
-          console.log("New facility created:", newFacility);
-          set((state) => {
-            const newState = {
-              facilities: [...state.facilities, newFacility],
-            };
-            console.log("Updated facilities array length:", newState.facilities.length);
-            console.log("All facilities:", newState.facilities);
-            return newState;
-          });
+          set((state) => ({
+            ...state,
+            facilities: [...state.facilities, newFacility],
+          }));
         },
 
         deleteFacility: (id: string): void => {
-          console.log("deleteFacility called with id:", id);
-          set((state) => {
-            const newState = {
-              facilities: state.facilities.filter((facility) => facility.id !== id),
-            };
-            console.log("Facility deleted. Remaining facilities:", newState.facilities.length);
-            return newState;
-          });
+          set((state) => ({
+            ...state,
+            facilities: state.facilities.filter((facility) => facility.id !== id),
+          }));
         },
         
         getFacilityById: (id: string): IFacility | undefined => {

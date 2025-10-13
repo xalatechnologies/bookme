@@ -60,7 +60,6 @@ export const useCartStore = create<ICartState>()(
             itemCount: newItems.length,
           });
 
-          console.log(`Added item to cart: ${newItem.facilityName} (${newItem.timeSlots.length} slots)`);
         },
 
         /**
@@ -80,7 +79,6 @@ export const useCartStore = create<ICartState>()(
             itemCount: newItems.length,
           });
 
-          console.log(`Removed item from cart: ${itemId}`);
         },
 
         /**
@@ -105,7 +103,6 @@ export const useCartStore = create<ICartState>()(
             itemCount: newItems.length,
           });
 
-          console.log(`Updated cart item: ${itemId}`);
         },
 
         /**
@@ -119,7 +116,6 @@ export const useCartStore = create<ICartState>()(
             itemCount: 0,
           });
 
-          console.log("Cart cleared");
         },
 
         /**

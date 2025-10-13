@@ -4,8 +4,9 @@
 import { useState, useEffect } from 'react';
 
 // Internal imports
-import type { Zone } from '@/components/booking/types';
+import type { Zone } from '@/types/booking';
 import { getZonesForFacility } from '@/data/zones/dummyZones';
+import { useZoneStore } from '@/stores/zoneStore';
 
 interface ZonesState {
   readonly zones: readonly Zone[];
@@ -20,6 +21,8 @@ export const useZones = (facilityId: string | number): ZonesState => {
     error: null
   });
 
+  const { getZonesForFacility: storeGetZonesForFacility } = useZoneStore();
+
   useEffect(() => {
     const fetchZones = async (): Promise<void> => {
       try {
@@ -28,45 +31,15 @@ export const useZones = (facilityId: string | number): ZonesState => {
         // Simulate API delay
         await new Promise(resolve => setTimeout(resolve, 100));
 
-        // Get zones for the facility from dummy data
+        // Get zones for the facility from store first, then fallback to dummy data
         const facilityIdStr = typeof facilityId === 'number' ? facilityId.toString() : facilityId;
-        const dummyZones = getZonesForFacility(facilityIdStr);
+        let zones = storeGetZonesForFacility(facilityIdStr);
         
-        // Convert to BookingZone format
-        const zones: readonly Zone[] = dummyZones.map(zone => ({
-          id: zone.id,
-          name: zone.name,
-          facilityId: zone.facilityId,
-          capacity: zone.capacity,
-          pricePerHour: zone.pricePerHour,
-          description: `${zone.name} - Kapasitet: ${zone.capacity} personer`,
-          area: `${zone.capacity} m²`,
-          isMainZone: true,
-          subZones: [],
-          equipment: [],
-          amenities: zone.amenities,
-          bookingRules: {
-            minBookingDuration: 1,
-            maxBookingDuration: 8,
-            allowedTimeSlots: ['08:00-09:00', '09:00-10:00', '10:00-11:00'],
-            bookingTypes: ['standard'],
-            advanceBookingDays: 30,
-            cancellationHours: 24
-          },
-          adminInfo: {
-            contactPersonName: 'Admin',
-            contactPersonEmail: 'admin@bookme.no',
-            specialInstructions: '',
-            maintenanceSchedule: []
-          },
-          layout: {
-            coordinates: { x: 0, y: 0, width: 100, height: 100 },
-            entryPoints: ['main']
-          },
-          accessibility: [],
-          features: [],
-          isActive: true
-        }));
+        // If no zones in store, use dummy data
+        if (zones.length === 0) {
+          const dummyZones = getZonesForFacility(facilityIdStr);
+          zones = dummyZones;
+        }
 
         setState({
           zones,
@@ -85,7 +58,7 @@ export const useZones = (facilityId: string | number): ZonesState => {
     if (facilityId) {
       fetchZones();
     }
-  }, [facilityId]);
+  }, [facilityId, storeGetZonesForFacility]);
 
   return state;
 };

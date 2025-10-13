@@ -75,7 +75,9 @@ export const FacilityDetailLayout = ({
             <FacilityContactInfo 
               facilityName={facility.name} 
               address={facility.address} 
-              openingHours={facility.openingHours || "08:00 - 22:00"}
+              openingHours={facility.openingHours}
+              openingHoursStart={facility.openingHoursStart}
+              openingHoursEnd={facility.openingHoursEnd}
               contactEmail={facility.contactEmail}
               emergencyContact={facility.emergencyContact}
             />
@@ -91,6 +93,8 @@ export const FacilityDetailLayout = ({
           zones={zones}
           isLoading={false}
           error={undefined}
+          openingHoursStart={facility.openingHoursStart || "08:00"}
+          openingHoursEnd={facility.openingHoursEnd || "22:00"}
         />
       )}
     </div>

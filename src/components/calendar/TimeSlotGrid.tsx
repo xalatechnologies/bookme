@@ -40,15 +40,21 @@ export const TimeSlotGrid: React.FC<ICalendarGridProps> = ({
   error,
   getAvailabilityStatus: externalGetAvailabilityStatus,
   isSlotSelected: externalIsSlotSelected,
+  openingHoursStart = "08:00",
+  openingHoursEnd = "22:00"
 }) => {
-  // Generate time slots from 08:00 to 22:00 (14 slots) - memoized
-  const timeSlots = useMemo(() => 
-    Array.from({ length: 14 }, (_, i) => {
-      const hour = 8 + i;
+  // Generate time slots based on opening hours - memoized
+  const timeSlots = useMemo(() => {
+    const startHour = parseInt(openingHoursStart.split(':')[0]);
+    const endHour = parseInt(openingHoursEnd.split(':')[0]);
+    const totalHours = endHour - startHour;
+    
+    return Array.from({ length: totalHours }, (_, i) => {
+      const hour = startHour + i;
       const nextHour = hour + 1;
       return `${hour.toString().padStart(2, '0')}:00-${nextHour.toString().padStart(2, '0')}:00`;
-    }), []
-  );
+    });
+  }, [openingHoursStart, openingHoursEnd]);
 
   // Use hooks for drag selection and availability
   const { dragState, startDrag, updateDrag, endDrag, cancelDrag, isSlotInPreview } = useDragSelection();

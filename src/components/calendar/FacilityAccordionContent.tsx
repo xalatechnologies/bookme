@@ -7,6 +7,7 @@ import React from "react";
 import type { SelectedTimeSlot, AvailabilityStatus } from '@/types/booking';
 import type { IFacility } from '@/stores/facilityStore';
 import { getZonesForFacility } from '@/data/zones/dummyZones';
+import { useZoneStore } from '@/stores/zoneStore';
 import { AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 // Sibling imports
@@ -36,7 +37,11 @@ export const FacilityAccordionContent: React.FC<FacilityAccordionContentProps> =
   onClearSlots,
   onRemoveSlot
 }): JSX.Element => {
-  const zones = getZonesForFacility(facility.id);
+  const { getZonesForFacility: storeGetZonesForFacility } = useZoneStore();
+  
+  // Get zones from store first, then fallback to dummy data
+  const storeZones = storeGetZonesForFacility(facility.id);
+  const zones = storeZones.length > 0 ? storeZones : getZonesForFacility(facility.id);
   
   return (
     <AccordionItem 
@@ -71,6 +76,8 @@ export const FacilityAccordionContent: React.FC<FacilityAccordionContentProps> =
           onCompleteBooking={() => {}}
           isLoading={false}
           error={null}
+          openingHoursStart={facility.openingHoursStart || "08:00"}
+          openingHoursEnd={facility.openingHoursEnd || "22:00"}
         />
       </AccordionContent>
     </AccordionItem>

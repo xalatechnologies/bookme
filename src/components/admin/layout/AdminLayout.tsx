@@ -14,7 +14,7 @@ const AdminLayout = ({ children }: IAdminLayoutProps): JSX.Element => {
       <AdminHeader />
       <div className="flex h-[calc(100vh-73px)]">
         <AdminSidebar />
-        <main className="flex-1 p-6 overflow-y-auto">
+        <main className="flex-1 flex flex-col">
           {children}
         </main>
       </div>

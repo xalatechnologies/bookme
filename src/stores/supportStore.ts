@@ -618,9 +618,7 @@ export const useSupportStore = create<SupportState>()(
           try {
             const importData = JSON.parse(data);
             // This would validate and import the data
-            console.log('Importing tickets:', importData);
           } catch (error) {
-            console.error('Error importing tickets:', error);
           }
         }
       }),

@@ -2,39 +2,29 @@
 
 import React, { useState, useEffect } from "react";
 import { format } from "date-fns";
-import { MessageCircle, Search, Filter, Plus, MoreHorizontal, Archive, Trash2 } from "lucide-react";
+import { MessageCircle, Search, Filter, Plus, MoreHorizontal, Trash2, Bell, BellOff, X, Building, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { MessageThread, MessageThreadFilter } from "@/types/message";
+import { MessageThread } from "./MessageThread";
+import CreateThreadModal from "./CreateThreadModal";
 import { useMessageStore } from "@/stores/messageStore";
+import { MessageThread as MessageThreadType } from "@/types/message";
 
-/**
- * Props interface for MessageInbox component
- */
-interface MessageInboxProps {
-  readonly userId: string;
-  readonly onThreadSelect: (threadId: string) => void;
-  readonly onCreateThread: () => void;
-}
-
-/**
- * Thread card component for displaying individual message threads
- */
 const ThreadCard: React.FC<{
-  readonly thread: MessageThread;
+  readonly thread: MessageThreadType;
   readonly unreadCount: number;
   readonly lastMessage: string;
   readonly onSelect: (threadId: string) => void;
-  readonly onArchive: (threadId: string) => void;
   readonly onDelete: (threadId: string) => void;
-}> = ({ thread, unreadCount, lastMessage, onSelect, onArchive, onDelete }) => {
+  readonly onMarkResolved?: (threadId: string) => void;
+  readonly currentUserType?: 'tenant' | 'landlord';
+}> = ({ thread, unreadCount, lastMessage, onSelect, onDelete, onMarkResolved, currentUserType }) => {
   const [showActions, setShowActions] = useState<boolean>(false);
 
-  const getStatusColor = (status: MessageThread['status']): string => {
+  const getStatusColor = (status: MessageThreadType['status']): string => {
     switch (status) {
       case 'active': return 'bg-green-100 text-green-800';
       case 'resolved': return 'bg-blue-100 text-blue-800';
@@ -43,7 +33,7 @@ const ThreadCard: React.FC<{
     }
   };
 
-  const getPriorityColor = (priority: MessageThread['priority']): string => {
+  const getPriorityColor = (priority: MessageThreadType['priority']): string => {
     switch (priority) {
       case 'high': return 'bg-red-100 text-red-800';
       case 'medium': return 'bg-yellow-100 text-yellow-800';
@@ -88,6 +78,12 @@ const ThreadCard: React.FC<{
             <div className="flex items-center space-x-4 text-xs text-muted-foreground">
               <span>{thread.participants.length} deltakere</span>
               <span>{format(new Date(thread.lastMessageAt), "dd.MM.yyyy HH:mm")}</span>
+              {thread.facilityName && (
+                <span className="flex items-center gap-1">
+                  <Building className="h-3 w-3" />
+                  {thread.facilityName}
+                </span>
+              )}
               {thread.relatedBookingId && (
                 <span>Relatert til booking</span>
               )}
@@ -96,16 +92,21 @@ const ThreadCard: React.FC<{
           
           {showActions && (
             <div className="flex space-x-1">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onArchive(thread.id);
-                }}
-              >
-                <Archive className="h-4 w-4" />
-              </Button>
+              {/* Admin actions - only show for landlords */}
+              {currentUserType === 'landlord' && thread.status === 'active' && onMarkResolved && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onMarkResolved(thread.id);
+                  }}
+                  className="h-8 w-8 p-0 text-green-600 hover:text-green-700 hover:bg-green-50"
+                  title="Marker som løst"
+                >
+                  <Check className="h-4 w-4" />
+                </Button>
+              )}
               <Button
                 variant="ghost"
                 size="sm"
@@ -113,6 +114,8 @@ const ThreadCard: React.FC<{
                   e.stopPropagation();
                   onDelete(thread.id);
                 }}
+                className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+                title="Slett tråd"
               >
                 <Trash2 className="h-4 w-4" />
               </Button>
@@ -124,38 +127,56 @@ const ThreadCard: React.FC<{
   );
 };
 
-/**
- * Message inbox component
- * 
- * Displays all message threads with filtering, searching, and management capabilities.
- */
+interface MessageInboxProps {
+  readonly userId: string;
+  readonly onThreadSelect?: (threadId: string) => void;
+  readonly onCreateThread?: () => void;
+  readonly showThreadView?: boolean;
+  readonly currentUserType?: 'tenant' | 'landlord';
+}
+
 export const MessageInbox: React.FC<MessageInboxProps> = ({
   userId,
   onThreadSelect,
-  onCreateThread
+  onCreateThread,
+  showThreadView = true,
+  currentUserType = 'tenant'
 }) => {
-  const { getUserThreads, filterThreads, getMessagesByThread } = useMessageStore();
-  const [threads, setThreads] = useState<readonly MessageThread[]>([]);
+  const { getUserThreads, filterThreads, getMessagesByThread, getAvailableParticipants, updateThread, deleteThread } = useMessageStore();
+  const [threads, setThreads] = useState<readonly MessageThreadType[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [priorityFilter, setPriorityFilter] = useState<string>("all");
-  const [activeTab, setActiveTab] = useState<string>("all");
+  const [selectedThreadId, setSelectedThreadId] = useState<string | null>(null);
+  const [notificationsEnabled, setNotificationsEnabled] = useState<boolean>(true);
+  const [showCreateModal, setShowCreateModal] = useState<boolean>(false);
+  
+  // Get available participants to check if messaging is possible
+  const availableParticipants = getAvailableParticipants(userId, currentUserType);
+  
 
   useEffect(() => {
     const userThreads = getUserThreads(userId);
     setThreads(userThreads);
-  }, [userId, getUserThreads]);
+    
+    // Auto-select first thread if none selected and we have threads
+    if (showThreadView && userThreads.length > 0 && !selectedThreadId) {
+      setSelectedThreadId(userThreads[0].id);
+    }
+  }, [userId, getUserThreads, showThreadView, selectedThreadId]);
 
-  const filteredThreads = threads.filter((thread) => {
-    const matchesSearch = !searchQuery || 
-      thread.subject.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      thread.participants.some(p => p.name.toLowerCase().includes(searchQuery.toLowerCase()));
-    
-    const matchesStatus = statusFilter === "all" || thread.status === statusFilter;
-    const matchesPriority = priorityFilter === "all" || thread.priority === priorityFilter;
-    
-    return matchesSearch && matchesStatus && matchesPriority;
-  });
+  const filteredThreads = threads
+    .filter((thread) => {
+      const matchesSearch = !searchQuery || 
+        thread.subject.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        thread.participants.some(p => p.name.toLowerCase().includes(searchQuery.toLowerCase()));
+      
+      const matchesStatus = statusFilter === "all" || thread.status === statusFilter;
+      const matchesPriority = priorityFilter === "all" || thread.priority === priorityFilter;
+      
+      return matchesSearch && matchesStatus && matchesPriority;
+    })
+    .sort((a, b) => new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime()); // Sort threads by last message at
 
   const getUnreadCount = (threadId: string): number => {
     const messages = getMessagesByThread(threadId);
@@ -170,163 +191,141 @@ export const MessageInbox: React.FC<MessageInboxProps> = ({
 
   const handleArchive = (threadId: string): void => {
     // Implementation would archive the thread
-    console.log("Archive thread:", threadId);
   };
 
   const handleDelete = (threadId: string): void => {
     // Implementation would delete the thread
-    console.log("Delete thread:", threadId);
   };
 
-  const activeThreads = filteredThreads.filter(t => t.status === 'active');
-  const resolvedThreads = filteredThreads.filter(t => t.status === 'resolved');
-  const closedThreads = filteredThreads.filter(t => t.status === 'closed');
+  const clearFilters = (): void => {
+    setSearchQuery("");
+    setStatusFilter("all");
+    setPriorityFilter("all");
+  };
 
+
+  const handleThreadSelect = (threadId: string) => {
+    setSelectedThreadId(threadId);
+    onThreadSelect?.(threadId);
+  };
+
+  const handleCreateThread = () => {
+    setShowCreateModal(true);
+    onCreateThread?.();
+  };
+
+  // Always show split view
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold">Meldinger</h2>
-          <p className="text-muted-foreground">
-            Administrer dine meldingstråder
-          </p>
+    <div className="flex flex-1 border rounded-lg overflow-hidden">
+      {/* Left side - Thread list */}
+      <div className="w-1/3 border-r bg-muted/30 flex flex-col">
+        {/* Header */}
+        <div className="p-4 border-b bg-background">
+          <div className="flex items-center justify-between">
+            <h3 className="font-semibold">Meldingstråder</h3>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleCreateThread}
+              disabled={availableParticipants.length === 0}
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Ny melding
+            </Button>
+          </div>
         </div>
-        <Button onClick={onCreateThread}>
-          <Plus className="h-4 w-4 mr-2" />
-          Ny melding
-        </Button>
-      </div>
-
-      {/* Search and Filters */}
-      <div className="flex flex-col sm:flex-row gap-4">
-        <div className="flex-1">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        
+        {/* Search and filters */}
+        <div className="p-4 border-b bg-background">
+          <div className="space-y-2">
             <Input
               placeholder="Søk i meldinger..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
+              className="h-8"
             />
+            <div className="flex gap-2">
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger className="h-8 text-xs">
+                  <SelectValue placeholder="Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Alle</SelectItem>
+                  <SelectItem value="active">Aktive</SelectItem>
+                  <SelectItem value="resolved">Løst</SelectItem>
+                  <SelectItem value="closed">Lukket</SelectItem>
+                </SelectContent>
+              </Select>
+              <Select value={priorityFilter} onValueChange={setPriorityFilter}>
+                <SelectTrigger className="h-8 text-xs">
+                  <SelectValue placeholder="Prioritet" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Alle</SelectItem>
+                  <SelectItem value="high">Høy</SelectItem>
+                  <SelectItem value="medium">Medium</SelectItem>
+                  <SelectItem value="low">Lav</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
         </div>
-        <div className="flex gap-2">
-          <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-32">
-              <SelectValue placeholder="Status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Alle statuser</SelectItem>
-              <SelectItem value="active">Aktiv</SelectItem>
-              <SelectItem value="resolved">Løst</SelectItem>
-              <SelectItem value="closed">Lukket</SelectItem>
-            </SelectContent>
-          </Select>
-          <Select value={priorityFilter} onValueChange={setPriorityFilter}>
-            <SelectTrigger className="w-32">
-              <SelectValue placeholder="Prioritet" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Alle prioriter</SelectItem>
-              <SelectItem value="high">Høy</SelectItem>
-              <SelectItem value="medium">Medium</SelectItem>
-              <SelectItem value="low">Lav</SelectItem>
-            </SelectContent>
-          </Select>
+        
+        {/* Thread list */}
+        <div className="flex-1 overflow-y-auto">
+          {filteredThreads.map((thread) => (
+            <ThreadCard
+              key={thread.id}
+              thread={thread}
+              unreadCount={getUnreadCount(thread.id)}
+              lastMessage={getLastMessage(thread.id)}
+              onSelect={() => handleThreadSelect(thread.id)}
+              onDelete={(threadId) => {
+                deleteThread(threadId);
+                // If we're deleting the currently selected thread, clear selection
+                if (selectedThreadId === threadId) {
+                  setSelectedThreadId(null);
+                }
+              }}
+              onMarkResolved={(threadId) => updateThread(threadId, { status: 'resolved' })}
+              currentUserType={currentUserType}
+            />
+          ))}
+          {filteredThreads.length === 0 && (
+            <div className="p-4 text-center text-muted-foreground text-sm">
+              Ingen meldingstråder funnet
+            </div>
+          )}
         </div>
       </div>
+      
+      {/* Right side - Active thread */}
+      <div className="flex-1">
+        {selectedThreadId ? (
+          <MessageThread
+            threadId={selectedThreadId}
+            currentUserId={userId}
+            onClose={() => setSelectedThreadId(null)}
+            currentUserType={currentUserType}
+            showHeader={false}
+          />
+        ) : (
+          <div className="flex items-center justify-center h-full text-muted-foreground">
+            <div className="text-center">
+              <MessageCircle className="h-12 w-12 mx-auto mb-4 opacity-50" />
+              <p>Velg en meldingstråd for å starte samtalen</p>
+            </div>
+          </div>
+        )}
+      </div>
 
-      {/* Threads Tabs */}
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList>
-          <TabsTrigger value="all">
-            Alle ({filteredThreads.length})
-          </TabsTrigger>
-          <TabsTrigger value="active">
-            Aktive ({activeThreads.length})
-          </TabsTrigger>
-          <TabsTrigger value="resolved">
-            Løste ({resolvedThreads.length})
-          </TabsTrigger>
-          <TabsTrigger value="closed">
-            Lukkede ({closedThreads.length})
-          </TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="all" className="space-y-3">
-          {filteredThreads.length === 0 ? (
-            <Card>
-              <CardContent className="flex flex-col items-center justify-center py-12">
-                <MessageCircle className="h-12 w-12 text-muted-foreground mb-4" />
-                <h3 className="text-lg font-semibold mb-2">Ingen meldinger</h3>
-                <p className="text-muted-foreground text-center mb-4">
-                  Du har ingen meldinger ennå
-                </p>
-                <Button onClick={onCreateThread}>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Opprett første melding
-                </Button>
-              </CardContent>
-            </Card>
-          ) : (
-            filteredThreads.map((thread) => (
-              <ThreadCard
-                key={thread.id}
-                thread={thread}
-                unreadCount={getUnreadCount(thread.id)}
-                lastMessage={getLastMessage(thread.id)}
-                onSelect={onThreadSelect}
-                onArchive={handleArchive}
-                onDelete={handleDelete}
-              />
-            ))
-          )}
-        </TabsContent>
-
-        <TabsContent value="active" className="space-y-3">
-          {activeThreads.map((thread) => (
-            <ThreadCard
-              key={thread.id}
-              thread={thread}
-              unreadCount={getUnreadCount(thread.id)}
-              lastMessage={getLastMessage(thread.id)}
-              onSelect={onThreadSelect}
-              onArchive={handleArchive}
-              onDelete={handleDelete}
-            />
-          ))}
-        </TabsContent>
-
-        <TabsContent value="resolved" className="space-y-3">
-          {resolvedThreads.map((thread) => (
-            <ThreadCard
-              key={thread.id}
-              thread={thread}
-              unreadCount={getUnreadCount(thread.id)}
-              lastMessage={getLastMessage(thread.id)}
-              onSelect={onThreadSelect}
-              onArchive={handleArchive}
-              onDelete={handleDelete}
-            />
-          ))}
-        </TabsContent>
-
-        <TabsContent value="closed" className="space-y-3">
-          {closedThreads.map((thread) => (
-            <ThreadCard
-              key={thread.id}
-              thread={thread}
-              unreadCount={getUnreadCount(thread.id)}
-              lastMessage={getLastMessage(thread.id)}
-              onSelect={onThreadSelect}
-              onArchive={handleArchive}
-              onDelete={handleDelete}
-            />
-          ))}
-        </TabsContent>
-      </Tabs>
+      <CreateThreadModal
+        isOpen={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        currentUserId={userId}
+        currentUserName={currentUserType === 'tenant' ? 'Hamid Rahmani' : 'Amin Ismail'}
+        currentUserType={currentUserType}
+      />
     </div>
   );
 };
-

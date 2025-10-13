@@ -20,6 +20,8 @@ interface CalendarGridProps {
   readonly isSlotSelected: (zoneId: string, date: Date, timeSlot: string) => boolean;
   readonly onSlotClick: (zoneId: string, date: Date, timeSlot: string, availability: string) => void;
   readonly onBulkSlotSelection?: (slots: readonly SelectedTimeSlot[]) => void;
+  readonly openingHoursStart?: string;
+  readonly openingHoursEnd?: string;
 }
 
 export const CalendarGrid: React.FC<CalendarGridProps> = ({ 
@@ -29,8 +31,10 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
   selectedSlots, 
   getAvailabilityStatus, 
   isSlotSelected, 
-  onSlotClick,
-  onBulkSlotSelection 
+  onSlotClick, 
+  onBulkSlotSelection,
+  openingHoursStart = "08:00",
+  openingHoursEnd = "22:00"
 }): JSX.Element => {
   const weekDays = Array(7).fill(0).map((_, i) => addDays(currentWeekStart, i));
   const { dragState, startDrag, updateDrag, endDrag, cancelDrag, isSlotInPreview } = useDragSelection();

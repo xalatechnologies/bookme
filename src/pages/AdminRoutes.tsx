@@ -17,6 +17,7 @@ const IntegrationsPage = lazy(() => import("@/pages/admin/IntegrationsPage"));
 const ReportsPage = lazy(() => import("@/pages/admin/ReportsPage"));
 const AuditLogPage = lazy(() => import("@/pages/admin/AuditLogPage"));
 const DeletionPlanPage = lazy(() => import("@/pages/admin/DeletionPlanPage"));
+const AdminMessages = lazy(() => import("@/pages/admin/AdminMessages"));
 
 // Loading component
 const AdminPageLoader = (): JSX.Element => (
@@ -46,6 +47,7 @@ const AdminRoutes = (_props: IAdminRoutesProps): JSX.Element => {
         <Route path="/reports" element={<AdminLayout><ReportsPage /></AdminLayout>} />
         <Route path="/audit-logs" element={<AdminLayout><AuditLogPage /></AdminLayout>} />
         <Route path="/data-retention" element={<AdminLayout><DeletionPlanPage /></AdminLayout>} />
+        <Route path="/messages" element={<AdminLayout><AdminMessages /></AdminLayout>} />
         <Route path="/settings" element={<AdminLayout><SettingsPage /></AdminLayout>} />
       </Routes>
     </Suspense>

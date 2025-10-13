@@ -22,6 +22,7 @@ interface SupportTicketFormProps {
   readonly userId: string;
   readonly userName: string;
   readonly userEmail: string;
+  readonly userType?: 'tenant' | 'landlord';
   readonly relatedBookingId?: string;
 }
 
@@ -150,6 +151,7 @@ export const SupportTicketForm: React.FC<SupportTicketFormProps> = ({
   userId,
   userName,
   userEmail,
+  userType = 'tenant',
   relatedBookingId
 }) => {
   const [category, setCategory] = useState<CreateSupportTicketData['category']>('other');

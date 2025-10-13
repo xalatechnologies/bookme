@@ -1,21 +1,15 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
-import { Calendar, View, SlotInfo } from "react-big-calendar";
-import { localizer } from "@/lib/calendar/localizer";
+import { SimpleCalendar } from "@/components/calendar/SimpleCalendar";
 import { useCalendarEvents } from "@/hooks/useCalendarEvents";
-import { startOfMonth, endOfMonth, startOfWeek, endOfWeek, startOfDay, endOfDay } from "date-fns";
+import { startOfMonth, endOfMonth } from "date-fns";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { 
   Calendar as CalendarIcon, 
-  ChevronLeft, 
-  ChevronRight, 
-  Grid3X3, 
-  List, 
   Plus,
-  Filter,
   Search
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -23,37 +17,18 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import type { IBookingEvent } from "@/types/calendar";
 
 export default function CalendarPage(): JSX.Element {
-  const [date, setDate] = useState(new Date());
-  const [view, setView] = useState<View>("month");
+  const [currentDate, setCurrentDate] = useState(new Date());
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedFacility, setSelectedFacility] = useState<string>("all");
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
+  const [selectedEvent, setSelectedEvent] = useState<IBookingEvent | null>(null);
 
   const range = useMemo(() => {
-    const now = date;
-    switch (view) {
-      case "month":
-        return {
-          from: startOfMonth(now).toISOString(),
-          to: endOfMonth(now).toISOString()
-        };
-      case "week":
-        return {
-          from: startOfWeek(now, { weekStartsOn: 1 }).toISOString(),
-          to: endOfWeek(now, { weekStartsOn: 1 }).toISOString()
-        };
-      case "day":
-        return {
-          from: startOfDay(now).toISOString(),
-          to: endOfDay(now).toISOString()
-        };
-      default:
-        return {
-          from: startOfMonth(now).toISOString(),
-          to: endOfMonth(now).toISOString()
-        };
-    }
-  }, [date, view]);
+    return {
+      from: startOfMonth(currentDate).toISOString(),
+      to: endOfMonth(currentDate).toISOString()
+    };
+  }, [currentDate]);
 
   const query = useMemo(() => ({
     from: range.from,
@@ -64,72 +39,24 @@ export default function CalendarPage(): JSX.Element {
   }), [range, searchQuery, selectedFacility, selectedStatus]);
 
   const { data = [], isLoading } = useCalendarEvents(query);
-  const [selectedEvent, setSelectedEvent] = useState<IBookingEvent | null>(null);
-  const [newSlot, setNewSlot] = useState<SlotInfo | null>(null);
 
   const facilities = ["Drammenshallen", "Kulturhuset", "Idrettshallen", "Svømmehallen"];
 
-  const eventStyleGetter = (event: IBookingEvent) => {
-    const base = "border rounded-sm text-xs font-medium";
-    const by = {
-      confirmed: "border-green-600 bg-green-50 text-green-900",
-      pending: "border-yellow-600 bg-yellow-50 text-yellow-900",
-      cancelled: "border-red-600 bg-red-50 text-red-900 line-through"
-    }[event.status];
-    return { className: `${base} ${by}` };
-  };
-
-  const handleNavigate = (newDate: Date) => {
-    setDate(newDate);
-  };
-
-  const handleViewChange = (newView: View) => {
-    setView(newView);
-  };
-
-  const handleSelectEvent = (event: IBookingEvent) => {
+  const handleEventClick = (event: IBookingEvent) => {
     setSelectedEvent(event);
   };
 
-  const handleSelectSlot = (slot: SlotInfo) => {
-    setNewSlot(slot);
+  const handleNewBooking = () => {
+    console.log("Ny booking");
   };
 
-  const handleToday = () => {
-    setDate(new Date());
-  };
-
-  const handlePrev = () => {
-    const newDate = new Date(date);
-    switch (view) {
-      case "month":
-        newDate.setMonth(newDate.getMonth() - 1);
-        break;
-      case "week":
-        newDate.setDate(newDate.getDate() - 7);
-        break;
-      case "day":
-        newDate.setDate(newDate.getDate() - 1);
-        break;
-    }
-    setDate(newDate);
-  };
-
-  const handleNext = () => {
-    const newDate = new Date(date);
-    switch (view) {
-      case "month":
-        newDate.setMonth(newDate.getMonth() + 1);
-        break;
-      case "week":
-        newDate.setDate(newDate.getDate() + 7);
-        break;
-      case "day":
-        newDate.setDate(newDate.getDate() + 1);
-        break;
-    }
-    setDate(newDate);
-  };
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-gray-600 dark:text-gray-400">Laster kalender...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -144,7 +71,7 @@ export default function CalendarPage(): JSX.Element {
           </p>
         </div>
         <Button 
-          onClick={() => console.log("Ny booking")}
+          onClick={handleNewBooking}
           className="flex items-center gap-2"
         >
           <Plus className="w-4 h-4" />
@@ -152,7 +79,7 @@ export default function CalendarPage(): JSX.Element {
         </Button>
       </header>
 
-      {/* Toolbar */}
+      {/* Filters */}
       <Card>
         <CardContent className="p-4">
           <div className="flex flex-col lg:flex-row gap-4">
@@ -193,121 +120,20 @@ export default function CalendarPage(): JSX.Element {
                 <SelectItem value="cancelled">Avlyst</SelectItem>
               </SelectContent>
             </Select>
-
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                onClick={() => setView("month")}
-                className={view === "month" ? "bg-blue-50" : ""}
-              >
-                <Grid3X3 className="w-4 h-4" />
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => setView("week")}
-                className={view === "week" ? "bg-blue-50" : ""}
-              >
-                Uke
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => setView("day")}
-                className={view === "day" ? "bg-blue-50" : ""}
-              >
-                Dag
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => setView("agenda")}
-                className={view === "agenda" ? "bg-blue-50" : ""}
-              >
-                <List className="w-4 h-4" />
-              </Button>
-            </div>
           </div>
         </CardContent>
       </Card>
-
-      {/* Calendar Navigation */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={handlePrev}>
-            <ChevronLeft className="w-4 h-4" />
-          </Button>
-          <Button variant="outline" size="sm" onClick={handleToday}>
-            I dag
-          </Button>
-          <Button variant="outline" size="sm" onClick={handleNext}>
-            <ChevronRight className="w-4 h-4" />
-          </Button>
-        </div>
-        
-        <h2 className="text-lg font-semibold">
-          {date.toLocaleDateString("nb-NO", { 
-            year: "numeric", 
-            month: "long",
-            ...(view === "week" && { day: "numeric" })
-          })}
-        </h2>
-      </div>
-
-      {/* Calendar Legend */}
-      <div className="flex gap-4 text-sm">
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 bg-green-100 border border-green-600 rounded"></div>
-          <span>Bekreftet</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 bg-yellow-100 border border-yellow-600 rounded"></div>
-          <span>Ventende</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 bg-red-100 border border-red-600 rounded"></div>
-          <span>Avlyst</span>
-        </div>
-      </div>
 
       {/* Calendar */}
-      <Card>
-        <CardContent className="p-0">
-          <div className="h-[600px] rbc-calendar">
-            <Calendar
-              localizer={localizer}
-              events={data}
-              date={date}
-              view={view}
-              onNavigate={handleNavigate}
-              onView={handleViewChange}
-              selectable
-              onSelectEvent={handleSelectEvent}
-              onSelectSlot={handleSelectSlot}
-              popup
-              culture="nb"
-              eventPropGetter={eventStyleGetter}
-              step={60}
-              timeslots={1}
-              messages={{
-                next: "Neste",
-                previous: "Forrige",
-                today: "I dag",
-                month: "Måned",
-                week: "Uke",
-                day: "Dag",
-                agenda: "Liste",
-                date: "Dato",
-                time: "Tid",
-                event: "Booking",
-                noEventsInRange: "Ingen bookinger i dette intervallet",
-                showMore: (total) => `+${total} flere`
-              }}
-            />
-          </div>
-        </CardContent>
-      </Card>
+      <SimpleCalendar
+        events={data}
+        onEventClick={handleEventClick}
+        className="w-full"
+      />
 
       {/* Event Details Modal */}
       {selectedEvent && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
           <Card className="w-full max-w-md">
             <CardHeader>
               <div className="flex items-center justify-between">
@@ -371,55 +197,6 @@ export default function CalendarPage(): JSX.Element {
                 </Button>
                 <Button variant="outline" size="sm" className="flex-1">
                   Avlys
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      )}
-
-      {/* New Booking Modal */}
-      {newSlot && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
-          <Card className="w-full max-w-md">
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-lg">Ny booking</CardTitle>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setNewSlot(null)}
-                >
-                  ×
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Dato:</span>
-                  <span>{newSlot.start.toLocaleDateString("nb-NO")}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Tid:</span>
-                  <span>
-                    {newSlot.start.toLocaleTimeString("nb-NO", { 
-                      hour: "2-digit", 
-                      minute: "2-digit" 
-                    })} - {newSlot.end.toLocaleTimeString("nb-NO", { 
-                      hour: "2-digit", 
-                      minute: "2-digit" 
-                    })}
-                  </span>
-                </div>
-              </div>
-              
-              <div className="flex gap-2 pt-4">
-                <Button size="sm" className="flex-1">
-                  Opprett booking
-                </Button>
-                <Button variant="outline" size="sm" onClick={() => setNewSlot(null)}>
-                  Avbryt
                 </Button>
               </div>
             </CardContent>

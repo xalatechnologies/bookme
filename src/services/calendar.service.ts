@@ -1,50 +1,117 @@
 import type { IBookingEvent, ICalendarQuery } from "@/types/calendar";
 
-// Mock service - replace with actual HTTP calls
+// Convert booking data to calendar events
+const convertBookingToEvent = (booking: any): IBookingEvent => {
+  try {
+    // Parse date - handle different formats (prioritize date over startDate)
+    let bookingDate: Date;
+    if (booking.date) {
+      bookingDate = new Date(booking.date);
+    } else if (booking.startDate) {
+      bookingDate = new Date(booking.startDate);
+    } else {
+      bookingDate = new Date();
+    }
+    
+    // Validate date
+    if (isNaN(bookingDate.getTime())) {
+      bookingDate = new Date();
+    }
+  
+  // Parse time - handle different formats (prioritize time over startTime/endTime)
+  let startTime: string, endTime: string;
+  if (booking.time && booking.time.includes('-')) {
+    [startTime, endTime] = booking.time.split('-').map(t => t.trim());
+  } else if (booking.time) {
+    // Handle single time format
+    startTime = booking.time;
+    endTime = booking.time;
+  } else if (booking.startTime && booking.endTime) {
+    startTime = booking.startTime;
+    endTime = booking.endTime;
+  } else {
+    startTime = '12:00';
+    endTime = '13:00';
+  }
+  
+  // Ensure times are in HH:MM format
+  if (!startTime.includes(':')) {
+    startTime = '12:00';
+  }
+  if (!endTime.includes(':')) {
+    endTime = '13:00';
+  }
+  
+  // Create start and end datetime
+  const [startHour, startMinute] = startTime.split(':').map(Number);
+  const [endHour, endMinute] = endTime.split(':').map(Number);
+  
+  const startDateTime = new Date(bookingDate);
+  startDateTime.setHours(startHour, startMinute, 0, 0);
+  
+  const endDateTime = new Date(bookingDate);
+  endDateTime.setHours(endHour, endMinute, 0, 0);
+  
+  // Extract price as number - handle both string and number types
+  let priceNok = 0;
+  if (typeof booking.price === 'string') {
+    priceNok = parseInt(booking.price.replace(/\D/g, '') || '0');
+  } else if (typeof booking.price === 'number') {
+    priceNok = booking.price;
+  } else {
+    priceNok = 0;
+  }
+  
+    const event = {
+      id: booking.id,
+      facilityId: booking.facilityId || booking.id,
+      facilityName: booking.facility || booking.facilityName || 'Ukjent lokale',
+      title: booking.description || booking.purpose || 'Booking',
+      start: startDateTime.toISOString(),
+      end: endDateTime.toISOString(),
+      status: booking.status === 'confirmed' || booking.status === 'approved' ? 'confirmed' : 
+              booking.status === 'pending' ? 'pending' : 
+              booking.status === 'rejected' || booking.status === 'cancelled' ? 'cancelled' : 'cancelled',
+      priceNok: priceNok,
+      tags: [booking.facility?.toLowerCase() || 'booking']
+    };
+    
+    return event;
+  } catch (error) {
+    // Return a fallback event
+    return {
+      id: booking.id || 'unknown',
+      facilityId: booking.facilityId || booking.id || 'unknown',
+      facilityName: booking.facility || booking.facilityName || 'Ukjent lokale',
+      title: booking.description || booking.purpose || 'Booking',
+      start: new Date().toISOString(),
+      end: new Date().toISOString(),
+      status: 'cancelled' as const,
+      priceNok: 0,
+      tags: ['error']
+    };
+  }
+};
+
 export const calendarService = {
   async list(params: ICalendarQuery): Promise<readonly IBookingEvent[]> {
-    // Mock data for development
-    const mockEvents: IBookingEvent[] = [
-      {
-        id: "1",
-        facilityId: "facility-1",
-        facilityName: "Drammenshallen",
-        title: "Fotballtrening",
-        start: "2024-01-20T10:00:00.000Z",
-        end: "2024-01-20T12:00:00.000Z",
-        status: "confirmed",
-        priceNok: 2400,
-        tags: ["sport", "fotball"]
-      },
-      {
-        id: "2",
-        facilityId: "facility-2",
-        facilityName: "Kulturhuset",
-        title: "Konsert",
-        start: "2024-01-22T18:00:00.000Z",
-        end: "2024-01-22T20:00:00.000Z",
-        status: "pending",
-        priceNok: 1200,
-        tags: ["kultur", "musikk"]
-      },
-      {
-        id: "3",
-        facilityId: "facility-3",
-        facilityName: "Idrettshallen",
-        title: "Basketball",
-        start: "2024-01-25T14:00:00.000Z",
-        end: "2024-01-25T16:00:00.000Z",
-        status: "cancelled",
-        priceNok: 1800,
-        tags: ["sport", "basketball"]
-      }
-    ];
-
+    // Get bookings from localStorage
+    const pendingBookings = JSON.parse(localStorage.getItem('pendingBookings') || '[]');
+    const processedBookings = JSON.parse(localStorage.getItem('processedBookings') || '[]');
+    
+    // Combine all bookings
+    const allBookings = [...pendingBookings, ...processedBookings];
+    
+    // Convert to calendar events
+    const events: IBookingEvent[] = allBookings.map((booking) => {
+      return convertBookingToEvent(booking);
+    });
+    
     // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 300));
+    await new Promise(resolve => setTimeout(resolve, 100));
     
     // Filter based on query parameters
-    let filtered = mockEvents;
+    let filtered = events;
     
     if (params.facilityIds && params.facilityIds.length > 0) {
       filtered = filtered.filter(event => params.facilityIds!.includes(event.facilityId));
@@ -62,6 +129,16 @@ export const calendarService = {
       );
     }
     
+    // Filter by date range
+    if (params.from && params.to) {
+      const fromDate = new Date(params.from);
+      const toDate = new Date(params.to);
+      
+      filtered = filtered.filter(event => {
+        const eventDate = new Date(event.start);
+        return eventDate >= fromDate && eventDate <= toDate;
+      });
+    }
     return filtered;
   },
 } as const;

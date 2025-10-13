@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { calendarService } from "@/services/calendar.service";
 import type { ICalendarQuery } from "@/types/calendar";
 
-export function useCalendarEvents(q: ICalendarQuery) {
+export function useCalendarEvents(q: ICalendarQuery): ReturnType<typeof useQuery> {
   return useQuery({
     queryKey: ["calendar", q],
     queryFn: () => calendarService.list(q),

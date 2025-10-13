@@ -11,6 +11,7 @@ import {
   Heart,
   User,
   Bell,
+  MessageCircle,
   HelpCircle,
   ChevronLeft, 
   ChevronRight 
@@ -64,6 +65,7 @@ const UserSidebar = (_props: IUserSidebarProps): JSX.Element => {
       items: [
         { id: "profile", label: "Innstillinger", path: "/user/profile", icon: User },
         { id: "notifications", label: "Varsler", path: "/user/notifications", icon: Bell },
+        { id: "messages", label: "Meldinger", path: "/user/messages", icon: MessageCircle },
       ]
     },
     {

@@ -59,6 +59,8 @@ export interface IFacilityCalendarProps {
   readonly isSlotSelected?: (zoneId: string, date: Date, timeSlot: string) => boolean;
   readonly onAddToCart?: (bookingData: any) => void;
   readonly onCompleteBooking?: (bookingData: any) => void;
+  readonly openingHoursStart?: string;
+  readonly openingHoursEnd?: string;
 }
 
 export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
@@ -74,6 +76,8 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
   isSlotSelected: externalIsSlotSelected,
   onAddToCart: externalOnAddToCart,
   onCompleteBooking: externalOnCompleteBooking,
+  openingHoursStart = "08:00",
+  openingHoursEnd = "22:00",
 }) => {
   const navigate = useNavigate();
   const { addItem } = useCart();
@@ -539,7 +543,7 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
                       <Users className="h-4 w-4" />
                       {zone.name}
                       <Badge variant="secondary" className="ml-1 text-sm">
-                        {zone.area || "120 m²"}
+                        {zone.area ? `${zone.area} m²` : "120 m²"}
                       </Badge>
                     </Button>
                   ))}
@@ -592,6 +596,8 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
                     error={error}
                     getAvailabilityStatus={externalGetAvailabilityStatus}
                     isSlotSelected={externalIsSlotSelected}
+                    openingHoursStart={openingHoursStart}
+                    openingHoursEnd={openingHoursEnd}
                   />
                 </CardContent>
               </Card>

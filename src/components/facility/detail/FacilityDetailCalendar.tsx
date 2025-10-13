@@ -12,6 +12,8 @@ interface FacilityDetailCalendarProps {
   readonly currentPattern?: any;
   readonly onPatternChange?: (pattern: any) => void;
   readonly onPatternApply?: (pattern: any) => void;
+  readonly openingHoursStart?: string;
+  readonly openingHoursEnd?: string;
 }
 
 export const FacilityDetailCalendar: React.FC<FacilityDetailCalendarProps> = ({
@@ -21,7 +23,9 @@ export const FacilityDetailCalendar: React.FC<FacilityDetailCalendarProps> = ({
   timeSlotDuration = 1,
   currentPattern,
   onPatternChange,
-  onPatternApply
+  onPatternApply,
+  openingHoursStart = "08:00",
+  openingHoursEnd = "22:00"
 }): JSX.Element => {
   return (
     <FacilityCalendar
@@ -30,6 +34,8 @@ export const FacilityDetailCalendar: React.FC<FacilityDetailCalendarProps> = ({
       zones={zones}
       isLoading={false}
       error={undefined}
+      openingHoursStart={openingHoursStart}
+      openingHoursEnd={openingHoursEnd}
     />
   );
 };

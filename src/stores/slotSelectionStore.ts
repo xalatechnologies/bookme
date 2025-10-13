@@ -51,7 +51,6 @@ const ensureDate = (date: Date | string): Date => {
     return new Date(date);
   }
   
-  console.error("Invalid date type:", typeof date, date);
   return new Date();
 };
 

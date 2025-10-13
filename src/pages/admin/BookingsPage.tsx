@@ -30,13 +30,10 @@ import {
   Building2,
   UserCheck,
   Timer,
-  MessageCircle,
   HelpCircle,
   Repeat
 } from "lucide-react";
-import { MessageInbox } from "@/components/messaging/MessageInbox";
 import { SupportTicketList } from "@/components/support/SupportTicketList";
-import { useMessageStore } from "@/stores/messageStore";
 import { useSupportStore } from "@/stores/supportStore";
 
 interface IBooking {
@@ -505,7 +502,6 @@ const BookingsPage = (): JSX.Element => {
   });
   
   // New feature states
-  const [showMessages, setShowMessages] = useState<boolean>(false);
   const [showSupport, setShowSupport] = useState<boolean>(false);
   const [showRecurringBookings, setShowRecurringBookings] = useState<boolean>(false);
 
@@ -531,7 +527,6 @@ const BookingsPage = (): JSX.Element => {
         duration: booking.duration ? parseInt(booking.duration) : 2
       }));
     } catch (error) {
-      console.error('Error loading pending bookings:', error);
       return [];
     }
   }, []);
@@ -541,7 +536,6 @@ const BookingsPage = (): JSX.Element => {
     try {
       return JSON.parse(localStorage.getItem('processedBookings') || '[]');
     } catch (error) {
-      console.error('Error loading processed bookings:', error);
       return [];
     }
   }, []);
@@ -614,9 +608,8 @@ const BookingsPage = (): JSX.Element => {
       // Refresh the component
       setRefreshTrigger(prev => prev + 1);
       
-      console.log(`Booking ${id} approved successfully`);
     } catch (error) {
-      console.error('Error approving booking:', error);
+      // Handle error silently
     }
   }, [bookings]);
 
@@ -704,14 +697,6 @@ const BookingsPage = (): JSX.Element => {
           
           {/* Admin Action Buttons */}
           <div className="flex flex-wrap gap-2">
-            <Button 
-              variant="outline"
-              onClick={() => setShowMessages(true)}
-              className="flex items-center gap-2"
-            >
-              <MessageCircle className="h-4 w-4" />
-              Meldinger
-            </Button>
             <Button 
               variant="outline"
               onClick={() => setShowSupport(true)}
@@ -949,27 +934,6 @@ const BookingsPage = (): JSX.Element => {
       </div>
 
       {/* Admin Feature Modals */}
-      {showMessages && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg w-full max-w-6xl h-[90vh] overflow-hidden">
-            <div className="p-4 border-b">
-              <div className="flex items-center justify-between">
-                <h2 className="text-xl font-semibold">Admin - Meldinger</h2>
-                <Button variant="outline" onClick={() => setShowMessages(false)}>
-                  Lukk
-                </Button>
-              </div>
-            </div>
-            <div className="h-full overflow-y-auto">
-              <MessageInbox
-                userId="admin"
-                onThreadSelect={(threadId) => console.log('Select thread:', threadId)}
-                onCreateThread={() => console.log('Create thread')}
-              />
-            </div>
-          </div>
-        </div>
-      )}
 
       {showSupport && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">

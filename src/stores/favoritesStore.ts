@@ -66,7 +66,6 @@ export const useFavoritesStore = create<IFavoritesStore>()(
           const existingFavorite = get().favorites.find(fav => fav.facilityId === facilityId);
           
           if (existingFavorite) {
-            console.warn(`Facility ${facilityId} is already in favorites`);
             return;
           }
 
@@ -81,7 +80,6 @@ export const useFavoritesStore = create<IFavoritesStore>()(
             favorites: [...state.favorites, newFavorite],
           }));
 
-          console.log(`Added facility ${facilityId} to favorites`);
         },
 
         /**
@@ -93,7 +91,6 @@ export const useFavoritesStore = create<IFavoritesStore>()(
             favorites: state.favorites.filter(fav => fav.facilityId !== facilityId),
           }));
 
-          console.log(`Removed facility ${facilityId} from favorites`);
         },
 
         /**
@@ -139,7 +136,6 @@ export const useFavoritesStore = create<IFavoritesStore>()(
             ),
           }));
 
-          console.log(`Updated favorite for facility ${facilityId}`);
         },
 
         /**
@@ -171,7 +167,6 @@ export const useFavoritesStore = create<IFavoritesStore>()(
          */
         clearAllFavorites: (): void => {
           set({ favorites: [] });
-          console.log("Cleared all favorites");
         },
 
         /**

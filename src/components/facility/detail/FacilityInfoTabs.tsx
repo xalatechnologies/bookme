@@ -195,7 +195,7 @@ export const FacilityInfoTabs: React.FC<FacilityInfoTabsProps> = ({
                     </div>
                     <div>
                       <span className="font-medium">Areal:</span>
-                      <span className="ml-2">{zone.area}</span>
+                      <span className="ml-2">{zone.area} m²</span>
                     </div>
                   </div>
                 </div>
@@ -217,7 +217,7 @@ export const FacilityInfoTabs: React.FC<FacilityInfoTabsProps> = ({
                 </div>
                 <div>
                   <span className="font-medium">Areal:</span>
-                  <span className="ml-2">{area}</span>
+                  <span className="ml-2">{area} m²</span>
                 </div>
               </div>
             </div>

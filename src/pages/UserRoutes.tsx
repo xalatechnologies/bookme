@@ -13,6 +13,7 @@ import UserFavorites from "@/pages/user/UserFavorites";
 import UserProfile from "@/pages/user/UserProfile";
 import UserNotifications from "@/pages/user/UserNotifications";
 import UserHelp from "@/pages/user/UserHelp";
+import UserMessages from "@/pages/user/UserMessages";
 
 const UserRoutes = (): JSX.Element => {
   return (
@@ -29,6 +30,7 @@ const UserRoutes = (): JSX.Element => {
         <Route path="/favorites" element={<UserFavorites />} />
         <Route path="/profile" element={<UserProfile />} />
         <Route path="/notifications" element={<UserNotifications />} />
+        <Route path="/messages" element={<UserMessages />} />
         <Route path="/help" element={<UserHelp />} />
       </Routes>
     </UserLayout>

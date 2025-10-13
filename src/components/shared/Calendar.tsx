@@ -1,7 +1,7 @@
 "use client";
 
 // External imports
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useMemo } from "react";
 import { format, addDays, startOfWeek, addWeeks, subWeeks } from "date-fns";
 import { ChevronLeft, ChevronRight, Calendar as CalendarIcon } from "lucide-react";
 
@@ -22,6 +22,8 @@ interface CalendarProps {
   readonly isSlotSelected: (zoneId: string, date: Date, timeSlot: string) => boolean;
   readonly timeSlotDuration?: number;
   readonly showZoneSelector?: boolean;
+  readonly openingHoursStart?: string;
+  readonly openingHoursEnd?: string;
   readonly compact?: boolean;
 }
 
@@ -34,6 +36,8 @@ export const Calendar: React.FC<CalendarProps> = ({
   isSlotSelected,
   timeSlotDuration = 1,
   showZoneSelector = true,
+  openingHoursStart = "08:00",
+  openingHoursEnd = "22:00",
   compact = false
 }): JSX.Element => {
   const [currentWeekStart, setCurrentWeekStart] = useState(() =>
@@ -41,12 +45,19 @@ export const Calendar: React.FC<CalendarProps> = ({
   );
   const [selectedZoneId, setSelectedZoneId] = useState<string>(zones[0]?.id || '');
 
-  // Generate time slots based on duration
-  const timeSlots = Array.from({ length: 14 }, (_, i) => {
-    const hour = 8 + (i * timeSlotDuration);
-    const nextHour = hour + timeSlotDuration;
-    return `${hour.toString().padStart(2, '0')}:00-${nextHour.toString().padStart(2, '0')}:00`;
-  });
+  // Generate time slots based on duration and opening hours
+  const timeSlots = useMemo(() => {
+    const startHour = parseInt(openingHoursStart.split(':')[0]);
+    const endHour = parseInt(openingHoursEnd.split(':')[0]);
+    const totalHours = endHour - startHour;
+    const slotCount = Math.floor(totalHours / timeSlotDuration);
+    
+    return Array.from({ length: slotCount }, (_, i) => {
+      const hour = startHour + (i * timeSlotDuration);
+      const nextHour = hour + timeSlotDuration;
+      return `${hour.toString().padStart(2, '0')}:00-${nextHour.toString().padStart(2, '0')}:00`;
+    });
+  }, [openingHoursStart, openingHoursEnd, timeSlotDuration]);
 
   const handlePreviousWeek = useCallback((): void => {
     setCurrentWeekStart(prev => subWeeks(prev, 1));
@@ -121,6 +132,8 @@ export const Calendar: React.FC<CalendarProps> = ({
         isSlotSelected={isSlotSelected}
         onSlotClick={onSlotClick}
         onBulkSlotSelection={onBulkSlotSelection}
+        openingHoursStart={openingHoursStart}
+        openingHoursEnd={openingHoursEnd}
       />
 
       {/* Legend */}

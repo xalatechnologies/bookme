@@ -11,7 +11,9 @@ import { Separator } from "@/components/ui/separator";
 interface FacilityContactInfoProps {
   readonly facilityName: string;
   readonly address: string;
-  readonly openingHours: string | readonly any[];
+  readonly openingHours?: string | readonly any[];
+  readonly openingHoursStart?: string;
+  readonly openingHoursEnd?: string;
   readonly contactEmail?: string;
   readonly emergencyContact?: string;
 }
@@ -20,6 +22,8 @@ export const FacilityContactInfo: React.FC<FacilityContactInfoProps> = ({
   facilityName,
   address,
   openingHours,
+  openingHoursStart,
+  openingHoursEnd,
   contactEmail,
   emergencyContact
 }): JSX.Element => {
@@ -54,11 +58,18 @@ export const FacilityContactInfo: React.FC<FacilityContactInfoProps> = ({
 
   const t = translations[language];
 
-  const formatOpeningHours = (hours: string | readonly any[]): string => {
+  const formatOpeningHours = (hours: string | readonly any[] | undefined, start?: string, end?: string): string => {
+    // Use new time fields if available
+    if (start && end) {
+      return `${start} - ${end}`;
+    }
+    
+    // Fallback to old format
     if (typeof hours === 'string') {
       return hours;
     }
-    // For array format, return a simple string for now
+    
+    // Default fallback
     return "08:00 - 22:00";
   };
 
@@ -90,7 +101,7 @@ export const FacilityContactInfo: React.FC<FacilityContactInfoProps> = ({
             <Clock className="h-4 w-4 text-gray-400 mr-3" />
             <div>
               <p className="font-semibold text-gray-900">{t.openingHours}</p>
-              <p className="text-sm text-gray-600">{formatOpeningHours(openingHours)}</p>
+              <p className="text-sm text-gray-600">{formatOpeningHours(openingHours, openingHoursStart, openingHoursEnd)}</p>
             </div>
           </div>
         </div>

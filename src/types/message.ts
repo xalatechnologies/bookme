@@ -9,9 +9,10 @@ export interface Message {
   readonly threadId: string;
   readonly senderId: string;
   readonly senderName: string;
-  readonly senderType: 'user' | 'admin';
+  readonly senderAvatar?: string;
+  readonly senderType: 'tenant' | 'landlord';
   readonly recipientId: string;
-  readonly recipientType: 'user' | 'admin';
+  readonly recipientType: 'tenant' | 'landlord';
   readonly content: string;
   readonly attachments?: readonly {
     readonly id: string;
@@ -36,9 +37,11 @@ export interface MessageThread {
   readonly participants: readonly {
     readonly id: string;
     readonly name: string;
-    readonly type: 'user' | 'admin';
+    readonly type: 'tenant' | 'landlord';
   }[];
   readonly relatedBookingId?: string;
+  readonly facilityId?: string;
+  readonly facilityName?: string;
   readonly status: 'active' | 'resolved' | 'closed';
   readonly priority: 'low' | 'medium' | 'high';
   readonly messages: readonly string[]; // message IDs
@@ -65,9 +68,10 @@ export interface CreateMessageData {
   readonly threadId: string;
   readonly senderId: string;
   readonly senderName: string;
-  readonly senderType: 'user' | 'admin';
+  readonly senderAvatar?: string;
+  readonly senderType: 'tenant' | 'landlord';
   readonly recipientId: string;
-  readonly recipientType: 'user' | 'admin';
+  readonly recipientType: 'tenant' | 'landlord';
   readonly content: string;
   readonly attachments?: readonly {
     readonly name: string;
@@ -85,9 +89,11 @@ export interface CreateMessageThreadData {
   readonly participants: readonly {
     readonly id: string;
     readonly name: string;
-    readonly type: 'user' | 'admin';
+    readonly type: 'tenant' | 'landlord';
   }[];
   readonly relatedBookingId?: string;
+  readonly facilityId?: string;
+  readonly facilityName?: string;
   readonly priority: 'low' | 'medium' | 'high';
   readonly initialMessage: {
     readonly content: string;
@@ -155,10 +161,10 @@ export interface MessageStatistics {
     readonly high: number;
   };
   readonly messagesByType: {
-    readonly userToAdmin: number;
-    readonly adminToUser: number;
-    readonly userToUser: number;
-    readonly adminToAdmin: number;
+    readonly tenantToLandlord: number;
+    readonly landlordToTenant: number;
+    readonly tenantToTenant: number;
+    readonly landlordToLandlord: number;
   };
 }
 

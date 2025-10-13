@@ -9,6 +9,7 @@ import {
   CheckCircle, 
   Users, 
   Bell, 
+  MessageCircle,
   Plug, 
   BarChart3, 
   FileText, 
@@ -55,6 +56,7 @@ const AdminSidebar = (_props: IAdminSidebarProps): JSX.Element => {
       title: "System",
       items: [
         { id: "notifications", label: "Varsler", path: "/admin/notifications", icon: Bell },
+        { id: "messages", label: "Meldinger", path: "/admin/messages", icon: MessageCircle },
         { id: "integrations", label: "Integrasjoner", path: "/admin/integrations", icon: Plug },
         { id: "reports", label: "Rapporter", path: "/admin/reports", icon: BarChart3 },
         { id: "audit", label: "Revisjonslogg", path: "/admin/audit-logs", icon: FileText },

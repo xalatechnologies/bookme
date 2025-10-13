@@ -8,6 +8,8 @@ export interface Zone {
   readonly facilityId: string;
   readonly capacity: number;
   readonly pricePerHour: number;
+  readonly area?: number; // Area in square meters
+  readonly description?: string; // Zone information/description
   readonly amenities: readonly string[];
   readonly availability: {
     readonly monday: { readonly start: string; readonly end: string; };

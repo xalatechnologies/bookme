@@ -16,7 +16,7 @@ const UserLayout = ({ children }: IUserLayoutProps): JSX.Element => {
         <UserHeader />
         <div className="flex h-[calc(100vh-73px)]">
           <UserSidebar />
-          <main className="flex-1 p-6 overflow-y-auto">
+          <main className="flex-1 flex flex-col">
             {children}
           </main>
         </div>

@@ -23,7 +23,7 @@ export const useTranslation = () => {
 
   const t = (key: string, params?: TranslationParams, fallback?: string): string => {
     const keys = key.split('.');
-    let translation: any = allTranslations[language];
+    let translation: unknown = allTranslations[language];
 
     for (const k of keys) {
       if (translation && typeof translation === 'object' && k in translation) {
@@ -31,7 +31,7 @@ export const useTranslation = () => {
       } else {
         // Fallback til engelsk hvis norsk oversettelse ikke finnes
         if (language === 'NO') {
-          let fallbackTranslation: any = allTranslations.EN;
+          let fallbackTranslation: unknown = allTranslations.EN;
           for (const fallbackKey of keys) {
             if (fallbackTranslation && typeof fallbackTranslation === 'object' && fallbackKey in fallbackTranslation) {
               fallbackTranslation = fallbackTranslation[fallbackKey];
