@@ -68,7 +68,7 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
   isSlotSelected,
 }) => {
   // Current step state
-  const [currentStep, setCurrentStep] = useState<BookingStep>('details');
+  const [currentStep, setCurrentStep] = useState<BookingStep>('calendar');
   
   // Form data state
   const [formData, setFormData] = useState<IBookingFormData>({
@@ -93,16 +93,16 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
    */
   const steps = useMemo(() => [
     {
-      id: 'details' as BookingStep,
-      title: 'Bookingdetaljer',
-      description: 'Fyll ut informasjon om bookingen',
-      icon: FileText,
-    },
-    {
       id: 'calendar' as BookingStep,
       title: 'Kalender',
       description: 'Velg dato og tid for bookingen',
       icon: Calendar,
+    },
+    {
+      id: 'details' as BookingStep,
+      title: 'Bookingdetaljer',
+      description: 'Fyll ut informasjon om bookingen',
+      icon: FileText,
     },
     {
       id: 'terms' as BookingStep,
@@ -343,9 +343,13 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
                       zoneId={selectedZone.id}
                       week={calendarWeek}
                       selectedSlots={selectedSlots}
-                      onSlotClick={onSlotClick}
+                      onSlotClick={(zoneId, date, timeSlot, status) => {
+                        onSlotClick?.(zoneId, date, timeSlot, status);
+                        // The parent component (FacilityCalendar) will handle onSlotsChange
+                      }}
                       onBulkSelect={(slots) => {
                         onBulkSlotSelection?.(slots);
+                        // The parent component (FacilityCalendar) will handle onSlotsChange
                       }}
                       pricePerHour={selectedZone?.pricePerHour || 0}
                       isLoading={isLoading}

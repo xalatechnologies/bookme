@@ -20,8 +20,9 @@ export const CartDropdown = ({ onClose }: CartDropdownProps): JSX.Element => {
    * @param slot - Time slot object
    * @returns Formatted string
    */
-  const formatTimeSlot = (slot: { date: string; timeSlot: string }): string => {
-    const date = format(parseISO(slot.date), "dd. MMM", { locale: nb });
+  const formatTimeSlot = (slot: { date: string | Date; timeSlot: string }): string => {
+    const dateObj = typeof slot.date === 'string' ? parseISO(slot.date) : slot.date;
+    const date = format(dateObj, "dd. MMM", { locale: nb });
     const time = slot.timeSlot.split('-')[0];
     return `${date} kl. ${time}`;
   };
