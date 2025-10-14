@@ -66,7 +66,6 @@ export const MapView: React.FC<MapViewProps> = ({ facilityType, location, viewMo
   };
 
   const handleMarkerClick = (facility: { id: string; name: string; [key: string]: unknown }): void => {
-    console.log('Marker clicked:', facility);
     // Could navigate to facility detail page or show more info
   };
 

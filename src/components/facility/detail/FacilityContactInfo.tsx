@@ -15,12 +15,10 @@ export const FacilityContactInfo: React.FC<FacilityContactInfoProps> = ({ facili
 
   const handleBookNow = () => {
     // TODO: Implement booking functionality
-    console.log('Book now clicked for facility:', facility.id);
   };
 
   const handleContact = () => {
     // TODO: Implement contact functionality
-    console.log('Contact clicked for facility:', facility.id);
   };
 
   return (

@@ -42,6 +42,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 // Types
 import type { ICartItem } from "@/types/cart";
+import type { ISelectedTimeSlot } from "@/components/booking/types";
 
 /**
  * Professional checkout page component
@@ -177,6 +178,36 @@ export const Checkout = (): JSX.Element => {
   }, []);
 
   /**
+   * Calculate time range for multiple time slots
+   * 
+   * @param timeSlots - Array of time slots
+   * @returns Formatted time range string
+   */
+  const calculateTimeRange = useCallback((timeSlots: readonly ISelectedTimeSlot[]): string => {
+    if (!timeSlots || timeSlots.length === 0) {
+      return 'Ingen tid';
+    }
+
+    if (timeSlots.length === 1) {
+      return formatTime(timeSlots[0].timeSlot);
+    }
+
+    // For multiple slots, calculate the total time range
+    // Sort slots by time to ensure correct order
+    const sortedSlots = [...timeSlots].sort((a, b) => {
+      const timeA = a.timeSlot.split('-')[0];
+      const timeB = b.timeSlot.split('-')[0];
+      return timeA.localeCompare(timeB);
+    });
+
+    const startTime = sortedSlots[0].timeSlot.split('-')[0];
+    const lastSlot = sortedSlots[sortedSlots.length - 1];
+    const endTime = lastSlot.timeSlot.split('-')[1];
+    
+    return `${startTime} - ${endTime}`;
+  }, [formatTime]);
+
+  /**
    * Handle discount code application
    */
   const handleDiscountCode = useCallback(() => {
@@ -214,7 +245,6 @@ export const Checkout = (): JSX.Element => {
   const validateForm = useCallback((): boolean => {
     const newErrors: Record<string, string> = {};
     
-    console.log('Validating form:', { selectedPaymentMethod, consents });
     
     if (!selectedPaymentMethod) {
       newErrors.payment = 'Velg en betalingsmetode';
@@ -233,7 +263,6 @@ export const Checkout = (): JSX.Element => {
       newErrors.consents = 'Du må samtykke til personvern';
     }
     
-    console.log('Validation errors:', newErrors);
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   }, [selectedPaymentMethod, consents]);
@@ -257,56 +286,106 @@ export const Checkout = (): JSX.Element => {
    * Handle payment completion
    */
   const handleCompletePayment = useCallback(async (): Promise<void> => {
-    console.log('Payment button clicked');
     
     // Auto-select payment method if none selected
     if (!selectedPaymentMethod) {
-      console.log('No payment method selected, defaulting to card');
       setSelectedPaymentMethod('card');
     }
     
     if (!validateForm()) {
-      console.log('Validation failed, not proceeding with payment');
       return;
     }
     
-    console.log('Validation passed, starting payment process');
     setIsProcessing(true);
     
     try {
       // Simulate payment processing
       await new Promise(resolve => setTimeout(resolve, 2000));
       
-      console.log('Payment successful, updating booking status and redirecting');
       
       // Save cart items as pending bookings before clearing cart
-      const pendingBookings = items.map(item => ({
-        id: getNextBookingNumber().toString(),
-        facility: item.facilityName,
-        date: item.timeSlots && item.timeSlots.length > 0 
-          ? new Date(item.timeSlots[0].date).toISOString().split('T')[0]
-          : new Date().toISOString().split('T')[0],
-        time: item.timeSlots && item.timeSlots.length > 0 
-          ? item.timeSlots[0].timeSlot
-          : '12:00-13:00',
-        duration: item.timeSlots && item.timeSlots.length > 0 
-          ? `${item.timeSlots.reduce((total, slot) => total + slot.duration, 0)} timer`
-          : '1 timer',
-        status: 'pending' as const,
-        location: 'Drammen', // This could be dynamic based on facility
-        price: `${item.pricing.finalPrice.toLocaleString('nb-NO')} kr`,
-        description: item.purpose || 'Booking',
-        purpose: item.purpose || 'Booking',
-        contactPerson: 'Hamid Rahmani', // This should come from user profile
-        paymentStatus: 'pending' as const,
-        type: 'booking' as const,
-        submittedAt: new Date().toISOString(),
-        bookingType: item.bookingType,
-        zoneName: item.zoneName,
-        attendees: item.attendees,
-        activityType: item.activityType,
-        actorType: item.actorType
-      }));
+      const pendingBookings = items.map(item => {
+        // Handle date conversion more carefully to avoid timezone issues
+        let bookingDate: string;
+        if (item.timeSlots && item.timeSlots.length > 0) {
+          const slotDate = item.timeSlots[0].date;
+          if (slotDate instanceof Date) {
+            // If it's already a Date object, use local date components to avoid timezone issues
+            const year = slotDate.getFullYear();
+            const month = String(slotDate.getMonth() + 1).padStart(2, '0');
+            const day = String(slotDate.getDate()).padStart(2, '0');
+            bookingDate = `${year}-${month}-${day}`;
+          } else if (typeof slotDate === 'string') {
+            // If it's a string, parse it and ensure we get the correct date
+            const parsedDate = new Date(slotDate);
+            // Use local date components to avoid timezone issues
+            const year = parsedDate.getFullYear();
+            const month = String(parsedDate.getMonth() + 1).padStart(2, '0');
+            const day = String(parsedDate.getDate()).padStart(2, '0');
+            bookingDate = `${year}-${month}-${day}`;
+          } else {
+            // Fallback to today's date using local components
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            bookingDate = `${year}-${month}-${day}`;
+          }
+        } else {
+          // Fallback to today's date using local components
+          const today = new Date();
+          const year = today.getFullYear();
+          const month = String(today.getMonth() + 1).padStart(2, '0');
+          const day = String(today.getDate()).padStart(2, '0');
+          bookingDate = `${year}-${month}-${day}`;
+        }
+
+        // Calculate proper time range from timeSlots
+        let timeRange: string;
+        if (item.timeSlots && item.timeSlots.length > 0) {
+          if (item.timeSlots.length === 1) {
+            timeRange = item.timeSlots[0].timeSlot;
+          } else {
+            // Sort slots by time to ensure correct order
+            const sortedSlots = [...item.timeSlots].sort((a, b) => {
+              const timeA = a.timeSlot.split('-')[0];
+              const timeB = b.timeSlot.split('-')[0];
+              return timeA.localeCompare(timeB);
+            });
+            const startTime = sortedSlots[0].timeSlot.split('-')[0];
+            const lastSlot = sortedSlots[sortedSlots.length - 1];
+            const endTime = lastSlot.timeSlot.split('-')[1];
+            timeRange = `${startTime}-${endTime}`;
+          }
+        } else {
+          timeRange = '12:00-13:00';
+        }
+
+        return {
+          id: getNextBookingNumber().toString(),
+          facility: item.facilityName,
+          date: bookingDate,
+          time: timeRange,
+          duration: item.timeSlots && item.timeSlots.length > 0 
+            ? `${item.timeSlots.reduce((total, slot) => total + slot.duration, 0)} timer`
+            : '1 timer',
+          status: 'pending' as const,
+          location: 'Drammen', // This could be dynamic based on facility
+          price: `${item.pricing.finalPrice.toLocaleString('nb-NO')} kr`,
+          description: item.purpose || 'Booking',
+          purpose: item.purpose || 'Booking',
+          contactPerson: 'Hamid Rahmani', // This should come from user profile
+          paymentStatus: 'pending' as const,
+          type: 'booking' as const,
+          submittedAt: new Date().toISOString(),
+          bookingType: item.bookingType,
+          zoneName: item.zoneName,
+          attendees: item.attendees,
+          activityType: item.activityType,
+          actorType: item.actorType,
+          timeSlots: item.timeSlots // Store timeSlots for proper time calculation
+        };
+      });
       
       // Save to localStorage
       const existingPending = JSON.parse(localStorage.getItem('pendingBookings') || '[]');
@@ -321,7 +400,7 @@ export const Checkout = (): JSX.Element => {
       setErrors({ payment: 'Betalingen feilet. Prøv igjen eller velg en annen metode.' });
       setIsProcessing(false);
     }
-  }, [validateForm, clearCart, navigate, selectedPaymentMethod]);
+  }, [validateForm, clearCart, navigate, selectedPaymentMethod, items, getNextBookingNumber]);
 
   if (items.length === 0 && !isProcessing) {
     return (
@@ -521,7 +600,7 @@ export const Checkout = (): JSX.Element => {
                         <Clock className="h-4 w-4" />
                         <span>
                           {item.timeSlots && item.timeSlots.length > 0 
-                            ? formatTime(item.timeSlots[0].timeSlot) 
+                            ? calculateTimeRange(item.timeSlots) 
                             : 'Ingen tid'
                           }
                         </span>

@@ -23,6 +23,7 @@ import { AvailabilityLegend } from "./AvailabilityLegend";
 import { BookingForm } from "@/components/booking/BookingForm";
 import { BookingTypeSelector } from "@/components/booking/BookingTypeSelector";
 import { RecurrencePatternSelector } from "@/components/booking/RecurrencePatternSelector";
+import { StepByStepBooking } from "@/components/booking/StepByStepBooking";
 
 // Types
 import { ISelectedTimeSlot, IZone, BookingType } from "@/components/booking/types";
@@ -55,12 +56,13 @@ export interface IFacilityCalendarProps {
   readonly selectedSlots?: readonly ISelectedTimeSlot[];
   readonly onSlotClick?: (zoneId: string, date: Date, timeSlot: string, status: string) => void;
   readonly onBulkSlotSelection?: (slots: readonly ISelectedTimeSlot[]) => void;
-  readonly getAvailabilityStatus?: (zoneId: string, date: Date, timeSlot: string) => { status: string; conflict?: any };
+  readonly getAvailabilityStatus?: (zoneId: string, date: Date, timeSlot: string) => { status: string; conflict?: { readonly id: string; readonly title: string } };
   readonly isSlotSelected?: (zoneId: string, date: Date, timeSlot: string) => boolean;
-  readonly onAddToCart?: (bookingData: any) => void;
-  readonly onCompleteBooking?: (bookingData: any) => void;
+  readonly onAddToCart?: (bookingData: IBookingFormData) => void;
+  readonly onCompleteBooking?: (bookingData: IBookingFormData) => void;
   readonly openingHoursStart?: string;
   readonly openingHoursEnd?: string;
+  readonly useStepByStepBooking?: boolean;
 }
 
 export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
@@ -78,6 +80,7 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
   onCompleteBooking: externalOnCompleteBooking,
   openingHoursStart = "08:00",
   openingHoursEnd = "22:00",
+  useStepByStepBooking = false,
 }) => {
   const navigate = useNavigate();
   const { addItem } = useCart();
@@ -453,6 +456,11 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
       zoneId: selectedZone.id,
       zoneName: selectedZone.name,
       timeSlots: allSelectedSlots,
+      purpose: bookingData.purpose,
+      attendees: bookingData.attendees,
+      activityType: bookingData.activityType,
+      additionalInfo: bookingData.additionalInfo,
+      actorType: bookingData.actorType,
       pricing: {
         basePrice: finalBasePrice,
         totalPrice: finalBasePrice,
@@ -461,7 +469,6 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
         breakdown: [],
         requiresApproval: false,
       },
-      formData: bookingData,
       bookingType: bookingType,
       recurrencePattern: recurrencePattern,
       status: 'pending' as const, // Set status to pending for new bookings
@@ -518,6 +525,36 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
           <div className="text-center py-12">
             <p className="text-gray-500">Laster soner...</p>
           </div>
+        </div>
+      </div>
+    );
+  }
+
+  // If step-by-step booking is enabled, render StepByStepBooking component
+  if (useStepByStepBooking) {
+    return (
+      <div className="bg-gray-50 py-8">
+        <div className="w-full px-4">
+          <StepByStepBooking
+            facilityId={facilityId}
+            facilityName={facilityName}
+            zones={zones}
+            selectedZoneId={selectedZoneId}
+            onZoneChange={setSelectedZoneId}
+            selectedSlots={allSelectedSlots}
+            onSlotsChange={handleSlotsChange}
+            onAddToCart={handleAddToCart}
+            onCompleteBooking={handleCompleteBooking}
+            isLoading={isLoading}
+            error={error}
+            openingHoursStart={openingHoursStart}
+            openingHoursEnd={openingHoursEnd}
+            calendarWeek={calendarWeek}
+            onSlotClick={handleSlotClickWithZone}
+            onBulkSlotSelection={handleBulkSelectWithZone}
+            getAvailabilityStatus={externalGetAvailabilityStatus}
+            isSlotSelected={externalIsSlotSelected}
+          />
         </div>
       </div>
     );

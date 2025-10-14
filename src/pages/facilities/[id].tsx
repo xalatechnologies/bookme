@@ -43,7 +43,6 @@ export const FacilityDetail = (): JSX.Element => {
       } else {
         await navigator.clipboard.writeText(window.location.href);
         // Optional: Show a toast notification that link was copied
-        console.log('Link copied to clipboard');
       }
     } catch (error) {
       // Handle share cancellation or other errors silently
@@ -52,7 +51,6 @@ export const FacilityDetail = (): JSX.Element => {
         // Fallback to clipboard
         try {
           await navigator.clipboard.writeText(window.location.href);
-          console.log('Link copied to clipboard as fallback');
         } catch (clipboardError) {
           console.warn('Clipboard fallback also failed:', clipboardError);
         }

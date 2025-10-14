@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ShoppingCart, X, Trash2, Calendar, Clock, CreditCard } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
-import { format } from "date-fns";
+import { format, parseISO } from "date-fns";
 import { nb } from "date-fns/locale";
 
 interface CartDropdownProps {
@@ -20,8 +20,8 @@ export const CartDropdown = ({ onClose }: CartDropdownProps): JSX.Element => {
    * @param slot - Time slot object
    * @returns Formatted string
    */
-  const formatTimeSlot = (slot: any): string => {
-    const date = format(slot.date, "dd. MMM", { locale: nb });
+  const formatTimeSlot = (slot: { date: string; timeSlot: string }): string => {
+    const date = format(parseISO(slot.date), "dd. MMM", { locale: nb });
     const time = slot.timeSlot.split('-')[0];
     return `${date} kl. ${time}`;
   };
@@ -43,7 +43,7 @@ export const CartDropdown = ({ onClose }: CartDropdownProps): JSX.Element => {
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full bg-white">
       <div className="flex items-center justify-between p-4 border-b">
         <h3 className="font-semibold text-lg">Reservasjonskurv</h3>
         <Button variant="ghost" size="sm" onClick={onClose}>

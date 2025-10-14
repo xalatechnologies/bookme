@@ -186,7 +186,6 @@ const UserNotifications = (): JSX.Element => {
     // Auto-save after 2 seconds
     setTimeout(() => {
       // TODO: Implement actual save to backend
-      console.log("Auto-saving preference change");
     }, 2000);
   };
 
@@ -208,7 +207,6 @@ const UserNotifications = (): JSX.Element => {
     // Auto-save after 2 seconds
     setTimeout(() => {
       // TODO: Implement actual save to backend
-      console.log("Auto-saving template change");
     }, 2000);
   };
 

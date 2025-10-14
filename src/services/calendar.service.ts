@@ -1,12 +1,31 @@
 import type { IBookingEvent, ICalendarQuery } from "@/types/calendar";
 
 // Convert booking data to calendar events
-const convertBookingToEvent = (booking: any): IBookingEvent => {
+const convertBookingToEvent = (booking: {
+  readonly id: string;
+  readonly facilityName: string;
+  readonly time: string;
+  readonly duration?: number;
+  readonly timeSlots?: readonly { readonly date: string; readonly timeSlot: string }[];
+  readonly status: string;
+  readonly purpose?: string;
+}): IBookingEvent => {
   try {
     // Parse date - handle different formats (prioritize date over startDate)
     let bookingDate: Date;
     if (booking.date) {
-      bookingDate = new Date(booking.date);
+      // Handle date string more carefully to avoid timezone issues
+      if (typeof booking.date === 'string') {
+        // If it's a date string in YYYY-MM-DD format, parse it as local date
+        if (booking.date.match(/^\d{4}-\d{2}-\d{2}$/)) {
+          const [year, month, day] = booking.date.split('-').map(Number);
+          bookingDate = new Date(year, month - 1, day); // month is 0-indexed
+        } else {
+          bookingDate = new Date(booking.date);
+        }
+      } else {
+        bookingDate = new Date(booking.date);
+      }
     } else if (booking.startDate) {
       bookingDate = new Date(booking.startDate);
     } else {
@@ -139,6 +158,7 @@ export const calendarService = {
         return eventDate >= fromDate && eventDate <= toDate;
       });
     }
+    
     return filtered;
   },
 } as const;

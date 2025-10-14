@@ -77,8 +77,12 @@ export const useSlotSelection = () => {
       // Remove slot
       removeSlot(zoneId, slotDate, timeSlot);
     } else {
-      // Add slot
-      const dayString = slotDate.toISOString().split('T')[0]; // YYYY-MM-DD format
+      // Add slot - use local date components to avoid timezone issues
+      const year = slotDate.getFullYear();
+      const month = String(slotDate.getMonth() + 1).padStart(2, '0');
+      const day = String(slotDate.getDate()).padStart(2, '0');
+      const dayString = `${year}-${month}-${day}`; // YYYY-MM-DD format
+      
       const newSlot: ISelectedTimeSlot = {
         id: `${facilityId}-${zoneId}-${dayString}-${timeSlot}`,
         facilityId,
@@ -106,7 +110,12 @@ export const useSlotSelection = () => {
     // Ensure all dates are Date objects and generate proper IDs
     const normalizedSlots = newSlots.map(slot => {
       const slotDate = ensureDate(slot.date);
-      const dayString = slotDate.toISOString().split('T')[0]; // YYYY-MM-DD format
+      // Use local date components to avoid timezone issues
+      const year = slotDate.getFullYear();
+      const month = String(slotDate.getMonth() + 1).padStart(2, '0');
+      const day = String(slotDate.getDate()).padStart(2, '0');
+      const dayString = `${year}-${month}-${day}`; // YYYY-MM-DD format
+      
       return {
         ...slot,
         date: slotDate,

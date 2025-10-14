@@ -45,7 +45,6 @@ export const FacilityCard = ({
         });
       } else {
         await navigator.clipboard.writeText(`${window.location.origin}/facilities/${facility.id}`);
-        console.log('Link copied to clipboard');
       }
     } catch (error) {
       // Handle share cancellation or other errors silently
@@ -54,7 +53,6 @@ export const FacilityCard = ({
         // Fallback to clipboard
         try {
           await navigator.clipboard.writeText(`${window.location.origin}/facilities/${facility.id}`);
-          console.log('Link copied to clipboard as fallback');
         } catch (clipboardError) {
           console.warn('Clipboard fallback also failed:', clipboardError);
         }
@@ -84,7 +82,7 @@ export const FacilityCard = ({
       }}
     >
       {/* Image Section */}
-      <div className="relative h-64 overflow-hidden">
+      <div className="relative h-48 sm:h-56 md:h-64 overflow-hidden">
         <img
           src={facility.images[0] || '/placeholder.svg'}
           alt={facility.name}
@@ -92,43 +90,43 @@ export const FacilityCard = ({
         />
         
         {/* Overlay buttons */}
-        <div className="absolute top-4 right-4 flex gap-2">
+        <div className="absolute top-2 sm:top-3 md:top-4 right-2 sm:right-3 md:right-4 flex gap-1 sm:gap-2">
           <button
             onClick={handleFavorite}
-            className="p-2 rounded-full bg-white/90 backdrop-blur-sm shadow-lg hover:bg-white transition-colors"
+            className="p-1.5 sm:p-2 rounded-full bg-white/90 backdrop-blur-sm shadow-lg hover:bg-white transition-colors"
             aria-label="Legg til favoritter"
           >
-            <Heart className={`h-4 w-4 ${isFavorited ? 'fill-red-500 text-red-500' : 'text-gray-600'}`} />
+            <Heart className={`h-3 w-3 sm:h-4 sm:w-4 ${isFavorited ? 'fill-red-500 text-red-500' : 'text-gray-600'}`} />
           </button>
           <button
             onClick={handleShare}
-            className="p-2 rounded-full bg-white/90 backdrop-blur-sm shadow-lg hover:bg-white transition-colors"
+            className="p-1.5 sm:p-2 rounded-full bg-white/90 backdrop-blur-sm shadow-lg hover:bg-white transition-colors"
             aria-label="Del fasilitet"
           >
-            <Share2 className="h-4 w-4 text-gray-600" />
+            <Share2 className="h-3 w-3 sm:h-4 sm:w-4 text-gray-600" />
           </button>
         </div>
 
         {/* Type badge */}
-        <div className="absolute top-4 left-4">
-          <Badge className="bg-blue-600 text-white font-medium px-3 py-1">
+        <div className="absolute top-2 sm:top-3 md:top-4 left-2 sm:left-3 md:left-4">
+          <Badge className="bg-blue-600 text-white font-medium px-2 py-1 text-xs sm:text-sm">
             {facility.type}
           </Badge>
         </div>
       </div>
       
       {/* Content Section */}
-      <div className="flex-1 flex flex-col p-6">
+      <div className="flex-1 flex flex-col p-4 sm:p-5 md:p-6">
         {/* Facility Name */}
-        <h3 className="text-2xl font-bold text-gray-900 mb-4 line-clamp-2">
+        <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mb-3 sm:mb-4 line-clamp-2">
           {facility.name}
         </h3>
 
         {/* Location */}
-        <div className="flex items-center gap-3 mb-5 text-gray-600 hover:text-blue-600 transition-colors group/location">
-          <MapPin className="h-5 w-5 text-gray-400 group-hover/location:text-blue-500" />
+        <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-5 text-gray-600 hover:text-blue-600 transition-colors group/location">
+          <MapPin className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400 group-hover/location:text-blue-500 flex-shrink-0" />
           <span 
-            className="text-base font-medium line-clamp-1 cursor-pointer" 
+            className="text-sm sm:text-base font-medium line-clamp-1 cursor-pointer" 
             onClick={e => onAddressClick(e, facility)}
           >
             {facility.address}
@@ -136,17 +134,17 @@ export const FacilityCard = ({
         </div>
 
         {/* Description */}
-        <p className="text-gray-700 text-base leading-relaxed mb-4 line-clamp-2">
+        <p className="text-gray-700 text-sm sm:text-base leading-relaxed mb-3 sm:mb-4 line-clamp-2">
           {facility.description}
         </p>
 
         {/* Amenities Tags */}
         {facility.amenities.length > 0 && (
-          <div className="flex flex-wrap gap-2 mb-5">
+          <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-4 sm:mb-5">
             {facility.amenities.slice(0, 3).map((amenity, index) => (
               <Badge 
                 key={index}
-                className="bg-blue-50 text-blue-700 border-blue-200 font-medium px-3 py-1 text-sm hover:bg-blue-100 transition-colors"
+                className="bg-blue-50 text-blue-700 border-blue-200 font-medium px-2 py-1 text-xs sm:text-sm hover:bg-blue-100 transition-colors"
               >
                 {amenity}
               </Badge>
@@ -154,7 +152,7 @@ export const FacilityCard = ({
             {facility.amenities.length > 3 && (
               <Badge 
                 variant="outline"
-                className="bg-gray-50 text-gray-600 border-gray-300 font-medium px-3 py-1 text-sm"
+                className="bg-gray-50 text-gray-600 border-gray-300 font-medium px-2 py-1 text-xs sm:text-sm"
               >
                 +{facility.amenities.length - 3} more
               </Badge>
@@ -195,9 +193,9 @@ export const FacilityCard = ({
               };
 
               return (
-                <div key={field.id} className="flex items-center gap-3 text-gray-600">
+                <div key={field.id} className="flex items-center gap-2 sm:gap-3 text-gray-600">
                   {getIcon()}
-                  <span className="text-base font-medium">
+                  <span className="text-sm sm:text-base font-medium">
                     {field.label}: {getFieldValue()}
                     {getUnit() && ` ${getUnit()}`}
                   </span>

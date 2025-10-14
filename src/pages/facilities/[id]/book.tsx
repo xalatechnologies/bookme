@@ -63,14 +63,12 @@ export const FacilityBooking = (): JSX.Element => {
         });
       } else {
         await navigator.clipboard.writeText(window.location.href);
-        console.log('Link copied to clipboard');
       }
     } catch (error) {
       if (error instanceof Error && error.name !== 'AbortError') {
         console.warn('Share failed:', error);
         try {
           await navigator.clipboard.writeText(window.location.href);
-          console.log('Link copied to clipboard as fallback');
         } catch (clipboardError) {
           console.warn('Clipboard fallback also failed:', clipboardError);
         }

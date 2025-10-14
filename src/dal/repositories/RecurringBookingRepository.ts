@@ -63,7 +63,7 @@ export class RecurringBookingRepository {
   async generateRecurringBookings(
     maxOccurrences: number = 52,
     endDate?: Date
-  ): Promise<{ success: boolean; data?: GeneratedRecurringBooking[]; error?: any }> {
+  ): Promise<{ success: boolean; data?: GeneratedRecurringBooking[]; error?: string }> {
     try {
       if (!this.pattern || !this.pattern.endDate) {
         return { success: false, error: { message: 'Invalid recurrence pattern' } };

@@ -67,7 +67,6 @@ const UserProfile = (): JSX.Element => {
   // Sync editingProfile with profile only once when profile is loaded
   React.useEffect(() => {
     if (!hasSyncedRef.current && profile.firstName) {
-      console.log("Initial sync editingProfile with profile:", profile);
       setEditingProfile({
         firstName: profile.firstName,
         lastName: profile.lastName,
@@ -126,13 +125,12 @@ const UserProfile = (): JSX.Element => {
 
   const handleSave = (): void => {
     // Update context with all changes
-    const updates: any = { ...editingProfile };
+    const updates: Partial<IUserProfile> = { ...editingProfile };
     if (avatarPreview) {
       updates.avatar = avatarPreview;
       setAvatarPreview(null);
     }
     
-    console.log("handleSave called with updates:", updates);
     updateProfile(updates);
     setIsEditing(false);
     showToastMessage("Endringer lagret");
@@ -154,10 +152,8 @@ const UserProfile = (): JSX.Element => {
   };
 
   const handleInputChange = (field: string, value: string): void => {
-    console.log(`handleInputChange: ${field} = ${value}`);
     setEditingProfile(prev => {
       const newProfile = { ...prev, [field]: value };
-      console.log("New editingProfile:", newProfile);
       return newProfile;
     });
   };

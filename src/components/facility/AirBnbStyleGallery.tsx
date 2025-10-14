@@ -58,7 +58,6 @@ export const AirBnbStyleGallery: React.FC<AirBnbStyleGalleryProps> = ({
         });
       } else {
         await navigator.clipboard.writeText(window.location.href);
-        console.log('Link copied to clipboard');
       }
     } catch (error) {
       // Handle share cancellation or other errors silently
@@ -67,7 +66,6 @@ export const AirBnbStyleGallery: React.FC<AirBnbStyleGalleryProps> = ({
         // Fallback to clipboard
         try {
           await navigator.clipboard.writeText(window.location.href);
-          console.log('Link copied to clipboard as fallback');
         } catch (clipboardError) {
           console.warn('Clipboard fallback also failed:', clipboardError);
         }

@@ -117,7 +117,62 @@ const Bookings = (): JSX.Element => {
   // Get pending bookings from localStorage
   const getPendingBookings = useCallback((): IBooking[] => {
     try {
-      return JSON.parse(localStorage.getItem('pendingBookings') || '[]');
+      const pendingBookings = JSON.parse(localStorage.getItem('pendingBookings') || '[]');
+      return pendingBookings.map((booking: {
+        readonly id: string;
+        readonly facilityName: string;
+        readonly time: string;
+        readonly duration?: number;
+        readonly timeSlots?: readonly { readonly date: string; readonly timeSlot: string }[];
+        readonly status: string;
+        readonly purpose?: string;
+        readonly attendees?: number;
+        readonly activityType?: string;
+        readonly actorType?: string;
+        readonly additionalInfo?: string;
+        readonly createdAt: string;
+      }) => {
+        // Calculate proper time range from timeSlots if available
+        let bookingTime: string;
+        if (booking.timeSlots && booking.timeSlots.length > 0) {
+          // Calculate time range from multiple time slots
+          const sortedSlots = [...booking.timeSlots].sort((a: { readonly timeSlot: string }, b: { readonly timeSlot: string }) => {
+            const timeA = a.timeSlot.split('-')[0];
+            const timeB = b.timeSlot.split('-')[0];
+            return timeA.localeCompare(timeB);
+          });
+          const startTime = sortedSlots[0].timeSlot.split('-')[0];
+          const lastSlot = sortedSlots[sortedSlots.length - 1];
+          const endTime = lastSlot.timeSlot.split('-')[1];
+          bookingTime = `${startTime}-${endTime}`;
+        } else if (booking.time) {
+          // If no timeSlots but has time, try to calculate from duration
+          const timeParts = booking.time.split('-');
+          if (timeParts.length === 2 && booking.duration) {
+            const startTime = timeParts[0];
+            const duration = parseInt(booking.duration.replace(/\D/g, ''));
+            if (duration > 1) {
+              // Calculate end time based on duration
+              const [hours, minutes] = startTime.split(':').map(Number);
+              const endTime = new Date();
+              endTime.setHours(hours + duration, minutes, 0, 0);
+              const endTimeStr = endTime.toTimeString().slice(0, 5);
+              bookingTime = `${startTime}-${endTimeStr}`;
+            } else {
+              bookingTime = booking.time;
+            }
+          } else {
+            bookingTime = booking.time;
+          }
+        } else {
+          bookingTime = '10:00-12:00';
+        }
+
+        return {
+          ...booking,
+          time: bookingTime
+        };
+      });
     } catch {
       return [];
     }
@@ -127,24 +182,94 @@ const Bookings = (): JSX.Element => {
   const getProcessedBookings = useCallback((): IBooking[] => {
     try {
       const processedBookings = JSON.parse(localStorage.getItem('processedBookings') || '[]');
-      return processedBookings.map((booking: any) => ({
-        id: booking.id,
-        facility: booking.facility,
-        date: booking.startDate || booking.date,
-        time: `${booking.startTime}-${booking.endTime}`,
-        duration: booking.duration ? `${booking.duration} timer` : '2 timer',
-        status: booking.status === 'approved' ? 'confirmed' : booking.status === 'rejected' ? 'rejected' : 'cancelled',
-        location: 'Drammen', // This could be dynamic
-        price: booking.price ? `${booking.price.toLocaleString('nb-NO')} kr` : '0 kr',
-        description: booking.purpose || 'Booking',
-        purpose: booking.purpose,
-        contactPerson: booking.bookerName || 'Ukjent',
-        paymentStatus: booking.status === 'approved' ? 'paid' : 'pending',
-        facilityImage: undefined,
-        rejectionReason: booking.status === 'rejected' ? 'Avvist av administrator' : undefined,
-        createdAt: booking.requestedAt || new Date().toISOString(),
-        updatedAt: booking.processedAt || new Date().toISOString()
-      }));
+      return processedBookings.map((booking: {
+        readonly id: string;
+        readonly facilityName: string;
+        readonly time: string;
+        readonly duration?: number;
+        readonly timeSlots?: readonly { readonly date: string; readonly timeSlot: string }[];
+        readonly status: string;
+        readonly purpose?: string;
+        readonly attendees?: number;
+        readonly activityType?: string;
+        readonly actorType?: string;
+        readonly additionalInfo?: string;
+        readonly createdAt: string;
+        readonly date?: string;
+        readonly startDate?: string;
+      }) => {
+        // Handle date more carefully - prioritize date over startDate
+        let bookingDate: string;
+        if (booking.date) {
+          bookingDate = booking.date;
+        } else if (booking.startDate) {
+          bookingDate = booking.startDate;
+        } else {
+          // Fallback to today's date using local components
+          const today = new Date();
+          const year = today.getFullYear();
+          const month = String(today.getMonth() + 1).padStart(2, '0');
+          const day = String(today.getDate()).padStart(2, '0');
+          bookingDate = `${year}-${month}-${day}`;
+        }
+
+        // Handle time more carefully - calculate proper time range
+        let bookingTime: string;
+        if (booking.timeSlots && booking.timeSlots.length > 0) {
+          // Calculate time range from multiple time slots
+          const sortedSlots = [...booking.timeSlots].sort((a: { readonly timeSlot: string }, b: { readonly timeSlot: string }) => {
+            const timeA = a.timeSlot.split('-')[0];
+            const timeB = b.timeSlot.split('-')[0];
+            return timeA.localeCompare(timeB);
+          });
+          const startTime = sortedSlots[0].timeSlot.split('-')[0];
+          const lastSlot = sortedSlots[sortedSlots.length - 1];
+          const endTime = lastSlot.timeSlot.split('-')[1];
+          bookingTime = `${startTime}-${endTime}`;
+        } else if (booking.startTime && booking.endTime) {
+          bookingTime = `${booking.startTime}-${booking.endTime}`;
+        } else if (booking.time) {
+          // If no timeSlots but has time, try to calculate from duration
+          const timeParts = booking.time.split('-');
+          if (timeParts.length === 2 && booking.duration) {
+            const startTime = timeParts[0];
+            const duration = parseInt(booking.duration.replace(/\D/g, ''));
+            if (duration > 1) {
+              // Calculate end time based on duration
+              const [hours, minutes] = startTime.split(':').map(Number);
+              const endTime = new Date();
+              endTime.setHours(hours + duration, minutes, 0, 0);
+              const endTimeStr = endTime.toTimeString().slice(0, 5);
+              bookingTime = `${startTime}-${endTimeStr}`;
+            } else {
+              bookingTime = booking.time;
+            }
+          } else {
+            bookingTime = booking.time;
+          }
+        } else {
+          bookingTime = '10:00-12:00';
+        }
+
+        return {
+          id: booking.id,
+          facility: booking.facility,
+          date: bookingDate,
+          time: bookingTime,
+          duration: booking.duration ? `${booking.duration} timer` : '2 timer',
+          status: booking.status === 'approved' ? 'confirmed' : booking.status === 'rejected' ? 'rejected' : 'cancelled',
+          location: 'Drammen', // This could be dynamic
+          price: booking.price ? `${booking.price.toLocaleString('nb-NO')} kr` : '0 kr',
+          description: booking.purpose || 'Booking',
+          purpose: booking.purpose,
+          contactPerson: booking.bookerName || 'Ukjent',
+          paymentStatus: booking.status === 'approved' ? 'paid' : 'pending',
+          facilityImage: undefined,
+          rejectionReason: booking.status === 'rejected' ? 'Avvist av administrator' : undefined,
+          createdAt: booking.requestedAt || new Date().toISOString(),
+          updatedAt: booking.processedAt || new Date().toISOString()
+        };
+      });
     } catch {
       return [];
     }
@@ -383,20 +508,20 @@ const Bookings = (): JSX.Element => {
     switch (booking.status) {
       case "pending":
         return [
-          { icon: Edit, label: "Rediger", onClick: () => console.log("Edit", booking.id) },
-          { icon: RotateCcw, label: "Trekk tilbake", onClick: () => console.log("Withdraw", booking.id) }
+          { icon: Edit, label: "Rediger", onClick: () => {/* TODO: Implement edit */} },
+          { icon: RotateCcw, label: "Trekk tilbake", onClick: () => {/* TODO: Implement withdraw */} }
         ];
       case "confirmed":
         return [
-          { icon: Edit, label: "Endre tidspunkt", onClick: () => console.log("Reschedule", booking.id) },
-          { icon: X, label: "Avlys", onClick: () => console.log("Cancel", booking.id) },
-          { icon: Share2, label: "Del", onClick: () => console.log("Share", booking.id) },
-          { icon: CalendarPlus, label: "Legg til i kalender", onClick: () => console.log("Add to calendar", booking.id) }
+          { icon: Edit, label: "Endre tidspunkt", onClick: () => {/* TODO: Implement reschedule */} },
+          { icon: X, label: "Avlys", onClick: () => {/* TODO: Implement cancel */} },
+          { icon: Share2, label: "Del", onClick: () => {/* TODO: Implement share */} },
+          { icon: CalendarPlus, label: "Legg til i kalender", onClick: () => {/* TODO: Implement add to calendar */} }
         ];
       case "rejected":
       case "cancelled":
         return [
-          { icon: Plus, label: "Send ny forespørsel", onClick: () => console.log("New request", booking.id) }
+          { icon: Plus, label: "Send ny forespørsel", onClick: () => {/* TODO: Implement new request */} }
         ];
       default:
         return [];
@@ -631,7 +756,18 @@ const Bookings = (): JSX.Element => {
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-gray-600">
                         <div className="flex items-center gap-2">
                           <Calendar className="w-4 h-4" />
-                          {new Date(booking.date).toLocaleDateString('nb-NO')}
+                          {(() => {
+                            // Handle date display more carefully to avoid timezone issues
+                            if (booking.date.match(/^\d{4}-\d{2}-\d{2}$/)) {
+                              // If it's a YYYY-MM-DD string, parse it as local date
+                              const [year, month, day] = booking.date.split('-').map(Number);
+                              const localDate = new Date(year, month - 1, day);
+                              return localDate.toLocaleDateString('nb-NO');
+                            } else {
+                              // Fallback to original method
+                              return new Date(booking.date).toLocaleDateString('nb-NO');
+                            }
+                          })()}
                         </div>
                         <div className="flex items-center gap-2">
                           <Clock className="w-4 h-4" />
@@ -696,7 +832,18 @@ const Bookings = (): JSX.Element => {
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
                     <span className="text-gray-600">Dato:</span>
-                    <span>{new Date(selectedBooking.date).toLocaleDateString('nb-NO')}</span>
+                    <span>{(() => {
+                      // Handle date display more carefully to avoid timezone issues
+                      if (selectedBooking.date.match(/^\d{4}-\d{2}-\d{2}$/)) {
+                        // If it's a YYYY-MM-DD string, parse it as local date
+                        const [year, month, day] = selectedBooking.date.split('-').map(Number);
+                        const localDate = new Date(year, month - 1, day);
+                        return localDate.toLocaleDateString('nb-NO');
+                      } else {
+                        // Fallback to original method
+                        return new Date(selectedBooking.date).toLocaleDateString('nb-NO');
+                      }
+                    })()}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Tid:</span>

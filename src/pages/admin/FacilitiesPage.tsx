@@ -150,7 +150,6 @@ const FacilitiesPage = (_props: IFacilitiesPageProps): JSX.Element => {
       const facility = adminFacilities.find(f => f.id === facilityId);
       if (facility) {
         // TODO: Call API to update facility status
-        console.log(`Publishing facility: ${facility.name}`);
       }
     });
     
@@ -158,7 +157,6 @@ const FacilitiesPage = (_props: IFacilitiesPageProps): JSX.Element => {
     setSelectedFacilities([]);
     
     // Show success message
-    console.log(`${selectedFacilities.length} lokaler publisert`);
   };
 
   const handleBatchUnpublish = (): void => {
@@ -167,7 +165,6 @@ const FacilitiesPage = (_props: IFacilitiesPageProps): JSX.Element => {
       const facility = adminFacilities.find(f => f.id === facilityId);
       if (facility) {
         // TODO: Call API to update facility status
-        console.log(`Unpublishing facility: ${facility.name}`);
       }
     });
     
@@ -175,7 +172,6 @@ const FacilitiesPage = (_props: IFacilitiesPageProps): JSX.Element => {
     setSelectedFacilities([]);
     
     // Show success message
-    console.log(`${selectedFacilities.length} lokaler upublisert`);
   };
 
   const handleBatchArchive = (): void => {
@@ -184,7 +180,6 @@ const FacilitiesPage = (_props: IFacilitiesPageProps): JSX.Element => {
       const facility = adminFacilities.find(f => f.id === facilityId);
       if (facility) {
         // TODO: Call API to update facility status
-        console.log(`Archiving facility: ${facility.name}`);
       }
     });
     
@@ -192,7 +187,6 @@ const FacilitiesPage = (_props: IFacilitiesPageProps): JSX.Element => {
     setSelectedFacilities([]);
     
     // Show success message
-    console.log(`${selectedFacilities.length} lokaler arkivert`);
   };
 
   const handleBatchDelete = (): void => {
@@ -207,7 +201,6 @@ const FacilitiesPage = (_props: IFacilitiesPageProps): JSX.Element => {
       setSelectedFacilities([]);
       
       // Show success message
-      console.log(`${selectedFacilities.length} lokaler slettet`);
     }
   };
 
@@ -218,7 +211,6 @@ const FacilitiesPage = (_props: IFacilitiesPageProps): JSX.Element => {
     // Confirm deletion
     if (window.confirm(`Er du sikker på at du vil slette "${facility.name}"? Denne handlingen kan ikke angres.`)) {
       deleteFacility(facilityId);
-      console.log(`Facility deleted: ${facility.name}`);
     }
   };
 

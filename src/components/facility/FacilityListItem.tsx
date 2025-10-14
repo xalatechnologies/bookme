@@ -37,7 +37,6 @@ export const FacilityListItem: React.FC<FacilityListItemProps> = ({
         });
       } else {
         await navigator.clipboard.writeText(`${window.location.origin}/facilities/${facility.id}`);
-        console.log('Link copied to clipboard');
       }
     } catch (error) {
       // Handle share cancellation or other errors silently
@@ -46,7 +45,6 @@ export const FacilityListItem: React.FC<FacilityListItemProps> = ({
         // Fallback to clipboard
         try {
           await navigator.clipboard.writeText(`${window.location.origin}/facilities/${facility.id}`);
-          console.log('Link copied to clipboard as fallback');
         } catch (clipboardError) {
           console.warn('Clipboard fallback also failed:', clipboardError);
         }

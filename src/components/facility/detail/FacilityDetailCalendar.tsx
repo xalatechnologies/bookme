@@ -9,9 +9,24 @@ interface FacilityDetailCalendarProps {
   readonly facilityId: string;
   readonly facilityName: string;
   readonly timeSlotDuration?: number;
-  readonly currentPattern?: any;
-  readonly onPatternChange?: (pattern: any) => void;
-  readonly onPatternApply?: (pattern: any) => void;
+  readonly currentPattern?: {
+    readonly type: 'daily' | 'weekly' | 'monthly' | 'custom';
+    readonly interval?: number;
+    readonly endDate?: Date;
+    readonly maxOccurrences?: number;
+  };
+  readonly onPatternChange?: (pattern: {
+    readonly type: 'daily' | 'weekly' | 'monthly' | 'custom';
+    readonly interval?: number;
+    readonly endDate?: Date;
+    readonly maxOccurrences?: number;
+  }) => void;
+  readonly onPatternApply?: (pattern: {
+    readonly type: 'daily' | 'weekly' | 'monthly' | 'custom';
+    readonly interval?: number;
+    readonly endDate?: Date;
+    readonly maxOccurrences?: number;
+  }) => void;
   readonly openingHoursStart?: string;
   readonly openingHoursEnd?: string;
 }

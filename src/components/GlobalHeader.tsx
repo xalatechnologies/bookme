@@ -107,7 +107,11 @@ export const GlobalHeader = (): JSX.Element => {
             {/* Cart Icon with Dropdown */}
             <Popover open={cartOpen} onOpenChange={setCartOpen}>
               <PopoverTrigger asChild>
-                <Button variant="ghost" className="relative hover:bg-gray-100">
+                <Button 
+                  variant="ghost" 
+                  className="relative hover:bg-gray-100 cursor-pointer"
+                  onClick={() => setCartOpen(!cartOpen)}
+                >
                   <ShoppingCart className="h-6 w-6" />
                   {itemCount > 0 && (
                     <Badge 
@@ -118,7 +122,7 @@ export const GlobalHeader = (): JSX.Element => {
                   )}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-96 p-0 z-50" align="end">
+              <PopoverContent className="w-96 p-0 z-[9999]" align="end">
                 <CartDropdown onClose={() => setCartOpen(false)} />
               </PopoverContent>
             </Popover>

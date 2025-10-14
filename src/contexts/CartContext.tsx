@@ -80,7 +80,6 @@ export const CartProvider: React.FC<{ readonly children: React.ReactNode }> = ({
 
       storeAddItem(itemWithPricing);
       
-      console.log(`Added to cart: ${item.facilityName} (${item.timeSlots.length} slots)`);
     } catch (error) {
       console.error("Error adding item to cart:", error);
     }
@@ -97,7 +96,6 @@ export const CartProvider: React.FC<{ readonly children: React.ReactNode }> = ({
       storeRemoveItem(itemId);
       
       if (item) {
-        console.log(`Removed from cart: ${item.facilityName}`);
       }
     } catch (error) {
       console.error("Error removing item from cart:", error);
@@ -113,7 +111,6 @@ export const CartProvider: React.FC<{ readonly children: React.ReactNode }> = ({
   const updateItem = (itemId: string, updates: Partial<ICartItem>): void => {
     try {
       storeUpdateItem(itemId, updates);
-      console.log(`Updated cart item: ${itemId}`);
     } catch (error) {
       console.error("Error updating cart item:", error);
     }
@@ -128,7 +125,6 @@ export const CartProvider: React.FC<{ readonly children: React.ReactNode }> = ({
       storeClearCart();
       
       if (count > 0) {
-        console.log(`Cleared cart: removed ${count} items`);
       }
     } catch (error) {
       console.error("Error clearing cart:", error);
@@ -137,7 +133,6 @@ export const CartProvider: React.FC<{ readonly children: React.ReactNode }> = ({
 
   // Log cart state changes for debugging
   useEffect(() => {
-    console.log("Cart state updated:", { itemCount, totalPrice });
   }, [itemCount, totalPrice]);
 
   const contextValue: ICartContext = {

@@ -56,9 +56,8 @@ export const InfiniteScrollFacilities: React.FC<InfiniteScrollFacilitiesProps> =
     setFilteredFacilities(filtered);
   }, [filters, getPublishedFacilities]);
 
-  const handleAddressClick = (e: React.MouseEvent, facility: any): void => {
+  const handleAddressClick = (e: React.MouseEvent, facility: { readonly address: string }): void => {
     e.stopPropagation();
-    console.log('Address clicked for facility:', facility.name);
   };
 
   return (

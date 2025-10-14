@@ -26,7 +26,6 @@ export const MapContainer: React.FC<MapContainerProps> = ({
   const map = useRef<mapboxgl.Map | null>(null);
 
   const initializeMap = async (): Promise<void> => {
-    console.log('Starting map initialization with provided token...');
     
     // Wait for next tick to ensure DOM is ready
     await new Promise(resolve => setTimeout(resolve, 100));
@@ -42,19 +41,16 @@ export const MapContainer: React.FC<MapContainerProps> = ({
     onMapError('');
 
     try {
-      console.log('Setting Mapbox access token...');
       
       // Set the access token
       mapboxgl.accessToken = mapboxToken;
       
       // Clear any existing map
       if (map.current) {
-        console.log('Removing existing map...');
         map.current.remove();
         map.current = null;
       }
 
-      console.log('Creating new map instance...');
       
       // Create new map with error handling
       map.current = new mapboxgl.Map({
@@ -70,7 +66,6 @@ export const MapContainer: React.FC<MapContainerProps> = ({
 
       // Handle successful map load
       map.current.on('load', (): void => {
-        console.log('Map loaded successfully');
         if (map.current) {
           onMapLoad(map.current);
         }
@@ -108,7 +103,6 @@ export const MapContainer: React.FC<MapContainerProps> = ({
     // Cleanup function
     return (): void => {
       if (map.current) {
-        console.log('Cleaning up map...');
         map.current.remove();
         map.current = null;
       }

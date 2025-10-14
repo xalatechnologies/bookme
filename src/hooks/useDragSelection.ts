@@ -99,7 +99,7 @@ export const useDragSelection = () => {
     timeSlot: string,
     timeSlots: readonly string[],
     weekDays: readonly { date: Date }[],
-    getAvailabilityStatus: (zoneId: string, date: Date, timeSlot: string) => { status: string; conflict?: any },
+    getAvailabilityStatus: (zoneId: string, date: Date, timeSlot: string) => { status: string; conflict?: { readonly id: string; readonly title: string } },
     facilityId: string = "",
     pricePerHour: number = 0
   ): void => {
@@ -137,7 +137,11 @@ export const useDragSelection = () => {
           
           // Only include available slots in the preview
           if (status === "available") {
-            const dayString = currentDay.toISOString().split('T')[0]; // YYYY-MM-DD format
+            // Use local date components to avoid timezone issues
+            const year = currentDay.getFullYear();
+            const month = String(currentDay.getMonth() + 1).padStart(2, '0');
+            const day = String(currentDay.getDate()).padStart(2, '0');
+            const dayString = `${year}-${month}-${day}`; // YYYY-MM-DD format
             previewSlots.push({
               id: `${facilityId}-${zoneId}-${dayString}-${currentTimeSlot}`,
               facilityId,

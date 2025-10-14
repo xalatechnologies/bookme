@@ -183,27 +183,22 @@ const UserRequests = (): JSX.Element => {
 
   const handleContactAdmin = (requestId: string): void => {
     // TODO: Implement contact admin
-    console.log("Contact admin for request:", requestId);
   };
 
   const handleEditRequest = (requestId: string): void => {
     // TODO: Implement edit request
-    console.log("Edit request:", requestId);
   };
 
   const handleCancelRequest = (requestId: string): void => {
     // TODO: Implement cancel request with confirmation
-    console.log("Cancel request:", requestId);
   };
 
   const handleGoToBooking = (requestId: string): void => {
     // TODO: Navigate to booking details
-    console.log("Go to booking for request:", requestId);
   };
 
   const handleAddToCalendar = (requestId: string): void => {
     // TODO: Implement add to calendar
-    console.log("Add to calendar:", requestId);
   };
 
   const handleNewRequest = (): void => {

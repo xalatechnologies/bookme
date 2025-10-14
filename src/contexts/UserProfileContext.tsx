@@ -49,18 +49,14 @@ export const UserProfileProvider = ({ children }: { readonly children: React.Rea
   useEffect(() => {
     try {
       const savedProfile = localStorage.getItem("user-profile");
-      console.log("Loading profile from localStorage:", savedProfile);
       if (savedProfile) {
         const parsedProfile = JSON.parse(savedProfile);
-        console.log("Parsed profile:", parsedProfile);
         setProfile(parsedProfile);
       } else {
-        console.log("No saved profile found, using initial profile");
       }
       setIsLoadedFromStorage(true);
     } catch (error) {
       console.error("Error loading profile from localStorage:", error);
-      console.log("Using initial profile as fallback");
       setIsLoadedFromStorage(true);
     }
   }, []);
@@ -69,23 +65,18 @@ export const UserProfileProvider = ({ children }: { readonly children: React.Rea
   useEffect(() => {
     if (isLoadedFromStorage) {
       try {
-        console.log("Saving profile to localStorage:", profile);
         localStorage.setItem("user-profile", JSON.stringify(profile));
-        console.log("Profile saved successfully to localStorage");
       } catch (error) {
         console.error("Error saving profile to localStorage:", error);
       }
     } else {
-      console.log("Skipping save - not loaded from storage yet");
     }
   }, [profile, isLoadedFromStorage]);
 
   const updateProfile = (updates: Partial<IUserProfile>): void => {
-    console.log("updateProfile called with updates:", updates);
     setIsLoading(true);
     setProfile(prev => {
       const newProfile = { ...prev, ...updates };
-      console.log("New profile state:", newProfile);
       return newProfile;
     });
     

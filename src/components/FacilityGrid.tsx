@@ -56,7 +56,6 @@ export const FacilityGrid = ({
           facility={facility}
           onAddressClick={(e, facility) => {
             e.stopPropagation();
-            console.log('Address clicked for facility:', facility.name);
           }}
         />
       ))}

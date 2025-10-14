@@ -23,13 +23,13 @@ export const ViewModeToggle: React.FC<ViewModeToggleProps> = ({ viewMode, setVie
   ];
 
   return (
-    <div className="flex border border-slate-300 rounded-xl overflow-hidden bg-white shadow-sm">
+    <div className="flex border border-slate-300 rounded-lg sm:rounded-xl overflow-hidden bg-white shadow-sm">
       {viewModes.map(({ key, icon: Icon, label }) => (
         <Button
           key={key}
           variant={viewMode === key ? "default" : "ghost"}
           onClick={() => setViewMode(key)}
-          className={`h-14 px-4 rounded-none border-0 text-base font-medium transition-all duration-200 ${
+          className={`h-10 sm:h-12 md:h-14 px-2 sm:px-3 md:px-4 rounded-none border-0 text-xs sm:text-sm md:text-base font-medium transition-all duration-200 ${
             viewMode === key
               ? 'bg-slate-700 text-white shadow-md'
               : 'text-gray-600 hover:bg-slate-50 hover:text-slate-700'
@@ -37,7 +37,7 @@ export const ViewModeToggle: React.FC<ViewModeToggleProps> = ({ viewMode, setVie
           aria-label={label}
           title={label}
         >
-          <Icon className="h-5 w-5" />
+          <Icon className="h-4 w-4 sm:h-5 sm:w-5" />
         </Button>
       ))}
     </div>

@@ -233,7 +233,6 @@ const UserFavorites = (): JSX.Element => {
     incrementUsage(facilityId);
     updateLastVisited(facilityId);
     // TODO: Navigate to facility detail page
-    console.log("View facility:", facilityId);
   };
 
   const handleBookNow = (facilityId: string): void => {
@@ -242,12 +241,10 @@ const UserFavorites = (): JSX.Element => {
     incrementUsage(facilityId);
     updateLastVisited(facilityId);
     // TODO: Navigate to booking page
-    console.log("Book facility:", facilityId);
   };
 
   const handleQuickView = (facilityId: string): void => {
     // TODO: Open quick view modal
-    console.log("Quick view facility:", facilityId);
   };
 
 

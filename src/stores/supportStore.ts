@@ -269,7 +269,7 @@ export const useSupportStore = create<SupportState>()(
           // Apply sorting
           if (criteria.sortBy) {
             results = results.sort((a, b) => {
-              let aValue: any, bValue: any;
+              let aValue: string | number, bValue: string | number;
               
               switch (criteria.sortBy) {
                 case 'createdAt':

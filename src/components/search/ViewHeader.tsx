@@ -33,23 +33,23 @@ export const ViewHeader: React.FC<ViewHeaderProps> = ({
   };
 
   return (
-    <div className="mb-8 flex flex-col md:flex-row gap-6 md:gap-0 items-start md:items-end justify-between">
-      <div className="flex items-center gap-6">
-        <div className="flex items-center gap-3">
-          <span className="text-4xl font-bold text-gray-900">
+    <div className="mb-6 flex flex-col sm:flex-row gap-4 sm:gap-6 items-start sm:items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6">
+        <div className="flex items-center gap-2 sm:gap-3">
+          <span className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900">
             {isLoading ? "..." : facilityCount}
           </span>
-          <span className="text-xl font-semibold text-gray-700">lokaler</span>
+          <span className="text-lg sm:text-xl font-semibold text-gray-700">lokaler</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="text-lg px-6 py-3 font-medium text-gray-600 bg-gray-100 rounded-full">
+          <div className="text-sm sm:text-base md:text-lg px-3 sm:px-4 md:px-6 py-2 sm:py-3 font-medium text-gray-600 bg-gray-100 rounded-full">
             {isLoading ? "Laster..." : getViewLabel()}
           </div>
         </div>
       </div>
       
       {/* View mode toggle aligned with the results label */}
-      <div className="flex-shrink-0">
+      <div className="flex-shrink-0 w-full sm:w-auto">
         <ViewModeToggle viewMode={viewMode} setViewMode={setViewMode} />
       </div>
     </div>

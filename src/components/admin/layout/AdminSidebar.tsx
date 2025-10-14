@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { NavLink } from "react-router-dom";
 import { 
   LayoutDashboard, 
@@ -17,6 +17,7 @@ import {
   ChevronLeft, 
   ChevronRight 
 } from "lucide-react";
+import { useSidebar } from "./AdminLayout";
 
 interface IMenuItem {
   readonly id: string;
@@ -35,7 +36,7 @@ interface IAdminSidebarProps {
 }
 
 const AdminSidebar = (_props: IAdminSidebarProps): JSX.Element => {
-  const [isCollapsed, setIsCollapsed] = useState<boolean>(false);
+  const { isCollapsed, toggleCollapse } = useSidebar();
 
   const menuGroups: readonly IMenuGroup[] = [
     {
@@ -65,13 +66,10 @@ const AdminSidebar = (_props: IAdminSidebarProps): JSX.Element => {
     }
   ];
 
-  const toggleCollapse = (): void => {
-    setIsCollapsed(!isCollapsed);
-  };
 
   return (
-    <div className={`h-full flex flex-col bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 transition-all duration-300 ${
-      isCollapsed ? "w-16" : "w-72"
+    <div className={`h-[calc(100vh-73px)] flex flex-col bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 transition-all duration-300 ${
+      isCollapsed ? "w-16" : "w-64"
     }`}>
       {/* Navigation Content */}
       <nav className="flex-1 p-4 space-y-6 overflow-y-auto">

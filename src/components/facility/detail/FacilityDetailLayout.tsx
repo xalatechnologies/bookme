@@ -31,7 +31,6 @@ export const FacilityDetailLayout = ({
   onToggleFavorite,
   showBookingInterface = false
 }: FacilityDetailLayoutProps): JSX.Element => {
-  
   return (
     <div className="container mx-auto px-4 py-6 max-w-7xl">
       {/* Full Width Gallery Section */}
@@ -95,6 +94,7 @@ export const FacilityDetailLayout = ({
           error={undefined}
           openingHoursStart={facility.openingHoursStart || "08:00"}
           openingHoursEnd={facility.openingHoursEnd || "22:00"}
+          useStepByStepBooking={true}
         />
       )}
     </div>

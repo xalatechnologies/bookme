@@ -298,7 +298,19 @@ export default function HistoryPage(): JSX.Element {
                         onClick={() => toggleRowExpansion(item.id)}
                       >
                         <td className="px-4 py-3">
-                          {new Date(item.start).toLocaleDateString("nb-NO")}
+                          {(() => {
+                            // Handle date display more carefully to avoid timezone issues
+                            const dateStr = item.start.split('T')[0]; // Get YYYY-MM-DD part
+                            if (dateStr.match(/^\d{4}-\d{2}-\d{2}$/)) {
+                              // If it's a YYYY-MM-DD string, parse it as local date
+                              const [year, month, day] = dateStr.split('-').map(Number);
+                              const localDate = new Date(year, month - 1, day);
+                              return localDate.toLocaleDateString("nb-NO");
+                            } else {
+                              // Fallback to original method
+                              return new Date(item.start).toLocaleDateString("nb-NO");
+                            }
+                          })()}
                         </td>
                         <td className="px-4 py-3">
                           {new Date(item.start).toLocaleTimeString("nb-NO", { 
@@ -333,7 +345,6 @@ export default function HistoryPage(): JSX.Element {
                               size="sm"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                console.log("Se detaljer", item.id);
                               }}
                             >
                               <Eye className="w-4 h-4" />

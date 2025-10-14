@@ -265,7 +265,6 @@ const UserReceipts = (): JSX.Element => {
 
   const handleDownloadReceipt = (receiptId: string): void => {
     // TODO: Implement download receipt
-    console.log("Download receipt:", receiptId);
   };
 
   const handleViewInvoice = (receiptId: string): void => {
@@ -279,17 +278,14 @@ const UserReceipts = (): JSX.Element => {
 
   const handleSendReceiptEmail = (receiptId: string): void => {
     // TODO: Implement send receipt email
-    console.log("Send receipt email:", receiptId);
   };
 
   const handleCompletePayment = (receiptId: string): void => {
     // TODO: Navigate to payment portal
-    console.log("Complete payment:", receiptId);
   };
 
   const handleExportCSV = (): void => {
     // TODO: Implement CSV export
-    console.log("Export CSV");
   };
 
   const totalAmount = filteredAndSortedReceipts

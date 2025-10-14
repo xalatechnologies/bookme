@@ -398,14 +398,35 @@ const UserDashboard = (): JSX.Element => {
 
 
   const formatDate = (dateString: string): string => {
-    return new Date(dateString).toLocaleDateString('nb-NO');
+    // Handle date display more carefully to avoid timezone issues
+    if (dateString.match(/^\d{4}-\d{2}-\d{2}$/)) {
+      // If it's a YYYY-MM-DD string, parse it as local date
+      const [year, month, day] = dateString.split('-').map(Number);
+      const localDate = new Date(year, month - 1, day);
+      return localDate.toLocaleDateString('nb-NO');
+    } else {
+      // Fallback to original method
+      return new Date(dateString).toLocaleDateString('nb-NO');
+    }
   };
 
   const formatMessageDate = (dateString: string): string => {
-    return new Date(dateString).toLocaleDateString('nb-NO', {
-      month: 'short',
-      day: 'numeric'
-    });
+    // Handle date display more carefully to avoid timezone issues
+    if (dateString.match(/^\d{4}-\d{2}-\d{2}$/)) {
+      // If it's a YYYY-MM-DD string, parse it as local date
+      const [year, month, day] = dateString.split('-').map(Number);
+      const localDate = new Date(year, month - 1, day);
+      return localDate.toLocaleDateString('nb-NO', {
+        month: 'short',
+        day: 'numeric'
+      });
+    } else {
+      // Fallback to original method
+      return new Date(dateString).toLocaleDateString('nb-NO', {
+        month: 'short',
+        day: 'numeric'
+      });
+    }
   };
 
   const handleNewBooking = (): void => {

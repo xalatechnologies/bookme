@@ -70,7 +70,7 @@ export interface ICalendarGridProps {
   readonly pricePerHour?: number;
   readonly isLoading?: boolean;
   readonly error?: string;
-  readonly getAvailabilityStatus?: (zoneId: string, date: Date, timeSlot: string) => { status: string; conflict?: any };
+  readonly getAvailabilityStatus?: (zoneId: string, date: Date, timeSlot: string) => { status: string; conflict?: { readonly id: string; readonly title: string } };
   readonly isSlotSelected?: (zoneId: string, date: Date, timeSlot: string) => boolean;
   readonly openingHoursStart?: string;
   readonly openingHoursEnd?: string;

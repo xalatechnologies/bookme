@@ -64,7 +64,11 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
   // Mock availability status function - in a real app this would fetch from API
   const getAvailabilityStatus = useCallback((zoneId: string, date: Date, timeSlot: string): AvailabilityStatus => {
     // Simple mock logic - make some slots busy for demonstration
-    const dateStr = date.toISOString().split('T')[0];
+    // Use local date components to avoid timezone issues
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const dateStr = `${year}-${month}-${day}`;
     const hash = `${zoneId}-${dateStr}-${timeSlot}`.split('').reduce((a, b) => {
       a = ((a << 5) - a) + b.charCodeAt(0);
       return a & a;

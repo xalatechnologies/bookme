@@ -328,7 +328,15 @@ const FacilityEditPage = (_props: IFacilityEditPageProps): JSX.Element => {
   };
 
   // Function to render field based on configuration
-  const renderField = (field: any): JSX.Element | null => {
+  const renderField = (field: {
+    readonly key: string;
+    readonly label: string;
+    readonly type: string;
+    readonly visible: boolean;
+    readonly required?: boolean;
+    readonly placeholder?: string;
+    readonly options?: readonly { readonly value: string; readonly label: string }[];
+  }): JSX.Element | null => {
     if (!field.visible) return null;
 
     const getFieldValue = (): string | number => {

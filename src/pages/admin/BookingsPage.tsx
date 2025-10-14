@@ -509,23 +509,88 @@ const BookingsPage = (): JSX.Element => {
   const getPendingBookings = useCallback((): IBooking[] => {
     try {
       const pendingBookings = JSON.parse(localStorage.getItem('pendingBookings') || '[]');
-      return pendingBookings.map((booking: any, index: number) => ({
-        id: booking.id || (index + 1).toString(),
-        title: `Booking #${booking.id || (index + 1)} – ${booking.facility}`,
-        facility: booking.facility,
-        facilityId: booking.facilityId || '1',
-        bookerName: booking.contactPerson || 'Ukjent bruker',
-        bookerEmail: 'bruker@example.com', // This should come from user profile
-        purpose: booking.purpose || booking.description || 'Booking',
-        startDate: booking.date || new Date().toISOString().split('T')[0],
-        endDate: booking.date || new Date().toISOString().split('T')[0],
-        startTime: booking.time ? booking.time.split('-')[0] : '10:00',
-        endTime: booking.time ? booking.time.split('-')[1] : '12:00',
-        status: booking.status || 'pending',
-        requestedAt: booking.submittedAt || new Date().toISOString(),
-        price: booking.price ? parseInt(booking.price.replace(/\D/g, '')) : 0,
-        duration: booking.duration ? parseInt(booking.duration) : 2
-      }));
+      return pendingBookings.map((booking: {
+        readonly id: string;
+        readonly facilityName: string;
+        readonly time: string;
+        readonly duration?: number;
+        readonly timeSlots?: readonly { readonly date: string; readonly timeSlot: string }[];
+        readonly status: string;
+        readonly purpose?: string;
+        readonly attendees?: number;
+        readonly activityType?: string;
+        readonly actorType?: string;
+        readonly additionalInfo?: string;
+        readonly createdAt: string;
+      }, index: number) => {
+        // Calculate proper time range from timeSlots if available
+        let startTime: string;
+        let endTime: string;
+        
+        if (booking.timeSlots && booking.timeSlots.length > 0) {
+          // Calculate time range from multiple time slots
+          const sortedSlots = [...booking.timeSlots].sort((a: { readonly timeSlot: string }, b: { readonly timeSlot: string }) => {
+            const timeA = a.timeSlot.split('-')[0];
+            const timeB = b.timeSlot.split('-')[0];
+            return timeA.localeCompare(timeB);
+          });
+          startTime = sortedSlots[0].timeSlot.split('-')[0];
+          const lastSlot = sortedSlots[sortedSlots.length - 1];
+          endTime = lastSlot.timeSlot.split('-')[1];
+        } else if (booking.time) {
+          // If no timeSlots but has time, try to calculate from duration
+          const timeParts = booking.time.split('-');
+          if (timeParts.length === 2 && booking.duration) {
+            startTime = timeParts[0];
+            const duration = parseInt(booking.duration.replace(/\D/g, ''));
+            if (duration > 1) {
+              // Calculate end time based on duration
+              const [hours, minutes] = startTime.split(':').map(Number);
+              const endTimeDate = new Date();
+              endTimeDate.setHours(hours + duration, minutes, 0, 0);
+              endTime = endTimeDate.toTimeString().slice(0, 5);
+            } else {
+              endTime = timeParts[1];
+            }
+          } else {
+            startTime = timeParts[0];
+            endTime = timeParts[1];
+          }
+        } else {
+          startTime = '10:00';
+          endTime = '12:00';
+        }
+
+        return {
+          id: booking.id || (index + 1).toString(),
+          title: `Booking #${booking.id || (index + 1)} – ${booking.facility}`,
+          facility: booking.facility,
+          facilityId: booking.facilityId || '1',
+          bookerName: booking.contactPerson || 'Ukjent bruker',
+          bookerEmail: 'bruker@example.com', // This should come from user profile
+          purpose: booking.purpose || booking.description || 'Booking',
+          startDate: booking.date || (() => {
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+          })(),
+          endDate: booking.date || (() => {
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+          })(),
+          startTime,
+          endTime,
+          status: booking.status || 'pending',
+          requestedAt: booking.submittedAt || new Date().toISOString(),
+          price: booking.price ? parseInt(booking.price.replace(/\D/g, '')) : 0,
+          duration: booking.duration ? parseInt(booking.duration) : 2
+        };
+      });
     } catch (error) {
       return [];
     }
@@ -534,7 +599,72 @@ const BookingsPage = (): JSX.Element => {
   // Get approved/rejected bookings from localStorage
   const getProcessedBookings = useCallback((): IBooking[] => {
     try {
-      return JSON.parse(localStorage.getItem('processedBookings') || '[]');
+      const processedBookings = JSON.parse(localStorage.getItem('processedBookings') || '[]');
+      return processedBookings.map((booking: {
+        readonly id: string;
+        readonly facilityName: string;
+        readonly time: string;
+        readonly duration?: number;
+        readonly timeSlots?: readonly { readonly date: string; readonly timeSlot: string }[];
+        readonly status: string;
+        readonly purpose?: string;
+        readonly attendees?: number;
+        readonly activityType?: string;
+        readonly actorType?: string;
+        readonly additionalInfo?: string;
+        readonly createdAt: string;
+        readonly startTime?: string;
+        readonly endTime?: string;
+        readonly date?: string;
+        readonly startDate?: string;
+      }) => {
+        // Calculate proper time range from timeSlots if available
+        let startTime: string;
+        let endTime: string;
+        
+        if (booking.startTime && booking.endTime) {
+          startTime = booking.startTime;
+          endTime = booking.endTime;
+        } else if (booking.time) {
+          // If no timeSlots but has time, try to calculate from duration
+          const timeParts = booking.time.split('-');
+          if (timeParts.length === 2 && booking.duration) {
+            startTime = timeParts[0];
+            const duration = parseInt(booking.duration.replace(/\D/g, ''));
+            if (duration > 1) {
+              // Calculate end time based on duration
+              const [hours, minutes] = startTime.split(':').map(Number);
+              const endTimeDate = new Date();
+              endTimeDate.setHours(hours + duration, minutes, 0, 0);
+              endTime = endTimeDate.toTimeString().slice(0, 5);
+            } else {
+              endTime = timeParts[1];
+            }
+          } else {
+            startTime = timeParts[0];
+            endTime = timeParts[1];
+          }
+        } else if (booking.timeSlots && booking.timeSlots.length > 0) {
+          // Calculate time range from multiple time slots
+          const sortedSlots = [...booking.timeSlots].sort((a: { readonly timeSlot: string }, b: { readonly timeSlot: string }) => {
+            const timeA = a.timeSlot.split('-')[0];
+            const timeB = b.timeSlot.split('-')[0];
+            return timeA.localeCompare(timeB);
+          });
+          startTime = sortedSlots[0].timeSlot.split('-')[0];
+          const lastSlot = sortedSlots[sortedSlots.length - 1];
+          endTime = lastSlot.timeSlot.split('-')[1];
+        } else {
+          startTime = '10:00';
+          endTime = '12:00';
+        }
+
+        return {
+          ...booking,
+          startTime,
+          endTime
+        };
+      });
     } catch (error) {
       return [];
     }
@@ -591,7 +721,7 @@ const BookingsPage = (): JSX.Element => {
 
       // Remove from pending bookings
       const pendingBookings = JSON.parse(localStorage.getItem('pendingBookings') || '[]');
-      const updatedPending = pendingBookings.filter((b: any) => b.id !== id);
+      const updatedPending = pendingBookings.filter((b: { readonly id: string }) => b.id !== id);
       localStorage.setItem('pendingBookings', JSON.stringify(updatedPending));
 
       // Add to processed bookings with approved status
@@ -621,7 +751,7 @@ const BookingsPage = (): JSX.Element => {
 
       // Remove from pending bookings
       const pendingBookings = JSON.parse(localStorage.getItem('pendingBookings') || '[]');
-      const updatedPending = pendingBookings.filter((b: any) => b.id !== id);
+      const updatedPending = pendingBookings.filter((b: { readonly id: string }) => b.id !== id);
       localStorage.setItem('pendingBookings', JSON.stringify(updatedPending));
 
       // Add to processed bookings with rejected status
@@ -638,7 +768,6 @@ const BookingsPage = (): JSX.Element => {
       // Refresh the component
       setRefreshTrigger(prev => prev + 1);
       
-      console.log(`Booking ${id} rejected successfully`);
     } catch (error) {
       console.error('Error rejecting booking:', error);
     }
@@ -949,8 +1078,6 @@ const BookingsPage = (): JSX.Element => {
             <div className="h-full overflow-y-auto">
               <SupportTicketList
                 isAdmin={true}
-                onTicketSelect={(ticketId) => console.log('Select ticket:', ticketId)}
-                onCreateTicket={() => console.log('Create ticket')}
               />
             </div>
           </div>
