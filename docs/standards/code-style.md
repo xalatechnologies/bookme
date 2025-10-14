@@ -54,12 +54,12 @@ ELSE:
 - Update comments when modifying code to maintain accuracy
 - Keep comments concise and relevant
 
-### Flowbite Component Usage
-- **Always prefer Flowbite components** over custom HTML elements
-- Import components from `flowbite-react`: `import { Button, Card } from 'flowbite-react'`
-- Use Flowbite's prop-based styling instead of custom CSS classes
-- Follow Flowbite's naming conventions for component props
-- Leverage Flowbite's built-in TypeScript definitions
+### shadcn/ui Component Usage
+- **Always prefer shadcn/ui components** over custom HTML elements
+- Import components from `@/components/ui`: `import { Button } from "@/components/ui/button"`
+- Use shadcn/ui's variant-based styling instead of custom CSS classes
+- Follow shadcn/ui's naming conventions for component props
+- Leverage shadcn/ui's built-in TypeScript definitions (built on Radix UI)
 </conditional-block>
 
 <conditional-block task-condition="html-css-tailwind" context-check="html-css-style">
@@ -78,7 +78,7 @@ IF current task involves writing or updating HTML, CSS, or TailwindCSS:
         READ the following style guides (only if not already in context):
         - @.agent-os/standards/code-style/html-style.md (if not in context)
         - @.agent-os/standards/code-style/css-style.md (if not in context)
-        - @.agent-os/standards/code-style/flowbite-style.md (if not in context)
+        - @.agent-os/standards/code-style/ui-components.md (if not in context)
     </context_fetcher_strategy>
 ELSE:
   SKIP: HTML/CSS style guides not relevant to current task

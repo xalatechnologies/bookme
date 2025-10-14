@@ -1,8 +1,8 @@
-# TypeScript Standards for MediaHub
+# TypeScript Standards for BookMe
 
 ## 🎯 Overview
 
-This document defines strict TypeScript standards for the MediaHub project, emphasizing type safety, consistency, and maintainability. All code MUST adhere to these standards.
+This document defines strict TypeScript standards for the BookMe project, emphasizing type safety, consistency, and maintainability. All code MUST adhere to these standards.
 
 ## 📋 Core Principles
 

@@ -1,8 +1,8 @@
-# MediaHub Coding Standards
+# BookMe Coding Standards
 
 ## 🎯 Overview
 
-This document defines comprehensive coding standards for the MediaHub project, emphasizing consistency, maintainability, and best practices across all development aspects.
+This document defines comprehensive coding standards for the BookMe project, emphasizing consistency, maintainability, and best practices across all development aspects.
 
 ## 🧩 Components & Architecture
 
@@ -164,18 +164,18 @@ export const NavigationMenu = (): JSX.Element => {
 ### Custom Icons
 
 ```typescript
-// src/components/icons/MediaHubLogo.tsx
+// src/components/icons/BookMeLogo.tsx
 import React from 'react';
 
-interface MediaHubLogoProps {
+interface BookMeLogoProps {
   readonly size?: number;
   readonly className?: string;
 }
 
-export const MediaHubLogo = ({ 
+export const BookMeLogo = ({ 
   size = 24, 
   className = '' 
-}: MediaHubLogoProps): JSX.Element => {
+}: BookMeLogoProps): JSX.Element => {
   return (
     <svg 
       width={size} 
@@ -578,8 +578,8 @@ export const AnimatedCard = ({ children }: { children: React.ReactNode }): JSX.E
 import { Inngest } from 'inngest';
 
 export const inngest = new Inngest({ 
-  id: 'mediahub',
-  name: 'MediaHub Background Jobs' 
+  id: 'bookme',
+  name: 'BookMe Background Jobs' 
 });
 ```
 
@@ -758,23 +758,23 @@ npm run build
 
 # Fix any errors (ignore warnings)
 # Then update project log
-echo "- Added comprehensive Flowbite integration standards" >> .project-updates
+echo "- Added comprehensive shadcn/ui integration standards" >> .project-updates
 
 # Commit with semantic message
 git add .
-git commit -m "docs: add comprehensive coding standards with Flowbite integration"
+git commit -m "docs: add comprehensive coding standards with shadcn/ui integration"
 ```
 
 ### Project Updates Tracking
 
 ```markdown
 <!-- .project-updates -->
-# MediaHub Project Updates
+# BookMe Project Updates
 
 ## Recent Changes
 
 - Added comprehensive coding standards documentation
-- Implemented Flowbite-first UI development approach
+- Implemented shadcn/ui-first UI development approach
 - Created TypeScript strict typing requirements
 - Set up Inngest background job processing
 - Configured Storybook for component development
@@ -785,7 +785,7 @@ git commit -m "docs: add comprehensive coding standards with Flowbite integratio
 
 **Before every commit, verify:**
 
-- [ ] ✅ Components use Flowbite React library
+- [ ] ✅ Components use shadcn/ui library
 - [ ] ✅ TypeScript strict mode with no `any` types
 - [ ] ✅ Proper import organization (external → internal → sibling)
 - [ ] ✅ Mobile-first Tailwind CSS classes
@@ -797,11 +797,12 @@ git commit -m "docs: add comprehensive coding standards with Flowbite integratio
 - [ ] ✅ Project builds successfully (`npm run build`)
 - [ ] ✅ `.project-updates` file updated
 - [ ] ✅ Semantic commit message format
+- [ ] ✅ No console.log statements in production code
 
 ## 🎯 Success Metrics
 
 **Every code contribution MUST achieve:**
-- ✅ 100% Flowbite component usage for UI
+- ✅ 100% shadcn/ui component usage for UI
 - ✅ Zero TypeScript errors or warnings
 - ✅ Responsive design with dark mode support
 - ✅ Accessibility compliance (WCAG AA)
@@ -809,5 +810,6 @@ git commit -m "docs: add comprehensive coding standards with Flowbite integratio
 - ✅ Proper file organization and naming
 - ✅ Comprehensive error handling
 - ✅ Type-safe API interactions
+- ✅ No console.log statements
 
 **VIOLATION CONSEQUENCES**: Code that doesn't meet these standards will be rejected during review and must be refactored to comply with all requirements.

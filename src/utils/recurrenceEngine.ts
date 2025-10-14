@@ -1,0 +1,282 @@
+"use client";
+
+import { addDays, addWeeks, addMonths, format, startOfWeek, isSameDay, getDay } from 'date-fns';
+
+/**
+ * Recurrence pattern interface for defining recurring booking patterns
+ * 
+ * Supports various recurrence types including single, weekly, biweekly, monthly, and custom patterns
+ */
+export interface RecurrencePattern {
+  readonly type: 'single' | 'weekly' | 'biweekly' | 'monthly' | 'custom';
+  readonly weekdays: readonly number[]; // 0 = Sunday, 1 = Monday, etc.
+  readonly timeSlots: readonly string[];
+  readonly interval: number; // for custom patterns
+  readonly startDate?: Date; // When the recurrence should start
+  readonly endDate?: Date; // When the recurrence should end
+  readonly monthlyPattern?: 'first' | 'second' | 'third' | 'fourth' | 'last';
+  readonly monthlyWeekday?: number;
+  readonly maxOccurrences?: number; // Maximum number of occurrences
+}
+
+/**
+ * Extended time slot interface for recurring bookings
+ * 
+ * Extends the base ISelectedTimeSlot with recurrence-specific properties
+ */
+export interface RecurringTimeSlot {
+  readonly id: string;
+  readonly facilityId: string;
+  readonly zoneId: string;
+  readonly date: Date;
+  readonly timeSlot: string;
+  readonly duration: number; // in hours
+  readonly pricePerHour: number;
+  readonly isRecurring: boolean;
+  readonly recurrencePattern?: RecurrencePattern;
+  readonly parentBookingId?: string; // ID of the parent recurring booking
+}
+
+/**
+ * Recurrence Engine for generating recurring booking patterns
+ * 
+ * Handles the complex logic of generating recurring time slots based on various patterns
+ * including weekly, biweekly, monthly, and custom intervals.
+ * 
+ * Features:
+ * - Multiple recurrence types (single, weekly, biweekly, monthly, custom)
+ * - Weekday filtering for weekly patterns
+ * - Monthly pattern matching (first, second, third, fourth, last weekday)
+ * - Custom interval support
+ * - Maximum occurrence limits
+ * - Exception handling
+ * 
+ * Usage:
+ * - Create a RecurrencePattern with desired settings
+ * - Use generateOccurrences() to generate time slots
+ * - Use getPatternDescription() for user-friendly descriptions
+ */
+export class RecurrenceEngine {
+  /**
+   * Generate recurring time slot occurrences based on pattern
+   * 
+   * @param pattern - Recurrence pattern configuration
+   * @param startDate - Base start date for generation
+   * @param zoneId - Zone ID for the slots
+   * @param facilityId - Facility ID for the slots
+   * @param pricePerHour - Price per hour for the slots
+   * @param maxOccurrences - Maximum number of occurrences to generate
+   * @returns Array of generated recurring time slots
+   */
+  generateOccurrences(
+    pattern: RecurrencePattern,
+    startDate: Date,
+    zoneId: string,
+    facilityId: string,
+    pricePerHour: number,
+    maxOccurrences: number = 52
+  ): RecurringTimeSlot[] {
+    const occurrences: RecurringTimeSlot[] = [];
+    
+    // Use pattern's start date if available, otherwise use provided startDate
+    let currentDate = pattern.startDate || startDate;
+    const endDate = pattern.endDate;
+    let count = 0;
+
+    while (count < maxOccurrences && (!endDate || currentDate <= endDate)) {
+      // Check if current date matches pattern
+      if (this.dateMatchesPattern(currentDate, pattern)) {
+        // Add all time slots for this date
+        pattern.timeSlots.forEach(timeSlot => {
+          occurrences.push({
+            id: `${zoneId}-${currentDate.getTime()}-${timeSlot}-recurring`,
+            facilityId,
+            zoneId,
+            date: new Date(currentDate),
+            timeSlot,
+            duration: this.calculateDuration(timeSlot),
+            pricePerHour,
+            isRecurring: true,
+            recurrencePattern: pattern,
+            parentBookingId: `${facilityId}-${zoneId}-${pattern.startDate?.getTime() || startDate.getTime()}`
+          });
+        });
+        count++;
+      }
+
+      // Move to next date based on pattern type
+      currentDate = this.getNextDate(currentDate, pattern);
+    }
+
+    return occurrences;
+  }
+
+  /**
+   * Check if a date matches the recurrence pattern
+   * 
+   * @param date - Date to check
+   * @param pattern - Recurrence pattern
+   * @returns True if date matches pattern
+   */
+  private dateMatchesPattern(date: Date, pattern: RecurrencePattern): boolean {
+    const dayOfWeek = getDay(date);
+
+    switch (pattern.type) {
+      case 'single':
+        return true; // Single occurrence
+      case 'weekly':
+      case 'biweekly':
+        return pattern.weekdays.includes(dayOfWeek);
+      case 'monthly':
+        return this.matchesMonthlyPattern(date, pattern);
+      case 'custom':
+        return pattern.weekdays.includes(dayOfWeek);
+      default:
+        return false;
+    }
+  }
+
+  /**
+   * Check if date matches monthly pattern
+   * 
+   * @param date - Date to check
+   * @param pattern - Monthly recurrence pattern
+   * @returns True if date matches monthly pattern
+   */
+  private matchesMonthlyPattern(date: Date, pattern: RecurrencePattern): boolean {
+    if (!pattern.monthlyPattern || pattern.monthlyWeekday === undefined) return false;
+
+    const dayOfWeek = getDay(date);
+    if (dayOfWeek !== pattern.monthlyWeekday) return false;
+
+    // Calculate which occurrence of this weekday in the month
+    const firstOfMonth = new Date(date.getFullYear(), date.getMonth(), 1);
+    const firstOccurrence = addDays(firstOfMonth, (7 + pattern.monthlyWeekday - getDay(firstOfMonth)) % 7);
+    
+    const weekNumber = Math.floor((date.getDate() - firstOccurrence.getDate()) / 7) + 1;
+
+    switch (pattern.monthlyPattern) {
+      case 'first': return weekNumber === 1;
+      case 'second': return weekNumber === 2;
+      case 'third': return weekNumber === 3;
+      case 'fourth': return weekNumber === 4;
+      case 'last':
+        // Check if this is the last occurrence of this weekday in the month
+        const nextWeek = addDays(date, 7);
+        return nextWeek.getMonth() !== date.getMonth();
+      default: return false;
+    }
+  }
+
+  /**
+   * Get the next date based on recurrence pattern
+   * 
+   * @param currentDate - Current date
+   * @param pattern - Recurrence pattern
+   * @returns Next date in the sequence
+   */
+  private getNextDate(currentDate: Date, pattern: RecurrencePattern): Date {
+    switch (pattern.type) {
+      case 'single':
+        return addDays(currentDate, 1);
+      case 'weekly':
+        return addDays(currentDate, 1);
+      case 'biweekly':
+        return addDays(currentDate, 1);
+      case 'monthly':
+        return addDays(currentDate, 1);
+      case 'custom':
+        return addDays(currentDate, pattern.interval || 1);
+      default:
+        return addDays(currentDate, 1);
+    }
+  }
+
+  /**
+   * Calculate duration from time slot string
+   * 
+   * @param timeSlot - Time slot string (e.g., "09:00-11:00")
+   * @returns Duration in hours
+   */
+  private calculateDuration(timeSlot: string): number {
+    if (!timeSlot.includes('-')) return 2; // Default 2 hours
+    
+    const [start, end] = timeSlot.split('-').map(t => t.trim());
+    const startHour = parseInt(start.split(':')[0]);
+    const endHour = parseInt(end.split(':')[0]);
+    
+    return endHour - startHour;
+  }
+
+  /**
+   * Get human-readable description of recurrence pattern
+   * 
+   * @param pattern - Recurrence pattern
+   * @returns Human-readable description
+   */
+  getPatternDescription(pattern: RecurrencePattern): string {
+    const weekdayNames = ['Søndag', 'Mandag', 'Tirsdag', 'Onsdag', 'Torsdag', 'Fredag', 'Lørdag'];
+    const selectedDays = pattern.weekdays.map(day => weekdayNames[day]).join(', ');
+
+    switch (pattern.type) {
+      case 'single':
+        return 'Enkelt booking';
+      case 'weekly':
+        return `Ukentlig på ${selectedDays}`;
+      case 'biweekly':
+        return `Annenhver uke på ${selectedDays}`;
+      case 'monthly':
+        const dayName = weekdayNames[pattern.monthlyWeekday || 0];
+        return `${pattern.monthlyPattern} ${dayName} hver måned`;
+      case 'custom':
+        return `Egendefinert: hver ${pattern.interval}. dag på ${selectedDays}`;
+      default:
+        return 'Ukjent mønster';
+    }
+  }
+
+  /**
+   * Validate recurrence pattern
+   * 
+   * @param pattern - Recurrence pattern to validate
+   * @returns Validation result with errors if any
+   */
+  validatePattern(pattern: RecurrencePattern): { isValid: boolean; errors: string[] } {
+    const errors: string[] = [];
+
+    if (!pattern.type) {
+      errors.push('Recurrence type is required');
+    }
+
+    if (pattern.type === 'weekly' || pattern.type === 'biweekly' || pattern.type === 'custom') {
+      if (!pattern.weekdays || pattern.weekdays.length === 0) {
+        errors.push('Weekdays must be specified for this recurrence type');
+      }
+    }
+
+    if (pattern.type === 'monthly') {
+      if (!pattern.monthlyPattern) {
+        errors.push('Monthly pattern must be specified');
+      }
+      if (pattern.monthlyWeekday === undefined) {
+        errors.push('Monthly weekday must be specified');
+      }
+    }
+
+    if (pattern.type === 'custom' && (!pattern.interval || pattern.interval < 1)) {
+      errors.push('Custom interval must be at least 1');
+    }
+
+    if (pattern.endDate && pattern.startDate && pattern.endDate <= pattern.startDate) {
+      errors.push('End date must be after start date');
+    }
+
+    return {
+      isValid: errors.length === 0,
+      errors
+    };
+  }
+}
+
+// Export singleton instance
+export const recurrenceEngine = new RecurrenceEngine();

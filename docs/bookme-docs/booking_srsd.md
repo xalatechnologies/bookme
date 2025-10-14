@@ -78,7 +78,7 @@ Systemet skal tilby:
 
 ### 4.1 Arkitektur
 - **Front-end:** Next.js 15 (App Router) + TypeScript
-- **UI:** Flowbite React + Tailwind CSS
+- **UI:** shadcn/ui (Radix UI + Tailwind CSS)
 - **Backend:** Supabase (self-hosted) + tRPC
 - **Database:** PostgreSQL (via Supabase)
 - **ORM:** Prisma

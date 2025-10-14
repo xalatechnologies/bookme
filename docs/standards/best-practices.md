@@ -25,10 +25,10 @@ ELSE:
 
 ### DRY (Don't Repeat Yourself)
 - Extract repeated business logic to private methods
-- Use Flowbite components instead of custom UI markup
-- Leverage Flowbite's pre-built component library to avoid reinventing common patterns
+- Use shadcn/ui components instead of custom UI markup
+- Leverage shadcn/ui's pre-built component library (built on Radix UI + Tailwind) to avoid reinventing common patterns
 - Create utility functions for common operations
-- Extend Flowbite components when customization is needed rather than building from scratch
+- Extend shadcn/ui components when customization is needed rather than building from scratch
 
 ### File Structure
 - Keep files focused on a single responsibility
@@ -50,9 +50,9 @@ ELSE:
 
 ### Choose Libraries Wisely
 When adding third-party dependencies:
-- **Prioritize Flowbite components** for all UI elements before considering alternatives
-- Use Flowbite React (https://flowbite-react.com/) for React/Next.js projects
-- Follow Flowbite's Next.js integration guide (https://flowbite.com/docs/getting-started/next-js/)
+- **Prioritize shadcn/ui components** for all UI elements before considering alternatives
+- Use shadcn/ui (https://ui.shadcn.com/) for React/Next.js projects
+- Follow shadcn/ui's installation and usage guide (https://ui.shadcn.com/docs/installation)
 - For non-UI dependencies, select the most popular and actively maintained option
 - Check the library's GitHub repository for:
   - Recent commits (within last 6 months)
@@ -61,41 +61,41 @@ When adding third-party dependencies:
   - Clear documentation
 </conditional-block>
 
-<conditional-block context-check="flowbite-guidelines" task-condition="ui-development">
+<conditional-block context-check="shadcn-guidelines" task-condition="ui-development">
 IF current task involves UI development or component creation:
-  IF Flowbite guidelines already read in current context:
+  IF shadcn/ui guidelines already read in current context:
     SKIP: Re-reading this section
-    NOTE: "Using Flowbite guidelines already in context"
+    NOTE: "Using shadcn/ui guidelines already in context"
   ELSE:
-    READ: The following Flowbite integration guidelines
+    READ: The following shadcn/ui integration guidelines
 
-## Flowbite Integration Guidelines
+## shadcn/ui Integration Guidelines
 
 ### Component Usage Priority
-1. **First Choice**: Use existing Flowbite components from flowbite-react
-2. **Second Choice**: Extend Flowbite components with custom props/styling
-3. **Last Resort**: Create custom components only when Flowbite doesn't provide the functionality
+1. **First Choice**: Use existing shadcn/ui components from @/components/ui
+2. **Second Choice**: Extend shadcn/ui components with custom variants/styling
+3. **Last Resort**: Create custom components only when shadcn/ui doesn't provide the functionality
 
-### Flowbite React Integration
-- Install: `npm install flowbite-react`
-- Import components: `import { Button, Card, Modal } from 'flowbite-react'`
-- Use Flowbite's TypeScript definitions for type safety
-- Follow Flowbite's theming system for consistent styling
+### shadcn/ui Integration
+- Install: `npx shadcn-ui@latest init`
+- Import components: `import { Button } from "@/components/ui/button"`
+- Use shadcn/ui's TypeScript definitions for type safety
+- Follow shadcn/ui's theming system with CSS variables for consistent styling
 
 ### Next.js Specific Guidelines
-- Configure Flowbite in `tailwind.config.js` as per official documentation
-- Use Flowbite's server-side rendering compatible components
-- Implement Flowbite's dark mode support through Next.js theme providers
-- Leverage Flowbite's responsive design patterns
+- Configure shadcn/ui in `components.json` as per official documentation
+- Use shadcn/ui's server-side rendering compatible components (built on Radix UI)
+- Implement shadcn/ui's dark mode support through CSS variables and next-themes
+- Leverage shadcn/ui's responsive design patterns with Tailwind CSS
 
 ### Customization Best Practices
-- Use Flowbite's theme configuration for global styling changes
-- Extend component props rather than overriding CSS classes
-- Maintain Flowbite's accessibility standards when customizing
+- Use shadcn/ui's CSS variable system for global styling changes
+- Extend component variants rather than overriding CSS classes
+- Maintain shadcn/ui's accessibility standards when customizing (inherited from Radix UI)
 - Document any custom extensions for team consistency
 
 ELSE:
-  SKIP: Flowbite guidelines not relevant to current task
+  SKIP: shadcn/ui guidelines not relevant to current task
 </conditional-block>
 
 ## Code Quality Standards
