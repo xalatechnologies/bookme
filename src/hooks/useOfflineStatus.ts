@@ -93,7 +93,6 @@ export const useOfflineStatus = () => {
       // Clear queue after successful sync
       clearOfflineQueue();
     } catch (error) {
-      console.error('Failed to sync offline actions:', error);
     }
   };
 
@@ -115,7 +114,6 @@ export const useOfflineStatus = () => {
         // Sync message sending
         break;
       default:
-        console.warn('Unknown action type:', action.type);
     }
   };
 

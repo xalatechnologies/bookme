@@ -10,8 +10,8 @@ interface SearchFilterProps {
   readonly setFacilityType: (type: string) => void;
   readonly location: string;
   readonly setLocation: (location: string) => void;
-  readonly viewMode: "grid" | "map" | "calendar" | "list";
-  readonly setViewMode: (mode: "grid" | "map" | "calendar" | "list") => void;
+  readonly viewMode: "grid" | "map" | "list";
+  readonly setViewMode: (mode: "grid" | "map" | "list") => void;
   readonly accessibility: string;
   readonly setAccessibility: (accessibility: string) => void;
   readonly capacity: readonly number[];

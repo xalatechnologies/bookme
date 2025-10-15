@@ -135,8 +135,8 @@ export const useDragSelection = () => {
           const currentTimeSlot = timeSlots[timeIndex];
           const { status } = getAvailabilityStatus(zoneId, currentDay, currentTimeSlot);
           
-          // Only include available slots in the preview
-          if (status === "available") {
+          // Include both available and selected slots in the preview
+          if (status === "available" || status === "selected") {
             // Use local date components to avoid timezone issues
             const year = currentDay.getFullYear();
             const month = String(currentDay.getMonth() + 1).padStart(2, '0');

@@ -1,15 +1,15 @@
 "use client";
 
 import React from "react";
-import { Grid3X3, List, Map, Calendar } from "lucide-react";
+import { Grid3X3, List, Map } from "lucide-react";
 
 import { useTranslation } from "@/i18n";
 
 import { Button } from "@/components/ui/button";
 
 interface ViewModeToggleProps {
-  readonly viewMode: "grid" | "map" | "calendar" | "list";
-  readonly setViewMode: (mode: "grid" | "map" | "calendar" | "list") => void;
+  readonly viewMode: "grid" | "map" | "list";
+  readonly setViewMode: (mode: "grid" | "map" | "list") => void;
 }
 
 export const ViewModeToggle: React.FC<ViewModeToggleProps> = ({ viewMode, setViewMode }): JSX.Element => {
@@ -19,7 +19,6 @@ export const ViewModeToggle: React.FC<ViewModeToggleProps> = ({ viewMode, setVie
     { key: "grid" as const, icon: Grid3X3, label: "Rutenett visning" },
     { key: "list" as const, icon: List, label: "Liste visning" },
     { key: "map" as const, icon: Map, label: "Kart" },
-    { key: "calendar" as const, icon: Calendar, label: "Kalender" },
   ];
 
   return (

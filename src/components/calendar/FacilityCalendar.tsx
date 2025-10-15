@@ -175,6 +175,25 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
   }, [currentWeekStart]);
 
   /**
+   * Get all selected slots (regular + recurring)
+   * Memoized for performance
+   */
+  const allSelectedSlots = useMemo(() => {
+    if (!selectedZone) return [];
+    
+    const enrichedSlots = selectedSlots.map(slot => ({
+      ...slot,
+      facilityName,
+      zoneName: selectedZone.name
+    }));
+    
+    return enrichedSlots;
+  }, [selectedSlots, facilityName, selectedZone?.id, selectedZone?.name]);
+
+  // For step-by-step booking, we need to use the internal selectedSlots directly
+  const stepByStepSelectedSlots = useStepByStepBooking ? selectedSlots : allSelectedSlots;
+
+  /**
    * Handle time slot click with zone context
    * 
    * @param zoneId - Zone ID of the clicked slot
@@ -186,8 +205,39 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
     if (status === "available" || status === "selected") {
       // Call the slot selection hook with proper parameters
       handleSlotClick(zoneId, date, timeSlot, status, facilityId, selectedZone?.pricePerHour || 0);
+      
+      // Update external selected slots if we're in step-by-step mode
+      if (useStepByStepBooking) {
+        const updatedSlots = [...stepByStepSelectedSlots];
+        const existingIndex = updatedSlots.findIndex(slot => {
+          // Convert slot.date to Date object if it's a string
+          const slotDate = slot.date instanceof Date ? slot.date : new Date(slot.date);
+          return slot.zoneId === zoneId && 
+                 slotDate.toDateString() === date.toDateString() && 
+                 slot.timeSlot === timeSlot;
+        });
+        
+        if (existingIndex >= 0) {
+          // Remove slot
+          updatedSlots.splice(existingIndex, 1);
+        } else {
+          // Add slot
+          const newSlot: ISelectedTimeSlot = {
+            id: `${facilityId}-${zoneId}-${date.toISOString().split('T')[0]}-${timeSlot}`,
+            facilityId,
+            zoneId,
+            date,
+            timeSlot,
+            duration: 1,
+            pricePerHour: selectedZone?.pricePerHour || 0,
+          };
+          updatedSlots.push(newSlot);
+        }
+        
+        handleSlotsChange(updatedSlots);
+      }
     }
-  }, [handleSlotClick, facilityId, selectedZone?.pricePerHour]);
+  }, [handleSlotClick, facilityId, selectedZone?.pricePerHour, useStepByStepBooking, stepByStepSelectedSlots, handleSlotsChange]);
 
   /**
    * Handle bulk slot selection with zone context
@@ -203,7 +253,34 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
     }));
     
     handleBulkSlotSelection(updatedSlots);
-  }, [facilityId, selectedZone?.pricePerHour, handleBulkSlotSelection]);
+    
+    // Update external selected slots if we're in step-by-step mode
+    if (useStepByStepBooking) {
+      const currentSlots = [...stepByStepSelectedSlots];
+      
+      // For each slot in the drag selection, toggle its state
+      updatedSlots.forEach(dragSlot => {
+        const existingIndex = currentSlots.findIndex(existingSlot => {
+          // Convert dates to Date objects if they're strings
+          const existingDate = existingSlot.date instanceof Date ? existingSlot.date : new Date(existingSlot.date);
+          const dragDate = dragSlot.date instanceof Date ? dragSlot.date : new Date(dragSlot.date);
+          return existingSlot.zoneId === dragSlot.zoneId && 
+                 existingDate.toDateString() === dragDate.toDateString() && 
+                 existingSlot.timeSlot === dragSlot.timeSlot;
+        });
+        
+        if (existingIndex >= 0) {
+          // Remove slot if it already exists
+          currentSlots.splice(existingIndex, 1);
+        } else {
+          // Add slot if it doesn't exist
+          currentSlots.push(dragSlot);
+        }
+      });
+      
+      handleSlotsChange(currentSlots);
+    }
+  }, [facilityId, selectedZone?.pricePerHour, handleBulkSlotSelection, useStepByStepBooking, stepByStepSelectedSlots, handleSlotsChange]);
 
   /**
    * Handle previous week navigation
@@ -225,22 +302,6 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
   const handleCurrentWeek = useCallback((): void => {
     setCurrentWeekStart(startOfWeek(new Date(), { weekStartsOn: 1 }));
   }, []);
-
-  /**
-   * Get all selected slots (regular + recurring)
-   * Memoized for performance
-   */
-  const allSelectedSlots = useMemo(() => {
-    if (!selectedZone) return [];
-    
-    const enrichedSlots = selectedSlots.map(slot => ({
-      ...slot,
-      facilityName,
-      zoneName: selectedZone.name
-    }));
-    
-    return enrichedSlots;
-  }, [selectedSlots, facilityName, selectedZone?.id, selectedZone?.name]);
 
   /**
    * Calculate pricing for booking
@@ -541,7 +602,7 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
             zones={zones}
             selectedZoneId={selectedZoneId}
             onZoneChange={setSelectedZoneId}
-            selectedSlots={allSelectedSlots}
+            selectedSlots={stepByStepSelectedSlots}
             onSlotsChange={handleSlotsChange}
             onAddToCart={handleAddToCart}
             onCompleteBooking={handleCompleteBooking}
@@ -645,7 +706,7 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
 
             {/* Right Column - Booking Form (40%) */}
             <div className="lg:col-span-2">
-              <div className="sticky top-6 space-y-4">
+              <div className="sticky top-20 h-[calc(100vh-8rem)] overflow-y-auto space-y-4">
                 {/* Recurrence Pattern Selector (only for recurring bookings) */}
                 {bookingType === 'recurring' && (
                   <RecurrencePatternSelector

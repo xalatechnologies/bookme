@@ -49,12 +49,10 @@ export const FacilityCard = ({
     } catch (error) {
       // Handle share cancellation or other errors silently
       if (error instanceof Error && error.name !== 'AbortError') {
-        console.warn('Share failed:', error);
         // Fallback to clipboard
         try {
           await navigator.clipboard.writeText(`${window.location.origin}/facilities/${facility.id}`);
         } catch (clipboardError) {
-          console.warn('Clipboard fallback also failed:', clipboardError);
         }
       }
     }

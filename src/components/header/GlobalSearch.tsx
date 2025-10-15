@@ -8,7 +8,6 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { useFacilityStore } from "@/stores/facilityStore";
 
 import { Input } from "@/components/ui/input";
-import { Command, CommandEmpty, CommandGroup, CommandItem, CommandList } from "@/components/ui/command";
 
 interface SearchResult {
   readonly id: string;
@@ -41,12 +40,22 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({ onResultClick }): JS
     const handleClickOutside = (event: MouseEvent) => {
       if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
         setIsOpen(false);
+        setSearchTerm(""); // Clear search term when clicking outside
       }
     };
 
+    // Also close when clicking on facility cards or other interactive elements
+    const handleFacilityClick = () => {
+      setIsOpen(false);
+      setSearchTerm("");
+    };
+
     document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('click', handleFacilityClick);
+    
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('click', handleFacilityClick);
     };
   }, []);
 
@@ -135,6 +144,29 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({ onResultClick }): JS
     onResultClick?.();
   };
 
+  // Close dropdown when search term is cleared
+  useEffect(() => {
+    if (!searchTerm.trim()) {
+      setIsOpen(false);
+    }
+  }, [searchTerm]);
+
+  // Close dropdown on Escape key
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setIsOpen(false);
+        setSearchTerm("");
+        inputRef.current?.blur();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
+
   // Group results by type
   const groupedResults = results.reduce((acc, result) => {
     if (!acc[result.type]) {
@@ -176,27 +208,25 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({ onResultClick }): JS
 
       {/* Search Results Dropdown */}
       {isOpen && results.length > 0 && (
-        <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-96 overflow-hidden">
-          <Command className="rounded-lg border-0">
-            <CommandList className="max-h-96">
+        <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-40 max-h-96 overflow-hidden">
+          <div className="rounded-lg border-0">
+            <div className="max-h-96 overflow-y-auto">
               {results.length === 0 ? (
-                <CommandEmpty className="py-6 text-center text-sm text-gray-500">
+                <div className="py-6 text-center text-sm text-gray-500">
                   Ingen resultater funnet.
-                </CommandEmpty>
+                </div>
               ) : (
                 <>
                   {Object.entries(groupedResults).map(([type, typeResults]) => (
-                    <CommandGroup
-                      key={type}
-                      heading={getGroupTitle(type)}
-                      className="[&_[cmdk-group-heading]]:px-4 [&_[cmdk-group-heading]]:py-2 [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-gray-500"
-                    >
+                    <div key={type} className="border-b border-gray-100 last:border-b-0">
+                      <div className="px-4 py-2 text-xs font-medium text-gray-500 bg-gray-50">
+                        {getGroupTitle(type)}
+                      </div>
                       {typeResults.map((result) => (
-                        <CommandItem
+                        <div
                           key={result.id}
-                          value={result.title}
-                          onSelect={() => handleResultClick(result)}
-                          className="flex items-center gap-4 px-4 py-4 cursor-pointer hover:bg-gray-50"
+                          onClick={() => handleResultClick(result)}
+                          className="flex items-center gap-4 px-4 py-4 cursor-pointer hover:bg-gray-50 transition-colors"
                         >
                           {result.image ? (
                             <div className="w-12 h-12 bg-gray-100 overflow-hidden flex-shrink-0 rounded">
@@ -221,14 +251,14 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({ onResultClick }): JS
                               </div>
                             )}
                           </div>
-                        </CommandItem>
+                        </div>
                       ))}
-                    </CommandGroup>
+                    </div>
                   ))}
                 </>
               )}
-            </CommandList>
-          </Command>
+            </div>
+          </div>
         </div>
       )}
     </div>

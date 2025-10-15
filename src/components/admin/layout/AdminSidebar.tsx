@@ -72,7 +72,7 @@ const AdminSidebar = (_props: IAdminSidebarProps): JSX.Element => {
       isCollapsed ? "w-16" : "w-64"
     }`}>
       {/* Navigation Content */}
-      <nav className="flex-1 p-4 space-y-6 overflow-y-auto">
+      <nav className="flex-1 p-4 pt-8 space-y-6 overflow-y-auto">
         {menuGroups.map((group, groupIndex) => (
           <div key={group.title} className="space-y-2">
             {/* Group Title */}

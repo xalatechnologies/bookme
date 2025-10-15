@@ -103,9 +103,9 @@ const FacilitiesPage = (_props: IFacilitiesPageProps): JSX.Element => {
       lastUpdated: "Nå",
       updatedBy: "Admin User",
       // Remove id, createdAt, updatedAt to let addFacility generate new ones
-      id: undefined as any,
-      createdAt: undefined as any,
-      updatedAt: undefined as any,
+      id: undefined,
+      createdAt: undefined,
+      updatedAt: undefined,
     };
 
     // Add the duplicated facility

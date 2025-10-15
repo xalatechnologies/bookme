@@ -283,7 +283,6 @@ const Bookings = (): JSX.Element => {
       localStorage.setItem('pendingBookings', JSON.stringify(updatedPending));
       setRefreshTrigger(prev => prev + 1);
     } catch (error) {
-      console.error('Error removing pending booking:', error);
     }
   }, []);
 
@@ -297,7 +296,6 @@ const Bookings = (): JSX.Element => {
       localStorage.setItem('pendingBookings', JSON.stringify(updatedPending));
       setRefreshTrigger(prev => prev + 1);
     } catch (error) {
-      console.error('Error updating pending booking status:', error);
     }
   }, []);
 

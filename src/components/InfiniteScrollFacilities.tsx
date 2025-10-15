@@ -12,7 +12,7 @@ import { ViewHeader } from "./search/ViewHeader";
 interface InfiniteScrollFacilitiesProps {
   readonly filters: FacilityFilters;
   readonly viewMode: "grid" | "list";
-  readonly setViewMode: (mode: "grid" | "map" | "calendar" | "list") => void;
+  readonly setViewMode: (mode: "grid" | "map" | "list") => void;
 }
 
 export const InfiniteScrollFacilities: React.FC<InfiniteScrollFacilitiesProps> = ({

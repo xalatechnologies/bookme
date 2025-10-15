@@ -56,7 +56,6 @@ export const UserProfileProvider = ({ children }: { readonly children: React.Rea
       }
       setIsLoadedFromStorage(true);
     } catch (error) {
-      console.error("Error loading profile from localStorage:", error);
       setIsLoadedFromStorage(true);
     }
   }, []);
@@ -67,7 +66,6 @@ export const UserProfileProvider = ({ children }: { readonly children: React.Rea
       try {
         localStorage.setItem("user-profile", JSON.stringify(profile));
       } catch (error) {
-        console.error("Error saving profile to localStorage:", error);
       }
     } else {
     }

@@ -209,7 +209,6 @@ export const SupportTicketForm: React.FC<SupportTicketFormProps> = ({
       
       onClose();
     } catch (error) {
-      console.error('Error creating ticket:', error);
       alert('Kunne ikke opprette ticket. Prøv igjen.');
     } finally {
       setIsSubmitting(false);

@@ -28,7 +28,7 @@ interface IUserFacility {
 
 const UserFacilities = (): JSX.Element => {
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [viewMode, setViewMode] = useState<"grid" | "list" | "map" | "calendar">("grid");
+  const [viewMode, setViewMode] = useState<"grid" | "list" | "map">("grid");
   const [selectedType, setSelectedType] = useState<string>("all");
   const [sortBy, setSortBy] = useState<"price" | "popularity" | "name">("name");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
@@ -193,19 +193,6 @@ const UserFacilities = (): JSX.Element => {
                 </h3>
                 <p className="text-gray-600 dark:text-gray-400">
                   Kartvisning kommer snart. Bruk grid- eller listvisning i mellomtiden.
-                </p>
-              </CardContent>
-            </Card>
-          )}
-          {viewMode === "calendar" && (
-            <Card>
-              <CardContent className="p-8 text-center">
-                <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
-                  Kalendervisning
-                </h3>
-                <p className="text-gray-600 dark:text-gray-400">
-                  Kalendervisning kommer snart. Bruk grid- eller listvisning i mellomtiden.
                 </p>
               </CardContent>
             </Card>

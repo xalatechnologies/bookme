@@ -31,7 +31,6 @@ export const MapContainer: React.FC<MapContainerProps> = ({
     await new Promise(resolve => setTimeout(resolve, 100));
     
     if (!mapContainer.current) {
-      console.error('Map container ref is not available');
       onMapError('Map container not ready. Please try again.');
       onLoadingChange(false);
       return;
@@ -74,7 +73,6 @@ export const MapContainer: React.FC<MapContainerProps> = ({
 
       // Handle map errors with more specific error messages
       map.current.on('error', (e): void => {
-        console.error('Map error:', e);
         let errorMessage = 'An error occurred while loading the map.';
         
         if (e.error?.message?.includes('401')) {
@@ -90,7 +88,6 @@ export const MapContainer: React.FC<MapContainerProps> = ({
       });
 
     } catch (error) {
-      console.error('Failed to initialize map:', error);
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred while initializing map.';
       onMapError(errorMessage);
       onLoadingChange(false);

@@ -104,7 +104,7 @@ export const TimeSlotGrid: React.FC<ICalendarGridProps> = ({
       case "busy":
         return `${baseClasses} bg-red-100 border-red-300 text-red-700 cursor-not-allowed line-through`;
       case "selected":
-        return `${baseClasses} bg-blue-600 border-blue-700 text-white shadow-md`;
+        return `${baseClasses} bg-blue-600 border-blue-700 text-white shadow-md hover:bg-blue-700 hover:border-blue-800`;
       case "unavailable":
         return `${baseClasses} bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed line-through`;
       case "conflict":
@@ -124,7 +124,7 @@ export const TimeSlotGrid: React.FC<ICalendarGridProps> = ({
   const handleMouseDown = useCallback((day: Date, timeSlot: string, event: React.MouseEvent): void => {
     const { status } = getAvailabilityStatus(zoneId, day, timeSlot);
     
-    if (status === "available" && !!onBulkSelect) {
+    if ((status === "available" || status === "selected") && !!onBulkSelect) {
       event.preventDefault();
       startDrag(zoneId, day, timeSlot, event);
     }
@@ -261,9 +261,10 @@ export const TimeSlotGrid: React.FC<ICalendarGridProps> = ({
                   <div key={dayIndex} className="relative">
                     <button
                       className={`w-full h-8 rounded border transition-all duration-200 text-sm select-none ${getSlotClasses(status, isInPreview)} ${
-                        status === "available" ? 'transform hover:scale-105' : ''
+                        status === "available" ? 'transform hover:scale-105' : 
+                        status === "selected" ? 'hover:scale-105' : ''
                       }`}
-                      disabled={status !== "available"}
+                      disabled={status !== "available" && status !== "selected"}
                       onMouseDown={(e) => handleMouseDown(day.date, timeSlot, e)}
                       onMouseEnter={() => handleMouseEnter(day.date, timeSlot)}
                       onMouseUp={handleMouseUp}

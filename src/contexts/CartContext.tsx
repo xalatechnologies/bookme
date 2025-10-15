@@ -66,7 +66,6 @@ export const CartProvider: React.FC<{ readonly children: React.ReactNode }> = ({
     try {
       // Validate required fields
       if (!item.facilityId || !item.facilityName || !item.timeSlots.length) {
-        console.error("Invalid cart item: missing required fields");
         return;
       }
 
@@ -81,7 +80,6 @@ export const CartProvider: React.FC<{ readonly children: React.ReactNode }> = ({
       storeAddItem(itemWithPricing);
       
     } catch (error) {
-      console.error("Error adding item to cart:", error);
     }
   };
 
@@ -98,7 +96,6 @@ export const CartProvider: React.FC<{ readonly children: React.ReactNode }> = ({
       if (item) {
       }
     } catch (error) {
-      console.error("Error removing item from cart:", error);
     }
   };
 
@@ -112,7 +109,6 @@ export const CartProvider: React.FC<{ readonly children: React.ReactNode }> = ({
     try {
       storeUpdateItem(itemId, updates);
     } catch (error) {
-      console.error("Error updating cart item:", error);
     }
   };
 
@@ -127,7 +123,6 @@ export const CartProvider: React.FC<{ readonly children: React.ReactNode }> = ({
       if (count > 0) {
       }
     } catch (error) {
-      console.error("Error clearing cart:", error);
     }
   };
 

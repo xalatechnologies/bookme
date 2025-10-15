@@ -63,6 +63,12 @@
   * {
     @apply border-border;
   }
+  
+  /* Global height rules - critical for proper scroll containers */
+  html, body, #root {
+    height: 100%;
+  }
+  
   body {
     @apply bg-background text-foreground;
   }

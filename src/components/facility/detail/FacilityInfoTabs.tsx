@@ -1,7 +1,7 @@
 "use client";
 
-import React from 'react';
-import { CheckCircle, XCircle, Users, MapPin, Wifi, Car, Camera, Volume2, Calendar } from 'lucide-react';
+import React, { useState } from 'react';
+import { CheckCircle, XCircle, Users, MapPin, Wifi, Car, Camera, Volume2, Calendar, ChevronDown, ChevronRight } from 'lucide-react';
 
 import type { Zone } from '@/components/booking/types';
 import { useTranslation } from '@/i18n';
@@ -35,6 +35,11 @@ export const FacilityInfoTabs: React.FC<FacilityInfoTabsProps> = ({
   facilityName
 }): JSX.Element => {
   const { t } = useTranslation();
+  const [expandedFAQ, setExpandedFAQ] = useState<string | null>(null);
+
+  const toggleFAQ = (faqId: string): void => {
+    setExpandedFAQ(expandedFAQ === faqId ? null : faqId);
+  };
   
   // Get field configs for this facility
   const { getFieldConfigsForFacility } = useFieldConfigStore();
@@ -319,29 +324,99 @@ export const FacilityInfoTabs: React.FC<FacilityInfoTabsProps> = ({
       <TabsContent value="faq" className="space-y-6 mt-6">
         <div>
           <h3 className="text-xl font-semibold mb-4">Ofte stilte spørsmål</h3>
-          <div className="space-y-6">
-            <div>
-              <h4 className="font-medium mb-2">Hvor lang tid i forveien kan jeg booke?</h4>
-              <p className="text-gray-600">Du kan booke inntil 90 dager i forveien.</p>
+          <div className="space-y-4">
+            <div className="border border-gray-200 dark:border-gray-700 rounded-lg">
+              <button
+                onClick={() => toggleFAQ('booking-time')}
+                className="w-full p-4 text-left flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+              >
+                <h4 className="font-medium text-gray-900 dark:text-white">
+                  Hvor lang tid i forveien kan jeg booke?
+                </h4>
+                {expandedFAQ === 'booking-time' ? (
+                  <ChevronDown className="h-5 w-5 text-gray-400" />
+                ) : (
+                  <ChevronRight className="h-5 w-5 text-gray-400" />
+                )}
+              </button>
+              {expandedFAQ === 'booking-time' && (
+                <div className="px-4 pb-4">
+                  <p className="text-gray-600 dark:text-gray-400">
+                    Du kan booke inntil 90 dager i forveien.
+                  </p>
+                </div>
+              )}
             </div>
             
-            <div>
-              <h4 className="font-medium mb-2">Kan jeg avbestille bookingen min?</h4>
-              <p className="text-gray-600">Ja, du kan avbestille gratis inntil 48 timer før arrangementet starter.</p>
+            <div className="border border-gray-200 dark:border-gray-700 rounded-lg">
+              <button
+                onClick={() => toggleFAQ('cancellation')}
+                className="w-full p-4 text-left flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+              >
+                <h4 className="font-medium text-gray-900 dark:text-white">
+                  Kan jeg avbestille bookingen min?
+                </h4>
+                {expandedFAQ === 'cancellation' ? (
+                  <ChevronDown className="h-5 w-5 text-gray-400" />
+                ) : (
+                  <ChevronRight className="h-5 w-5 text-gray-400" />
+                )}
+              </button>
+              {expandedFAQ === 'cancellation' && (
+                <div className="px-4 pb-4">
+                  <p className="text-gray-600 dark:text-gray-400">
+                    Ja, du kan avbestille gratis inntil 48 timer før arrangementet starter.
+                  </p>
+                </div>
+              )}
             </div>
             
-            <div>
-              <h4 className="font-medium mb-2">Er det parkering tilgjengelig?</h4>
-              <p className="text-gray-600">
-                {amenities.some(a => a.toLowerCase().includes('parkering')) 
-                  ? 'Ja, det er parkering tilgjengelig ved lokalet.' 
-                  : 'Kontakt oss for informasjon om parkeringsmuligheter i området.'}
-              </p>
+            <div className="border border-gray-200 dark:border-gray-700 rounded-lg">
+              <button
+                onClick={() => toggleFAQ('parking')}
+                className="w-full p-4 text-left flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+              >
+                <h4 className="font-medium text-gray-900 dark:text-white">
+                  Er det parkering tilgjengelig?
+                </h4>
+                {expandedFAQ === 'parking' ? (
+                  <ChevronDown className="h-5 w-5 text-gray-400" />
+                ) : (
+                  <ChevronRight className="h-5 w-5 text-gray-400" />
+                )}
+              </button>
+              {expandedFAQ === 'parking' && (
+                <div className="px-4 pb-4">
+                  <p className="text-gray-600 dark:text-gray-400">
+                    {amenities.some(a => a.toLowerCase().includes('parkering')) 
+                      ? 'Ja, det er parkering tilgjengelig ved lokalet.' 
+                      : 'Kontakt oss for informasjon om parkeringsmuligheter i området.'}
+                  </p>
+                </div>
+              )}
             </div>
             
-            <div>
-              <h4 className="font-medium mb-2">Kan jeg ta med egen mat og drikke?</h4>
-              <p className="text-gray-600">Ja, du kan ta med egen mat og drikke. Husk å rydde opp etter deg.</p>
+            <div className="border border-gray-200 dark:border-gray-700 rounded-lg">
+              <button
+                onClick={() => toggleFAQ('food-drinks')}
+                className="w-full p-4 text-left flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+              >
+                <h4 className="font-medium text-gray-900 dark:text-white">
+                  Kan jeg ta med egen mat og drikke?
+                </h4>
+                {expandedFAQ === 'food-drinks' ? (
+                  <ChevronDown className="h-5 w-5 text-gray-400" />
+                ) : (
+                  <ChevronRight className="h-5 w-5 text-gray-400" />
+                )}
+              </button>
+              {expandedFAQ === 'food-drinks' && (
+                <div className="px-4 pb-4">
+                  <p className="text-gray-600 dark:text-gray-400">
+                    Ja, du kan ta med egen mat og drikke. Husk å rydde opp etter deg.
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         </div>

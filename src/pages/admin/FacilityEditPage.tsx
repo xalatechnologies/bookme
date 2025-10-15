@@ -1213,7 +1213,7 @@ const FacilityEditPage = (_props: IFacilityEditPageProps): JSX.Element => {
 
           {/* Right Column - Contact Info Sidebar (30%) - Matches frontend exactly */}
           <div className="lg:col-span-3 hidden lg:block">
-            <div className="sticky top-6 space-y-6">
+            <div className="sticky top-20 h-[calc(100vh-8rem)] overflow-y-auto space-y-6">
               {/* Contact Information */}
               <Card>
                 <CardContent className="p-6">

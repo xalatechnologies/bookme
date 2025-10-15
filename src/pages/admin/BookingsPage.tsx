@@ -769,7 +769,6 @@ const BookingsPage = (): JSX.Element => {
       setRefreshTrigger(prev => prev + 1);
       
     } catch (error) {
-      console.error('Error rejecting booking:', error);
     }
   }, [bookings]);
 
