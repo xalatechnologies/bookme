@@ -9,14 +9,13 @@ import { GlobalHeader } from "@/components/GlobalHeader";
 import SearchFilter from "@/components/SearchFilter";
 import { FacilityList } from "@/components/FacilityList";
 import { MapView } from "@/components/MapView";
-import { CalendarView } from "@/components/CalendarView";
 
 export const Index = (): JSX.Element => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [date, setDate] = useState<Date>();
   const [facilityType, setFacilityType] = useState<string>("all");
   const [location, setLocation] = useState<string>("all");
-  const [viewMode, setViewMode] = useState<"grid" | "map" | "calendar" | "list">("grid");
+  const [viewMode, setViewMode] = useState<"grid" | "map" | "list">("grid");
   const [accessibility, setAccessibility] = useState<string>("all");
   const [capacity, setCapacity] = useState<number[]>([0, 200]);
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -44,8 +43,8 @@ export const Index = (): JSX.Element => {
       const capacityArray = urlCapacity.split(',').map(Number);
       if (capacityArray.length === 2) setCapacity(capacityArray);
     }
-    if (urlViewMode && ['grid', 'map', 'calendar', 'list'].includes(urlViewMode)) {
-      setViewMode(urlViewMode as "grid" | "map" | "calendar" | "list");
+    if (urlViewMode && ['grid', 'map', 'list'].includes(urlViewMode)) {
+      setViewMode(urlViewMode as "grid" | "map" | "list");
     }
     if (urlSearchTerm) setSearchTerm(urlSearchTerm);
 
@@ -96,8 +95,6 @@ export const Index = (): JSX.Element => {
     switch (viewMode) {
       case "map":
         return <MapView facilityType={facilityType} location={location} viewMode={viewMode} setViewMode={setViewMode} />;
-      case "calendar":
-        return <CalendarView date={date} facilityType={facilityType} location={location} accessibility={accessibility} capacity={capacity} viewMode={viewMode} setViewMode={setViewMode} />;
       case "list":
       case "grid":
         return (

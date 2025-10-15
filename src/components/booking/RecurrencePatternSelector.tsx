@@ -179,7 +179,9 @@ export function RecurrencePatternSelector({
                 className="h-auto p-3 flex flex-col items-center space-y-1"
               >
                 <span className="font-medium">{type.label}</span>
-                <span className="text-xs text-muted-foreground">{type.description}</span>
+                <span className={`text-xs ${localPattern?.type === type.id ? 'text-white' : 'text-gray-600'}`}>
+                  {type.description}
+                </span>
               </Button>
             ))}
           </div>
@@ -328,8 +330,8 @@ export function RecurrencePatternSelector({
 
         {/* Pattern Description */}
         {localPattern && (
-          <div className="p-3 bg-blue-50 rounded-lg">
-            <p className="text-sm text-blue-800">
+          <div className="p-3 bg-gray-100 rounded-lg">
+            <p className="text-sm text-gray-900">
               <strong>Mønster:</strong> {recurrenceEngine.getPatternDescription(localPattern)}
             </p>
           </div>

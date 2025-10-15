@@ -108,7 +108,6 @@ export const useCalendarEnhancements = (): CalendarEnhancementsState & CalendarE
       await new Promise(resolve => setTimeout(resolve, 1000));
       setLastRefresh(new Date());
     } catch (error) {
-      console.error('Failed to refresh calendar:', error);
     } finally {
       setIsLoading(false);
     }

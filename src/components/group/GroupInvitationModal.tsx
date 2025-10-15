@@ -63,7 +63,6 @@ const InviteMemberForm: React.FC<{
       setMessage("");
       onClose();
     } catch (error) {
-      console.error("Error inviting member:", error);
       alert("Kunne ikke sende invitasjon. Prøv igjen.");
     } finally {
       setIsLoading(false);

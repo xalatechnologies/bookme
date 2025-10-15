@@ -37,7 +37,6 @@ export const AdminAuthProvider = ({ children }: IAdminAuthProviderProps): JSX.El
         return JSON.parse(savedUser);
       }
     } catch (error) {
-      console.error('Error loading user from localStorage:', error);
     }
     
     // Default user if no saved data
@@ -83,7 +82,6 @@ export const AdminAuthProvider = ({ children }: IAdminAuthProviderProps): JSX.El
       try {
         localStorage.setItem('adminUser', JSON.stringify(newUser));
       } catch (error) {
-        console.error('Error saving user to localStorage:', error);
       }
     } catch (err) {
       setError((err as Error).message);
@@ -100,7 +98,6 @@ export const AdminAuthProvider = ({ children }: IAdminAuthProviderProps): JSX.El
     try {
       localStorage.removeItem('adminUser');
     } catch (error) {
-      console.error('Error removing user from localStorage:', error);
     }
   };
 
@@ -113,7 +110,6 @@ export const AdminAuthProvider = ({ children }: IAdminAuthProviderProps): JSX.El
       try {
         localStorage.setItem('adminUser', JSON.stringify(updatedUser));
       } catch (error) {
-        console.error('Error saving user to localStorage:', error);
       }
     }
   };

@@ -55,13 +55,11 @@ export const SelectedSlotsDisplay: React.FC<ISelectedSlotsDisplayProps> = ({
       date = new Date(slot.date);
     } else {
       // Fallback to current date if invalid
-      console.error("Invalid date in slot:", slot);
       date = new Date();
     }
     
     // Validate the date
     if (isNaN(date.getTime())) {
-      console.error("Invalid date after parsing:", { slot, parsedDate: date });
       date = new Date(); // Fallback to current date
     }
     

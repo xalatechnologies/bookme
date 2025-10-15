@@ -7,8 +7,8 @@ import { ViewModeToggle } from "./ViewModeToggle";
 interface ViewHeaderProps {
   readonly facilityCount: number;
   readonly isLoading: boolean;
-  readonly viewMode: "grid" | "map" | "calendar" | "list";
-  readonly setViewMode: (mode: "grid" | "map" | "calendar" | "list") => void;
+  readonly viewMode: "grid" | "map" | "list";
+  readonly setViewMode: (mode: "grid" | "map" | "list") => void;
 }
 
 export const ViewHeader: React.FC<ViewHeaderProps> = ({

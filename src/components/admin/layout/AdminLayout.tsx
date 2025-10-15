@@ -47,7 +47,7 @@ const AdminLayout = ({ children }: IAdminLayoutProps): JSX.Element => {
         <main className={`mt-[73px] flex-1 flex flex-col min-h-[calc(100vh-73px)] transition-all duration-300 ${
           isCollapsed ? "ml-16" : "ml-64"
         }`}>
-          <div className="p-6 overflow-y-auto">
+          <div className="p-6 overflow-hidden">
             {children}
           </div>
         </main>

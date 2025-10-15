@@ -8,8 +8,8 @@ import { Grid3X3, List, Map, Calendar } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 
 interface MapLoadingStateProps {
-  readonly viewMode: "grid" | "map" | "calendar" | "list";
-  readonly setViewMode: (mode: "grid" | "map" | "calendar" | "list") => void;
+  readonly viewMode: "grid" | "map" | "list";
+  readonly setViewMode: (mode: "grid" | "map" | "list") => void;
 }
 
 export const MapLoadingState: React.FC<MapLoadingStateProps> = ({

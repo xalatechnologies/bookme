@@ -19,7 +19,8 @@ import {
   Copy,
   Building,
   Check,
-  CheckCheck
+  CheckCheck,
+  ChevronDown
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -274,9 +275,10 @@ export const MessageThread: React.FC<MessageThreadProps> = ({
     }
   }, [threadId, markAllMessagesAsRead]);
 
+  // Scroll til bunn når nye meldinger kommer
   useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+    messagesEndRef.current?.scrollIntoView({ behavior: "auto", block: "end" });
+  }, [messages.length]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -374,105 +376,105 @@ export const MessageThread: React.FC<MessageThreadProps> = ({
   }
 
   return (
-    <div className="flex flex-col h-full">
-      {/* Header */}
+    <div className="flex flex-col h-full relative">
+      {/* Header for tittel/status */}
       {showHeader && (
-        <div className="flex items-center justify-between p-4 border-b bg-background">
-        <div className="flex items-center gap-3">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onClose}
-            className="md:hidden"
-          >
-            ←
-          </Button>
-          <div>
-            <h3 className="font-semibold">{thread.subject}</h3>
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <span>{thread.participants.length} deltakere</span>
-              {thread.facilityName && (
-                <>
-                  <span>•</span>
-                  <span className="flex items-center gap-1">
-                    <Building className="h-3 w-3" />
-                    {thread.facilityName}
-                  </span>
-                </>
+        <header className="bg-white border-b px-4 py-3 flex-shrink-0">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onClose}
+                className="md:hidden"
+              >
+                ←
+              </Button>
+              <div>
+                <h3 className="font-semibold">{thread.subject}</h3>
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <span>{thread.participants.length} deltakere</span>
+                  {thread.facilityName && (
+                    <>
+                      <span>•</span>
+                      <span className="flex items-center gap-1">
+                        <Building className="h-3 w-3" />
+                        {thread.facilityName}
+                      </span>
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-2">
+              <Badge variant={thread.status === 'active' ? 'default' : 'secondary'}>
+                {thread.status === 'active' ? 'Aktiv' : 
+                 thread.status === 'resolved' ? 'Løst' : 'Lukket'}
+              </Badge>
+              
+              {/* Admin actions - only show for landlords */}
+              {currentUserType === 'landlord' && thread.status === 'active' && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => updateThread(threadId, { status: 'resolved' })}
+                  className="text-green-600 border-green-200 hover:bg-green-50"
+                >
+                  <Check className="h-4 w-4 mr-2" />
+                  Marker som løst
+                </Button>
               )}
+              
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="sm">
+                    <MoreVertical className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem onClick={() => updateThread(threadId, { status: 'resolved' })}>
+                    <Check className="h-4 w-4 mr-2" />
+                    Marker som løst
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => updateThread(threadId, { status: 'closed' })}>
+                    <EyeOff className="h-4 w-4 mr-2" />
+                    Lukk tråd
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
-        </div>
-        
-        <div className="flex items-center gap-2">
-          <Badge variant={thread.status === 'active' ? 'default' : 'secondary'}>
-            {thread.status === 'active' ? 'Aktiv' : 
-             thread.status === 'resolved' ? 'Løst' : 'Lukket'}
-          </Badge>
-          
-          {/* Admin actions - only show for landlords */}
-          {currentUserType === 'landlord' && thread.status === 'active' && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => updateThread(threadId, { status: 'resolved' })}
-              className="text-green-600 border-green-200 hover:bg-green-50"
-            >
-              <Check className="h-4 w-4 mr-2" />
-              Marker som løst
-            </Button>
-          )}
-          
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm">
-                <MoreVertical className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem onClick={() => updateThread(threadId, { status: 'resolved' })}>
-                <Check className="h-4 w-4 mr-2" />
-                Marker som løst
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => updateThread(threadId, { status: 'closed' })}>
-                <EyeOff className="h-4 w-4 mr-2" />
-                Lukk tråd
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      </div>
+        </header>
       )}
 
-      {/* Messages */}
-      <ScrollArea className="flex-1 p-4">
-        <div className="space-y-4">
-          {messages.map((message, index) => {
-            const isOwn = message.senderId === currentUserId;
-            const prevMessage = messages[index - 1];
-            const showAvatar = true; // Always show avatars
-            
-            return (
-              <MessageBubble
-                key={message.id}
-                message={message}
-                isOwn={isOwn}
-                showAvatar={showAvatar}
-                onReply={handleReply}
-                onForward={handleForward}
-                onStar={handleStar}
-                onDelete={handleDelete}
-                getUserAvatar={getUserAvatar}
-              />
-            );
-          })}
-          <div ref={messagesEndRef} />
-        </div>
-      </ScrollArea>
+      {/* MessagesScroller - meldingslisten er den ENESTE scrolleflaten i høyre kolonne */}
+      <div id="messages-scroller" className="flex-1 min-h-0 overflow-y-auto px-6 py-4 space-y-3 pb-20">
+        {messages.map((message, index) => {
+          const isOwn = message.senderId === currentUserId;
+          const prevMessage = messages[index - 1];
+          const showAvatar = true; // Always show avatars
+          
+          return (
+            <MessageBubble
+              key={message.id}
+              message={message}
+              isOwn={isOwn}
+              showAvatar={showAvatar}
+              onReply={handleReply}
+              onForward={handleForward}
+              onStar={handleStar}
+              onDelete={handleDelete}
+              getUserAvatar={getUserAvatar}
+            />
+          );
+        })}
+        <div ref={messagesEndRef} />
+      </div>
 
       {/* Reply indicator */}
       {replyTo && (
-        <div className="px-4 py-2 bg-muted border-t">
+        <div className="absolute bottom-16 left-0 right-0 px-4 py-2 bg-muted border-t">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Reply className="h-4 w-4 text-muted-foreground" />
@@ -491,8 +493,8 @@ export const MessageThread: React.FC<MessageThreadProps> = ({
         </div>
       )}
 
-      {/* Message input */}
-      <div className="p-3 border-t bg-background">
+      {/* Composer - helt fast på bunnen som footer */}
+      <div className="absolute bottom-0 left-0 right-0 bg-white border-t px-4 py-3 z-10">
         <div className="flex items-end gap-2">
           <div className="flex-1">
             <Textarea

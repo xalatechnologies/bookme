@@ -9,7 +9,7 @@ import { InfiniteScrollFacilities } from "./InfiniteScrollFacilities";
 interface FacilityListProps {
   readonly filters: FacilityFilters;
   readonly viewMode: "grid" | "list";
-  readonly setViewMode: (mode: "grid" | "map" | "calendar" | "list") => void;
+  readonly setViewMode: (mode: "grid" | "map" | "list") => void;
 }
 
 export const FacilityList: React.FC<FacilityListProps> = ({

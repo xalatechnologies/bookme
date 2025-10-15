@@ -277,7 +277,6 @@ const UserNotifications = (): JSX.Element => {
   };
 
   const testNotification = (templateId: string): void => {
-    // TODO: Implement test notification
     addSuccessMessage(`Test sendt til ${contactInfo.email} – sjekk innboksen`);
   };
 

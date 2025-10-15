@@ -90,7 +90,6 @@ export default function HistoryPage(): JSX.Element {
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
     } catch (error) {
-      console.error("Export failed:", error);
     }
   };
 

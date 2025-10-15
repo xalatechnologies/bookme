@@ -2,6 +2,8 @@
 
 import React, { useState, useCallback, useMemo } from "react";
 import { ChevronLeft, ChevronRight, CheckCircle, Clock, Calendar, FileText, Shield, Users, X } from "lucide-react";
+import { startOfWeek, addWeeks, subWeeks, addDays, format, isToday, isWeekend, isPast } from "date-fns";
+import { nb } from "date-fns/locale";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -20,6 +22,7 @@ import { PriceCalculation } from "./PriceCalculation";
 
 import { ISelectedTimeSlot, IZone, BookingType, IBookingFormData } from "./types";
 import type { RecurrencePattern } from "@/utils/recurrenceEngine";
+import { useAvailabilityStatus } from "@/hooks/useAvailabilityStatus";
 
 export interface IStepByStepBookingProps {
   readonly facilityId: string;
@@ -85,8 +88,65 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
   const [bookingType, setBookingType] = useState<BookingType>('one-time');
   const [recurrencePattern, setRecurrencePattern] = useState<RecurrencePattern | null>(null);
 
+  // Week navigation state
+  const [currentWeekStart, setCurrentWeekStart] = useState<Date>(() => {
+    const now = new Date();
+    return startOfWeek(now, { weekStartsOn: 1 }); // Start on Monday
+  });
+
   // Get selected zone
   const selectedZone = zones?.find(zone => zone.id === selectedZoneId);
+
+  // Simple isSlotSelected function
+  const isSlotSelectedLocal = useCallback((zoneId: string, date: Date, timeSlot: string): boolean => {
+    const result = selectedSlots.some(slot => {
+      const slotDate = slot.date instanceof Date ? slot.date : new Date(slot.date);
+      return slot.zoneId === zoneId && 
+             slotDate.toDateString() === date.toDateString() && 
+             slot.timeSlot === timeSlot;
+    });
+    return result;
+  }, [selectedSlots]);
+
+  // Use the proper availability status hook
+  const { getAvailabilityStatus: internalGetAvailabilityStatus } = useAvailabilityStatus(selectedSlots);
+  
+  // Use external prop if available, otherwise use internal hook
+  const getAvailabilityStatusLocal = getAvailabilityStatus || internalGetAvailabilityStatus;
+
+
+  // Week navigation functions
+  const handlePreviousWeek = useCallback(() => {
+    setCurrentWeekStart(prev => subWeeks(prev, 1));
+  }, []);
+
+  const handleNextWeek = useCallback(() => {
+    setCurrentWeekStart(prev => addWeeks(prev, 1));
+  }, []);
+
+  // Calculate current week range with days array
+  const currentWeek = useMemo(() => {
+    const start = currentWeekStart;
+    const end = addWeeks(start, 1);
+    
+    // Generate days array for the week
+    const days = [];
+    for (let i = 0; i < 7; i++) {
+      const date = addDays(start, i);
+      days.push({
+        date,
+        isToday: isToday(date),
+        isWeekend: isWeekend(date),
+        isPast: isPast(date)
+      });
+    }
+    
+    return { 
+      startDate: start, 
+      endDate: end,
+      days 
+    };
+  }, [currentWeekStart]);
 
   /**
    * Step configuration
@@ -320,42 +380,80 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
               <CardContent className="p-6 space-y-4">
                 {/* Week Navigation */}
                 <div className="flex items-center justify-between">
-                  <Button variant="outline" size="lg">
+                  <Button variant="outline" size="lg" onClick={handlePreviousWeek}>
                     <ChevronLeft className="h-4 w-4 mr-2" />
                     Forrige uke
                   </Button>
                   <div className="text-center">
                     <h3 className="text-xl font-semibold">
-                      {calendarWeek ? `${calendarWeek.startDate.toLocaleDateString('no-NO')} - ${calendarWeek.endDate.toLocaleDateString('no-NO')}` : 'Kalender'}
+                      {format(currentWeek.startDate, 'dd. MMM', { locale: nb })} - {format(currentWeek.endDate, 'dd. MMM yyyy', { locale: nb })}
                     </h3>
                   </div>
-                  <Button variant="outline" size="lg">
+                  <Button variant="outline" size="lg" onClick={handleNextWeek}>
                     Neste uke
                     <ChevronRight className="h-4 w-4 ml-2" />
                   </Button>
                 </div>
 
                 {/* Calendar Grid */}
-                {calendarWeek && selectedZone && (
+                {selectedZone && (
                   <div className="mt-4">
                     <TimeSlotGrid
                       facilityId={facilityId}
                       zoneId={selectedZone.id}
-                      week={calendarWeek}
+                      week={currentWeek}
                       selectedSlots={selectedSlots}
                       onSlotClick={(zoneId, date, timeSlot, status) => {
+                        // Handle slot toggle logic directly
+                        if (status === "available" || status === "selected") {
+                          const existingIndex = selectedSlots.findIndex(slot => {
+                            // Convert slot.date to Date object if it's a string
+                            const slotDate = slot.date instanceof Date ? slot.date : new Date(slot.date);
+                            return slot.zoneId === zoneId && 
+                                   slotDate.toDateString() === date.toDateString() && 
+                                   slot.timeSlot === timeSlot;
+                          });
+                          
+                          if (existingIndex >= 0) {
+                            // Remove slot
+                            const updatedSlots = selectedSlots.filter((_, index) => index !== existingIndex);
+                            onSlotsChange(updatedSlots);
+                          } else {
+                            // Add slot
+                            const newSlot: ISelectedTimeSlot = {
+                              id: `${facilityId}-${zoneId}-${date.toISOString().split('T')[0]}-${timeSlot}`,
+                              facilityId,
+                              zoneId,
+                              date,
+                              timeSlot,
+                              duration: 1,
+                              pricePerHour: selectedZone?.pricePerHour || 0,
+                            };
+                            onSlotsChange([...selectedSlots, newSlot]);
+                          }
+                        }
+                        
+                        // Also call parent's onSlotClick for any additional handling
                         onSlotClick?.(zoneId, date, timeSlot, status);
-                        // The parent component (FacilityCalendar) will handle onSlotsChange
                       }}
                       onBulkSelect={(slots) => {
+                        // Handle bulk selection by adding all slots
+                        const enrichedSlots = slots.map(slot => ({
+                          ...slot,
+                          facilityId,
+                          zoneName: selectedZone?.name || '',
+                          pricePerHour: selectedZone?.pricePerHour || 0,
+                        }));
+                        onSlotsChange([...selectedSlots, ...enrichedSlots]);
+                        
+                        // Also call parent's onBulkSlotSelection for any additional handling
                         onBulkSlotSelection?.(slots);
-                        // The parent component (FacilityCalendar) will handle onSlotsChange
                       }}
                       pricePerHour={selectedZone?.pricePerHour || 0}
                       isLoading={isLoading}
                       error={error}
-                      getAvailabilityStatus={getAvailabilityStatus}
-                      isSlotSelected={isSlotSelected}
+                      getAvailabilityStatus={getAvailabilityStatusLocal}
+                      isSlotSelected={isSlotSelectedLocal}
                       openingHoursStart={openingHoursStart}
                       openingHoursEnd={openingHoursEnd}
                     />
@@ -601,7 +699,7 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
 
         {/* Right Column - Time Slots & Pricing (40%) */}
         <div className="lg:col-span-2">
-          <div className="sticky top-6 space-y-4">
+          <div className="sticky top-20 h-[calc(100vh-8rem)] overflow-y-auto space-y-4">
             {/* Time Selection and Price Calculation Box */}
             <Card className="w-full">
               <CardHeader className="pb-3">

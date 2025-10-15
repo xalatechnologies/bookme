@@ -18,8 +18,8 @@ import { MapMarkers } from './map/MapMarkers';
 interface MapViewProps {
   readonly facilityType: string;
   readonly location: string;
-  readonly viewMode: "grid" | "map" | "calendar" | "list";
-  readonly setViewMode: (mode: "grid" | "map" | "calendar" | "list") => void;
+  readonly viewMode: "grid" | "map" | "list";
+  readonly setViewMode: (mode: "grid" | "map" | "list") => void;
 }
 
 // Mapbox public token provided by user

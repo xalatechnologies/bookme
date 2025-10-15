@@ -66,11 +66,9 @@ export const FacilityBooking = (): JSX.Element => {
       }
     } catch (error) {
       if (error instanceof Error && error.name !== 'AbortError') {
-        console.warn('Share failed:', error);
         try {
           await navigator.clipboard.writeText(window.location.href);
         } catch (clipboardError) {
-          console.warn('Clipboard fallback also failed:', clipboardError);
         }
       }
     }

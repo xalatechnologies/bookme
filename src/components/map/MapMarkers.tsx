@@ -89,7 +89,7 @@ export const MapMarkers: React.FC<MapMarkersProps> = ({
       const popup = new mapboxgl.Popup({
         offset: 25,
         closeButton: true,
-        closeOnClick: false
+        closeOnClick: true
       }).setHTML(popupContent);
 
       const marker = new mapboxgl.Marker({

@@ -5,7 +5,7 @@ import { MessageInbox } from "@/components/messaging/MessageInbox";
 
 const UserMessages: React.FC = () => {
   return (
-    <div className="flex-1 flex flex-col p-6">
+    <div className="fixed inset-0 top-20 left-64 right-0 bottom-0 overflow-hidden">
       <MessageInbox
         userId="tenant-1"
         showThreadView={true}

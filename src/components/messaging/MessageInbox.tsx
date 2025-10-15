@@ -216,11 +216,11 @@ export const MessageInbox: React.FC<MessageInboxProps> = ({
 
   // Always show split view
   return (
-    <div className="flex flex-1 border rounded-lg overflow-hidden">
-      {/* Left side - Thread list */}
-      <div className="w-1/3 border-r bg-muted/30 flex flex-col">
-        {/* Header */}
-        <div className="p-4 border-b bg-background">
+    <div className="h-full w-full flex overflow-hidden p-6">
+      {/* ThreadsPane - venstre trådeliste som scroller */}
+      <section className="w-[420px] border-r flex flex-col min-h-0">
+        {/* Sticky header for filter/søk */}
+        <header className="sticky top-0 z-10 bg-white border-b p-3 flex-shrink-0">
           <div className="flex items-center justify-between">
             <h3 className="font-semibold">Meldingstråder</h3>
             <Button
@@ -233,10 +233,10 @@ export const MessageInbox: React.FC<MessageInboxProps> = ({
               Ny melding
             </Button>
           </div>
-        </div>
+        </header>
         
         {/* Search and filters */}
-        <div className="p-4 border-b bg-background">
+        <div className="p-3 border-b bg-background flex-shrink-0">
           <div className="space-y-2">
             <Input
               placeholder="Søk i meldinger..."
@@ -271,8 +271,8 @@ export const MessageInbox: React.FC<MessageInboxProps> = ({
           </div>
         </div>
         
-        {/* Thread list */}
-        <div className="flex-1 overflow-y-auto">
+        {/* Dette er eneste scroll i venstre kolonne */}
+        <div className="flex-1 min-h-0 overflow-y-auto p-2 space-y-2">
           {filteredThreads.map((thread) => (
             <ThreadCard
               key={thread.id}
@@ -297,17 +297,17 @@ export const MessageInbox: React.FC<MessageInboxProps> = ({
             </div>
           )}
         </div>
-      </div>
+      </section>
       
-      {/* Right side - Active thread */}
-      <div className="flex-1">
+      {/* ConversationPane - høyre samtale */}
+      <section className="flex-1 flex flex-col min-h-0 min-w-0">
         {selectedThreadId ? (
           <MessageThread
             threadId={selectedThreadId}
             currentUserId={userId}
             onClose={() => setSelectedThreadId(null)}
             currentUserType={currentUserType}
-            showHeader={false}
+            showHeader={true}
           />
         ) : (
           <div className="flex items-center justify-center h-full text-muted-foreground">
@@ -317,7 +317,7 @@ export const MessageInbox: React.FC<MessageInboxProps> = ({
             </div>
           </div>
         )}
-      </div>
+      </section>
 
       <CreateThreadModal
         isOpen={showCreateModal}
