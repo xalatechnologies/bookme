@@ -148,8 +148,13 @@ const IntegrationsPage = (): JSX.Element => {
   };
 
   const copyToClipboard = (text: string): void => {
-    navigator.clipboard.writeText(text);
-    // TODO: Show toast notification
+    try {
+      navigator.clipboard.writeText(text);
+      alert('Kopiert til utklippstavle!');
+    } catch (error) {
+      console.error('Failed to copy to clipboard:', error);
+      alert('Kunne ikke kopiere til utklippstavle. Prøv igjen.');
+    }
   };
 
   return (

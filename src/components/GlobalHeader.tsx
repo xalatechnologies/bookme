@@ -36,8 +36,40 @@ export const GlobalHeader = (): JSX.Element => {
   const isAuthenticated = isBookingPage || isUserPage || isCheckoutPage;
   
   const logout = (): void => {
-    // TODO: Implement logout logic
-    navigate('/');
+    try {
+      // Clear all user data from localStorage
+      const keysToRemove = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && (key.startsWith('user') || key.startsWith('admin'))) {
+          keysToRemove.push(key);
+        }
+      }
+      keysToRemove.forEach(key => localStorage.removeItem(key));
+      
+      // Clear cart data
+      localStorage.removeItem('cart');
+      localStorage.removeItem('cartItems');
+      
+      // Clear search results
+      localStorage.removeItem('searchResults');
+      localStorage.removeItem('adminSearchResults');
+      
+      // Clear any other session data
+      localStorage.removeItem('sessionData');
+      localStorage.removeItem('authToken');
+      
+      // Show logout confirmation
+      alert('Du er nå logget ut!');
+      
+      // Navigate to home page
+      navigate('/');
+    } catch (error) {
+      console.error('Global logout failed:', error);
+      alert('Kunne ikke logge ut. Prøv igjen.');
+      // Still navigate to home page even if logout fails
+      navigate('/');
+    }
   };
 
   // Function to handle login navigation

@@ -157,7 +157,42 @@ const AuditLogPage = (): JSX.Element => {
   }, [auditEvents]);
 
   const handleExportCSV = (): void => {
-    // TODO: Implement CSV export
+    try {
+      const csvHeaders = [
+        'Tidspunkt',
+        'Bruker',
+        'Handling',
+        'Objekt',
+        'Detaljer',
+        'Objekttype'
+      ];
+      
+      const csvData = filteredEvents.map(event => [
+        formatTimestamp(event.timestamp),
+        event.user,
+        event.action,
+        event.object,
+        event.details,
+        event.objectType
+      ]);
+      
+      const csvContent = [csvHeaders, ...csvData]
+        .map(row => row.map(field => `"${field}"`).join(','))
+        .join('\n');
+      
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `audit-log-${new Date().toISOString().split('T')[0]}.csv`;
+      link.click();
+      URL.revokeObjectURL(url);
+      
+      alert('Audit-log eksportert til CSV!');
+    } catch (error) {
+      console.error('Failed to export CSV:', error);
+      alert('Kunne ikke eksportere CSV. Prøv igjen.');
+    }
   };
 
   const handleFilter = (): void => {

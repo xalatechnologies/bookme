@@ -25,9 +25,30 @@ const ProfileDropdown = (_props: IProfileDropdownProps): JSX.Element => {
   };
 
   const handleLanguageChange = (): void => {
-    // TODO: Implement language change
-    // Language change logic will be implemented here
-    setIsOpen(false);
+    try {
+      // Get current language from localStorage
+      const currentLanguage = localStorage.getItem('adminLanguage') || 'no';
+      
+      // Toggle between Norwegian and English
+      const newLanguage = currentLanguage === 'no' ? 'en' : 'no';
+      
+      // Save new language preference
+      localStorage.setItem('adminLanguage', newLanguage);
+      
+      // Show language change confirmation
+      const languageName = newLanguage === 'no' ? 'Norsk' : 'English';
+      alert(`Språk endret til ${languageName}!`);
+      
+      // Trigger a custom event for other components to listen to
+      window.dispatchEvent(new CustomEvent('adminLanguageChanged', {
+        detail: { language: newLanguage }
+      }));
+      
+      setIsOpen(false);
+    } catch (error) {
+      console.error('Admin language change failed:', error);
+      alert('Kunne ikke endre språk. Prøv igjen.');
+    }
   };
 
   const toggleDropdown = (): void => {

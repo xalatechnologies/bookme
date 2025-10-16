@@ -264,7 +264,43 @@ const UserReceipts = (): JSX.Element => {
   };
 
   const handleDownloadReceipt = (receiptId: string): void => {
-    // TODO: Implement download receipt
+    // Implement download receipt
+    const receipt = receipts.find(r => r.id === receiptId);
+    if (receipt) {
+      // Create a simple PDF-like content for download
+      const content = `
+KVITTERING - ${receipt.facility}
+Fakturanummer: ${receipt.invoiceNumber}
+Booking-ID: ${receipt.bookingId}
+
+Dato: ${formatDate(receipt.date)}
+Lokasjon: ${receipt.location}
+Formål: ${receipt.purpose}
+Varighet: ${receipt.duration}
+
+Beløp: ${formatAmount(receipt.amount)}
+${receipt.mvaAmount ? `MVA (25%): ${formatAmount(receipt.mvaAmount)}` : ''}
+Betalt med: ${receipt.paymentMethod}
+Status: ${receipt.status === 'paid' ? 'Betalt' : receipt.status === 'pending' ? 'Venter på betaling' : receipt.status === 'cancelled' ? 'Avbrutt' : 'Refundert'}
+
+${receipt.paidAt ? `Betalt: ${new Date(receipt.paidAt).toLocaleDateString('nb-NO')}` : ''}
+${receipt.refundReason ? `Refunderingsinfo: ${receipt.refundReason}` : ''}
+
+---
+BookMe - Drammen kommune
+      `.trim();
+      
+      const blob = new Blob([content], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `kvittering-${receipt.invoiceNumber}.txt`;
+      link.click();
+      URL.revokeObjectURL(url);
+      
+      // Show success message
+      alert('Kvittering lastet ned!');
+    }
   };
 
   const handleViewInvoice = (receiptId: string): void => {
@@ -273,19 +309,100 @@ const UserReceipts = (): JSX.Element => {
 
   const handleCopyInvoiceNumber = (invoiceNumber: string): void => {
     navigator.clipboard.writeText(invoiceNumber);
-    // TODO: Show toast notification
+    // Show toast notification
+    alert('Fakturanummer kopiert til utklippstavle!');
   };
 
   const handleSendReceiptEmail = (receiptId: string): void => {
-    // TODO: Implement send receipt email
+    // Implement send receipt email
+    const receipt = receipts.find(r => r.id === receiptId);
+    if (receipt) {
+      // Create mailto link with receipt details
+      const subject = `Kvittering for ${receipt.facility} - ${receipt.invoiceNumber}`;
+      const body = `
+Hei,
+
+Vedlagt finner du kvittering for din booking:
+
+Fasilitet: ${receipt.facility}
+Dato: ${formatDate(receipt.date)}
+Beløp: ${formatAmount(receipt.amount)}
+Fakturanummer: ${receipt.invoiceNumber}
+Booking-ID: ${receipt.bookingId}
+
+Med vennlig hilsen
+BookMe - Drammen kommune
+      `.trim();
+      
+      const mailtoLink = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      window.open(mailtoLink);
+      
+      // Show success message
+      alert('E-post klargjort!');
+    }
   };
 
   const handleCompletePayment = (receiptId: string): void => {
-    // TODO: Navigate to payment portal
+    // Navigate to payment portal
+    const receipt = receipts.find(r => r.id === receiptId);
+    if (receipt) {
+      // In a real app, this would redirect to the payment provider
+      alert(`Omdirigerer til betalingsportal for ${receipt.facility}...`);
+      // Simulate navigation
+      setTimeout(() => {
+        window.location.href = `/payment/${receipt.bookingId}`;
+      }, 1000);
+    }
   };
 
   const handleExportCSV = (): void => {
-    // TODO: Implement CSV export
+    // Implement CSV export
+    const csvHeaders = [
+      'Fakturanummer',
+      'Booking-ID', 
+      'Fasilitet',
+      'Dato',
+      'Beløp',
+      'Status',
+      'Betaling',
+      'Lokasjon',
+      'Formål',
+      'Varighet',
+      'Kategori',
+      'MVA',
+      'Betalt dato'
+    ];
+    
+    const csvData = filteredAndSortedReceipts.map(receipt => [
+      receipt.invoiceNumber,
+      receipt.bookingId,
+      receipt.facility,
+      receipt.date,
+      receipt.amount,
+      receipt.status,
+      receipt.paymentMethod,
+      receipt.location,
+      receipt.purpose,
+      receipt.duration,
+      receipt.category || '',
+      receipt.mvaAmount || 0,
+      receipt.paidAt ? new Date(receipt.paidAt).toLocaleDateString('nb-NO') : ''
+    ]);
+    
+    const csvContent = [csvHeaders, ...csvData]
+      .map(row => row.map(field => `"${field}"`).join(','))
+      .join('\n');
+    
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `kvitteringer-${new Date().toISOString().split('T')[0]}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+    
+    // Show success message
+    alert('CSV-fil lastet ned!');
   };
 
   const totalAmount = filteredAndSortedReceipts

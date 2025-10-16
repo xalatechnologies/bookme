@@ -21,9 +21,35 @@ const UserProfileDropdown = (_props: IUserProfileDropdownProps): JSX.Element => 
   };
 
   const handleLogout = (): void => {
-    // TODO: Implement user logout
-    navigate("/login-selection");
-    setIsOpen(false);
+    try {
+      // Clear user data from localStorage
+      localStorage.removeItem('userProfile');
+      localStorage.removeItem('userNotifications');
+      localStorage.removeItem('userSettings');
+      localStorage.removeItem('userFavorites');
+      localStorage.removeItem('userBookings');
+      localStorage.removeItem('userReceipts');
+      
+      // Clear any other user-specific data
+      const keysToRemove = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith('user')) {
+          keysToRemove.push(key);
+        }
+      }
+      keysToRemove.forEach(key => localStorage.removeItem(key));
+      
+      // Show logout confirmation
+      alert('Du er nå logget ut!');
+      
+      // Navigate to login selection
+      navigate("/login-selection");
+      setIsOpen(false);
+    } catch (error) {
+      console.error('Logout failed:', error);
+      alert('Kunne ikke logge ut. Prøv igjen.');
+    }
   };
 
   const handleSettings = (): void => {
@@ -37,9 +63,30 @@ const UserProfileDropdown = (_props: IUserProfileDropdownProps): JSX.Element => 
   };
 
   const handleLanguageChange = (): void => {
-    // TODO: Implement language change
-    // Language change logic will be implemented here
-    setIsOpen(false);
+    try {
+      // Get current language from localStorage
+      const currentLanguage = localStorage.getItem('userLanguage') || 'no';
+      
+      // Toggle between Norwegian and English
+      const newLanguage = currentLanguage === 'no' ? 'en' : 'no';
+      
+      // Save new language preference
+      localStorage.setItem('userLanguage', newLanguage);
+      
+      // Show language change confirmation
+      const languageName = newLanguage === 'no' ? 'Norsk' : 'English';
+      alert(`Språk endret til ${languageName}!`);
+      
+      // Trigger a custom event for other components to listen to
+      window.dispatchEvent(new CustomEvent('languageChanged', {
+        detail: { language: newLanguage }
+      }));
+      
+      setIsOpen(false);
+    } catch (error) {
+      console.error('Language change failed:', error);
+      alert('Kunne ikke endre språk. Prøv igjen.');
+    }
   };
 
   const toggleDropdown = (): void => {

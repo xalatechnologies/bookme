@@ -18,7 +18,7 @@ interface IUserNotificationBellProps {
 
 const UserNotificationBell = (_props: IUserNotificationBellProps): JSX.Element => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [notifications] = useState<readonly INotification[]>([
+  const [notifications, setNotifications] = useState<readonly INotification[]>([
     {
       id: "1",
       type: "success",
@@ -78,13 +78,38 @@ const UserNotificationBell = (_props: IUserNotificationBellProps): JSX.Element =
   };
 
   const markAsRead = (id: string): void => {
-    // TODO: Implement mark as read functionality
-    // Mark as read logic will be implemented here
+    try {
+      const updatedNotifications = notifications.map(notification =>
+        notification.id === id ? { ...notification, isRead: true } : notification
+      );
+      setNotifications(updatedNotifications);
+      
+      // Save to localStorage (simulating backend)
+      localStorage.setItem('userNotifications', JSON.stringify(updatedNotifications));
+      
+      alert('Notifikasjon markert som lest!');
+    } catch (error) {
+      console.error('Failed to mark notification as read:', error);
+      alert('Kunne ikke markere notifikasjon som lest. Prøv igjen.');
+    }
   };
 
   const markAllAsRead = (): void => {
-    // TODO: Implement mark all as read functionality
-    // Mark all as read logic will be implemented here
+    try {
+      const updatedNotifications = notifications.map(notification => ({
+        ...notification,
+        isRead: true
+      }));
+      setNotifications(updatedNotifications);
+      
+      // Save to localStorage (simulating backend)
+      localStorage.setItem('userNotifications', JSON.stringify(updatedNotifications));
+      
+      alert('Alle notifikasjoner markert som lest!');
+    } catch (error) {
+      console.error('Failed to mark all notifications as read:', error);
+      alert('Kunne ikke markere alle notifikasjoner som lest. Prøv igjen.');
+    }
   };
 
   return (
@@ -141,9 +166,10 @@ const UserNotificationBell = (_props: IUserNotificationBellProps): JSX.Element =
                   {notifications.map((notification) => (
                     <div
                       key={notification.id}
-                      className={`p-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors ${
+                      className={`p-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors cursor-pointer ${
                         !notification.isRead ? "bg-blue-50/50 dark:bg-blue-900/10" : ""
                       }`}
+                      onClick={() => !notification.isRead && markAsRead(notification.id)}
                     >
                       <div className="flex items-start gap-3">
                         <div className={`p-2 rounded-lg ${getNotificationColor(notification.type)}`}>

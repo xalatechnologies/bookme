@@ -48,6 +48,7 @@ export interface IBookingFormData {
   readonly actorType: ActorType | "";
   readonly termsAccepted: boolean;
   readonly recurrencePattern?: RecurrencePattern; // For recurring bookings
+  readonly recurringSlots?: readonly ISelectedTimeSlot[]; // Generated recurring slots
 }
 
 /**
@@ -117,9 +118,11 @@ export interface ISelectedSlotsDisplayProps {
  */
 export interface IPriceCalculationProps {
   readonly selectedSlots: readonly ISelectedTimeSlot[];
+  readonly recurringSlots?: readonly ISelectedTimeSlot[];
   readonly actorType: ActorType | "";
   readonly activityType: ActivityType | "";
   readonly isLoading?: boolean;
+  readonly bookingType?: BookingType;
 }
 
 /**

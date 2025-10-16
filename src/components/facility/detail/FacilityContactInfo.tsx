@@ -13,12 +13,47 @@ interface FacilityContactInfoProps {
 export const FacilityContactInfo: React.FC<FacilityContactInfoProps> = ({ facility }) => {
   const { t } = useTranslation();
 
-  const handleBookNow = () => {
-    // TODO: Implement booking functionality
+  const handleBookNow = (): void => {
+    try {
+      // Navigate to booking page
+      window.location.href = `/facilities/${facility.id}/book`;
+    } catch (error) {
+      console.error('Failed to navigate to booking:', error);
+      alert('Kunne ikke navigere til bookingside. Prøv igjen.');
+    }
   };
 
-  const handleContact = () => {
-    // TODO: Implement contact functionality
+  const handleContact = (): void => {
+    try {
+      // Create contact options
+      const contactOptions = [
+        `Telefon: ${facility.emergencyContact || "+47 32 04 70 00"}`,
+        `E-post: ${facility.contactEmail || "booking@drammen.kommune.no"}`,
+        `Fasilitet: ${facility.name}`,
+        `Lokasjon: ${facility.location}`
+      ].join('\n');
+      
+      // Show contact information
+      const contactChoice = window.confirm(
+        `Kontaktinformasjon for ${facility.name}:\n\n${contactOptions}\n\nVil du åpne e-post klient?`
+      );
+      
+      if (contactChoice) {
+        // Open email client
+        const subject = `Forespørsel om ${facility.name}`;
+        const body = `Hei,\n\nJeg er interessert i å booke ${facility.name}.\n\nKan dere gi meg mer informasjon?\n\nMvh`;
+        
+        const mailtoLink = `mailto:${facility.contactEmail || "booking@drammen.kommune.no"}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        window.open(mailtoLink);
+      } else {
+        // Copy contact info to clipboard
+        navigator.clipboard.writeText(contactOptions);
+        alert('Kontaktinformasjon kopiert til utklippstavle!');
+      }
+    } catch (error) {
+      console.error('Failed to handle contact:', error);
+      alert('Kunne ikke åpne kontaktfunksjonalitet. Prøv igjen.');
+    }
   };
 
   return (

@@ -172,11 +172,87 @@ const ReportsPage = (): JSX.Element => {
   };
 
   const handleExportCSV = (): void => {
-    // TODO: Implement CSV export
+    try {
+      const csvHeaders = [
+        'Bruker',
+        'E-post',
+        'Antall handlinger',
+        'Sist aktiv',
+        'Status'
+      ];
+      
+      const csvData = filteredUsers.map(user => [
+        user.name,
+        user.email,
+        user.actionsCount,
+        formatDateTime(user.lastActive),
+        user.status
+      ]);
+      
+      const csvContent = [csvHeaders, ...csvData]
+        .map(row => row.map(field => `"${field}"`).join(','))
+        .join('\n');
+      
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `rapport-brukeraktivitet-${new Date().toISOString().split('T')[0]}.csv`;
+      link.click();
+      URL.revokeObjectURL(url);
+      
+      alert('Rapport eksportert til CSV!');
+    } catch (error) {
+      console.error('Failed to export CSV:', error);
+      alert('Kunne ikke eksportere CSV. Prøv igjen.');
+    }
   };
 
   const handleExportPDF = (): void => {
-    // TODO: Implement PDF export
+    try {
+      // Simulate PDF generation
+      const reportData = {
+        title: 'BookMe Rapport',
+        date: new Date().toLocaleDateString('nb-NO'),
+        bookingStats,
+        userActivity: filteredUsers,
+        popularFacilities
+      };
+      
+      // Create a simple text-based PDF simulation
+      const pdfContent = `
+BOOKME RAPPORT
+Generert: ${reportData.date}
+
+BOOKING STATISTIKK
+==================
+Totalt bookinger: ${bookingStats.total}
+Godkjente: ${bookingStats.approved} (${((bookingStats.approved / bookingStats.total) * 100).toFixed(1)}%)
+Avviste: ${bookingStats.rejected} (${((bookingStats.rejected / bookingStats.total) * 100).toFixed(1)}%)
+Ventende: ${bookingStats.pending}
+
+MEST BRUKTE LOKALER
+===================
+${popularFacilities.map(f => `• ${f.name}: ${f.bookings} bookinger (${f.change > 0 ? '+' : ''}${f.change}%)`).join('\n')}
+
+BRUKERAKTIVITET
+===============
+${filteredUsers.map(u => `• ${u.name} (${u.email}): ${u.actionsCount} handlinger, sist aktiv ${formatDateTime(u.lastActive)}`).join('\n')}
+      `.trim();
+      
+      const blob = new Blob([pdfContent], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `rapport-${new Date().toISOString().split('T')[0]}.txt`;
+      link.click();
+      URL.revokeObjectURL(url);
+      
+      alert('Rapport eksportert! (Simulert PDF som tekstfil)');
+    } catch (error) {
+      console.error('Failed to export PDF:', error);
+      alert('Kunne ikke eksportere PDF. Prøv igjen.');
+    }
   };
 
   return (

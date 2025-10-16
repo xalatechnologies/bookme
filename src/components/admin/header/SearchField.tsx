@@ -15,8 +15,63 @@ const SearchField = (_props: ISearchFieldProps): JSX.Element => {
     if (searchTerm.trim() === "") {
       return;
     }
-    // TODO: Implement search functionality
-    // Search logic will be implemented here
+    
+    try {
+      // Get admin data from localStorage (simulating API call)
+      const facilities = JSON.parse(localStorage.getItem('adminFacilities') || '[]');
+      const users = JSON.parse(localStorage.getItem('adminUsers') || '[]');
+      const bookings = JSON.parse(localStorage.getItem('adminBookings') || '[]');
+      
+      // Filter all admin data based on search term
+      const searchResults = {
+        facilities: facilities.filter((facility: any) => 
+          facility.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          facility.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          facility.address?.toLowerCase().includes(searchTerm.toLowerCase())
+        ),
+        users: users.filter((user: any) => 
+          user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          user.role?.toLowerCase().includes(searchTerm.toLowerCase())
+        ),
+        bookings: bookings.filter((booking: any) => 
+          booking.facility?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          booking.user?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          booking.purpose?.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+      };
+      
+      // Store search results in localStorage
+      localStorage.setItem('adminSearchResults', JSON.stringify({
+        query: searchTerm,
+        results: searchResults,
+        timestamp: new Date().toISOString()
+      }));
+      
+      // Calculate total results
+      const totalResults = searchResults.facilities.length + 
+                          searchResults.users.length + 
+                          searchResults.bookings.length;
+      
+      if (totalResults > 0) {
+        // Update URL to include search query
+        const url = new URL(window.location.href);
+        url.searchParams.set('search', searchTerm);
+        window.history.pushState({}, '', url.toString());
+        
+        // Trigger a custom event for other components to listen to
+        window.dispatchEvent(new CustomEvent('adminSearch', {
+          detail: { query: searchTerm, results: searchResults }
+        }));
+        
+        alert(`Fant ${totalResults} resultater: ${searchResults.facilities.length} lokaler, ${searchResults.users.length} brukere, ${searchResults.bookings.length} bookinger`);
+      } else {
+        alert(`Ingen resultater funnet for "${searchTerm}"`);
+      }
+    } catch (error) {
+      console.error('Admin search failed:', error);
+      alert('Søket feilet. Prøv igjen.');
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>): void => {

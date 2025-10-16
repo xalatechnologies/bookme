@@ -1,9 +1,8 @@
 "use client";
 
 // External libraries
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { format } from 'date-fns';
-import { CalendarIcon } from 'lucide-react';
 
 // Internal libraries/utilities
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -12,8 +11,6 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Calendar } from '@/components/ui/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { recurrenceEngine } from '@/utils/recurrenceEngine';
 
 // Types
@@ -52,15 +49,15 @@ export function RecurrencePatternSelector({
   onPatternChange, 
   disabled = false 
 }: RecurrencePatternSelectorProps): JSX.Element {
-  const [localPattern, setLocalPattern] = useState<RecurrencePattern>(
+  const [localPattern, setLocalPattern] = useState<RecurrencePattern>(() => 
     pattern || {
       type: 'weekly',
       weekdays: [1, 2, 3, 4, 5],
       timeSlots: ['09:00-11:00'],
-      interval: 1
+      interval: 1,
+      maxOccurrences: 52
     }
   );
-  const [showEndDatePicker, setShowEndDatePicker] = useState(false);
 
   const weekdays = [
     { id: 0, name: 'Søndag', short: 'Søn' },
@@ -80,74 +77,99 @@ export function RecurrencePatternSelector({
     { id: 'last', label: 'Siste' }
   ];
 
-  // Call onPatternChange when pattern changes
-  const updatePattern = (newPattern: RecurrencePattern) => {
-    setLocalPattern(newPattern);
-    if (newPattern.type !== 'single') {
+
+
+  const handleTypeChange = React.useCallback((type: RecurrencePattern['type']) => {
+    setLocalPattern(prevPattern => {
+      const newPattern: RecurrencePattern = {
+        type,
+        weekdays: type === 'single' ? [] : prevPattern.weekdays,
+        timeSlots: prevPattern.timeSlots,
+        interval: prevPattern.interval,
+        startDate: prevPattern.startDate,
+        endDate: prevPattern.endDate,
+        monthlyPattern: type === 'monthly' ? (prevPattern.monthlyPattern || 'first') : undefined,
+        monthlyWeekday: type === 'monthly' ? (prevPattern.monthlyWeekday || 1) : undefined,
+        maxOccurrences: prevPattern.maxOccurrences
+      };
+      
       onPatternChange(newPattern);
-    }
-  };
-
-  const handleTypeChange = (type: RecurrencePattern['type']) => {
-    const newPattern: RecurrencePattern = {
-      type,
-      weekdays: type === 'single' ? [] : localPattern.weekdays,
-      timeSlots: localPattern.timeSlots,
-      interval: localPattern.interval,
-      startDate: localPattern.startDate,
-      endDate: localPattern.endDate,
-      monthlyPattern: type === 'monthly' ? (localPattern.monthlyPattern || 'first') : undefined,
-      monthlyWeekday: type === 'monthly' ? (localPattern.monthlyWeekday || 1) : undefined,
-      maxOccurrences: localPattern.maxOccurrences
-    };
-    updatePattern(newPattern);
-  };
-
-  const handleWeekdayToggle = (weekday: number) => {
-    const newWeekdays = localPattern.weekdays.includes(weekday)
-      ? localPattern.weekdays.filter(d => d !== weekday)
-      : [...localPattern.weekdays, weekday];
-    
-    updatePattern({
-      ...localPattern,
-      weekdays: newWeekdays
+      return newPattern;
     });
-  };
+  }, [onPatternChange]);
 
-  const handleIntervalChange = (interval: number) => {
-    updatePattern({
-      ...localPattern,
-      interval: Math.max(1, interval)
-    });
-  };
+  const handleWeekdayToggle = React.useCallback((weekday: number) => {
+    setLocalPattern(prevPattern => {
+      const newWeekdays = prevPattern.weekdays.includes(weekday)
+        ? prevPattern.weekdays.filter(d => d !== weekday)
+        : [...prevPattern.weekdays, weekday];
 
-  const handleMonthlyPatternChange = (monthlyPattern: RecurrencePattern['monthlyPattern']) => {
-    updatePattern({
-      ...localPattern,
-      monthlyPattern
+      const newPattern = {
+        ...prevPattern,
+        weekdays: newWeekdays
+      };
+      
+      // Call onPatternChange with the new pattern
+      onPatternChange(newPattern);
+      
+      return newPattern;
     });
-  };
+  }, [onPatternChange]);
 
-  const handleMonthlyWeekdayChange = (monthlyWeekday: number) => {
-    updatePattern({
-      ...localPattern,
-      monthlyWeekday
+  const handleIntervalChange = React.useCallback((interval: number) => {
+    setLocalPattern(prevPattern => {
+      const newPattern = {
+        ...prevPattern,
+        interval: Math.max(1, interval)
+      };
+      onPatternChange(newPattern);
+      return newPattern;
     });
-  };
+  }, [onPatternChange]);
 
-  const handleEndDateChange = (endDate: Date | undefined) => {
-    updatePattern({
-      ...localPattern,
-      endDate
+  const handleMonthlyPatternChange = React.useCallback((monthlyPattern: RecurrencePattern['monthlyPattern']) => {
+    setLocalPattern(prevPattern => {
+      const newPattern = {
+        ...prevPattern,
+        monthlyPattern
+      };
+      onPatternChange(newPattern);
+      return newPattern;
     });
-  };
+  }, [onPatternChange]);
 
-  const handleMaxOccurrencesChange = (maxOccurrences: number) => {
-    updatePattern({
-      ...localPattern,
-      maxOccurrences: Math.max(1, maxOccurrences)
+  const handleMonthlyWeekdayChange = React.useCallback((monthlyWeekday: number) => {
+    setLocalPattern(prevPattern => {
+      const newPattern = {
+        ...prevPattern,
+        monthlyWeekday
+      };
+      onPatternChange(newPattern);
+      return newPattern;
     });
-  };
+  }, [onPatternChange]);
+
+  const handleEndDateChange = React.useCallback((endDate: Date | undefined) => {
+    setLocalPattern(prevPattern => {
+      const newPattern = {
+        ...prevPattern,
+        endDate
+      };
+      onPatternChange(newPattern);
+      return newPattern;
+    });
+  }, [onPatternChange]);
+
+  const handleMaxOccurrencesChange = React.useCallback((maxOccurrences: number) => {
+    setLocalPattern(prevPattern => {
+      const newPattern = {
+        ...prevPattern,
+        maxOccurrences: Math.max(1, maxOccurrences)
+      };
+      onPatternChange(newPattern);
+      return newPattern;
+    });
+  }, [onPatternChange]);
 
   const validation = recurrenceEngine.validatePattern(localPattern);
 
@@ -285,30 +307,22 @@ export function RecurrencePatternSelector({
           <Label className="text-sm font-medium text-gray-700 mb-2 block">
             Sluttdato (valgfri)
           </Label>
-          <Popover open={showEndDatePicker} onOpenChange={setShowEndDatePicker}>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                disabled={disabled}
-                className="w-full justify-start text-left font-normal"
-              >
-                <CalendarIcon className="mr-2 h-4 w-4" />
-                {localPattern?.endDate ? format(localPattern.endDate, 'dd. MMMM yyyy') : 'Velg sluttdato'}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-              <Calendar
-                mode="single"
-                selected={localPattern.endDate}
-                onSelect={(date) => {
-                  handleEndDateChange(date);
-                  setShowEndDatePicker(false);
-                }}
-                disabled={(date) => date < new Date()}
-                initialFocus
-              />
-            </PopoverContent>
-          </Popover>
+          <Input
+            type="date"
+            value={localPattern?.endDate ? format(localPattern.endDate, 'yyyy-MM-dd') : ''}
+            onChange={(e) => {
+              if (e.target.value) {
+                const date = new Date(e.target.value);
+                handleEndDateChange(date);
+              } else {
+                handleEndDateChange(undefined);
+              }
+            }}
+            disabled={disabled}
+            className="w-full"
+            min={format(new Date(), 'yyyy-MM-dd')}
+            placeholder="Velg sluttdato"
+          />
         </div>
 
         {/* Max Occurrences */}
