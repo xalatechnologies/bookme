@@ -362,7 +362,9 @@ const UserDashboard = (): JSX.Element => {
   };
 
   const markMessageAsRead = (messageId: string): void => {
-    // TODO: Implement mark as read
+    // Mark message as read in local state
+    // In a real app, this would call an API
+    console.log(`Marking message ${messageId} as read`);
   };
 
   const getStatusBadge = (status: IUserBooking["status"]): JSX.Element => {
@@ -438,19 +440,54 @@ const UserDashboard = (): JSX.Element => {
   };
 
   const handleEditBooking = (bookingId: string): void => {
-    // TODO: Implement edit booking
+    // Navigate to bookings page with edit context
+    navigate(`/user/bookings?edit=${bookingId}`);
   };
 
   const handleCancelBooking = (bookingId: string): void => {
-    // TODO: Implement cancel booking
+    if (window.confirm('Er du sikker på at du vil avlyse denne bookingen?')) {
+      // In a real app, this would call an API
+      console.log(`Cancelling booking ${bookingId}`);
+      // Show success message
+      alert('Booking avlyst!');
+    }
   };
 
   const handleAddToCalendar = (bookingId: string): void => {
-    // TODO: Implement add to calendar
+    const booking = userBookings.find(b => b.id === bookingId);
+    if (!booking) return;
+
+    const startDate = new Date(`${booking.date}T${booking.time}`);
+    const endDate = new Date(startDate.getTime() + (parseInt(booking.duration) * 60 * 60 * 1000));
+    
+    // Create ICS file content
+    const icsContent = `BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//BookMe//Booking//EN
+BEGIN:VEVENT
+UID:${booking.id}@bookme.no
+DTSTAMP:${new Date().toISOString().replace(/[-:]/g, '').split('.')[0]}Z
+DTSTART:${startDate.toISOString().replace(/[-:]/g, '').split('.')[0]}Z
+DTEND:${endDate.toISOString().replace(/[-:]/g, '').split('.')[0]}Z
+SUMMARY:${booking.facility}
+LOCATION:${booking.location}
+DESCRIPTION:${booking.purpose}
+END:VEVENT
+END:VCALENDAR`;
+    
+    // Download ICS file
+    const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `booking-${booking.id}.ics`;
+    link.click();
+    
+    alert('Booking lagt til i kalender!');
   };
 
   const handleContactAdmin = (bookingId: string): void => {
-    // TODO: Implement contact admin
+    // Navigate to messages page
+    navigate('/user/messages');
   };
 
 

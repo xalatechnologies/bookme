@@ -38,7 +38,24 @@ const UserSettings = (): JSX.Element => {
   };
 
   const handleSaveSettings = (): void => {
-    // TODO: Implement save settings
+    // Save settings to localStorage (in a real app, this would call an API)
+    try {
+      localStorage.setItem('userSettings', JSON.stringify(settings));
+      
+      // Show success message
+      alert('Innstillinger lagret!');
+      
+      // In a real app, you would also:
+      // 1. Call API to save to backend
+      // 2. Update user context/state
+      // 3. Show toast notification
+      // 4. Handle errors appropriately
+      
+      console.log('Settings saved:', settings);
+    } catch (error) {
+      console.error('Failed to save settings:', error);
+      alert('Kunne ikke lagre innstillinger. Prøv igjen.');
+    }
   };
 
   return (

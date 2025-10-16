@@ -811,31 +811,136 @@ const UsersRolesPage = (): JSX.Element => {
   };
 
   const handleSaveUser = (userData: Partial<IUser>): void => {
-    // TODO: Implement save user logic
+    try {
+      // Simulate saving to backend/localStorage
+      const users = JSON.parse(localStorage.getItem('adminUsers') || '[]');
+      
+      if (userModal.isEditing && userModal.user) {
+        // Update existing user
+        const updatedUsers = users.map((u: IUser) => 
+          u.id === userModal.user!.id ? { ...u, ...userData } : u
+        );
+        localStorage.setItem('adminUsers', JSON.stringify(updatedUsers));
+        alert('Bruker oppdatert!');
+      } else {
+        // Create new user
+        const newUser: IUser = {
+          id: Date.now().toString(),
+          name: userData.name || '',
+          email: userData.email || '',
+          role: userData.role || 'lesetilgang',
+          status: 'invitation_sent',
+          createdAt: new Date().toISOString(),
+          createdBy: 'Current Admin',
+          invitationSentAt: new Date().toISOString(),
+          permissions: []
+        };
+        users.push(newUser);
+        localStorage.setItem('adminUsers', JSON.stringify(users));
+        alert('Invitasjon sendt til bruker!');
+      }
+    } catch (error) {
+      console.error('Failed to save user:', error);
+      alert('Kunne ikke lagre bruker. Prøv igjen.');
+    }
   };
 
   const handleSaveRole = (roleData: Partial<IRole>): void => {
-    // TODO: Implement save role logic
+    try {
+      // Simulate saving to backend/localStorage
+      const roles = JSON.parse(localStorage.getItem('adminRoles') || '[]');
+      
+      if (roleModal.isEditing && roleModal.role) {
+        // Update existing role
+        const updatedRoles = roles.map((r: IRole) => 
+          r.id === roleModal.role!.id ? { ...r, ...roleData } : r
+        );
+        localStorage.setItem('adminRoles', JSON.stringify(updatedRoles));
+        alert('Rolle oppdatert!');
+      } else {
+        // Create new role
+        const newRole: IRole = {
+          id: Date.now().toString(),
+          name: roleData.name || '',
+          description: roleData.description || '',
+          userCount: 0,
+          permissions: roleData.permissions || [],
+          isActive: true
+        };
+        roles.push(newRole);
+        localStorage.setItem('adminRoles', JSON.stringify(roles));
+        alert('Rolle opprettet!');
+      }
+    } catch (error) {
+      console.error('Failed to save role:', error);
+      alert('Kunne ikke lagre rolle. Prøv igjen.');
+    }
   };
 
   const handleDeactivateUser = (userId: string): void => {
-    // TODO: Implement deactivate user logic
+    if (window.confirm('Er du sikker på at du vil deaktivere denne brukeren?')) {
+      try {
+        const users = JSON.parse(localStorage.getItem('adminUsers') || '[]');
+        const updatedUsers = users.map((u: IUser) => 
+          u.id === userId ? { ...u, status: 'inactive' as const } : u
+        );
+        localStorage.setItem('adminUsers', JSON.stringify(updatedUsers));
+        alert('Bruker deaktivert!');
+      } catch (error) {
+        console.error('Failed to deactivate user:', error);
+        alert('Kunne ikke deaktivere bruker. Prøv igjen.');
+      }
+    }
   };
 
   const handleDeleteUser = (userId: string): void => {
-    // TODO: Implement delete user logic
+    if (window.confirm('Er du sikker på at du vil slette denne brukeren permanent?')) {
+      try {
+        const users = JSON.parse(localStorage.getItem('adminUsers') || '[]');
+        const updatedUsers = users.filter((u: IUser) => u.id !== userId);
+        localStorage.setItem('adminUsers', JSON.stringify(updatedUsers));
+        alert('Bruker slettet!');
+      } catch (error) {
+        console.error('Failed to delete user:', error);
+        alert('Kunne ikke slette bruker. Prøv igjen.');
+      }
+    }
   };
 
   const handleResendInvitation = (userId: string): void => {
-    // TODO: Implement resend invitation logic
+    try {
+      const users = JSON.parse(localStorage.getItem('adminUsers') || '[]');
+      const updatedUsers = users.map((u: IUser) => 
+        u.id === userId ? { ...u, invitationSentAt: new Date().toISOString() } : u
+      );
+      localStorage.setItem('adminUsers', JSON.stringify(updatedUsers));
+      alert('Invitasjon sendt på nytt!');
+    } catch (error) {
+      console.error('Failed to resend invitation:', error);
+      alert('Kunne ikke sende invitasjon. Prøv igjen.');
+    }
   };
 
   const handleDeactivateRole = (roleId: string): void => {
-    // TODO: Implement deactivate role logic
+    try {
+      const roles = JSON.parse(localStorage.getItem('adminRoles') || '[]');
+      const updatedRoles = roles.map((r: IRole) => 
+        r.id === roleId ? { ...r, isActive: !r.isActive } : r
+      );
+      localStorage.setItem('adminRoles', JSON.stringify(updatedRoles));
+      alert('Rolle status endret!');
+    } catch (error) {
+      console.error('Failed to toggle role status:', error);
+      alert('Kunne ikke endre rolle status. Prøv igjen.');
+    }
   };
 
   const handleViewUsers = (roleId: string): void => {
-    // TODO: Implement view users with role logic
+    const role = roles.find(r => r.id === roleId);
+    if (role) {
+      const usersWithRole = users.filter(u => u.role === role.name);
+      alert(`Brukere med rolle "${role.name}":\n${usersWithRole.map(u => `• ${u.name} (${u.email})`).join('\n')}`);
+    }
   };
 
   const handleSelectUser = (userId: string, selected: boolean): void => {
@@ -849,7 +954,38 @@ const UsersRolesPage = (): JSX.Element => {
   };
 
   const handleBulkAction = (action: string): void => {
-    // TODO: Implement bulk actions
+    if (selectedUsers.size === 0) return;
+    
+    try {
+      const users = JSON.parse(localStorage.getItem('adminUsers') || '[]');
+      
+      switch (action) {
+        case 'change-role':
+          const newRole = prompt('Skriv inn ny rolle for valgte brukere:');
+          if (newRole) {
+            const updatedUsers = users.map((u: IUser) => 
+              selectedUsers.has(u.id) ? { ...u, role: newRole } : u
+            );
+            localStorage.setItem('adminUsers', JSON.stringify(updatedUsers));
+            alert(`${selectedUsers.size} bruker(e) oppdatert med ny rolle!`);
+            setSelectedUsers(new Set());
+          }
+          break;
+        case 'resend-invitation':
+          const updatedUsers = users.map((u: IUser) => 
+            selectedUsers.has(u.id) ? { ...u, invitationSentAt: new Date().toISOString() } : u
+          );
+          localStorage.setItem('adminUsers', JSON.stringify(updatedUsers));
+          alert(`Invitasjoner sendt på nytt til ${selectedUsers.size} bruker(e)!`);
+          setSelectedUsers(new Set());
+          break;
+        default:
+          alert('Handling ikke implementert');
+      }
+    } catch (error) {
+      console.error('Failed to perform bulk action:', error);
+      alert('Kunne ikke utføre massehandling. Prøv igjen.');
+    }
   };
 
   return (

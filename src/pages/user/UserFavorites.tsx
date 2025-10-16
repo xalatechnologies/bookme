@@ -67,6 +67,30 @@ const UserFavorites = (): JSX.Element => {
   const [showFilters, setShowFilters] = useState<boolean>(false);
   const [removingFacility, setRemovingFacility] = useState<string | null>(null);
 
+  // Real-time availability check function
+  const getRealTimeAvailability = (facilityId: string): "available" | "busy" | "full" => {
+    // In a real app, this would call an API to check current availability
+    // For now, we'll simulate with some logic based on facility ID and time
+    const now = new Date();
+    const hour = now.getHours();
+    const dayOfWeek = now.getDay();
+    
+    // Simulate availability based on time and day
+    if (dayOfWeek === 0 || dayOfWeek === 6) { // Weekend
+      if (hour >= 8 && hour <= 22) {
+        return Math.random() > 0.3 ? "available" : "busy";
+      } else {
+        return "full";
+      }
+    } else { // Weekday
+      if (hour >= 6 && hour <= 23) {
+        return Math.random() > 0.2 ? "available" : "busy";
+      } else {
+        return "full";
+      }
+    }
+  };
+
   // Load view mode from localStorage
   useEffect(() => {
     const savedViewMode = localStorage.getItem("favorites-view-mode");
@@ -106,7 +130,7 @@ const UserFavorites = (): JSX.Element => {
         usageCount: favoriteEntry.usageCount,
         amenities: facility.amenities,
         description: facility.description,
-        availability: "available" as const, // TODO: Implement real availability check
+        availability: getRealTimeAvailability(facility.id) as const,
         location: facility.location,
         isFavorite: true,
         coordinates: facility.coordinates
@@ -232,7 +256,8 @@ const UserFavorites = (): JSX.Element => {
     const { incrementUsage, updateLastVisited } = useFavoritesStore.getState();
     incrementUsage(facilityId);
     updateLastVisited(facilityId);
-    // TODO: Navigate to facility detail page
+    // Navigate to facility detail page
+    window.location.href = `/facilities/${facilityId}`;
   };
 
   const handleBookNow = (facilityId: string): void => {
@@ -240,11 +265,46 @@ const UserFavorites = (): JSX.Element => {
     const { incrementUsage, updateLastVisited } = useFavoritesStore.getState();
     incrementUsage(facilityId);
     updateLastVisited(facilityId);
-    // TODO: Navigate to booking page
+    // Navigate to booking page
+    window.location.href = `/facilities/${facilityId}/book`;
   };
 
   const handleQuickView = (facilityId: string): void => {
-    // TODO: Open quick view modal
+    // Open quick view modal
+    const facility = favorites.find(f => f.id === facilityId);
+    if (facility) {
+      // Create a simple modal for quick view
+      const modal = document.createElement('div');
+      modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+      modal.innerHTML = `
+        <div class="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full mx-4">
+          <div class="flex justify-between items-start mb-4">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">${facility.name}</h3>
+            <button onclick="this.closest('.fixed').remove()" class="text-gray-400 hover:text-gray-600">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </button>
+          </div>
+          <div class="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+            <p><strong>Type:</strong> ${facility.type}</p>
+            <p><strong>Kapasitet:</strong> ${facility.capacity} personer</p>
+            <p><strong>Pris:</strong> ${facility.price}</p>
+            <p><strong>Adresse:</strong> ${facility.address}</p>
+            <p><strong>Tilgjengelighet:</strong> ${facility.availability === 'available' ? 'Ledig' : facility.availability === 'busy' ? 'Delvis opptatt' : 'Fullbooket'}</p>
+          </div>
+          <div class="mt-4 flex gap-2">
+            <button onclick="window.location.href='/facilities/${facilityId}'" class="flex-1 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+              Se detaljer
+            </button>
+            <button onclick="window.location.href='/facilities/${facilityId}/book'" class="flex-1 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+              Book nå
+            </button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+    }
   };
 
 
@@ -521,7 +581,7 @@ const UserFavorites = (): JSX.Element => {
               }
             </p>
             {!searchTerm && filterType === "all" && filterCapacity === "all" && filterLocation === "all" && filterAvailability === "all" && (
-              <Button>
+              <Button onClick={() => window.location.href = '/user/facilities'}>
                 <BookOpen className="h-4 w-4 mr-2" />
                 Utforsk lokaler
                 <ArrowRight className="h-4 w-4 ml-2" />

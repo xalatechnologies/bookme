@@ -29,9 +29,11 @@ import { IPriceCalculationProps, ActorType, ActivityType } from "./types";
  */
 export const PriceCalculation: React.FC<IPriceCalculationProps> = ({
   selectedSlots,
+  recurringSlots = [],
   actorType,
   activityType,
   isLoading = false,
+  bookingType = 'one-time',
 }) => {
   /**
    * Get actor type multiplier for pricing
@@ -135,7 +137,11 @@ export const PriceCalculation: React.FC<IPriceCalculationProps> = ({
    * @returns Calculated pricing information
    */
   const pricing = useMemo(() => {
-    if (selectedSlots.length === 0) {
+    // For recurring bookings, use recurring slots if available, otherwise use selected slots
+    // For one-time bookings, only use selected slots
+    const allSlots = bookingType === 'recurring' && recurringSlots.length > 0 ? recurringSlots : selectedSlots;
+    
+    if (allSlots.length === 0) {
       return {
         basePrice: 0,
         totalPrice: 0,
@@ -143,11 +149,12 @@ export const PriceCalculation: React.FC<IPriceCalculationProps> = ({
         finalPrice: 0,
         breakdown: [],
         requiresApproval: false,
+        totalOccurrences: 0,
       };
     }
 
     // Calculate base price
-    const basePrice = selectedSlots.reduce((total, slot) => {
+    const basePrice = allSlots.reduce((total, slot) => {
       return total + (slot.pricePerHour * slot.duration);
     }, 0);
 
@@ -198,10 +205,11 @@ export const PriceCalculation: React.FC<IPriceCalculationProps> = ({
       finalPrice,
       breakdown,
       requiresApproval,
+      totalOccurrences: allSlots.length,
     };
-  }, [selectedSlots, actorType, activityType]);
+  }, [selectedSlots, recurringSlots, actorType, activityType, bookingType]);
 
-  if (selectedSlots.length === 0) {
+  if (bookingType === 'recurring' ? recurringSlots.length === 0 : selectedSlots.length === 0) {
     return null;
   }
 
@@ -210,6 +218,11 @@ export const PriceCalculation: React.FC<IPriceCalculationProps> = ({
       <h4 className="text-sm font-medium text-gray-700 flex items-center gap-2">
         <Calculator className="h-4 w-4" />
         Prisberegning
+        {pricing.totalOccurrences > 0 && (
+          <Badge variant="secondary" className="ml-2">
+            {pricing.totalOccurrences} forekomster
+          </Badge>
+        )}
       </h4>
         {/* Price Breakdown */}
         <div className="space-y-2">

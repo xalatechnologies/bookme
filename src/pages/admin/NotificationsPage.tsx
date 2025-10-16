@@ -160,11 +160,41 @@ const NotificationsPage = (): JSX.Element => {
   };
 
   const handleToggleEvent = (eventId: string): void => {
-    // TODO: Implement toggle functionality
+    try {
+      // Simulate saving to backend/localStorage
+      const events = JSON.parse(localStorage.getItem('systemEvents') || '[]');
+      const updatedEvents = events.map((event: ISystemEvent) => 
+        event.id === eventId ? { ...event, isActive: !event.isActive } : event
+      );
+      localStorage.setItem('systemEvents', JSON.stringify(updatedEvents));
+      
+      const event = systemEvents.find(e => e.id === eventId);
+      if (event) {
+        alert(`Systemhendelse "${event.name}" ${!event.isActive ? 'aktivert' : 'deaktivert'}!`);
+      }
+    } catch (error) {
+      console.error('Failed to toggle event:', error);
+      alert('Kunne ikke endre systemhendelse. Prøv igjen.');
+    }
   };
 
   const handleTogglePreference = (preferenceId: string): void => {
-    // TODO: Implement toggle functionality
+    try {
+      // Simulate saving to backend/localStorage
+      const preferences = JSON.parse(localStorage.getItem('notificationPreferences') || '[]');
+      const updatedPreferences = preferences.map((pref: INotificationPreference) => 
+        pref.id === preferenceId ? { ...pref, isEnabled: !pref.isEnabled } : pref
+      );
+      localStorage.setItem('notificationPreferences', JSON.stringify(updatedPreferences));
+      
+      const preference = notificationPreferences.find(p => p.id === preferenceId);
+      if (preference) {
+        alert(`Varselpreferanse "${preference.name}" ${!preference.isEnabled ? 'aktivert' : 'deaktivert'}!`);
+      }
+    } catch (error) {
+      console.error('Failed to toggle preference:', error);
+      alert('Kunne ikke endre varselpreferanse. Prøv igjen.');
+    }
   };
 
   return (

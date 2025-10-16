@@ -15,8 +15,46 @@ const UserSearchField = (_props: IUserSearchFieldProps): JSX.Element => {
     if (searchTerm.trim() === "") {
       return;
     }
-    // TODO: Implement search functionality for facilities
-    // Search logic will be implemented here
+    
+    try {
+      // Get facilities from localStorage (simulating API call)
+      const facilities = JSON.parse(localStorage.getItem('facilities') || '[]');
+      
+      // Filter facilities based on search term
+      const filteredFacilities = facilities.filter((facility: any) => 
+        facility.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        facility.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        facility.address?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        facility.type?.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      
+      // Store search results in localStorage for other components to use
+      localStorage.setItem('searchResults', JSON.stringify({
+        query: searchTerm,
+        results: filteredFacilities,
+        timestamp: new Date().toISOString()
+      }));
+      
+      // Navigate to search results page or update current view
+      if (filteredFacilities.length > 0) {
+        // Update URL to include search query
+        const url = new URL(window.location.href);
+        url.searchParams.set('search', searchTerm);
+        window.history.pushState({}, '', url.toString());
+        
+        // Trigger a custom event for other components to listen to
+        window.dispatchEvent(new CustomEvent('facilitySearch', {
+          detail: { query: searchTerm, results: filteredFacilities }
+        }));
+        
+        alert(`Fant ${filteredFacilities.length} lokale(r) for "${searchTerm}"`);
+      } else {
+        alert(`Ingen lokaler funnet for "${searchTerm}"`);
+      }
+    } catch (error) {
+      console.error('Search failed:', error);
+      alert('Søket feilet. Prøv igjen.');
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>): void => {

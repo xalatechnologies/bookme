@@ -87,16 +87,31 @@ const FacilityCardUser = (props: IFacilityCardUserProps): JSX.Element => {
 
   const handleShare = (e: React.MouseEvent): void => {
     e.stopPropagation();
-    // TODO: Implement share functionality
-    if (navigator.share) {
-      navigator.share({
+    
+    try {
+      const shareData = {
         title: name,
-        text: `Sjekk ut ${name} på BookMe`,
+        text: `Sjekk ut ${name} på BookMe - ${type} med kapasitet for ${capacity} personer`,
         url: window.location.origin + `/facilities/${id}`
-      });
-    } else {
-      // Fallback: copy to clipboard
-      navigator.clipboard.writeText(window.location.origin + `/facilities/${id}`);
+      };
+      
+      if (navigator.share) {
+        navigator.share(shareData).then(() => {
+          alert('Fasilitet delt!');
+        }).catch((error) => {
+          console.error('Share failed:', error);
+          // Fallback to clipboard
+          navigator.clipboard.writeText(shareData.url);
+          alert('Lenke kopiert til utklippstavle!');
+        });
+      } else {
+        // Fallback: copy to clipboard
+        navigator.clipboard.writeText(shareData.url);
+        alert('Lenke kopiert til utklippstavle!');
+      }
+    } catch (error) {
+      console.error('Share functionality failed:', error);
+      alert('Kunne ikke dele fasilitet. Prøv igjen.');
     }
   };
 

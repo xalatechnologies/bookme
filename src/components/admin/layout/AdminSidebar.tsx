@@ -49,15 +49,20 @@ const AdminSidebar = (_props: IAdminSidebarProps): JSX.Element => {
       title: "Administrasjon",
       items: [
         { id: "facilities", label: "Lokaler", path: "/admin/facilities", icon: Building2 },
-        { id: "bookings", label: "Bookinger & Godkjenninger", path: "/admin/bookings", icon: Calendar },
+        { id: "bookings", label: "Bookinger", path: "/admin/bookings", icon: Calendar },
         { id: "users-roles", label: "Brukere og roller", path: "/admin/users-roles", icon: Users },
+      ]
+    },
+    {
+      title: "Kommunikasjon",
+      items: [
+        { id: "messages", label: "Meldinger", path: "/admin/messages", icon: MessageCircle },
+        { id: "notifications", label: "Varsler", path: "/admin/notifications", icon: Bell },
       ]
     },
     {
       title: "System",
       items: [
-        { id: "notifications", label: "Varsler", path: "/admin/notifications", icon: Bell },
-        { id: "messages", label: "Meldinger", path: "/admin/messages", icon: MessageCircle },
         { id: "integrations", label: "Integrasjoner", path: "/admin/integrations", icon: Plug },
         { id: "reports", label: "Rapporter", path: "/admin/reports", icon: BarChart3 },
         { id: "audit", label: "Revisjonslogg", path: "/admin/audit-logs", icon: FileText },

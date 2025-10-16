@@ -108,6 +108,126 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
       setSelectedZoneId(zones[0].id);
     }
   }, [zones, selectedZoneId]);
+
+  /**
+   * Check if a date is a Norwegian holiday
+   * 
+   * @param date - Date to check
+   * @returns True if the date is a holiday
+   */
+  const checkIfHoliday = useCallback((date: Date): boolean => {
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1; // getMonth() returns 0-11
+    const day = date.getDate();
+    
+    // Fixed holidays
+    const fixedHolidays = [
+      { month: 1, day: 1 },   // New Year's Day
+      { month: 5, day: 1 },   // Labour Day
+      { month: 5, day: 17 },  // Constitution Day
+      { month: 12, day: 25 }, // Christmas Day
+      { month: 12, day: 26 }, // Boxing Day
+    ];
+    
+    // Check fixed holidays
+    for (const holiday of fixedHolidays) {
+      if (month === holiday.month && day === holiday.day) {
+        return true;
+      }
+    }
+    
+    // Calculate Easter and related holidays
+    const easter = calculateEaster(year);
+    const easterHolidays = [
+      addDays(easter, -2),  // Good Friday
+      addDays(easter, 1),   // Easter Monday
+      addDays(easter, 39),  // Ascension Day
+      addDays(easter, 49),  // Whit Monday
+    ];
+    
+    // Check Easter-related holidays
+    for (const holiday of easterHolidays) {
+      if (holiday.getFullYear() === year && 
+          holiday.getMonth() + 1 === month && 
+          holiday.getDate() === day) {
+        return true;
+      }
+    }
+    
+    return false;
+  }, []);
+
+  /**
+   * Get the name of a Norwegian holiday
+   * 
+   * @param date - Date to check
+   * @returns Holiday name or undefined
+   */
+  const getHolidayName = useCallback((date: Date): string | undefined => {
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+    
+    // Fixed holidays
+    const fixedHolidays: Record<string, string> = {
+      '1-1': 'Nyttårsdag',
+      '5-1': 'Arbeidernes dag',
+      '5-17': 'Grunnlovsdag',
+      '12-25': '1. juledag',
+      '12-26': '2. juledag',
+    };
+    
+    const key = `${month}-${day}`;
+    if (fixedHolidays[key]) {
+      return fixedHolidays[key];
+    }
+    
+    // Calculate Easter and related holidays
+    const easter = calculateEaster(year);
+    const easterHolidays = [
+      { date: addDays(easter, -2), name: 'Langfredag' },
+      { date: addDays(easter, 1), name: '2. påskedag' },
+      { date: addDays(easter, 39), name: 'Kristi himmelfartsdag' },
+      { date: addDays(easter, 49), name: '2. pinsedag' },
+    ];
+    
+    // Check Easter-related holidays
+    for (const holiday of easterHolidays) {
+      if (holiday.date.getFullYear() === year && 
+          holiday.date.getMonth() + 1 === month && 
+          holiday.date.getDate() === day) {
+        return holiday.name;
+      }
+    }
+    
+    return undefined;
+  }, []);
+
+  /**
+   * Calculate Easter date for a given year
+   * 
+   * @param year - Year to calculate Easter for
+   * @returns Easter date
+   */
+  const calculateEaster = useCallback((year: number): Date => {
+    // Algorithm to calculate Easter date
+    const a = year % 19;
+    const b = Math.floor(year / 100);
+    const c = year % 100;
+    const d = Math.floor(b / 4);
+    const e = b % 4;
+    const f = Math.floor((b + 8) / 25);
+    const g = Math.floor((b - f + 1) / 3);
+    const h = (19 * a + b - d - g + 15) % 30;
+    const i = Math.floor(c / 4);
+    const k = c % 4;
+    const l = (32 + 2 * e + 2 * i - h - k) % 7;
+    const m = Math.floor((a + 11 * h + 22 * l) / 451);
+    const n = Math.floor((h + l - 7 * m + 114) / 31);
+    const p = (h + l - 7 * m + 114) % 31;
+    
+    return new Date(year, n - 1, p + 1);
+  }, []);
   
   // Use slot selection hook
   const {
@@ -160,8 +280,8 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
         date,
         isToday: isToday(date),
         isWeekend: isWeekend(date),
-        isHoliday: false, // TODO: Implement holiday checking
-        holidayName: undefined,
+        isHoliday: checkIfHoliday(date),
+        holidayName: getHolidayName(date),
         isPast: isPast(date),
         timeSlots: [], // Will be populated by TimeSlotGrid
       };
@@ -337,7 +457,7 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
     readonly vatRate: number;
     readonly vatAmount: number;
     readonly finalPrice: number;
-  }): {
+  }, slotsToUse: readonly ISelectedTimeSlot[]): {
     readonly facilityId: string;
     readonly facilityName: string;
     readonly zoneId: string;
@@ -364,7 +484,7 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
       facilityName,
       zoneId: selectedZone.id,
       zoneName: selectedZone.name,
-      timeSlots: allSelectedSlots,
+      timeSlots: slotsToUse,
       purpose: bookingData.purpose,
       attendees: bookingData.attendees,
       activityType: bookingData.activityType,
@@ -380,7 +500,7 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
       },
       status: 'pending' as const, // Set status to pending for new bookings
     };
-  }, [selectedZone, allSelectedSlots, facilityId, facilityName, bookingType, recurrencePattern]);
+  }, [selectedZone, facilityId, facilityName, bookingType, recurrencePattern]);
 
   /**
    * Handle add to cart
@@ -393,12 +513,18 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
     readonly activityType: string;
     readonly additionalInfo: string;
     readonly actorType: string;
+    readonly recurringSlots?: readonly ISelectedTimeSlot[];
   }): void => {
     try {
       if (!selectedZone) return;
       
-      const pricing = calculatePricing(allSelectedSlots);
-      const cartItem = createCartItem(bookingData, pricing);
+      // Use recurring slots if available, otherwise use selected slots
+      const slotsToUse = bookingData.recurringSlots && bookingData.recurringSlots.length > 0 
+        ? bookingData.recurringSlots 
+        : allSelectedSlots;
+      
+      const pricing = calculatePricing(slotsToUse);
+      const cartItem = createCartItem(bookingData, pricing, slotsToUse);
       
       addItem(cartItem);
       clearSelection();
@@ -460,14 +586,20 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
     readonly activityType: string;
     readonly additionalInfo: string;
     readonly actorType: string;
+    readonly recurringSlots?: readonly ISelectedTimeSlot[];
   }): void => {
-    if (!selectedZone || allSelectedSlots.length === 0) {
+    // Use recurring slots if available, otherwise use selected slots
+    const slotsToUse = bookingData.recurringSlots && bookingData.recurringSlots.length > 0 
+      ? bookingData.recurringSlots 
+      : allSelectedSlots;
+
+    if (!selectedZone || slotsToUse.length === 0) {
       toast.error("Ingen tidspunkter valgt for booking.");
       return;
     }
 
     // Calculate pricing like in handleAddToCart
-    const basePrice = allSelectedSlots.reduce((total, slot) => {
+    const basePrice = slotsToUse.reduce((total, slot) => {
       return total + (slot.pricePerHour * slot.duration);
     }, 0);
 
