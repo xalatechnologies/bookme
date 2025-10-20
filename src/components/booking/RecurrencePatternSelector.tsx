@@ -52,10 +52,10 @@ export function RecurrencePatternSelector({
   const [localPattern, setLocalPattern] = useState<RecurrencePattern>(() => 
     pattern || {
       type: 'weekly',
-      weekdays: [1, 2, 3, 4, 5],
+      weekdays: [], // No default selection - user must choose
       timeSlots: ['09:00-11:00'],
       interval: 1,
-      maxOccurrences: 52
+      maxOccurrences: 1
     }
   );
 
@@ -93,10 +93,9 @@ export function RecurrencePatternSelector({
         maxOccurrences: prevPattern.maxOccurrences
       };
       
-      onPatternChange(newPattern);
       return newPattern;
     });
-  }, [onPatternChange]);
+  }, []);
 
   const handleWeekdayToggle = React.useCallback((weekday: number) => {
     setLocalPattern(prevPattern => {
@@ -109,12 +108,9 @@ export function RecurrencePatternSelector({
         weekdays: newWeekdays
       };
       
-      // Call onPatternChange with the new pattern
-      onPatternChange(newPattern);
-      
       return newPattern;
     });
-  }, [onPatternChange]);
+  }, []);
 
   const handleIntervalChange = React.useCallback((interval: number) => {
     setLocalPattern(prevPattern => {
@@ -122,10 +118,9 @@ export function RecurrencePatternSelector({
         ...prevPattern,
         interval: Math.max(1, interval)
       };
-      onPatternChange(newPattern);
       return newPattern;
     });
-  }, [onPatternChange]);
+  }, []);
 
   const handleMonthlyPatternChange = React.useCallback((monthlyPattern: RecurrencePattern['monthlyPattern']) => {
     setLocalPattern(prevPattern => {
@@ -133,10 +128,9 @@ export function RecurrencePatternSelector({
         ...prevPattern,
         monthlyPattern
       };
-      onPatternChange(newPattern);
       return newPattern;
     });
-  }, [onPatternChange]);
+  }, []);
 
   const handleMonthlyWeekdayChange = React.useCallback((monthlyWeekday: number) => {
     setLocalPattern(prevPattern => {
@@ -144,10 +138,9 @@ export function RecurrencePatternSelector({
         ...prevPattern,
         monthlyWeekday
       };
-      onPatternChange(newPattern);
       return newPattern;
     });
-  }, [onPatternChange]);
+  }, []);
 
   const handleEndDateChange = React.useCallback((endDate: Date | undefined) => {
     setLocalPattern(prevPattern => {
@@ -155,10 +148,9 @@ export function RecurrencePatternSelector({
         ...prevPattern,
         endDate
       };
-      onPatternChange(newPattern);
       return newPattern;
     });
-  }, [onPatternChange]);
+  }, []);
 
   const handleMaxOccurrencesChange = React.useCallback((maxOccurrences: number) => {
     setLocalPattern(prevPattern => {
@@ -166,10 +158,14 @@ export function RecurrencePatternSelector({
         ...prevPattern,
         maxOccurrences: Math.max(1, maxOccurrences)
       };
-      onPatternChange(newPattern);
       return newPattern;
     });
-  }, [onPatternChange]);
+  }, []);
+
+  // Call onPatternChange when localPattern changes
+  React.useEffect(() => {
+    onPatternChange(localPattern);
+  }, [localPattern]); // Remove onPatternChange from dependencies to prevent infinite loop
 
   const validation = recurrenceEngine.validatePattern(localPattern);
 
@@ -330,15 +326,15 @@ export function RecurrencePatternSelector({
           <Label className="text-sm font-medium text-gray-700 mb-2 block">
             Maks antall forekomster (valgfri)
           </Label>
-          <Input
+            <Input
             type="number"
             min="1"
             max="52"
-            value={localPattern.maxOccurrences || ''}
-            onChange={(e) => !disabled && handleMaxOccurrencesChange(parseInt(e.target.value) || 0)}
+              value={localPattern.maxOccurrences || ''}
+            onChange={(e) => !disabled && handleMaxOccurrencesChange(parseInt(e.target.value) || 52)}
             disabled={disabled}
-            className="w-32"
-            placeholder="52"
+              className="w-32"
+              placeholder="1"
           />
         </div>
 

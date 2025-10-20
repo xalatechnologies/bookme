@@ -31,7 +31,8 @@ import {
   Users,
   Settings,
   ChevronRight,
-  Loader2
+  Loader2,
+  Trash2
 } from "lucide-react";
 
 // Internal libraries/utilities
@@ -72,7 +73,7 @@ import type { ISelectedTimeSlot } from "@/components/booking/types";
  */
 export const Checkout = (): JSX.Element => {
   const navigate = useNavigate();
-  const { items, totalPrice, clearCart } = useCart();
+  const { items, totalPrice, clearCart, removeItem } = useCart();
   const { profile, updateProfile } = useUserProfile();
   
   // State management
@@ -380,6 +381,36 @@ export const Checkout = (): JSX.Element => {
       
       // Save cart items as pending bookings before clearing cart
       const pendingBookings = items.map(item => {
+        // Recurring: one pending booking per occurrence from cart timeSlots
+        if (item.bookingType === 'recurring' && item.timeSlots && item.timeSlots.length > 0) {
+          return item.timeSlots.map(slot => {
+            // normalize date to YYYY-MM-DD
+            const d = typeof slot.date === 'string' ? new Date(slot.date) : (slot.date as Date);
+            const bookingDate = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+
+            const hours = (slot.duration ?? 60) / 60;
+
+            return {
+              id: getNextBookingNumber().toString(),
+              facility: item.facilityName,
+              date: bookingDate,
+              time: slot.timeSlot,
+              duration: `${hours} timer`,
+              status: 'pending' as const,
+              location: 'Drammen',
+              price: `${(item.pricing?.finalPrice / (item.timeSlots.length || 1)).toLocaleString('nb-NO')} kr`,
+              description: item.purpose || 'Booking',
+              purpose: item.purpose || 'Booking',
+              participants: item.attendees || 1,
+              zone: item.zoneName || 'Hovedbasseng',
+              isRecurring: true,
+              parentBookingId: (slot as any).parentBookingId ?? `${item.facilityId}-${item.zoneId}`,
+              recurrencePattern: item.recurrencePattern,
+              bookingType: 'recurring' as const,
+              timeSlots: [slot]
+            };
+          });
+        }
         // Handle date conversion more carefully to avoid timezone issues
         let bookingDate: string;
         if (item.timeSlots && item.timeSlots.length > 0) {
@@ -442,7 +473,7 @@ export const Checkout = (): JSX.Element => {
           date: bookingDate,
           time: timeRange,
           duration: item.timeSlots && item.timeSlots.length > 0 
-            ? `${item.timeSlots.reduce((total, slot) => total + slot.duration, 0)} timer`
+            ? `${item.timeSlots.reduce((total, slot) => total + (slot.duration ?? 60), 0) / 60} timer`
             : '1 timer',
           status: 'pending' as const,
           location: 'Drammen', // This could be dynamic based on facility
@@ -460,7 +491,7 @@ export const Checkout = (): JSX.Element => {
           actorType: item.actorType,
           timeSlots: item.timeSlots // Store timeSlots for proper time calculation
         };
-      });
+       }).flat();
       
       // Save to localStorage
       const existingPending = JSON.parse(localStorage.getItem('pendingBookings') || '[]');
@@ -814,7 +845,7 @@ export const Checkout = (): JSX.Element => {
                         <MapPin className="h-4 w-4" />
                         <span>
                           {item.timeSlots && item.timeSlots.length > 0 
-                            ? `${item.timeSlots.reduce((total, slot) => total + slot.duration, 0)} timer`
+                            ? `${item.timeSlots.reduce((total, slot) => total + (slot.duration ?? 60), 0) / 60} timer`
                             : '0 timer'
                           }
                         </span>
@@ -829,6 +860,16 @@ export const Checkout = (): JSX.Element => {
                       <div className="mt-3">
                         <p className="text-sm text-gray-600">Formål:</p>
                         <p className="text-sm">{item.purpose}</p>
+                      </div>
+                    )}
+
+                    {/* Show period for recurring bookings */}
+                    {item.bookingType === "recurring" && item.timeSlots && item.timeSlots.length > 1 && (
+                      <div className="mt-3">
+                        <p className="text-sm text-gray-600">Periode:</p>
+                        <p className="text-sm">
+                          {formatDate(item.timeSlots[0].date)} – {formatDate(item.timeSlots[item.timeSlots.length - 1].date)}
+                        </p>
                       </div>
                     )}
 
@@ -1235,17 +1276,91 @@ export const Checkout = (): JSX.Element => {
                   </p>
                 </CardHeader>
                 <CardContent className="space-y-4 p-6">
-                  {/* Base Price */}
-                  <div className="flex justify-between items-center py-2">
-                    <span className="text-gray-700 font-medium">Leiepris</span>
-                    <span className="font-semibold text-lg">{pricing.basePriceWithVat.toLocaleString("nb-NO")} kr</span>
-                  </div>
+                  {/* Booking Type Breakdown */}
+                  {items.map((item, index) => (
+                    <div key={item.id} className="space-y-2">
+                      <div className="flex justify-between items-center py-2">
+                        <span className="text-gray-700 font-medium">
+                          {item.bookingType === "recurring" ? "Gjentakende" : "Enkelt"}
+                        </span>
+                        <div className="flex items-center space-x-2">
+                          <Badge variant="outline" className="text-xs">
+                            {item.facilityName}
+                          </Badge>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => removeItem(item.id)}
+                            className="h-6 w-6 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
+                          >
+                            <Trash2 className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      </div>
+                      
+                      {/* Price breakdown for this booking */}
+                      <div className="ml-4 space-y-1 text-sm">
+                        <div className="flex justify-between items-center">
+                          <span className="text-gray-600">Pris (ekskl. MVA)</span>
+                          <span className="font-medium">
+                            {(() => {
+                              // Calculate price excluding VAT for this specific item
+                              const itemPriceWithVat = item.pricing?.finalPrice || 0;
+                              const itemVatAmount = Math.round(itemPriceWithVat * 0.2); // 20% of total = 25% VAT
+                              const itemPriceExcludingVat = itemPriceWithVat - itemVatAmount;
+                              return `${itemPriceExcludingVat.toLocaleString("nb-NO")} kr`;
+                            })()}
+                          </span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-gray-600">MVA (25%)</span>
+                          <span className="font-medium">
+                            {(() => {
+                              // Calculate VAT for this specific item
+                              const itemPriceWithVat = item.pricing?.finalPrice || 0;
+                              const itemVatAmount = Math.round(itemPriceWithVat * 0.2); // 20% of total = 25% VAT
+                              return `${itemVatAmount.toLocaleString("nb-NO")} kr`;
+                            })()}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
 
-                  {/* Add-ons */}
+                  {/* Add-ons detailed breakdown */}
                   {pricing.addonPrice > 0 && (
-                    <div className="flex justify-between items-center py-2 border-l-4 border-blue-200 pl-3">
-                      <span className="text-gray-700 font-medium">Tillegg</span>
-                      <span className="font-semibold text-lg text-blue-600">+{pricing.addonPriceWithVat.toLocaleString("nb-NO")} kr</span>
+                    <div className="space-y-2 border-t pt-4">
+                      <div className="flex justify-between items-center py-2">
+                        <span className="text-gray-700 font-medium">Tillegg utstyr/tjenester</span>
+                      </div>
+                      
+                      <div className="ml-4 space-y-1 text-sm">
+                        {Object.entries(addons).map(([id, selected]) => {
+                          if (!selected) return null;
+                          const addon = availableAddons.find(a => a.id === id);
+                          if (!addon) return null;
+                          
+                          return (
+                            <div key={id} className="flex justify-between items-center">
+                              <span className="text-gray-600">{addon.name}</span>
+                              <div className="flex items-center space-x-2">
+                                <div className="text-right">
+                                  <div className="font-medium">{addon.price.toLocaleString("nb-NO")} kr (ekskl. MVA)</div>
+                                  <div className="text-xs text-gray-500">+{(addon.price * 0.25).toLocaleString("nb-NO")} kr MVA</div>
+                                </div>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => toggleAddon(id)}
+                                  className="h-6 w-6 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
+                                >
+                                  <Trash2 className="h-3 w-3" />
+                                </Button>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
                     </div>
                   )}
 

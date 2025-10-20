@@ -72,12 +72,14 @@ export const SelectedSlotsDisplay: React.FC<ISelectedSlotsDisplayProps> = ({
   /**
    * Get duration text for display
    * 
-   * @param duration - Duration in hours
+   * @param duration - Duration in minutes
    * @returns Formatted duration text
    */
   const getDurationText = (duration: number): string => {
-    if (duration === 1) return "1 time";
-    return `${duration} timer`;
+    // Convert minutes to hours
+    const hours = duration / 60;
+    if (hours === 1) return "1 time";
+    return `${hours} timer`;
   };
 
   /**

@@ -239,7 +239,7 @@ const PricingSummary: React.FC<{
   const pricing = useMemo(() => {
     const occurrences = [];
     let currentDate = new Date(startDate);
-    const maxOccurrences = 52; // 1 year max
+    const maxOccurrences = 5; // Limit to 5 occurrences
     let count = 0;
 
     while (count < maxOccurrences && (!endDate || currentDate <= endDate)) {

@@ -364,7 +364,7 @@ const UserDashboard = (): JSX.Element => {
   const markMessageAsRead = (messageId: string): void => {
     // Mark message as read in local state
     // In a real app, this would call an API
-    console.log(`Marking message ${messageId} as read`);
+    
   };
 
   const getStatusBadge = (status: IUserBooking["status"]): JSX.Element => {
@@ -447,7 +447,7 @@ const UserDashboard = (): JSX.Element => {
   const handleCancelBooking = (bookingId: string): void => {
     if (window.confirm('Er du sikker på at du vil avlyse denne bookingen?')) {
       // In a real app, this would call an API
-      console.log(`Cancelling booking ${bookingId}`);
+      
       // Show success message
       alert('Booking avlyst!');
     }

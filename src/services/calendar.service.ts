@@ -9,6 +9,10 @@ const convertBookingToEvent = (booking: {
   readonly timeSlots?: readonly { readonly date: string; readonly timeSlot: string }[];
   readonly status: string;
   readonly purpose?: string;
+  readonly facility?: string;
+  readonly facilityId?: string;
+  readonly price?: string | number;
+  readonly description?: string;
 }): IBookingEvent => {
   try {
     // Parse date - handle different formats (prioritize date over startDate)
@@ -112,6 +116,50 @@ const convertBookingToEvent = (booking: {
   }
 };
 
+// Convert recurring occurrence to calendar event
+const convertRecurringOccurrenceToEvent = (occurrence: any, parentBooking: any): IBookingEvent => {
+  try {
+    const startTime = occurrence.timeSlot.split('-')[0];
+    const endTime = occurrence.timeSlot.split('-')[1];
+    
+    const [startHour, startMinute] = startTime.split(':').map(Number);
+    const [endHour, endMinute] = endTime.split(':').map(Number);
+    
+    const startDateTime = new Date(occurrence.date);
+    startDateTime.setHours(startHour, startMinute, 0, 0);
+    
+    const endDateTime = new Date(occurrence.date);
+    endDateTime.setHours(endHour, endMinute, 0, 0);
+    
+    return {
+      id: occurrence.id,
+      facilityId: occurrence.facilityId,
+      facilityName: parentBooking.facility || parentBooking.facilityName || 'Ukjent lokale',
+      title: parentBooking.description || parentBooking.purpose || 'Gjentakende booking',
+      start: startDateTime.toISOString(),
+      end: endDateTime.toISOString(),
+      status: parentBooking.status === 'confirmed' || parentBooking.status === 'approved' ? 'confirmed' : 
+              parentBooking.status === 'pending' ? 'pending' : 
+              parentBooking.status === 'rejected' || parentBooking.status === 'cancelled' ? 'cancelled' : 'cancelled',
+      priceNok: parentBooking.pricePerHour || 0,
+      tags: ['recurring', parentBooking.facility?.toLowerCase() || 'booking']
+    };
+  } catch (error) {
+    console.error('Error converting recurring occurrence to event:', error);
+    return {
+      id: occurrence.id || 'unknown',
+      facilityId: occurrence.facilityId || 'unknown',
+      facilityName: parentBooking.facility || parentBooking.facilityName || 'Ukjent lokale',
+      title: parentBooking.description || parentBooking.purpose || 'Gjentakende booking',
+      start: new Date().toISOString(),
+      end: new Date().toISOString(),
+      status: 'cancelled' as const,
+      priceNok: 0,
+      tags: ['error']
+    };
+  }
+};
+
 export const calendarService = {
   async list(params: ICalendarQuery): Promise<readonly IBookingEvent[]> {
     // Get bookings from localStorage
@@ -121,10 +169,15 @@ export const calendarService = {
     // Combine all bookings
     const allBookings = [...pendingBookings, ...processedBookings];
     
-    // Convert to calendar events
-    const events: IBookingEvent[] = allBookings.map((booking) => {
-      return convertBookingToEvent(booking);
-    });
+    
+    // Convert bookings to calendar events
+    const events: IBookingEvent[] = [];
+    
+    for (const booking of allBookings) {
+      // Convert booking to calendar event (all bookings are now stored as individual occurrences)
+      const event = convertBookingToEvent(booking);
+      events.push(event);
+    }
     
     // Simulate API delay
     await new Promise(resolve => setTimeout(resolve, 100));

@@ -197,12 +197,7 @@ const UserProfile = (): JSX.Element => {
       // 4. Send confirmation email
       // 5. Log the deletion for audit purposes
       
-      console.log('GDPR-compliant account deletion initiated for:', profile.email);
-      console.log('Data to be deleted:');
-      console.log('- Personal information:', profile);
-      console.log('- All bookings and receipts');
-      console.log('- Favorites and preferences');
-      console.log('- Login history and security logs');
+      
       
       // Simulate API call
       setTimeout(() => {

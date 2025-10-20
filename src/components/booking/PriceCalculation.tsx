@@ -155,7 +155,9 @@ export const PriceCalculation: React.FC<IPriceCalculationProps> = ({
 
     // Calculate base price
     const basePrice = allSlots.reduce((total, slot) => {
-      return total + (slot.pricePerHour * slot.duration);
+      // Convert duration from minutes to hours for price calculation
+      const durationInHours = slot.duration / 60;
+      return total + (slot.pricePerHour * durationInHours);
     }, 0);
 
     // Apply actor type multiplier

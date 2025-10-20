@@ -2,7 +2,7 @@
 
 import React, { useState, useCallback, useMemo } from "react";
 import { ChevronLeft, ChevronRight, CheckCircle, Clock, Calendar, FileText, Shield, Users, X } from "lucide-react";
-import { startOfWeek, addWeeks, subWeeks, addDays, format, isToday, isWeekend, isPast } from "date-fns";
+import { startOfWeek, addWeeks, subWeeks, addDays, addMonths, format, isToday, isWeekend, isPast, getDay } from "date-fns";
 import { nb } from "date-fns/locale";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -85,14 +85,13 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
     bookingType: "one-time",
   });
 
-  // Booking type and recurrence state
-  const [bookingType, setBookingType] = useState<BookingType>('one-time');
+  // Recurrence state
   const [recurrencePattern, setRecurrencePattern] = useState<RecurrencePattern | null>({
     type: 'weekly',
-    weekdays: [1, 2, 3, 4, 5],
+    weekdays: [], // No default selection - user must choose
     timeSlots: ['09:00-11:00'],
     interval: 1,
-    maxOccurrences: 52
+        maxOccurrences: 5
   });
   const [recurringSlots, setRecurringSlots] = useState<ISelectedTimeSlot[]>([]);
   
@@ -191,7 +190,7 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
     ];
 
     // Add recurrence step only for recurring bookings
-    if (bookingType === 'recurring') {
+    if (formData.bookingType === 'recurring') {
       baseSteps.push({
         id: 'recurrence' as BookingStep,
         title: 'Gjentakelse',
@@ -216,7 +215,7 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
     );
 
     return baseSteps;
-  }, [bookingType]);
+  }, [formData.bookingType]);
 
   /**
    * Calculate current step index
@@ -239,7 +238,7 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
         return selectedSlots.length > 0;
       
       case 'recurrence':
-        return bookingType === 'one-time' || recurrencePattern !== null;
+        return formData.bookingType === 'one-time' || recurrencePattern !== null;
       
       case 'terms':
         return formData.termsAccepted;
@@ -250,7 +249,7 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
       default:
         return false;
     }
-  }, [formData, selectedSlots.length, recurringSlots.length, bookingType, recurrencePattern]);
+  }, [formData, selectedSlots.length, recurringSlots.length, recurrencePattern]);
 
   /**
    * Handle next step
@@ -289,7 +288,6 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
    * Handle booking type change
    */
   const handleBookingTypeChange = useCallback((type: BookingType) => {
-    setBookingType(type);
     handleFormDataUpdate({ bookingType: type });
   }, [handleFormDataUpdate]);
 
@@ -299,51 +297,156 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
   const generateRecurringSlots = useCallback((pattern: RecurrencePattern) => {
     if (!selectedSlots.length || !selectedZone) return;
     
-    const timeSlots = selectedSlots.map(slot => slot.timeSlot);
-    const startDate = selectedSlots[0].date;
+    const timeSlots = [...new Set(selectedSlots.map(slot => slot.timeSlot))];
+    const startDate = pattern.startDate || selectedSlots[0].date;
+    const maxOccurrences = Math.max(1, pattern.maxOccurrences || 5); // Allow any value >=1
+    const occurrences: ISelectedTimeSlot[] = [];
     
-    // Create a pattern with the selected time slots
-    const patternWithTimeSlots = {
-      ...pattern,
-      timeSlots: timeSlots,
-      startDate: startDate,
-      endDate: pattern.endDate
-    };
+    // Simple weekly pattern generation
+    if (pattern.type === 'weekly' || pattern.type === 'biweekly') {
+      let occurrenceCount = 0;
+      const weekIncrement = pattern.type === 'biweekly' ? 2 : 1;
+      
+      // Find the first occurrence of the target weekday
+      const targetWeekday = pattern.weekdays[0]; // Use first selected weekday
+      const startDayOfWeek = getDay(startDate);
+      let occurrenceDate = startDate;
+      
+      // If startDate is not the target weekday, find the first occurrence
+      if (startDayOfWeek !== targetWeekday) {
+        const daysToAdd = (targetWeekday - startDayOfWeek + 7) % 7;
+        occurrenceDate = addDays(startDate, daysToAdd);
+      }
+      
+      while (occurrenceCount < maxOccurrences) {
+        
+        
+        // Generate occurrences for this week
+        for (const timeSlot of timeSlots) {
+          if (occurrenceCount >= maxOccurrences) break;
+          
+          // Calculate duration from timeSlot (e.g., "20:00-21:00" = 60 minutes)
+          const [startTime, endTime] = timeSlot.split('-');
+          const startMinutes = parseInt(startTime.split(':')[0]) * 60 + parseInt(startTime.split(':')[1]);
+          const endMinutes = parseInt(endTime.split(':')[0]) * 60 + parseInt(endTime.split(':')[1]);
+          const duration = endMinutes - startMinutes;
+          
+          occurrences.push({
+            id: `${selectedZone.id}-${occurrenceDate.getTime()}-${timeSlot}-recurring-${occurrenceCount}`,
+            facilityId,
+            zoneId: selectedZone.id,
+            date: occurrenceDate,
+            timeSlot,
+            duration: duration, // Calculate actual duration from timeSlot
+            pricePerHour: selectedZone.pricePerHour || 0,
+            zoneName: selectedZone.name,
+            isRecurring: true,
+            recurrencePattern: pattern,
+            parentBookingId: selectedSlots[0].id
+          });
+          
+          occurrenceCount++;
+        }
+        
+        // Move to next week/biweekly
+        occurrenceDate = addWeeks(occurrenceDate, weekIncrement);
+      }
+    }
+    else if (pattern.type === 'monthly') {
+      // Generate on the selected weekday each month. If no weekday provided, use weekday of startDate.
+      let occurrenceCount = 0;
+      const targetWeekday = (pattern.weekdays && pattern.weekdays.length > 0)
+        ? pattern.weekdays[0]
+        : getDay(startDate);
+
+      // Start from the month of startDate
+      let monthCursor = new Date(startDate.getFullYear(), startDate.getMonth(), 1);
+
+      while (occurrenceCount < maxOccurrences) {
+        // First occurrence of targetWeekday in this month
+        const monthStartDay = getDay(monthCursor); // 0-6
+        const add = (targetWeekday - monthStartDay + 7) % 7;
+        let occ = addDays(monthCursor, add);
+
+        // Ensure the first occurrence is not before startDate for the first month
+        if (occ < startDate && monthCursor.getMonth() === startDate.getMonth() && monthCursor.getFullYear() === startDate.getFullYear()) {
+          // Take the next week's same weekday
+          occ = addDays(occ, 7);
+        }
+
+        // Add timeslots for this monthly occurrence
+        for (const timeSlot of timeSlots) {
+          if (occurrenceCount >= maxOccurrences) break;
+          const [startTime, endTime] = timeSlot.split('-');
+          const startMinutes = parseInt(startTime.split(':')[0]) * 60 + parseInt(startTime.split(':')[1]);
+          const endMinutes = parseInt(endTime.split(':')[0]) * 60 + parseInt(endTime.split(':')[1]);
+          const duration = endMinutes - startMinutes;
+          occurrences.push({
+            id: `${selectedZone.id}-${occ.getTime()}-${timeSlot}-recurring-${occurrenceCount}`,
+            facilityId,
+            zoneId: selectedZone.id,
+            date: new Date(occ),
+            timeSlot,
+            duration,
+            pricePerHour: selectedZone.pricePerHour || 0,
+            zoneName: selectedZone.name,
+            isRecurring: true,
+            recurrencePattern: pattern,
+            parentBookingId: selectedSlots[0].id
+          });
+          occurrenceCount++;
+        }
+
+        // Move to next month
+        monthCursor = addMonths(monthCursor, 1);
+      }
+    }
+    else if (pattern.type === 'custom') {
+      // Use interval as days between occurrences
+      const intervalDays = Math.max(1, pattern.interval || 1);
+      let occurrenceCount = 0;
+      let occurrenceDate = new Date(startDate);
+      while (occurrenceCount < maxOccurrences) {
+        for (const timeSlot of timeSlots) {
+          if (occurrenceCount >= maxOccurrences) break;
+          const [startTime, endTime] = timeSlot.split('-');
+          const startMinutes = parseInt(startTime.split(':')[0]) * 60 + parseInt(startTime.split(':')[1]);
+          const endMinutes = parseInt(endTime.split(':')[0]) * 60 + parseInt(endTime.split(':')[1]);
+          const duration = endMinutes - startMinutes;
+          occurrences.push({
+            id: `${selectedZone.id}-${occurrenceDate.getTime()}-${timeSlot}-recurring-${occurrenceCount}`,
+            facilityId,
+            zoneId: selectedZone.id,
+            date: new Date(occurrenceDate),
+            timeSlot,
+            duration,
+            pricePerHour: selectedZone.pricePerHour || 0,
+            zoneName: selectedZone.name,
+            isRecurring: true,
+            recurrencePattern: pattern,
+            parentBookingId: selectedSlots[0].id
+          });
+          occurrenceCount++;
+        }
+        occurrenceDate = addDays(occurrenceDate, intervalDays);
+      }
+    }
     
-    // Generate recurring occurrences
-    const generatedSlots = recurrenceEngine.generateOccurrences(
-      patternWithTimeSlots,
-      startDate,
-      selectedZone.id,
-      facilityId,
-      selectedZone.pricePerHour || 0,
-      pattern.maxOccurrences || 52
-    );
-    
-    // Convert to ISelectedTimeSlot format
-    const convertedSlots: ISelectedTimeSlot[] = generatedSlots.map(slot => ({
-      id: slot.id,
-      facilityId: slot.facilityId,
-      zoneId: slot.zoneId,
-      date: slot.date,
-      timeSlot: slot.timeSlot,
-      duration: slot.duration,
-      pricePerHour: slot.pricePerHour,
-      zoneName: selectedZone.name,
-      isRecurring: true,
-      recurrencePattern: pattern,
-      parentBookingId: selectedSlots[0].id
-    }));
-    
-    setRecurringSlots(convertedSlots);
-  }, [selectedSlots, selectedZone, facilityId, recurrenceEngine]);
+    setRecurringSlots(occurrences);
+  }, [selectedSlots, selectedZone, facilityId]);
 
   /**
    * Handle recurrence pattern change
    */
   const handleRecurrencePatternChange = useCallback((pattern: RecurrencePattern | null) => {
-    setRecurrencePattern(pattern);
-    handleFormDataUpdate({ recurrencePattern: pattern });
+    // Set startDate to the first selected slot's date if available
+    const patternWithStartDate = pattern ? {
+      ...pattern,
+      startDate: selectedSlots.length > 0 ? selectedSlots[0].date : pattern.startDate
+    } : null;
+    
+    setRecurrencePattern(patternWithStartDate);
+    handleFormDataUpdate({ recurrencePattern: patternWithStartDate });
     
     // Clear existing timeout
     if (timeoutRef.current) {
@@ -352,8 +455,20 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
     
     // Only generate recurring slots if pattern is complete and valid
     if (pattern && selectedSlots.length > 0 && selectedZone) {
-      // Check if pattern is complete enough to generate slots
-      const isPatternComplete = pattern.weekdays && pattern.weekdays.length > 0;
+      // Check if pattern is complete enough to generate slots based on type
+      const isPatternComplete = (() => {
+        switch (pattern.type) {
+          case 'weekly':
+          case 'biweekly':
+            return Array.isArray(pattern.weekdays) && pattern.weekdays.length > 0;
+          case 'monthly':
+            return (pattern.monthlyWeekday !== undefined) || (Array.isArray(pattern.weekdays) && pattern.weekdays.length > 0);
+          case 'custom':
+            return (pattern.interval !== undefined && pattern.interval > 0);
+          default:
+            return true;
+        }
+      })();
       
       if (isPatternComplete) {
         // Use setTimeout to debounce the generation
@@ -373,12 +488,43 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
    */
   const handleAddToCart = useCallback(() => {
     if (validateStep('details') && validateStep('calendar') && validateStep('terms')) {
-      // Include recurring slots in the form data
-      const formDataWithRecurring = {
-        ...formData,
-        recurringSlots: recurringSlots
-      };
-      onAddToCart(formDataWithRecurring);
+      if (formData.bookingType === 'recurring' && recurringSlots.length > 0) {
+        // For recurring bookings, create separate bookings for each occurrence
+        const recurringBookings = recurringSlots.map(slot => ({
+          ...formData,
+          id: slot.id,
+          date: slot.date.toISOString().split('T')[0],
+          timeSlots: [{
+            date: slot.date,
+            timeSlot: slot.timeSlot,
+            duration: slot.duration
+          }],
+          zoneId: slot.zoneId,
+          facilityId: slot.facilityId,
+          pricePerHour: slot.pricePerHour,
+          bookingType: 'one-time' as const, // Each occurrence is a one-time booking
+          isRecurring: true,
+          parentBookingId: slot.parentBookingId,
+          recurrencePattern: formData.recurrencePattern,
+          // Calculate individual pricing for this slot
+          individualPricing: {
+            basePrice: slot.pricePerHour * (slot.duration / 60),
+            vatRate: 0.25,
+            vatAmount: (slot.pricePerHour * (slot.duration / 60)) * 0.25,
+            finalPrice: (slot.pricePerHour * (slot.duration / 60)) * 1.25
+          }
+        }));
+        
+        // Send one booking with all recurring slots
+        onAddToCart({
+          ...formData,
+          recurringSlots: recurringSlots,
+          bookingType: 'recurring' as const
+        });
+      } else {
+        // For one-time bookings, use the original logic
+        onAddToCart(formData);
+      }
     }
   }, [formData, recurringSlots, validateStep, onAddToCart]);
 
@@ -387,12 +533,43 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
    */
   const handleCompleteBooking = useCallback(() => {
     if (validateStep('details') && validateStep('calendar') && validateStep('terms')) {
-      // Include recurring slots in the form data
-      const formDataWithRecurring = {
-        ...formData,
-        recurringSlots: recurringSlots
-      };
-      onCompleteBooking(formDataWithRecurring);
+      if (formData.bookingType === 'recurring' && recurringSlots.length > 0) {
+        // For recurring bookings, create separate bookings for each occurrence
+        const recurringBookings = recurringSlots.map(slot => ({
+          ...formData,
+          id: slot.id,
+          date: slot.date.toISOString().split('T')[0],
+          timeSlots: [{
+            date: slot.date,
+            timeSlot: slot.timeSlot,
+            duration: slot.duration
+          }],
+          zoneId: slot.zoneId,
+          facilityId: slot.facilityId,
+          pricePerHour: slot.pricePerHour,
+          bookingType: 'one-time' as const, // Each occurrence is a one-time booking
+          isRecurring: true,
+          parentBookingId: slot.parentBookingId,
+          recurrencePattern: formData.recurrencePattern,
+          // Calculate individual pricing for this slot
+          individualPricing: {
+            basePrice: slot.pricePerHour * (slot.duration / 60),
+            vatRate: 0.25,
+            vatAmount: (slot.pricePerHour * (slot.duration / 60)) * 0.25,
+            finalPrice: (slot.pricePerHour * (slot.duration / 60)) * 1.25
+          }
+        }));
+        
+        // Complete all recurring bookings
+        onCompleteBooking({
+          ...formData,
+          recurringSlots: recurringSlots,
+          bookingType: 'recurring' as const
+        });
+      } else {
+        // For one-time bookings, use the original logic
+        onCompleteBooking(formData);
+      }
     }
   }, [formData, recurringSlots, validateStep, onCompleteBooking]);
 
@@ -746,7 +923,7 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
             {/* Booking Type Selector */}
             <div className="flex gap-2">
               <BookingTypeSelector
-                selectedType={bookingType}
+                selectedType={formData.bookingType}
                 onTypeChange={handleBookingTypeChange}
               />
             </div>
@@ -841,7 +1018,7 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm font-medium text-gray-700">
                   {selectedSlots.length > 0 
-                    ? (bookingType === 'recurring' 
+                    ? (formData.bookingType === 'recurring' 
                         ? (recurringSlots.length > 0 ? "Gjentakende tidspunkter og prisberegning" : "Tidspunkter og prisberegning (velg gjentakelsesmønster)")
                         : "Valgte tidspunkter og prisberegning")
                     : "Velg tidspunkter og få en prisberegning"
@@ -854,38 +1031,55 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
                     {/* Selected Slots Display */}
                     <div className="space-y-2">
                       {/* Show selected slots (template for recurring or final for one-time) */}
-                      {selectedSlots.map((slot, index) => (
-                        <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                      {formData.bookingType === 'recurring' && recurringSlots.length > 0 ? (
+                        // For recurring bookings, show the first recurring slot as template
+                        <div className="flex items-center justify-between p-2 bg-gray-50 rounded">
                           <div className="flex-1">
-                            <div className="font-medium text-sm">{slot.timeSlot}</div>
-                            <div className="text-xs text-gray-500">{slot.zoneName}</div>
+                            <div className="font-medium text-sm">{recurringSlots[0].timeSlot}</div>
+                            <div className="text-xs text-gray-500">{recurringSlots[0].zoneName}</div>
                             <div className="text-xs text-gray-400">
-                              {new Date(slot.date).toLocaleDateString('nb-NO')}
+                              {new Date(recurringSlots[0].date).toLocaleDateString('nb-NO')}
                             </div>
-                            {bookingType === 'recurring' && (
-                              <div className="text-xs text-blue-600 font-medium">
-                                Mal for gjentakelse
-                              </div>
-                            )}
+                            <div className="text-xs text-blue-600 font-medium">
+                              Mal for gjentakelse
+                            </div>
                           </div>
                           <div className="flex items-center gap-2">
                             <Badge variant="secondary">
-                              {slot.duration} timer
+                              {recurringSlots[0].duration / 60} timer
                             </Badge>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => handleRemoveSlot(slot.id)}
-                              className="h-6 w-6 p-0 text-gray-400 hover:text-red-500 hover:bg-red-50"
-                            >
-                              <X className="h-3 w-3" />
-                            </Button>
                           </div>
                         </div>
-                      ))}
+                      ) : (
+                        // For one-time bookings, show selected slots
+                        selectedSlots.map((slot, index) => (
+                          <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                            <div className="flex-1">
+                              <div className="font-medium text-sm">{slot.timeSlot}</div>
+                              <div className="text-xs text-gray-500">{slot.zoneName}</div>
+                              <div className="text-xs text-gray-400">
+                                {new Date(slot.date).toLocaleDateString('nb-NO')}
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Badge variant="secondary">
+                                {slot.duration / 60} timer
+                              </Badge>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleRemoveSlot(slot.id)}
+                                className="h-6 w-6 p-0 text-gray-400 hover:text-red-500 hover:bg-red-50"
+                              >
+                                <X className="h-3 w-3" />
+                              </Button>
+                            </div>
+                          </div>
+                        ))
+                      )}
                       
                       {/* Show recurring slots preview for recurring bookings */}
-                      {bookingType === 'recurring' && recurringSlots.length > 0 && (
+                      {formData.bookingType === 'recurring' && recurringSlots.length > 0 && (
                         <div>
                           <div className="text-xs font-medium text-gray-600 mb-2">
                             Gjentakende forekomster ({recurringSlots.length} totalt):
@@ -901,7 +1095,7 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
                               </div>
                               <div className="flex items-center gap-2">
                                 <Badge variant="outline" className="text-xs">
-                                  {slot.duration} timer
+                                  {slot.duration / 60} timer
                                 </Badge>
                                 <Badge variant="secondary" className="text-xs">
                                   Gjentakende
@@ -939,7 +1133,7 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
                       recurringSlots={recurringSlots}
                       actorType={formData.actorType}
                       activityType={formData.activityType}
-                      bookingType={bookingType}
+                      bookingType={formData.bookingType}
                     />
                   </>
                 ) : (

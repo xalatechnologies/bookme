@@ -148,7 +148,8 @@ export const useDragSelection = () => {
               zoneId,
               date: currentDay,
               timeSlot: currentTimeSlot,
-              duration: 1,
+              // duration in minutes; each slot represents 1 time slot (1 hour)
+              duration: 60,
               pricePerHour,
             });
           }

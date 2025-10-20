@@ -221,7 +221,7 @@ const UserNotifications = (): JSX.Element => {
     try {
       // In a real app, this would call an API
       localStorage.setItem('notificationPreferences', JSON.stringify(preferences));
-      console.log('Notification preferences saved:', preferences);
+      
     } catch (error) {
       console.error('Failed to save notification preferences:', error);
     }
@@ -232,7 +232,7 @@ const UserNotifications = (): JSX.Element => {
     try {
       // In a real app, this would call an API
       localStorage.setItem('notificationTemplates', JSON.stringify(templates));
-      console.log('Notification templates saved:', templates);
+      
     } catch (error) {
       console.error('Failed to save notification templates:', error);
     }

@@ -131,7 +131,7 @@ export const SimpleCalendar: React.FC<SimpleCalendarProps> = ({
       return [];
     }
     
-    return events.filter(event => {
+    const filteredEvents = events.filter(event => {
       const eventStart = new Date(event.start);
       const year = eventStart.getFullYear();
       const month = String(eventStart.getMonth() + 1).padStart(2, '0');
@@ -139,6 +139,9 @@ export const SimpleCalendar: React.FC<SimpleCalendarProps> = ({
       const eventDate = `${year}-${month}-${day}`;
       return eventDate === dateString;
     });
+    
+    
+    return filteredEvents;
   };
 
   // Navigation functions
@@ -173,7 +176,7 @@ export const SimpleCalendar: React.FC<SimpleCalendarProps> = ({
   // Format display based on view
   const getDisplayText = () => {
     if (view === 'month') {
-      return firstDayOfMonth.toLocaleDateString('no-NO', {
+      return firstDayOfMonth.toLocaleDateString('nb-NO', {
         month: 'long',
         year: 'numeric'
       });
@@ -188,9 +191,9 @@ export const SimpleCalendar: React.FC<SimpleCalendarProps> = ({
       const endOfWeek = new Date(startOfWeek);
       endOfWeek.setDate(startOfWeek.getDate() + 6);
       
-      return `${startOfWeek.toLocaleDateString('no-NO', { day: 'numeric', month: 'short' })} - ${endOfWeek.toLocaleDateString('no-NO', { day: 'numeric', month: 'short', year: 'numeric' })}`;
+      return `${startOfWeek.toLocaleDateString('nb-NO', { day: 'numeric', month: 'short' })} - ${endOfWeek.toLocaleDateString('nb-NO', { day: 'numeric', month: 'short', year: 'numeric' })}`;
     } else if (view === 'day') {
-      return currentDate.toLocaleDateString('no-NO', {
+      return currentDate.toLocaleDateString('nb-NO', {
         weekday: 'long',
         day: 'numeric',
         month: 'long',

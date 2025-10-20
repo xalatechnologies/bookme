@@ -89,7 +89,8 @@ export const useSlotSelection = () => {
         zoneId,
         date: slotDate,
         timeSlot,
-        duration: 1,
+        // duration in minutes (e.g., 60 for 1h)
+        duration: 60,
         pricePerHour,
       };
       

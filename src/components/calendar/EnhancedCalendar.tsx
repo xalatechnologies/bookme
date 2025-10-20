@@ -19,6 +19,11 @@ interface EnhancedCalendarProps {
   readonly onEventShare?: (event: IBookingEvent) => void;
   readonly onEventAddToCalendar?: (event: IBookingEvent) => void;
   readonly className?: string;
+  // External control (optional)
+  readonly view?: 'month' | 'week' | 'day';
+  readonly onViewChange?: (view: 'month' | 'week' | 'day') => void;
+  readonly currentDate?: Date;
+  readonly onDateChange?: (date: Date) => void;
 }
 
 export const EnhancedCalendar: React.FC<EnhancedCalendarProps> = ({
@@ -29,7 +34,11 @@ export const EnhancedCalendar: React.FC<EnhancedCalendarProps> = ({
   onEventCopy,
   onEventShare,
   onEventAddToCalendar,
-  className = ''
+  className = '',
+  view: externalView,
+  onViewChange,
+  currentDate: externalCurrentDate,
+  onDateChange
 }): JSX.Element => {
   const {
     searchQuery,
@@ -52,8 +61,12 @@ export const EnhancedCalendar: React.FC<EnhancedCalendarProps> = ({
   const availableFacilities = useAvailableFacilities(events);
   const filteredEvents = useFilteredEvents(events, searchQuery, selectedFacilities, selectedStatuses);
 
-  const [view, setView] = useState<'month' | 'week' | 'day'>('month');
-  const [currentDate, setCurrentDate] = useState(new Date());
+  const [internalView, setInternalView] = useState<'month' | 'week' | 'day'>('month');
+  const [internalCurrentDate, setInternalCurrentDate] = useState(new Date());
+  const view = externalView ?? internalView;
+  const setView = onViewChange ?? setInternalView;
+  const currentDate = externalCurrentDate ?? internalCurrentDate;
+  const setCurrentDate = onDateChange ?? setInternalCurrentDate;
 
   // Auto-refresh every 5 minutes
   useEffect(() => {

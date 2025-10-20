@@ -51,7 +51,7 @@ const UserSettings = (): JSX.Element => {
       // 3. Show toast notification
       // 4. Handle errors appropriately
       
-      console.log('Settings saved:', settings);
+      
     } catch (error) {
       console.error('Failed to save settings:', error);
       alert('Kunne ikke lagre innstillinger. Prøv igjen.');
