@@ -145,7 +145,9 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
         facilityId: facility?.id || slot.facilityId,
         facilityName: facility?.name || slot.facilityName,
         zoneName: zone?.name || slot.zoneName,
-        pricePerHour: zone?.pricePerHour || slot.pricePerHour
+        pricePerHour: zone?.pricePerHour || slot.pricePerHour,
+        // Ensure duration is in minutes; default one hour
+        duration: slot.duration ?? 60
       };
     });
     

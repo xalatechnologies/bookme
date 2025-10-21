@@ -79,34 +79,98 @@ export class RecurrenceEngine {
     const occurrences: RecurringTimeSlot[] = [];
     
     // Use pattern's start date if available, otherwise use provided startDate
-    let currentDate = pattern.startDate || startDate;
+    const actualStartDate = pattern.startDate || startDate;
     const endDate = pattern.endDate;
     let count = 0;
-
-    while (count < maxOccurrences && (!endDate || currentDate <= endDate)) {
-      // Check if current date matches pattern
-      if (this.dateMatchesPattern(currentDate, pattern)) {
-        // Add all time slots for this date
-        pattern.timeSlots.forEach(timeSlot => {
-          occurrences.push({
-            id: `${zoneId}-${currentDate.getTime()}-${timeSlot}-recurring`,
-            facilityId,
-            zoneId,
-            date: new Date(currentDate),
-            timeSlot,
-            duration: this.calculateDuration(timeSlot),
-            pricePerHour,
-            isRecurring: true,
-            recurrencePattern: pattern,
-            parentBookingId: `${facilityId}-${zoneId}-${pattern.startDate?.getTime() || startDate.getTime()}`
-          });
-        });
-        count++;
-      }
-
-      // Move to next date based on pattern type
-      currentDate = this.getNextDate(currentDate, pattern);
+    
+    // Validate that we have a valid start date
+    if (!actualStartDate) {
+      console.error('RecurrenceEngine: No valid start date provided');
+      return occurrences;
     }
+    
+
+    // For weekly and biweekly patterns
+    if (pattern.type === 'weekly' || pattern.type === 'biweekly') {
+      const weekIncrement = pattern.type === 'biweekly' ? 2 : 1;
+
+      
+
+      for (const weekday of pattern.weekdays) {
+        // Find first occurrence of selected weekday on or after start date
+        let currentDate = new Date(actualStartDate);
+        const startDay = getDay(currentDate); // 0 = Sunday, 1 = Monday, etc.
+        
+        // Calculate days to add to get to the target weekday
+        let daysToAdd = weekday - startDay;
+        if (daysToAdd < 0) {
+          daysToAdd += 7; // Move to next week
+        }
+        
+        
+        
+        // Move to the first occurrence of the target weekday
+        currentDate = addDays(currentDate, daysToAdd);
+        
+        
+
+        // Generate occurrences for this weekday
+        while (count < maxOccurrences && (!endDate || currentDate <= endDate)) {
+          // Add all time slots for this date
+          pattern.timeSlots.forEach(timeSlot => {
+            if (count >= maxOccurrences) return;
+            
+            
+            
+            occurrences.push({
+              id: `${zoneId}-${currentDate.getTime()}-${timeSlot}-recurring-${count}`,
+              facilityId,
+              zoneId,
+              date: new Date(currentDate),
+              timeSlot,
+              duration: this.calculateDuration(timeSlot),
+              pricePerHour,
+              isRecurring: true,
+              recurrencePattern: pattern,
+              parentBookingId: `${facilityId}-${zoneId}-${actualStartDate.getTime()}`
+            });
+            count++;
+          });
+
+          // Move to next occurrence (next week or biweekly)
+          currentDate = addWeeks(currentDate, weekIncrement);
+        }
+      }
+    } else {
+      // For other patterns (monthly, custom)
+      let currentDate = actualStartDate;
+      
+      while (count < maxOccurrences && (!endDate || currentDate <= endDate)) {
+        // Check if current date matches pattern
+        if (this.dateMatchesPattern(currentDate, pattern)) {
+          // Add all time slots for this date
+          pattern.timeSlots.forEach(timeSlot => {
+            occurrences.push({
+              id: `${zoneId}-${currentDate.getTime()}-${timeSlot}-recurring`,
+              facilityId,
+              zoneId,
+              date: new Date(currentDate),
+              timeSlot,
+              duration: this.calculateDuration(timeSlot),
+              pricePerHour,
+              isRecurring: true,
+              recurrencePattern: pattern,
+              parentBookingId: `${facilityId}-${zoneId}-${actualStartDate.getTime()}`
+            });
+          });
+          count++;
+        }
+
+        // Move to next date based on pattern type
+        currentDate = this.getNextDate(currentDate, pattern);
+      }
+    }
+    
 
     return occurrences;
   }
@@ -119,18 +183,18 @@ export class RecurrenceEngine {
    * @returns True if date matches pattern
    */
   private dateMatchesPattern(date: Date, pattern: RecurrencePattern): boolean {
-    const dayOfWeek = getDay(date);
+    const jsDayOfWeek = getDay(date); // 0=Sunday, 1=Monday, etc.
 
     switch (pattern.type) {
       case 'single':
         return true; // Single occurrence
       case 'weekly':
       case 'biweekly':
-        return pattern.weekdays.includes(dayOfWeek);
+        return pattern.weekdays.includes(jsDayOfWeek);
       case 'monthly':
         return this.matchesMonthlyPattern(date, pattern);
       case 'custom':
-        return pattern.weekdays.includes(dayOfWeek);
+        return pattern.weekdays.includes(jsDayOfWeek);
       default:
         return false;
     }
@@ -180,11 +244,11 @@ export class RecurrenceEngine {
       case 'single':
         return addDays(currentDate, 1);
       case 'weekly':
-        return addDays(currentDate, 1);
+        return addWeeks(currentDate, 1);
       case 'biweekly':
-        return addDays(currentDate, 1);
+        return addWeeks(currentDate, 2);
       case 'monthly':
-        return addDays(currentDate, 1);
+        return addMonths(currentDate, 1);
       case 'custom':
         return addDays(currentDate, pattern.interval || 1);
       default:

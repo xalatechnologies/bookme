@@ -66,8 +66,9 @@ export const CartDropdown = ({ onClose }: CartDropdownProps): JSX.Element => {
         <div className="p-4">
           {/* Cart Items */}
           <div className="space-y-3 max-h-64 overflow-y-auto">
-            {items.map((item) => (
-              <div key={item.id} className="border rounded-lg p-3 bg-gray-50">
+            {items.map((item) => {
+              return (
+                <div key={item.id} className="border rounded-lg p-3 bg-gray-50">
                 <div className="flex items-start justify-between mb-2">
                   <div className="flex-1 min-w-0">
                     <h4 className="font-medium text-sm text-gray-900 truncate">
@@ -92,7 +93,10 @@ export const CartDropdown = ({ onClose }: CartDropdownProps): JSX.Element => {
                       <Calendar className="h-3 w-3" />
                       <span>{formatTimeSlot(slot)}</span>
                       <Clock className="h-3 w-3 ml-2" />
-                      <span>{slot.duration} timer</span>
+                      <span>{(() => {
+                        const hours = slot.duration / 60;
+                        return hours === 1 ? '1 time' : `${hours} timer`;
+                      })()}</span>
                     </div>
                   ))}
                 </div>
@@ -101,11 +105,12 @@ export const CartDropdown = ({ onClose }: CartDropdownProps): JSX.Element => {
                 <div className="mt-2 pt-2 border-t border-gray-200">
                   <div className="flex justify-between items-center text-sm">
                     <span className="text-gray-600">Pris:</span>
-                    <span className="font-medium">{item.pricing.finalPrice} kr</span>
+                    <span className="font-medium">{item.pricing.finalPrice.toLocaleString('nb-NO')} kr</span>
                   </div>
                 </div>
               </div>
-            ))}
+              );
+            })}
           </div>
 
           {/* Total and Actions */}

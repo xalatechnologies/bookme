@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -26,7 +26,8 @@ import {
   BarChart3,
   ChevronDown,
   ChevronUp,
-  Plus
+  Plus,
+  Repeat
 } from "lucide-react";
 
 interface IReceipt {
@@ -47,6 +48,15 @@ interface IReceipt {
   readonly category?: string;
   readonly mvaAmount?: number;
   readonly refundReason?: string;
+  readonly isRecurring?: boolean;
+  readonly occurrenceCount?: number;
+  readonly occurrences?: Array<{
+    readonly id: string;
+    readonly date: string;
+    readonly time: string;
+    readonly status: string;
+    readonly amount: number;
+  }>;
 }
 
 const UserReceipts = (): JSX.Element => {
@@ -58,90 +68,113 @@ const UserReceipts = (): JSX.Element => {
   const [expandedReceipt, setExpandedReceipt] = useState<string | null>(null);
   const [showReceiptDetails, setShowReceiptDetails] = useState<string | null>(null);
 
-  // Enhanced mock data
-  const receipts: readonly IReceipt[] = [
-    {
-      id: "1",
-      facility: "Drammen Idrettshall",
-      date: "2024-01-15",
-      amount: 1500,
-      status: "paid",
-      paymentMethod: "Visa •••• 1234",
-      bookingId: "BK-2024-001",
-      location: "Drammen",
-      duration: "3 timer",
-      purpose: "Fotballtrening",
-      invoiceNumber: "INV-2024-001",
-      paidAt: "2024-01-10T14:30:00Z",
-      category: "Idrett",
-      mvaAmount: 375
-    },
-    {
-      id: "2",
-      facility: "Kulturhuset",
-      date: "2024-01-20",
-      amount: 3200,
-      status: "paid",
-      paymentMethod: "Mastercard •••• 5678",
-      bookingId: "BK-2024-002",
-      location: "Drammen sentrum",
-      duration: "4 timer",
-      purpose: "Konsert",
-      invoiceNumber: "INV-2024-002",
-      paidAt: "2024-01-18T16:45:00Z",
-      category: "Kultur",
-      mvaAmount: 800
-    },
-    {
-      id: "3",
-      facility: "Møterom 1",
-      date: "2024-01-25",
-      amount: 400,
-      status: "cancelled",
-      paymentMethod: "Visa •••• 1234",
-      bookingId: "BK-2024-003",
-      location: "Drammen sentrum",
-      duration: "2 timer",
-      purpose: "Team meeting",
-      invoiceNumber: "INV-2024-003",
-      cancelledAt: "2024-01-22T10:15:00Z",
-      category: "Møterom",
-      mvaAmount: 100,
-      refundReason: "Avlyst av saksbehandler"
-    },
-    {
-      id: "4",
-      facility: "Solberghallen",
-      date: "2024-02-01",
-      amount: 800,
-      status: "pending",
-      paymentMethod: "Visa •••• 1234",
-      bookingId: "BK-2024-004",
-      location: "Drammen",
-      duration: "2 timer",
-      purpose: "Badminton",
-      invoiceNumber: "INV-2024-004",
-      category: "Idrett",
-      mvaAmount: 200
-    },
-    {
-      id: "5",
-      facility: "Spiralen Fotballbane",
-      date: "2024-01-12",
-      amount: 650,
-      status: "refunded",
-      paymentMethod: "Visa •••• 1234",
-      bookingId: "BK-2024-005",
-      location: "Drammen",
-      duration: "2 timer",
-      purpose: "Fotballtrening",
-      invoiceNumber: "INV-2024-005",
-      refundedAt: "2024-01-15T09:30:00Z",
-      category: "Idrett",
-      mvaAmount: 162.5,
-      refundReason: "Refundert 15.01.2024 – behandlet av Bookme"
+  // Get receipts from localStorage and group recurring bookings
+  const receipts: readonly IReceipt[] = useMemo(() => {
+    try {
+      const pending = JSON.parse(localStorage.getItem('pendingBookings') || '[]');
+      const processed = JSON.parse(localStorage.getItem('processedBookings') || '[]');
+      const all = [...pending, ...processed];
+      
+      // Group recurring bookings by parentBookingId or fallback key
+      const groupedRecurring = new Map();
+      const singleBookings = [];
+      
+      all.forEach((booking: any) => {
+        const parentKey = booking.parentBookingId || 
+          `${booking.facility || booking.facilityName}-${booking.purpose}-${booking.time || booking.startTime}`;
+        
+        if (booking.isRecurring || booking.bookingType === 'recurring') {
+          if (!groupedRecurring.has(parentKey)) {
+            groupedRecurring.set(parentKey, []);
+          }
+          groupedRecurring.get(parentKey).push(booking);
+        } else {
+          singleBookings.push(booking);
+        }
+      });
+      
+      // Convert single bookings to receipts format
+      const singleReceipts = singleBookings.map((booking: any, index: number) => {
+        const amount = parseFloat(booking.price?.replace(/[^\d,]/g, '').replace(',', '.') || '0');
+        const mvaAmount = amount * 0.25; // 25% MVA
+        const facilityName = booking.facility || booking.facilityName || booking.zoneName || 'Ukjent lokale';
+        
+        return {
+          id: booking.id,
+          facility: facilityName,
+          date: booking.startDate || new Date().toISOString().split('T')[0],
+          amount: amount,
+          status: booking.status === 'approved' ? 'paid' : 
+                  booking.status === 'rejected' ? 'cancelled' : 'pending',
+          paymentMethod: "Visa •••• 1234",
+          bookingId: booking.id,
+          location: facilityName,
+          duration: booking.duration || '1 time',
+          purpose: booking.purpose || 'Ikke spesifisert',
+          invoiceNumber: `INV-${new Date().getFullYear()}-${String(index + 1).padStart(3, '0')}`,
+          paidAt: booking.status === 'approved' ? new Date().toISOString() : undefined,
+          cancelledAt: booking.status === 'rejected' ? new Date().toISOString() : undefined,
+          category: facilityName.includes('Idrett') ? 'Idrett' : 
+                   facilityName.includes('Kultur') ? 'Kultur' : 'Generelt',
+          mvaAmount: mvaAmount,
+          refundReason: booking.status === 'rejected' ? 'Avvist av administrator' : undefined,
+          isRecurring: false
+        };
+      });
+      
+      // Convert recurring booking groups to receipts format
+      const recurringReceipts = Array.from(groupedRecurring.entries()).map(([parentKey, bookings], index) => {
+        const first = bookings[0];
+        const facilityName = first.facility || first.facilityName || first.zoneName || 'Ukjent lokale';
+        
+        // Calculate total amount for all occurrences
+        const totalAmount = bookings.reduce((sum, booking) => {
+          return sum + parseFloat(booking.price?.replace(/[^\d,]/g, '').replace(',', '.') || '0');
+        }, 0);
+        const mvaAmount = totalAmount * 0.25; // 25% MVA
+        
+        // Determine group status
+        const statuses = bookings.map(b => b.status);
+        const groupStatus = statuses.every(s => s === 'approved') ? 'paid' :
+                           statuses.every(s => s === 'rejected') ? 'cancelled' : 'pending';
+        
+        return {
+          id: parentKey,
+          facility: facilityName,
+          date: first.startDate || first.date || new Date().toISOString().split('T')[0],
+          amount: totalAmount,
+          status: groupStatus,
+          paymentMethod: "Visa •••• 1234",
+          bookingId: parentKey,
+          location: facilityName,
+          duration: `${bookings.length} forekomster`,
+          purpose: first.purpose || 'Ikke spesifisert',
+          invoiceNumber: `INV-${new Date().getFullYear()}-${String(index + 1).padStart(3, '0')}`,
+          paidAt: groupStatus === 'paid' ? new Date().toISOString() : undefined,
+          cancelledAt: groupStatus === 'cancelled' ? new Date().toISOString() : undefined,
+          category: facilityName.includes('Idrett') ? 'Idrett' : 
+                   facilityName.includes('Kultur') ? 'Kultur' : 'Generelt',
+          mvaAmount: mvaAmount,
+          refundReason: groupStatus === 'cancelled' ? 'Avvist av administrator' : undefined,
+          isRecurring: true,
+          occurrenceCount: bookings.length,
+          occurrences: bookings.map(booking => ({
+            id: booking.id,
+            date: booking.startDate || booking.date,
+            time: booking.startTime || booking.time,
+            status: booking.status,
+            amount: parseFloat(booking.price?.replace(/[^\d,]/g, '').replace(',', '.') || '0')
+          }))
+        };
+      });
+      
+      // Combine single and recurring receipts
+      return [...singleReceipts, ...recurringReceipts];
+    } catch (error) {
+      console.error('Error loading receipts data:', error);
+      return [];
     }
-  ];
+  }, []);
 
   const statusFilters = [
     { value: "all", label: "Alle", icon: Receipt, count: receipts.length },
@@ -233,7 +266,7 @@ const UserReceipts = (): JSX.Element => {
     );
   };
 
-  const getStatusBackgroundColor = (status: IReceipt["status"]): string => {
+  const getStatusBackgroundColor = (status: IReceipt["status"], isRecurring: boolean = false): string => {
     switch (status) {
       case "paid":
         return "bg-green-50 dark:bg-green-900/10 border-l-4 border-l-green-500";
@@ -244,7 +277,7 @@ const UserReceipts = (): JSX.Element => {
       case "refunded":
         return "bg-blue-50 dark:bg-blue-900/10 border-l-4 border-l-blue-500";
       default:
-        return "bg-gray-50 dark:bg-gray-800";
+        return "bg-gray-50 dark:bg-gray-800 border-l-4 border-l-gray-500";
     }
   };
 
@@ -428,72 +461,167 @@ BookMe - Drammen kommune
 
   const renderReceiptDetails = (receipt: IReceipt): JSX.Element => (
     <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <h4 className="font-medium text-gray-900 dark:text-white mb-2">Faktura detaljer</h4>
-          <div className="space-y-2 text-sm">
-            <div className="flex justify-between">
-              <span className="text-gray-600 dark:text-gray-400">Fakturanummer:</span>
-              <span className="text-gray-900 dark:text-white">{receipt.invoiceNumber}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600 dark:text-gray-400">Booking-ID:</span>
-              <span className="text-gray-900 dark:text-white">{receipt.bookingId}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600 dark:text-gray-400">Betalt med:</span>
-              <span className="text-gray-900 dark:text-white">{receipt.paymentMethod}</span>
-            </div>
-            {receipt.mvaAmount && (
-              <div className="flex justify-between">
-                <span className="text-gray-600 dark:text-gray-400">MVA (25%):</span>
-                <span className="text-gray-900 dark:text-white">{formatAmount(receipt.mvaAmount)}</span>
+      {receipt.isRecurring ? (
+        // Recurring booking details
+        <div className="space-y-4">
+          <div className="flex items-center gap-2 mb-4">
+            <Repeat className="h-5 w-5 text-blue-600" />
+            <h4 className="font-medium text-gray-900 dark:text-white">Gjentakende booking detaljer</h4>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <h5 className="font-medium text-gray-900 dark:text-white mb-2">Faktura detaljer</h5>
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-gray-600 dark:text-gray-400">Fakturanummer:</span>
+                  <span className="text-gray-900 dark:text-white">{receipt.invoiceNumber}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600 dark:text-gray-400">Antall forekomster:</span>
+                  <span className="text-gray-900 dark:text-white">{receipt.occurrenceCount}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600 dark:text-gray-400">Totalpris:</span>
+                  <span className="text-gray-900 dark:text-white">{formatAmount(receipt.amount)}</span>
+                </div>
+                {receipt.mvaAmount && (
+                  <div className="flex justify-between">
+                    <span className="text-gray-600 dark:text-gray-400">MVA (25%):</span>
+                    <span className="text-gray-900 dark:text-white">{formatAmount(receipt.mvaAmount)}</span>
+                  </div>
+                )}
               </div>
-            )}
-            {receipt.paidAt && (
-              <div className="flex justify-between">
-                <span className="text-gray-600 dark:text-gray-400">Betalt:</span>
-                <span className="text-gray-900 dark:text-white">
-                  {new Date(receipt.paidAt).toLocaleDateString('nb-NO')}
-                </span>
+            </div>
+            
+            <div>
+              <h5 className="font-medium text-gray-900 dark:text-white mb-2">Handlinger</h5>
+              <div className="space-y-2">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => handleDownloadReceipt(receipt.id)}
+                  className="w-full justify-start"
+                >
+                  <Download className="h-4 w-4 mr-2" />
+                  Last ned PDF
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => handleSendReceiptEmail(receipt.id)}
+                  className="w-full justify-start"
+                >
+                  <Mail className="h-4 w-4 mr-2" />
+                  Send på e-post
+                </Button>
               </div>
-            )}
+            </div>
+          </div>
+          
+          {/* Show all occurrences */}
+          <div className="mt-4">
+            <h5 className="font-medium text-gray-900 dark:text-white mb-2">Alle forekomster:</h5>
+            <div className="space-y-2">
+              {receipt.occurrences?.map((occurrence, index) => (
+                <div key={occurrence.id} className="flex items-center justify-between p-3 bg-white dark:bg-gray-700 rounded border">
+                  <div className="flex items-center gap-3">
+                    <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                      #{index + 1}
+                    </span>
+                    <div>
+                      <span className="text-sm text-gray-900 dark:text-white">
+                        {new Date(occurrence.date).toLocaleDateString('nb-NO')} kl. {occurrence.time}
+                      </span>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">
+                        {formatAmount(occurrence.amount)}
+                      </div>
+                    </div>
+                  </div>
+                  <Badge className={
+                    occurrence.status === "approved" 
+                      ? "bg-green-100 text-green-800" 
+                      : occurrence.status === "rejected"
+                      ? "bg-red-100 text-red-800"
+                      : "bg-yellow-100 text-yellow-800"
+                  }>
+                    {occurrence.status === "approved" ? "Godkjent" : 
+                     occurrence.status === "rejected" ? "Avvist" : "Ventende"}
+                  </Badge>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
-        
-        <div>
-          <h4 className="font-medium text-gray-900 dark:text-white mb-2">Handlinger</h4>
-          <div className="space-y-2">
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => handleDownloadReceipt(receipt.id)}
-              className="w-full justify-start"
-            >
-              <Download className="h-4 w-4 mr-2" />
-              Last ned PDF
-            </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => handleSendReceiptEmail(receipt.id)}
-              className="w-full justify-start"
-            >
-              <Mail className="h-4 w-4 mr-2" />
-              Send på e-post
-            </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => handleCopyInvoiceNumber(receipt.invoiceNumber)}
-              className="w-full justify-start"
-            >
-              <Copy className="h-4 w-4 mr-2" />
-              Kopier fakturanummer
-            </Button>
+      ) : (
+        // Single booking details
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <h4 className="font-medium text-gray-900 dark:text-white mb-2">Faktura detaljer</h4>
+            <div className="space-y-2 text-sm">
+              <div className="flex justify-between">
+                <span className="text-gray-600 dark:text-gray-400">Fakturanummer:</span>
+                <span className="text-gray-900 dark:text-white">{receipt.invoiceNumber}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-600 dark:text-gray-400">Booking-ID:</span>
+                <span className="text-gray-900 dark:text-white">{receipt.bookingId}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-600 dark:text-gray-400">Betalt med:</span>
+                <span className="text-gray-900 dark:text-white">{receipt.paymentMethod}</span>
+              </div>
+              {receipt.mvaAmount && (
+                <div className="flex justify-between">
+                  <span className="text-gray-600 dark:text-gray-400">MVA (25%):</span>
+                  <span className="text-gray-900 dark:text-white">{formatAmount(receipt.mvaAmount)}</span>
+                </div>
+              )}
+              {receipt.paidAt && (
+                <div className="flex justify-between">
+                  <span className="text-gray-600 dark:text-gray-400">Betalt:</span>
+                  <span className="text-gray-900 dark:text-white">
+                    {new Date(receipt.paidAt).toLocaleDateString('nb-NO')}
+                  </span>
+                </div>
+              )}
+            </div>
+          </div>
+          
+          <div>
+            <h4 className="font-medium text-gray-900 dark:text-white mb-2">Handlinger</h4>
+            <div className="space-y-2">
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => handleDownloadReceipt(receipt.id)}
+                className="w-full justify-start"
+              >
+                <Download className="h-4 w-4 mr-2" />
+                Last ned PDF
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => handleSendReceiptEmail(receipt.id)}
+                className="w-full justify-start"
+              >
+                <Mail className="h-4 w-4 mr-2" />
+                Send på e-post
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => handleCopyInvoiceNumber(receipt.invoiceNumber)}
+                className="w-full justify-start"
+              >
+                <Copy className="h-4 w-4 mr-2" />
+                Kopier fakturanummer
+              </Button>
+            </div>
           </div>
         </div>
-      </div>
+      )}
       
       {receipt.refundReason && (
         <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
@@ -700,23 +828,34 @@ BookMe - Drammen kommune
           filteredAndSortedReceipts.map((receipt) => (
             <Card 
               key={receipt.id} 
-              className={`hover:shadow-lg transition-all duration-200 cursor-pointer ${getStatusBackgroundColor(receipt.status)}`}
+              className={`hover:shadow-lg transition-all duration-200 cursor-pointer ${getStatusBackgroundColor(receipt.status, receipt.isRecurring)}`}
               onClick={() => setExpandedReceipt(expandedReceipt === receipt.id ? null : receipt.id)}
             >
               <CardContent className="p-6">
                 <div className="flex items-start justify-between">
                   <div className="flex items-start space-x-4 flex-1">
                     {/* Status Icon */}
-                    <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/20 rounded-lg flex items-center justify-center">
-                      <Receipt className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                    <div className={`w-12 h-12 ${receipt.isRecurring ? 'bg-blue-100 dark:bg-blue-900/20' : 'bg-green-100 dark:bg-green-900/20'} rounded-lg flex items-center justify-center`}>
+                      {receipt.isRecurring ? (
+                        <Repeat className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                      ) : (
+                        <Receipt className="h-6 w-6 text-green-600 dark:text-green-400" />
+                      )}
                     </div>
                     
                     <div className="flex-1">
                       {/* Header: Title + Status */}
                       <div className="flex items-start justify-between mb-2">
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                          {receipt.facility}
-                        </h3>
+                        <div className="flex items-center gap-2">
+                          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                            {receipt.facility}
+                          </h3>
+                          {receipt.isRecurring && (
+                            <Badge variant="outline" className="text-blue-600 border-blue-200">
+                              {receipt.occurrenceCount} forekomster
+                            </Badge>
+                          )}
+                        </div>
                         {getStatusBadge(receipt.status)}
                       </div>
                       

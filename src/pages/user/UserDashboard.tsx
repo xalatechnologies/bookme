@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -124,17 +124,43 @@ const UserDashboard = (): JSX.Element => {
   // Get facilities from store
   const { getPublishedFacilities } = useFacilityStore();
 
-  // Mock user data
-  const user = {
-    name: "Amin",
-    totalBookings: 3,
-    monthlyBookingLimit: 5,
-    nextBooking: {
-      facility: "Drammen Idrettshall",
-      date: "20.01",
-      time: "14:00"
+  // Get user data from localStorage
+  const user = useMemo(() => {
+    try {
+      const pending = JSON.parse(localStorage.getItem('pendingBookings') || '[]');
+      const processed = JSON.parse(localStorage.getItem('processedBookings') || '[]');
+      const all = [...pending, ...processed];
+      
+      // Find next upcoming booking
+      const upcomingBookings = all
+        .filter((booking: any) => {
+          const bookingDate = new Date(booking.startDate);
+          return bookingDate >= new Date() && booking.status === 'approved';
+        })
+        .sort((a: any, b: any) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime());
+      
+      const nextBooking = upcomingBookings[0];
+      
+      return {
+        name: "Amin", // Could be from user profile context
+        totalBookings: all.length,
+        monthlyBookingLimit: 5,
+        nextBooking: nextBooking ? {
+          facility: nextBooking.facilityName || 'Ukjent lokale',
+          date: new Date(nextBooking.startDate).toLocaleDateString('nb-NO', { day: '2-digit', month: '2-digit' }),
+          time: nextBooking.startTime || '14:00'
+        } : null
+      };
+    } catch (error) {
+      console.error('Error loading user data:', error);
+      return {
+        name: "Amin",
+        totalBookings: 0,
+        monthlyBookingLimit: 5,
+        nextBooking: null
+      };
     }
-  };
+  }, []);
 
   // Mock weather data
   useEffect(() => {
@@ -182,57 +208,42 @@ const UserDashboard = (): JSX.Element => {
     }
   ];
 
-  // Mock data
-  const userBookings: readonly IUserBooking[] = [
-    {
-      id: "1",
-      facility: "Drammen Idrettshall",
-      date: "2024-01-20",
-      time: "14:00",
-      duration: "2 timer",
-      status: "confirmed",
-      location: "Drammen",
-      price: "1000 kr",
-      purpose: "Fotballtrening",
-      participants: ["Amin", "Erik", "Lars", "Maria"],
-      qrCode: "QR123456",
-      cancellationPolicy: "Avbestilling mulig 24 timer før",
-      contactInfo: {
-        phone: "+47 123 45 678",
-        email: "admin@drammen.no"
-      }
-    },
-    {
-      id: "2",
-      facility: "Solberghallen",
-      date: "2024-01-22",
-      time: "10:00",
-      duration: "1 time",
-      status: "pending",
-      location: "Drammen",
-      price: "500 kr",
-      purpose: "Badminton",
-      participants: ["Amin", "Sofia"],
-      cancellationPolicy: "Avbestilling mulig 12 timer før",
-      contactInfo: {
-        phone: "+47 987 65 432",
-        email: "booking@solberg.no"
-      }
-    },
-    {
-      id: "3",
-      facility: "Kulturhuset",
-      date: "2024-01-18",
-      time: "16:00",
-      duration: "3 timer",
-      status: "cancelled",
-      location: "Drammen",
-      price: "1500 kr",
-      purpose: "Konsert",
-      participants: ["Amin", "Bandet"],
-      cancellationPolicy: "Avbestilling mulig 48 timer før"
+  // Get recent bookings from localStorage
+  const userBookings: readonly IUserBooking[] = useMemo(() => {
+    try {
+      const pending = JSON.parse(localStorage.getItem('pendingBookings') || '[]');
+      const processed = JSON.parse(localStorage.getItem('processedBookings') || '[]');
+      const all = [...pending, ...processed];
+      
+      // Get recent bookings (last 3)
+      const recentBookings = all
+        .sort((a: any, b: any) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime())
+        .slice(0, 3);
+      
+      return recentBookings.map((booking: any) => ({
+        id: booking.id,
+        facility: booking.facilityName || 'Ukjent lokale',
+        date: booking.startDate || new Date().toISOString().split('T')[0],
+        time: booking.startTime || '14:00',
+        duration: booking.duration || '1 time',
+        status: booking.status === 'approved' ? 'confirmed' : 
+                booking.status === 'rejected' ? 'cancelled' : 'pending',
+        location: booking.facilityName || 'Ukjent lokale',
+        price: booking.price || '0 kr',
+        purpose: booking.purpose || 'Ikke spesifisert',
+        participants: ["Amin"], // Default participant
+        qrCode: `QR${booking.id.slice(-6)}`,
+        cancellationPolicy: "Avbestilling mulig 24 timer før",
+        contactInfo: {
+          phone: "+47 123 45 678",
+          email: "admin@drammen.no"
+        }
+      }));
+    } catch (error) {
+      console.error('Error loading recent bookings:', error);
+      return [];
     }
-  ];
+  }, []);
 
   /**
    * Get recommended facilities from store (first 3 published facilities)
@@ -364,7 +375,7 @@ const UserDashboard = (): JSX.Element => {
   const markMessageAsRead = (messageId: string): void => {
     // Mark message as read in local state
     // In a real app, this would call an API
-    console.log(`Marking message ${messageId} as read`);
+    
   };
 
   const getStatusBadge = (status: IUserBooking["status"]): JSX.Element => {
@@ -447,7 +458,7 @@ const UserDashboard = (): JSX.Element => {
   const handleCancelBooking = (bookingId: string): void => {
     if (window.confirm('Er du sikker på at du vil avlyse denne bookingen?')) {
       // In a real app, this would call an API
-      console.log(`Cancelling booking ${bookingId}`);
+      
       // Show success message
       alert('Booking avlyst!');
     }
@@ -532,7 +543,10 @@ END:VCALENDAR`;
               </div>
 
               <p className="text-sm text-blue-600 dark:text-blue-400">
-                Neste booking: {user.nextBooking.facility} – {user.nextBooking.date} kl. {user.nextBooking.time}
+                {user.nextBooking ? 
+                  `Neste booking: ${user.nextBooking.facility} – ${user.nextBooking.date} kl. ${user.nextBooking.time}` :
+                  'Ingen kommende bookinger'
+                }
               </p>
             </div>
             <div className="ml-6">

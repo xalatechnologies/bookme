@@ -2,27 +2,84 @@
 
 import React, { useMemo, useState } from "react";
 import { EnhancedCalendar } from "@/components/calendar/EnhancedCalendar";
-import { useCalendarEvents } from "@/hooks/useCalendarEvents";
-import { startOfMonth, endOfMonth } from "date-fns";
+import { startOfMonth, endOfMonth, startOfWeek, endOfWeek, startOfDay, endOfDay } from "date-fns";
 import type { IBookingEvent } from "@/types/calendar";
 
 export default function CalendarPage(): JSX.Element {
   const [selectedEvent, setSelectedEvent] = useState<IBookingEvent | null>(null);
+  const [view, setView] = useState<'month'|'week'|'day'>('month');
+  const [currentDate, setCurrentDate] = useState<Date>(new Date());
 
   const range = useMemo(() => {
-    const now = new Date();
+    if (view === 'week') {
+      return {
+        from: startOfWeek(currentDate, { weekStartsOn: 1 }).toISOString(),
+        to: endOfWeek(currentDate, { weekStartsOn: 1 }).toISOString(),
+      };
+    }
+    if (view === 'day') {
+      return {
+        from: startOfDay(currentDate).toISOString(),
+        to: endOfDay(currentDate).toISOString(),
+      };
+    }
+    // month default
     return {
-      from: startOfMonth(now).toISOString(),
-      to: endOfMonth(now).toISOString()
+      from: startOfMonth(currentDate).toISOString(),
+      to: endOfMonth(currentDate).toISOString(),
     };
-  }, []);
+  }, [view, currentDate]);
 
   const query = useMemo(() => ({
     from: range.from,
     to: range.to
   }), [range]);
 
-  const { data = [], isLoading } = useCalendarEvents(query);
+  // Build calendar events directly from the same data-kilde as "Mine bookinger"
+  const data: IBookingEvent[] = useMemo(() => {
+    try {
+      const pending = JSON.parse(localStorage.getItem('pendingBookings') || '[]');
+      const processed = JSON.parse(localStorage.getItem('processedBookings') || '[]');
+      const all = [...pending, ...processed];
+      const events: IBookingEvent[] = all.map((b: any) => {
+        // b.date === 'YYYY-MM-DD', b.time === 'HH:MM-HH:MM'
+        const [startH, startM] = (b.time?.split('-')[0] || '09:00').split(':').map((n: string) => parseInt(n, 10));
+        const [endH, endM] = (b.time?.split('-')[1] || '10:00').split(':').map((n: string) => parseInt(n, 10));
+        const [y, m, d] = (b.date || '').split('-').map((n: string) => parseInt(n, 10));
+        const start = new Date(y, (m || 1) - 1, d || 1, startH, startM, 0, 0);
+        const end = new Date(y, (m || 1) - 1, d || 1, endH, endM, 0, 0);
+        // Map status correctly to match user bookings page
+        let mappedStatus = b.status || 'pending';
+        if (mappedStatus === 'approved') {
+          mappedStatus = 'confirmed';
+        } else if (mappedStatus === 'rejected') {
+          mappedStatus = 'rejected';
+        } else if (mappedStatus === 'cancelled') {
+          mappedStatus = 'cancelled';
+        }
+        
+        return {
+          id: b.id,
+          title: b.purpose || 'Booking',
+          facilityName: b.facility || b.facilityName,
+          start: start.toISOString(),
+          end: end.toISOString(),
+          status: mappedStatus,
+          // Behold original pris-tekst for korrekt format i modal
+          meta: { priceText: b.price },
+        } as unknown as IBookingEvent;
+      });
+      // Filter by current view range (simple month range for nå)
+      const from = new Date(query.from);
+      const to = new Date(query.to);
+      return events.filter(e => {
+        const s = new Date(e.start);
+        return s >= from && s <= to;
+      });
+    } catch {
+      return [] as IBookingEvent[];
+    }
+  }, [query]);
 
   const handleEventClick = (event: IBookingEvent): void => {
     setSelectedEvent(event);
@@ -51,13 +108,7 @@ export default function CalendarPage(): JSX.Element {
   };
 
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-gray-600 dark:text-gray-400">Laster kalender...</div>
-      </div>
-    );
-  }
+  // Ingen eksplisitt lastestatus – vi leser direkte fra localStorage
 
   return (
     <>
@@ -70,6 +121,10 @@ export default function CalendarPage(): JSX.Element {
         onEventShare={handleEventShare}
         onEventAddToCalendar={handleEventAddToCalendar}
         className="w-full"
+        view={view}
+        onViewChange={setView}
+        currentDate={currentDate}
+        onDateChange={setCurrentDate}
       />
 
       {/* Event Details Modal */}
@@ -100,7 +155,7 @@ export default function CalendarPage(): JSX.Element {
                 <div className="flex justify-between">
                   <span className="text-gray-600 dark:text-gray-400">Dato:</span>
                   <span className="text-gray-900 dark:text-white">
-                    {new Date(selectedEvent.start).toLocaleDateString("nb-NO")}
+                    {new Date(selectedEvent.start).toLocaleDateString("nb-NO", { day: '2-digit', month: '2-digit', year: 'numeric' })}
                   </span>
                 </div>
                 
@@ -129,11 +184,11 @@ export default function CalendarPage(): JSX.Element {
                   </span>
                 </div>
                 
-                {selectedEvent.priceNok && selectedEvent.priceNok > 0 && (
+                {((selectedEvent as any).meta?.priceText) && (
                   <div className="flex justify-between">
                     <span className="text-gray-600 dark:text-gray-400">Pris:</span>
                     <span className="text-gray-900 dark:text-white font-medium">
-                      {selectedEvent.priceNok} kr
+                      {(selectedEvent as any).meta?.priceText}
                     </span>
                   </div>
                 )}

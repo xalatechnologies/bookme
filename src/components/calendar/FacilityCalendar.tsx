@@ -93,8 +93,7 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
   // State for selected zone
   const [selectedZoneId, setSelectedZoneId] = useState(zones?.[0]?.id || "");
   
-  // State for booking type and recurrence
-  const [bookingType, setBookingType] = useState<BookingType>('one-time');
+  // State for recurrence
   const [recurrencePattern, setRecurrencePattern] = useState<RecurrencePattern | null>({
     type: 'weekly',
     weekdays: [1, 2, 3, 4, 5],
@@ -342,13 +341,19 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
           updatedSlots.splice(existingIndex, 1);
         } else {
           // Add slot
+          // Calculate duration in minutes from timeSlot (e.g., "08:00-09:00" = 60 minutes)
+          const [startTime, endTime] = timeSlot.split('-');
+          const startMinutes = parseInt(startTime.split(':')[0]) * 60 + parseInt(startTime.split(':')[1]);
+          const endMinutes = parseInt(endTime.split(':')[0]) * 60 + parseInt(endTime.split(':')[1]);
+          const duration = endMinutes - startMinutes;
+          
           const newSlot: ISelectedTimeSlot = {
             id: `${facilityId}-${zoneId}-${date.toISOString().split('T')[0]}-${timeSlot}`,
             facilityId,
             zoneId,
             date,
             timeSlot,
-            duration: 1,
+            duration: duration, // Duration in minutes
             pricePerHour: selectedZone?.pricePerHour || 0,
           };
           updatedSlots.push(newSlot);
@@ -432,8 +437,10 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
     readonly vatAmount: number;
     readonly finalPrice: number;
   } => {
+    // slot.duration is stored in minutes; convert to hours for pricing
     const basePrice = slots.reduce((total, slot) => {
-      return total + (slot.pricePerHour * slot.duration);
+      const durationHours = (slot.duration ?? 60) / 60;
+      return total + (slot.pricePerHour * durationHours);
     }, 0);
     
     const vatRate = 0.25;
@@ -452,6 +459,8 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
     readonly activityType: string;
     readonly additionalInfo: string;
     readonly actorType: string;
+    readonly bookingType: BookingType;
+    readonly recurrencePattern?: RecurrencePattern | null;
   }, pricing: {
     readonly basePrice: number;
     readonly vatRate: number;
@@ -479,6 +488,11 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
   } => {
     if (!selectedZone) throw new Error("No zone selected");
     
+    // Use recurrencePattern from bookingData if available, otherwise use the component state
+    const patternToUse = bookingData.recurrencePattern !== undefined 
+      ? bookingData.recurrencePattern 
+      : recurrencePattern;
+    
     return {
       facilityId,
       facilityName,
@@ -490,8 +504,8 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
       activityType: bookingData.activityType,
       additionalInfo: bookingData.additionalInfo,
       actorType: bookingData.actorType,
-      bookingType: bookingType,
-      recurrencePattern: recurrencePattern,
+      bookingType: bookingData.bookingType,
+      recurrencePattern: patternToUse,
       pricing: {
         basePrice: pricing.basePrice,
         totalPrice: pricing.basePrice,
@@ -500,7 +514,7 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
       },
       status: 'pending' as const, // Set status to pending for new bookings
     };
-  }, [selectedZone, facilityId, facilityName, bookingType, recurrencePattern]);
+  }, [selectedZone, facilityId, facilityName, recurrencePattern]);
 
   /**
    * Handle add to cart
@@ -513,6 +527,8 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
     readonly activityType: string;
     readonly additionalInfo: string;
     readonly actorType: string;
+    readonly bookingType: BookingType;
+    readonly recurrencePattern?: RecurrencePattern | null;
     readonly recurringSlots?: readonly ISelectedTimeSlot[];
   }): void => {
     try {
@@ -523,6 +539,7 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
         ? bookingData.recurringSlots 
         : allSelectedSlots;
       
+      // For recurring bookings, calculate pricing for all slots
       const pricing = calculatePricing(slotsToUse);
       const cartItem = createCartItem(bookingData, pricing, slotsToUse);
       
@@ -534,7 +551,7 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
       const errorMessage = error instanceof Error ? error.message : "En feil oppstod ved lagring";
       toast.error(`Kunne ikke legge til i kurv: ${errorMessage}`);
     }
-  }, [selectedZone, allSelectedSlots, calculatePricing, createCartItem, addItem, clearSelection, clearRecurringSlots]);
+  }, [selectedZone, allSelectedSlots, calculatePricing, createCartItem, addItem, clearSelection, clearRecurringSlots, recurrencePattern]);
 
   /**
    * Handle booking type change
@@ -542,8 +559,6 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
    * @param type - New booking type
    */
   const handleBookingTypeChange = useCallback((type: BookingType): void => {
-    setBookingType(type);
-    
     // Clear recurring slots when switching to one-time
     if (type === 'one-time') {
       clearRecurringSlots();
@@ -586,93 +601,33 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
     readonly activityType: string;
     readonly additionalInfo: string;
     readonly actorType: string;
+    readonly bookingType: BookingType;
+    readonly recurrencePattern?: RecurrencePattern | null;
     readonly recurringSlots?: readonly ISelectedTimeSlot[];
   }): void => {
-    // Use recurring slots if available, otherwise use selected slots
-    const slotsToUse = bookingData.recurringSlots && bookingData.recurringSlots.length > 0 
-      ? bookingData.recurringSlots 
-      : allSelectedSlots;
-
-    if (!selectedZone || slotsToUse.length === 0) {
-      toast.error("Ingen tidspunkter valgt for booking.");
-      return;
+    try {
+      if (!selectedZone) return;
+      
+      // Use recurring slots if available, otherwise use selected slots
+      const slotsToUse = bookingData.recurringSlots && bookingData.recurringSlots.length > 0 
+        ? bookingData.recurringSlots 
+        : allSelectedSlots;
+      
+      // For recurring bookings, calculate pricing for all slots
+      const pricing = calculatePricing(slotsToUse);
+      const cartItem = createCartItem(bookingData, pricing, slotsToUse);
+      
+      addItem(cartItem);
+      clearSelection();
+      clearRecurringSlots();
+      toast.success("Booking lagt til i kurven!");
+      
+      // Navigate to checkout using React Router
+      navigate("/checkout");
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "En feil oppstod ved lagring";
+      toast.error(`Kunne ikke fullføre booking: ${errorMessage}`);
     }
-
-    // Calculate pricing like in handleAddToCart
-    const basePrice = slotsToUse.reduce((total, slot) => {
-      return total + (slot.pricePerHour * slot.duration);
-    }, 0);
-
-    // Apply actor type multiplier
-    const getActorMultiplier = (actorType: string): number => {
-      switch (actorType) {
-        case "private-person":
-          return 1.0;
-        case "lag-foreninger":
-          return 0.8;
-        case "paraply":
-          return 0.7;
-        case "private-firma":
-          return 1.2;
-        case "kommunale-enheter":
-          return 0.5;
-        default:
-          return 1.0;
-      }
-    };
-
-    // Apply activity type adjustments
-    const getActivityAdjustment = (activityType: string): number => {
-      switch (activityType) {
-        case "kultur":
-          return -50;
-        case "møte":
-          return 100;
-        case "arrangement":
-          return 200;
-        default:
-          return 0;
-      }
-    };
-
-    const actorMultiplier = getActorMultiplier(bookingData.actorType);
-    const adjustedPrice = basePrice * actorMultiplier;
-    const activityAdjustment = getActivityAdjustment(bookingData.activityType);
-    const finalBasePrice = adjustedPrice + activityAdjustment;
-    const vatAmount = finalBasePrice * 0.25;
-    const finalPrice = finalBasePrice + vatAmount;
-
-    // Add to cart with calculated pricing
-    const cartItem = {
-      facilityId,
-      facilityName,
-      zoneId: selectedZone.id,
-      zoneName: selectedZone.name,
-      timeSlots: allSelectedSlots,
-      purpose: bookingData.purpose,
-      attendees: bookingData.attendees,
-      activityType: bookingData.activityType,
-      additionalInfo: bookingData.additionalInfo,
-      actorType: bookingData.actorType,
-      pricing: {
-        basePrice: finalBasePrice,
-        totalPrice: finalBasePrice,
-        vatAmount: vatAmount,
-        finalPrice: finalPrice,
-        breakdown: [],
-        requiresApproval: false,
-      },
-      bookingType: bookingType,
-      recurrencePattern: recurrencePattern,
-      status: 'pending' as const, // Set status to pending for new bookings
-    };
-    
-    addItem(cartItem);
-    clearSelection();
-    toast.success("Booking lagt i handlekurv!");
-    
-    // Navigate to checkout using React Router
-    navigate("/checkout");
   };
 
   if (isLoading) {
@@ -782,7 +737,7 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
                 {/* Booking Type Selector - Moved to top right */}
                 <div className="flex gap-2">
                   <BookingTypeSelector
-                    selectedType={bookingType}
+                    selectedType="one-time"
                     onTypeChange={handleBookingTypeChange}
                   />
                 </div>
@@ -840,7 +795,7 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
             <div className="lg:col-span-2">
               <div className="sticky top-20 h-[calc(100vh-8rem)] overflow-y-auto space-y-4">
                 {/* Recurrence Pattern Selector (only for recurring bookings) */}
-                {bookingType === 'recurring' && (
+                {false && (
                   <RecurrencePatternSelector
                     pattern={recurrencePattern}
                     onPatternChange={handleRecurrencePatternChange}

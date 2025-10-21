@@ -21,6 +21,7 @@ import {
   Plus,
   Search,
   Share2,
+  Share,
   Star,
   ChevronDown,
   ChevronUp,
@@ -150,45 +151,47 @@ const Bookings = (): JSX.Element => {
         readonly additionalInfo?: string;
         readonly createdAt: string;
       }) => {
-        // Calculate proper time range from timeSlots if available
+        // Prefer explicit time coming from Checkout; otherwise derive from a single slot
         let bookingTime: string;
-        if (booking.timeSlots && booking.timeSlots.length > 0) {
-          // Calculate time range from multiple time slots
-          const sortedSlots = [...booking.timeSlots].sort((a: { readonly timeSlot: string }, b: { readonly timeSlot: string }) => {
-            const timeA = a.timeSlot.split('-')[0];
-            const timeB = b.timeSlot.split('-')[0];
-            return timeA.localeCompare(timeB);
-          });
-          const startTime = sortedSlots[0].timeSlot.split('-')[0];
-          const lastSlot = sortedSlots[sortedSlots.length - 1];
-          const endTime = lastSlot.timeSlot.split('-')[1];
-          bookingTime = `${startTime}-${endTime}`;
-        } else if (booking.time) {
-          // If no timeSlots but has time, try to calculate from duration
-          const timeParts = booking.time.split('-');
-          if (timeParts.length === 2 && booking.duration) {
-            const startTime = timeParts[0];
-            const duration = parseInt(booking.duration.replace(/\D/g, ''));
-            if (duration > 1) {
-              // Calculate end time based on duration
-              const [hours, minutes] = startTime.split(':').map(Number);
-              const endTime = new Date();
-              endTime.setHours(hours + duration, minutes, 0, 0);
-              const endTimeStr = endTime.toTimeString().slice(0, 5);
-              bookingTime = `${startTime}-${endTimeStr}`;
-            } else {
-              bookingTime = booking.time;
-            }
+        if (booking.time && booking.time.trim().length > 0) {
+          bookingTime = booking.time;
+        } else if (booking.timeSlots && booking.timeSlots.length > 0) {
+          if (booking.timeSlots.length === 1) {
+            bookingTime = booking.timeSlots[0].timeSlot;
           } else {
-            bookingTime = booking.time;
+            const sortedSlots = [...booking.timeSlots].sort((a: { readonly timeSlot: string }, b: { readonly timeSlot: string }) => {
+              const timeA = a.timeSlot.split('-')[0];
+              const timeB = b.timeSlot.split('-')[0];
+              return timeA.localeCompare(timeB);
+            });
+            const startTime = sortedSlots[0].timeSlot.split('-')[0];
+            const lastSlot = sortedSlots[sortedSlots.length - 1];
+            const endTime = lastSlot.timeSlot.split('-')[1];
+            bookingTime = `${startTime}-${endTime}`;
           }
         } else {
-          bookingTime = '10:00-12:00';
+          bookingTime = '20:00-21:00';
+        }
+
+        // Normalize duration to hours text
+        let durationText: string | undefined = (booking as any).duration as any;
+        if (!durationText) {
+          if (booking.timeSlots && booking.timeSlots.length > 0) {
+            const totalMinutes = booking.timeSlots.reduce((sum: number, s: any) => sum + (s as any).duration ?? 60, 0 as number);
+            const hours = totalMinutes / 60;
+            durationText = hours === 1 ? '1 time' : `${hours} timer`;
+          } else {
+            durationText = '1 time';
+          }
+        } else if (typeof (durationText as unknown) === 'number') {
+          const hours = (durationText as unknown as number) / 60;
+          durationText = hours === 1 ? '1 time' : `${hours} timer`;
         }
 
         return {
           ...booking,
-          time: bookingTime
+          time: bookingTime,
+          duration: durationText
         };
       });
     } catch {
@@ -216,76 +219,48 @@ const Bookings = (): JSX.Element => {
         readonly date?: string;
         readonly startDate?: string;
       }) => {
-        // Handle date more carefully - prioritize date over startDate
-        let bookingDate: string;
-        if (booking.date) {
-          bookingDate = booking.date;
-        } else if (booking.startDate) {
-          bookingDate = booking.startDate;
-        } else {
-          // Fallback to today's date using local components
-          const today = new Date();
-          const year = today.getFullYear();
-          const month = String(today.getMonth() + 1).padStart(2, '0');
-          const day = String(today.getDate()).padStart(2, '0');
-          bookingDate = `${year}-${month}-${day}`;
-        }
+        // Always trust data coming from Checkout/localStorage; do not recompute
+        const today = new Date();
+        const fallbackDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+        const bookingDate = booking.date ?? booking.startDate ?? fallbackDate;
 
-        // Handle time more carefully - calculate proper time range
-        let bookingTime: string;
-        if (booking.timeSlots && booking.timeSlots.length > 0) {
-          // Calculate time range from multiple time slots
-          const sortedSlots = [...booking.timeSlots].sort((a: { readonly timeSlot: string }, b: { readonly timeSlot: string }) => {
-            const timeA = a.timeSlot.split('-')[0];
-            const timeB = b.timeSlot.split('-')[0];
-            return timeA.localeCompare(timeB);
-          });
-          const startTime = sortedSlots[0].timeSlot.split('-')[0];
-          const lastSlot = sortedSlots[sortedSlots.length - 1];
-          const endTime = lastSlot.timeSlot.split('-')[1];
-          bookingTime = `${startTime}-${endTime}`;
-        } else if (booking.startTime && booking.endTime) {
-          bookingTime = `${booking.startTime}-${booking.endTime}`;
-        } else if (booking.time) {
-          // If no timeSlots but has time, try to calculate from duration
-          const timeParts = booking.time.split('-');
-          if (timeParts.length === 2 && booking.duration) {
-            const startTime = timeParts[0];
-            const duration = parseInt(booking.duration.replace(/\D/g, ''));
-            if (duration > 1) {
-              // Calculate end time based on duration
-              const [hours, minutes] = startTime.split(':').map(Number);
-              const endTime = new Date();
-              endTime.setHours(hours + duration, minutes, 0, 0);
-              const endTimeStr = endTime.toTimeString().slice(0, 5);
-              bookingTime = `${startTime}-${endTimeStr}`;
-            } else {
-              bookingTime = booking.time;
-            }
+        const bookingTime = booking.time
+          ?? (booking.timeSlots && booking.timeSlots.length > 0 ? booking.timeSlots[0].timeSlot : '20:00-21:00');
+
+        // Normalize duration: prefer stored duration; else derive from slots; fallback 1 time
+        let durationText: string | undefined = (booking as any).duration as any;
+        if (!durationText) {
+          if (booking.timeSlots && booking.timeSlots.length > 0) {
+            const totalMinutes = booking.timeSlots.reduce((sum: number, s: any) => sum + ((s as any).duration ?? 60), 0);
+            const hours = totalMinutes / 60;
+            durationText = hours === 1 ? '1 time' : `${hours} timer`;
           } else {
-            bookingTime = booking.time;
+            durationText = '1 time';
           }
-        } else {
-          bookingTime = '10:00-12:00';
+        } else if (typeof (durationText as unknown) === 'number') {
+          const hours = (durationText as unknown as number) / 60;
+          durationText = hours === 1 ? '1 time' : `${hours} timer`;
         }
 
         return {
           id: booking.id,
-          facility: booking.facility,
+          facility: (booking as any).facility ?? (booking as any).facilityName,
           date: bookingDate,
           time: bookingTime,
-          duration: booking.duration ? `${booking.duration} timer` : '2 timer',
+          duration: durationText,
           status: booking.status === 'approved' ? 'confirmed' : booking.status === 'rejected' ? 'rejected' : 'cancelled',
-          location: 'Drammen', // This could be dynamic
-          price: booking.price ? `${booking.price.toLocaleString('nb-NO')} kr` : '0 kr',
+          location: 'Drammen',
+          price: (booking as any).price || '0 kr',
           description: booking.purpose || 'Booking',
           purpose: booking.purpose,
-          contactPerson: booking.bookerName || 'Ukjent',
+          contactPerson: (booking as any).bookerName || 'Ukjent',
           paymentStatus: booking.status === 'approved' ? 'paid' : 'pending',
           facilityImage: undefined,
           rejectionReason: booking.status === 'rejected' ? 'Avvist av administrator' : undefined,
-          createdAt: booking.requestedAt || new Date().toISOString(),
-          updatedAt: booking.processedAt || new Date().toISOString()
+          createdAt: (booking as any).requestedAt || new Date().toISOString(),
+          updatedAt: (booking as any).processedAt || new Date().toISOString(),
+          isRecurring: (booking as any).isRecurring,
+          parentBookingId: (booking as any).parentBookingId
         };
       });
     } catch {
@@ -398,6 +373,25 @@ const Bookings = (): JSX.Element => {
     return filtered;
   }, [allBookings, activeStatus, searchQuery, dateFrom, dateTo, selectedFacility, selectedStatuses, sortBy]);
 
+  // Group recurring bookings by parentBookingId for display (keep grouped even when confirmed)
+  const { groupedRecurring, singletonBookings } = useMemo(() => {
+    const groups = new Map<string, IBooking[]>();
+    const singles: IBooking[] = [];
+    for (const b of filteredBookings) {
+      const recurring = ((b as any).isRecurring || (b as any).parentBookingId) && (b as any).parentBookingId;
+      if (recurring) {
+        const key = String((b as any).parentBookingId);
+        if (!groups.has(key)) groups.set(key, []);
+        groups.get(key)!.push(b);
+      } else {
+        singles.push(b);
+      }
+    }
+    return { groupedRecurring: groups, singletonBookings: singles };
+  }, [filteredBookings]);
+
+  const [showRecurringGroupId, setShowRecurringGroupId] = useState<string | null>(null);
+
   const handleStatusChange = useCallback((status: string) => {
     setActiveStatus(status);
     setSelectedStatuses(status === "all" ? ["all"] : [status]);
@@ -409,6 +403,20 @@ const Bookings = (): JSX.Element => {
         ? prev.filter(id => id !== bookingId)
         : [...prev, bookingId]
     );
+  }, []);
+
+  const handleRecurringGroupSelect = useCallback((groupId: string, items: IBooking[]) => {
+    const itemIds = items.map(item => item.id);
+    setSelectedBookings(prev => {
+      const hasAllItems = itemIds.every(id => prev.includes(id));
+      if (hasAllItems) {
+        // Remove all items from this group
+        return prev.filter(id => !itemIds.includes(id));
+      } else {
+        // Add all items from this group
+        return [...prev, ...itemIds.filter(id => !prev.includes(id))];
+      }
+    });
   }, []);
 
   const handleSelectAll = useCallback(() => {
@@ -434,6 +442,11 @@ const Bookings = (): JSX.Element => {
     const pendingBookings = getPendingBookings();
     const updatedPending = pendingBookings.filter(booking => !bookingsToDelete.includes(booking.id));
     localStorage.setItem('pendingBookings', JSON.stringify(updatedPending));
+    
+    // Remove bookings from localStorage (for processed bookings)
+    const processedBookings = JSON.parse(localStorage.getItem('processedBookings') || '[]');
+    const updatedProcessed = processedBookings.filter((booking: any) => !bookingsToDelete.includes(booking.id));
+    localStorage.setItem('processedBookings', JSON.stringify(updatedProcessed));
     
     // Clear selected bookings
     setSelectedBookings([]);
@@ -696,22 +709,6 @@ END:VCALENDAR`;
             <Plus className="w-4 h-4" />
             Ny booking
           </Button>
-          <Button 
-            variant="outline"
-            onClick={() => setShowRecurringModal(true)}
-            className="flex items-center gap-2"
-          >
-            <Repeat className="w-4 h-4" />
-            Gjentakende
-          </Button>
-          <Button 
-            variant="outline"
-            onClick={() => setShowGroupBookingModal(true)}
-            className="flex items-center gap-2"
-          >
-            <Users className="w-4 h-4" />
-            Gruppe
-          </Button>
         </div>
       </header>
 
@@ -801,7 +798,7 @@ END:VCALENDAR`;
               <Button
                 variant="outline"
                 onClick={handleClearFilters}
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 h-10 px-4"
               >
                 <X className="w-4 h-4" />
                 Tøm filtre
@@ -809,7 +806,7 @@ END:VCALENDAR`;
               <Button
                 variant="outline"
                 onClick={() => navigate('/user/calendar')}
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 h-10 px-4"
               >
                 <Calendar className="w-4 h-4" />
                 Åpne i kalender
@@ -855,7 +852,7 @@ END:VCALENDAR`;
         </div>
       </div>
 
-      {/* Results */}
+      {/* Results with grouped recurring bookings */}
       <div className="space-y-4">
         {filteredBookings.length === 0 ? (
           <Card>
@@ -873,38 +870,134 @@ END:VCALENDAR`;
             </CardContent>
           </Card>
         ) : (
-          filteredBookings.map((booking) => (
-            <Card key={booking.id} className="relative">
-              <div className={`absolute left-0 top-0 bottom-0 w-1 ${getStatusColor(booking.status)}`} />
-              
-              <CardContent className="p-4">
-                <div className="flex items-start justify-between">
-                  <div className="flex items-start gap-4 flex-1">
-                    <Checkbox
-                      checked={selectedBookings.includes(booking.id)}
-                      onCheckedChange={() => handleBookingSelect(booking.id)}
-                      className="mt-1"
-                    />
-                    
-                    <div className="flex-1">
-                      <div className="flex items-start justify-between mb-2">
-                        <div>
-                          <h3 className="font-semibold text-gray-900">
-                            {booking.facility}
-                          </h3>
-                          <p className="text-sm text-gray-600">
-                            {booking.description}
-                          </p>
+          <>
+            {/* Grouped recurring */}
+          {[...groupedRecurring.entries()].map(([groupId, items]) => {
+            const first = items[0];
+            const title = first.facility ?? 'Gjentakende booking';
+            const times = (() => {
+              const t = (first as any).time ?? ((first as any).timeSlots?.[0]?.timeSlot ?? '');
+              return t || '20:00-21:00';
+            })();
+            const dates = items
+              .map(i => i.date)
+              .sort();
+            const period = `${new Date(dates[0]).toLocaleDateString('nb-NO')} – ${new Date(dates[dates.length-1]).toLocaleDateString('nb-NO')}`;
+            
+            // Determine group status based on individual items
+            const uniqueStatuses = Array.from(new Set(items.map(i => i.status)));
+            let groupStatus = 'pending';
+            if (uniqueStatuses.length === 1) {
+              groupStatus = uniqueStatuses[0];
+            } else if (uniqueStatuses.includes('confirmed')) {
+              groupStatus = 'confirmed';
+            }
+            
+            return (
+              <div key={`group-${groupId}`} className="flex items-start gap-4">
+                <div onClick={(e) => e.stopPropagation()}>
+                  <Checkbox
+                  checked={(() => {
+                    const itemIds = items.map(item => item.id);
+                    const hasAllItems = itemIds.every(id => selectedBookings.includes(id));
+                    return hasAllItems;
+                  })()}
+                  onCheckedChange={(checked) => {
+                    handleRecurringGroupSelect(groupId, items);
+                  }}
+                  className="mt-1"
+                />
+                </div>
+                
+                <Card className="relative cursor-pointer flex-1" onClick={() => setShowRecurringGroupId(groupId)}>
+                  <div className={`absolute left-0 top-0 bottom-0 w-1 ${getStatusColor(groupStatus)}`} />
+                  <CardContent className="p-4">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between mb-1">
+                          <h3 className="font-semibold text-gray-900">{title} – Gjentakende</h3>
+                          <Badge className={getStatusBadgeColor(groupStatus)}>{getStatusLabel(groupStatus)}</Badge>
                         </div>
+                        <div className="text-sm text-gray-600">
+                          <div className="flex flex-wrap gap-4">
+                            <span>{times}</span>
+                            <span>{items.length} forekomster</span>
+                            <span>Periode: {period}</span>
+                          </div>
+                        </div>
+                      </div>
+                    <div className="flex items-center gap-2 ml-4">
+                      <Button
+                        variant="default"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setShowRecurringGroupId(groupId);
+                        }}
+                        className="flex items-center justify-center p-2"
+                        title="Vis detaljer"
+                      >
+                        <Eye className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          // Handle delete for recurring booking group
+                          const groupItems = items;
+                          const bookingIds = groupItems.map(item => item.id);
+                          setBookingsToDelete(bookingIds);
+                          setShowDeleteConfirm(true);
+                        }}
+                        className="flex items-center justify-center p-2 text-red-600 hover:text-red-700 hover:bg-red-50"
+                        title="Slett"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            );
+          })}
+
+          {/* Non-recurring or standalone bookings */}
+          {singletonBookings.map((booking) => (
+            <div key={booking.id} className="flex items-start gap-4">
+              <div onClick={(e) => e.stopPropagation()}>
+                <Checkbox
+                checked={selectedBookings.includes(booking.id)}
+                onCheckedChange={(checked) => {
+                  handleBookingSelect(booking.id);
+                }}
+                className="mt-1"
+              />
+              </div>
+              
+              <Card className="relative cursor-pointer flex-1" onClick={() => {
+                setSelectedBooking(booking);
+                setShowDetailsPanel(true);
+              }}>
+                <div className={`absolute left-0 top-0 bottom-0 w-1 ${getStatusColor(booking.status)}`} />
+                
+                <CardContent className="p-4">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between mb-1">
+                        <h3 className="font-semibold text-gray-900">
+                          {booking.facility}
+                        </h3>
                         <Badge className={getStatusBadgeColor(booking.status)}>
                           {getStatusLabel(booking.status)}
                         </Badge>
                       </div>
                       
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-gray-600">
-                        <div className="flex items-center gap-2">
-                          <Calendar className="w-4 h-4" />
-                          {(() => {
+                      <div className="text-sm text-gray-600">
+                        <div className="flex flex-wrap gap-4">
+                          <span>{booking.time} ({booking.duration})</span>
+                          <span>{(() => {
                             // Handle date display more carefully to avoid timezone issues
                             if (booking.date.match(/^\d{4}-\d{2}-\d{2}$/)) {
                               // If it's a YYYY-MM-DD string, parse it as local date
@@ -915,50 +1008,51 @@ END:VCALENDAR`;
                               // Fallback to original method
                               return new Date(booking.date).toLocaleDateString('nb-NO');
                             }
-                          })()}
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Clock className="w-4 h-4" />
-                          {booking.time} ({booking.duration})
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <MapPin className="w-4 h-4" />
-                          {booking.location}
-                        </div>
-                        <div className="font-medium text-gray-900">
-                          {booking.price}
+                          })()}</span>
+                          <span>{booking.location}</span>
+                          <span className="font-medium text-gray-900">{booking.price}</span>
                         </div>
                       </div>
                     </div>
+                    
+                    <div className="flex items-center gap-2 ml-4">
+                      {getActionButtons(booking).map((action, index) => (
+                        <Button
+                          key={index}
+                          variant={action.primary ? "default" : "outline"}
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            action.onClick();
+                          }}
+                          className={`flex items-center justify-center p-2 ${
+                            action.label === "Slett" ? "text-red-600 hover:text-red-700 hover:bg-red-50" : ""
+                          }`}
+                          title={action.label}
+                        >
+                          <action.icon className="w-4 h-4" />
+                        </Button>
+                      ))}
+                    </div>
                   </div>
-                  
-                  <div className="flex items-center gap-2 ml-4">
-                    {getActionButtons(booking).map((action, index) => (
-                      <Button
-                        key={index}
-                        variant={action.primary ? "default" : "outline"}
-                        size="sm"
-                        onClick={action.onClick}
-                        className={`flex items-center justify-center p-2 ${
-                          action.label === "Slett" ? "text-red-600 hover:text-red-700 hover:bg-red-50" : ""
-                        }`}
-                        title={action.label}
-                      >
-                        <action.icon className="w-4 h-4" />
-                      </Button>
-                    ))}
-                  </div>
-                </div>
               </CardContent>
             </Card>
-          ))
+          </div>
+        ))}
+          </>
         )}
       </div>
 
       {/* Details Panel */}
       {showDetailsPanel && selectedBooking && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-end">
-          <div className="w-full max-w-lg bg-white h-full overflow-y-auto">
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center"
+          onClick={handleCloseDetails}
+        >
+          <div 
+            className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[75vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="p-6">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl font-semibold">Bookingdetaljer</h2>
@@ -1034,29 +1128,9 @@ END:VCALENDAR`;
                 <div className="pt-4 border-t">
                   <h4 className="font-medium text-gray-900 mb-3">Handlinger</h4>
                   
-                  {/* Basic actions */}
-                  <div className="mb-4">
-                    <h5 className="text-sm font-medium text-gray-700 mb-2">Grunnleggende</h5>
-                    <div className="grid grid-cols-2 gap-2">
-                      {getActionButtons(selectedBooking).map((action, index) => (
-                        <Button
-                          key={index}
-                          variant={action.primary ? "default" : "outline"}
-                          size="sm"
-                          onClick={action.onClick}
-                          className="flex items-center justify-center gap-1 text-xs"
-                        >
-                          <action.icon className="w-3 h-3" />
-                          <span className="truncate">{action.label}</span>
-                        </Button>
-                      ))}
-                    </div>
-                  </div>
-
                   {/* Additional actions */}
                   {getAdditionalActions(selectedBooking).length > 0 && (
                     <div>
-                      <h5 className="text-sm font-medium text-gray-700 mb-2">Ekstra handlinger</h5>
                       <div className="grid grid-cols-2 gap-2">
                         {getAdditionalActions(selectedBooking).map((action, index) => (
                           <Button
@@ -1076,6 +1150,180 @@ END:VCALENDAR`;
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Recurring Group Modal */}
+      {showRecurringGroupId && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center"
+          onClick={() => setShowRecurringGroupId(null)}
+        >
+          <div 
+            className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[75vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            {(() => {
+              try {
+                if (!showRecurringGroupId || !groupedRecurring.has(showRecurringGroupId)) {
+                  return (
+                    <div className="p-6 text-center">
+                      <p className="text-gray-500">Bookinggruppe ikke funnet</p>
+                      <Button variant="outline" onClick={() => setShowRecurringGroupId(null)} className="mt-4">
+                        Lukk
+                      </Button>
+                    </div>
+                  );
+                }
+                
+                const items = [...(groupedRecurring.get(showRecurringGroupId) || [])].sort((a,b)=> a.date.localeCompare(b.date));
+                
+                // Safety check - if no items, return empty
+                if (items.length === 0) {
+                  return (
+                    <div className="p-6 text-center">
+                      <p className="text-gray-500">Ingen bookinger funnet</p>
+                      <Button variant="outline" onClick={() => setShowRecurringGroupId(null)} className="mt-4">
+                        Lukk
+                      </Button>
+                    </div>
+                  );
+                }
+              
+              const first = items[0];
+              const last = items[items.length - 1];
+              const title = first?.facility ?? 'Gjentakende booking';
+              const timeStr = (first as any)?.time ?? ((first as any)?.timeSlots?.[0]?.timeSlot ?? '');
+              const period = first && last ? `${new Date(first.date).toLocaleDateString('nb-NO')} – ${new Date(last.date).toLocaleDateString('nb-NO')}` : 'Ukjent periode';
+              const sumGross = items.reduce((sum, it) => {
+                const raw = String((it as any).price ?? '').replace(/[^0-9,\.]/g, '').replace(',', '.');
+                const val = parseFloat(raw) || 0;
+                return sum + val;
+              }, 0);
+              const base = sumGross / 1.25;
+              const vat = sumGross - base;
+              const fmt = (n: number) => new Intl.NumberFormat('nb-NO', { style: 'currency', currency: 'NOK' }).format(n);
+              return (
+                <>
+                  <div className="p-4 border-b flex items-center justify-between">
+                    <div>
+                      <h2 className="text-lg font-semibold">{title}</h2>
+                      <div className="text-sm text-gray-600 mt-1 flex flex-wrap gap-4">
+                        <span>Tid: {timeStr || '20:00-21:00'}</span>
+                        <span>Forekomster: {items.length}</span>
+                        <span>Periode: {period}</span>
+                      </div>
+                    </div>
+                    {/* Close button fjernet i header for å unngå duplikat */}
+                  </div>
+                  {/* Body */}
+                  <div className="p-4 max-h-[70vh] overflow-y-auto">
+                    <div className="grid grid-cols-12 px-3 py-2 text-xs font-medium text-gray-500">
+                      <div className="col-span-5 md:col-span-6">Dato</div>
+                      <div className="col-span-4 md:col-span-4">Tid</div>
+                      <div className="col-span-3 md:col-span-2 text-right">Pris</div>
+                    </div>
+                    <div className="divide-y rounded-md border">
+                      {items.map(it => (
+                        <div key={it.id} className="grid grid-cols-12 items-center px-3 py-3 text-sm">
+                          <div className="col-span-5 md:col-span-6 flex items-center gap-2 text-gray-800">
+                            <Calendar className="w-4 h-4 text-gray-500" />
+                            <span>{new Date(it.date).toLocaleDateString('nb-NO')}</span>
+                          </div>
+                          <div className="col-span-4 md:col-span-4 flex items-center gap-2 text-gray-800">
+                            <Clock className="w-4 h-4 text-gray-500" />
+                            <span>{(it as any).time ?? ((it as any).timeSlots?.[0]?.timeSlot ?? '20:00-21:00')}</span>
+                          </div>
+                          <div className="col-span-3 md:col-span-2 text-right font-medium">{it.price}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  {/* Extra actions for recurring bookings */}
+                  <div className="p-4 border-t">
+                    <h4 className="font-medium text-gray-900 mb-3">Handlinger</h4>
+                    <div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            // Handle change time for recurring booking
+                            console.log('Endre tidspunkt for gjentakende booking');
+                          }}
+                          className="flex items-center justify-center gap-1 text-xs"
+                        >
+                          <Edit className="w-3 h-3" />
+                          <span className="truncate">Endre tidspunkt</span>
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            // Handle cancel recurring booking
+                            console.log('Avlys gjentakende booking');
+                          }}
+                          className="flex items-center justify-center gap-1 text-xs"
+                        >
+                          <X className="w-3 h-3" />
+                          <span className="truncate">Avlys</span>
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            // Handle share recurring booking
+                            console.log('Del gjentakende booking');
+                          }}
+                          className="flex items-center justify-center gap-1 text-xs"
+                        >
+                          <Share className="w-3 h-3" />
+                          <span className="truncate">Del</span>
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            // Handle add to calendar for recurring booking
+                            console.log('Legg til i kalender for gjentakende booking');
+                          }}
+                          className="flex items-center justify-center gap-1 text-xs"
+                        >
+                          <Calendar className="w-3 h-3" />
+                          <span className="truncate">Legg til i kalender</span>
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Footer */}
+                  <div className="p-4 border-t flex items-center justify-between">
+                    <div className="text-sm text-gray-700 space-y-0.5">
+                      <div>Grunnpris: <span className="font-medium">{fmt(base)}</span></div>
+                      <div>MVA (25%): <span className="font-medium">{fmt(vat)}</span></div>
+                      <div className="font-semibold">Total inkl. MVA: <span>{fmt(sumGross)}</span></div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Button variant="outline" onClick={() => setShowRecurringGroupId(null)}>Lukk</Button>
+                    </div>
+                  </div>
+                </>
+              );
+              } catch (error) {
+                console.error('Error in recurring booking modal:', error);
+                return (
+                  <div className="p-6 text-center">
+                    <p className="text-red-500">En feil oppstod ved visning av bookingdetaljer</p>
+                    <Button variant="outline" onClick={() => setShowRecurringGroupId(null)} className="mt-4">
+                      Lukk
+                    </Button>
+                  </div>
+                );
+              }
+            })()}
           </div>
         </div>
       )}
