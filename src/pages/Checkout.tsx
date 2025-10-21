@@ -92,11 +92,10 @@ export const Checkout = (): JSX.Element => {
   
   // Collapsible sections state
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
-    userInfo: false,
-    bookingDetails: false,
+    userInfo: true,
+    bookingDetails: true,
     addons: false,
-    paymentMethods: false,
-    consents: false
+    paymentMethods: true
   });
   
   // Booking details editing state
@@ -392,7 +391,7 @@ export const Checkout = (): JSX.Element => {
 
             return {
               id: getNextBookingNumber().toString(),
-              facility: item.facilityName,
+        facility: item.facilityName,
               date: bookingDate,
               time: slot.timeSlot,
               duration: hours === 1 ? '1 time' : `${hours} timer`,
@@ -472,25 +471,25 @@ export const Checkout = (): JSX.Element => {
           facility: item.facilityName,
           date: bookingDate,
           time: timeRange,
-          duration: item.timeSlots && item.timeSlots.length > 0 
+        duration: item.timeSlots && item.timeSlots.length > 0 
             ? (() => {
                 const totalHours = item.timeSlots.reduce((total, slot) => total + (slot.duration ?? 60), 0) / 60;
                 return totalHours === 1 ? '1 time' : `${totalHours} timer`;
               })()
             : '1 time',
-          status: 'pending' as const,
-          location: 'Drammen', // This could be dynamic based on facility
-          price: `${item.pricing.finalPrice.toLocaleString('nb-NO')} kr`,
-          description: item.purpose || 'Booking',
-          purpose: item.purpose || 'Booking',
-          contactPerson: 'Hamid Rahmani', // This should come from user profile
-          paymentStatus: 'pending' as const,
-          type: 'booking' as const,
-          submittedAt: new Date().toISOString(),
-          bookingType: item.bookingType,
-          zoneName: item.zoneName,
-          attendees: item.attendees,
-          activityType: item.activityType,
+        status: 'pending' as const,
+        location: 'Drammen', // This could be dynamic based on facility
+        price: `${item.pricing.finalPrice.toLocaleString('nb-NO')} kr`,
+        description: item.purpose || 'Booking',
+        purpose: item.purpose || 'Booking',
+        contactPerson: 'Hamid Rahmani', // This should come from user profile
+        paymentStatus: 'pending' as const,
+        type: 'booking' as const,
+        submittedAt: new Date().toISOString(),
+        bookingType: item.bookingType,
+        zoneName: item.zoneName,
+        attendees: item.attendees,
+        activityType: item.activityType,
           actorType: item.actorType,
           timeSlots: item.timeSlots // Store timeSlots for proper time calculation
         };
@@ -543,64 +542,42 @@ export const Checkout = (): JSX.Element => {
         {/* Enhanced Step Indicator */}
         <div className="mb-8">
           <div className="bg-white rounded-xl shadow-sm border p-6">
-            <div className="flex items-center justify-center space-x-8">
-              <div className="flex items-center">
+          <div className="flex items-center justify-center space-x-8">
+            <div className="flex items-center">
                 <div className="w-10 h-10 bg-green-600 text-white rounded-full flex items-center justify-center text-sm font-bold shadow-lg">
                   <CheckCircle className="h-5 w-5" />
-                </div>
+              </div>
                 <div className="ml-3">
                   <span className="text-sm font-semibold text-green-600">Velg detaljer</span>
                   <p className="text-xs text-gray-500">Fullført</p>
-                </div>
+            </div>
               </div>
               <div className="w-20 h-1 bg-green-200 rounded-full relative">
                 <div className="w-full h-full bg-green-600 rounded-full"></div>
               </div>
-              <div className="flex items-center">
+            <div className="flex items-center">
                 <div className="w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold shadow-lg">
-                  2
-                </div>
+                2
+              </div>
                 <div className="ml-3">
                   <span className="text-sm font-semibold text-blue-600">Betaling</span>
                   <p className="text-xs text-gray-500">Aktivt trinn</p>
-                </div>
+            </div>
               </div>
               <div className="w-20 h-1 bg-gray-200 rounded-full"></div>
-              <div className="flex items-center">
+            <div className="flex items-center">
                 <div className="w-10 h-10 bg-gray-200 text-gray-400 rounded-full flex items-center justify-center text-sm font-bold">
-                  3
-                </div>
+                3
+              </div>
                 <div className="ml-3">
                   <span className="text-sm font-semibold text-gray-400">Kvittering</span>
                   <p className="text-xs text-gray-400">Neste</p>
-                </div>
-              </div>
             </div>
+          </div>
+        </div>
           </div>
         </div>
 
-        {/* Enhanced Security Notice */}
-        <div className="mb-6">
-          <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-            <div className="flex items-center justify-center space-x-6">
-              <div className="flex items-center text-green-700">
-                <Shield className="h-5 w-5 mr-2" />
-                <span className="text-sm font-medium">SSL-kryptert</span>
-              </div>
-              <div className="flex items-center text-green-700">
-                <Lock className="h-5 w-5 mr-2" />
-                <span className="text-sm font-medium">Sikker betaling</span>
-              </div>
-              <div className="flex items-center text-green-700">
-                <Star className="h-5 w-5 mr-2" />
-                <span className="text-sm font-medium">Stripe/PCI DSS</span>
-              </div>
-            </div>
-            <p className="text-center text-xs text-green-600 mt-2">
-              Kortdata lagres ikke hos BookMe. Alle betalinger er kryptert og sikre.
-            </p>
-          </div>
-        </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left Column: Main Content */}
@@ -618,30 +595,30 @@ export const Checkout = (): JSX.Element => {
                         expandedSections.userInfo ? 'rotate-90' : ''
                       }`} 
                     />
-                    <div>
-                      <CardTitle className="text-lg">Dine opplysninger</CardTitle>
-                      <p className="text-sm text-gray-600 mt-1">
-                        Kontrollér at opplysningene er riktige
-                      </p>
-                    </div>
+                  <div>
+                    <CardTitle className="text-lg">Dine opplysninger</CardTitle>
+                    <p className="text-sm text-gray-600 mt-1">
+                      Kontrollér at opplysningene er riktige
+                    </p>
+                  </div>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
+                  <Button
+                    variant="outline"
+                    size="sm"
                       onClick={(e) => {
                         e.stopPropagation();
                         setEditingInfo(!editingInfo);
                       }}
-                    >
-                      <Edit3 className="h-4 w-4 mr-2" />
-                      {editingInfo ? 'Ferdig' : 'Endre'}
-                    </Button>
+                  >
+                    <Edit3 className="h-4 w-4 mr-2" />
+                    {editingInfo ? 'Ferdig' : 'Endre'}
+                  </Button>
                   </div>
                 </div>
               </CardHeader>
               {expandedSections.userInfo && (
-                <CardContent className="space-y-4">
+              <CardContent className="space-y-4">
                 {editingInfo ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
@@ -706,7 +683,7 @@ export const Checkout = (): JSX.Element => {
                     </div>
                   </div>
                 )}
-                </CardContent>
+              </CardContent>
               )}
             </Card>
 
@@ -723,12 +700,12 @@ export const Checkout = (): JSX.Element => {
                         expandedSections.bookingDetails ? 'rotate-90' : ''
                       }`} 
                     />
-                    <div>
-                      <CardTitle className="text-lg">Bookingdetaljer</CardTitle>
-                      <p className="text-sm text-gray-600 mt-1">
-                        Kontrollér dato, tid og deltakere
-                      </p>
-                    </div>
+                  <div>
+                    <CardTitle className="text-lg">Bookingdetaljer</CardTitle>
+                    <p className="text-sm text-gray-600 mt-1">
+                      Kontrollér dato, tid og deltakere
+                    </p>
+                  </div>
                   </div>
                   <Button 
                     variant="outline" 
@@ -744,7 +721,7 @@ export const Checkout = (): JSX.Element => {
                 </div>
               </CardHeader>
               {expandedSections.bookingDetails && (
-                <CardContent className="space-y-4">
+              <CardContent className="space-y-4">
                 {editingBookingDetails ? (
                   <div className="space-y-4">
                     <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
@@ -813,17 +790,17 @@ export const Checkout = (): JSX.Element => {
                   </div>
                 ) : (
                   <>
-                    {items.map((item, index) => (
-                      <div key={item.id} className="border rounded-lg p-4">
-                        <div className="flex justify-between items-start mb-3">
-                          <div>
-                            <h3 className="font-semibold text-lg">{item.facilityName}</h3>
-                            <p className="text-sm text-gray-600">{item.zoneName}</p>
-                          </div>
-                          <Badge variant="outline">
-                            {item.bookingType === "recurring" ? "Gjentakende" : "Enkelt"}
-                          </Badge>
-                        </div>
+                {items.map((item, index) => (
+                  <div key={item.id} className="border rounded-lg p-4">
+                    <div className="flex justify-between items-start mb-3">
+                      <div>
+                        <h3 className="font-semibold text-lg">{item.facilityName}</h3>
+                        <p className="text-sm text-gray-600">{item.zoneName}</p>
+                      </div>
+                      <Badge variant="outline">
+                        {item.bookingType === "recurring" ? "Gjentakende" : "Enkelt"}
+                      </Badge>
+                    </div>
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
                       <div className="flex items-center gap-2 text-sm text-gray-600">
@@ -893,84 +870,7 @@ export const Checkout = (): JSX.Element => {
                 ))}
                   </>
                 )}
-                </CardContent>
-              )}
-            </Card>
-
-            {/* Enhanced Add-ons */}
-            <Card>
-              <CardHeader 
-                className="cursor-pointer hover:bg-gray-50 transition-colors"
-                onClick={() => toggleSection('addons')}
-              >
-                <div className="flex items-center">
-                  <ChevronRight 
-                    className={`h-5 w-5 mr-3 text-gray-500 transition-transform duration-200 ${
-                      expandedSections.addons ? 'rotate-90' : ''
-                    }`} 
-                  />
-                  <div>
-                    <CardTitle className="text-lg flex items-center">
-                      <Plus className="h-5 w-5 mr-2 text-blue-600" />
-                      Tillegg
-                    </CardTitle>
-                    <p className="text-sm text-gray-600 mt-1">
-                      Legg til ekstra tjenester for din booking
-                    </p>
-                  </div>
-                </div>
-              </CardHeader>
-              {expandedSections.addons && (
-                <CardContent className="space-y-4">
-                {availableAddons.map((addon) => {
-                  const IconComponent = addon.icon;
-                  const isSelected = addons[addon.id] || false;
-                  
-                  return (
-                    <div 
-                      key={addon.id} 
-                      className={`flex items-center justify-between p-4 border-2 rounded-xl transition-all duration-200 ${
-                        isSelected 
-                          ? 'border-blue-500 bg-blue-50 shadow-md' 
-                          : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
-                      }`}
-                    >
-                      <div className="flex items-center space-x-4">
-                        <Checkbox
-                          id={addon.id}
-                          checked={isSelected}
-                          onCheckedChange={() => toggleAddon(addon.id)}
-                          className="h-5 w-5"
-                        />
-                        <div className="flex items-center space-x-3">
-                          <div className={`p-2 rounded-lg ${isSelected ? 'bg-blue-100' : 'bg-gray-100'}`}>
-                            <IconComponent className={`h-5 w-5 ${isSelected ? 'text-blue-600' : 'text-gray-600'}`} />
-                          </div>
-                          <div>
-                            <Label htmlFor={addon.id} className="font-semibold cursor-pointer text-base">
-                              {addon.name}
-                            </Label>
-                            <p className="text-sm text-gray-600">{addon.description}</p>
-                            <div className="flex items-center mt-1">
-                              <Info className="h-3 w-3 text-gray-400 mr-1" />
-                              <span className="text-xs text-gray-500">{addon.details}</span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <span className="text-lg font-bold text-blue-600">{addon.price} kr</span>
-                        {isSelected && (
-                          <div className="flex items-center text-green-600 text-xs mt-1">
-                            <Check className="h-3 w-3 mr-1" />
-                            Valgt
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
-                </CardContent>
+              </CardContent>
               )}
             </Card>
 
@@ -985,20 +885,20 @@ export const Checkout = (): JSX.Element => {
                     className={`h-5 w-5 mr-3 text-gray-500 transition-transform duration-200 ${
                       expandedSections.paymentMethods ? 'rotate-90' : ''
                     }`} 
-                  />
-                  <div>
+                      />
+                      <div>
                     <CardTitle className="text-lg flex items-center">
                       <CreditCard className="h-5 w-5 mr-2 text-blue-600" />
                       Betalingsmetode
                     </CardTitle>
-                    <p className="text-sm text-gray-600 mt-1">
-                      Velg hvordan du vil betale for bookingen
-                    </p>
+                <p className="text-sm text-gray-600 mt-1">
+                  Velg hvordan du vil betale for bookingen
+                </p>
                   </div>
                 </div>
               </CardHeader>
               {expandedSections.paymentMethods && (
-                <CardContent className="space-y-4">
+              <CardContent className="space-y-4">
                 <RadioGroup value={selectedPaymentMethod} onValueChange={setSelectedPaymentMethod}>
                   {/* Credit Card */}
                   <div className={`flex items-start space-x-4 p-5 border-2 rounded-xl transition-all duration-200 ${
@@ -1146,126 +1046,87 @@ export const Checkout = (): JSX.Element => {
                     {errors.payment}
                   </div>
                 )}
-                </CardContent>
+              </CardContent>
               )}
             </Card>
 
-            {/* Enhanced Consent and Terms */}
+            {/* Enhanced Add-ons */}
             <Card>
               <CardHeader 
                 className="cursor-pointer hover:bg-gray-50 transition-colors"
-                onClick={() => toggleSection('consents')}
+                onClick={() => toggleSection('addons')}
               >
                 <div className="flex items-center">
                   <ChevronRight 
                     className={`h-5 w-5 mr-3 text-gray-500 transition-transform duration-200 ${
-                      expandedSections.consents ? 'rotate-90' : ''
+                      expandedSections.addons ? 'rotate-90' : ''
                     }`} 
                   />
                   <div>
                     <CardTitle className="text-lg flex items-center">
-                      <FileText className="h-5 w-5 mr-2 text-blue-600" />
-                      Før du betaler
+                      <Plus className="h-5 w-5 mr-2 text-blue-600" />
+                      Tillegg
                     </CardTitle>
-                    <p className="text-sm text-gray-600 mt-1">
-                      Godta vilkårene for å fullføre bestillingen
-                    </p>
+                <p className="text-sm text-gray-600 mt-1">
+                  Legg til ekstra tjenester for din booking
+                </p>
                   </div>
                 </div>
               </CardHeader>
-              {expandedSections.consents && (
+              {expandedSections.addons && (
                 <CardContent className="space-y-4">
-                <div className="bg-gray-50 rounded-lg p-4 space-y-4">
-                  <div className="flex items-start space-x-4">
-                    <Checkbox
-                      id="terms"
-                      checked={consents.terms}
-                      onCheckedChange={() => handleConsentChange('terms')}
-                      className="h-5 w-5 mt-0.5"
-                    />
-                    <div className="flex-1">
-                      <Label htmlFor="terms" className="text-sm cursor-pointer flex items-start">
-                        <span>Jeg godtar </span>
-                        <a 
-                          href="/terms" 
-                          target="_blank" 
-                          className="text-blue-600 hover:underline mx-1 flex items-center"
-                        >
-                          vilkår for leie
-                          <ExternalLink className="h-3 w-3 ml-1" />
-                        </a>
-                      </Label>
-                    </div>
-                    {consents.terms && (
-                      <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0" />
-                    )}
-                  </div>
+                {availableAddons.map((addon) => {
+                  const IconComponent = addon.icon;
+                  const isSelected = addons[addon.id] || false;
                   
-                  <div className="flex items-start space-x-4">
-                    <Checkbox
-                      id="cancellation"
-                      checked={consents.cancellation}
-                      onCheckedChange={() => handleConsentChange('cancellation')}
-                      className="h-5 w-5 mt-0.5"
-                    />
-                    <div className="flex-1">
-                      <Label htmlFor="cancellation" className="text-sm cursor-pointer flex items-start">
-                        <span>Jeg har lest </span>
-                        <a 
-                          href="/cancellation" 
-                          target="_blank" 
-                          className="text-blue-600 hover:underline mx-1 flex items-center"
-                        >
-                          avbestillingsreglene
-                          <ExternalLink className="h-3 w-3 ml-1" />
-                        </a>
-                      </Label>
-                    </div>
-                    {consents.cancellation && (
-                      <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0" />
-                    )}
-                  </div>
-                  
-                  <div className="flex items-start space-x-4">
-                    <Checkbox
-                      id="privacy"
-                      checked={consents.privacy}
-                      onCheckedChange={() => handleConsentChange('privacy')}
-                      className="h-5 w-5 mt-0.5"
-                    />
-                    <div className="flex-1">
-                      <Label htmlFor="privacy" className="text-sm cursor-pointer">
-                        Jeg samtykker til behandling av personopplysninger for denne bestillingen
-                      </Label>
-                    </div>
-                    {consents.privacy && (
-                      <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0" />
-                    )}
-                  </div>
-                </div>
-
-                {/* Ready to pay indicator */}
-                {consents.terms && consents.cancellation && consents.privacy && (
-                  <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                    <div className="flex items-center">
-                      <CheckCircle className="h-6 w-6 text-green-600 mr-3" />
+                  return (
+                    <div 
+                      key={addon.id} 
+                      className={`flex items-center justify-between p-4 border-2 rounded-xl transition-all duration-200 ${
+                        isSelected 
+                          ? 'border-blue-500 bg-blue-50 shadow-md' 
+                          : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                      }`}
+                    >
+                      <div className="flex items-center space-x-4">
+                      <Checkbox
+                        id={addon.id}
+                          checked={isSelected}
+                        onCheckedChange={() => toggleAddon(addon.id)}
+                          className="h-5 w-5"
+                      />
+                        <div className="flex items-center space-x-3">
+                          <div className={`p-2 rounded-lg ${isSelected ? 'bg-blue-100' : 'bg-gray-100'}`}>
+                            <IconComponent className={`h-5 w-5 ${isSelected ? 'text-blue-600' : 'text-gray-600'}`} />
+                          </div>
                       <div>
-                        <p className="font-semibold text-green-800">Klar til betaling!</p>
-                        <p className="text-sm text-green-700">Alle samtykker er godtatt.</p>
+                            <Label htmlFor={addon.id} className="font-semibold cursor-pointer text-base">
+                          {addon.name}
+                        </Label>
+                        <p className="text-sm text-gray-600">{addon.description}</p>
+                            <div className="flex items-center mt-1">
+                              <Info className="h-3 w-3 text-gray-400 mr-1" />
+                              <span className="text-xs text-gray-500">{addon.details}</span>
                       </div>
                     </div>
                   </div>
-                )}
-
-                {errors.consents && (
-                  <div className="flex items-center text-red-600 text-sm bg-red-50 p-3 rounded-lg">
-                    <AlertCircle className="h-4 w-4 mr-2" />
-                    {errors.consents}
-                  </div>
-                )}
-                </CardContent>
+                      </div>
+                      <div className="text-right">
+                        <span className="text-lg font-bold text-blue-600">{addon.price} kr</span>
+                        {isSelected && (
+                          <div className="flex items-center text-green-600 text-xs mt-1">
+                            <Check className="h-3 w-3 mr-1" />
+                            Valgt
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </CardContent>
               )}
             </Card>
+
           </div>
 
           {/* Right Column: Enhanced Sticky Pricing Summary */}
@@ -1279,8 +1140,8 @@ export const Checkout = (): JSX.Element => {
                   </CardTitle>
                   <p className="text-blue-100 text-sm">
                     Du blir ikke belastet før bestillingen er bekreftet
-                  </p>
-                </CardHeader>
+                </p>
+              </CardHeader>
                 <CardContent className="space-y-4 p-6">
                   {/* Booking Type Breakdown */}
                   {items.map((item, index) => (
@@ -1301,9 +1162,9 @@ export const Checkout = (): JSX.Element => {
                           >
                             <Trash2 className="h-3 w-3" />
                           </Button>
-                        </div>
-                      </div>
-                      
+                  </div>
+                  </div>
+                  
                       {/* Price breakdown for this booking */}
                       <div className="ml-4 space-y-1 text-sm">
                         <div className="flex justify-between items-center">
@@ -1317,7 +1178,7 @@ export const Checkout = (): JSX.Element => {
                               return `${itemPriceExcludingVat.toLocaleString("nb-NO")} kr`;
                             })()}
                           </span>
-                        </div>
+                  </div>
                         <div className="flex justify-between items-center">
                           <span className="text-gray-600">MVA (25%)</span>
                           <span className="font-medium">
@@ -1328,9 +1189,9 @@ export const Checkout = (): JSX.Element => {
                               return `${itemVatAmount.toLocaleString("nb-NO")} kr`;
                             })()}
                           </span>
-                        </div>
-                      </div>
-                    </div>
+                </div>
+                  </div>
+          </div>
                   ))}
 
                   {/* Add-ons detailed breakdown */}
@@ -1338,8 +1199,8 @@ export const Checkout = (): JSX.Element => {
                     <div className="space-y-2 border-t pt-4">
                       <div className="flex justify-between items-center py-2">
                         <span className="text-gray-700 font-medium">Tillegg utstyr/tjenester</span>
-                      </div>
-                      
+                  </div>
+
                       <div className="ml-4 space-y-1 text-sm">
                         {Object.entries(addons).map(([id, selected]) => {
                           if (!selected) return null;
@@ -1438,16 +1299,96 @@ export const Checkout = (): JSX.Element => {
                     <span className="text-2xl font-bold text-blue-600">{pricing.total.toLocaleString("nb-NO")} kr</span>
                   </div>
 
-                  {/* Payment Due */}
-                  <div className="text-center py-2">
-                    <div className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-700">
-                      <Clock className="h-4 w-4 mr-1" />
-                      {selectedPaymentMethod === "invoice" 
-                        ? "Forfaller innen 25 dager"
-                        : "Forfaller i dag"
-                      }
+
+                  {/* Consent Checkboxes - Moved from "Før du betaler" section */}
+                  <div className="bg-gray-50 rounded-lg p-4 space-y-4">
+                    <div className="flex items-start space-x-4">
+                      <Checkbox
+                        id="terms"
+                        checked={consents.terms}
+                        onCheckedChange={() => handleConsentChange('terms')}
+                        className="h-5 w-5 mt-0.5"
+                      />
+                      <div className="flex-1">
+                        <Label htmlFor="terms" className="text-sm cursor-pointer flex items-start">
+                          <span>Jeg godtar </span>
+                          <a 
+                            href="/terms" 
+                            target="_blank" 
+                            className="text-blue-600 hover:underline mx-1 flex items-center"
+                          >
+                            vilkår for leie
+                            <ExternalLink className="h-3 w-3 ml-1" />
+                          </a>
+                        </Label>
+                      </div>
+                      {consents.terms && (
+                        <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0" />
+                      )}
+                  </div>
+
+                    <div className="flex items-start space-x-4">
+                      <Checkbox
+                        id="cancellation"
+                        checked={consents.cancellation}
+                        onCheckedChange={() => handleConsentChange('cancellation')}
+                        className="h-5 w-5 mt-0.5"
+                      />
+                      <div className="flex-1">
+                        <Label htmlFor="cancellation" className="text-sm cursor-pointer flex items-start">
+                          <span>Jeg har lest </span>
+                          <a 
+                            href="/cancellation" 
+                            target="_blank" 
+                            className="text-blue-600 hover:underline mx-1 flex items-center"
+                          >
+                            avbestillingsreglene
+                            <ExternalLink className="h-3 w-3 ml-1" />
+                          </a>
+                        </Label>
+                      </div>
+                      {consents.cancellation && (
+                        <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0" />
+                      )}
+                    </div>
+                    
+                    <div className="flex items-start space-x-4">
+                      <Checkbox
+                        id="privacy"
+                        checked={consents.privacy}
+                        onCheckedChange={() => handleConsentChange('privacy')}
+                        className="h-5 w-5 mt-0.5"
+                      />
+                      <div className="flex-1">
+                        <Label htmlFor="privacy" className="text-sm cursor-pointer">
+                          Jeg samtykker til behandling av personopplysninger for denne bestillingen
+                        </Label>
+                      </div>
+                      {consents.privacy && (
+                        <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0" />
+                      )}
                     </div>
                   </div>
+
+                  {/* Ready to pay indicator */}
+                  {consents.terms && consents.cancellation && consents.privacy && (
+                    <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                      <div className="flex items-center">
+                        <CheckCircle className="h-6 w-6 text-green-600 mr-3" />
+                        <div>
+                          <p className="font-semibold text-green-800">Klar til betaling!</p>
+                          <p className="text-sm text-green-700">Alle samtykker er godtatt.</p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {errors.consents && (
+                    <div className="flex items-center text-red-600 text-sm bg-red-50 p-3 rounded-lg">
+                      <AlertCircle className="h-4 w-4 mr-2" />
+                      {errors.consents}
+                    </div>
+                  )}
 
                   {/* Enhanced Complete Payment Button */}
                   <Button
@@ -1488,6 +1429,7 @@ export const Checkout = (): JSX.Element => {
                 </CardContent>
               </Card>
             </div>
+
           </div>
         </div>
 
@@ -1501,9 +1443,6 @@ export const Checkout = (): JSX.Element => {
               </div>
               <div className="text-right">
                 <div className="text-2xl font-bold text-blue-600">{pricing.total.toLocaleString("nb-NO")} kr</div>
-                <div className="text-xs text-gray-500">
-                  {selectedPaymentMethod === "invoice" ? "Forfaller innen 25 dager" : "Forfaller i dag"}
-                </div>
               </div>
             </div>
             
@@ -1535,3 +1474,5 @@ export const Checkout = (): JSX.Element => {
 };
 
 export default Checkout;
+
+
