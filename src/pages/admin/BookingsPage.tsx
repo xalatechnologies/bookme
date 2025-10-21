@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
 import { 
   Search, 
   Filter, 
@@ -312,20 +313,33 @@ const BookingRow = ({ booking, onApprove, onReject, onViewDetails, onDelete, isS
   };
 
   return (
-    <div className={`p-4 border rounded-lg transition-all duration-200 shadow-sm hover:shadow-md ${
+    <div className="flex items-start gap-4">
+      <div onClick={(e) => e.stopPropagation()}>
+        <Checkbox
+          checked={isSelected}
+          onCheckedChange={(checked) => onSelect(booking.id, checked)}
+          className="mt-1"
+        />
+      </div>
+      
+      <Card 
+        className={`relative cursor-pointer flex-1 transition-all duration-200 shadow-sm hover:shadow-md ${
       isSelected 
         ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800' 
         : `bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 ${getStatusBorderColor(booking.status)}`
-    } ${booking.status === 'pending' ? 'bg-yellow-50/30 dark:bg-yellow-900/5' : ''}`}>
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          <input
-            type="checkbox"
-            checked={isSelected}
-            onChange={(e) => onSelect(booking.id, e.target.checked)}
-            className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-          />
-          <div className="flex-1 min-w-0">
+        } ${booking.status === 'pending' ? 'bg-yellow-50/30 dark:bg-yellow-900/5' : ''}`}
+        onClick={() => onViewDetails(booking.id)}
+      >
+        <div className={`absolute left-0 top-0 bottom-0 w-1 ${(() => {
+          if (booking.status === 'approved') return 'bg-green-500';
+          if (booking.status === 'rejected') return 'bg-red-500';
+          if (booking.status === 'pending') return 'bg-yellow-500';
+          return 'bg-gray-500';
+        })()}`} />
+        
+        <CardContent className="p-4">
+          <div className="flex items-start justify-between">
+            <div className="flex-1">
             <div className="flex items-center justify-between mb-1">
               <h4 className="font-medium text-gray-900 dark:text-white truncate">
                 {booking.title}
@@ -333,65 +347,75 @@ const BookingRow = ({ booking, onApprove, onReject, onViewDetails, onDelete, isS
               {getStatusBadge(booking.status)}
             </div>
             <div className="flex items-center space-x-4 text-sm text-gray-600 dark:text-gray-400">
-              <span className="flex items-center space-x-1">
-                <Calendar className="h-4 w-4" />
-                <span>{formatDateTime(booking.startDate, booking.startTime)} - {formatDateTime(booking.endDate, booking.endTime)}</span>
+              <span>
+                {booking.startTime}-{booking.endTime} ({booking.duration === 1 ? '1 time' : `${booking.duration} timer`})
+              </span>
+              <span>
+                {new Date(booking.startDate).toLocaleDateString('nb-NO')}
               </span>
               <span className="flex items-center space-x-1">
-                <User className="h-4 w-4" />
-                <span>{booking.bookerName}</span>
-              </span>
-              <span className="flex items-center space-x-1">
-                <Clock className="h-4 w-4" />
-                <span>{booking.duration}t</span>
+                <span>{booking.purpose}</span>
               </span>
             </div>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-              {booking.facility} • {booking.purpose}
-            </p>
-          </div>
         </div>
         
-        <div className="flex items-center space-x-2">
-          {booking.status === 'pending' && (
-            <>
+            <div className="flex items-center gap-2 ml-4">
               <Button
+                variant="default"
                 size="sm"
-                onClick={() => onApprove(booking.id)}
-                className="bg-green-600 hover:bg-green-700 text-white"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onViewDetails(booking.id);
+                }}
+                className="flex items-center justify-center p-2"
+                title="Vis detaljer"
               >
-                <Check className="h-4 w-4 mr-1" />
-                Godkjenn
+                <Eye className="w-4 h-4" />
               </Button>
               <Button
+                variant="outline"
                 size="sm"
-                variant="destructive"
-                onClick={() => onReject(booking.id)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDelete(booking.id);
+                }}
+                className="flex items-center justify-center p-2 text-red-600 hover:text-red-700 hover:bg-red-50"
+                title="Slett"
               >
-                <X className="h-4 w-4 mr-1" />
-                Avvis
+                <Trash2 className="w-4 h-4" />
               </Button>
-            </>
-          )}
+              {booking.status === 'pending' && (
+                <>
           <Button
-            size="sm"
             variant="outline"
-            onClick={() => onViewDetails(booking.id)}
-            className="text-gray-600 hover:text-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50"
-          >
-            <Eye className="h-4 w-4 mr-1" />
-            Detaljer
+                    size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onApprove(booking.id);
+                    }}
+                    className="flex items-center justify-center p-2 text-green-600 hover:text-green-700 hover:bg-green-50"
+                    title="Godkjenn"
+                  >
+                    <Check className="w-4 h-4" />
           </Button>
           <Button
+                    variant="outline"
             size="sm"
-            variant="ghost"
-            onClick={() => onDelete(booking.id)}
-            className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
-          >
-            <Trash2 className="h-4 w-4" />
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onReject(booking.id);
+                    }}
+                    className="flex items-center justify-center p-2 text-red-600 hover:text-red-700 hover:bg-red-50"
+                    title="Avvis"
+                  >
+                    <X className="w-4 h-4" />
           </Button>
+                </>
+              )}
         </div>
       </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };
@@ -439,7 +463,7 @@ const BookingDetailModal = ({ booking, isOpen, onClose, onApprove, onReject, onD
       return series.map((b: any) => {
         const date = b.date || b.startDate || new Date().toISOString().slice(0, 10);
         const time = b.time || (b.startTime && b.endTime ? `${b.startTime}-${b.endTime}` : (b.timeSlots && b.timeSlots[0]?.timeSlot) || `${booking.startTime}-${booking.endTime}`);
-        const priceText = typeof b.price === 'string' ? b.price : `${(b.price || 0).toLocaleString('nb-NO')} kr`;
+        const priceText = b.price || '0 kr';
         // Duration may be a string like "1 timer"
         const durationHours = typeof b.duration === 'string'
           ? parseFloat(b.duration.replace(/[^0-9.,]/g, '').replace(',', '.')) || 1
@@ -452,8 +476,14 @@ const BookingDetailModal = ({ booking, isOpen, onClose, onApprove, onReject, onD
   })();
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[75vh] overflow-y-auto">
+    <div 
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+      onClick={onClose}
+    >
+      <div 
+        className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[75vh] overflow-y-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="p-6">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
@@ -477,7 +507,7 @@ const BookingDetailModal = ({ booking, isOpen, onClose, onApprove, onReject, onD
                 {(() => {
                   // Build occurrences list (same as above) to compute totals
                   const occ = occurrences.length > 0 ? occurrences : [
-                    { date: booking.startDate, time: `${booking.startTime}-${booking.endTime}`, durationHours: booking.duration, priceText: `${parseNOK(booking.price).toLocaleString('nb-NO')} kr` }
+                    { date: booking.startDate, time: `${booking.startTime}-${booking.endTime}`, durationHours: booking.duration, priceText: booking.price || '0 kr' }
                   ];
                   const totalHours = occ.reduce((sum, o) => sum + (o.durationHours || 0), 0);
                   const totalPrice = occ.reduce((sum, o) => sum + parseNOK(o.priceText), 0);
@@ -605,10 +635,8 @@ const BookingsPage = (): JSX.Element => {
     handler: "",
     duration: ""
   });
-  
+
   // New feature states
-  const [showSupport, setShowSupport] = useState<boolean>(false);
-  const [showRecurringBookings, setShowRecurringBookings] = useState<boolean>(false);
 
   // Get pending bookings from localStorage (user bookings)
   const getPendingBookings = useCallback((): IBooking[] => {
@@ -974,12 +1002,40 @@ const BookingsPage = (): JSX.Element => {
   };
 
   const handleBulkApprove = (): void => {
-    // TODO: Implement bulk approval logic
+    const selectedIds = Array.from(selectedBookings);
+    selectedIds.forEach(id => handleApprove(id));
+    setSelectedBookings(new Set());
   };
 
   const handleBulkReject = (): void => {
-    // TODO: Implement bulk rejection logic
+    const selectedIds = Array.from(selectedBookings);
+    selectedIds.forEach(id => handleReject(id));
+    setSelectedBookings(new Set());
   };
+
+  const handleBulkDelete = (): void => {
+    const selectedIds = Array.from(selectedBookings);
+    selectedIds.forEach(id => handleDelete(id));
+    setSelectedBookings(new Set());
+  };
+
+  const handleRecurringGroupSelect = useCallback((groupId: string, items: IBooking[]) => {
+    const itemIds = items.map(item => item.id);
+    setSelectedBookings(prev => {
+      const hasAllItems = itemIds.every(id => prev.has(id));
+      if (hasAllItems) {
+        // Remove all items from this group
+        const newSelected = new Set(prev);
+        itemIds.forEach(id => newSelected.delete(id));
+        return newSelected;
+      } else {
+        // Add all items from this group
+        const newSelected = new Set(prev);
+        itemIds.forEach(id => newSelected.add(id));
+        return newSelected;
+      }
+    });
+  }, []);
 
   const tabs = [
     { id: "all", label: "Alle", count: bookings.length },
@@ -994,32 +1050,12 @@ const BookingsPage = (): JSX.Element => {
         {/* Header */}
         <header className="space-y-4">
           <div className="space-y-1">
-            <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">
-              Bookinger & Godkjenninger
-            </h1>
-            <p className="text-gray-600 dark:text-gray-400">
-              Administrer alle bookinger og godkjenningsprosesser i systemet.
-            </p>
-          </div>
-          
-          {/* Admin Action Buttons */}
-          <div className="flex flex-wrap gap-2">
-            <Button 
-              variant="outline"
-              onClick={() => setShowSupport(true)}
-              className="flex items-center gap-2"
-            >
-              <HelpCircle className="h-4 w-4" />
-              Support-tickets
-            </Button>
-            <Button 
-              variant="outline"
-              onClick={() => setShowRecurringBookings(true)}
-              className="flex items-center gap-2"
-            >
-              <Repeat className="h-4 w-4" />
-              Gjentakende bookinger
-            </Button>
+          <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">
+            Bookinger & Godkjenninger
+          </h1>
+          <p className="text-gray-600 dark:text-gray-400">
+            Administrer alle bookinger og godkjenningsprosesser i systemet.
+          </p>
           </div>
         </header>
 
@@ -1104,13 +1140,58 @@ const BookingsPage = (): JSX.Element => {
               </div>
             </div>
 
-            {/* Bulk Actions */}
+            {/* Toolbar */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <Checkbox
+                    checked={(() => {
+                      const allBookings = [...groupedRecurring.values()].flat().concat(singletonBookings);
+                      return allBookings.length > 0 && allBookings.every(booking => selectedBookings.has(booking.id));
+                    })()}
+                    onCheckedChange={(checked) => {
+                      const allBookings = [...groupedRecurring.values()].flat().concat(singletonBookings);
+                      if (checked) {
+                        const allIds = allBookings.map(booking => booking.id);
+                        setSelectedBookings(new Set(allIds));
+                      } else {
+                        setSelectedBookings(new Set());
+                      }
+                    }}
+                  />
+                  <span className="text-sm text-gray-600 dark:text-gray-400">
+                    Velg alle ({(() => {
+                      const allBookings = [...groupedRecurring.values()].flat().concat(singletonBookings);
+                      return allBookings.length;
+                    })()})
+                  </span>
+                </div>
+                
             {selectedBookings.size > 0 && (
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-gray-600 dark:text-gray-400">
+                      {selectedBookings.size} valgt
+                    </span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Bulk Actions */}
+            {selectedBookings.size > 0 && (() => {
+              const selectedIds = Array.from(selectedBookings);
+              const selectedBookingsData = bookings.filter(b => selectedIds.includes(b.id));
+              const hasPending = selectedBookingsData.some(b => b.status === 'pending');
+              const hasApprovedOrRejected = selectedBookingsData.some(b => b.status === 'approved' || b.status === 'rejected');
+              
+              return (
               <div className="flex items-center justify-between bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
                 <span className="text-sm text-blue-700 dark:text-blue-300">
                   {selectedBookings.size} booking(er) valgt
                 </span>
                 <div className="flex space-x-2">
+                    {hasPending && (
+                      <>
                   <Button
                     size="sm"
                     onClick={handleBulkApprove}
@@ -1127,9 +1208,23 @@ const BookingsPage = (): JSX.Element => {
                     <X className="h-4 w-4 mr-1" />
                     Avvis alle
                   </Button>
+                      </>
+                    )}
+                    {hasApprovedOrRejected && (
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        onClick={handleBulkDelete}
+                        className="bg-red-600 hover:bg-red-700 text-white"
+                      >
+                        <Trash2 className="h-4 w-4 mr-1" />
+                        Slett alle
+                      </Button>
+                    )}
                 </div>
               </div>
-            )}
+              );
+            })()}
           </CardHeader>
 
           <CardContent>
@@ -1165,42 +1260,127 @@ const BookingsPage = (): JSX.Element => {
                       else { badgeColor = "bg-blue-100 text-blue-800"; badgeText = "Delvis godkjent"; }
                     }
                     return (
-                      <Card key={`group-${groupId}`} className="relative">
-                        <CardContent className="p-4">
-                          <div className="flex items-start justify-between">
-                            <div className="flex-1">
-                              <div className="flex items-center justify-between mb-1">
-                                <h3 className="font-semibold text-gray-900 dark:text-white">{title}</h3>
-                                <Badge className={badgeColor}>{badgeText}</Badge>
-                              </div>
-                              <div className="text-sm text-gray-600 dark:text-gray-400">
-                                <div className="flex flex-wrap gap-4">
-                                  <span>{items.length} forekomster</span>
-                                  <span>Periode: {period}</span>
+                      <div key={`group-${groupId}`} className="flex items-start gap-4">
+                        <div onClick={(e) => e.stopPropagation()}>
+                          <Checkbox
+                            checked={(() => {
+                              const itemIds = items.map(item => item.id);
+                              const hasAllItems = itemIds.every(id => selectedBookings.has(id));
+                              return hasAllItems;
+                            })()}
+                            onCheckedChange={() => {
+                              handleRecurringGroupSelect(groupId, items);
+                            }}
+                            className="mt-1"
+                          />
+                        </div>
+                        
+                        <Card 
+                          className="relative cursor-pointer flex-1" 
+                          onClick={() => handleViewDetails(first.id)}
+                        >
+                          <div className={`absolute left-0 top-0 bottom-0 w-1 ${(() => {
+                            if (uniqueStatuses.length === 1) {
+                              if (uniqueStatuses[0] === 'approved') return 'bg-green-500';
+                              if (uniqueStatuses[0] === 'rejected') return 'bg-red-500';
+                              if (uniqueStatuses[0] === 'pending') return 'bg-yellow-500';
+                            } else {
+                              if (uniqueStatuses.includes('pending')) return 'bg-yellow-500';
+                              return 'bg-blue-500';
+                            }
+                          })()}`} />
+                          
+                          <CardContent className="p-4">
+                            <div className="flex items-start justify-between">
+                              <div className="flex-1">
+                                <div className="flex items-center justify-between mb-1">
+                                  <h3 className="font-semibold text-gray-900 dark:text-white">{title}</h3>
+                                  <Badge className={badgeColor}>{badgeText}</Badge>
+                                </div>
+                                <div className="text-sm text-gray-600 dark:text-gray-400">
+                                  <div className="flex flex-wrap gap-4">
+                                    <span>{items.length} forekomster</span>
+                                    <span>Periode: {period}</span>
+                                  </div>
                                 </div>
                               </div>
+                              
+                              <div className="flex items-center gap-2 ml-4">
+                                <Button
+                                  variant="default"
+                                  size="sm"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleViewDetails(first.id);
+                                  }}
+                                  className="flex items-center justify-center p-2"
+                                  title="Vis detaljer"
+                                >
+                                  <Eye className="w-4 h-4" />
+                                </Button>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    const itemIds = items.map(item => item.id);
+                                    itemIds.forEach(id => handleDelete(id));
+                                  }}
+                                  className="flex items-center justify-center p-2 text-red-600 hover:text-red-700 hover:bg-red-50"
+                                  title="Slett"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </Button>
+                                {uniqueStatuses.includes('pending') && (
+                                  <>
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        const itemIds = items.map(item => item.id);
+                                        itemIds.forEach(id => handleApprove(id));
+                                      }}
+                                      className="flex items-center justify-center p-2 text-green-600 hover:text-green-700 hover:bg-green-50"
+                                      title="Godkjenn"
+                                    >
+                                      <Check className="w-4 h-4" />
+                                    </Button>
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        const itemIds = items.map(item => item.id);
+                                        itemIds.forEach(id => handleReject(id));
+                                      }}
+                                      className="flex items-center justify-center p-2 text-red-600 hover:text-red-700 hover:bg-red-50"
+                                      title="Avvis"
+                                    >
+                                      <X className="w-4 h-4" />
+                                    </Button>
+                                  </>
+                                )}
+                              </div>
                             </div>
-                            <div className="ml-4">
-                              <Button size="sm" onClick={() => handleViewDetails(first.id)}>Vis detaljer</Button>
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
+                          </CardContent>
+                        </Card>
+                      </div>
                     );
                   })}
 
                   {/* Single bookings */}
                   {singletonBookings.map(booking => (
-                    <BookingRow
-                      key={booking.id}
-                      booking={booking}
-                      onApprove={handleApprove}
-                      onReject={handleReject}
-                      onViewDetails={handleViewDetails}
-                      onDelete={handleDelete}
-                      isSelected={selectedBookings.has(booking.id)}
-                      onSelect={handleSelectBooking}
-                    />
+                  <BookingRow
+                    key={booking.id}
+                    booking={booking}
+                    onApprove={handleApprove}
+                    onReject={handleReject}
+                    onViewDetails={handleViewDetails}
+                    onDelete={handleDelete}
+                    isSelected={selectedBookings.has(booking.id)}
+                    onSelect={handleSelectBooking}
+                  />
                   ))}
                 </>
               )}
@@ -1285,48 +1465,6 @@ const BookingsPage = (): JSX.Element => {
         />
       </div>
 
-      {/* Admin Feature Modals */}
-
-      {showSupport && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg w-full max-w-6xl h-[90vh] overflow-hidden">
-            <div className="p-4 border-b">
-              <div className="flex items-center justify-between">
-                <h2 className="text-xl font-semibold">Admin - Support-tickets</h2>
-                <Button variant="outline" onClick={() => setShowSupport(false)}>
-                  Lukk
-                </Button>
-              </div>
-            </div>
-            <div className="h-full overflow-y-auto">
-              <SupportTicketList
-                isAdmin={true}
-              />
-            </div>
-          </div>
-        </div>
-      )}
-
-      {showRecurringBookings && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg w-full max-w-6xl h-[90vh] overflow-hidden">
-            <div className="p-4 border-b">
-              <div className="flex items-center justify-between">
-                <h2 className="text-xl font-semibold">Admin - Gjentakende bookinger</h2>
-                <Button variant="outline" onClick={() => setShowRecurringBookings(false)}>
-                  Lukk
-                </Button>
-              </div>
-            </div>
-            <div className="h-full overflow-y-auto p-4">
-              <p className="text-gray-600">
-                Her kan du administrere alle gjentakende bookinger i systemet.
-                Denne funksjonaliteten vil bli implementert i en senere versjon.
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
     </RequireRole>
   );
 };

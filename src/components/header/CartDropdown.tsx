@@ -93,7 +93,10 @@ export const CartDropdown = ({ onClose }: CartDropdownProps): JSX.Element => {
                       <Calendar className="h-3 w-3" />
                       <span>{formatTimeSlot(slot)}</span>
                       <Clock className="h-3 w-3 ml-2" />
-                      <span>{slot.duration / 60} timer</span>
+                      <span>{(() => {
+                        const hours = slot.duration / 60;
+                        return hours === 1 ? '1 time' : `${hours} timer`;
+                      })()}</span>
                     </div>
                   ))}
                 </div>

@@ -20,7 +20,6 @@ import {
   ChevronDown,
   ChevronRight
 } from "lucide-react";
-import { useHistory } from "@/hooks/useHistory";
 import { downloadICS } from "@/utils/ics";
 import type { IBookingHistoryItem } from "@/types/history";
 
@@ -44,9 +43,169 @@ export default function HistoryPage(): JSX.Element {
     pageSize: 50
   }), [searchQuery, selectedFacility, selectedStatus, dateFrom, dateTo, sortBy]);
 
-  const { data, isLoading } = useHistory(query);
+  // Get data from localStorage and group recurring bookings
+  const data = useMemo(() => {
+    try {
+      const pending = JSON.parse(localStorage.getItem('pendingBookings') || '[]');
+      const processed = JSON.parse(localStorage.getItem('processedBookings') || '[]');
+      const all = [...pending, ...processed];
+      
+      // Group recurring bookings by parentBookingId or fallback key
+      const groupedRecurring = new Map();
+      const singleBookings = [];
+      
+      all.forEach((booking: any) => {
+        const parentKey = booking.parentBookingId || 
+          `${booking.facility || booking.facilityName}-${booking.purpose}-${booking.time || booking.startTime}`;
+        
+        if (booking.isRecurring || booking.bookingType === 'recurring') {
+          if (!groupedRecurring.has(parentKey)) {
+            groupedRecurring.set(parentKey, []);
+          }
+          groupedRecurring.get(parentKey).push(booking);
+        } else {
+          singleBookings.push(booking);
+        }
+      });
+      
+      // Convert single bookings to history format
+      const singleHistoryItems = singleBookings.map((booking: any) => {
+        // Handle different date/time formats
+        let startDate, endDate;
+        if (booking.startDate && booking.startTime) {
+          startDate = new Date(booking.startDate + 'T' + booking.startTime).toISOString();
+        } else if (booking.date && booking.time) {
+          const [startTime, endTime] = booking.time.split('-');
+          startDate = new Date(booking.date + 'T' + startTime).toISOString();
+        } else {
+          startDate = new Date().toISOString();
+        }
+        
+        if (booking.endTime) {
+          endDate = new Date(booking.startDate + 'T' + booking.endTime).toISOString();
+        } else if (booking.time) {
+          const [, endTime] = booking.time.split('-');
+          endDate = new Date(booking.date + 'T' + endTime).toISOString();
+        } else {
+          endDate = new Date(startDate).toISOString();
+        }
+        
+        // Calculate duration from booking data instead of time difference
+        let durationHours = 1; // Default to 1 hour
+        if (booking.duration) {
+          // If duration is in minutes, convert to hours
+          durationHours = typeof booking.duration === 'number' ? booking.duration / 60 : 1;
+        } else if (booking.time) {
+          // Calculate from time range if duration not available
+          const [startTime, endTime] = booking.time.split('-');
+          const [startH, startM] = startTime.split(':').map(Number);
+          const [endH, endM] = endTime.split(':').map(Number);
+          const startMinutes = startH * 60 + startM;
+          const endMinutes = endH * 60 + endM;
+          durationHours = (endMinutes - startMinutes) / 60;
+        }
 
-  const facilities = ["Drammenshallen", "Kulturhuset", "Idrettshallen", "Svømmehallen"];
+        return {
+          id: booking.id,
+          start: startDate,
+          end: endDate,
+          startTime: booking.startTime || booking.time?.split('-')[0] || '09:00',
+          endTime: booking.endTime || booking.time?.split('-')[1] || '10:00',
+          duration: durationHours,
+          facilityName: booking.facilityName || booking.facility || 'Ukjent lokale',
+          status: booking.status === 'approved' ? 'confirmed' : booking.status === 'rejected' ? 'rejected' : 'pending',
+          totalPriceNok: parseFloat(booking.price?.replace(/[^\d,]/g, '').replace(',', '.') || '0'),
+          bookingId: booking.id,
+          purpose: booking.purpose || 'Ikke spesifisert',
+          location: booking.facilityName || booking.facility || 'Ukjent lokale',
+          isRecurring: false,
+          // Store original date for better display
+          originalDate: booking.startDate || booking.date,
+          originalTime: booking.time || `${booking.startTime || '09:00'}-${booking.endTime || '10:00'}`
+        };
+      });
+      
+      // Convert recurring booking groups to history format
+      const recurringHistoryItems = Array.from(groupedRecurring.entries()).map(([parentKey, bookings]) => {
+        const first = bookings[0];
+        const last = bookings[bookings.length - 1];
+        
+        // Calculate total price for all occurrences
+        const totalPrice = bookings.reduce((sum, booking) => {
+          return sum + parseFloat(booking.price?.replace(/[^\d,]/g, '').replace(',', '.') || '0');
+        }, 0);
+        
+        // Determine group status
+        const statuses = bookings.map(b => b.status);
+        const groupStatus = statuses.every(s => s === 'approved') ? 'confirmed' :
+                           statuses.every(s => s === 'rejected') ? 'rejected' : 'pending';
+        
+        // Calculate total duration for recurring bookings
+        const totalDuration = bookings.reduce((sum, booking) => {
+          let durationHours = 1;
+          if (booking.duration) {
+            durationHours = typeof booking.duration === 'number' ? booking.duration / 60 : 1;
+          } else if (booking.time) {
+            const [startTime, endTime] = booking.time.split('-');
+            const [startH, startM] = startTime.split(':').map(Number);
+            const [endH, endM] = endTime.split(':').map(Number);
+            const startMinutes = startH * 60 + startM;
+            const endMinutes = endH * 60 + endM;
+            durationHours = (endMinutes - startMinutes) / 60;
+          }
+          return sum + durationHours;
+        }, 0);
+
+        return {
+          id: parentKey,
+          start: new Date(first.startDate || first.date).toISOString(),
+          end: new Date(last.startDate || last.date).toISOString(),
+          startTime: first.startTime || first.time?.split('-')[0] || '09:00',
+          endTime: last.endTime || last.time?.split('-')[1] || '10:00',
+          duration: totalDuration,
+          facilityName: first.facilityName || first.facility || 'Ukjent lokale',
+          status: groupStatus,
+          totalPriceNok: totalPrice,
+          bookingId: parentKey,
+          purpose: first.purpose || 'Ikke spesifisert',
+          location: first.facilityName || first.facility || 'Ukjent lokale',
+          isRecurring: true,
+          occurrenceCount: bookings.length,
+          // Store original date for better display
+          originalDate: first.startDate || first.date,
+          originalTime: first.time || `${first.startTime || '09:00'}-${first.endTime || '10:00'}`,
+          occurrences: bookings.map(booking => ({
+            id: booking.id,
+            date: booking.startDate || booking.date,
+            time: booking.startTime || booking.time,
+            status: booking.status
+          }))
+        };
+      });
+      
+      // Combine single and recurring items
+      const allHistoryItems = [...singleHistoryItems, ...recurringHistoryItems];
+      
+      return {
+        items: allHistoryItems,
+        total: allHistoryItems.length,
+        page: 1,
+        pageSize: 50,
+        totalPages: 1
+      };
+    } catch (error) {
+      console.error('Error loading history data:', error);
+      return { items: [], total: 0, page: 1, pageSize: 50, totalPages: 1 };
+    }
+  }, []);
+
+  const isLoading = false; // No loading state needed for localStorage
+
+  const facilities = useMemo(() => {
+    const allBookings = [...(data?.items || [])];
+    const uniqueFacilities = [...new Set(allBookings.map(booking => booking.facilityName))];
+    return uniqueFacilities.filter(Boolean);
+  }, [data]);
 
   // Calculate KPIs
   const kpis = useMemo(() => {
@@ -54,11 +213,11 @@ export default function HistoryPage(): JSX.Element {
     
     const totalBookings = data.total;
     const totalHours = data.items.reduce((sum, item) => {
-      const duration = (new Date(item.end).getTime() - new Date(item.start).getTime()) / 3_600_000;
-      return sum + duration;
+      // Use the duration field we calculated instead of time difference
+      return sum + (item.duration || 1);
     }, 0);
     const totalSpent = data.items.reduce((sum, item) => sum + (item.totalPriceNok || 0), 0);
-    const cancellations = data.items.filter(item => item.status === "cancelled").length;
+    const cancellations = data.items.filter(item => item.status === "rejected").length;
     
     return { totalBookings, totalHours, totalSpent, cancellations };
   }, [data]);
@@ -297,41 +456,50 @@ export default function HistoryPage(): JSX.Element {
                         onClick={() => toggleRowExpansion(item.id)}
                       >
                         <td className="px-4 py-3">
-                          {(() => {
-                            // Handle date display more carefully to avoid timezone issues
-                            const dateStr = item.start.split('T')[0]; // Get YYYY-MM-DD part
-                            if (dateStr.match(/^\d{4}-\d{2}-\d{2}$/)) {
-                              // If it's a YYYY-MM-DD string, parse it as local date
-                              const [year, month, day] = dateStr.split('-').map(Number);
-                              const localDate = new Date(year, month - 1, day);
-                              return localDate.toLocaleDateString("nb-NO");
-                            } else {
-                              // Fallback to original method
-                              return new Date(item.start).toLocaleDateString("nb-NO");
-                            }
-                          })()}
+                          {item.originalDate ? 
+                            new Date(item.originalDate).toLocaleDateString("nb-NO") :
+                            (() => {
+                              // Handle date display more carefully to avoid timezone issues
+                              const dateStr = item.start.split('T')[0]; // Get YYYY-MM-DD part
+                              if (dateStr.match(/^\d{4}-\d{2}-\d{2}$/)) {
+                                // If it's a YYYY-MM-DD string, parse it as local date
+                                const [year, month, day] = dateStr.split('-').map(Number);
+                                const localDate = new Date(year, month - 1, day);
+                                return localDate.toLocaleDateString("nb-NO");
+                              } else {
+                                // Fallback to original method
+                                return new Date(item.start).toLocaleDateString("nb-NO");
+                              }
+                            })()
+                          }
                         </td>
                         <td className="px-4 py-3">
-                          {new Date(item.start).toLocaleTimeString("nb-NO", { 
+                          {item.startTime && item.endTime ? 
+                            `${item.startTime} - ${item.endTime}` : 
+                            `${new Date(item.start).toLocaleTimeString("nb-NO", { 
                             hour: "2-digit", 
                             minute: "2-digit" 
-                          })} - {new Date(item.end).toLocaleTimeString("nb-NO", { 
+                            })} - ${new Date(item.end).toLocaleTimeString("nb-NO", { 
                             hour: "2-digit", 
                             minute: "2-digit" 
-                          })}
+                            })}`
+                          }
                         </td>
                         <td className="px-4 py-3">{item.facilityName}</td>
-                        <td className="px-4 py-3">{item.title}</td>
+                        <td className="px-4 py-3">{item.purpose || item.title || 'Ikke spesifisert'}</td>
                         <td className="px-4 py-3">
-                          {((new Date(item.end).getTime() - new Date(item.start).getTime()) / 3_600_000).toFixed(1)} t
+                          {item.duration ? `${item.duration.toFixed(1)} t` : '1.0 t'}
                         </td>
                         <td className="px-4 py-3">
                           <Badge className={
-                            item.status === "completed" 
+                            item.status === "confirmed" 
                               ? "bg-green-100 text-green-800" 
-                              : "bg-red-100 text-red-800"
+                              : item.status === "rejected"
+                              ? "bg-red-100 text-red-800"
+                              : "bg-yellow-100 text-yellow-800"
                           }>
-                            {item.status === "completed" ? "Fullført" : "Avlyst"}
+                            {item.status === "confirmed" ? "Bekreftet" : 
+                             item.status === "rejected" ? "Avvist" : "Ventende"}
                           </Badge>
                         </td>
                         <td className="px-4 py-3">

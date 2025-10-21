@@ -454,7 +454,7 @@ export const GroupBookingFlow: React.FC<GroupBookingFlowProps> = ({
               <CardContent className="space-y-2">
                 <div className="flex justify-between text-sm">
                   <span>Varighet:</span>
-                  <span>{duration} timer</span>
+                  <span>{duration === 1 ? '1 time' : `${duration} timer`}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span>Pris per time:</span>

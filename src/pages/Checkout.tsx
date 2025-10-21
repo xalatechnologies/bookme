@@ -395,7 +395,7 @@ export const Checkout = (): JSX.Element => {
               facility: item.facilityName,
               date: bookingDate,
               time: slot.timeSlot,
-              duration: `${hours} timer`,
+              duration: hours === 1 ? '1 time' : `${hours} timer`,
               status: 'pending' as const,
               location: 'Drammen',
               price: `${(item.pricing?.finalPrice / (item.timeSlots.length || 1)).toLocaleString('nb-NO')} kr`,
@@ -473,8 +473,11 @@ export const Checkout = (): JSX.Element => {
           date: bookingDate,
           time: timeRange,
           duration: item.timeSlots && item.timeSlots.length > 0 
-            ? `${item.timeSlots.reduce((total, slot) => total + (slot.duration ?? 60), 0) / 60} timer`
-            : '1 timer',
+            ? (() => {
+                const totalHours = item.timeSlots.reduce((total, slot) => total + (slot.duration ?? 60), 0) / 60;
+                return totalHours === 1 ? '1 time' : `${totalHours} timer`;
+              })()
+            : '1 time',
           status: 'pending' as const,
           location: 'Drammen', // This could be dynamic based on facility
           price: `${item.pricing.finalPrice.toLocaleString('nb-NO')} kr`,
@@ -845,7 +848,10 @@ export const Checkout = (): JSX.Element => {
                         <MapPin className="h-4 w-4" />
                         <span>
                           {item.timeSlots && item.timeSlots.length > 0 
-                            ? `${item.timeSlots.reduce((total, slot) => total + (slot.duration ?? 60), 0) / 60} timer`
+                            ? (() => {
+                                const totalHours = item.timeSlots.reduce((total, slot) => total + (slot.duration ?? 60), 0) / 60;
+                                return totalHours === 1 ? '1 time' : `${totalHours} timer`;
+                              })()
                             : '0 timer'
                           }
                         </span>

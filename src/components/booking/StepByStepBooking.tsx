@@ -2,7 +2,7 @@
 
 import React, { useState, useCallback, useMemo } from "react";
 import { ChevronLeft, ChevronRight, CheckCircle, Clock, Calendar, FileText, Shield, Users, X } from "lucide-react";
-import { startOfWeek, addWeeks, subWeeks, addDays, addMonths, format, isToday, isWeekend, isPast, getDay } from "date-fns";
+import { startOfWeek, addWeeks, subWeeks, addDays, addMonths, format, isToday, isWeekend, isPast, getDay, parseISO, isValid } from "date-fns";
 import { nb } from "date-fns/locale";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -109,6 +109,24 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
       }
     };
   }, []);
+
+  // Clean up old slots when entering recurrence step
+  React.useEffect(() => {
+    if (currentStep === 'recurrence' && selectedSlots.length > 0) {
+      // Keep only the most recent slots (from the last 7 days)
+      const sevenDaysAgo = new Date();
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+      
+      const recentSlots = selectedSlots.filter(slot => {
+        const slotDate = slot.date instanceof Date ? slot.date : new Date(slot.date);
+        return slotDate >= sevenDaysAgo;
+      });
+      
+      if (recentSlots.length !== selectedSlots.length) {
+        onSlotsChange(recentSlots);
+      }
+    }
+  }, [currentStep, selectedSlots, onSlotsChange]);
 
   // Week navigation state
   const [currentWeekStart, setCurrentWeekStart] = useState<Date>(() => {
@@ -297,8 +315,133 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
   const generateRecurringSlots = useCallback((pattern: RecurrencePattern) => {
     if (!selectedSlots.length || !selectedZone) return;
     
-    const timeSlots = [...new Set(selectedSlots.map(slot => slot.timeSlot))];
-    const startDate = pattern.startDate || selectedSlots[0].date;
+    // Group selected slots into packages first
+    const groupTimeSlotsIntoPackages = (slots: ISelectedTimeSlot[]) => {
+      // Group by date first
+      const dateGroups = slots.reduce((groups, slot) => {
+        // Safely handle date conversion
+        let date: Date;
+        if (slot.date instanceof Date) {
+          date = slot.date;
+        } else if (typeof slot.date === 'string') {
+          date = parseISO(slot.date);
+        } else {
+          date = new Date(slot.date);
+        }
+        
+        // Validate date
+        if (!isValid(date)) {
+          console.warn('Invalid date for slot:', slot);
+          return groups;
+        }
+        
+        const dateKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+        if (!groups[dateKey]) {
+          groups[dateKey] = [];
+        }
+        groups[dateKey].push(slot);
+        return groups;
+      }, {} as Record<string, ISelectedTimeSlot[]>);
+
+      // Process each date group
+      return Object.entries(dateGroups).map(([dateKey, dateSlots]) => {
+        // Sort by start time
+        const sortedSlots = dateSlots.sort((a, b) => {
+          const timeA = a.timeSlot.split('-')[0];
+          const timeB = b.timeSlot.split('-')[0];
+          return timeA.localeCompare(timeB);
+        });
+
+        // Group consecutive time slots
+        const consecutiveGroups: ISelectedTimeSlot[][] = [];
+        let currentGroup: ISelectedTimeSlot[] = [sortedSlots[0]];
+
+        for (let i = 1; i < sortedSlots.length; i++) {
+          const prevSlot = sortedSlots[i - 1];
+          const currentSlot = sortedSlots[i];
+          
+          // Check if current slot is consecutive to previous
+          const prevEndTime = prevSlot.timeSlot.split('-')[1];
+          const currentStartTime = currentSlot.timeSlot.split('-')[0];
+          
+          if (prevEndTime === currentStartTime) {
+            // Consecutive - add to current group
+            currentGroup.push(currentSlot);
+          } else {
+            // Not consecutive - start new group
+            consecutiveGroups.push([...currentGroup]);
+            currentGroup = [currentSlot];
+          }
+        }
+        
+        // Add the last group
+        consecutiveGroups.push(currentGroup);
+
+        return {
+          date: dateKey,
+          dateFormatted: new Date(dateKey).toLocaleDateString('nb-NO'),
+          groups: consecutiveGroups.map(group => ({
+            slots: group,
+            startTime: group[0].timeSlot.split('-')[0],
+            endTime: group[group.length - 1].timeSlot.split('-')[1],
+            totalDuration: group.reduce((total, slot) => total + slot.duration, 0),
+            isConsecutive: group.length === 1 || 
+              group.every((slot, index) => {
+                if (index === 0) return true;
+                const prevEndTime = group[index - 1].timeSlot.split('-')[1];
+                const currentStartTime = slot.timeSlot.split('-')[0];
+                return prevEndTime === currentStartTime;
+              })
+          }))
+        };
+      });
+    };
+
+    const timePackages = groupTimeSlotsIntoPackages(selectedSlots);
+    
+    // Use the first package as the template for recurrence
+    const templatePackage = timePackages[0];
+    if (!templatePackage) return;
+    
+    const templateGroup = templatePackage.groups[0];
+    if (!templateGroup) return;
+    
+    // Create time slots from the grouped package
+    const timeSlots = [`${templateGroup.startTime}-${templateGroup.endTime}`];
+    
+    // Use the actual date from selected slots, not pattern.startDate
+    // Find the most common date among selected slots
+    const dateCounts = selectedSlots.reduce((counts, slot) => {
+      // Use local date to avoid timezone issues
+      const slotDate = slot.date instanceof Date ? slot.date : new Date(slot.date);
+      const dateKey = `${slotDate.getFullYear()}-${String(slotDate.getMonth() + 1).padStart(2, '0')}-${String(slotDate.getDate()).padStart(2, '0')}`;
+      counts[dateKey] = (counts[dateKey] || 0) + 1;
+      return counts;
+    }, {} as Record<string, number>);
+    
+    const mostCommonDate = Object.entries(dateCounts).reduce((a, b) => dateCounts[a[0]] > dateCounts[b[0]] ? a : b)[0];
+    
+    // Safely handle startDate conversion
+    let startDate: Date;
+    if (mostCommonDate) {
+      startDate = parseISO(mostCommonDate);
+    } else {
+      const rawStartDate = pattern.startDate || selectedSlots[0].date;
+      if (rawStartDate instanceof Date) {
+        startDate = rawStartDate;
+      } else if (typeof rawStartDate === 'string') {
+        startDate = parseISO(rawStartDate);
+      } else {
+        startDate = new Date(rawStartDate);
+      }
+    }
+    
+    // Validate startDate
+    if (!isValid(startDate)) {
+      console.error('Invalid startDate:', mostCommonDate || pattern.startDate);
+      return [];
+    }
+    
     const maxOccurrences = Math.max(1, pattern.maxOccurrences || 5); // Allow any value >=1
     const occurrences: ISelectedTimeSlot[] = [];
     
@@ -319,34 +462,25 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
       }
       
       while (occurrenceCount < maxOccurrences) {
+        // Generate one occurrence per week using the grouped time package
+        const timeSlot = timeSlots[0]; // Use the grouped time slot (e.g., "09:00-11:00")
+        const duration = templateGroup.totalDuration; // Use the total duration from the grouped package
         
+        occurrences.push({
+          id: `${selectedZone.id}-${occurrenceDate.getTime()}-${timeSlot}-recurring-${occurrenceCount}`,
+          facilityId,
+          zoneId: selectedZone.id,
+          date: occurrenceDate,
+          timeSlot,
+          duration: duration, // Use the grouped package duration
+          pricePerHour: selectedZone.pricePerHour || 0,
+          zoneName: selectedZone.name,
+          isRecurring: true,
+          recurrencePattern: pattern,
+          parentBookingId: selectedSlots[0].id
+        });
         
-        // Generate occurrences for this week
-        for (const timeSlot of timeSlots) {
-          if (occurrenceCount >= maxOccurrences) break;
-          
-          // Calculate duration from timeSlot (e.g., "20:00-21:00" = 60 minutes)
-          const [startTime, endTime] = timeSlot.split('-');
-          const startMinutes = parseInt(startTime.split(':')[0]) * 60 + parseInt(startTime.split(':')[1]);
-          const endMinutes = parseInt(endTime.split(':')[0]) * 60 + parseInt(endTime.split(':')[1]);
-          const duration = endMinutes - startMinutes;
-          
-          occurrences.push({
-            id: `${selectedZone.id}-${occurrenceDate.getTime()}-${timeSlot}-recurring-${occurrenceCount}`,
-            facilityId,
-            zoneId: selectedZone.id,
-            date: occurrenceDate,
-            timeSlot,
-            duration: duration, // Calculate actual duration from timeSlot
-            pricePerHour: selectedZone.pricePerHour || 0,
-            zoneName: selectedZone.name,
-            isRecurring: true,
-            recurrencePattern: pattern,
-            parentBookingId: selectedSlots[0].id
-          });
-          
-          occurrenceCount++;
-        }
+        occurrenceCount++;
         
         // Move to next week/biweekly
         occurrenceDate = addWeeks(occurrenceDate, weekIncrement);
@@ -439,10 +573,10 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
    * Handle recurrence pattern change
    */
   const handleRecurrencePatternChange = useCallback((pattern: RecurrencePattern | null) => {
-    // Set startDate to the first selected slot's date if available
+    // Set startDate to the most recent selected slot's date if available
     const patternWithStartDate = pattern ? {
       ...pattern,
-      startDate: selectedSlots.length > 0 ? selectedSlots[0].date : pattern.startDate
+      startDate: selectedSlots.length > 0 ? selectedSlots[selectedSlots.length - 1].date : pattern.startDate
     } : null;
     
     setRecurrencePattern(patternWithStartDate);
@@ -718,9 +852,10 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
                             const updatedSlots = selectedSlots.filter((_, index) => index !== existingIndex);
                             onSlotsChange(updatedSlots);
                           } else {
-                            // Add slot
+                            // Add slot - use local date for ID to avoid timezone issues
+                            const localDateString = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
                             const newSlot: ISelectedTimeSlot = {
-                              id: `${facilityId}-${zoneId}-${date.toISOString().split('T')[0]}-${timeSlot}`,
+                              id: `${facilityId}-${zoneId}-${localDateString}-${timeSlot}`,
                               facilityId,
                               zoneId,
                               date,
@@ -1032,50 +1167,263 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
                     <div className="space-y-2">
                       {/* Show selected slots (template for recurring or final for one-time) */}
                       {formData.bookingType === 'recurring' && recurringSlots.length > 0 ? (
-                        // For recurring bookings, show the first recurring slot as template
-                        <div className="flex items-center justify-between p-2 bg-gray-50 rounded">
-                          <div className="flex-1">
-                            <div className="font-medium text-sm">{recurringSlots[0].timeSlot}</div>
-                            <div className="text-xs text-gray-500">{recurringSlots[0].zoneName}</div>
-                            <div className="text-xs text-gray-400">
-                              {new Date(recurringSlots[0].date).toLocaleDateString('nb-NO')}
-                            </div>
-                            <div className="text-xs text-blue-600 font-medium">
-                              Mal for gjentakelse
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Badge variant="secondary">
-                              {recurringSlots[0].duration / 60} timer
-                            </Badge>
-                          </div>
-                        </div>
-                      ) : (
-                        // For one-time bookings, show selected slots
-                        selectedSlots.map((slot, index) => (
-                          <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded">
-                            <div className="flex-1">
-                              <div className="font-medium text-sm">{slot.timeSlot}</div>
-                              <div className="text-xs text-gray-500">{slot.zoneName}</div>
-                              <div className="text-xs text-gray-400">
-                                {new Date(slot.date).toLocaleDateString('nb-NO')}
+                        // For recurring bookings, show intelligently grouped time packages as template
+                        (() => {
+                          // Group time slots into packages by date and consecutive times
+                          const groupTimeSlotsIntoPackages = (slots: ISelectedTimeSlot[]) => {
+                            // Group by date first
+                            const dateGroups = slots.reduce((groups, slot) => {
+                              // Safely handle date conversion
+                              let date: Date;
+                              if (slot.date instanceof Date) {
+                                date = slot.date;
+                              } else if (typeof slot.date === 'string') {
+                                date = parseISO(slot.date);
+                              } else {
+                                date = new Date(slot.date);
+                              }
+                              
+                              // Validate date
+                              if (!isValid(date)) {
+                                console.warn('Invalid date for slot:', slot);
+                                return groups;
+                              }
+                              
+                              const dateKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+                              if (!groups[dateKey]) {
+                                groups[dateKey] = [];
+                              }
+                              groups[dateKey].push(slot);
+                              return groups;
+                            }, {} as Record<string, ISelectedTimeSlot[]>);
+
+                            // Process each date group
+                            return Object.entries(dateGroups).map(([dateKey, dateSlots]) => {
+                              // Sort by start time
+                              const sortedSlots = dateSlots.sort((a, b) => {
+                                const timeA = a.timeSlot.split('-')[0];
+                                const timeB = b.timeSlot.split('-')[0];
+                                return timeA.localeCompare(timeB);
+                              });
+
+                              // Group consecutive time slots
+                              const consecutiveGroups: ISelectedTimeSlot[][] = [];
+                              let currentGroup: ISelectedTimeSlot[] = [sortedSlots[0]];
+
+                              for (let i = 1; i < sortedSlots.length; i++) {
+                                const prevSlot = sortedSlots[i - 1];
+                                const currentSlot = sortedSlots[i];
+                                
+                                // Check if current slot is consecutive to previous
+                                const prevEndTime = prevSlot.timeSlot.split('-')[1];
+                                const currentStartTime = currentSlot.timeSlot.split('-')[0];
+                                
+                                if (prevEndTime === currentStartTime) {
+                                  // Consecutive - add to current group
+                                  currentGroup.push(currentSlot);
+                                } else {
+                                  // Not consecutive - start new group
+                                  consecutiveGroups.push([...currentGroup]);
+                                  currentGroup = [currentSlot];
+                                }
+                              }
+                              
+                              // Add the last group
+                              consecutiveGroups.push(currentGroup);
+
+                              return {
+                                date: dateKey,
+                                dateFormatted: new Date(dateKey).toLocaleDateString('nb-NO'),
+                                groups: consecutiveGroups.map(group => ({
+                                  slots: group,
+                                  startTime: group[0].timeSlot.split('-')[0],
+                                  endTime: group[group.length - 1].timeSlot.split('-')[1],
+                                  totalDuration: group.reduce((total, slot) => total + slot.duration, 0),
+                                  isConsecutive: group.length === 1 || 
+                                    group.every((slot, index) => {
+                                      if (index === 0) return true;
+                                      const prevEndTime = group[index - 1].timeSlot.split('-')[1];
+                                      const currentStartTime = slot.timeSlot.split('-')[0];
+                                      return prevEndTime === currentStartTime;
+                                    })
+                                }))
+                              };
+                            });
+                          };
+
+                          // Debug: Log selected slots to see what we're working with
+                          console.log('Selected slots for template:', selectedSlots.map(slot => ({
+                            id: slot.id,
+                            date: slot.date,
+                            dateString: slot.date instanceof Date ? slot.date.toDateString() : new Date(slot.date).toDateString(),
+                            timeSlot: slot.timeSlot
+                          })));
+                          
+                          // Debug: Log selected slots to see what we're working with
+                          console.log('Selected slots for template (calendar step):', selectedSlots.map(slot => ({
+                            id: slot.id,
+                            date: slot.date,
+                            dateString: slot.date instanceof Date ? slot.date.toDateString() : new Date(slot.date).toDateString(),
+                            timeSlot: slot.timeSlot
+                          })));
+                          
+                          // Use all selected slots for the template (no filtering needed)
+                          const timePackages = groupTimeSlotsIntoPackages(selectedSlots);
+
+                          return (
+                            <div className="space-y-2">
+                              <div className="text-xs text-blue-600 font-medium mb-2">
+                                Mal for gjentakelse
                               </div>
+                              {timePackages.map((datePackage) => (
+                                <div key={datePackage.date} className="space-y-2">
+                                  <div className="flex items-center gap-2">
+                                    <Calendar className="h-4 w-4 text-gray-600" />
+                                    <span className="text-sm font-medium text-gray-800">
+                                      {datePackage.dateFormatted}
+                                    </span>
+                                  </div>
+                                  
+                                  {datePackage.groups.map((group, groupIndex) => (
+                                    <div
+                                      key={`${datePackage.date}-${groupIndex}`}
+                                      className="flex items-center justify-between p-3 bg-blue-50 rounded-lg border border-blue-200"
+                                    >
+                                      <div className="flex-1 min-w-0">
+                                        <div className="flex items-center gap-2">
+                                          <Clock className="h-3 w-3 text-blue-600" />
+                                          <span className="text-sm font-medium text-blue-900">
+                                            {group.isConsecutive 
+                                              ? `(${group.startTime}-${group.endTime}) - (${group.totalDuration / 60 === 1 ? '1 time' : `${group.totalDuration / 60} timer`})`
+                                              : `(${group.slots.map(slot => slot.timeSlot.split('-')[0]).join(', ')}) - (${group.totalDuration / 60 === 1 ? '1 time' : `${group.totalDuration / 60} timer`})`
+                                            }
+                                          </span>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              ))}
                             </div>
-                            <div className="flex items-center gap-2">
-                              <Badge variant="secondary">
-                                {slot.duration / 60} timer
-                              </Badge>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => handleRemoveSlot(slot.id)}
-                                className="h-6 w-6 p-0 text-gray-400 hover:text-red-500 hover:bg-red-50"
-                              >
-                                <X className="h-3 w-3" />
-                              </Button>
+                          );
+                        })()
+                      ) : (
+                        // For one-time bookings, show grouped time packages
+                        (() => {
+                          // Group time slots into packages by date and consecutive times
+                          const groupTimeSlotsIntoPackages = (slots: ISelectedTimeSlot[]) => {
+                            // Group by date first
+                            const dateGroups = slots.reduce((groups, slot) => {
+                              // Safely handle date conversion
+                              let date: Date;
+                              if (slot.date instanceof Date) {
+                                date = slot.date;
+                              } else if (typeof slot.date === 'string') {
+                                date = parseISO(slot.date);
+                              } else {
+                                date = new Date(slot.date);
+                              }
+                              
+                              // Validate date
+                              if (!isValid(date)) {
+                                console.warn('Invalid date for slot:', slot);
+                                return groups;
+                              }
+                              
+                              const dateKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+                              if (!groups[dateKey]) {
+                                groups[dateKey] = [];
+                              }
+                              groups[dateKey].push(slot);
+                              return groups;
+                            }, {} as Record<string, ISelectedTimeSlot[]>);
+
+                            // Process each date group
+                            return Object.entries(dateGroups).map(([dateKey, dateSlots]) => {
+                              // Sort by start time
+                              const sortedSlots = dateSlots.sort((a, b) => {
+                                const timeA = a.timeSlot.split('-')[0];
+                                const timeB = b.timeSlot.split('-')[0];
+                                return timeA.localeCompare(timeB);
+                              });
+
+                              // Group consecutive time slots
+                              const consecutiveGroups: ISelectedTimeSlot[][] = [];
+                              let currentGroup: ISelectedTimeSlot[] = [sortedSlots[0]];
+
+                              for (let i = 1; i < sortedSlots.length; i++) {
+                                const prevSlot = sortedSlots[i - 1];
+                                const currentSlot = sortedSlots[i];
+                                
+                                // Check if current slot is consecutive to previous
+                                const prevEndTime = prevSlot.timeSlot.split('-')[1];
+                                const currentStartTime = currentSlot.timeSlot.split('-')[0];
+                                
+                                if (prevEndTime === currentStartTime) {
+                                  // Consecutive - add to current group
+                                  currentGroup.push(currentSlot);
+                                } else {
+                                  // Not consecutive - start new group
+                                  consecutiveGroups.push([...currentGroup]);
+                                  currentGroup = [currentSlot];
+                                }
+                              }
+                              
+                              // Add the last group
+                              consecutiveGroups.push(currentGroup);
+
+                              return {
+                                date: dateKey,
+                                dateFormatted: new Date(dateKey).toLocaleDateString('nb-NO'),
+                                groups: consecutiveGroups.map(group => ({
+                                  slots: group,
+                                  startTime: group[0].timeSlot.split('-')[0],
+                                  endTime: group[group.length - 1].timeSlot.split('-')[1],
+                                  totalDuration: group.reduce((total, slot) => total + slot.duration, 0),
+                                  isConsecutive: group.length === 1 || 
+                                    group.every((slot, index) => {
+                                      if (index === 0) return true;
+                                      const prevEndTime = group[index - 1].timeSlot.split('-')[1];
+                                      const currentStartTime = slot.timeSlot.split('-')[0];
+                                      return prevEndTime === currentStartTime;
+                                    })
+                                }))
+                              };
+                            });
+                          };
+
+                          const timePackages = groupTimeSlotsIntoPackages(selectedSlots);
+
+                          return timePackages.map((datePackage) => (
+                            <div key={datePackage.date} className="space-y-2">
+                              <div className="flex items-center gap-2">
+                                <Calendar className="h-4 w-4 text-gray-600" />
+                                <span className="text-sm font-medium text-gray-800">
+                                  {datePackage.dateFormatted}
+                                </span>
+                              </div>
+                              
+                              {datePackage.groups.map((group, groupIndex) => (
+                                <div
+                                  key={`${datePackage.date}-${groupIndex}`}
+                                  className="flex items-center justify-between p-3 bg-blue-50 rounded-lg border border-blue-200"
+                                >
+                                  <div className="flex-1 min-w-0">
+                                    <div className="flex items-center gap-2">
+                                      <Clock className="h-3 w-3 text-blue-600" />
+                                      <span className="text-sm font-medium text-blue-900">
+                                        {group.isConsecutive 
+                                          ? `(${group.startTime}-${group.endTime}) - (${group.totalDuration / 60 === 1 ? '1 time' : `${group.totalDuration / 60} timer`})`
+                                          : `(${group.slots.map(slot => slot.timeSlot.split('-')[0]).join(', ')}) - (${group.totalDuration / 60 === 1 ? '1 time' : `${group.totalDuration / 60} timer`})`
+                                        }
+                                      </span>
+                                    </div>
+                                  </div>
+                                </div>
+                              ))}
                             </div>
-                          </div>
-                        ))
+                          ));
+                        })()
                       )}
                       
                       {/* Show recurring slots preview for recurring bookings */}
@@ -1084,25 +1432,129 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
                           <div className="text-xs font-medium text-gray-600 mb-2">
                             Gjentakende forekomster ({recurringSlots.length} totalt):
                           </div>
-                          {recurringSlots.slice(0, 5).map((slot, index) => (
-                            <div key={index} className="flex items-center justify-between p-2 bg-blue-50 rounded text-sm mb-2">
-                              <div className="flex-1">
-                                <div className="font-medium text-sm">{slot.timeSlot}</div>
-                                <div className="text-xs text-gray-500">{slot.zoneName}</div>
-                                <div className="text-xs text-gray-400">
-                                  {new Date(slot.date).toLocaleDateString('nb-NO')}
+                          {(() => {
+                            // Group recurring slots by date and consecutive times
+                            const groupRecurringSlotsIntoPackages = (slots: ISelectedTimeSlot[]) => {
+                              // Group by date first
+                              const dateGroups = slots.reduce((groups, slot) => {
+                                // Safely handle date conversion
+                                let date: Date;
+                                if (slot.date instanceof Date) {
+                                  date = slot.date;
+                                } else if (typeof slot.date === 'string') {
+                                  date = parseISO(slot.date);
+                                } else {
+                                  date = new Date(slot.date);
+                                }
+                                
+                                // Validate date
+                                if (!isValid(date)) {
+                                  console.warn('Invalid date for slot:', slot);
+                                  return groups;
+                                }
+                                
+                                const dateKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+                                if (!groups[dateKey]) {
+                                  groups[dateKey] = [];
+                                }
+                                groups[dateKey].push(slot);
+                                return groups;
+                              }, {} as Record<string, ISelectedTimeSlot[]>);
+
+                              // Process each date group
+                              return Object.entries(dateGroups).map(([dateKey, dateSlots]) => {
+                                // Sort by start time
+                                const sortedSlots = dateSlots.sort((a, b) => {
+                                  const timeA = a.timeSlot.split('-')[0];
+                                  const timeB = b.timeSlot.split('-')[0];
+                                  return timeA.localeCompare(timeB);
+                                });
+
+                                // Group consecutive time slots
+                                const consecutiveGroups: ISelectedTimeSlot[][] = [];
+                                let currentGroup: ISelectedTimeSlot[] = [sortedSlots[0]];
+
+                                for (let i = 1; i < sortedSlots.length; i++) {
+                                  const prevSlot = sortedSlots[i - 1];
+                                  const currentSlot = sortedSlots[i];
+                                  
+                                  // Check if current slot is consecutive to previous
+                                  const prevEndTime = prevSlot.timeSlot.split('-')[1];
+                                  const currentStartTime = currentSlot.timeSlot.split('-')[0];
+                                  
+                                  if (prevEndTime === currentStartTime) {
+                                    // Consecutive - add to current group
+                                    currentGroup.push(currentSlot);
+                                  } else {
+                                    // Not consecutive - start new group
+                                    consecutiveGroups.push([...currentGroup]);
+                                    currentGroup = [currentSlot];
+                                  }
+                                }
+                                
+                                // Add the last group
+                                consecutiveGroups.push(currentGroup);
+
+                                return {
+                                  date: dateKey,
+                                  dateFormatted: new Date(dateKey).toLocaleDateString('nb-NO'),
+                                  groups: consecutiveGroups.map(group => ({
+                                    slots: group,
+                                    startTime: group[0].timeSlot.split('-')[0],
+                                    endTime: group[group.length - 1].timeSlot.split('-')[1],
+                                    totalDuration: group.reduce((total, slot) => total + slot.duration, 0),
+                                    isConsecutive: group.length === 1 || 
+                                      group.every((slot, index) => {
+                                        if (index === 0) return true;
+                                        const prevEndTime = group[index - 1].timeSlot.split('-')[1];
+                                        const currentStartTime = slot.timeSlot.split('-')[0];
+                                        return prevEndTime === currentStartTime;
+                                      })
+                                  }))
+                                };
+                              });
+                            };
+
+                            const recurringPackages = groupRecurringSlotsIntoPackages(recurringSlots);
+
+                            return recurringPackages.slice(0, 5).map((datePackage, packageIndex) => (
+                              <div key={datePackage.date} className="space-y-2 mb-3">
+                                <div className="flex items-center gap-2">
+                                  <Calendar className="h-4 w-4 text-gray-600" />
+                                  <span className="text-sm font-medium text-gray-800">
+                                    {datePackage.dateFormatted}
+                                  </span>
                                 </div>
+                                
+                                {datePackage.groups.map((group, groupIndex) => (
+                                  <div
+                                    key={`${datePackage.date}-${groupIndex}`}
+                                    className="flex items-center justify-between p-3 bg-blue-50 rounded-lg border border-blue-200"
+                                  >
+                                    <div className="flex-1 min-w-0">
+                                      <div className="flex items-center gap-2">
+                                        <Clock className="h-3 w-3 text-blue-600" />
+                                        <span className="text-sm font-medium text-blue-900">
+                                          {group.isConsecutive 
+                                            ? `(${group.startTime}-${group.endTime}) - (${group.totalDuration / 60 === 1 ? '1 time' : `${group.totalDuration / 60} timer`})`
+                                            : `(${group.slots.map(slot => slot.timeSlot.split('-')[0]).join(', ')}) - (${group.totalDuration / 60 === 1 ? '1 time' : `${group.totalDuration / 60} timer`})`
+                                          }
+                                        </span>
+                                      </div>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                      <Badge variant="outline" className="text-xs">
+                                        {group.totalDuration / 60 === 1 ? '1 time' : `${group.totalDuration / 60} timer`}
+                                      </Badge>
+                                      <Badge variant="secondary" className="text-xs">
+                                        Gjentakende
+                                      </Badge>
+                                    </div>
+                                  </div>
+                                ))}
                               </div>
-                              <div className="flex items-center gap-2">
-                                <Badge variant="outline" className="text-xs">
-                                  {slot.duration / 60} timer
-                                </Badge>
-                                <Badge variant="secondary" className="text-xs">
-                                  Gjentakende
-                                </Badge>
-                              </div>
-                            </div>
-                          ))}
+                            ));
+                          })()}
                           {recurringSlots.length > 5 && (
                             <div className="text-xs text-gray-500 text-center py-1">
                               ... og {recurringSlots.length - 5} til
