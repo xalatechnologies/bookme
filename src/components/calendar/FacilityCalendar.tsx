@@ -431,7 +431,7 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
   /**
    * Calculate pricing for booking
    */
-  const calculatePricing = useCallback((slots: ISelectedTimeSlot[]): {
+  const calculatePricing = useCallback((slots: ISelectedTimeSlot[], actorType?: string, activityType?: string): {
     readonly basePrice: number;
     readonly vatRate: number;
     readonly vatAmount: number;
@@ -442,12 +442,44 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
       const durationHours = (slot.duration ?? 60) / 60;
       return total + (slot.pricePerHour * durationHours);
     }, 0);
-    
+
+    // Apply the same adjustments used in PriceCalculation.tsx
+    const getActorMultiplier = (type?: string): number => {
+      switch (type) {
+        case "paraply":
+          return 0.9; // 10% rabatt
+        case "private-firma":
+          return 1.2; // 20% tillegg
+        case "kommunale-enheter":
+          return 0.8; // 20% rabatt
+        case "lag-foreninger":
+          return 0.85; // 15% rabatt
+        default:
+          return 1.0; // Privatperson
+      }
+    };
+
+    const getActivityAdjustment = (type?: string): number => {
+      switch (type) {
+        case "kultur":
+          return -50; // 50 kr rabatt
+        case "møte":
+          return 100; // 100 kr tillegg
+        case "arrangement":
+          return 200; // 200 kr tillegg
+        default:
+          return 0;
+      }
+    };
+
+    const adjusted = basePrice * getActorMultiplier(actorType);
+    const adjustedWithActivity = adjusted + getActivityAdjustment(activityType);
+
     const vatRate = 0.25;
-    const vatAmount = basePrice * vatRate;
-    const finalPrice = basePrice + vatAmount;
+    const vatAmount = adjustedWithActivity * vatRate;
+    const finalPrice = adjustedWithActivity + vatAmount;
     
-    return { basePrice, vatRate, vatAmount, finalPrice };
+    return { basePrice: adjustedWithActivity, vatRate, vatAmount, finalPrice };
   }, []);
 
   /**
@@ -540,7 +572,7 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
         : allSelectedSlots;
       
       // For recurring bookings, calculate pricing for all slots
-      const pricing = calculatePricing(slotsToUse);
+      const pricing = calculatePricing(slotsToUse, bookingData.actorType, bookingData.activityType);
       const cartItem = createCartItem(bookingData, pricing, slotsToUse);
       
       addItem(cartItem);
@@ -614,7 +646,7 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
         : allSelectedSlots;
       
       // For recurring bookings, calculate pricing for all slots
-      const pricing = calculatePricing(slotsToUse);
+      const pricing = calculatePricing(slotsToUse, bookingData.actorType, bookingData.activityType);
       const cartItem = createCartItem(bookingData, pricing, slotsToUse);
       
       addItem(cartItem);

@@ -41,9 +41,13 @@ export const MapMarkers: React.FC<MapMarkersProps> = ({
   const createMarkerElement = (facility: Facility): HTMLDivElement => {
     const markerElement = document.createElement('div');
     markerElement.className = 'custom-marker';
+    // Create a location icon marker with black color, no white border, matching exactly the style used in list view (Mapbox pin)
     markerElement.innerHTML = `
-      <div class="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center shadow-lg border-2 border-white cursor-pointer hover:bg-blue-700 transition-colors">
-        <span class="text-xs font-bold">${facility.capacity}</span>
+      <div class="text-gray-800 cursor-pointer hover:text-black transition-colors" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="#000000">
+          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+          <circle cx="12" cy="9" r="2" fill="white"/>
+        </svg>
       </div>
     `;
     
@@ -58,17 +62,18 @@ export const MapMarkers: React.FC<MapMarkersProps> = ({
   };
 
   const createPopupContent = (facility: Facility): string => {
+    // Get the first image or use a placeholder
+    const imageUrl = facility.images && facility.images.length > 0 
+      ? facility.images[0] 
+      : '/placeholder.svg';
+      
+    // Simplified popup content with only name and image
     return `
-      <div class="p-3 min-w-[200px]">
-        <h3 class="font-bold text-lg mb-2">${facility.name}</h3>
-        <p class="text-gray-600 mb-2">${facility.address}</p>
-        <div class="flex justify-between items-center text-sm">
-          <span class="text-gray-500">Kapasitet: ${facility.capacity}</span>
-          <span class="font-semibold text-blue-600">${facility.pricePerHour} kr/t</span>
+      <div style="min-width: 200px; padding: 12px;">
+        <div style="margin-bottom: 8px;">
+          <img src="${imageUrl}" alt="${facility.name}" style="width: 100%; height: 128px; object-fit: cover; border-radius: 4px;" onerror="this.src='/placeholder.svg'">
         </div>
-        <div class="mt-2">
-          <span class="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">${facility.type}</span>
-        </div>
+        <h3 style="font-weight: bold; font-size: 16px; margin: 0;">${facility.name}</h3>
       </div>
     `;
   };
@@ -81,8 +86,17 @@ export const MapMarkers: React.FC<MapMarkersProps> = ({
       marker.remove();
     });
 
+    // Filter facilities to only include those with valid coordinates
+    const facilitiesWithCoordinates = facilities.filter(facility => 
+      facility.coordinates && 
+      typeof facility.coordinates.lat === 'number' && 
+      typeof facility.coordinates.lng === 'number' &&
+      !isNaN(facility.coordinates.lat) &&
+      !isNaN(facility.coordinates.lng)
+    );
+
     // Create new markers
-    const newMarkers = facilities.map((facility): mapboxgl.Marker => {
+    const newMarkers = facilitiesWithCoordinates.map((facility): mapboxgl.Marker => {
       const markerElement = createMarkerElement(facility);
       const popupContent = createPopupContent(facility);
       
@@ -94,7 +108,7 @@ export const MapMarkers: React.FC<MapMarkersProps> = ({
 
       const marker = new mapboxgl.Marker({
         element: markerElement,
-        anchor: 'center'
+        anchor: 'bottom'
       })
         .setLngLat([facility.coordinates.lng, facility.coordinates.lat])
         .setPopup(popup)

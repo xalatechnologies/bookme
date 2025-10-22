@@ -7,6 +7,7 @@ import mapboxgl from 'mapbox-gl';
 // Internal imports
 import { useFacilityStore } from '@/stores/facilityStore';
 import { FacilityFilters } from '@/types/facility';
+import type { IFacility } from '@/stores/facilityStore'; // Import the IFacility type
 
 // Sibling imports
 import { Card } from './ui/card';
@@ -20,19 +21,31 @@ interface MapViewProps {
   readonly location: string;
   readonly viewMode: "grid" | "map" | "list";
   readonly setViewMode: (mode: "grid" | "map" | "list") => void;
+  readonly showAllFacilities?: boolean; // New prop to show all facilities in admin
+  readonly showHeader?: boolean; // New prop to control header visibility
+  readonly onMarkerClick?: (facility: IFacility) => void; // New prop for handling marker clicks
 }
 
 // Mapbox public token provided by user
 const DEFAULT_MAPBOX_TOKEN = 'pk.eyJ1IjoiYW1pbjA3IiwiYSI6ImNtZzlqcjNnczBmMmsycXM2cm4xYzU0OGwifQ.1Vuiv_9pPIUY478LP3yccA';
 
-export const MapView: React.FC<MapViewProps> = ({ facilityType, location, viewMode, setViewMode }): JSX.Element => {
+export const MapView: React.FC<MapViewProps> = ({ 
+  facilityType, 
+  location, 
+  viewMode, 
+  setViewMode,
+  showAllFacilities = false, // Default to false for backward compatibility
+  showHeader = true, // Default to true for backward compatibility
+  onMarkerClick // New prop for handling marker clicks
+}): JSX.Element => {
   const [map, setMap] = useState<mapboxgl.Map | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
   const [isInitialized, setIsInitialized] = useState<boolean>(false);
   
-  const { getPublishedFacilities } = useFacilityStore();
-  const facilities = getPublishedFacilities();
+  const { getPublishedFacilities, getAdminFacilities } = useFacilityStore();
+  // Use getAdminFacilities if showAllFacilities is true, otherwise use getPublishedFacilities
+  const facilities = showAllFacilities ? getAdminFacilities() : getPublishedFacilities();
 
   // Create filters from props
   const filters: FacilityFilters = {
@@ -55,6 +68,7 @@ export const MapView: React.FC<MapViewProps> = ({ facilityType, location, viewMo
   };
 
   const handleMapError = (errorMessage: string): void => {
+    console.error('Map error:', errorMessage); // Log to console for debugging
     setError(errorMessage);
     setIsInitialized(false);
   };
@@ -65,20 +79,18 @@ export const MapView: React.FC<MapViewProps> = ({ facilityType, location, viewMo
     window.location.reload();
   };
 
-  const handleMarkerClick = (facility: { id: string; name: string; [key: string]: unknown }): void => {
-    // Could navigate to facility detail page or show more info
-  };
-
   // Show loading or error overlay inside the card instead of replacing entire component
 
   return (
     <div className="max-w-7xl mx-auto px-4 my-[12px]">
-      <ViewHeader 
-        facilityCount={filteredFacilities.length}
-        isLoading={isLoading}
-        viewMode={viewMode}
-        setViewMode={setViewMode}
-      />
+      {showHeader && (
+        <ViewHeader 
+          facilityCount={filteredFacilities.length}
+          isLoading={isLoading}
+          viewMode={viewMode}
+          setViewMode={setViewMode}
+        />
+      )}
 
       {filteredFacilities.length === 0 ? (
         <Card className="p-8">
@@ -89,7 +101,7 @@ export const MapView: React.FC<MapViewProps> = ({ facilityType, location, viewMo
           </div>
         </Card>
       ) : (
-        <Card className="h-[600px] relative overflow-hidden">
+        <Card className={`h-[600px] relative overflow-hidden ${!showHeader ? 'mt-4' : ''}`}>
           {/* Show loading overlay */}
           {isLoading && (
             <div className="absolute inset-0 bg-gray-50 flex items-center justify-center z-10">
@@ -134,7 +146,7 @@ export const MapView: React.FC<MapViewProps> = ({ facilityType, location, viewMo
             <MapMarkers
               map={map}
               facilities={filteredFacilities}
-              onMarkerClick={handleMarkerClick}
+              onMarkerClick={onMarkerClick}
             />
           )}
         </Card>
@@ -142,4 +154,3 @@ export const MapView: React.FC<MapViewProps> = ({ facilityType, location, viewMo
     </div>
   );
 };
-

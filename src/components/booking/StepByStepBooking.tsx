@@ -406,7 +406,27 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
     const templateGroup = templatePackage.groups[0];
     if (!templateGroup) return;
     
-    // Create time slots from the grouped package
+    // Build a map: weekday (0-6) -> grouped time window for that weekday
+    const weekdayToGroup = new Map<number, { startTime: string; endTime: string; totalDuration: number }>();
+    // And track the first explicit date from the template per weekday
+    const weekdayToFirstDate = new Map<number, Date>();
+    for (const datePackage of timePackages) {
+      // datePackage.date is formatted as YYYY-MM-DD from grouping logic
+      const [y, m, d] = datePackage.date.split('-').map(Number);
+      const localDate = new Date(y, (m || 1) - 1, d || 1);
+      const wd = localDate.getDay();
+      const grp = datePackage.groups && datePackage.groups[0];
+      if (grp && !weekdayToGroup.has(wd)) {
+        weekdayToGroup.set(wd, { startTime: grp.startTime, endTime: grp.endTime, totalDuration: grp.totalDuration });
+      }
+      if (!weekdayToFirstDate.has(wd)) {
+        weekdayToFirstDate.set(wd, localDate);
+      }
+    }
+    // Fallback group if a specific weekday was not part of the template selection
+    const defaultGroup = { startTime: templateGroup.startTime, endTime: templateGroup.endTime, totalDuration: templateGroup.totalDuration };
+    
+    // Create time slots from the grouped package (kept for compatibility where one weekday is chosen)
     const timeSlots = [`${templateGroup.startTime}-${templateGroup.endTime}`];
     
     // Use the actual date from selected slots, not pattern.startDate
@@ -445,45 +465,90 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
     const maxOccurrences = Math.max(1, pattern.maxOccurrences || 5); // Allow any value >=1
     const occurrences: ISelectedTimeSlot[] = [];
     
-    // Simple weekly pattern generation
+    // Simple weekly pattern generation (supports multiple weekdays)
     if (pattern.type === 'weekly' || pattern.type === 'biweekly') {
-      let occurrenceCount = 0;
       const weekIncrement = pattern.type === 'biweekly' ? 2 : 1;
-      
-      // Find the first occurrence of the target weekday
-      const targetWeekday = pattern.weekdays[0]; // Use first selected weekday
-      const startDayOfWeek = getDay(startDate);
-      let occurrenceDate = startDate;
-      
-      // If startDate is not the target weekday, find the first occurrence
-      if (startDayOfWeek !== targetWeekday) {
-        const daysToAdd = (targetWeekday - startDayOfWeek + 7) % 7;
-        occurrenceDate = addDays(startDate, daysToAdd);
-      }
-      
-      while (occurrenceCount < maxOccurrences) {
-        // Generate one occurrence per week using the grouped time package
-        const timeSlot = timeSlots[0]; // Use the grouped time slot (e.g., "09:00-11:00")
-        const duration = templateGroup.totalDuration; // Use the total duration from the grouped package
-        
+      const selectedWeekdays = (pattern.weekdays && pattern.weekdays.length > 0)
+        ? [...pattern.weekdays]
+        : [getDay(startDate)];
+
+      // Build a cursor per weekday pointing to the first matching date on/after startDate
+      type WeekdayCursor = { weekday: number; date: Date };
+      const cursors: WeekdayCursor[] = selectedWeekdays.map((weekday) => {
+        // Prefer the explicit first date captured from the template (so we include 25.10 if selected)
+        const templateFirst = weekdayToFirstDate.get(weekday);
+        if (templateFirst) {
+          return { weekday, date: new Date(templateFirst) };
+        }
+        // Fallback: compute the first matching date on/after startDate
+        const startDow = getDay(startDate);
+        const daysToAdd = (weekday - startDow + 7) % 7;
+        const firstDate = addDays(startDate, daysToAdd);
+        return { weekday, date: firstDate };
+      });
+
+      // Track per-weekday counts to enforce maxOccurrences per selected day
+      const perWeekdayCount = new Map<number, number>();
+      selectedWeekdays.forEach(w => perWeekdayCount.set(w, 0));
+
+      let occurrenceCount = 0; // total generated (all weekdays)
+      const targetTotal = maxOccurrences * selectedWeekdays.length;
+      // The time window depends on the weekday cursor we are expanding
+      // Use the specific group's times if available; otherwise, fall back to templateGroup
+
+      // Generate occurrences by always taking the next earliest cursor date,
+      // then advance only that cursor by the (bi)weekly increment
+      while (occurrenceCount < targetTotal && cursors.length > 0) {
+        // Find earliest upcoming date among cursors
+        let earliestIndex = 0;
+        for (let i = 1; i < cursors.length; i++) {
+          if (cursors[i].date < cursors[earliestIndex].date) {
+            earliestIndex = i;
+          }
+        }
+
+        const next = cursors[earliestIndex];
+        const nextDate = next.date;
+        const groupForWeekday = weekdayToGroup.get(next.weekday) || defaultGroup;
+        const timeSlot = `${groupForWeekday.startTime}-${groupForWeekday.endTime}`;
+        const duration = groupForWeekday.totalDuration;
+
+        // If this weekday already reached its cap, advance its cursor and continue
+        const currentCount = perWeekdayCount.get(next.weekday) || 0;
+        if (currentCount >= maxOccurrences) {
+          // Remove this cursor - it's done
+          cursors.splice(earliestIndex, 1);
+          continue;
+        }
+
         occurrences.push({
-          id: `${selectedZone.id}-${occurrenceDate.getTime()}-${timeSlot}-recurring-${occurrenceCount}`,
+          id: `${selectedZone.id}-${nextDate.getTime()}-${timeSlot}-recurring-${occurrenceCount}`,
           facilityId,
           zoneId: selectedZone.id,
-          date: occurrenceDate,
+          date: nextDate,
           timeSlot,
-          duration: duration, // Use the grouped package duration
+          duration,
           pricePerHour: selectedZone.pricePerHour || 0,
           zoneName: selectedZone.name,
           isRecurring: true,
           recurrencePattern: pattern,
           parentBookingId: selectedSlots[0].id
         });
-        
+
         occurrenceCount++;
-        
-        // Move to next week/biweekly
-        occurrenceDate = addWeeks(occurrenceDate, weekIncrement);
+        perWeekdayCount.set(next.weekday, currentCount + 1);
+
+        // Advance that weekday's cursor by weekIncrement weeks
+        const advancedDate = addWeeks(nextDate, weekIncrement);
+        // If this weekday reached its cap after increment, drop its cursor; else update
+        if ((perWeekdayCount.get(next.weekday) || 0) >= maxOccurrences) {
+          cursors.splice(earliestIndex, 1);
+        } else {
+          cursors[earliestIndex] = {
+            weekday: next.weekday,
+            date: advancedDate
+          };
+        }
       }
     }
     else if (pattern.type === 'monthly') {
@@ -1275,7 +1340,12 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
                               <div className="text-xs text-blue-600 font-medium mb-2">
                                 Mal for gjentakelse
                               </div>
-                              {timePackages.map((datePackage) => (
+                              {[...timePackages].sort((a, b) => {
+                                // Sort by actual date ascending
+                                const ad = new Date(a.date);
+                                const bd = new Date(b.date);
+                                return ad.getTime() - bd.getTime();
+                              }).map((datePackage) => (
                                 <div key={datePackage.date} className="space-y-2">
                                   <div className="flex items-center gap-2">
                                     <Calendar className="h-4 w-4 text-gray-600" />
