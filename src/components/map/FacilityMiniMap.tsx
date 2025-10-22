@@ -21,7 +21,7 @@ export const FacilityMiniMap: React.FC<FacilityMiniMapProps> = ({
 
   // Generate static map URL using Mapbox Static Images API
   // Use a larger size to ensure good quality at different heights
-  const staticMapUrl = `https://api.mapbox.com/styles/v1/mapbox/streets-v12/static/pin-s+2563eb(${facility.coordinates.lng},${facility.coordinates.lat})/${facility.coordinates.lng},${facility.coordinates.lat},14,0/400x400@2x?access_token=${mapboxToken}`;
+  const staticMapUrl = `https://api.mapbox.com/styles/v1/mapbox/streets-v12/static/pin-s+000000(${facility.coordinates.lng},${facility.coordinates.lat})/${facility.coordinates.lng},${facility.coordinates.lat},14,0/400x400@2x?access_token=${mapboxToken}`;
 
   const handleImageLoad = (): void => {
     setImageLoaded(true);
@@ -36,7 +36,7 @@ export const FacilityMiniMap: React.FC<FacilityMiniMapProps> = ({
     return (
       <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
         <div className="text-center">
-          <MapPin className="h-8 w-8 text-blue-600 mx-auto mb-2" />
+          <MapPin className="h-8 w-8 text-gray-800 mx-auto mb-2" />
           <p className="text-xs text-gray-600 font-medium">{facility.name}</p>
           <p className="text-xs text-gray-500 truncate px-2">{facility.address}</p>
         </div>

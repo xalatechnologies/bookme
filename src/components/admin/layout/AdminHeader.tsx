@@ -19,15 +19,17 @@ const AdminHeader = (_props: IAdminHeaderProps): JSX.Element => {
       </a>
       
       {/* Logo */}
-      <Logo />
+      <div className="w-40">
+        <Logo />
+      </div>
       
       {/* Search field in center */}
-      <div className="flex-1 flex justify-center px-8">
+      <div className="flex-1 flex justify-center px-4 md:px-12">
         <SearchField />
       </div>
 
       {/* Right side actions */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 w-40 justify-end">
         <NotificationBell />
         <ProfileDropdown />
       </div>

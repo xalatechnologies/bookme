@@ -6,14 +6,17 @@ import { RequireRole } from "@/components/admin/guards/RequireRole";
 import ViewToggle from "@/components/admin/facilities/ViewToggle";
 import AdminFacilityCard from "@/components/admin/facilities/AdminFacilityCard";
 import AdminFacilityListItem from "@/components/admin/facilities/AdminFacilityListItem";
+import { FacilityEditForm } from "@/components/admin/facilities/FacilityEditForm";
 import { useFacilityStore } from "@/stores/facilityStore";
 import { Plus, Search, Filter, SortAsc, SortDesc, CheckSquare, Square, Trash2, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { MapView } from "@/components/MapView";
+import type { IFacility } from "@/stores/facilityStore";
 
-type TView = "list" | "grid" | "map" | "calendar";
+type TView = "list" | "grid" | "map";
 type TSortBy = "name" | "capacity" | "lastUpdated" | "createdAt";
 type TSortOrder = "asc" | "desc";
 
@@ -32,6 +35,7 @@ const FacilitiesPage = (_props: IFacilitiesPageProps): JSX.Element => {
   const [capacityRange, setCapacityRange] = useState<{ min: number; max: number }>({ min: 0, max: 1000 });
   const [selectedFacilities, setSelectedFacilities] = useState<readonly string[]>([]);
   const [showFilters, setShowFilters] = useState<boolean>(false);
+  const [selectedFacility, setSelectedFacility] = useState<IFacility | null>(null); // New state for selected facility
   
   // Use the facility store
   const { facilities, addFacility, getFacilityById, deleteFacility } = useFacilityStore();
@@ -126,6 +130,10 @@ const FacilitiesPage = (_props: IFacilitiesPageProps): JSX.Element => {
 
   const handleViewChange = (newView: TView): void => {
     setView(newView);
+    // Close the edit form when changing views
+    if (newView !== "map") {
+      setSelectedFacility(null);
+    }
   };
 
   const handleSelectFacility = (facilityId: string): void => {
@@ -242,6 +250,21 @@ const FacilitiesPage = (_props: IFacilitiesPageProps): JSX.Element => {
         ? prev.filter(t => t !== type)
         : [...prev, type]
     );
+  };
+
+  // Handler for when a marker is clicked on the map
+  const handleMarkerClick = (facility: IFacility): void => {
+    setSelectedFacility(facility);
+  };
+
+  // Handler for when the edit form is closed
+  const handleCloseEditForm = (): void => {
+    setSelectedFacility(null);
+  };
+
+  // Handler for when the facility is updated
+  const handleFacilityUpdate = (): void => {
+    // Refresh the facilities list or show a success message
   };
 
   // Get unique types for filter
@@ -483,8 +506,7 @@ const FacilitiesPage = (_props: IFacilitiesPageProps): JSX.Element => {
           </p>
           <p className="text-sm text-gray-500 dark:text-gray-500">
             {view === "grid" ? "Rutenett visning" : 
-             view === "list" ? "Liste visning" :
-             view === "map" ? "Kart visning" : "Kalender visning"}
+             view === "list" ? "Liste visning" : "Kart visning"}
           </p>
         </div>
 
@@ -548,20 +570,34 @@ const FacilitiesPage = (_props: IFacilitiesPageProps): JSX.Element => {
         )}
 
         {view === "map" && (
-          <div className="h-96 bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center">
-            <p className="text-gray-500 dark:text-gray-400">
-              Kart visning kommer snart...
-            </p>
+          <div className="flex gap-4">
+            {/* Map View */}
+            <div className={selectedFacility ? "w-2/3" : "w-full"}>
+              <MapView 
+                facilityType="all" 
+                location="all" 
+                viewMode={view} 
+                setViewMode={setView} 
+                showAllFacilities={true} // Show all facilities in admin panel
+                showHeader={false} // Don't show the header in admin panel to avoid duplicate view toggles
+                onMarkerClick={handleMarkerClick} // Pass the marker click handler
+              />
+            </div>
+            
+            {/* Edit Form */}
+            {selectedFacility && (
+              <div className="w-1/3">
+                <FacilityEditForm 
+                  facility={selectedFacility} 
+                  onClose={handleCloseEditForm}
+                  onUpdate={handleFacilityUpdate}
+                />
+              </div>
+            )}
           </div>
         )}
 
-        {view === "calendar" && (
-          <div className="h-96 bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center">
-            <p className="text-gray-500 dark:text-gray-400">
-              Kalender visning kommer snart...
-            </p>
-          </div>
-        )}
+
 
         {/* Empty State */}
         {filteredFacilities.length === 0 && (

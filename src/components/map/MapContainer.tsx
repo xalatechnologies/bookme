@@ -44,6 +44,11 @@ export const MapContainer: React.FC<MapContainerProps> = ({
       // Set the access token
       mapboxgl.accessToken = mapboxToken;
       
+      // Validate the access token format
+      if (!mapboxToken || mapboxToken.length < 10) {
+        throw new Error('Invalid Mapbox access token. Please check your token.');
+      }
+      
       // Clear any existing map
       if (map.current) {
         map.current.remove();
