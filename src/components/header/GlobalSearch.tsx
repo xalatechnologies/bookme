@@ -188,7 +188,7 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({ onResultClick }): JS
   };
 
   return (
-    <div className="relative w-full max-w-md" ref={searchRef}>
+    <div className="relative w-full max-w-2xl min-w-[350px]" ref={searchRef}>
       <div className="relative">
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4 z-10" />
         <Input
