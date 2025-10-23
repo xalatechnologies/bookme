@@ -51,8 +51,11 @@ export const MapMarkers: React.FC<MapMarkersProps> = ({
       </div>
     `;
     
-    // Add click handler
-    markerElement.addEventListener('click', (): void => {
+    // Add click handler - only open popup, don't navigate directly
+    markerElement.addEventListener('click', (e): void => {
+      // Prevent default to avoid immediate navigation
+      e.preventDefault();
+      // Let Mapbox handle the popup opening automatically
       if (onMarkerClick) {
         onMarkerClick(facility);
       }
@@ -67,9 +70,9 @@ export const MapMarkers: React.FC<MapMarkersProps> = ({
       ? facility.images[0] 
       : '/placeholder.svg';
       
-    // Simplified popup content with only name and image
+    // Simplified popup content with only name and image, entire popup is clickable
     return `
-      <div style="min-width: 200px; padding: 12px;">
+      <div style="min-width: 200px; padding: 12px;" onclick="window.location.href='/facilities/${facility.id}'" style="cursor: pointer;">
         <div style="margin-bottom: 8px;">
           <img src="${imageUrl}" alt="${facility.name}" style="width: 100%; height: 128px; object-fit: cover; border-radius: 4px;" onerror="this.src='/placeholder.svg'">
         </div>

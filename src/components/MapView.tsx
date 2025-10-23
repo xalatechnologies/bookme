@@ -3,6 +3,7 @@
 // External imports
 import React, { useState } from 'react';
 import mapboxgl from 'mapbox-gl';
+import { useNavigate } from 'react-router-dom';
 
 // Internal imports
 import { useFacilityStore } from '@/stores/facilityStore';
@@ -38,6 +39,7 @@ export const MapView: React.FC<MapViewProps> = ({
   showHeader = true, // Default to true for backward compatibility
   onMarkerClick // New prop for handling marker clicks
 }): JSX.Element => {
+  const navigate = useNavigate();
   const [map, setMap] = useState<mapboxgl.Map | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
@@ -61,6 +63,14 @@ export const MapView: React.FC<MapViewProps> = ({
   if (filters.location) {
     filteredFacilities = filteredFacilities.filter(f => f.area === filters.location);
   }
+
+  // Handle marker click - only call the custom handler if provided, don't navigate automatically
+  const handleMarkerClick = (facility: IFacility): void => {
+    if (onMarkerClick) {
+      onMarkerClick(facility);
+    }
+    // Don't automatically navigate - let the popup handle navigation
+  };
 
   const handleMapLoad = (mapInstance: mapboxgl.Map): void => {
     setMap(mapInstance);
@@ -146,7 +156,7 @@ export const MapView: React.FC<MapViewProps> = ({
             <MapMarkers
               map={map}
               facilities={filteredFacilities}
-              onMarkerClick={onMarkerClick}
+              onMarkerClick={handleMarkerClick}
             />
           )}
         </Card>

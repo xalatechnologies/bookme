@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import ViewToggleUser from "@/components/facility/ViewToggleUser";
 
 interface IFilterBarUserProps {
   readonly searchQuery: string;
@@ -17,6 +18,8 @@ interface IFilterBarUserProps {
   readonly onSortChange: (sortBy: "price" | "popularity" | "name", order: "asc" | "desc") => void;
   readonly showAvailableOnly: boolean;
   readonly onAvailableToggle: (show: boolean) => void;
+  readonly viewMode: "grid" | "list" | "map";
+  readonly onViewChange: (view: "grid" | "list" | "map") => void;
 }
 
 const FilterBarUser = (props: IFilterBarUserProps): JSX.Element => {
@@ -29,7 +32,9 @@ const FilterBarUser = (props: IFilterBarUserProps): JSX.Element => {
     sortOrder,
     onSortChange,
     showAvailableOnly,
-    onAvailableToggle
+    onAvailableToggle,
+    viewMode,
+    onViewChange
   } = props;
 
   const [showFilters, setShowFilters] = useState<boolean>(false);
@@ -118,6 +123,12 @@ const FilterBarUser = (props: IFilterBarUserProps): JSX.Element => {
                 sortOrder === "asc" ? <SortAsc className="w-3 h-3" /> : <SortDesc className="w-3 h-3" />
               )}
             </Button>
+            
+            {/* View Toggle */}
+            <ViewToggleUser
+              currentView={viewMode}
+              onViewChange={onViewChange}
+            />
           </div>
         </div>
       </div>

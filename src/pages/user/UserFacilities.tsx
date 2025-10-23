@@ -2,13 +2,14 @@
 
 import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Map, Calendar } from "lucide-react";
+import { Map } from "lucide-react";
 import { useFacilityStore } from "@/stores/facilityStore";
 import { useFavoritesStore } from "@/stores/favoritesStore";
 import FacilityCardUser from "@/components/facility/FacilityCardUser";
 import FacilityListItemUser from "@/components/facility/FacilityListItemUser";
 import ViewToggleUser from "@/components/facility/ViewToggleUser";
 import FilterBarUser from "@/components/facility/FilterBarUser";
+import { MapView } from "@/components/MapView";
 
 interface IUserFacility {
   readonly id: string;
@@ -233,9 +234,11 @@ const UserFacilities = (): JSX.Element => {
         onSortChange={handleSortChange}
         showAvailableOnly={showAvailableOnly}
         onAvailableToggle={setShowAvailableOnly}
+        viewMode={viewMode}
+        onViewChange={setViewMode}
       />
 
-      {/* View Toggle and Results Count */}
+      {/* Results Count */}
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-2">
           <span className="text-sm text-gray-600 dark:text-gray-400">
@@ -247,11 +250,6 @@ const UserFacilities = (): JSX.Element => {
             </span>
           )}
         </div>
-        
-        <ViewToggleUser
-          currentView={viewMode}
-          onViewChange={setViewMode}
-        />
       </div>
 
       {/* Content */}
@@ -260,18 +258,16 @@ const UserFacilities = (): JSX.Element => {
           {viewMode === "grid" && renderGridView()}
           {viewMode === "list" && renderListView()}
           {viewMode === "map" && (
-            <Card>
-              <CardContent className="p-8 text-center">
-                <Map className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
-                  Kartvisning
-                </h3>
-                <p className="text-gray-600 dark:text-gray-400">
-                  Kartvisning kommer snart. Bruk grid- eller listvisning i mellomtiden.
-                </p>
-              </CardContent>
-            </Card>
+            <MapView
+              facilityType={selectedType}
+              location="all"
+              viewMode={viewMode}
+              setViewMode={setViewMode}
+              showAllFacilities={false}
+              showHeader={false}
+            />
           )}
+
         </>
       ) : (
         <Card>

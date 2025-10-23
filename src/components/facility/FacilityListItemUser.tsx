@@ -125,9 +125,9 @@ const FacilityListItemUser = (props: IFacilityListItemUserProps): JSX.Element =>
 
   return (
     <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden hover:shadow-md transition-shadow">
-      <div className="flex">
+      <div className="flex min-h-[128px]">
         {/* Image Section */}
-        <div className="relative w-48 h-32 bg-gray-200 dark:bg-gray-700 flex-shrink-0">
+        <div className="relative w-48 min-h-[128px] bg-gray-200 dark:bg-gray-700 flex-shrink-0 flex items-center justify-center">
           <img
             src={image}
             alt={name}
@@ -161,21 +161,21 @@ const FacilityListItemUser = (props: IFacilityListItemUserProps): JSX.Element =>
         </div>
         
         {/* Content Section */}
-        <div className="flex-1 p-4">
-          <div className="flex items-start justify-between mb-2">
-            <div className="flex-1">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
+        <div className="flex-1 p-4 flex flex-col min-w-0"> {/* Added min-w-0 to prevent overflow issues */}
+          <div className="flex items-start justify-between mb-2 flex-shrink-0">
+            <div className="flex-1 min-w-0"> {/* Added min-w-0 to prevent overflow issues */}
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1 truncate">
                 {name}
               </h3>
               <div className="flex items-center space-x-2 mb-2">
-                <MapPin className="h-4 w-4 text-gray-400" />
-                <span className="text-sm text-gray-600 dark:text-gray-400">
+                <MapPin className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                <span className="text-sm text-gray-600 dark:text-gray-400 truncate">
                   {address}
                 </span>
               </div>
             </div>
             
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-2 ml-4 flex-shrink-0">
               {rating && (
                 <div className="flex items-center space-x-1">
                   <Star className="h-4 w-4 text-yellow-400 fill-current" />
@@ -189,13 +189,13 @@ const FacilityListItemUser = (props: IFacilityListItemUserProps): JSX.Element =>
           </div>
           
           {description && (
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-3 line-clamp-2">
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-3 line-clamp-2 flex-shrink-0">
               {description}
             </p>
           )}
           
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
+          <div className="flex items-center justify-between mt-auto">
+            <div className="flex items-center space-x-4 flex-shrink-0">
               <div className="flex items-center space-x-1">
                 <Users className="h-4 w-4 text-gray-400" />
                 <span className="text-sm text-gray-600 dark:text-gray-400">
@@ -217,7 +217,7 @@ const FacilityListItemUser = (props: IFacilityListItemUserProps): JSX.Element =>
               </div>
             </div>
             
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-2 flex-shrink-0">
               {price && (
                 <span className="text-sm font-semibold text-blue-600 dark:text-blue-400">
                   {price}
@@ -246,40 +246,42 @@ const FacilityListItemUser = (props: IFacilityListItemUserProps): JSX.Element =>
         </div>
         
         {/* Map Section */}
-        {coordinates && (
-          <div className="w-32 h-32 flex-shrink-0 border-l border-gray-200 dark:border-gray-700">
-            <FacilityMiniMap
-              facility={{
-                id,
-                name,
-                description: description || "",
-                type,
-                location: address,
-                address,
-                capacity,
-                pricePerHour: parseInt(price?.replace(/[^\d]/g, "") || "0") || 0,
-                amenities,
-                images: [image],
-                availability: {
-                  monday: { start: "08:00", end: "22:00" },
-                  tuesday: { start: "08:00", end: "22:00" },
-                  wednesday: { start: "08:00", end: "22:00" },
-                  thursday: { start: "08:00", end: "22:00" },
-                  friday: { start: "08:00", end: "22:00" },
-                  saturday: { start: "08:00", end: "22:00" },
-                  sunday: { start: "08:00", end: "22:00" }
-                },
-                coordinates: { lat: coordinates.lat, lng: coordinates.lng },
-                rating: rating || 0,
-                reviewCount: 0,
-                status: "published",
-                owner: "",
-                lastUpdated: "",
-                createdAt: "",
-                updatedAt: ""
-              }}
-              mapboxToken="pk.eyJ1IjoiYW1pbjA3IiwiYSI6ImNtZzlqcjNnczBmMmsycXM2cm4xYzU0OGwifQ.1Vuiv_9pPIUY478LP3yccA"
-            />
+        {coordinates && coordinates.lat && coordinates.lng && (
+          <div className="w-32 min-h-[128px] flex-shrink-0 border-l border-gray-200 dark:border-gray-700 flex items-center justify-center">
+            <div className="w-full h-full">
+              <FacilityMiniMap
+                facility={{
+                  id,
+                  name,
+                  description: description || "",
+                  type,
+                  location: address,
+                  address,
+                  capacity,
+                  pricePerHour: parseInt(price?.replace(/[^\d]/g, "") || "0") || 0,
+                  amenities,
+                  images: [image],
+                  availability: {
+                    monday: { start: "08:00", end: "22:00" },
+                    tuesday: { start: "08:00", end: "22:00" },
+                    wednesday: { start: "08:00", end: "22:00" },
+                    thursday: { start: "08:00", end: "22:00" },
+                    friday: { start: "08:00", end: "22:00" },
+                    saturday: { start: "08:00", end: "22:00" },
+                    sunday: { start: "08:00", end: "22:00" }
+                  },
+                  coordinates: { lat: coordinates.lat, lng: coordinates.lng },
+                  rating: rating || 0,
+                  reviewCount: 0,
+                  status: "published",
+                  owner: "",
+                  lastUpdated: "",
+                  createdAt: "",
+                  updatedAt: ""
+                }}
+                mapboxToken="pk.eyJ1IjoiYW1pbjA3IiwiYSI6ImNtZzlqcjNnczBmMmsycXM2cm4xYzU0OGwifQ.1Vuiv_9pPIUY478LP3yccA"
+              />
+            </div>
           </div>
         )}
       </div>
