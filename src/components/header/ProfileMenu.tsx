@@ -4,7 +4,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { User, LogIn } from "lucide-react";
 
-import { useTranslation } from "@/i18n";
+import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -25,24 +25,24 @@ interface ProfileMenuProps {
   };
 }
 
-export const ProfileMenu: React.FC<ProfileMenuProps> = ({ 
-  isLoggedIn, 
-  handleLogin, 
+export const ProfileMenu: React.FC<ProfileMenuProps> = ({
+  isLoggedIn,
+  handleLogin,
   handleLogout,
   userProfile
 }): JSX.Element => {
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t } = useTranslation('common');
 
   if (!isLoggedIn) {
     return (
-      <Button 
-        variant="outline" 
+      <Button
+        variant="outline"
         className="flex items-center gap-1 h-9 px-4 border-gray-300 text-gray-700 hover:bg-gray-50 hover:text-gray-900"
         onClick={handleLogin}
       >
         <LogIn className="w-4 h-4" />
-        <span>{t('common.actions.login', {}, 'Logg inn')}</span>
+        <span>{t('actions.login')}</span>
       </Button>
     );
   }
@@ -67,16 +67,16 @@ export const ProfileMenu: React.FC<ProfileMenuProps> = ({
           </div>
         )}
         <DropdownMenuItem onClick={() => navigate("/user/profile")}>
-          {t('common.navigation.profile', {}, 'Profil')}
+          {t('navigation.profile')}
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => navigate("/user/bookings")}>
-          Mine bookinger
+          {t('navigation.my_bookings')}
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => navigate("/user/facilities")}>
-          Lokaler
+          {t('navigation.facilities')}
         </DropdownMenuItem>
         <DropdownMenuItem onClick={handleLogout}>
-          {t('common.actions.logout', {}, 'Logg ut')}
+          {t('actions.logout')}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

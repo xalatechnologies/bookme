@@ -2,10 +2,11 @@
 
 import React from "react";
 import { NavLink, useLocation } from "react-router-dom";
-import { 
-  LayoutDashboard, 
-  Building2, 
-  Calendar, 
+import { useTranslation } from "react-i18next";
+import {
+  LayoutDashboard,
+  Building2,
+  Calendar,
   History,
   Receipt,
   Heart,
@@ -13,20 +14,20 @@ import {
   Bell,
   MessageCircle,
   HelpCircle,
-  ChevronLeft, 
-  ChevronRight 
+  ChevronLeft,
+  ChevronRight
 } from "lucide-react";
 import { useSidebar } from "./UserLayout";
 
 interface IMenuItem {
   readonly id: string;
-  readonly label: string;
+  readonly labelKey: string;
   readonly path: string;
   readonly icon: React.ComponentType<{ className?: string }>;
 }
 
 interface IMenuGroup {
-  readonly title: string;
+  readonly titleKey: string;
   readonly items: readonly IMenuItem[];
 }
 
@@ -36,43 +37,44 @@ interface IUserSidebarProps {
 
 const UserSidebar = (_props: IUserSidebarProps): JSX.Element => {
   const { isCollapsed, toggleCollapse } = useSidebar();
+  const { t } = useTranslation('navigation');
   const location = useLocation();
 
   const menuGroups: readonly IMenuGroup[] = [
     {
-      title: "Oversikt",
+      titleKey: "overview",
       items: [
-        { id: "dashboard", label: "Dashboard", path: "/user", icon: LayoutDashboard },
+        { id: "dashboard", labelKey: "dashboard", path: "/user", icon: LayoutDashboard },
       ]
     },
     {
-      title: "Booking",
+      titleKey: "booking",
       items: [
-        { id: "bookings", label: "Bookinger", path: "/user/bookings", icon: Calendar },
-        { id: "calendar", label: "Kalender", path: "/user/calendar", icon: Calendar },
-        { id: "history", label: "Historikk", path: "/user/history", icon: History },
-        { id: "receipts", label: "Kvitteringer", path: "/user/receipts", icon: Receipt },
+        { id: "bookings", labelKey: "bookings", path: "/user/bookings", icon: Calendar },
+        { id: "calendar", labelKey: "calendar", path: "/user/calendar", icon: Calendar },
+        { id: "history", labelKey: "history", path: "/user/history", icon: History },
+        { id: "receipts", labelKey: "receipts", path: "/user/receipts", icon: Receipt },
       ]
     },
     {
-      title: "Utforsk lokaler",
+      titleKey: "explore_facilities",
       items: [
-        { id: "facilities", label: "Lokaler", path: "/user/facilities", icon: Building2 },
-        { id: "favorites", label: "Favoritter", path: "/user/favorites", icon: Heart },
+        { id: "facilities", labelKey: "rooms", path: "/user/facilities", icon: Building2 },
+        { id: "favorites", labelKey: "favorites", path: "/user/favorites", icon: Heart },
       ]
     },
     {
-      title: "Konto",
+      titleKey: "account",
       items: [
-        { id: "profile", label: "Innstillinger", path: "/user/profile", icon: User },
-        { id: "notifications", label: "Varsler", path: "/user/notifications", icon: Bell },
-        { id: "messages", label: "Meldinger", path: "/user/messages", icon: MessageCircle },
+        { id: "profile", labelKey: "settings", path: "/user/profile", icon: User },
+        { id: "notifications", labelKey: "alerts", path: "/user/notifications", icon: Bell },
+        { id: "messages", labelKey: "messages", path: "/user/messages", icon: MessageCircle },
       ]
     },
     {
-      title: "Support",
+      titleKey: "support",
       items: [
-        { id: "help", label: "Hjelp & kontakt", path: "/user/help", icon: HelpCircle },
+        { id: "help", labelKey: "help_and_contact", path: "/user/help", icon: HelpCircle },
       ]
     }
   ];
@@ -92,14 +94,14 @@ const UserSidebar = (_props: IUserSidebarProps): JSX.Element => {
       {/* Navigation Content */}
       <nav className="flex-1 p-4 pt-8 space-y-6 overflow-y-auto">
         {menuGroups.map((group, groupIndex) => (
-          <div key={group.title} className="space-y-2">
+          <div key={group.titleKey} className="space-y-2">
             {/* Group Title */}
             {!isCollapsed && (
               <h3 className="px-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                {group.title}
+                {t(group.titleKey)}
               </h3>
             )}
-            
+
             {/* Group Items */}
             <div className="space-y-1">
               {group.items.map(item => {
@@ -114,21 +116,21 @@ const UserSidebar = (_props: IUserSidebarProps): JSX.Element => {
                         ? "bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 shadow-sm"
                         : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white"
                     }`}
-                    title={isCollapsed ? item.label : undefined}
+                    title={isCollapsed ? t(item.labelKey) : undefined}
                   >
                     {/* Active Indicator */}
                     <div className={`absolute left-0 top-1/2 transform -translate-y-1/2 w-1 h-6 rounded-r-full transition-all duration-200 ${
                       active ? "bg-blue-600" : "bg-transparent"
                     }`} />
-                    
+
                     {/* Icon */}
                     <IconComponent className={`flex-shrink-0 transition-colors ${
                       active ? "text-blue-600 dark:text-blue-400" : "text-gray-500 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-300"
                     } ${isCollapsed ? "w-5 h-5 mx-auto" : "w-5 h-5 mr-3"}`} />
-                    
+
                     {/* Label */}
                     {!isCollapsed && (
-                      <span className="whitespace-nowrap">{item.label}</span>
+                      <span className="whitespace-nowrap">{t(item.labelKey)}</span>
                     )}
                   </NavLink>
                 );
@@ -143,7 +145,7 @@ const UserSidebar = (_props: IUserSidebarProps): JSX.Element => {
         <button
           onClick={toggleCollapse}
           className="w-full flex items-center justify-center p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
-          aria-label={isCollapsed ? "Utvid sidebar" : "Kollaps sidebar"}
+          aria-label={isCollapsed ? t('expand_sidebar') : t('collapse_sidebar')}
         >
           {isCollapsed ? (
             <ChevronRight className="w-5 h-5" />

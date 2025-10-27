@@ -30,7 +30,14 @@
     "login": "Login",
     "signup": "Sign up",
     "loading": "Loading...",
-    "refresh": "Refresh"
+    "refresh": "Refresh",
+    "share": "Share",
+    "like": "Like",
+    "liked": "Liked",
+    "go_back": "Go back",
+    "go_home": "Go to home",
+    "contact_us": "Contact us",
+    "book_now": "Book now"
   },
   "status": {
     "active": "Active",
@@ -42,6 +49,16 @@
     "completed": "Completed",
     "draft": "Draft",
     "published": "Published"
+  },
+  "view_modes": {
+    "grid": "Grid view",
+    "list": "List view",
+    "map": "Map"
+  },
+  "navigation": {
+    "profile": "Profile",
+    "my_bookings": "My bookings",
+    "facilities": "Facilities"
   },
   "common": {
     "yes": "Yes",
@@ -115,6 +132,16 @@
       "no_data": "No data available",
       "no_items": "No items"
     }
+  },
+  "loading": {
+    "facility": "Loading facility...",
+    "please_wait": "Please wait while we fetch the information."
+  },
+  "errors": {
+    "facility_not_found": "Facility not found",
+    "facility_not_found_desc": "Sorry, we could not find the facility you are looking for. It may have been moved or deleted.",
+    "something_went_wrong": "Something went wrong",
+    "load_facility_error": "We could not load the facility. Please try again later."
   },
   "time": {
     "now": "Now",

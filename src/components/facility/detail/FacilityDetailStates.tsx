@@ -4,7 +4,7 @@ import React from "react";
 import { AlertCircle, ArrowLeft, Home } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-import { useTranslation } from "@/i18n";
+import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -12,12 +12,14 @@ import { Card, CardContent } from "@/components/ui/card";
 interface LoadingStateProps {}
 
 export const LoadingState: React.FC<LoadingStateProps> = ({}): JSX.Element => {
+  const { t } = useTranslation('common');
+
   return (
     <div className="min-h-screen bg-white flex flex-col items-center justify-center">
       <div className="text-center space-y-4">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-        <h2 className="text-xl font-semibold text-gray-900">Laster fasilitet...</h2>
-        <p className="text-gray-600">Vennligst vent mens vi henter informasjonen.</p>
+        <h2 className="text-xl font-semibold text-gray-900">{t('loading.facility')}</h2>
+        <p className="text-gray-600">{t('loading.please_wait')}</p>
       </div>
     </div>
   );
@@ -30,7 +32,7 @@ interface ErrorStateProps {
 
 export const ErrorState: React.FC<ErrorStateProps> = ({ error, notFound = false }): JSX.Element => {
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t } = useTranslation('common');
 
   const handleGoBack = (): void => {
     navigate(-1);
@@ -48,11 +50,11 @@ export const ErrorState: React.FC<ErrorStateProps> = ({ error, notFound = false 
             <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto">
               <AlertCircle className="h-8 w-8 text-gray-400" />
             </div>
-            
+
             <div className="space-y-2">
-              <h1 className="text-2xl font-bold text-gray-900">Fasilitet ikke funnet</h1>
+              <h1 className="text-2xl font-bold text-gray-900">{t('errors.facility_not_found')}</h1>
               <p className="text-gray-600">
-                Beklager, vi kunne ikke finne fasiliteten du leter etter. Den kan ha blitt flyttet eller slettet.
+                {t('errors.facility_not_found_desc')}
               </p>
             </div>
 
@@ -63,14 +65,14 @@ export const ErrorState: React.FC<ErrorStateProps> = ({ error, notFound = false 
                 className="flex items-center justify-center gap-2"
               >
                 <ArrowLeft className="h-4 w-4" />
-                Gå tilbake
+                {t('actions.go_back')}
               </Button>
               <Button
                 onClick={handleGoHome}
                 className="flex items-center justify-center gap-2"
               >
                 <Home className="h-4 w-4" />
-                Til forsiden
+                {t('actions.go_home')}
               </Button>
             </div>
           </CardContent>
@@ -86,11 +88,11 @@ export const ErrorState: React.FC<ErrorStateProps> = ({ error, notFound = false 
           <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto">
             <AlertCircle className="h-8 w-8 text-red-600" />
           </div>
-          
+
           <div className="space-y-2">
-            <h1 className="text-2xl font-bold text-gray-900">Noe gikk galt</h1>
+            <h1 className="text-2xl font-bold text-gray-900">{t('errors.something_went_wrong')}</h1>
             <p className="text-gray-600">
-              {error || "Vi kunne ikke laste fasiliteten. Vennligst prøv igjen senere."}
+              {error || t('errors.load_facility_error')}
             </p>
           </div>
 
@@ -101,14 +103,14 @@ export const ErrorState: React.FC<ErrorStateProps> = ({ error, notFound = false 
               className="flex items-center justify-center gap-2"
             >
               <ArrowLeft className="h-4 w-4" />
-              Gå tilbake
+              {t('actions.go_back')}
             </Button>
             <Button
               onClick={handleGoHome}
               className="flex items-center justify-center gap-2"
             >
               <Home className="h-4 w-4" />
-              Til forsiden
+              {t('actions.go_home')}
             </Button>
           </div>
         </CardContent>

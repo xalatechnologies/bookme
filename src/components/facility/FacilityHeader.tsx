@@ -3,7 +3,7 @@
 import React from "react";
 import { MapPin, Heart, Share2 } from "lucide-react";
 
-import { useTranslation } from "@/i18n";
+import { useTranslation } from "react-i18next";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -17,15 +17,15 @@ interface FacilityHeaderProps {
   readonly onToggleFavorite: () => void;
 }
 
-export const FacilityHeader = ({ 
-  name, 
+export const FacilityHeader = ({
+  name,
   address,
   type,
   onShare,
   isFavorited,
   onToggleFavorite
 }: FacilityHeaderProps): JSX.Element => {
-  const { t, language } = useTranslation();
+  const { t } = useTranslation('common');
 
   return (
     <div>
@@ -34,11 +34,11 @@ export const FacilityHeader = ({
           {type}
         </Badge>
       </div>
-      
+
       {/* Title with Like and Share buttons */}
       <div className="flex items-start justify-between mb-4">
         <h1 className="text-3xl font-bold text-gray-900 flex-1 pr-4">{name}</h1>
-        
+
         {/* Enhanced Action Buttons */}
         <div className="flex items-center gap-2 flex-shrink-0">
           <Button
@@ -46,17 +46,17 @@ export const FacilityHeader = ({
             size="sm"
             onClick={onToggleFavorite}
             className={`px-3 py-2 h-auto transition-all duration-200 hover:scale-105 ${
-              isFavorited 
-                ? 'bg-red-50 border-red-200 text-red-600 hover:bg-red-100' 
+              isFavorited
+                ? 'bg-red-50 border-red-200 text-red-600 hover:bg-red-100'
                 : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'
             }`}
           >
             <Heart className={`h-4 w-4 mr-2 ${isFavorited ? 'fill-red-500 text-red-500' : ''}`} />
             <span className="text-sm font-medium">
-              {isFavorited ? (language === 'NO' ? 'Likt' : 'Liked') : (language === 'NO' ? 'Lik' : 'Like')}
+              {isFavorited ? t('actions.liked') : t('actions.like')}
             </span>
           </Button>
-          
+
           <Button
             variant="outline"
             size="sm"
@@ -65,7 +65,7 @@ export const FacilityHeader = ({
           >
             <Share2 className="h-4 w-4 mr-2" />
             <span className="text-sm font-medium">
-              {language === 'NO' ? 'Del' : 'Share'}
+              {t('actions.share')}
             </span>
           </Button>
         </div>

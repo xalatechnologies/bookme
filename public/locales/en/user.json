@@ -1,0 +1,252 @@
+{
+  "dashboard": {
+    "title": "Dashboard",
+    "greeting": "Good {{dayOfWeek}}, {{name}}!",
+    "weather_in_city": "{{description}} in Drammen.",
+    "perfect_day": "Perfect day for football in Drammen!",
+    "monthly_bookings": "Bookings this month",
+    "of": "of",
+    "next_booking": "Next booking: {{facility}} – {{date}} at {{time}}",
+    "no_upcoming_bookings": "No upcoming bookings",
+    "new_booking": "New booking",
+    "quick_actions": "Quick actions",
+    "my_bookings": "My bookings",
+    "recommended_facilities": "Recommended facilities",
+    "system_messages": "System messages",
+    "days": {
+      "sunday": "Sunday",
+      "monday": "Monday",
+      "tuesday": "Tuesday",
+      "wednesday": "Wednesday",
+      "thursday": "Thursday",
+      "friday": "Friday",
+      "saturday": "Saturday"
+    }
+  },
+  "quick_actions": {
+    "calendar": {
+      "title": "View calendar",
+      "description": "Overview of all bookings"
+    },
+    "invoices": {
+      "title": "Invoices & payments",
+      "description": "Payment history and receipts"
+    },
+    "favorites": {
+      "title": "Favorites",
+      "description": "Your favorite facilities"
+    },
+    "history": {
+      "title": "History",
+      "description": "Previous bookings and activity"
+    }
+  },
+  "bookings": {
+    "status": {
+      "confirmed": "Confirmed",
+      "pending": "Pending",
+      "cancelled": "Cancelled"
+    },
+    "facility": "Facility",
+    "date": "Date",
+    "time": "Time",
+    "duration": "Duration",
+    "location": "Location",
+    "price": "Price",
+    "purpose": "Purpose",
+    "participants": "Participants",
+    "qr_code": "QR code",
+    "cancellation_policy": "Cancellation possible 24 hours before",
+    "contact_info": "Contact information",
+    "view_facility": "View facility",
+    "edit_booking": "Edit booking",
+    "cancel_booking": "Cancel booking",
+    "contact_admin": "Contact admin",
+    "confirm_cancel": "Are you sure you want to cancel this booking?",
+    "booking_cancelled": "Booking cancelled!",
+    "not_specified": "Not specified"
+  },
+  "recommendations": {
+    "frequent_bookings": "Recommended based on your previous bookings",
+    "preferred_times": "Available at your usual times",
+    "new_in_area": "New in the area"
+  },
+  "messages": {
+    "types": {
+      "info": "Info",
+      "warning": "Warning",
+      "maintenance": "Maintenance",
+      "success": "Success"
+    },
+    "categories": {
+      "system": "system",
+      "booking": "booking",
+      "news": "news"
+    }
+  },
+  "profile": {
+    "title": "Settings",
+    "subtitle": "Manage your personal information and account settings",
+    "account_overview": "Account overview",
+    "account_created": "Account created",
+    "last_active": "Last active",
+    "role": "Role",
+    "subscription_type": "Subscription type",
+    "tabs": {
+      "profile": "Profile",
+      "security": "Security",
+      "preferences": "Preferences",
+      "privacy": "Privacy"
+    },
+    "personal_info": {
+      "title": "Personal information",
+      "edit": "Edit",
+      "cancel": "Cancel",
+      "save_changes": "Save changes",
+      "personal_details": "Personal details",
+      "contact_info": "Contact information",
+      "first_name": "First name",
+      "last_name": "Last name",
+      "date_of_birth": "Date of birth",
+      "email": "Email",
+      "phone": "Phone",
+      "address": "Address"
+    },
+    "security": {
+      "title": "Security and access",
+      "change_password": "Change password",
+      "current_password": "Current password",
+      "new_password": "New password",
+      "confirm_password": "Confirm new password",
+      "update_password": "Update password",
+      "two_factor_auth": "Two-factor authentication (2FA)",
+      "two_factor_description": "Get a security code via email or SMS when logging in",
+      "enable": "Enable",
+      "disable": "Disable",
+      "login_history": "Login history",
+      "connected_accounts": "Connected accounts",
+      "not_connected": "Not connected",
+      "connect": "Connect",
+      "passwords_dont_match": "Passwords do not match",
+      "password_updated": "Password updated"
+    },
+    "preferences": {
+      "title": "Preferences and customization",
+      "language_and_theme": "Language and appearance",
+      "language": "Language",
+      "theme": "Theme",
+      "theme_light": "Light",
+      "theme_dark": "Dark",
+      "theme_system": "System",
+      "notifications": "Notification settings",
+      "email_notifications": "Email notifications",
+      "email_notifications_desc": "Receive notifications via email",
+      "sms_notifications": "SMS notifications",
+      "sms_notifications_desc": "Receive notifications via SMS",
+      "push_notifications": "Push notifications",
+      "push_notifications_desc": "Receive push notifications in browser",
+      "booking_reminders": "Reminders",
+      "booking_reminders_desc": "Reminder the day before booking",
+      "new_bookings": "New bookings",
+      "new_bookings_desc": "Notify about new bookings",
+      "on": "On",
+      "off": "Off",
+      "dashboard_view": "Dashboard view",
+      "view_compact": "Compact",
+      "view_compact_desc": "Smaller cards and tight layout",
+      "view_extended": "Extended",
+      "view_extended_desc": "Large cards and spacious layout",
+      "languages": {
+        "nb": "Norwegian (Bokmål)",
+        "nn": "Norwegian (Nynorsk)",
+        "en": "English"
+      }
+    },
+    "privacy": {
+      "title": "Privacy and data",
+      "download_data": "Download your data",
+      "download_data_desc": "Download a copy of all your personal data, including bookings, receipts, and profile information.",
+      "download_button": "Download data",
+      "deactivate_temp": "Temporarily deactivate",
+      "deactivate_temp_desc": "Temporarily deactivate your account. You can reactivate it at any time by logging in again.",
+      "deactivate_button": "Temporarily deactivate",
+      "delete_account": "Permanently delete account",
+      "delete_account_desc": "When you delete your account, all data will be permanently removed. This includes all your bookings, favorites, and personal information. This action cannot be undone.",
+      "delete_button": "Permanently delete account",
+      "delete_modal": {
+        "title": "Delete account",
+        "description": "Are you sure you want to delete your account? All bookings and receipts will be permanently deleted.",
+        "confirm_label": "Enter your email address to confirm: {{email}}",
+        "confirm_placeholder": "amin@example.com",
+        "delete_permanent": "Delete permanently",
+        "cancel": "Cancel",
+        "email_mismatch": "Email address does not match",
+        "confirm_final": "Are you absolutely sure you want to permanently delete your account? This cannot be undone.",
+        "success": "Account permanently deleted. You will receive a confirmation email."
+      }
+    },
+    "account_summary": {
+      "account_id": "Account ID",
+      "subscription_type": "Subscription type",
+      "available_features": "Available features",
+      "standard_features": "Standard booking and favorites"
+    },
+    "toast": {
+      "changes_saved": "Changes saved"
+    },
+    "time": {
+      "yesterday": "yesterday",
+      "days_ago": "{{count}} days ago",
+      "weeks_ago": "{{count}} weeks ago"
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Manage your account settings and preferences",
+    "notifications": {
+      "title": "Notifications",
+      "email": "Email notifications",
+      "email_desc": "Receive notifications via email",
+      "sms": "SMS notifications",
+      "sms_desc": "Receive notifications via SMS",
+      "push": "Push notifications",
+      "push_desc": "Receive push notifications in browser",
+      "booking_reminders": "Booking reminders",
+      "booking_reminders_desc": "Get reminders before bookings",
+      "marketing": "Marketing",
+      "marketing_desc": "Receive marketing and offers"
+    },
+    "privacy_security": {
+      "title": "Privacy and security",
+      "show_profile": "Show profile publicly",
+      "show_profile_desc": "Let other users see your profile",
+      "two_factor": "Two-factor authentication",
+      "two_factor_desc": "Extra security for your account",
+      "change_password": "Change password"
+    },
+    "language_region": {
+      "title": "Language and region",
+      "language": "Language",
+      "timezone": "Timezone",
+      "languages": {
+        "no": "Norwegian",
+        "en": "English"
+      },
+      "timezones": {
+        "oslo": "Europe/Oslo (Norway)",
+        "stockholm": "Europe/Stockholm (Sweden)",
+        "copenhagen": "Europe/Copenhagen (Denmark)",
+        "utc": "UTC"
+      }
+    },
+    "account_actions": {
+      "title": "Account actions",
+      "change_email": "Change email address",
+      "change_phone": "Change phone number",
+      "delete_account": "Delete account"
+    },
+    "save_settings": "Save settings",
+    "settings_saved": "Settings saved!",
+    "settings_save_failed": "Could not save settings. Please try again."
+  }
+}

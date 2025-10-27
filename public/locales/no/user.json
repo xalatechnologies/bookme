@@ -1,0 +1,252 @@
+{
+  "dashboard": {
+    "title": "Dashbord",
+    "greeting": "God {{dayOfWeek}}, {{name}}!",
+    "weather_in_city": "{{description}} i Drammen.",
+    "perfect_day": "Perfekt dag for fotball i Drammen!",
+    "monthly_bookings": "Bookinger denne måneden",
+    "of": "av",
+    "next_booking": "Neste booking: {{facility}} – {{date}} kl. {{time}}",
+    "no_upcoming_bookings": "Ingen kommende bookinger",
+    "new_booking": "Ny booking",
+    "quick_actions": "Hurtighandlinger",
+    "my_bookings": "Mine bookinger",
+    "recommended_facilities": "Anbefalte lokaler",
+    "system_messages": "Systemmeldinger",
+    "days": {
+      "sunday": "søndag",
+      "monday": "mandag",
+      "tuesday": "tirsdag",
+      "wednesday": "onsdag",
+      "thursday": "fredag",
+      "friday": "fredag",
+      "saturday": "lørdag"
+    }
+  },
+  "quick_actions": {
+    "calendar": {
+      "title": "Se kalender",
+      "description": "Oversikt over alle bookinger"
+    },
+    "invoices": {
+      "title": "Fakturaer & betalinger",
+      "description": "Betalingshistorikk og kvitteringer"
+    },
+    "favorites": {
+      "title": "Favoritter",
+      "description": "Dine favorittlokaler"
+    },
+    "history": {
+      "title": "Historikk",
+      "description": "Tidligere bookinger og aktivitet"
+    }
+  },
+  "bookings": {
+    "status": {
+      "confirmed": "Bekreftet",
+      "pending": "Ventende",
+      "cancelled": "Avlyst"
+    },
+    "facility": "Lokale",
+    "date": "Dato",
+    "time": "Tid",
+    "duration": "Varighet",
+    "location": "Plassering",
+    "price": "Pris",
+    "purpose": "Formål",
+    "participants": "Deltakere",
+    "qr_code": "QR-kode",
+    "cancellation_policy": "Avbestilling mulig 24 timer før",
+    "contact_info": "Kontaktinformasjon",
+    "view_facility": "Se lokale",
+    "edit_booking": "Rediger booking",
+    "cancel_booking": "Avlys booking",
+    "contact_admin": "Kontakt admin",
+    "confirm_cancel": "Er du sikker på at du vil avlyse denne bookingen?",
+    "booking_cancelled": "Booking avlyst!",
+    "not_specified": "Ikke spesifisert"
+  },
+  "recommendations": {
+    "frequent_bookings": "Anbefalt basert på dine tidligere bookinger",
+    "preferred_times": "Tilgjengelig på dine vanlige tider",
+    "new_in_area": "Ny i området"
+  },
+  "messages": {
+    "types": {
+      "info": "Info",
+      "warning": "Advarsel",
+      "maintenance": "Vedlikehold",
+      "success": "Suksess"
+    },
+    "categories": {
+      "system": "system",
+      "booking": "booking",
+      "news": "nyheter"
+    }
+  },
+  "profile": {
+    "title": "Innstillinger",
+    "subtitle": "Administrer din personlige informasjon og kontoinnstillinger",
+    "account_overview": "Kontooversikt",
+    "account_created": "Konto opprettet",
+    "last_active": "Sist aktiv",
+    "role": "Rolle",
+    "subscription_type": "Abonnementstype",
+    "tabs": {
+      "profile": "Profil",
+      "security": "Sikkerhet",
+      "preferences": "Preferanser",
+      "privacy": "Personvern"
+    },
+    "personal_info": {
+      "title": "Personlig informasjon",
+      "edit": "Rediger",
+      "cancel": "Avbryt",
+      "save_changes": "Lagre endringer",
+      "personal_details": "Personlige detaljer",
+      "contact_info": "Kontaktinformasjon",
+      "first_name": "Fornavn",
+      "last_name": "Etternavn",
+      "date_of_birth": "Fødselsdato",
+      "email": "E-post",
+      "phone": "Telefon",
+      "address": "Adresse"
+    },
+    "security": {
+      "title": "Sikkerhet og tilgang",
+      "change_password": "Endre passord",
+      "current_password": "Nåværende passord",
+      "new_password": "Nytt passord",
+      "confirm_password": "Bekreft nytt passord",
+      "update_password": "Oppdater passord",
+      "two_factor_auth": "Tofaktorautentisering (2FA)",
+      "two_factor_description": "Få en sikkerhetskode på e-post eller SMS ved innlogging",
+      "enable": "Aktiver",
+      "disable": "Deaktiver",
+      "login_history": "Påloggingshistorikk",
+      "connected_accounts": "Tilknyttede kontoer",
+      "not_connected": "Ikke tilknyttet",
+      "connect": "Tilknytt",
+      "passwords_dont_match": "Passordene matcher ikke",
+      "password_updated": "Passord oppdatert"
+    },
+    "preferences": {
+      "title": "Preferanser og tilpasning",
+      "language_and_theme": "Språk og utseende",
+      "language": "Språk",
+      "theme": "Tema",
+      "theme_light": "Lys",
+      "theme_dark": "Mørk",
+      "theme_system": "System",
+      "notifications": "Varslingsinnstillinger",
+      "email_notifications": "E-postvarsler",
+      "email_notifications_desc": "Motta varsler på e-post",
+      "sms_notifications": "SMS-varsler",
+      "sms_notifications_desc": "Motta varsler på SMS",
+      "push_notifications": "Push-varsler",
+      "push_notifications_desc": "Motta push-varsler i nettleseren",
+      "booking_reminders": "Påminnelser",
+      "booking_reminders_desc": "Påminnelse dagen før booking",
+      "new_bookings": "Nye bookinger",
+      "new_bookings_desc": "Varsle om nye bookinger",
+      "on": "På",
+      "off": "Av",
+      "dashboard_view": "Dashboardvisning",
+      "view_compact": "Kompakt",
+      "view_compact_desc": "Mindre kort og tett layout",
+      "view_extended": "Utvidet",
+      "view_extended_desc": "Store kort og luftig layout",
+      "languages": {
+        "nb": "Norsk (bokmål)",
+        "nn": "Norsk (nynorsk)",
+        "en": "English"
+      }
+    },
+    "privacy": {
+      "title": "Personvern og data",
+      "download_data": "Last ned dine data",
+      "download_data_desc": "Last ned en kopi av alle dine personlige data, inkludert bookinger, kvitteringer og profilinformasjon.",
+      "download_button": "Last ned data",
+      "deactivate_temp": "Deaktiver midlertidig",
+      "deactivate_temp_desc": "Deaktiver kontoen din midlertidig. Du kan reaktivere den når som helst ved å logge inn igjen.",
+      "deactivate_button": "Deaktiver midlertidig",
+      "delete_account": "Slett konto permanent",
+      "delete_account_desc": "Når du sletter kontoen din, vil all data bli permanent fjernet. Dette inkluderer alle dine bookinger, favoritter og personlige opplysninger. Denne handlingen kan ikke angres.",
+      "delete_button": "Slett konto permanent",
+      "delete_modal": {
+        "title": "Slett konto",
+        "description": "Er du sikker på at du vil slette kontoen din? Alle bookinger og kvitteringer vil bli slettet permanent.",
+        "confirm_label": "Skriv inn din e-postadresse for å bekrefte: {{email}}",
+        "confirm_placeholder": "amin@example.com",
+        "delete_permanent": "Slett permanent",
+        "cancel": "Avbryt",
+        "email_mismatch": "E-postadressen matcher ikke",
+        "confirm_final": "Er du helt sikker på at du vil slette kontoen din permanent? Dette kan ikke angres.",
+        "success": "Konto slettet permanent. Du vil motta en bekreftelse på e-post."
+      }
+    },
+    "account_summary": {
+      "account_id": "Konto-ID",
+      "subscription_type": "Abonnementstype",
+      "available_features": "Tilgjengelige funksjoner",
+      "standard_features": "Standard booking og favoritter"
+    },
+    "toast": {
+      "changes_saved": "Endringer lagret"
+    },
+    "time": {
+      "yesterday": "i går",
+      "days_ago": "{{count}} dager siden",
+      "weeks_ago": "{{count}} uker siden"
+    }
+  },
+  "settings": {
+    "title": "Innstillinger",
+    "subtitle": "Administrer dine kontoinnstillinger og preferanser",
+    "notifications": {
+      "title": "Varsler",
+      "email": "E-post varsler",
+      "email_desc": "Motta varsler på e-post",
+      "sms": "SMS varsler",
+      "sms_desc": "Motta varsler på SMS",
+      "push": "Push varsler",
+      "push_desc": "Motta push-varsler i nettleseren",
+      "booking_reminders": "Booking påminnelser",
+      "booking_reminders_desc": "Få påminnelser før bookinger",
+      "marketing": "Markedsføring",
+      "marketing_desc": "Motta markedsføring og tilbud"
+    },
+    "privacy_security": {
+      "title": "Personvern og sikkerhet",
+      "show_profile": "Vis profil offentlig",
+      "show_profile_desc": "La andre brukere se din profil",
+      "two_factor": "To-faktor autentisering",
+      "two_factor_desc": "Ekstra sikkerhet for kontoen",
+      "change_password": "Endre passord"
+    },
+    "language_region": {
+      "title": "Språk og region",
+      "language": "Språk",
+      "timezone": "Tidssone",
+      "languages": {
+        "no": "Norsk",
+        "en": "English"
+      },
+      "timezones": {
+        "oslo": "Europe/Oslo (Norge)",
+        "stockholm": "Europe/Stockholm (Sverige)",
+        "copenhagen": "Europe/Copenhagen (Danmark)",
+        "utc": "UTC"
+      }
+    },
+    "account_actions": {
+      "title": "Kontohandlinger",
+      "change_email": "Endre e-postadresse",
+      "change_phone": "Endre telefonnummer",
+      "delete_account": "Slett konto"
+    },
+    "save_settings": "Lagre innstillinger",
+    "settings_saved": "Innstillinger lagret!",
+    "settings_save_failed": "Kunne ikke lagre innstillinger. Prøv igjen."
+  }
+}

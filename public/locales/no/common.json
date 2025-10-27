@@ -30,7 +30,14 @@
     "login": "Logg inn",
     "signup": "Registrer deg",
     "loading": "Laster...",
-    "refresh": "Oppdater"
+    "refresh": "Oppdater",
+    "share": "Del",
+    "like": "Lik",
+    "liked": "Likt",
+    "go_back": "Gå tilbake",
+    "go_home": "Til forsiden",
+    "contact_us": "Kontakt oss",
+    "book_now": "Book nå"
   },
   "status": {
     "active": "Aktiv",
@@ -42,6 +49,16 @@
     "completed": "Fullført",
     "draft": "Utkast",
     "published": "Publisert"
+  },
+  "view_modes": {
+    "grid": "Rutenett visning",
+    "list": "Liste visning",
+    "map": "Kart"
+  },
+  "navigation": {
+    "profile": "Profil",
+    "my_bookings": "Mine bookinger",
+    "facilities": "Lokaler"
   },
   "common": {
     "yes": "Ja",
@@ -115,6 +132,16 @@
       "no_data": "Ingen data tilgjengelig",
       "no_items": "Ingen elementer"
     }
+  },
+  "loading": {
+    "facility": "Laster fasilitet...",
+    "please_wait": "Vennligst vent mens vi henter informasjonen."
+  },
+  "errors": {
+    "facility_not_found": "Fasilitet ikke funnet",
+    "facility_not_found_desc": "Beklager, vi kunne ikke finne fasiliteten du leter etter. Den kan ha blitt flyttet eller slettet.",
+    "something_went_wrong": "Noe gikk galt",
+    "load_facility_error": "Vi kunne ikke laste fasiliteten. Vennligst prøv igjen senere."
   },
   "time": {
     "now": "Nå",

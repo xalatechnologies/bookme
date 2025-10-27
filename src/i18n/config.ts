@@ -14,9 +14,15 @@ import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import HttpBackend from 'i18next-http-backend';
 
-// Import translation files directly for initial load
+// Import translation files directly for initial load to prevent flickering
 import rolesEN from '../../public/locales/en/roles.json';
 import rolesNO from '../../public/locales/no/roles.json';
+import commonEN from '../../public/locales/en/common.json';
+import commonNO from '../../public/locales/no/common.json';
+import navigationEN from '../../public/locales/en/navigation.json';
+import navigationNO from '../../public/locales/no/navigation.json';
+import authEN from '../../public/locales/en/auth.json';
+import authNO from '../../public/locales/no/auth.json';
 
 // Supported languages
 export const SUPPORTED_LANGUAGES = {
@@ -114,15 +120,24 @@ i18n
       defaultTransParent: 'div',
     },
 
-    // Preload resources
+    // Preload resources - critical namespaces to prevent flickering
     resources: {
       en: {
         roles: rolesEN,
+        common: commonEN,
+        navigation: navigationEN,
+        auth: authEN,
       },
       no: {
         roles: rolesNO,
+        common: commonNO,
+        navigation: navigationNO,
+        auth: authNO,
       },
     },
+
+    // Allow partial bundles - other namespaces load via HTTP backend
+    partialBundledLanguages: true,
 
     // Load all namespaces initially
     preload: Object.values(SUPPORTED_LANGUAGES),

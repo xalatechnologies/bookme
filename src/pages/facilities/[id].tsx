@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
-import { useTranslation } from "@/i18n";
+import { useTranslation } from "react-i18next";
 import type { RecurrencePattern } from "@/utils/recurrenceEngine";
 
 import { useFacility } from "@/hooks/useFacility";
@@ -26,7 +26,7 @@ export const FacilityDetail = (): JSX.Element => {
     timeSlots: [],
     interval: 1
   });
-  const { t } = useTranslation();
+  const { t } = useTranslation('common');
 
   // Use hooks to fetch data
   const { facility, loading, error, notFound } = useFacility(id || '');
@@ -81,7 +81,7 @@ export const FacilityDetail = (): JSX.Element => {
 
         {/* Main Content */}
         <div className="flex-grow pb-20 lg:pb-0">
-          <FacilityDetailLayout 
+          <FacilityDetailLayout
             facility={facility}
             zones={zones}
             onShare={handleShare}
@@ -93,15 +93,14 @@ export const FacilityDetail = (): JSX.Element => {
         </div>
 
         {/* Mobile Booking Panel */}
-        <MobileBookingPanel 
-          facilityName={facility.name} 
-          facilityId={facility.id} 
-          capacity={facility.capacity} 
-          area={`${facility.capacity} personer`}
-          openingHours="08:00 - 22:00" 
+        <MobileBookingPanel
+          facilityName={facility.name}
+          facilityId={facility.id}
+          capacity={facility.capacity}
+          area={`${facility.capacity} ${t('details.people', { ns: 'facilities' })}`}
+          openingHours="08:00 - 22:00"
         />
       </div>
     </CartProvider>
   );
 };
-

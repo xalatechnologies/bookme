@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -11,10 +12,10 @@ import FacilityCardUser from "@/components/facility/FacilityCardUser";
 import BookingFilters from "@/components/user/dashboard/BookingFilters";
 import SystemMessageFilters from "@/components/user/dashboard/SystemMessageFilters";
 import BookingList from "@/components/user/dashboard/BookingList";
-import { 
-  Calendar, 
-  Clock, 
-  MapPin, 
+import {
+  Calendar,
+  Clock,
+  MapPin,
   Plus,
   CheckCircle,
   AlertTriangle,
@@ -69,6 +70,7 @@ interface ISystemMessage {
 
 const UserDashboard = (): JSX.Element => {
   const navigate = useNavigate();
+  const { t } = useTranslation(['user', 'common']);
   const [bookingFilter, setBookingFilter] = useState<string>("all");
   const [expandedBookings, setExpandedBookings] = useState<Set<string>>(new Set());
   const [messageFilter, setMessageFilter] = useState<string>("all");
@@ -83,7 +85,7 @@ const UserDashboard = (): JSX.Element => {
       const pending: any[] = JSON.parse(localStorage.getItem('pendingBookings') || '[]');
       const processed: any[] = JSON.parse(localStorage.getItem('processedBookings') || '[]');
       const all = [...pending, ...processed];
-      
+
       // Find next upcoming booking
       const upcomingBookings = all
         .filter((booking: any) => {
@@ -91,9 +93,9 @@ const UserDashboard = (): JSX.Element => {
           return bookingDate >= new Date() && booking.status === 'approved';
         })
         .sort((a: any, b: any) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime());
-      
+
       const nextBooking = upcomingBookings[0];
-      
+
       return {
         name: "Amin", // Could be from user profile context
         totalBookings: all.length,
@@ -129,32 +131,32 @@ const UserDashboard = (): JSX.Element => {
   const quickActions = [
     {
       id: "calendar",
-      title: "Se kalender",
-      description: "Oversikt over alle bookinger",
+      title: t('user:quick_actions.calendar.title'),
+      description: t('user:quick_actions.calendar.description'),
       icon: CalendarDays,
       path: "/user/calendar",
       color: "bg-blue-500"
     },
     {
       id: "invoices",
-      title: "Fakturaer & betalinger",
-      description: "Betalingshistorikk og kvitteringer",
+      title: t('user:quick_actions.invoices.title'),
+      description: t('user:quick_actions.invoices.description'),
       icon: CreditCard,
       path: "/user/receipts",
       color: "bg-green-500"
     },
     {
       id: "favorites",
-      title: "Favoritter",
-      description: "Dine favorittlokaler",
+      title: t('user:quick_actions.favorites.title'),
+      description: t('user:quick_actions.favorites.description'),
       icon: Heart,
       path: "/user/favorites",
       color: "bg-red-500"
     },
     {
       id: "history",
-      title: "Historikk",
-      description: "Tidligere bookinger og aktivitet",
+      title: t('user:quick_actions.history.title'),
+      description: t('user:quick_actions.history.description'),
       icon: History,
       path: "/user/history",
       color: "bg-purple-500"
@@ -167,26 +169,26 @@ const UserDashboard = (): JSX.Element => {
       const pending: any[] = JSON.parse(localStorage.getItem('pendingBookings') || '[]');
       const processed: any[] = JSON.parse(localStorage.getItem('processedBookings') || '[]');
       const all = [...pending, ...processed];
-      
+
       // Get recent bookings (last 3)
       const recentBookings = all
         .sort((a: any, b: any) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime())
         .slice(0, 3);
-      
+
       return recentBookings.map((booking: any) => ({
         id: booking.id,
         facility: booking.facilityName || 'Ukjent lokale',
         date: booking.startDate || new Date().toISOString().split('T')[0],
         time: booking.startTime || '14:00',
         duration: booking.duration || '1 time',
-        status: booking.status === 'approved' ? ('confirmed' as const) : 
+        status: booking.status === 'approved' ? ('confirmed' as const) :
                 booking.status === 'rejected' ? ('cancelled' as const) : ('pending' as const),
         location: booking.facilityName || 'Ukjent lokale',
         price: booking.price || '0 kr',
-        purpose: booking.purpose || 'Ikke spesifisert',
+        purpose: booking.purpose || t('user:bookings.not_specified'),
         participants: ["Amin"], // Default participant
         qrCode: `QR${booking.id.slice(-6)}`,
-        cancellationPolicy: "Avbestilling mulig 24 timer før",
+        cancellationPolicy: t('user:bookings.cancellation_policy'),
         contactInfo: {
           phone: "+47 123 45 678",
           email: "admin@drammen.no"
@@ -196,17 +198,17 @@ const UserDashboard = (): JSX.Element => {
       console.error('Error loading recent bookings:', error);
       return [];
     }
-  }, []);
+  }, [t]);
 
   /**
    * Get recommended facilities from store (first 3 published facilities)
-   * 
+   *
    * This replaces the previous mock data with real facility data from the store.
    * The facilities are mapped to the dashboard format with recommendation logic:
    * - First facility: "Anbefalt basert på dine tidligere bookinger" (isFrequentlyBooked: true)
    * - Second facility: "Tilgjengelig på dine vanlige tider" (matchesPreferredTimes: true)
    * - Third facility: "Ny i området" (isNewInArea: true)
-   * 
+   *
    * This ensures consistency between the facilities page and dashboard recommendations.
    * The facilities are then rendered using FacilityCardUser component for unified functionality.
    */
@@ -224,9 +226,9 @@ const UserDashboard = (): JSX.Element => {
     rating: facility.rating,
     price: `${facility.pricePerHour} kr/time`,
     availability: "available" as const,
-    recommendationReason: index === 0 ? "Anbefalt basert på dine tidligere bookinger" : 
-                         index === 1 ? "Tilgjengelig på dine vanlige tider" : 
-                         "Ny i området",
+    recommendationReason: index === 0 ? t('user:recommendations.frequent_bookings') :
+                         index === 1 ? t('user:recommendations.preferred_times') :
+                         t('user:recommendations.new_in_area'),
     isFrequentlyBooked: index === 0,
     matchesPreferredTimes: index === 1,
     isNewInArea: index === 2
@@ -271,19 +273,20 @@ const UserDashboard = (): JSX.Element => {
     }
   ];
 
-  const filteredBookings = userBookings.filter(booking => 
+  const filteredBookings = userBookings.filter(booking =>
     bookingFilter === "all" || booking.status === bookingFilter
   );
 
-  const filteredMessages = systemMessages.filter(message => 
+  const filteredMessages = systemMessages.filter(message =>
     messageFilter === "all" || message.category === messageFilter
   );
 
   const unreadMessagesCount = systemMessages.filter(message => !message.isRead).length;
 
   const getDayOfWeek = (): string => {
-    const days = ["søndag", "mandag", "tirsdag", "onsdag", "torsdag", "fredag", "lørdag"];
-    return days[new Date().getDay()];
+    const dayIndex = new Date().getDay();
+    const dayKeys = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
+    return t(`user:dashboard.days.${dayKeys[dayIndex]}`);
   };
 
   const getWeatherIcon = (condition: IWeatherData["condition"]): JSX.Element => {
@@ -321,7 +324,7 @@ const UserDashboard = (): JSX.Element => {
   const markMessageAsRead = (): void => {
     // Mark message as read in local state
     // In a real app, this would call an API
-    
+
   };
 
 
@@ -359,45 +362,13 @@ const UserDashboard = (): JSX.Element => {
   };
 
   const handleCancelBooking = (): void => {
-    if (window.confirm('Er du sikker på at du vil avlyse denne bookingen?')) {
+    if (window.confirm(t('user:bookings.confirm_cancel'))) {
       // In a real app, this would call an API
-      
+
       // Show success message
-      alert('Booking avlyst!');
+      alert(t('user:bookings.booking_cancelled'));
     }
   };
-
-  // const handleAddToCalendar = (bookingId: string): void => {
-  //   const booking = userBookings.find(b => b.id === bookingId);
-  //   if (!booking) return;
-
-  //   const startDate = new Date(`${booking.date}T${booking.time}`);
-  //   const endDate = new Date(startDate.getTime() + (parseInt(booking.duration) * 60 * 60 * 1000));
-  //   
-  //   // Create ICS file content
-  //   const icsContent = `BEGIN:VCALENDAR
-  // VERSION:2.0
-  // PRODID:-//BookMe//Booking//EN
-  // BEGIN:VEVENT
-  // UID:${booking.id}@bookme.no
-  // DTSTAMP:${new Date().toISOString().replace(/[-:]/g, '').split('.')[0]}Z
-  // DTSTART:${startDate.toISOString().replace(/[-:]/g, '').split('.')[0]}Z
-  // DTEND:${endDate.toISOString().replace(/[-:]/g, '').split('.')[0]}Z
-  // SUMMARY:${booking.facility}
-  // LOCATION:${booking.location}
-  // DESCRIPTION:${booking.purpose}
-  // END:VEVENT
-  // END:VCALENDAR`;
-  //   
-  //   // Download ICS file
-  //   const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
-  //   const link = document.createElement('a');
-  //   link.href = URL.createObjectURL(blob);
-  //   link.download = `booking-${booking.id}.ics`;
-  //   link.click();
-  //   
-  //   alert('Booking lagt til i kalender!');
-  // };
 
   const handleContactAdmin = (): void => {
     // Navigate to messages page
@@ -414,7 +385,7 @@ const UserDashboard = (): JSX.Element => {
             <div className="flex-1">
               <div className="flex items-center gap-3 mb-3">
                 <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-                  God {getDayOfWeek()}, {user.name}! 👋
+                  {t('user:dashboard.greeting', { dayOfWeek: getDayOfWeek(), name: user.name })} 👋
                 </h1>
                 {weather && (
                   <div className="flex items-center gap-2 px-3 py-1 bg-white/50 dark:bg-gray-800/50 rounded-full">
@@ -426,40 +397,45 @@ const UserDashboard = (): JSX.Element => {
                 )}
               </div>
               <p className="text-gray-600 dark:text-gray-400 mb-3">
-                {weather && `${weather.description} i Drammen. `}Perfekt dag for fotball i Drammen!
+                {weather && `${t('user:dashboard.weather_in_city', { description: weather.description })} `}
+                {t('user:dashboard.perfect_day')}
               </p>
-              
+
               {/* Progress Bar */}
               <div className="mb-4">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Bookinger denne måneden
+                    {t('user:dashboard.monthly_bookings')}
                   </span>
                   <span className="text-sm text-gray-500 dark:text-gray-400">
-                    {user.totalBookings} av {user.monthlyBookingLimit}
+                    {user.totalBookings} {t('user:dashboard.of')} {user.monthlyBookingLimit}
                   </span>
                 </div>
-                <Progress 
-                  value={(user.totalBookings / user.monthlyBookingLimit) * 100} 
+                <Progress
+                  value={(user.totalBookings / user.monthlyBookingLimit) * 100}
                   className="h-2"
                 />
               </div>
 
               <p className="text-sm text-blue-600 dark:text-blue-400">
-                {user.nextBooking ? 
-                  `Neste booking: ${user.nextBooking.facility} – ${user.nextBooking.date} kl. ${user.nextBooking.time}` :
-                  'Ingen kommende bookinger'
+                {user.nextBooking ?
+                  t('user:dashboard.next_booking', {
+                    facility: user.nextBooking.facility,
+                    date: user.nextBooking.date,
+                    time: user.nextBooking.time
+                  }) :
+                  t('user:dashboard.no_upcoming_bookings')
                 }
               </p>
             </div>
             <div className="ml-6">
-              <Button 
-                onClick={handleNewBooking} 
+              <Button
+                onClick={handleNewBooking}
                 className="bg-blue-600 hover:bg-blue-700 text-lg px-6 py-3 shadow-lg"
                 size="lg"
               >
                 <Plus className="h-5 w-5 mr-2" />
-                Ny booking
+                {t('user:dashboard.new_booking')}
               </Button>
             </div>
           </div>
@@ -471,7 +447,7 @@ const UserDashboard = (): JSX.Element => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Settings className="h-5 w-5" />
-            Hurtighandlinger
+            {t('user:dashboard.quick_actions')}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -509,12 +485,12 @@ const UserDashboard = (): JSX.Element => {
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2">
               <Calendar className="h-5 w-5" />
-              Mine bookinger
+              {t('user:dashboard.my_bookings')}
             </CardTitle>
             <div className="flex items-center space-x-2">
-              <BookingFilters 
-                bookingFilter={bookingFilter} 
-                onFilterChange={setBookingFilter} 
+              <BookingFilters
+                bookingFilter={bookingFilter}
+                onFilterChange={setBookingFilter}
               />
             </div>
           </div>
@@ -537,18 +513,18 @@ const UserDashboard = (): JSX.Element => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <MapPin className="h-5 w-5" />
-            Anbefalte lokaler
+            {t('user:dashboard.recommended_facilities')}
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {recommendedFacilities.map((facility) => (
               <div key={facility.id} className="relative">
-                {/* 
+                {/*
                   Use FacilityCardUser component for consistent functionality
                   This ensures the same heart icon, share button, and hover effects
                   as the main facilities page, providing a unified user experience.
-                  
+
                   The component handles:
                   - Favorite toggle with visual feedback
                   - Share functionality (native share or clipboard fallback)
@@ -569,8 +545,8 @@ const UserDashboard = (): JSX.Element => {
                   description={facility.description}
                   availability={facility.availability}
                 />
-                
-                {/* 
+
+                {/*
                   Recommendation Badge Overlay
                   Positioned with high z-index (z-40) to appear above the card content
                   but below the heart/share buttons (z-30) for proper layering
@@ -594,7 +570,7 @@ const UserDashboard = (): JSX.Element => {
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2">
               <Bell className="h-5 w-5" />
-              Systemmeldinger
+              {t('user:dashboard.system_messages')}
               {unreadMessagesCount > 0 && (
                 <Badge className="bg-red-500 text-white">
                   {unreadMessagesCount}
@@ -602,7 +578,7 @@ const UserDashboard = (): JSX.Element => {
               )}
             </CardTitle>
             <div className="flex items-center space-x-2">
-              <SystemMessageFilters 
+              <SystemMessageFilters
                 messageFilter={messageFilter}
                 onFilterChange={setMessageFilter}
                 unreadMessagesCount={unreadMessagesCount}
@@ -616,8 +592,8 @@ const UserDashboard = (): JSX.Element => {
               <div
                 key={message.id}
                 className={`flex items-start space-x-3 p-4 border rounded-lg transition-all duration-200 hover:shadow-md ${
-                  message.isRead 
-                    ? "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800" 
+                  message.isRead
+                    ? "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800"
                     : "border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/20"
                 }`}
                 onClick={() => markMessageAsRead()}
@@ -633,8 +609,8 @@ const UserDashboard = (): JSX.Element => {
                 <div className="flex-1">
                   <div className="flex items-start justify-between">
                     <h4 className={`font-medium ${
-                      message.isRead 
-                        ? "text-gray-900 dark:text-white" 
+                      message.isRead
+                        ? "text-gray-900 dark:text-white"
                         : "text-gray-900 dark:text-white font-semibold"
                     }`}>
                       {message.title}

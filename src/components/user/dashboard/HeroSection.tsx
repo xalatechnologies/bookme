@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -25,10 +26,12 @@ interface IHeroSectionProps {
 
 const HeroSection = (props: IHeroSectionProps): JSX.Element => {
   const { userName, weather, totalBookings, monthlyBookingLimit, nextBooking, onNewBooking } = props;
+  const { t } = useTranslation(['user', 'common']);
 
   const getDayOfWeek = (): string => {
-    const days = ["søndag", "mandag", "tirsdag", "onsdag", "torsdag", "fredag", "lørdag"];
-    return days[new Date().getDay()];
+    const dayIndex = new Date().getDay();
+    const dayKeys = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
+    return t(`user:dashboard.days.${dayKeys[dayIndex]}`);
   };
 
   const getWeatherIcon = (condition: "sunny" | "cloudy" | "rainy" | "snowy"): JSX.Element => {
@@ -49,7 +52,7 @@ const HeroSection = (props: IHeroSectionProps): JSX.Element => {
           <div className="flex-1">
             <div className="flex items-center gap-3 mb-3">
               <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-                God {getDayOfWeek()}, {userName}! 👋
+                {t('user:dashboard.greeting', { dayOfWeek: getDayOfWeek(), name: userName })} 👋
               </h1>
               {weather && (
                 <div className="flex items-center gap-2 px-3 py-1 bg-white/50 dark:bg-gray-800/50 rounded-full">
@@ -61,40 +64,45 @@ const HeroSection = (props: IHeroSectionProps): JSX.Element => {
               )}
             </div>
             <p className="text-gray-600 dark:text-gray-400 mb-3">
-              {weather && `${weather.description} i Drammen. `}Perfekt dag for fotball i Drammen!
+              {weather && `${t('user:dashboard.weather_in_city', { description: weather.description })} `}
+              {t('user:dashboard.perfect_day')}
             </p>
-            
+
             {/* Progress Bar */}
             <div className="mb-4">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Bookinger denne måneden
+                  {t('user:dashboard.monthly_bookings')}
                 </span>
                 <span className="text-sm text-gray-500 dark:text-gray-400">
-                  {totalBookings} av {monthlyBookingLimit}
+                  {totalBookings} {t('user:dashboard.of')} {monthlyBookingLimit}
                 </span>
               </div>
-              <Progress 
-                value={(totalBookings / monthlyBookingLimit) * 100} 
+              <Progress
+                value={(totalBookings / monthlyBookingLimit) * 100}
                 className="h-2"
               />
             </div>
 
             <p className="text-sm text-blue-600 dark:text-blue-400">
-              {nextBooking ? 
-                `Neste booking: ${nextBooking.facility} – ${nextBooking.date} kl. ${nextBooking.time}` :
-                'Ingen kommende bookinger'
+              {nextBooking ?
+                t('user:dashboard.next_booking', {
+                  facility: nextBooking.facility,
+                  date: nextBooking.date,
+                  time: nextBooking.time
+                }) :
+                t('user:dashboard.no_upcoming_bookings')
               }
             </p>
           </div>
           <div className="ml-6">
-            <Button 
-              onClick={onNewBooking} 
+            <Button
+              onClick={onNewBooking}
               className="bg-blue-600 hover:bg-blue-700 text-lg px-6 py-3 shadow-lg"
               size="lg"
             >
               <Plus className="h-5 w-5 mr-2" />
-              Ny booking
+              {t('user:dashboard.new_booking')}
             </Button>
           </div>
         </div>

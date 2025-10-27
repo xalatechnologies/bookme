@@ -3,7 +3,7 @@
 import React from "react";
 import { Grid3X3, List, Map } from "lucide-react";
 
-import { useTranslation } from "@/i18n";
+import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui/button";
 
@@ -13,12 +13,12 @@ interface ViewModeToggleProps {
 }
 
 export const ViewModeToggle: React.FC<ViewModeToggleProps> = ({ viewMode, setViewMode }): JSX.Element => {
-  const { t } = useTranslation();
+  const { t } = useTranslation('common');
 
   const viewModes = [
-    { key: "grid" as const, icon: Grid3X3, label: "Rutenett visning" },
-    { key: "list" as const, icon: List, label: "Liste visning" },
-    { key: "map" as const, icon: Map, label: "Kart" },
+    { key: "grid" as const, icon: Grid3X3, label: t('view_modes.grid') },
+    { key: "list" as const, icon: List, label: t('view_modes.list') },
+    { key: "map" as const, icon: Map, label: t('view_modes.map') },
   ];
 
   return (
@@ -42,4 +42,3 @@ export const ViewModeToggle: React.FC<ViewModeToggleProps> = ({ viewMode, setVie
     </div>
   );
 };
-

@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { X, User, Globe, Shield } from "lucide-react";
 
@@ -25,29 +26,31 @@ const MobileMenu = ({
   closeMobileMenu,
   userProfile
 }: MobileMenuProps): JSX.Element => {
+  const { t } = useTranslation('navigation');
+
   if (!isOpen) return <></>;
 
   return (
     <div className="md:hidden bg-white border-t border-gray-200 shadow-lg">
       <div className="px-4 py-3 space-y-3">
         <div className="flex items-center justify-between">
-          <span className="font-medium">Meny</span>
+          <span className="font-medium">{t('menu')}</span>
           <Button variant="ghost" size="sm" onClick={closeMobileMenu}>
             <X className="h-5 w-5" />
           </Button>
         </div>
-        
+
         <div className="space-y-2">
           <Button variant="ghost" className="w-full justify-start">
             <Shield className="mr-2 h-4 w-4" />
-            Personvern
+            {t('privacy')}
           </Button>
-          
+
           <Button variant="ghost" className="w-full justify-start">
             <Globe className="mr-2 h-4 w-4" />
-            Språk
+            {t('language')}
           </Button>
-          
+
           {isLoggedIn ? (
             <>
               {userProfile && (
@@ -60,21 +63,21 @@ const MobileMenu = ({
               )}
               <Button variant="ghost" className="w-full justify-start">
                 <User className="mr-2 h-4 w-4" />
-                Min profil
+                {t('my_profile')}
               </Button>
               <Button variant="ghost" className="w-full justify-start">
-                Mine bookinger
+                {t('my_bookings')}
               </Button>
               <Button variant="ghost" className="w-full justify-start">
-                Lokaler
+                {t('rooms')}
               </Button>
               <Button variant="ghost" className="w-full justify-start" onClick={handleLogout}>
-                Logg ut
+                {t('logout')}
               </Button>
             </>
           ) : (
             <Button onClick={handleLogin} className="w-full bg-blue-600 hover:bg-blue-700 text-white">
-              Logg inn
+              {t('login')}
             </Button>
           )}
         </div>
