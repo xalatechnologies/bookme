@@ -1,10 +1,22 @@
-import { expect, afterEach, vi, beforeAll } from 'vitest';
+import { expect, afterEach, vi, beforeAll, afterAll } from 'vitest';
 import { cleanup } from '@testing-library/react';
 import '@testing-library/jest-dom';
+import { server } from '../mocks/server';
+
+// Setup MSW server
+beforeAll(() => {
+  server.listen({ onUnhandledRequest: 'warn' });
+});
 
 // Cleanup after each test
 afterEach(() => {
   cleanup();
+  server.resetHandlers();
+});
+
+// Cleanup MSW
+afterAll(() => {
+  server.close();
 });
 
 // Mock window.matchMedia
