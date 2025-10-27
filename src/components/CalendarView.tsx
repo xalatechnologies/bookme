@@ -21,8 +21,8 @@ interface CalendarViewProps {
   readonly location: string;
   readonly accessibility: string;
   readonly capacity: readonly number[];
-  readonly viewMode: "grid" | "map" | "calendar" | "list";
-  readonly setViewMode: (mode: "grid" | "map" | "calendar" | "list") => void;
+  readonly viewMode: "grid" | "map" | "list"; // Removed "calendar" as it's not a valid option
+  readonly setViewMode: (mode: "grid" | "map" | "list") => void;
 }
 
 export const CalendarView: React.FC<CalendarViewProps> = ({
@@ -53,13 +53,21 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
   });
 
   // Use slot selection hook for managing selected slots
-  const {
-    selectedSlots,
-    handleSlotClick,
-    handleBulkSlotSelection,
-    clearSelection,
-    isSlotSelected
-  } = useSlotSelection();
+  const slotSelection = useSlotSelection();
+  const selectedSlots = slotSelection.selectedSlots;
+  const handleSlotClick = slotSelection.handleSlotClick;
+  const handleBulkSlotSelection = slotSelection.handleBulkSlotSelection;
+  const clearSelection = slotSelection.clearSelection;
+  // isSlotSelected is not returned by the hook, we need to create our own version
+
+  // Custom function to check if a slot is selected
+  const isSlotSelected = useCallback((zoneId: string, date: Date, timeSlot: string): boolean => {
+    return selectedSlots.some(slot => 
+      slot.zoneId === zoneId && 
+      isSameDay(slot.date, date) && 
+      slot.timeSlot === timeSlot
+    );
+  }, [selectedSlots]);
 
   // Mock availability status function - in a real app this would fetch from API
   const getAvailabilityStatus = useCallback((zoneId: string, date: Date, timeSlot: string): AvailabilityStatus => {
@@ -121,13 +129,15 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
     } else {
       // Add slot with complete data
       const enhancedSlot: SelectedTimeSlot = {
+        id: `${facility.id}-${zoneId}-${date.toISOString().split('T')[0]}-${timeSlot}`,
         zoneId,
         date,
         timeSlot,
         facilityId: facility.id,
         facilityName: facility.name,
         zoneName: zone.name,
-        pricePerHour: zone.pricePerHour
+        pricePerHour: zone.pricePerHour,
+        duration: 60 // Default duration of 60 minutes
       };
       
       handleBulkSlotSelection([enhancedSlot]);
@@ -258,11 +268,11 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                 <FacilityAccordionContent
                   key={facility.id}
                   facility={facility}
-                  selectedSlots={selectedSlots}
+                  selectedSlots={selectedSlots as unknown as readonly SelectedTimeSlot[]} // Type assertion to fix the mismatch
                   onSlotClick={handleEnhancedSlotClick}
                   onBulkSlotSelection={handleEnhancedBulkSlotSelection}
                   getAvailabilityStatus={getAvailabilityStatus}
-                  isSlotSelected={isSlotSelected}
+                  isSlotSelected={isSlotSelected} // Use our custom function
                   onClearSlots={clearSelection}
                   onRemoveSlot={(zoneId: string, date: Date, timeSlot: string) => {
                     handleEnhancedSlotClick(zoneId, date, timeSlot, 'available');
@@ -276,4 +286,3 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
     </div>
   );
 };
-

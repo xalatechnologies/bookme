@@ -403,7 +403,7 @@ export const Checkout = (): JSX.Element => {
               participants: item.attendees || 1,
               zone: item.zoneName || 'Hovedbasseng',
               isRecurring: true,
-              parentBookingId: (slot as any).parentBookingId ?? `${item.facilityId}-${item.zoneId}`,
+              parentBookingId: slot.parentBookingId ?? `${item.facilityId}-${item.zoneId}`,
               recurrencePattern: item.recurrencePattern,
               bookingType: 'recurring' as const,
               timeSlots: [slot]

@@ -49,3 +49,22 @@ export interface ISystemAlert {
   readonly timestamp: string;
   readonly action?: string;
 }
+
+export interface IApprovalWorkflow {
+  readonly id: string;
+  readonly name: string;
+  readonly description: string;
+  readonly isActive: boolean;
+  readonly rules: readonly IWorkflowRule[];
+  readonly createdAt: string;
+  readonly updatedAt: string;
+}
+
+export interface IWorkflowRule {
+  readonly id: string;
+  readonly field: string;
+  readonly operator: "equals" | "contains" | "greater_than" | "less_than";
+  readonly value: string;
+  readonly approverType: "automatic" | "manual" | "admin";
+  readonly approvers?: readonly string[];
+}

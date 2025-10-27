@@ -237,7 +237,7 @@ const PricingSummary: React.FC<{
   readonly pricePerHour: number;
 }> = ({ pattern, startDate, endDate, timeSlots, pricePerHour }) => {
   const pricing = useMemo(() => {
-    const occurrences = [];
+    const occurrences: Array<{ duration: number; price: number }> = [];
     let currentDate = new Date(startDate);
     const maxOccurrences = 5; // Limit to 5 occurrences
     let count = 0;
@@ -354,7 +354,7 @@ export const RecurringBookingModal: React.FC<RecurringBookingModalProps> = ({
     type: recurrenceType,
     weekdays: selectedDays,
     timeSlots: selectedTimeSlots,
-    interval: recurrenceType === 'custom' ? 1 : undefined,
+    interval: recurrenceType === 'custom' ? 1 : 0,
     startDate,
     endDate: hasEndDate ? endDate : undefined,
     monthlyPattern: recurrenceType === 'monthly' ? 'first' : undefined,

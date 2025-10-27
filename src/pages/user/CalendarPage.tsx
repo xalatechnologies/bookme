@@ -3,7 +3,7 @@
 import React, { useMemo, useState } from "react";
 import { EnhancedCalendar } from "@/components/calendar/EnhancedCalendar";
 import { startOfMonth, endOfMonth, startOfWeek, endOfWeek, startOfDay, endOfDay } from "date-fns";
-import type { IBookingEvent } from "@/types/calendar";
+import type { IBookingEvent, TBookingStatus } from "@/types/calendar";
 
 export default function CalendarPage(): JSX.Element {
   const [selectedEvent, setSelectedEvent] = useState<IBookingEvent | null>(null);
@@ -38,41 +38,50 @@ export default function CalendarPage(): JSX.Element {
   // Build calendar events directly from the same data-kilde as "Mine bookinger"
   const data: IBookingEvent[] = useMemo(() => {
     try {
-      const pending = JSON.parse(localStorage.getItem('pendingBookings') || '[]');
-      const processed = JSON.parse(localStorage.getItem('processedBookings') || '[]');
+      const pending: readonly unknown[] = JSON.parse(localStorage.getItem('pendingBookings') || '[]');
+      const processed: readonly unknown[] = JSON.parse(localStorage.getItem('processedBookings') || '[]');
       const all = [...pending, ...processed];
-      const events: IBookingEvent[] = all.map((b: any) => {
+      const events = all.map((b: unknown) => {
+        if (typeof b !== 'object' || b === null) {
+          return null;
+        }
+        const booking = b as Record<string, unknown>;
         // b.date === 'YYYY-MM-DD', b.time === 'HH:MM-HH:MM'
-        const [startH, startM] = (b.time?.split('-')[0] || '09:00').split(':').map((n: string) => parseInt(n, 10));
-        const [endH, endM] = (b.time?.split('-')[1] || '10:00').split(':').map((n: string) => parseInt(n, 10));
-        const [y, m, d] = (b.date || '').split('-').map((n: string) => parseInt(n, 10));
+        const timeStr = (booking.time as string | undefined) || '09:00-10:00';
+        const [startTime, endTime] = timeStr.split('-');
+        const [startH, startM] = (startTime || '09:00').split(':').map((n: string) => parseInt(n, 10));
+        const [endH, endM] = (endTime || '10:00').split(':').map((n: string) => parseInt(n, 10));
+        const dateStr = (booking.date as string | undefined) || new Date().toISOString().split('T')[0];
+        const [y, m, d] = dateStr.split('-').map((n: string) => parseInt(n, 10));
         const start = new Date(y, (m || 1) - 1, d || 1, startH, startM, 0, 0);
         const end = new Date(y, (m || 1) - 1, d || 1, endH, endM, 0, 0);
         // Map status correctly to match user bookings page
-        let mappedStatus = b.status || 'pending';
-        if (mappedStatus === 'approved') {
+        const bookingStatus = (booking.status as string | undefined) || 'pending';
+        let mappedStatus: TBookingStatus = 'pending';
+        if (bookingStatus === 'approved' || bookingStatus === 'confirmed') {
           mappedStatus = 'confirmed';
-        } else if (mappedStatus === 'rejected') {
-          mappedStatus = 'rejected';
-        } else if (mappedStatus === 'cancelled') {
+        } else if (bookingStatus === 'rejected' || bookingStatus === 'cancelled') {
           mappedStatus = 'cancelled';
+        } else if (bookingStatus === 'pending') {
+          mappedStatus = 'pending';
         }
         
         return {
-          id: b.id,
-          title: b.purpose || 'Booking',
-          facilityName: b.facility || b.facilityName,
+          id: (booking.id as string | undefined) || 'unknown',
+          facilityId: (booking.facilityId as string | undefined) || '1',
+          facilityName: (booking.facility as string | undefined) || (booking.facilityName as string | undefined) || 'Ukjent lokale',
+          title: (booking.purpose as string | undefined) || 'Booking',
           start: start.toISOString(),
           end: end.toISOString(),
           status: mappedStatus,
-          // Behold original pris-tekst for korrekt format i modal
-          meta: { priceText: b.price },
-        } as unknown as IBookingEvent;
-      });
+          priceNok: undefined,
+          tags: undefined
+        };
+      }).filter((event): event is NonNullable<typeof event> => event !== null);
       // Filter by current view range (simple month range for nå)
       const from = new Date(query.from);
       const to = new Date(query.to);
-      return events.filter(e => {
+      return events.filter((e): e is NonNullable<typeof e> => e !== null).filter(e => {
         const s = new Date(e.start);
         return s >= from && s <= to;
       });
@@ -184,14 +193,7 @@ export default function CalendarPage(): JSX.Element {
                   </span>
                 </div>
                 
-                {((selectedEvent as any).meta?.priceText) && (
-                  <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">Pris:</span>
-                    <span className="text-gray-900 dark:text-white font-medium">
-                      {(selectedEvent as any).meta?.priceText}
-                    </span>
-                  </div>
-                )}
+                {/* Prisinformasjon er ikke lenger tilgjengelig i den nye strukturen */}
               </div>
               
               <div className="flex gap-2 mt-6">

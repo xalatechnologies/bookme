@@ -173,7 +173,11 @@ export const PriceCalculation: React.FC<IPriceCalculationProps> = ({
     const finalPrice = finalBasePrice + vatAmount;
 
     // Create breakdown
-    const breakdown = [
+    const breakdown: Array<{
+      readonly description: string;
+      readonly amount: number;
+      readonly type: "base" | "discount" | "surcharge";
+    }> = [
       {
         description: "Grunnpris",
         amount: basePrice,
@@ -185,7 +189,7 @@ export const PriceCalculation: React.FC<IPriceCalculationProps> = ({
       breakdown.push({
         description: getActorDescription(actorType),
         amount: adjustedPrice - basePrice,
-        type: actorMultiplier < 1 ? "discount" as const : "surcharge" as const,
+        type: actorMultiplier < 1 ? ("discount" as const) : ("surcharge" as const),
       });
     }
 
@@ -193,7 +197,7 @@ export const PriceCalculation: React.FC<IPriceCalculationProps> = ({
       breakdown.push({
         description: getActivityDescription(activityType),
         amount: activityAdjustment,
-        type: activityAdjustment < 0 ? "discount" as const : "surcharge" as const,
+        type: activityAdjustment < 0 ? ("discount" as const) : ("surcharge" as const),
       });
     }
 

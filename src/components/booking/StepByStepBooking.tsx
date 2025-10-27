@@ -12,6 +12,7 @@ import { Progress } from "@/components/ui/progress";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 
 import { BookingForm } from "./BookingForm";
 import { BookingTypeSelector } from "./BookingTypeSelector";
@@ -20,7 +21,8 @@ import { TimeSlotGrid } from "@/components/calendar/TimeSlotGrid";
 import { AvailabilityLegend } from "@/components/calendar/AvailabilityLegend";
 import { PriceCalculation } from "./PriceCalculation";
 
-import { ISelectedTimeSlot, IZone, BookingType, IBookingFormData } from "./types";
+import { ISelectedTimeSlot, BookingType, IBookingFormData, ActivityType } from "./types";
+import { Zone } from "@/types/booking";
 import type { RecurrencePattern } from "@/utils/recurrenceEngine";
 import { RecurrenceEngine } from "@/utils/recurrenceEngine";
 import { useAvailabilityStatus } from "@/hooks/useAvailabilityStatus";
@@ -28,7 +30,7 @@ import { useAvailabilityStatus } from "@/hooks/useAvailabilityStatus";
 export interface IStepByStepBookingProps {
   readonly facilityId: string;
   readonly facilityName: string;
-  readonly zones: readonly IZone[];
+  readonly zones: readonly Zone[];
   readonly selectedZoneId: string;
   readonly onZoneChange: (zoneId: string) => void;
   readonly selectedSlots: readonly ISelectedTimeSlot[];
@@ -177,7 +179,9 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
         date,
         isToday: isToday(date),
         isWeekend: isWeekend(date),
-        isPast: isPast(date)
+        isPast: isPast(date),
+        isHoliday: false, // Default value, would be updated with actual holiday data
+        timeSlots: [] // Default empty array, would be populated with actual time slots
       });
     }
     
@@ -397,7 +401,7 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
       });
     };
 
-    const timePackages = groupTimeSlotsIntoPackages(selectedSlots);
+    const timePackages = groupTimeSlotsIntoPackages([...selectedSlots]);
     
     // Use the first package as the template for recurrence
     const templatePackage = timePackages[0];
@@ -632,6 +636,7 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
     }
     
     setRecurringSlots(occurrences);
+    return;
   }, [selectedSlots, selectedZone, facilityId]);
 
   /**
@@ -645,7 +650,7 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
     } : null;
     
     setRecurrencePattern(patternWithStartDate);
-    handleFormDataUpdate({ recurrencePattern: patternWithStartDate });
+    handleFormDataUpdate({ recurrencePattern: patternWithStartDate || undefined });
     
     // Clear existing timeout
     if (timeoutRef.current) {
@@ -843,7 +848,7 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
                   </Label>
                   <Select
                     value={formData.activityType}
-                    onValueChange={(value) => handleFormDataUpdate({ activityType: value })}
+                    onValueChange={(value) => handleFormDataUpdate({ activityType: value as ActivityType })}
                     disabled={isLoading}
                   >
                     <SelectTrigger className="w-full">
@@ -923,6 +928,7 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
                               id: `${facilityId}-${zoneId}-${localDateString}-${timeSlot}`,
                               facilityId,
                               zoneId,
+                              zoneName: selectedZone?.name || '',
                               date,
                               timeSlot,
                               duration: 1,
@@ -1029,12 +1035,10 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
                   </div>
 
                   <div className="flex items-start space-x-3 pt-4 border-t">
-                    <input
-                      type="checkbox"
+                    <Checkbox
                       id="terms"
                       checked={formData.termsAccepted}
-                      onChange={(e) => handleFormDataUpdate({ termsAccepted: e.target.checked })}
-                      className="mt-1"
+                      onCheckedChange={(checked) => handleFormDataUpdate({ termsAccepted: !!checked })}
                     />
                     <label htmlFor="terms" className="text-sm cursor-pointer">
                       Jeg godtar <a href="/terms" target="_blank" className="text-blue-600 hover:underline">vilkår for leie</a> og 
@@ -1333,7 +1337,7 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
                           })));
                           
                           // Use all selected slots for the template (no filtering needed)
-                          const timePackages = groupTimeSlotsIntoPackages(selectedSlots);
+                          const timePackages = groupTimeSlotsIntoPackages([...selectedSlots]);
 
                           return (
                             <div className="space-y-2">
@@ -1462,7 +1466,7 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
                             });
                           };
 
-                          const timePackages = groupTimeSlotsIntoPackages(selectedSlots);
+                          const timePackages = groupTimeSlotsIntoPackages([...selectedSlots]);
 
                           return timePackages.map((datePackage) => (
                             <div key={datePackage.date} className="space-y-2">

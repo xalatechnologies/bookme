@@ -36,7 +36,9 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
   openingHoursStart = "08:00",
   openingHoursEnd = "22:00"
 }): JSX.Element => {
-  const weekDays = Array(7).fill(0).map((_, i) => addDays(currentWeekStart, i));
+  const weekDays = Array(7).fill(0).map((_, i) => ({
+    date: addDays(currentWeekStart, i)
+  }));
   const { dragState, startDrag, updateDrag, endDrag, cancelDrag, isSlotInPreview } = useDragSelection();
 
   const getStatusStyle = (status: string, isSelected: boolean, isInPreview: boolean): string => {
@@ -172,7 +174,8 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
         <CardContent className="p-4">
           {/* Compact Day Headers */}
           <div className="grid grid-cols-7 gap-2 mb-4">
-            {weekDays.map((day, i) => {
+            {weekDays.map((dayObj, i) => {
+              const day = dayObj.date;
               const holidayCheck = isNorwegianHoliday(day);
               const isToday = format(day, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd');
               
@@ -202,11 +205,14 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
           <div className="space-y-1">
             {timeSlots.map((timeSlot) => (
               <div key={timeSlot} className="grid grid-cols-7 gap-2">
-                {weekDays.map((day, dayIndex) => (
-                  <div key={dayIndex} className="relative">
-                    {renderTimeSlotCell(day, timeSlot, dayIndex)}
-                  </div>
-                ))}
+                {weekDays.map((dayObj, dayIndex) => {
+                  const day = dayObj.date;
+                  return (
+                    <div key={dayIndex} className="relative">
+                      {renderTimeSlotCell(day, timeSlot, dayIndex)}
+                    </div>
+                  );
+                })}
               </div>
             ))}
           </div>

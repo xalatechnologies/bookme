@@ -15,15 +15,8 @@ interface IUserProfile {
   readonly lastActive: string;
   readonly accountId: string;
   readonly subscriptionType: string;
+  readonly organization?: string;
 }
-
-interface IUserProfileContext {
-  readonly profile: IUserProfile;
-  readonly updateProfile: (updates: Partial<IUserProfile>) => void;
-  readonly isLoading: boolean;
-}
-
-const UserProfileContext = createContext<IUserProfileContext | undefined>(undefined);
 
 const initialProfile: IUserProfile = {
   firstName: "Amin",
@@ -37,8 +30,17 @@ const initialProfile: IUserProfile = {
   accountCreated: "2024-02-12",
   lastActive: "2024-01-20T14:30:00Z",
   accountId: "USR-1045",
-  subscriptionType: "Gratisbruker"
+  subscriptionType: "Gratisbruker",
+  organization: "Drammen kommune"
 };
+
+interface IUserProfileContext {
+  readonly profile: IUserProfile;
+  readonly updateProfile: (updates: Partial<IUserProfile>) => void;
+  readonly isLoading: boolean;
+}
+
+const UserProfileContext = createContext<IUserProfileContext | undefined>(undefined);
 
 export const UserProfileProvider = ({ children }: { readonly children: React.ReactNode }): JSX.Element => {
   const [profile, setProfile] = useState<IUserProfile>(initialProfile);

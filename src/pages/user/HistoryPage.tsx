@@ -21,7 +21,34 @@ import {
   ChevronRight
 } from "lucide-react";
 import { downloadICS } from "@/utils/ics";
-import type { IBookingHistoryItem } from "@/types/history";
+interface IBookingHistoryItem {
+  readonly id: string;
+  readonly facilityId?: string;
+  readonly facilityName: string;
+  readonly title?: string;
+  readonly start: string;   // ISO
+  readonly end: string;     // ISO
+  readonly status: "completed" | "cancelled" | "confirmed" | "rejected" | "pending";
+  readonly totalPriceNok?: number;
+  readonly invoiceId?: string;
+  readonly createdAt?: string;
+  readonly duration?: number;
+  readonly purpose?: string;
+  readonly location?: string;
+  readonly isRecurring?: boolean;
+  readonly occurrenceCount?: number;
+  readonly originalDate?: string;
+  readonly originalTime?: string;
+  readonly startTime?: string;
+  readonly endTime?: string;
+  readonly bookingId?: string;
+  readonly occurrences?: readonly {
+    readonly id: string;
+    readonly date?: string;
+    readonly time?: string;
+    readonly status?: string;
+  }[];
+}
 
 export default function HistoryPage(): JSX.Element {
   const [searchQuery, setSearchQuery] = useState("");
@@ -46,58 +73,64 @@ export default function HistoryPage(): JSX.Element {
   // Get data from localStorage and group recurring bookings
   const data = useMemo(() => {
     try {
-      const pending = JSON.parse(localStorage.getItem('pendingBookings') || '[]');
-      const processed = JSON.parse(localStorage.getItem('processedBookings') || '[]');
+      const pending: readonly unknown[] = JSON.parse(localStorage.getItem('pendingBookings') || '[]');
+      const processed: readonly unknown[] = JSON.parse(localStorage.getItem('processedBookings') || '[]');
       const all = [...pending, ...processed];
       
       // Group recurring bookings by parentBookingId or fallback key
-      const groupedRecurring = new Map();
-      const singleBookings = [];
+      const groupedRecurring = new Map<string, unknown[]>();
+      const singleBookings: unknown[] = [];
       
-      all.forEach((booking: any) => {
-        const parentKey = booking.parentBookingId || 
-          `${booking.facility || booking.facilityName}-${booking.purpose}-${booking.time || booking.startTime}`;
+      all.forEach((booking: unknown) => {
+        if (typeof booking !== 'object' || booking === null) return;
+        const bookingObj = booking as Record<string, unknown>;
+        const parentKey = (bookingObj.parentBookingId as string | undefined) || 
+          `${bookingObj.facility || bookingObj.facilityName}-${bookingObj.purpose}-${bookingObj.time || bookingObj.startTime}`;
         
-        if (booking.isRecurring || booking.bookingType === 'recurring') {
+        if ((bookingObj.isRecurring as boolean | undefined) || (bookingObj.bookingType as string | undefined) === 'recurring') {
           if (!groupedRecurring.has(parentKey)) {
             groupedRecurring.set(parentKey, []);
           }
-          groupedRecurring.get(parentKey).push(booking);
+          groupedRecurring.get(parentKey)!.push(booking);
         } else {
           singleBookings.push(booking);
         }
       });
       
       // Convert single bookings to history format
-      const singleHistoryItems = singleBookings.map((booking: any) => {
+      const singleHistoryItems = singleBookings.map((booking: unknown) => {
+        if (typeof booking !== 'object' || booking === null) {
+          return null;
+        }
+        const bookingObj = booking as Record<string, unknown>;
         // Handle different date/time formats
-        let startDate, endDate;
-        if (booking.startDate && booking.startTime) {
-          startDate = new Date(booking.startDate + 'T' + booking.startTime).toISOString();
-        } else if (booking.date && booking.time) {
-          const [startTime, endTime] = booking.time.split('-');
-          startDate = new Date(booking.date + 'T' + startTime).toISOString();
+        let startDate: string, endDate: string;
+        if ((bookingObj.startDate as string | undefined) && (bookingObj.startTime as string | undefined)) {
+          startDate = new Date((bookingObj.startDate as string) + 'T' + (bookingObj.startTime as string)).toISOString();
+        } else if ((bookingObj.date as string | undefined) && (bookingObj.time as string | undefined)) {
+          const [startTime, endTime] = (bookingObj.time as string).split('-');
+          startDate = new Date((bookingObj.date as string) + 'T' + startTime).toISOString();
         } else {
           startDate = new Date().toISOString();
         }
         
-        if (booking.endTime) {
-          endDate = new Date(booking.startDate + 'T' + booking.endTime).toISOString();
-        } else if (booking.time) {
-          const [, endTime] = booking.time.split('-');
-          endDate = new Date(booking.date + 'T' + endTime).toISOString();
+        if (bookingObj.endTime as string | undefined) {
+          endDate = new Date((bookingObj.startDate as string) + 'T' + (bookingObj.endTime as string)).toISOString();
+        } else if (bookingObj.time as string | undefined) {
+          const [, endTime] = (bookingObj.time as string).split('-');
+          endDate = new Date((bookingObj.date as string) + 'T' + endTime).toISOString();
         } else {
           endDate = new Date(startDate).toISOString();
         }
         
         // Calculate duration from booking data instead of time difference
         let durationHours = 1; // Default to 1 hour
-        if (booking.duration) {
+        if (bookingObj.duration !== undefined) {
           // If duration is in minutes, convert to hours
-          durationHours = typeof booking.duration === 'number' ? booking.duration / 60 : 1;
-        } else if (booking.time) {
+          durationHours = typeof bookingObj.duration === 'number' ? bookingObj.duration / 60 : 1;
+        } else if (bookingObj.time as string | undefined) {
           // Calculate from time range if duration not available
-          const [startTime, endTime] = booking.time.split('-');
+          const [startTime, endTime] = (bookingObj.time as string).split('-');
           const [startH, startM] = startTime.split(':').map(Number);
           const [endH, endM] = endTime.split(':').map(Number);
           const startMinutes = startH * 60 + startM;
@@ -106,47 +139,70 @@ export default function HistoryPage(): JSX.Element {
         }
 
         return {
-          id: booking.id,
+          id: bookingObj.id as string,
+          facilityId: (bookingObj.facilityId as string | undefined) || '1',
+          facilityName: (bookingObj.facilityName as string | undefined) || (bookingObj.facility as string | undefined) || 'Ukjent lokale',
+          title: (bookingObj.purpose as string | undefined) || 'Booking',
           start: startDate,
           end: endDate,
-          startTime: booking.startTime || booking.time?.split('-')[0] || '09:00',
-          endTime: booking.endTime || booking.time?.split('-')[1] || '10:00',
+          status: ((bookingObj.status as string) === 'approved' ? 'confirmed' : (bookingObj.status as string) === 'rejected' ? 'rejected' : 'pending') as "completed" | "cancelled" | "confirmed" | "rejected" | "pending",
+          totalPriceNok: parseFloat((bookingObj.price as string | undefined)?.replace(/[^\d,]/g, '').replace(',', '.') || '0'),
+          invoiceId: undefined,
+          createdAt: (bookingObj.requestedAt as string | undefined) || (bookingObj.createdAt as string | undefined) || new Date().toISOString(),
           duration: durationHours,
-          facilityName: booking.facilityName || booking.facility || 'Ukjent lokale',
-          status: booking.status === 'approved' ? 'confirmed' : booking.status === 'rejected' ? 'rejected' : 'pending',
-          totalPriceNok: parseFloat(booking.price?.replace(/[^\d,]/g, '').replace(',', '.') || '0'),
-          bookingId: booking.id,
-          purpose: booking.purpose || 'Ikke spesifisert',
-          location: booking.facilityName || booking.facility || 'Ukjent lokale',
+          purpose: (bookingObj.purpose as string | undefined) || 'Ikke spesifisert',
+          location: (bookingObj.facilityName as string | undefined) || (bookingObj.facility as string | undefined) || 'Ukjent lokale',
           isRecurring: false,
+          bookingId: bookingObj.id as string,
           // Store original date for better display
-          originalDate: booking.startDate || booking.date,
-          originalTime: booking.time || `${booking.startTime || '09:00'}-${booking.endTime || '10:00'}`
+          originalDate: (bookingObj.startDate as string | undefined) || (bookingObj.date as string | undefined),
+          originalTime: (bookingObj.time as string | undefined) || `${(bookingObj.startTime as string | undefined) || '09:00'}-${(bookingObj.endTime as string | undefined) || '10:00'}`,
+          startTime: (bookingObj.startTime as string | undefined) || (bookingObj.time as string | undefined)?.split('-')[0] || '09:00',
+          endTime: (bookingObj.endTime as string | undefined) || (bookingObj.time as string | undefined)?.split('-')[1] || '10:00'
         };
       });
       
       // Convert recurring booking groups to history format
       const recurringHistoryItems = Array.from(groupedRecurring.entries()).map(([parentKey, bookings]) => {
+        if (bookings.length === 0) return null;
         const first = bookings[0];
         const last = bookings[bookings.length - 1];
         
+        if (typeof first !== 'object' || first === null || typeof last !== 'object' || last === null) return null;
+        const firstObj = first as Record<string, unknown>;
+        const lastObj = last as Record<string, unknown>;
+        
         // Calculate total price for all occurrences
-        const totalPrice = bookings.reduce((sum, booking) => {
-          return sum + parseFloat(booking.price?.replace(/[^\d,]/g, '').replace(',', '.') || '0');
+        const totalPrice = bookings.reduce((sum: number, booking) => {
+          if (typeof booking !== 'object' || booking === null) return sum;
+          const bookingObj = booking as Record<string, unknown>;
+          return sum + parseFloat((bookingObj.price as string | undefined)?.replace(/[^\d,]/g, '').replace(',', '.') || '0');
         }, 0);
         
         // Determine group status
-        const statuses = bookings.map(b => b.status);
+        const statuses = bookings.map(b => {
+          if (typeof b !== 'object' || b === null) return '';
+          const bObj = b as Record<string, unknown>;
+          return bObj.status as string || '';
+        });
         const groupStatus = statuses.every(s => s === 'approved') ? 'confirmed' :
                            statuses.every(s => s === 'rejected') ? 'rejected' : 'pending';
         
+        // Map to the correct status type
+        const mappedStatus: "completed" | "cancelled" | "confirmed" | "rejected" | "pending" = 
+          groupStatus === 'confirmed' ? 'confirmed' : 
+          groupStatus === 'rejected' ? 'rejected' : 
+          'pending';
+        
         // Calculate total duration for recurring bookings
-        const totalDuration = bookings.reduce((sum, booking) => {
+        const totalDuration = bookings.reduce((sum: number, booking) => {
+          if (typeof booking !== 'object' || booking === null) return sum;
+          const bookingObj = booking as Record<string, unknown>;
           let durationHours = 1;
-          if (booking.duration) {
-            durationHours = typeof booking.duration === 'number' ? booking.duration / 60 : 1;
-          } else if (booking.time) {
-            const [startTime, endTime] = booking.time.split('-');
+          if (bookingObj.duration !== undefined) {
+            durationHours = typeof bookingObj.duration === 'number' ? bookingObj.duration / 60 : 1;
+          } else if (bookingObj.time as string | undefined) {
+            const [startTime, endTime] = (bookingObj.time as string).split('-');
             const [startH, startM] = startTime.split(':').map(Number);
             const [endH, endM] = endTime.split(':').map(Number);
             const startMinutes = startH * 60 + startM;
@@ -158,30 +214,38 @@ export default function HistoryPage(): JSX.Element {
 
         return {
           id: parentKey,
-          start: new Date(first.startDate || first.date).toISOString(),
-          end: new Date(last.startDate || last.date).toISOString(),
-          startTime: first.startTime || first.time?.split('-')[0] || '09:00',
-          endTime: last.endTime || last.time?.split('-')[1] || '10:00',
-          duration: totalDuration,
-          facilityName: first.facilityName || first.facility || 'Ukjent lokale',
-          status: groupStatus,
+          facilityId: (firstObj.facilityId as string | undefined) || '1',
+          facilityName: (firstObj.facilityName as string | undefined) || (firstObj.facility as string | undefined) || 'Ukjent lokale',
+          title: (firstObj.purpose as string | undefined) || 'Gjentakende booking',
+          start: new Date((firstObj.startDate as string | undefined) || (firstObj.date as string | undefined) || new Date().toISOString()).toISOString(),
+          end: new Date((lastObj.startDate as string | undefined) || (lastObj.date as string | undefined) || new Date().toISOString()).toISOString(),
+          status: mappedStatus,
           totalPriceNok: totalPrice,
-          bookingId: parentKey,
-          purpose: first.purpose || 'Ikke spesifisert',
-          location: first.facilityName || first.facility || 'Ukjent lokale',
+          invoiceId: undefined,
+          createdAt: (firstObj.requestedAt as string | undefined) || (firstObj.createdAt as string | undefined) || new Date().toISOString(),
+          duration: totalDuration,
+          purpose: (firstObj.purpose as string | undefined) || 'Ikke spesifisert',
+          location: (firstObj.facilityName as string | undefined) || (firstObj.facility as string | undefined) || 'Ukjent lokale',
           isRecurring: true,
+          bookingId: parentKey,
           occurrenceCount: bookings.length,
           // Store original date for better display
-          originalDate: first.startDate || first.date,
-          originalTime: first.time || `${first.startTime || '09:00'}-${first.endTime || '10:00'}`,
-          occurrences: bookings.map(booking => ({
-            id: booking.id,
-            date: booking.startDate || booking.date,
-            time: booking.startTime || booking.time,
-            status: booking.status
-          }))
+          originalDate: (firstObj.startDate as string | undefined) || (firstObj.date as string | undefined),
+          originalTime: (firstObj.time as string | undefined) || `${(firstObj.startTime as string | undefined) || '09:00'}-${(firstObj.endTime as string | undefined) || '10:00'}`,
+          startTime: (firstObj.startTime as string | undefined) || (firstObj.time as string | undefined)?.split('-')[0] || '09:00',
+          endTime: (lastObj.endTime as string | undefined) || (lastObj.time as string | undefined)?.split('-')[1] || '10:00',
+          occurrences: bookings.map(booking => {
+            if (typeof booking !== 'object' || booking === null) return null;
+            const bookingObj = booking as Record<string, unknown>;
+            return {
+              id: bookingObj.id as string,
+              date: (bookingObj.startDate as string | undefined) || (bookingObj.date as string | undefined),
+              time: (bookingObj.startTime as string | undefined) || (bookingObj.time as string | undefined),
+              status: bookingObj.status as string
+            };
+          }).filter((item): item is NonNullable<typeof item> => item !== null)
         };
-      });
+      }).filter((item): item is NonNullable<typeof item> => item !== null);
       
       // Combine single and recurring items
       const allHistoryItems = [...singleHistoryItems, ...recurringHistoryItems];
@@ -202,9 +266,9 @@ export default function HistoryPage(): JSX.Element {
   const isLoading = false; // No loading state needed for localStorage
 
   const facilities = useMemo(() => {
-    const allBookings = [...(data?.items || [])];
+    const allBookings = [...(data?.items || [])].filter((item): item is NonNullable<typeof item> => item !== null);
     const uniqueFacilities = [...new Set(allBookings.map(booking => booking.facilityName))];
-    return uniqueFacilities.filter(Boolean);
+    return uniqueFacilities.filter((facility): facility is string => Boolean(facility));
   }, [data]);
 
   // Calculate KPIs
@@ -212,12 +276,12 @@ export default function HistoryPage(): JSX.Element {
     if (!data) return { totalBookings: 0, totalHours: 0, totalSpent: 0, cancellations: 0 };
     
     const totalBookings = data.total;
-    const totalHours = data.items.reduce((sum, item) => {
+    const totalHours = data.items.filter((item): item is NonNullable<typeof item> => item !== null).reduce((sum: number, item) => {
       // Use the duration field we calculated instead of time difference
       return sum + (item.duration || 1);
     }, 0);
-    const totalSpent = data.items.reduce((sum, item) => sum + (item.totalPriceNok || 0), 0);
-    const cancellations = data.items.filter(item => item.status === "rejected").length;
+    const totalSpent = data.items.filter((item): item is NonNullable<typeof item> => item !== null).reduce((sum: number, item) => sum + (item.totalPriceNok || 0), 0);
+    const cancellations = data.items.filter((item): item is NonNullable<typeof item> => item !== null).filter(item => item.status === "rejected").length;
     
     return { totalBookings, totalHours, totalSpent, cancellations };
   }, [data]);
@@ -227,11 +291,11 @@ export default function HistoryPage(): JSX.Element {
       // Mock CSV export
       const csvContent = [
         "Dato,Tid,Lokale,Aktivitet,Varighet,Status,Sum,Faktura",
-        ...(data?.items || []).map(item => [
+        ...(data?.items || []).filter((item): item is NonNullable<typeof item> => item !== null).map(item => [
           new Date(item.start).toLocaleDateString("nb-NO"),
           `${new Date(item.start).toLocaleTimeString("nb-NO", { hour: "2-digit", minute: "2-digit" })}-${new Date(item.end).toLocaleTimeString("nb-NO", { hour: "2-digit", minute: "2-digit" })}`,
           item.facilityName,
-          item.title,
+          item.purpose || 'Booking',
           `${(new Date(item.end).getTime() - new Date(item.start).getTime()) / 3_600_000} t`,
           item.status,
           item.totalPriceNok ? `${item.totalPriceNok} kr` : "-",
@@ -255,13 +319,15 @@ export default function HistoryPage(): JSX.Element {
   const handleDownloadICS = (item: IBookingHistoryItem) => {
     const event = {
       id: item.id,
-      facilityId: item.facilityId,
+      facilityId: item.facilityId || '1',
       facilityName: item.facilityName,
-      title: item.title,
+      title: item.title || 'Booking',
       start: item.start,
       end: item.end,
-      status: item.status as "confirmed" | "pending" | "cancelled"
-    };
+      status: item.status === 'confirmed' ? 'confirmed' : 
+              item.status === 'rejected' ? 'cancelled' : 
+              item.status === 'cancelled' ? 'cancelled' : 'pending'
+    } as const;
     downloadICS(event);
   };
 
@@ -449,7 +515,7 @@ export default function HistoryPage(): JSX.Element {
                   </tr>
                 </thead>
                 <tbody>
-                  {data.items.map((item) => (
+                  {data.items.filter((item): item is NonNullable<typeof item> => item !== null).map((item) => (
                     <React.Fragment key={item.id}>
                       <tr 
                         className="border-t border-gray-200 hover:bg-gray-50 cursor-pointer"
@@ -486,7 +552,7 @@ export default function HistoryPage(): JSX.Element {
                           }
                         </td>
                         <td className="px-4 py-3">{item.facilityName}</td>
-                        <td className="px-4 py-3">{item.purpose || item.title || 'Ikke spesifisert'}</td>
+                        <td className="px-4 py-3">{item.purpose || 'Ikke spesifisert'}</td>
                         <td className="px-4 py-3">
                           {item.duration ? `${item.duration.toFixed(1)} t` : '1.0 t'}
                         </td>
@@ -544,7 +610,7 @@ export default function HistoryPage(): JSX.Element {
                                 <div>
                                   <span className="text-gray-600">Opprettet:</span>
                                   <span className="ml-2">
-                                    {new Date(item.createdAt).toLocaleDateString("nb-NO")}
+                                    {item.createdAt ? new Date(item.createdAt).toLocaleDateString("nb-NO") : 'Ikke tilgjengelig'}
                                   </span>
                                 </div>
                                 {item.invoiceId && (

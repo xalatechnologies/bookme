@@ -36,7 +36,7 @@ const AdminFacilityListItem = ({ facility, onDelete, onToggleStatus, onDuplicate
     description: string;
     capacity: number;
     type: string;
-    amenities: string[];
+    amenities: readonly string[];
   }>({
     name: facility.name,
     address: facility.address,

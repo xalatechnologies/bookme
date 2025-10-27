@@ -67,6 +67,42 @@ interface IBooking {
   readonly attendees?: number;
   readonly activityType?: string;
   readonly actorType?: string;
+  readonly notes?: string;
+}
+
+interface IRawBooking {
+  readonly id?: string;
+  readonly facility?: string;
+  readonly facilityName?: string;
+  readonly time?: string;
+  readonly duration?: string | number;
+  readonly timeSlots?: readonly { readonly date: string; readonly timeSlot: string }[];
+  readonly status?: string;
+  readonly purpose?: string;
+  readonly attendees?: number;
+  readonly activityType?: string;
+  readonly actorType?: string;
+  readonly additionalInfo?: string;
+  readonly createdAt?: string;
+  readonly requestedAt?: string;
+  readonly processedAt?: string;
+  readonly date?: string;
+  readonly startDate?: string;
+  readonly endDate?: string;
+  readonly startTime?: string;
+  readonly endTime?: string;
+  readonly price?: string | number;
+  readonly bookerName?: string;
+  readonly contactPerson?: string;
+  readonly isRecurring?: boolean;
+  readonly parentBookingId?: string;
+  readonly description?: string;
+  readonly notes?: string;
+  readonly facilityId?: string;
+  readonly zoneId?: string;
+  readonly submittedAt?: string;
+  readonly processedBy?: string;
+  readonly updatedAt?: string;
 }
 
 const Bookings = (): JSX.Element => {
@@ -133,65 +169,77 @@ const Bookings = (): JSX.Element => {
     }
   }, [location.search, navigate]);
 
-  // Get pending bookings from localStorage
+  // Get pending bookings from localStorage (user bookings)
   const getPendingBookings = useCallback((): IBooking[] => {
     try {
-      const pendingBookings = JSON.parse(localStorage.getItem('pendingBookings') || '[]');
-      return pendingBookings.map((booking: {
-        readonly id: string;
-        readonly facilityName: string;
-        readonly time: string;
-        readonly duration?: number;
-        readonly timeSlots?: readonly { readonly date: string; readonly timeSlot: string }[];
-        readonly status: string;
-        readonly purpose?: string;
-        readonly attendees?: number;
-        readonly activityType?: string;
-        readonly actorType?: string;
-        readonly additionalInfo?: string;
-        readonly createdAt: string;
-      }) => {
-        // Prefer explicit time coming from Checkout; otherwise derive from a single slot
-        let bookingTime: string;
-        if (booking.time && booking.time.trim().length > 0) {
+      const pendingBookings: IRawBooking[] = JSON.parse(localStorage.getItem('pendingBookings') || '[]');
+      return pendingBookings.map((booking: IRawBooking) => {
+        // Always trust data coming from Checkout/localstorage; do not recompute
+        const today = new Date();
+        const fallbackDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+        const bookingDate = booking.date ?? booking.startDate ?? fallbackDate;
+
+        // Derive time from various sources
+        let bookingTime = '20:00-21:00';
+        if (booking.time) {
           bookingTime = booking.time;
+        } else if (booking.startTime && booking.endTime) {
+          bookingTime = `${booking.startTime}-${booking.endTime}`;
         } else if (booking.timeSlots && booking.timeSlots.length > 0) {
-          if (booking.timeSlots.length === 1) {
-            bookingTime = booking.timeSlots[0].timeSlot;
-          } else {
-            const sortedSlots = [...booking.timeSlots].sort((a: { readonly timeSlot: string }, b: { readonly timeSlot: string }) => {
-              const timeA = a.timeSlot.split('-')[0];
-              const timeB = b.timeSlot.split('-')[0];
-              return timeA.localeCompare(timeB);
-            });
-            const startTime = sortedSlots[0].timeSlot.split('-')[0];
-            const lastSlot = sortedSlots[sortedSlots.length - 1];
-            const endTime = lastSlot.timeSlot.split('-')[1];
-            bookingTime = `${startTime}-${endTime}`;
-          }
-        } else {
-          bookingTime = '20:00-21:00';
+          const firstSlot = booking.timeSlots[0];
+          bookingTime = firstSlot.timeSlot;
         }
 
         // Normalize duration to hours text
-        let durationText: string | undefined = (booking as any).duration as any;
+        let durationText: string | undefined = booking.duration ? String(booking.duration) : undefined;
         if (!durationText) {
           if (booking.timeSlots && booking.timeSlots.length > 0) {
-            const totalMinutes = booking.timeSlots.reduce((sum: number, s: any) => sum + (s as any).duration ?? 60, 0 as number);
+            const totalMinutes = booking.timeSlots.reduce((sum: number, s: { readonly date: string; readonly timeSlot: string }) => {
+              // Extract duration from timeSlot (e.g., "09:00-10:00" = 60 minutes)
+              const [start, end] = s.timeSlot.split('-');
+              if (start && end) {
+                const [startH, startM] = start.split(':').map(Number);
+                const [endH, endM] = end.split(':').map(Number);
+                const startMinutes = startH * 60 + startM;
+                const endMinutes = endH * 60 + endM;
+                const slotDuration = endMinutes - startMinutes;
+                return sum + (slotDuration > 0 ? slotDuration : 60);
+              }
+              return sum + 60;
+            }, 0);
             const hours = totalMinutes / 60;
             durationText = hours === 1 ? '1 time' : `${hours} timer`;
           } else {
             durationText = '1 time';
           }
-        } else if (typeof (durationText as unknown) === 'number') {
-          const hours = (durationText as unknown as number) / 60;
+        } else if (typeof durationText === 'number') {
+          const hours = durationText / 60;
           durationText = hours === 1 ? '1 time' : `${hours} timer`;
         }
 
         return {
           ...booking,
+          id: booking.id || '',
+          facility: booking.facility || booking.facilityName || 'Ukjent fasilitet',
+          date: bookingDate,
           time: bookingTime,
-          duration: durationText
+          duration: durationText,
+          status: 'pending',
+          location: 'Drammen',
+          price: booking.price ? String(booking.price) : '0 kr',
+          description: booking.purpose || booking.description || 'Booking',
+          purpose: booking.purpose,
+          contactPerson: booking.bookerName || booking.contactPerson || 'Ukjent',
+          paymentStatus: 'pending',
+          facilityImage: undefined,
+          rejectionReason: undefined,
+          createdAt: booking.createdAt || booking.requestedAt || new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          isRecurring: booking.isRecurring,
+          parentBookingId: booking.parentBookingId,
+          attendees: booking.attendees,
+          notes: booking.notes,
+          type: 'booking' // Add the required type property
         };
       });
     } catch {
@@ -202,65 +250,76 @@ const Bookings = (): JSX.Element => {
   // Get processed bookings from localStorage (approved/rejected)
   const getProcessedBookings = useCallback((): IBooking[] => {
     try {
-      const processedBookings = JSON.parse(localStorage.getItem('processedBookings') || '[]');
-      return processedBookings.map((booking: {
-        readonly id: string;
-        readonly facilityName: string;
-        readonly time: string;
-        readonly duration?: number;
-        readonly timeSlots?: readonly { readonly date: string; readonly timeSlot: string }[];
-        readonly status: string;
-        readonly purpose?: string;
-        readonly attendees?: number;
-        readonly activityType?: string;
-        readonly actorType?: string;
-        readonly additionalInfo?: string;
-        readonly createdAt: string;
-        readonly date?: string;
-        readonly startDate?: string;
-      }) => {
-        // Always trust data coming from Checkout/localStorage; do not recompute
+      const processedBookings: IRawBooking[] = JSON.parse(localStorage.getItem('processedBookings') || '[]');
+      return processedBookings.map((booking: IRawBooking) => {
+        // Always trust data coming from Checkout/localstorage; do not recompute
         const today = new Date();
         const fallbackDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
         const bookingDate = booking.date ?? booking.startDate ?? fallbackDate;
 
         const bookingTime = booking.time
+          ?? (booking.startTime && booking.endTime ? `${booking.startTime}-${booking.endTime}` : '')
           ?? (booking.timeSlots && booking.timeSlots.length > 0 ? booking.timeSlots[0].timeSlot : '20:00-21:00');
 
         // Normalize duration: prefer stored duration; else derive from slots; fallback 1 time
-        let durationText: string | undefined = (booking as any).duration as any;
+        let durationText: string | undefined = booking.duration ? String(booking.duration) : undefined;
         if (!durationText) {
           if (booking.timeSlots && booking.timeSlots.length > 0) {
-            const totalMinutes = booking.timeSlots.reduce((sum: number, s: any) => sum + ((s as any).duration ?? 60), 0);
+            const totalMinutes = booking.timeSlots.reduce((sum: number, s: { readonly date: string; readonly timeSlot: string }) => {
+              // Extract duration from timeSlot (e.g., "09:00-10:00" = 60 minutes)
+              const [start, end] = s.timeSlot.split('-');
+              if (start && end) {
+                const [startH, startM] = start.split(':').map(Number);
+                const [endH, endM] = end.split(':').map(Number);
+                const startMinutes = startH * 60 + startM;
+                const endMinutes = endH * 60 + endM;
+                const slotDuration = endMinutes - startMinutes;
+                return sum + (slotDuration > 0 ? slotDuration : 60);
+              }
+              return sum + 60;
+            }, 0);
             const hours = totalMinutes / 60;
             durationText = hours === 1 ? '1 time' : `${hours} timer`;
           } else {
             durationText = '1 time';
           }
-        } else if (typeof (durationText as unknown) === 'number') {
-          const hours = (durationText as unknown as number) / 60;
+        } else if (typeof durationText === 'number') {
+          const hours = durationText / 60;
           durationText = hours === 1 ? '1 time' : `${hours} timer`;
         }
 
+        // Map status
+        let status: IBooking["status"] = 'cancelled';
+        if (booking.status === 'approved') {
+          status = 'confirmed';
+        } else if (booking.status === 'rejected') {
+          status = 'rejected';
+        } else if (booking.status === 'pending') {
+          status = 'pending';
+        }
+
         return {
-          id: booking.id,
-          facility: (booking as any).facility ?? (booking as any).facilityName,
+          id: booking.id || '',
+          facility: booking.facility || booking.facilityName || 'Ukjent fasilitet',
           date: bookingDate,
           time: bookingTime,
           duration: durationText,
-          status: booking.status === 'approved' ? 'confirmed' : booking.status === 'rejected' ? 'rejected' : 'cancelled',
+          status: status,
           location: 'Drammen',
-          price: (booking as any).price || '0 kr',
-          description: booking.purpose || 'Booking',
+          price: booking.price ? String(booking.price) : '0 kr',
+          description: booking.purpose || booking.description || 'Booking',
           purpose: booking.purpose,
-          contactPerson: (booking as any).bookerName || 'Ukjent',
+          contactPerson: booking.bookerName || booking.contactPerson || 'Ukjent',
           paymentStatus: booking.status === 'approved' ? 'paid' : 'pending',
           facilityImage: undefined,
           rejectionReason: booking.status === 'rejected' ? 'Avvist av administrator' : undefined,
-          createdAt: (booking as any).requestedAt || new Date().toISOString(),
-          updatedAt: (booking as any).processedAt || new Date().toISOString(),
-          isRecurring: (booking as any).isRecurring,
-          parentBookingId: (booking as any).parentBookingId
+          createdAt: booking.createdAt || booking.requestedAt || new Date().toISOString(),
+          updatedAt: booking.processedAt || booking.updatedAt || new Date().toISOString(),
+          isRecurring: booking.isRecurring,
+          parentBookingId: booking.parentBookingId,
+          attendees: booking.attendees,
+          notes: booking.notes,
+          type: 'booking' // Add the required type property
         };
       });
     } catch {
@@ -378,9 +437,14 @@ const Bookings = (): JSX.Element => {
     const groups = new Map<string, IBooking[]>();
     const singles: IBooking[] = [];
     for (const b of filteredBookings) {
-      const recurring = ((b as any).isRecurring || (b as any).parentBookingId) && (b as any).parentBookingId;
+      // Use type guard to check if booking has recurring properties
+      const hasRecurringProps = (booking: IBooking): booking is IBooking & { isRecurring?: boolean; parentBookingId?: string } => {
+        return 'isRecurring' in booking || 'parentBookingId' in booking;
+      };
+      
+      const recurring = hasRecurringProps(b) && ((b.isRecurring || b.parentBookingId) && b.parentBookingId);
       if (recurring) {
-        const key = String((b as any).parentBookingId);
+        const key = hasRecurringProps(b) ? String(b.parentBookingId) : '';
         if (!groups.has(key)) groups.set(key, []);
         groups.get(key)!.push(b);
       } else {
@@ -445,7 +509,11 @@ const Bookings = (): JSX.Element => {
     
     // Remove bookings from localStorage (for processed bookings)
     const processedBookings = JSON.parse(localStorage.getItem('processedBookings') || '[]');
-    const updatedProcessed = processedBookings.filter((booking: any) => !bookingsToDelete.includes(booking.id));
+    const updatedProcessed = processedBookings.filter((booking: unknown) => {
+      if (typeof booking !== 'object' || booking === null) return false;
+      const bookingObj = booking as { readonly id: string };
+      return !bookingsToDelete.includes(bookingObj.id);
+    });
     localStorage.setItem('processedBookings', JSON.stringify(updatedProcessed));
     
     // Clear selected bookings
@@ -661,7 +729,7 @@ END:VCALENDAR`;
 
   const handleNewRequest = (booking: IBooking): void => {
     // Navigate to facility booking page
-    navigate(`/facilities/${booking.facilityId || 'unknown'}/book`);
+    navigate(`/facilities/${booking.facility || 'unknown'}/book`);
   };
 
   const getAdditionalActions = (booking: IBooking) => {
@@ -876,8 +944,12 @@ END:VCALENDAR`;
             const first = items[0];
             const title = first.facility ?? 'Gjentakende booking';
             const times = (() => {
-              const t = (first as any).time ?? ((first as any).timeSlots?.[0]?.timeSlot ?? '');
-              return t || '20:00-21:00';
+              // Use type guard to safely access properties
+              if (typeof first === 'object' && first !== null) {
+                const firstBooking = first as IRawBooking;
+                return firstBooking.time ?? (firstBooking.timeSlots && firstBooking.timeSlots[0] ? firstBooking.timeSlots[0].timeSlot : '') ?? '20:00-21:00';
+              }
+              return '20:00-21:00';
             })();
             const dates = items
               .map(i => i.date)
@@ -1195,10 +1267,23 @@ END:VCALENDAR`;
               const first = items[0];
               const last = items[items.length - 1];
               const title = first?.facility ?? 'Gjentakende booking';
-              const timeStr = (first as any)?.time ?? ((first as any)?.timeSlots?.[0]?.timeSlot ?? '');
+              const timeStr = (() => {
+                // Use type guard to safely access time property
+                if (typeof first === 'object' && first !== null) {
+                  const firstBooking = first as IRawBooking;
+                  return firstBooking.time ?? (firstBooking.timeSlots && firstBooking.timeSlots[0] ? firstBooking.timeSlots[0].timeSlot : '') ?? '';
+                }
+                return '';
+              })();
               const period = first && last ? `${new Date(first.date).toLocaleDateString('nb-NO')} – ${new Date(last.date).toLocaleDateString('nb-NO')}` : 'Ukjent periode';
               const sumGross = items.reduce((sum, it) => {
-                const raw = String((it as any).price ?? '').replace(/[^0-9,\.]/g, '').replace(',', '.');
+                // Use type guard to safely access price property
+                let priceValue = '0';
+                if (typeof it === 'object' && it !== null) {
+                  const booking = it as IRawBooking;
+                  priceValue = String(booking.price ?? '0');
+                }
+                const raw = priceValue.replace(/[^0-9,\.]/g, '').replace(',', '.');
                 const val = parseFloat(raw) || 0;
                 return sum + val;
               }, 0);
@@ -1234,7 +1319,14 @@ END:VCALENDAR`;
                           </div>
                           <div className="col-span-4 md:col-span-4 flex items-center gap-2 text-gray-800">
                             <Clock className="w-4 h-4 text-gray-500" />
-                            <span>{(it as any).time ?? ((it as any).timeSlots?.[0]?.timeSlot ?? '20:00-21:00')}</span>
+                            <span>{(() => {
+                              // Use type guard to safely access time property
+                              if (typeof it === 'object' && it !== null) {
+                                const booking = it as IRawBooking;
+                                return booking.time ?? (booking.timeSlots && booking.timeSlots[0] ? booking.timeSlots[0].timeSlot : '') ?? '20:00-21:00';
+                              }
+                              return '20:00-21:00';
+                            })()}</span>
                           </div>
                           <div className="col-span-3 md:col-span-2 text-right font-medium">{it.price}</div>
                         </div>

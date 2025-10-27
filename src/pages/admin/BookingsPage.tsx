@@ -36,6 +36,9 @@ import {
 } from "lucide-react";
 import { SupportTicketList } from "@/components/support/SupportTicketList";
 import { useSupportStore } from "@/stores/supportStore";
+import { useApprovalWorkflowStore } from "@/stores/approvalWorkflowStore";
+import WorkflowModal from "@/components/admin/workflows/WorkflowModal";
+import { IApprovalWorkflow } from "@/types/admin";
 
 interface IBooking {
   readonly id: string;
@@ -58,6 +61,40 @@ interface IBooking {
   // Recurring metadata (optional)
   readonly isRecurring?: boolean;
   readonly parentBookingId?: string;
+}
+
+interface IRawBooking {
+  readonly id?: string;
+  readonly facility?: string;
+  readonly facilityName?: string;
+  readonly time?: string;
+  readonly duration?: number | string;
+  readonly timeSlots?: readonly { readonly date: string; readonly timeSlot: string }[];
+  readonly status?: string;
+  readonly purpose?: string;
+  readonly attendees?: number;
+  readonly activityType?: string;
+  readonly actorType?: string;
+  readonly additionalInfo?: string;
+  readonly createdAt?: string;
+  readonly isRecurring?: boolean;
+  readonly parentBookingId?: string;
+  readonly bookerName?: string;
+  readonly bookerEmail?: string;
+  readonly submittedAt?: string;
+  readonly requestedAt?: string;
+  readonly processedBy?: string;
+  readonly processedAt?: string;
+  readonly price?: number | string;
+  readonly contactPerson?: string;
+  readonly startDate?: string;
+  readonly endDate?: string;
+  readonly startTime?: string;
+  readonly endTime?: string;
+  readonly description?: string;
+  readonly zoneName?: string;
+  readonly bookingType?: string;
+  readonly date?: string;
 }
 
 interface IBookingKPICardProps {
@@ -317,7 +354,7 @@ const BookingRow = ({ booking, onApprove, onReject, onViewDetails, onDelete, isS
       <div onClick={(e) => e.stopPropagation()}>
         <Checkbox
           checked={isSelected}
-          onCheckedChange={(checked) => onSelect(booking.id, checked)}
+          onCheckedChange={(checked) => onSelect(booking.id, !!checked)}
           className="mt-1"
         />
       </div>
@@ -432,25 +469,25 @@ const BookingDetailModal = ({ booking, isOpen, onClose, onApprove, onReject, onD
   // Try to locate all occurrences from localStorage if this booking is part of a recurring series
   const occurrences: { date: string; time: string; durationHours: number; priceText: string }[] = (() => {
     try {
-      const rawPending = JSON.parse(localStorage.getItem('pendingBookings') || '[]');
-      const rawProcessed = JSON.parse(localStorage.getItem('processedBookings') || '[]');
+      const rawPending: IRawBooking[] = JSON.parse(localStorage.getItem('pendingBookings') || '[]');
+      const rawProcessed: IRawBooking[] = JSON.parse(localStorage.getItem('processedBookings') || '[]');
       const all = [...rawPending, ...rawProcessed];
 
       // Determine grouping key
-      const parentId = (booking as any).parentBookingId as string | undefined;
-      const isRecurring = (booking as any).isRecurring || !!parentId;
+      const parentId = booking.parentBookingId as string | undefined;
+      const isRecurring = booking.isRecurring || !!parentId;
       if (!isRecurring) return [];
 
       const groupKey = parentId || `${booking.facility}|${booking.purpose}|${booking.startTime}-${booking.endTime}`;
 
       // Filter same group
-      const series = all.filter((b: any) => {
+      const series = all.filter((b: IRawBooking) => {
         const bParent = b.parentBookingId;
         const bKey = bParent || `${b.facility || b.facilityName}|${b.purpose || b.description}|${(() => {
           if (b.time) return b.time;
           if (b.startTime && b.endTime) return `${b.startTime}-${b.endTime}`;
           if (b.timeSlots && b.timeSlots.length > 0) {
-            const sorted = [...b.timeSlots].sort((a: any, c: any) => a.timeSlot.localeCompare(c.timeSlot));
+            const sorted = [...b.timeSlots].sort((a: { readonly timeSlot: string }, c: { readonly timeSlot: string }) => a.timeSlot.localeCompare(c.timeSlot));
             const s = sorted[0].timeSlot.split('-')[0];
             const e = sorted[sorted.length - 1].timeSlot.split('-')[1];
             return `${s}-${e}`;
@@ -460,16 +497,16 @@ const BookingDetailModal = ({ booking, isOpen, onClose, onApprove, onReject, onD
         return (bParent && groupKey === bParent) || (!bParent && bKey === groupKey);
       });
 
-      return series.map((b: any) => {
+      return series.map((b: IRawBooking) => {
         const date = b.date || b.startDate || new Date().toISOString().slice(0, 10);
         const time = b.time || (b.startTime && b.endTime ? `${b.startTime}-${b.endTime}` : (b.timeSlots && b.timeSlots[0]?.timeSlot) || `${booking.startTime}-${booking.endTime}`);
-        const priceText = b.price || '0 kr';
+        const priceText = String(b.price || '0 kr');
         // Duration may be a string like "1 timer"
         const durationHours = typeof b.duration === 'string'
           ? parseFloat(b.duration.replace(/[^0-9.,]/g, '').replace(',', '.')) || 1
-          : (b.duration ? b.duration / 60 : 1);
+          : (typeof b.duration === 'number' ? b.duration / 60 : 1);
         return { date, time, durationHours, priceText };
-      }).sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime());
+      }).sort((a: { date: string; time: string; durationHours: number; priceText: string }, b: { date: string; time: string; durationHours: number; priceText: string }) => new Date(a.date).getTime() - new Date(b.date).getTime());
     } catch {
       return [];
     }
@@ -636,28 +673,18 @@ const BookingsPage = (): JSX.Element => {
     duration: ""
   });
 
+  // Workflow management states
+  const [isWorkflowModalOpen, setIsWorkflowModalOpen] = useState<boolean>(false);
+  const [selectedWorkflow, setSelectedWorkflow] = useState<IApprovalWorkflow | undefined>(undefined);
+
   // New feature states
 
   // Get pending bookings from localStorage (user bookings)
+  const { workflows, addWorkflow, updateWorkflow } = useApprovalWorkflowStore();
   const getPendingBookings = useCallback((): IBooking[] => {
     try {
-      const pendingBookings = JSON.parse(localStorage.getItem('pendingBookings') || '[]');
-      return pendingBookings.map((booking: {
-        readonly id: string;
-        readonly facilityName: string;
-        readonly time: string;
-        readonly duration?: number;
-        readonly timeSlots?: readonly { readonly date: string; readonly timeSlot: string }[];
-        readonly status: string;
-        readonly purpose?: string;
-        readonly attendees?: number;
-        readonly activityType?: string;
-        readonly actorType?: string;
-        readonly additionalInfo?: string;
-        readonly createdAt: string;
-        readonly isRecurring?: boolean;
-        readonly parentBookingId?: string;
-      }, index: number) => {
+      const pendingBookings: IRawBooking[] = JSON.parse(localStorage.getItem('pendingBookings') || '[]');
+      return pendingBookings.map((booking: IRawBooking, index: number) => {
         // Calculate proper time range from timeSlots if available
         let startTime: string;
         let endTime: string;
@@ -677,7 +704,7 @@ const BookingsPage = (): JSX.Element => {
           const timeParts = booking.time.split('-');
           if (timeParts.length === 2 && booking.duration) {
             startTime = timeParts[0];
-            const duration = parseInt(booking.duration.replace(/\D/g, ''));
+            const duration = typeof booking.duration === 'string' ? parseInt(booking.duration) : booking.duration;
             if (duration > 1) {
               // Calculate end time based on duration
               const [hours, minutes] = startTime.split(':').map(Number);
@@ -698,20 +725,20 @@ const BookingsPage = (): JSX.Element => {
 
         return {
           id: booking.id || (index + 1).toString(),
-          title: `Booking #${booking.id || (index + 1)} – ${booking.facility}`,
-          facility: booking.facility,
-          facilityId: booking.facilityId || '1',
-          bookerName: booking.contactPerson || 'Ukjent bruker',
+          title: `Booking #${booking.id || (index + 1)} – ${booking.facilityName || 'Ukjent fasilitet'}`,
+          facility: booking.facilityName || 'Ukjent fasilitet',
+          facilityId: '1',
+          bookerName: 'Ukjent bruker',
           bookerEmail: 'bruker@example.com', // This should come from user profile
-          purpose: booking.purpose || booking.description || 'Booking',
-          startDate: booking.date || (() => {
+          purpose: booking.purpose || 'Booking',
+          startDate: booking.createdAt || (() => {
             const today = new Date();
             const year = today.getFullYear();
             const month = String(today.getMonth() + 1).padStart(2, '0');
             const day = String(today.getDate()).padStart(2, '0');
             return `${year}-${month}-${day}`;
           })(),
-          endDate: booking.date || (() => {
+          endDate: booking.createdAt || (() => {
             const today = new Date();
             const year = today.getFullYear();
             const month = String(today.getMonth() + 1).padStart(2, '0');
@@ -720,10 +747,10 @@ const BookingsPage = (): JSX.Element => {
           })(),
           startTime,
           endTime,
-          status: booking.status || 'pending',
-          requestedAt: booking.submittedAt || new Date().toISOString(),
-          price: booking.price ? parseInt(booking.price.replace(/\D/g, '')) : 0,
-          duration: booking.duration ? parseInt(booking.duration as any) : 2,
+          status: (booking.status as "pending" | "approved" | "rejected" | "cancelled") || 'pending',
+          requestedAt: booking.createdAt || new Date().toISOString(),
+          price: 0,
+          duration: booking.duration ? (typeof booking.duration === 'string' ? parseInt(booking.duration) : booking.duration) : 2,
           isRecurring: booking.isRecurring,
           parentBookingId: booking.parentBookingId
         };
@@ -736,8 +763,8 @@ const BookingsPage = (): JSX.Element => {
   // Get approved/rejected bookings from localStorage
   const getProcessedBookings = useCallback((): IBooking[] => {
     try {
-      const processedBookings = JSON.parse(localStorage.getItem('processedBookings') || '[]');
-      return processedBookings.map((booking: any, index: number) => {
+      const processedBookings: IRawBooking[] = JSON.parse(localStorage.getItem('processedBookings') || '[]');
+      return processedBookings.map((booking: IRawBooking, index: number) => {
         // Derive start/end time
         let startTime: string;
         let endTime: string;
@@ -749,7 +776,7 @@ const BookingsPage = (): JSX.Element => {
           startTime = timeParts[0];
           endTime = timeParts[1];
         } else if (booking.timeSlots && booking.timeSlots.length > 0) {
-          const sorted = [...booking.timeSlots].sort((a: any, b: any) => a.timeSlot.localeCompare(b.timeSlot));
+          const sorted = [...booking.timeSlots].sort((a: { readonly timeSlot: string }, b: { readonly timeSlot: string }) => a.timeSlot.localeCompare(b.timeSlot));
           startTime = sorted[0].timeSlot.split('-')[0];
           endTime = sorted[sorted.length - 1].timeSlot.split('-')[1];
         } else {
@@ -775,7 +802,7 @@ const BookingsPage = (): JSX.Element => {
           id: booking.id || (index + 1).toString(),
           title: `Booking #${booking.id || (index + 1)} – ${booking.facility || booking.facilityName || 'Ukjent fasilitet'}`,
           facility: booking.facility || booking.facilityName || 'Ukjent fasilitet',
-          facilityId: booking.facilityId || '1',
+          facilityId: '1',
           bookerName: booking.contactPerson || booking.bookerName || 'Ukjent bruker',
           bookerEmail: booking.bookerEmail || 'bruker@example.com',
           purpose: booking.purpose || booking.description || 'Booking',
@@ -783,7 +810,7 @@ const BookingsPage = (): JSX.Element => {
           endDate,
           startTime,
           endTime,
-          status: booking.status || 'approved',
+          status: (booking.status as "pending" | "approved" | "rejected" | "cancelled") || 'approved',
           requestedAt: booking.submittedAt || booking.requestedAt || new Date().toISOString(),
           processedBy: booking.processedBy,
           processedAt: booking.processedAt,
@@ -840,8 +867,8 @@ const BookingsPage = (): JSX.Element => {
 
     // Build group map
     filteredBookings.forEach((b) => {
-      const parentId = (b as any).parentBookingId as string | undefined;
-      const isRecurring = (b as any).isRecurring || !!parentId;
+      const parentId = b.parentBookingId;
+      const isRecurring = b.isRecurring || !!parentId;
       const key = parentId ?? (isRecurring ? getFallbackGroupKey(b) : null);
 
       if (key) {
@@ -886,7 +913,7 @@ const BookingsPage = (): JSX.Element => {
     return `${b.facility}|${b.purpose}|${timeKey}`;
   };
 
-  const getGroupKeyFromRaw = (b: any): string => {
+  const getGroupKeyFromRaw = (b: IRawBooking): string => {
     const baseFacility = b.facility || b.facilityName;
     const basePurpose = b.purpose || b.description;
     let timeKey: string;
@@ -895,7 +922,7 @@ const BookingsPage = (): JSX.Element => {
     } else if (b.startTime && b.endTime) {
       timeKey = `${b.startTime}-${b.endTime}`;
     } else if (b.timeSlots && b.timeSlots.length > 0) {
-      const sorted = [...b.timeSlots].sort((a: any, c: any) => a.timeSlot.localeCompare(c.timeSlot));
+      const sorted = [...b.timeSlots].sort((a: { readonly timeSlot: string }, c: { readonly timeSlot: string }) => a.timeSlot.localeCompare(c.timeSlot));
       const s = sorted[0].timeSlot.split('-')[0];
       const e = sorted[sorted.length - 1].timeSlot.split('-')[1];
       timeKey = `${s}-${e}`;
@@ -914,13 +941,13 @@ const BookingsPage = (): JSX.Element => {
       const processedBookings = JSON.parse(localStorage.getItem('processedBookings') || '[]');
 
       // Determine series to approve
-      const parentId = (booking as any).parentBookingId as string | undefined;
-      const isRecurring = (booking as any).isRecurring || !!parentId;
+      const parentId = booking.parentBookingId as string | undefined;
+      const isRecurring = booking.isRecurring || !!parentId;
       const groupKey = parentId || getGroupKeyFromIBooking(booking);
 
-      const keep: any[] = [];
-      const moveToProcessed: any[] = [];
-      pendingBookings.forEach((b: any) => {
+      const keep: IRawBooking[] = [];
+      const moveToProcessed: (IRawBooking & { status: string; processedBy: string; processedAt: string })[] = [];
+      pendingBookings.forEach((b: IRawBooking) => {
         const bParent = b.parentBookingId as string | undefined;
         const bKey = bParent || getGroupKeyFromRaw(b);
         if (isRecurring ? (bKey === groupKey) : (b.id === id)) {
@@ -951,13 +978,13 @@ const BookingsPage = (): JSX.Element => {
       const pendingBookings = JSON.parse(localStorage.getItem('pendingBookings') || '[]');
       const processedBookings = JSON.parse(localStorage.getItem('processedBookings') || '[]');
 
-      const parentId = (booking as any).parentBookingId as string | undefined;
-      const isRecurring = (booking as any).isRecurring || !!parentId;
+      const parentId = booking.parentBookingId as string | undefined;
+      const isRecurring = booking.isRecurring || !!parentId;
       const groupKey = parentId || getGroupKeyFromIBooking(booking);
 
-      const keep: any[] = [];
-      const moveToProcessed: any[] = [];
-      pendingBookings.forEach((b: any) => {
+      const keep: IRawBooking[] = [];
+      const moveToProcessed: (IRawBooking & { status: string; processedBy: string; processedAt: string })[] = [];
+      pendingBookings.forEach((b: IRawBooking) => {
         const bParent = b.parentBookingId as string | undefined;
         const bKey = bParent || getGroupKeyFromRaw(b);
         if (isRecurring ? (bKey === groupKey) : (b.id === id)) {
@@ -976,6 +1003,7 @@ const BookingsPage = (): JSX.Element => {
       setRefreshTrigger(prev => prev + 1);
       
     } catch (error) {
+      // Handle error silently
     }
   }, [bookings]);
 
@@ -1284,6 +1312,7 @@ const BookingsPage = (): JSX.Element => {
                               if (uniqueStatuses[0] === 'approved') return 'bg-green-500';
                               if (uniqueStatuses[0] === 'rejected') return 'bg-red-500';
                               if (uniqueStatuses[0] === 'pending') return 'bg-yellow-500';
+                              return 'bg-gray-500'; // default color
                             } else {
                               if (uniqueStatuses.includes('pending')) return 'bg-yellow-500';
                               return 'bg-blue-500';
@@ -1401,7 +1430,10 @@ const BookingsPage = (): JSX.Element => {
                   Definer hvordan ulike typer bookinger behandles og hvem som må godkjenne dem.
                 </p>
               </div>
-              <Button size="sm">
+              <Button size="sm" onClick={() => {
+                setSelectedWorkflow(undefined);
+                setIsWorkflowModalOpen(true);
+              }}>
                 <Plus className="h-4 w-4 mr-2" />
                 Opprett ny flyt
               </Button>
@@ -1409,13 +1441,9 @@ const BookingsPage = (): JSX.Element => {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {[
-                { name: "Skolebookinger", description: "Automatisk godkjenning for skoler", status: "Aktiv", isActive: true },
-                { name: "Idrettslag", description: "Manuell godkjenning påkrevd", status: "Aktiv", isActive: true },
-                { name: "Kommersiell leie", description: "Godkjenning av saksbehandler påkrevd", status: "Aktiv", isActive: true }
-              ].map((workflow, index) => (
+              {workflows.map((workflow) => (
                 <div 
-                  key={index} 
+                  key={workflow.id} 
                   className={`flex items-center justify-between p-4 border rounded-lg transition-all duration-200 cursor-pointer hover:shadow-md ${
                     workflow.isActive 
                       ? 'border-gray-200 dark:border-gray-700 hover:border-green-300 dark:hover:border-green-600' 
@@ -1431,9 +1459,17 @@ const BookingsPage = (): JSX.Element => {
                   </div>
                   <div className="flex items-center space-x-3">
                     <Badge className={workflow.isActive ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300" : "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300"}>
-                      {workflow.status}
+                      {workflow.isActive ? "Aktiv" : "Inaktiv"}
                     </Badge>
-                    <Button size="sm" variant="outline">
+                    <Button 
+                      size="sm" 
+                      variant="outline"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedWorkflow(workflow);
+                        setIsWorkflowModalOpen(true);
+                      }}
+                    >
                       <Settings className="h-4 w-4 mr-1" />
                       Rediger
                     </Button>
@@ -1462,6 +1498,21 @@ const BookingsPage = (): JSX.Element => {
           isOpen={isFilterModalOpen}
           onClose={() => setIsFilterModalOpen(false)}
           onApplyFilters={setAppliedFilters}
+        />
+        
+        {/* Workflow Modal */}
+        <WorkflowModal
+          isOpen={isWorkflowModalOpen}
+          onClose={() => setIsWorkflowModalOpen(false)}
+          onSubmit={(workflowData) => {
+            if (selectedWorkflow) {
+              updateWorkflow(selectedWorkflow.id, workflowData);
+            } else {
+              addWorkflow(workflowData as Omit<IApprovalWorkflow, 'id' | 'createdAt' | 'updatedAt'>);
+            }
+            setIsWorkflowModalOpen(false);
+          }}
+          workflow={selectedWorkflow}
         />
       </div>
 

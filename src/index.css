@@ -1,3 +1,4 @@
+/* Tailwind CSS directives - processed at build time */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -61,6 +62,7 @@
 
 @layer base {
   * {
+    /* Tailwind CSS @apply directive */
     @apply border-border;
   }
   
@@ -70,6 +72,7 @@
   }
   
   body {
+    /* Tailwind CSS @apply directive */
     @apply bg-background text-foreground;
   }
 }
@@ -115,7 +118,6 @@
   embed,
   object {
     display: block !important;
-    vertical-align: unset !important;
   }
 }
 
@@ -160,4 +162,15 @@
   .line-clamp-4 {
     display: -webkit-box !important;
   }
+}
+
+/* Radix & shadcn checkbox sanity overrides */
+[role="checkbox"][data-state="checked"],
+[role="checkbox"][data-state="unchecked"] {
+  background-color: #fff !important;
+}
+
+[role="checkbox"][data-state="checked"] {
+  border-color: hsl(var(--primary)) !important;
+  color: hsl(var(--primary)) !important; /* for indikatoren */
 }

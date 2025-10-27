@@ -76,7 +76,7 @@ export const SkipLink: React.FC<{
       onClick={(e) => {
         e.preventDefault();
         const target = document.querySelector(href);
-        if (target) {
+        if (target && target instanceof HTMLElement) {
           target.focus();
           target.scrollIntoView();
         }

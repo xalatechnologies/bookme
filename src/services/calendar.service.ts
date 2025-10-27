@@ -1,10 +1,10 @@
-import type { IBookingEvent, ICalendarQuery } from "@/types/calendar";
+import type { IBookingEvent, ICalendarQuery, TBookingStatus } from "@/types/calendar";
 
 // Convert booking data to calendar events
 const convertBookingToEvent = (booking: {
   readonly id: string;
-  readonly facilityName: string;
-  readonly time: string;
+  readonly facilityName?: string;
+  readonly time?: string;
   readonly duration?: number;
   readonly timeSlots?: readonly { readonly date: string; readonly timeSlot: string }[];
   readonly status: string;
@@ -13,6 +13,10 @@ const convertBookingToEvent = (booking: {
   readonly facilityId?: string;
   readonly price?: string | number;
   readonly description?: string;
+  readonly date?: string;
+  readonly startDate?: string;
+  readonly startTime?: string;
+  readonly endTime?: string;
 }): IBookingEvent => {
   try {
     // Parse date - handle different formats (prioritize date over startDate)
@@ -85,7 +89,7 @@ const convertBookingToEvent = (booking: {
     priceNok = 0;
   }
   
-    const event = {
+    const event: IBookingEvent = {
       id: booking.id,
       facilityId: booking.facilityId || booking.id,
       facilityName: booking.facility || booking.facilityName || 'Ukjent lokale',
@@ -109,7 +113,7 @@ const convertBookingToEvent = (booking: {
       title: booking.description || booking.purpose || 'Booking',
       start: new Date().toISOString(),
       end: new Date().toISOString(),
-      status: 'cancelled' as const,
+      status: 'cancelled' as TBookingStatus,
       priceNok: 0,
       tags: ['error']
     };
@@ -117,7 +121,19 @@ const convertBookingToEvent = (booking: {
 };
 
 // Convert recurring occurrence to calendar event
-const convertRecurringOccurrenceToEvent = (occurrence: any, parentBooking: any): IBookingEvent => {
+const convertRecurringOccurrenceToEvent = (occurrence: {
+  readonly id: string;
+  readonly date: string;
+  readonly timeSlot: string;
+  readonly facilityId: string;
+}, parentBooking: {
+  readonly facility?: string;
+  readonly facilityName?: string;
+  readonly description?: string;
+  readonly purpose?: string;
+  readonly status: string;
+  readonly pricePerHour?: number;
+}): IBookingEvent => {
   try {
     const startTime = occurrence.timeSlot.split('-')[0];
     const endTime = occurrence.timeSlot.split('-')[1];
@@ -153,7 +169,7 @@ const convertRecurringOccurrenceToEvent = (occurrence: any, parentBooking: any):
       title: parentBooking.description || parentBooking.purpose || 'Gjentakende booking',
       start: new Date().toISOString(),
       end: new Date().toISOString(),
-      status: 'cancelled' as const,
+      status: 'cancelled' as TBookingStatus,
       priceNok: 0,
       tags: ['error']
     };

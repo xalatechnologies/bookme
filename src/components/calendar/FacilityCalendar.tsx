@@ -26,8 +26,12 @@ import { RecurrencePatternSelector } from "@/components/booking/RecurrencePatter
 import { StepByStepBooking } from "@/components/booking/StepByStepBooking";
 
 // Types
-import { ISelectedTimeSlot, IZone, BookingType } from "@/components/booking/types";
+import { ISelectedTimeSlot, BookingType } from "@/components/booking/types";
+import type { Zone } from '@/types/booking';
 import type { RecurrencePattern } from "@/utils/recurrenceEngine";
+
+// Import the IBookingFormData type
+import type { IBookingFormData } from "@/components/booking/types";
 
 /**
  * Facility calendar component
@@ -50,7 +54,7 @@ import type { RecurrencePattern } from "@/utils/recurrenceEngine";
 export interface IFacilityCalendarProps {
   readonly facilityId: string;
   readonly facilityName: string;
-  readonly zones: readonly IZone[];
+  readonly zones: readonly Zone[];
   readonly isLoading?: boolean;
   readonly error?: string;
   readonly selectedSlots?: readonly ISelectedTimeSlot[];
@@ -351,6 +355,7 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
             id: `${facilityId}-${zoneId}-${date.toISOString().split('T')[0]}-${timeSlot}`,
             facilityId,
             zoneId,
+            zoneName: selectedZone?.name || '', // Add zoneName
             date,
             timeSlot,
             duration: duration, // Duration in minutes
@@ -431,7 +436,7 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
   /**
    * Calculate pricing for booking
    */
-  const calculatePricing = useCallback((slots: ISelectedTimeSlot[], actorType?: string, activityType?: string): {
+  const calculatePricing = useCallback((slots: readonly ISelectedTimeSlot[], actorType?: string, activityType?: string): {
     readonly basePrice: number;
     readonly vatRate: number;
     readonly vatAmount: number;
@@ -485,15 +490,7 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
   /**
    * Create cart item from booking data
    */
-  const createCartItem = useCallback((bookingData: {
-    readonly purpose: string;
-    readonly attendees: number;
-    readonly activityType: string;
-    readonly additionalInfo: string;
-    readonly actorType: string;
-    readonly bookingType: BookingType;
-    readonly recurrencePattern?: RecurrencePattern | null;
-  }, pricing: {
+  const createCartItem = useCallback((bookingData: IBookingFormData, pricing: {
     readonly basePrice: number;
     readonly vatRate: number;
     readonly vatAmount: number;
@@ -508,15 +505,16 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
     readonly attendees: number;
     readonly activityType: string;
     readonly additionalInfo: string;
-    readonly actorType: string;
+    readonly actorType: 'private-person' | 'lag-foreninger' | 'paraply' | 'private-firma' | 'kommunale-enheter';
     readonly bookingType: BookingType;
-    readonly recurrencePattern: RecurrencePattern | null;
+    readonly recurrencePattern?: RecurrencePattern; // Make it optional instead of null
     readonly pricing: {
       readonly basePrice: number;
       readonly totalPrice: number;
       readonly vatAmount: number;
       readonly finalPrice: number;
     };
+    readonly status: 'pending'; // Add status property
   } => {
     if (!selectedZone) throw new Error("No zone selected");
     
@@ -530,21 +528,21 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
       facilityName,
       zoneId: selectedZone.id,
       zoneName: selectedZone.name,
-      timeSlots: slotsToUse,
+      timeSlots: [...slotsToUse], // Convert readonly array to mutable array
       purpose: bookingData.purpose,
       attendees: bookingData.attendees,
       activityType: bookingData.activityType,
-      additionalInfo: bookingData.additionalInfo,
-      actorType: bookingData.actorType,
+      additionalInfo: bookingData.additionalInfo || '', // Handle undefined case
+      actorType: bookingData.actorType as 'private-person' | 'lag-foreninger' | 'paraply' | 'private-firma' | 'kommunale-enheter', // Type assertion
       bookingType: bookingData.bookingType,
-      recurrencePattern: patternToUse,
+      recurrencePattern: patternToUse || undefined, // Convert null to undefined
       pricing: {
         basePrice: pricing.basePrice,
         totalPrice: pricing.basePrice,
         vatAmount: pricing.vatAmount,
         finalPrice: pricing.finalPrice,
       },
-      status: 'pending' as const, // Set status to pending for new bookings
+      status: 'pending', // Set status to pending for new bookings
     };
   }, [selectedZone, facilityId, facilityName, recurrencePattern]);
 
@@ -553,16 +551,7 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
    * 
    * @param bookingData - Booking form data
    */
-  const handleAddToCart = useCallback((bookingData: {
-    readonly purpose: string;
-    readonly attendees: number;
-    readonly activityType: string;
-    readonly additionalInfo: string;
-    readonly actorType: string;
-    readonly bookingType: BookingType;
-    readonly recurrencePattern?: RecurrencePattern | null;
-    readonly recurringSlots?: readonly ISelectedTimeSlot[];
-  }): void => {
+  const handleAddToCart = useCallback((bookingData: IBookingFormData): void => {
     try {
       if (!selectedZone) return;
       
@@ -627,16 +616,7 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
    * 
    * @param bookingData - Booking form data
    */
-  const handleCompleteBooking = (bookingData: {
-    readonly purpose: string;
-    readonly attendees: number;
-    readonly activityType: string;
-    readonly additionalInfo: string;
-    readonly actorType: string;
-    readonly bookingType: BookingType;
-    readonly recurrencePattern?: RecurrencePattern | null;
-    readonly recurringSlots?: readonly ISelectedTimeSlot[];
-  }): void => {
+  const handleCompleteBooking = (bookingData: IBookingFormData): void => {
     try {
       if (!selectedZone) return;
       
@@ -729,7 +709,10 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
             error={error}
             openingHoursStart={openingHoursStart}
             openingHoursEnd={openingHoursEnd}
-            calendarWeek={calendarWeek}
+            calendarWeek={{
+              start: calendarWeek.startDate,
+              end: calendarWeek.endDate
+            }}
             onSlotClick={handleSlotClickWithZone}
             onBulkSlotSelection={handleBulkSelectWithZone}
             getAvailabilityStatus={externalGetAvailabilityStatus}

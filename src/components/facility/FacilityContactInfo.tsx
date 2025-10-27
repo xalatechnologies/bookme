@@ -8,10 +8,16 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 
+interface FacilityHours {
+  readonly day: string;
+  readonly open: string;
+  readonly close: string;
+}
+
 interface FacilityContactInfoProps {
   readonly facilityName: string;
   readonly address: string;
-  readonly openingHours?: string | readonly any[];
+  readonly openingHours?: string | readonly FacilityHours[];
   readonly openingHoursStart?: string;
   readonly openingHoursEnd?: string;
   readonly contactEmail?: string;
@@ -58,7 +64,7 @@ export const FacilityContactInfo: React.FC<FacilityContactInfoProps> = ({
 
   const t = translations[language];
 
-  const formatOpeningHours = (hours: string | readonly any[] | undefined, start?: string, end?: string): string => {
+  const formatOpeningHours = (hours: string | readonly FacilityHours[] | undefined, start?: string, end?: string): string => {
     // Use new time fields if available
     if (start && end) {
       return `${start} - ${end}`;

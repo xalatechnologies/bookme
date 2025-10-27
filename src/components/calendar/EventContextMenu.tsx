@@ -74,7 +74,7 @@ export const EventContextMenu: React.FC<EventContextMenuProps> = ({
   }, [onView, event, handleAction]);
 
   if (!isVisible) {
-    return null;
+    return <></>;
   }
 
   return (

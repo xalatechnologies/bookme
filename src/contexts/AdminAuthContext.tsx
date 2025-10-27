@@ -9,6 +9,7 @@ interface IUser {
   readonly name: string;
   readonly email: string;
   readonly roles: readonly TRole[];
+  readonly avatar?: string;
 }
 
 interface IAdminAuthContext {

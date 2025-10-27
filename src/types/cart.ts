@@ -15,6 +15,7 @@ export interface ISelectedTimeSlot {
   readonly id: string;
   readonly facilityId: string;
   readonly zoneId: string;
+  readonly zoneName: string; // Add zoneName property
   readonly date: Date;
   readonly timeSlot: string; // Format: "08:00-09:00"
   readonly duration: number; // Duration in hours

@@ -30,6 +30,34 @@ import {
   Repeat
 } from "lucide-react";
 
+interface IRawBooking {
+  readonly id?: string;
+  readonly facility?: string;
+  readonly facilityName?: string;
+  readonly zoneName?: string;
+  readonly purpose?: string;
+  readonly time?: string;
+  readonly startTime?: string;
+  readonly endTime?: string;
+  readonly startDate?: string;
+  readonly endDate?: string;
+  readonly date?: string;
+  readonly duration?: string | number;
+  readonly price?: string | number;
+  readonly status?: string;
+  readonly isRecurring?: boolean;
+  readonly bookingType?: string;
+  readonly parentBookingId?: string;
+  readonly contactPerson?: string;
+  readonly bookerName?: string;
+  readonly bookerEmail?: string;
+  readonly submittedAt?: string;
+  readonly requestedAt?: string;
+  readonly processedAt?: string;
+  readonly processedBy?: string;
+  readonly description?: string;
+}
+
 interface IReceipt {
   readonly id: string;
   readonly facility: string;
@@ -73,13 +101,13 @@ const UserReceipts = (): JSX.Element => {
     try {
       const pending = JSON.parse(localStorage.getItem('pendingBookings') || '[]');
       const processed = JSON.parse(localStorage.getItem('processedBookings') || '[]');
-      const all = [...pending, ...processed];
+      const all: IRawBooking[] = [...pending, ...processed];
       
       // Group recurring bookings by parentBookingId or fallback key
-      const groupedRecurring = new Map();
-      const singleBookings = [];
+      const groupedRecurring = new Map<string, IRawBooking[]>();
+      const singleBookings: IRawBooking[] = [];
       
-      all.forEach((booking: any) => {
+      all.forEach((booking: IRawBooking) => {
         const parentKey = booking.parentBookingId || 
           `${booking.facility || booking.facilityName}-${booking.purpose}-${booking.time || booking.startTime}`;
         
@@ -87,29 +115,38 @@ const UserReceipts = (): JSX.Element => {
           if (!groupedRecurring.has(parentKey)) {
             groupedRecurring.set(parentKey, []);
           }
-          groupedRecurring.get(parentKey).push(booking);
+          groupedRecurring.get(parentKey)!.push(booking);
         } else {
           singleBookings.push(booking);
         }
       });
       
       // Convert single bookings to receipts format
-      const singleReceipts = singleBookings.map((booking: any, index: number) => {
-        const amount = parseFloat(booking.price?.replace(/[^\d,]/g, '').replace(',', '.') || '0');
+      const singleReceipts = singleBookings.map((booking: IRawBooking, index: number) => {
+        const amount = parseFloat(String(booking.price)?.replace(/[^\d,]/g, '').replace(',', '.') || '0');
         const mvaAmount = amount * 0.25; // 25% MVA
         const facilityName = booking.facility || booking.facilityName || booking.zoneName || 'Ukjent lokale';
         
+        // Map raw status to IReceipt status
+        let status: IReceipt["status"] = 'pending';
+        if (booking.status === 'approved') {
+          status = 'paid';
+        } else if (booking.status === 'rejected') {
+          status = 'cancelled';
+        } else if (booking.status === 'refunded') {
+          status = 'refunded';
+        }
+        
         return {
-          id: booking.id,
+          id: booking.id || '',
           facility: facilityName,
           date: booking.startDate || new Date().toISOString().split('T')[0],
           amount: amount,
-          status: booking.status === 'approved' ? 'paid' : 
-                  booking.status === 'rejected' ? 'cancelled' : 'pending',
+          status: status,
           paymentMethod: "Visa •••• 1234",
-          bookingId: booking.id,
+          bookingId: booking.id || '',
           location: facilityName,
-          duration: booking.duration || '1 time',
+          duration: String(booking.duration) || '1 time',
           purpose: booking.purpose || 'Ikke spesifisert',
           invoiceNumber: `INV-${new Date().getFullYear()}-${String(index + 1).padStart(3, '0')}`,
           paidAt: booking.status === 'approved' ? new Date().toISOString() : undefined,
@@ -129,14 +166,22 @@ const UserReceipts = (): JSX.Element => {
         
         // Calculate total amount for all occurrences
         const totalAmount = bookings.reduce((sum, booking) => {
-          return sum + parseFloat(booking.price?.replace(/[^\d,]/g, '').replace(',', '.') || '0');
+          return sum + parseFloat(String(booking.price)?.replace(/[^\d,]/g, '').replace(',', '.') || '0');
         }, 0);
         const mvaAmount = totalAmount * 0.25; // 25% MVA
         
         // Determine group status
         const statuses = bookings.map(b => b.status);
-        const groupStatus = statuses.every(s => s === 'approved') ? 'paid' :
-                           statuses.every(s => s === 'rejected') ? 'cancelled' : 'pending';
+        const rawGroupStatus = statuses.every(s => s === 'approved') ? 'approved' :
+                           statuses.every(s => s === 'rejected') ? 'rejected' : 'pending';
+        
+        // Map raw status to IReceipt status
+        let groupStatus: IReceipt["status"] = 'pending';
+        if (rawGroupStatus === 'approved') {
+          groupStatus = 'paid';
+        } else if (rawGroupStatus === 'rejected') {
+          groupStatus = 'cancelled';
+        }
         
         return {
           id: parentKey,
@@ -162,8 +207,8 @@ const UserReceipts = (): JSX.Element => {
             id: booking.id,
             date: booking.startDate || booking.date,
             time: booking.startTime || booking.time,
-            status: booking.status,
-            amount: parseFloat(booking.price?.replace(/[^\d,]/g, '').replace(',', '.') || '0')
+            status: booking.status || 'pending',
+            amount: parseFloat(String(booking.price)?.replace(/[^\d,]/g, '').replace(',', '.') || '0')
           }))
         };
       });
@@ -956,7 +1001,7 @@ BookMe - Drammen kommune
           ))
         ) : (
           <Card>
-            <CardContent className="p-8 text-center">
+            <CardContent className="p-88 text-center">
               <Receipt className="h-12 w-12 text-gray-400 mx-auto mb-4" />
               <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
                 Ingen kvitteringer funnet

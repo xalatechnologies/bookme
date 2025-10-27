@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useEffect } from "react";
 import { useCartStore } from "@/stores/cartStore";
-import { ICartContext } from "@/types/cart";
+import { ICartContext, ICartItem, ISelectedTimeSlot } from "@/types/cart";
 
 /**
  * Cart context for providing cart functionality to components

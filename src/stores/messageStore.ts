@@ -395,7 +395,7 @@ export const useMessageStore = create<MessageState>()(
             results = results.filter((message) => message.attachments && message.attachments.length > 0);
           }
 
-          return results.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+          return [...results].sort((a: Message, b: Message) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
         },
 
         createThread: (threadData: CreateMessageThreadData): string => {
@@ -554,7 +554,7 @@ export const useMessageStore = create<MessageState>()(
             });
           }
 
-          return results.sort((a, b) => new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime());
+          return [...results].sort((a: MessageThread, b: MessageThread) => new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime());
         },
 
         getUnreadThreads: (userId: string): readonly MessageThread[] => {
@@ -765,7 +765,7 @@ export const useMessageStore = create<MessageState>()(
               .filter((booking: IBooking) => booking.bookerId === userId || booking.bookerName === 'Hamid Rahmani');
             
             const processedBookings = JSON.parse(localStorage.getItem('processedBookings') || '[]')
-              .filter((booking: IBooking) => (booking.bookerId === userId || booking.bookerName === 'Hamid Rahmani') && booking.status === 'approved');
+              .filter((booking: IBooking) => booking.status === 'confirmed');
             
             const allBookings = [...pendingBookings, ...processedBookings];
             
@@ -788,7 +788,7 @@ export const useMessageStore = create<MessageState>()(
             // For landlords: get tenants from their facility bookings (both pending and processed)
             const pendingBookings = JSON.parse(localStorage.getItem('pendingBookings') || '[]');
             const processedBookings = JSON.parse(localStorage.getItem('processedBookings') || '[]')
-              .filter((booking: IBooking) => booking.status === 'approved');
+              .filter((booking: IBooking) => booking.status === 'confirmed');
             
             const allBookings = [...pendingBookings, ...processedBookings];
             const tenantNames = [...new Set(allBookings.map((booking: IBooking) => booking.bookerName))];
@@ -796,7 +796,7 @@ export const useMessageStore = create<MessageState>()(
             if (tenantNames.length > 0) {
               return tenantNames.map((tenantName, index) => ({
                 id: `tenant-${index + 1}`,
-                name: tenantName,
+                name: tenantName || 'Unknown Tenant', // Handle undefined case
                 type: 'tenant' as const
               }));
             }
@@ -817,7 +817,7 @@ export const useMessageStore = create<MessageState>()(
               .filter((booking: IBooking) => booking.bookerId === userId || booking.bookerName === 'Hamid Rahmani');
             
             const processedBookings = JSON.parse(localStorage.getItem('processedBookings') || '[]')
-              .filter((booking: IBooking) => (booking.bookerId === userId || booking.bookerName === 'Hamid Rahmani') && booking.status === 'approved');
+              .filter((booking: IBooking) => (booking.bookerId === userId || booking.bookerName === 'Hamid Rahmani') && booking.status === 'confirmed');
             
             const allBookings = [...pendingBookings, ...processedBookings];
             
@@ -847,7 +847,7 @@ export const useMessageStore = create<MessageState>()(
             // For landlords, get facilities from all bookings
             const pendingBookings = JSON.parse(localStorage.getItem('pendingBookings') || '[]');
             const processedBookings = JSON.parse(localStorage.getItem('processedBookings') || '[]')
-              .filter((booking: IBooking) => booking.status === 'approved');
+              .filter((booking: IBooking) => booking.status === 'confirmed');
             
             const allBookings = [...pendingBookings, ...processedBookings];
             

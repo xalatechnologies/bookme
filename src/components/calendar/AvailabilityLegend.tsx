@@ -8,7 +8,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
 // Types
-import { IAvailabilityLegendProps } from "./types";
+import { IAvailabilityLegendProps, TimeSlotStatus } from "./types";
+
+interface LegendItem {
+  readonly status: TimeSlotStatus;
+  readonly label: string;
+  readonly description: string;
+  readonly className: string;
+}
 
 /**
  * Availability legend component for calendar
@@ -29,27 +36,27 @@ export const AvailabilityLegend: React.FC<IAvailabilityLegendProps> = ({
   showConflictInfo = true,
   showHolidayInfo = true,
 }) => {
-  const legendItems = [
+  const legendItems: LegendItem[] = [
     {
-      status: "available" as const,
+      status: "available",
       label: "Ledig",
       description: "Tilgjengelig for booking",
       className: "bg-green-100 text-green-800 border-green-200",
     },
     {
-      status: "booked" as const,
+      status: "booked",
       label: "Opptatt",
       description: "Allerede booket",
       className: "bg-red-100 text-red-800 border-red-200",
     },
     {
-      status: "selected" as const,
+      status: "selected",
       label: "Valgt",
       description: "Du har valgt dette tidspunktet",
       className: "bg-blue-100 text-blue-800 border-blue-200",
     },
     {
-      status: "unavailable" as const,
+      status: "unavailable",
       label: "Ikke tilgjengelig",
       description: "Ikke tilgjengelig (helg, ferie, fortid)",
       className: "bg-gray-100 text-gray-600 border-gray-200",
@@ -58,7 +65,7 @@ export const AvailabilityLegend: React.FC<IAvailabilityLegendProps> = ({
 
   if (showConflictInfo) {
     legendItems.push({
-      status: "conflict" as const,
+      status: "conflict",
       label: "Konflikt",
       description: "Har konflikt med andre bookinger",
       className: "bg-orange-100 text-orange-800 border-orange-200",

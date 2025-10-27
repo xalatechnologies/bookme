@@ -6,6 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Switch } from "@/components/ui/switch";
 import { 
   Search, 
   Filter, 
@@ -84,6 +86,7 @@ interface IUserRowProps {
   readonly onResendInvitation: (userId: string) => void;
   readonly isSelected: boolean;
   readonly onSelect: (userId: string, selected: boolean) => void;
+  readonly onRowClick: (user: IUser) => void;
 }
 
 interface IRoleRowProps {
@@ -157,6 +160,26 @@ const formatTimeAgo = (dateString: string): string => {
   if (diffInDays < 7) return `${diffInDays} dager siden`;
   if (diffInDays < 30) return `${Math.floor(diffInDays / 7)} uker siden`;
   return `${Math.floor(diffInDays / 30)} måneder siden`;
+};
+
+const getLastActivity = (user: IUser): string => {
+  if (user.lastLogin) {
+    return `Sist innlogget: ${formatTimeAgo(user.lastLogin)}`;
+  } else if (user.invitationSentAt) {
+    return `Invitasjon sendt: ${formatTimeAgo(user.invitationSentAt)}`;
+  } else {
+    return "Aldri aktiv – kun invitert";
+  }
+};
+
+const getStatusColor = (status: IUser["status"]): string => {
+  return status === "active" || status === "invitation_sent" ? 
+    "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300" : 
+    "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300";
+};
+
+const getStatusText = (status: IUser["status"]): string => {
+  return status === "active" ? "Aktiv" : status === "inactive" ? "Inaktiv" : "Invitasjon sendt";
 };
 
 const UserActionDropdown = ({ user, onEdit, onDeactivate, onDelete, onResendInvitation, onResetPassword }: IUserActionDropdownProps): JSX.Element => {
@@ -353,7 +376,7 @@ const UserModal = ({ user, isOpen, onClose, onSave, isEditing }: IUserModalProps
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
                 >
                   <option value="active">Aktiv</option>
-                  <option value="inactive">Deaktivert</option>
+                  <option value="inactive">Inaktiv</option>
                   <option value="invitation_sent">Invitasjon sendt</option>
                 </select>
               </div>
@@ -391,7 +414,8 @@ const RoleModal = ({ role, isOpen, onClose, onSave, isEditing }: IRoleModalProps
   const [formData, setFormData] = useState({
     name: role?.name || "",
     description: role?.description || "",
-    permissions: role?.permissions || []
+    permissions: role?.permissions || [],
+    isActive: role?.isActive ?? true
   });
 
   React.useEffect(() => {
@@ -399,13 +423,15 @@ const RoleModal = ({ role, isOpen, onClose, onSave, isEditing }: IRoleModalProps
       setFormData({
         name: role.name,
         description: role.description,
-        permissions: role.permissions
+        permissions: role.permissions,
+        isActive: role.isActive
       });
     } else {
       setFormData({
         name: "",
         description: "",
-        permissions: []
+        permissions: [],
+        isActive: true
       });
     }
   }, [role]);
@@ -446,7 +472,7 @@ const RoleModal = ({ role, isOpen, onClose, onSave, isEditing }: IRoleModalProps
   };
 
   const handleSave = (): void => {
-    onSave(formData);
+    onSave({ ...formData, isActive: formData.isActive });
     onClose();
   };
 
@@ -501,11 +527,9 @@ const RoleModal = ({ role, isOpen, onClose, onSave, isEditing }: IRoleModalProps
                     <div className="space-y-2">
                       {group.permissions.map(permission => (
                         <label key={permission.id} className="flex items-center space-x-2">
-                          <input
-                            type="checkbox"
+                          <Checkbox
                             checked={formData.permissions.includes(permission.id)}
-                            onChange={(e) => handlePermissionChange(permission.id, e.target.checked)}
-                            className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                            onCheckedChange={(checked) => handlePermissionChange(permission.id, !!checked)}
                           />
                           <span className="text-sm text-gray-700 dark:text-gray-300">{permission.label}</span>
                         </label>
@@ -514,6 +538,16 @@ const RoleModal = ({ role, isOpen, onClose, onSave, isEditing }: IRoleModalProps
                   </div>
                 ))}
               </div>
+            </div>
+
+            <div>
+              <label className="flex items-center space-x-2">
+                <Checkbox
+                  checked={formData.isActive}
+                  onCheckedChange={(checked) => setFormData({ ...formData, isActive: !!checked })}
+                />
+                <span className="text-sm text-gray-700 dark:text-gray-300">Aktiv rolle</span>
+              </label>
             </div>
           </div>
 
@@ -531,41 +565,25 @@ const RoleModal = ({ role, isOpen, onClose, onSave, isEditing }: IRoleModalProps
   );
 };
 
-const UserRow = ({ user, onEdit, onDeactivate, onDelete, onResendInvitation, isSelected, onSelect }: IUserRowProps): JSX.Element => {
-  const getStatusBadge = (status: IUser["status"]): JSX.Element => {
-    const statusConfig = {
-      active: { label: "Aktiv", className: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300", icon: null },
-      inactive: { label: "Deaktivert", className: "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300", icon: null },
-      invitation_sent: { 
-        label: user.invitationSentAt ? `Invitasjon sendt – ${formatTimeAgo(user.invitationSentAt)}` : "Invitasjon sendt", 
-        className: "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300",
-        icon: <Clock className="h-3 w-3 mr-1" />
-      }
-    };
-    const config = statusConfig[status];
-    return (
-      <Badge className={config.className}>
-        {config.icon}
-        {config.label}
-      </Badge>
-    );
-  };
-
+const UserRow = ({ user, onEdit, onDeactivate, onDelete, onResendInvitation, isSelected, onSelect, onRowClick }: IUserRowProps): JSX.Element => {
   const formatDate = (dateString?: string): string => {
     if (!dateString) return "Aldri";
     return new Date(dateString).toLocaleDateString('nb-NO');
   };
 
   return (
-    <tr className={`border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 ${
-      isSelected ? 'bg-blue-50 dark:bg-blue-900/20' : ''
-    }`}>
+    <tr 
+      className={`border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 cursor-pointer ${
+        isSelected ? 'bg-blue-50 dark:bg-blue-900/20' : ''
+      }`}
+      onClick={() => onRowClick(user)}
+    >
       <td className="px-6 py-4">
-        <input
-          type="checkbox"
+        <Checkbox
           checked={isSelected}
-          onChange={(e) => onSelect(user.id, e.target.checked)}
-          className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+          onCheckedChange={(checked) => {
+            onSelect(user.id, !!checked);
+          }}
         />
       </td>
       <td className="px-6 py-4">
@@ -586,13 +604,12 @@ const UserRow = ({ user, onEdit, onDeactivate, onDelete, onResendInvitation, isS
         </Badge>
       </td>
       <td className="px-6 py-4 text-sm text-gray-900 dark:text-white">
-        {user.createdBy}
-      </td>
-      <td className="px-6 py-4 text-sm text-gray-900 dark:text-white">
-        {formatDate(user.lastLogin)}
+        {getLastActivity(user)}
       </td>
       <td className="px-6 py-4">
-        {getStatusBadge(user.status)}
+        <Badge className={getStatusColor(user.status)}>
+          {getStatusText(user.status)}
+        </Badge>
       </td>
       <td className="px-6 py-4">
         <UserActionDropdown
@@ -609,6 +626,28 @@ const UserRow = ({ user, onEdit, onDeactivate, onDelete, onResendInvitation, isS
 };
 
 const RoleRow = ({ role, onEdit, onDeactivate, onViewUsers }: IRoleRowProps): JSX.Element => {
+  // Format permissions for display
+  const formatPermissions = (permissions: readonly string[]): string => {
+    if (permissions.includes("all")) return "Alle moduler";
+    
+    const permissionMap: Record<string, string> = {
+      "facilities": "Lokaler",
+      "bookings": "Bookinger",
+      "reports": "Rapporter",
+      "users": "Brukere"
+    };
+    
+    const modules = new Set<string>();
+    permissions.forEach(permission => {
+      const module = permission.split(".")[0];
+      if (module in permissionMap) {
+        modules.add(permissionMap[module]);
+      }
+    });
+    
+    return modules.size > 0 ? Array.from(modules).join(", ") : "Ingen spesielle tilganger";
+  };
+
   return (
     <tr className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50">
       <td className="px-6 py-4">
@@ -620,9 +659,12 @@ const RoleRow = ({ role, onEdit, onDeactivate, onViewUsers }: IRoleRowProps): JS
       <td className="px-6 py-4">
         <Badge variant="outline">{role.userCount} brukere</Badge>
       </td>
+      <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
+        {formatPermissions(role.permissions)}
+      </td>
       <td className="px-6 py-4">
         <Badge className={role.isActive ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300" : "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300"}>
-          {role.isActive ? "Aktiv" : "Deaktivert"}
+          {role.isActive ? "Aktiv" : "Inaktiv"}
         </Badge>
       </td>
       <td className="px-6 py-4">
@@ -643,17 +685,160 @@ const RoleRow = ({ role, onEdit, onDeactivate, onViewUsers }: IRoleRowProps): JS
             <Eye className="h-4 w-4 mr-1" />
             Se brukere
           </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => onDeactivate(role.id)}
-            className={role.isActive ? "text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20" : "text-green-600 hover:text-green-700 hover:bg-green-50 dark:hover:bg-green-900/20"}
-          >
-            {role.isActive ? "Deaktiver" : "Aktiver"}
-          </Button>
+          <div className="flex items-center space-x-2">
+            <span className="text-sm text-gray-700 dark:text-gray-300">
+              {role.isActive ? "Aktiv" : "Inaktiv"}
+            </span>
+            <Switch
+              checked={role.isActive}
+              onCheckedChange={() => onDeactivate(role.id)}
+            />
+          </div>
         </div>
       </td>
     </tr>
+  );
+};
+
+const UserSidePanel = ({ user, isOpen, onClose, onEdit, onDeactivate, onDelete, onResendInvitation }: IUserSidePanelProps): JSX.Element => {
+  if (!isOpen || !user) return <></>;
+
+  const handleDeactivate = (): void => {
+    if (window.confirm(`Vil du deaktivere ${user.name}? Han/hun mister tilgang umiddelbart.`)) {
+      onDeactivate(user.id);
+      onClose();
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50">
+      <div 
+        className="absolute inset-0 bg-black bg-opacity-50"
+        onClick={onClose}
+      ></div>
+      <div className="absolute right-0 top-0 h-full w-full max-w-md bg-white dark:bg-gray-800 shadow-xl overflow-y-auto">
+        <div className="p-6">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+              Brukerdetaljer
+            </h2>
+            <Button variant="ghost" size="sm" onClick={onClose}>
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+
+          <div className="space-y-6">
+            <div className="flex items-center space-x-4">
+              <div className="w-16 h-16 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center text-xl font-medium text-gray-600 dark:text-gray-300">
+                {getInitials(user.name)}
+              </div>
+              <div>
+                <h3 className="text-lg font-medium text-gray-900 dark:text-white">{user.name}</h3>
+                <p className="text-gray-600 dark:text-gray-400">{user.email}</p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Rolle</p>
+                <Badge className={getRoleColor(user.role)}>
+                  {React.createElement(getRoleIcon(user.role), { className: "h-3 w-3 mr-1" })}
+                  {user.role}
+                </Badge>
+              </div>
+              <div>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Status</p>
+                <Badge className={getStatusColor(user.status)}>
+                  {getStatusText(user.status)}
+                </Badge>
+              </div>
+            </div>
+
+            <div>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Sist aktivitet</p>
+              <p className="text-gray-900 dark:text-white">{getLastActivity(user)}</p>
+            </div>
+
+            <div>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Opprettet av</p>
+              <p className="text-gray-900 dark:text-white">{user.createdBy}</p>
+            </div>
+
+            <div>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Opprettet</p>
+              <p className="text-gray-900 dark:text-white">{new Date(user.createdAt).toLocaleDateString('nb-NO')}</p>
+            </div>
+
+            {user.lastLogin && (
+              <div>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Sist innlogget</p>
+                <p className="text-gray-900 dark:text-white">{new Date(user.lastLogin).toLocaleString('nb-NO')}</p>
+              </div>
+            )}
+
+            {user.invitationSentAt && (
+              <div>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Invitasjon sendt</p>
+                <p className="text-gray-900 dark:text-white">{new Date(user.invitationSentAt).toLocaleString('nb-NO')}</p>
+              </div>
+            )}
+
+            <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+              <h4 className="font-medium text-gray-900 dark:text-white mb-3">Handlinger</h4>
+              <div className="space-y-2">
+                <Button 
+                  className="w-full justify-start"
+                  variant="outline"
+                  onClick={() => {
+                    onEdit(user);
+                    onClose();
+                  }}
+                >
+                  <Edit className="h-4 w-4 mr-2" />
+                  Rediger bruker
+                </Button>
+                {user.status === "invitation_sent" && (
+                  <Button 
+                    className="w-full justify-start"
+                    variant="outline"
+                    onClick={() => {
+                      onResendInvitation(user.id);
+                      onClose();
+                    }}
+                  >
+                    <Mail className="h-4 w-4 mr-2" />
+                    Send invitasjon på nytt
+                  </Button>
+                )}
+                <Button 
+                  className="w-full justify-start"
+                  variant="outline"
+                  onClick={handleDeactivate}
+                >
+                  <Ban className="h-4 w-4 mr-2" />
+                  Deaktiver bruker
+                </Button>
+                {user.status === "invitation_sent" && (
+                  <Button 
+                    className="w-full justify-start"
+                    variant="outline"
+                    onClick={() => {
+                      if (window.confirm(`Vil du slette ${user.name} permanent?`)) {
+                        onDelete(user.id);
+                        onClose();
+                      }
+                    }}
+                  >
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    Slett bruker
+                  </Button>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 
@@ -672,6 +857,10 @@ const UsersRolesPage = (): JSX.Element => {
     isOpen: false,
     role: null,
     isEditing: false
+  });
+  const [sidePanel, setSidePanel] = useState<{ isOpen: boolean; user: IUser | null }>({
+    isOpen: false,
+    user: null
   });
 
   // Mock data - replace with real data from API
@@ -865,7 +1054,7 @@ const UsersRolesPage = (): JSX.Element => {
           description: roleData.description || '',
           userCount: 0,
           permissions: roleData.permissions || [],
-          isActive: true
+          isActive: roleData.isActive ?? true
         };
         roles.push(newRole);
         localStorage.setItem('adminRoles', JSON.stringify(roles));
@@ -988,6 +1177,14 @@ const UsersRolesPage = (): JSX.Element => {
     }
   };
 
+  const openUserSidePanel = (user: IUser): void => {
+    setSidePanel({ isOpen: true, user });
+  };
+
+  const closeUserSidePanel = (): void => {
+    setSidePanel({ isOpen: false, user: null });
+  };
+
   return (
     <RequireRole roles={["system-admin", "org-admin"]}>
       <div className="space-y-6">
@@ -1001,244 +1198,221 @@ const UsersRolesPage = (): JSX.Element => {
           </p>
         </header>
 
-        {/* Tabs */}
-        <div className="flex space-x-1 bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
-          <button
-            onClick={() => setActiveTab("users")}
-            className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
-              activeTab === "users"
-                ? "bg-white dark:bg-gray-800 text-gray-900 dark:text-white shadow-sm"
-                : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
-            }`}
-          >
-            <Users className="h-4 w-4 mr-2 inline" />
-            Brukere
-          </button>
-          <button
-            onClick={() => setActiveTab("roles")}
-            className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
-              activeTab === "roles"
-                ? "bg-white dark:bg-gray-800 text-gray-900 dark:text-white shadow-sm"
-                : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
-            }`}
-          >
-            <Shield className="h-4 w-4 mr-2 inline" />
-            Roller
-          </button>
-        </div>
-        
-        {/* Tab descriptions */}
-        <div className="mt-2">
-          {activeTab === "users" && (
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              Se, opprett og administrer brukerkontoer i BookMe.
-            </p>
-          )}
-          {activeTab === "roles" && (
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              Definer rettigheter og tilgangsnivåer for ulike roller i systemet.
-            </p>
-          )}
-        </div>
-
-        {/* Users Tab */}
-        {activeTab === "users" && (
-          <Card>
-            <CardHeader>
-              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
-                <div>
-                  <CardTitle>Brukere</CardTitle>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                    Administrer systembrukere og deres tilganger
-                  </p>
-                </div>
-                <Button onClick={handleNewUser}>
-                  <UserPlus className="h-4 w-4 mr-2" />
-                  Ny bruker
-                </Button>
+        {/* Primary Level: Users */}
+        <Card className="rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+          <CardHeader className="bg-blue-50 dark:bg-blue-900/20 rounded-t-lg">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
+              <div>
+                <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white">
+                  <Users className="h-5 w-5 mr-2 inline" />
+                  Brukere
+                </CardTitle>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                  Administrer systembrukere og deres tilganger
+                </p>
               </div>
+              <Button 
+                onClick={handleNewUser}
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                <UserPlus className="h-4 w-4 mr-2" />
+                Ny bruker
+              </Button>
+            </div>
 
-              {/* Filters */}
-              <div className="flex flex-col sm:flex-row gap-3">
-                <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                  <Input
-                    placeholder="Søk etter navn, e-post eller rolle..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10"
-                  />
-                </div>
-                <select
-                  value={roleFilter}
-                  onChange={(e) => setRoleFilter(e.target.value)}
-                  className="px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-                >
-                  <option value="all">Alle roller</option>
-                  <option value="admin">Admin</option>
-                  <option value="saksbehandler">Saksbehandler</option>
-                  <option value="redaktor">Redaktør</option>
-                  <option value="lesetilgang">Lesetilgang</option>
-                </select>
-                <select
-                  value={statusFilter}
-                  onChange={(e) => setStatusFilter(e.target.value)}
-                  className="px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-                >
-                  <option value="all">Alle statuser</option>
-                  <option value="active">Aktiv</option>
-                  <option value="inactive">Deaktivert</option>
-                  <option value="invitation_sent">Invitasjon sendt</option>
-                </select>
+            {/* Filters */}
+            <div className="flex flex-col sm:flex-row gap-3 mt-4">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Input
+                  placeholder="Søk etter navn, e-post eller rolle..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10"
+                />
               </div>
+              <select
+                value={roleFilter}
+                onChange={(e) => setRoleFilter(e.target.value)}
+                className="px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+              >
+                <option value="all">Alle roller</option>
+                <option value="admin">Admin</option>
+                <option value="saksbehandler">Saksbehandler</option>
+                <option value="redaktor">Redaktør</option>
+                <option value="lesetilgang">Lesetilgang</option>
+              </select>
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+              >
+                <option value="all">Alle statuser</option>
+                <option value="active">Aktiv</option>
+                <option value="inactive">Inaktiv</option>
+                <option value="invitation_sent">Invitasjon sendt</option>
+              </select>
+            </div>
 
-              {/* Bulk Actions */}
-              {selectedUsers.size > 0 && (
-                <div className="flex items-center justify-between bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
-                  <span className="text-sm text-blue-700 dark:text-blue-300">
-                    {selectedUsers.size} bruker(e) valgt
-                  </span>
-                  <div className="flex space-x-2">
-                    <Button size="sm" variant="outline" onClick={() => handleBulkAction("change-role")}>
-                      Endre rolle
-                    </Button>
-                    <Button size="sm" variant="outline" onClick={() => handleBulkAction("resend-invitation")}>
-                      Send invitasjon på nytt
-                    </Button>
-                  </div>
+            {/* Bulk Actions */}
+            {selectedUsers.size > 0 && (
+              <div className="flex items-center justify-between bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3 mt-4">
+                <span className="text-sm text-blue-700 dark:text-blue-300">
+                  {selectedUsers.size} bruker(e) valgt
+                </span>
+                <div className="flex space-x-2">
+                  <Button size="sm" variant="outline" onClick={() => handleBulkAction("change-role")}>
+                    Endre rolle
+                  </Button>
+                  <Button size="sm" variant="outline" onClick={() => handleBulkAction("resend-invitation")}>
+                    Send invitasjon på nytt
+                  </Button>
                 </div>
-              )}
-            </CardHeader>
+              </div>
+            )}
+          </CardHeader>
 
-            <CardContent>
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b border-gray-200 dark:border-gray-700">
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                        <input type="checkbox" className="rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                        Bruker
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                        Rolle
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                        Opprettet av
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                        Sist innlogget
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                        Status
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                        Handlinger
-                      </th>
+          <CardContent className="p-0">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/50">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      <Checkbox
+                        onCheckedChange={(checked) => {
+                          const newSelected = new Set<string>();
+                          if (checked) {
+                            filteredUsers.forEach(user => newSelected.add(user.id));
+                          }
+                          setSelectedUsers(newSelected);
+                        }}
+                      />
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      Bruker
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      Rolle
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      Sist aktivitet
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      Status
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      Handlinger
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredUsers.length === 0 ? (
+                    <tr>
+                      <td colSpan={6} className="px-6 py-12 text-center">
+                        <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                        <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+                          Ingen brukere funnet
+                        </h3>
+                        <p className="text-gray-600 dark:text-gray-400">
+                          {searchQuery ? "Prøv å endre søkekriteriene" : "Det er ingen brukere å vise for øyeblikket"}
+                        </p>
+                      </td>
                     </tr>
-                  </thead>
-                  <tbody>
-                    {filteredUsers.length === 0 ? (
-                      <tr>
-                        <td colSpan={6} className="px-6 py-12 text-center">
-                          <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                          <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
-                            Ingen brukere funnet
-                          </h3>
-                          <p className="text-gray-600 dark:text-gray-400">
-                            {searchQuery ? "Prøv å endre søkekriteriene" : "Det er ingen brukere å vise for øyeblikket"}
-                          </p>
-                        </td>
-                      </tr>
-                    ) : (
-                      filteredUsers.map(user => (
-                        <UserRow
-                          key={user.id}
-                          user={user}
-                          onEdit={handleEditUser}
-                          onDeactivate={handleDeactivateUser}
-                          onDelete={handleDeleteUser}
-                          onResendInvitation={handleResendInvitation}
-                          isSelected={selectedUsers.has(user.id)}
-                          onSelect={handleSelectUser}
-                        />
-                      ))
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            </CardContent>
-          </Card>
-        )}
+                  ) : (
+                    filteredUsers.map(user => (
+                      <UserRow
+                        key={user.id}
+                        user={user}
+                        onEdit={handleEditUser}
+                        onDeactivate={handleDeactivateUser}
+                        onDelete={handleDeleteUser}
+                        onResendInvitation={handleResendInvitation}
+                        isSelected={selectedUsers.has(user.id)}
+                        onSelect={handleSelectUser}
+                        onRowClick={openUserSidePanel}
+                      />
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+        </Card>
 
-        {/* Roles Tab */}
-        {activeTab === "roles" && (
-          <Card>
-            <CardHeader>
-              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
-                <div>
-                  <CardTitle>Roller og tilgangsnivåer</CardTitle>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                    Definer og administrer systemroller og deres rettigheter
-                  </p>
-                </div>
-                <Button onClick={handleNewRole}>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Ny rolle
-                </Button>
+        {/* Secondary Level: Roles and Access Levels */}
+        <Card className="rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+          <CardHeader className="bg-gray-50 dark:bg-gray-700/30 rounded-t-lg">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
+              <div>
+                <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white">
+                  <Shield className="h-5 w-5 mr-2 inline" />
+                  Roller og tilgangsnivåer
+                </CardTitle>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                  Definer og administrer systemroller og deres rettigheter
+                </p>
               </div>
-            </CardHeader>
+              <Button 
+                onClick={handleNewRole}
+                variant="outline"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Ny rolle
+              </Button>
+            </div>
+          </CardHeader>
 
-            <CardContent>
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b border-gray-200 dark:border-gray-700">
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                        Rolle
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                        Antall brukere
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                        Status
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                        Handlinger
-                      </th>
+          <CardContent className="p-0">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/50">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      Rolle
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      Antall brukere
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      Tilganger
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      Status
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      Handlinger
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {roles.length === 0 ? (
+                    <tr>
+                      <td colSpan={5} className="px-6 py-12 text-center">
+                        <Shield className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                        <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+                          Ingen roller funnet
+                        </h3>
+                        <p className="text-gray-600 dark:text-gray-400">
+                          Opprett din første rolle for å komme i gang
+                        </p>
+                      </td>
                     </tr>
-                  </thead>
-                  <tbody>
-                    {roles.length === 0 ? (
-                      <tr>
-                        <td colSpan={4} className="px-6 py-12 text-center">
-                          <Shield className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                          <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
-                            Ingen roller funnet
-                          </h3>
-                          <p className="text-gray-600 dark:text-gray-400">
-                            Opprett din første rolle for å komme i gang
-                          </p>
-                        </td>
-                      </tr>
-                    ) : (
-                      roles.map(role => (
-                        <RoleRow
-                          key={role.id}
-                          role={role}
-                          onEdit={handleEditRole}
-                          onDeactivate={handleDeactivateRole}
-                          onViewUsers={handleViewUsers}
-                        />
-                      ))
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            </CardContent>
-          </Card>
-        )}
+                  ) : (
+                    roles.map(role => (
+                      <RoleRow
+                        key={role.id}
+                        role={role}
+                        onEdit={handleEditRole}
+                        onDeactivate={handleDeactivateRole}
+                        onViewUsers={handleViewUsers}
+                      />
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Modals */}
         <UserModal
@@ -1255,6 +1429,17 @@ const UsersRolesPage = (): JSX.Element => {
           onClose={() => setRoleModal({ isOpen: false, role: null, isEditing: false })}
           onSave={handleSaveRole}
           isEditing={roleModal.isEditing}
+        />
+
+        {/* Side Panel */}
+        <UserSidePanel
+          user={sidePanel.user}
+          isOpen={sidePanel.isOpen}
+          onClose={closeUserSidePanel}
+          onEdit={handleEditUser}
+          onDeactivate={handleDeactivateUser}
+          onDelete={handleDeleteUser}
+          onResendInvitation={handleResendInvitation}
         />
       </div>
     </RequireRole>

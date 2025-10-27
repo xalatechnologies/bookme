@@ -70,7 +70,7 @@ export const FieldConfigModal = ({
     onUpdateValue(fieldId, value);
     setFields(prev => prev.map(field => 
       field.id === fieldId 
-        ? { ...field, value: value as any }
+        ? { ...field, value: value }
         : field
     ));
   };

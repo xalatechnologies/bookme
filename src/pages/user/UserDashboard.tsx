@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { useFacilityStore } from "@/stores/facilityStore";
+import { useUserProfile } from "@/contexts/UserProfileContext";
 import FacilityCardUser from "@/components/facility/FacilityCardUser";
 import BookingFilters from "@/components/user/dashboard/BookingFilters";
 import SystemMessageFilters from "@/components/user/dashboard/SystemMessageFilters";
@@ -49,6 +50,30 @@ interface IUserFacility {
   readonly matchesPreferredTimes?: boolean;
 }
 
+interface IUserBooking {
+  readonly id: string;
+  readonly facility: string;
+  readonly date: string;
+  readonly time: string;
+  readonly duration: string;
+  readonly status: "confirmed" | "pending" | "cancelled" | "rejected";
+  readonly location: string;
+  readonly price: string;
+  readonly purpose: string;
+  readonly participants?: readonly string[];
+  readonly qrCode?: string;
+  readonly cancellationPolicy?: string;
+  readonly contactInfo?: {
+    readonly phone: string;
+    readonly email: string;
+  };
+  readonly isExpanded?: boolean;
+  readonly isRecurringGroup?: boolean;
+  readonly recurringCount?: number;
+  readonly groupBookings?: readonly IUserBooking[];
+  readonly period?: string;
+}
+
 interface IWeatherData {
   readonly temperature: number;
   readonly condition: "sunny" | "cloudy" | "rainy" | "snowy";
@@ -69,6 +94,7 @@ interface ISystemMessage {
 
 const UserDashboard = (): JSX.Element => {
   const navigate = useNavigate();
+  const { profile } = useUserProfile();
   const [bookingFilter, setBookingFilter] = useState<string>("all");
   const [expandedBookings, setExpandedBookings] = useState<Set<string>>(new Set());
   const [messageFilter, setMessageFilter] = useState<string>("all");
@@ -77,29 +103,41 @@ const UserDashboard = (): JSX.Element => {
   // Get facilities from store
   const { getPublishedFacilities } = useFacilityStore();
 
-  // Get user data from localStorage
+  // Get user data from profile context and localStorage
   const user = useMemo(() => {
     try {
-      const pending: any[] = JSON.parse(localStorage.getItem('pendingBookings') || '[]');
-      const processed: any[] = JSON.parse(localStorage.getItem('processedBookings') || '[]');
+      const pending: readonly unknown[] = JSON.parse(localStorage.getItem('pendingBookings') || '[]');
+      const processed: readonly unknown[] = JSON.parse(localStorage.getItem('processedBookings') || '[]');
       const all = [...pending, ...processed];
       
       // Find next upcoming booking
       const upcomingBookings = all
-        .filter((booking: any) => {
-          const bookingDate = new Date(booking.startDate);
-          return bookingDate >= new Date() && booking.status === 'approved';
+        .filter((booking: unknown) => {
+          if (typeof booking === 'object' && booking !== null && 'startDate' in booking && 'status' in booking) {
+            const b = booking as { startDate: string; status: string };
+            const bookingDate = new Date(b.startDate);
+            return bookingDate >= new Date() && b.status === 'approved';
+          }
+          return false;
         })
-        .sort((a: any, b: any) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime());
+        .sort((a: unknown, b: unknown) => {
+          if (typeof a === 'object' && a !== null && 'startDate' in a && 
+              typeof b === 'object' && b !== null && 'startDate' in b) {
+            const bookingA = a as { startDate: string };
+            const bookingB = b as { startDate: string };
+            return new Date(bookingA.startDate).getTime() - new Date(bookingB.startDate).getTime();
+          }
+          return 0;
+        });
       
-      const nextBooking = upcomingBookings[0];
+      const nextBooking = upcomingBookings[0] as { facility?: string; facilityName?: string; startDate: string; startTime?: string } | undefined;
       
       return {
-        name: "Amin", // Could be from user profile context
+        name: profile.firstName || "Bruker", // Use first name from profile context
         totalBookings: all.length,
         monthlyBookingLimit: 5,
         nextBooking: nextBooking ? {
-          facility: nextBooking.facilityName || 'Ukjent lokale',
+          facility: nextBooking.facility || nextBooking.facilityName || 'Ukjent lokale',
           date: new Date(nextBooking.startDate).toLocaleDateString('nb-NO', { day: '2-digit', month: '2-digit' }),
           time: nextBooking.startTime || '14:00'
         } : null
@@ -107,13 +145,13 @@ const UserDashboard = (): JSX.Element => {
     } catch (error) {
       console.error('Error loading user data:', error);
       return {
-        name: "Amin",
+        name: profile.firstName || "Bruker",
         totalBookings: 0,
         monthlyBookingLimit: 5,
         nextBooking: null
       };
     }
-  }, []);
+  }, [profile.firstName]);
 
   // Mock weather data
   useEffect(() => {
@@ -161,42 +199,197 @@ const UserDashboard = (): JSX.Element => {
     }
   ];
 
-  // Get recent bookings from localStorage
-  const userBookings = useMemo(() => {
+  // Get all bookings from localStorage and group recurring bookings (like Bookings page)
+  const { groupedBookings, singleBookings } = useMemo(() => {
     try {
-      const pending: any[] = JSON.parse(localStorage.getItem('pendingBookings') || '[]');
-      const processed: any[] = JSON.parse(localStorage.getItem('processedBookings') || '[]');
+      const pending: readonly unknown[] = JSON.parse(localStorage.getItem('pendingBookings') || '[]');
+      const processed: readonly unknown[] = JSON.parse(localStorage.getItem('processedBookings') || '[]');
       const all = [...pending, ...processed];
       
-      // Get recent bookings (last 3)
-      const recentBookings = all
-        .sort((a: any, b: any) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime())
-        .slice(0, 3);
+      // Group recurring bookings by parentBookingId (like Bookings page)
+      const groups = new Map<string, IUserBooking[]>();
+      const singles: IUserBooking[] = [];
       
-      return recentBookings.map((booking: any) => ({
-        id: booking.id,
-        facility: booking.facilityName || 'Ukjent lokale',
-        date: booking.startDate || new Date().toISOString().split('T')[0],
-        time: booking.startTime || '14:00',
-        duration: booking.duration || '1 time',
-        status: booking.status === 'approved' ? ('confirmed' as const) : 
-                booking.status === 'rejected' ? ('cancelled' as const) : ('pending' as const),
-        location: booking.facilityName || 'Ukjent lokale',
-        price: booking.price || '0 kr',
-        purpose: booking.purpose || 'Ikke spesifisert',
-        participants: ["Amin"], // Default participant
-        qrCode: `QR${booking.id.slice(-6)}`,
-        cancellationPolicy: "Avbestilling mulig 24 timer før",
-        contactInfo: {
-          phone: "+47 123 45 678",
-          email: "admin@drammen.no"
+      all.forEach((booking: unknown) => {
+        if (typeof booking === 'object' && booking !== null) {
+          const b = booking as {
+            id: string;
+            isRecurring?: boolean;
+            parentBookingId?: string;
+            facility?: string;
+            facilityName?: string;
+            startDate?: string;
+            date?: string;
+            startTime?: string;
+            time?: string;
+            duration?: string;
+            status: string;
+            location?: string;
+            price?: string;
+            purpose?: string;
+            bookerName?: string;
+            requestedAt?: string;
+            processedAt?: string;
+          };
+          
+          // Map status like in Bookings page
+          const mappedStatus = b.status === 'approved' ? 'confirmed' : 
+                              b.status === 'rejected' ? 'rejected' : 
+                              b.status === 'cancelled' ? 'cancelled' : 
+                              b.status || 'pending';
+          
+          const bookingWithMappedStatus: IUserBooking = {
+            id: b.id,
+            facility: b.facility || b.facilityName || 'Ukjent lokale',
+            date: b.startDate || b.date || new Date().toISOString().split('T')[0],
+            time: b.startTime || b.time || '14:00',
+            duration: b.duration || '1 time',
+            status: mappedStatus as "confirmed" | "pending" | "cancelled" | "rejected",
+            location: b.location || 'Drammen',
+            price: b.price || '0 kr',
+            purpose: b.purpose || 'Booking',
+            participants: [profile.firstName || "Bruker"],
+            qrCode: `QR${b.id.slice(-6)}`,
+            cancellationPolicy: "Avbestilling mulig 24 timer før",
+            contactInfo: {
+              phone: "+47 123 45 678",
+              email: "admin@drammen.no"
+            }
+          };
+          
+          const isRecurring = b.isRecurring || b.parentBookingId;
+          const parentBookingId = b.parentBookingId || b.id;
+          
+          if (isRecurring) {
+            if (!groups.has(parentBookingId)) {
+              groups.set(parentBookingId, []);
+            }
+            groups.get(parentBookingId)!.push(bookingWithMappedStatus);
+          } else {
+            singles.push(bookingWithMappedStatus);
+          }
         }
-      }));
+      });
+      
+      return { groupedBookings: groups, singleBookings: singles };
+    } catch (error) {
+      console.error('Error loading bookings:', error);
+      return { groupedBookings: new Map<string, IUserBooking[]>(), singleBookings: [] };
+    }
+  }, [profile.firstName]);
+  
+  // Get recent bookings for display (last 3)
+  const recentBookings = useMemo(() => {
+    try {
+      const pending: readonly unknown[] = JSON.parse(localStorage.getItem('pendingBookings') || '[]');
+      const processed: readonly unknown[] = JSON.parse(localStorage.getItem('processedBookings') || '[]');
+      const all = [...pending, ...processed];
+      
+      // Map status for recent bookings like in Bookings page
+      const allWithMappedStatus = all.map((booking: unknown) => {
+        if (typeof booking === 'object' && booking !== null) {
+          const b = booking as {
+            id: string;
+            facility?: string;
+            facilityName?: string;
+            startDate?: string;
+            date?: string;
+            startTime?: string;
+            time?: string;
+            duration?: string;
+            status: string;
+            location?: string;
+            price?: string;
+            purpose?: string;
+          };
+          
+          const mappedStatus = b.status === 'approved' ? 'confirmed' : 
+                              b.status === 'rejected' ? 'rejected' : 
+                              b.status === 'cancelled' ? 'cancelled' : 
+                              b.status || 'pending';
+          
+          return {
+            id: b.id,
+            facility: b.facility || b.facilityName || 'Ukjent lokale',
+            date: b.startDate || b.date || new Date().toISOString().split('T')[0],
+            time: b.startTime || b.time || '14:00',
+            duration: b.duration || '1 time',
+            status: mappedStatus as "confirmed" | "pending" | "cancelled" | "rejected",
+            location: b.location || 'Drammen',
+            price: b.price || '0 kr',
+            purpose: b.purpose || 'Booking'
+          };
+        }
+        return null;
+      }).filter((booking): booking is { id: string; facility: string; date: string; time: string; duration: string; status: "confirmed" | "pending" | "cancelled" | "rejected"; location: string; price: string; purpose: string; } => booking !== null);
+      
+      // Get recent bookings (last 3)
+      return allWithMappedStatus
+        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+        .slice(0, 3);
     } catch (error) {
       console.error('Error loading recent bookings:', error);
       return [];
     }
   }, []);
+  
+  // Flatten grouped and single bookings for display (only recent ones)
+  const userBookings = useMemo(() => {
+    const result: IUserBooking[] = [];
+    
+    // Create a set of recent booking IDs for quick lookup
+    const recentBookingIds = new Set(recentBookings.map(booking => booking.id));
+    
+    // Add single bookings that are recent
+    singleBookings.forEach(booking => {
+      if (recentBookingIds.has(booking.id)) {
+        result.push(booking);
+      }
+    });
+    
+    // Add one representative for each recurring booking group that has recent occurrences
+    groupedBookings.forEach((bookings) => {
+      // Check if any booking in this group is recent
+      const hasRecentBooking = bookings.some(booking => recentBookingIds.has(booking.id));
+      
+      if (hasRecentBooking && bookings.length > 0) {
+        const firstBooking = bookings[0];
+        // Calculate period for recurring bookings
+        const dates = bookings
+          .map(b => b.date)
+          .sort();
+        const period = dates.length > 0 
+          ? `${new Date(dates[0]).toLocaleDateString('nb-NO')} – ${new Date(dates[dates.length-1]).toLocaleDateString('nb-NO')}`
+          : 'Ikke tilgjengelig';
+              
+        // Calculate total price for all occurrences in the recurring booking
+        const totalPrice = bookings.reduce((sum, booking) => {
+          // Extract numeric value from price string (e.g., "4493,75 kr" -> 4493.75)
+          const priceString = booking.price || '0';
+          const numericPart = priceString.replace(/[^\d,]/g, '').replace(',', '.');
+          const priceValue = parseFloat(numericPart) || 0;
+          return sum + priceValue;
+        }, 0);
+        
+        // Format the total price
+        const formattedTotalPrice = `${totalPrice.toLocaleString('nb-NO', { 
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        })} kr`;
+
+        result.push({
+          ...firstBooking,
+          isRecurringGroup: true,
+          recurringCount: bookings.length,
+          groupBookings: bookings,
+          period: period,
+          price: formattedTotalPrice // Use the total price for the group
+        });
+      }
+    });
+    
+    return result;
+  }, [groupedBookings, singleBookings, recentBookings]);
 
   /**
    * Get recommended facilities from store (first 3 published facilities)
@@ -271,7 +464,7 @@ const UserDashboard = (): JSX.Element => {
     }
   ];
 
-  const filteredBookings = userBookings.filter(booking => 
+  const filteredBookings: readonly IUserBooking[] = userBookings.filter(booking => 
     bookingFilter === "all" || booking.status === bookingFilter
   );
 
@@ -505,19 +698,15 @@ const UserDashboard = (): JSX.Element => {
 
       {/* My Bookings Section */}
       <Card className="shadow-sm">
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center gap-2">
-              <Calendar className="h-5 w-5" />
-              Mine bookinger
-            </CardTitle>
-            <div className="flex items-center space-x-2">
-              <BookingFilters 
-                bookingFilter={bookingFilter} 
-                onFilterChange={setBookingFilter} 
-              />
-            </div>
-          </div>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="flex items-center gap-2 text-2xl font-semibold leading-none tracking-tight">
+            <Calendar className="h-5 w-5" />
+            Mine bookinger
+          </CardTitle>
+          <BookingFilters 
+            bookingFilter={bookingFilter} 
+            onFilterChange={setBookingFilter} 
+          />
         </CardHeader>
         <CardContent>
           <BookingList

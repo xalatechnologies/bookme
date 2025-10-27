@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
 // Types
-import { ISelectedSlotsDisplayProps } from "./types";
+import { ISelectedSlotsDisplayProps, ISelectedTimeSlot } from "./types";
 
 /**
  * Selected slots display component
@@ -98,7 +98,7 @@ export const SelectedSlotsDisplay: React.FC<ISelectedSlotsDisplayProps> = ({
    * @param slots - Array of selected time slots
    * @returns Array of grouped time packages
    */
-  const groupTimeSlotsIntoPackages = (slots: ISelectedTimeSlot[]) => {
+  const groupTimeSlotsIntoPackages = (slots: readonly ISelectedTimeSlot[]) => {
     // Group by date first
     const dateGroups = slots.reduce((groups, slot) => {
       const dateKey = format(slot.date instanceof Date ? slot.date : new Date(slot.date), 'yyyy-MM-dd');
@@ -112,7 +112,7 @@ export const SelectedSlotsDisplay: React.FC<ISelectedSlotsDisplayProps> = ({
     // Process each date group
     return Object.entries(dateGroups).map(([dateKey, dateSlots]) => {
       // Sort by start time
-      const sortedSlots = dateSlots.sort((a, b) => {
+      const sortedSlots = [...dateSlots].sort((a, b) => {
         const timeA = a.timeSlot.split('-')[0];
         const timeB = b.timeSlot.split('-')[0];
         return timeA.localeCompare(timeB);
@@ -175,7 +175,7 @@ export const SelectedSlotsDisplay: React.FC<ISelectedSlotsDisplayProps> = ({
     );
   }
 
-  const timePackages = groupTimeSlotsIntoPackages(selectedSlots);
+  const timePackages = groupTimeSlotsIntoPackages([...selectedSlots]);
 
   return (
     <div className="space-y-3">
