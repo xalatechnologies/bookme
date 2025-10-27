@@ -1,10 +1,15 @@
 # BookMe Portal
 
-En moderne plattform for fasilitetsreservasjon og booking utviklet av Xala Technologies. Bygget med React, TypeScript og Tailwind CSS, og følger strenge kodestandarder for enterprise-utvikling.
+En moderne plattform for fasilitetsreservasjon og booking utviklet av Xala Technologies. Bygget med React, TypeScript, Tailwind CSS, og **Supabase** som backend, og følger strenge kodestandarder for enterprise-utvikling.
 
 ## Oversikt
 
-BookMe Portal er en omfattende plattform for fasilitetsadministrasjon og booking som gjør det mulig for organisasjoner å effektivt administrere sine lokaler og la brukere gjøre reservasjoner. Applikasjonen har et moderne, responsivt design med flerspråkstøtte (norsk primær, engelsk sekundær) og tilbyr både administrative og brukerrettede funksjoner.
+BookMe Portal er en omfattende **Supabase-powered React application** for fasilitetsadministrasjon og booking som gjør det mulig for organisasjoner å effektivt administrere sine lokaler og la brukere gjøre reservasjoner. Applikasjonen har et moderne, responsivt design med flerspråkstøtte (norsk primær, engelsk sekundær) og tilbyr både administrative og brukerrettede funksjoner.
+
+### Arkitektur
+- **Frontend**: React + TypeScript + Vite + TailwindCSS
+- **Backend**: Supabase (PostgreSQL, Auth, Storage, Realtime)
+- **No separate backend server** - All backend logic runs in Supabase
 
 ## Hovedfunksjoner
 
@@ -49,6 +54,39 @@ BookMe Portal er en omfattende plattform for fasilitetsadministrasjon og booking
 - **Internasjonalisering**: Tilpasset i18n-system med fallback-støtte
 - **Persistent datalagring**: localStorage-integrasjon for brukerinnstillinger og applikasjonsdata
 
+## Quick Start
+
+### Prerequisites
+- Node.js (v18+)
+- Docker Desktop (for local Supabase)
+- npm
+
+### Installation
+
+```bash
+# 1. Install dependencies
+npm install
+
+# 2. Start Supabase (Docker must be running)
+npx supabase start
+
+# 3. Setup test users
+node setup-test-users.js
+
+# 4. Start development server
+npm run dev
+```
+
+**Access the app**: http://localhost:3006
+
+**Test login**:
+- Email: `test.user@drammen.kommune.no`
+- Password: `Test123!`
+
+For complete setup instructions, see [DEVELOPMENT_SETUP.md](./DEVELOPMENT_SETUP.md)
+
+---
+
 ## Teknologistakk
 
 ### Frontend
@@ -60,11 +98,19 @@ BookMe Portal er en omfattende plattform for fasilitetsadministrasjon og booking
 - **Kart**: Mapbox GL JS for interaktive kart
 - **Byggeverktøy**: Vite med optimaliserte produksjonsbygg
 
+### Backend
+- **Database**: PostgreSQL via Supabase
+- **Authentication**: Supabase Auth (email/password, magic links)
+- **Storage**: Supabase Storage for files and images
+- **Realtime**: Supabase Realtime for live updates
+- **API**: PostgREST automatically generated from database schema
+
 ### Utviklingsverktøy
 - **Linting**: ESLint med TypeScript-spesifikke regler
 - **Kodeformatering**: Prettier med konsistente formateringsregler
 - **Typekontroll**: TypeScript strict mode med omfattende dekning
 - **Pakkehåndtering**: npm med lock-fil for avhengighetskonsistens
+- **Database CLI**: Supabase CLI for migrations and local development
 
 ## Prosjektstruktur
 
