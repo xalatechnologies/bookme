@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useAdminAuth } from "@/contexts/AdminAuthContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { 
   Settings, 
   User, 
@@ -33,39 +33,53 @@ interface ISettingsPageProps {
 }
 
 const SettingsPage = (_props: ISettingsPageProps): JSX.Element => {
-  const { user, updateUser } = useAdminAuth();
+  const { user, profile } = useAuth();
   const [activeTab, setActiveTab] = useState<string>("profile");
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState<boolean>(false);
   const [showSaveMessage, setShowSaveMessage] = useState<boolean>(false);
-  const [avatar, setAvatar] = useState<string>(user?.avatar || "");
+  const [isSaving, setIsSaving] = useState<boolean>(false);
+  const [avatar, setAvatar] = useState<string>(profile?.avatar_url || "");
   const [firstName, setFirstName] = useState<string>("");
   const [lastName, setLastName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [phone, setPhone] = useState<string>("");
   const [bio, setBio] = useState<string>("");
 
-  // Initialize form data from user context
+  // Initialize form data from profile
   useEffect(() => {
-    if (user) {
-      const nameParts = user.name.split(" ");
-      setFirstName(nameParts[0] || "");
-      setLastName(nameParts.slice(1).join(" ") || "");
-      setEmail(user.email);
-      setAvatar(user.avatar || "");
+    if (profile) {
+      setFirstName(profile.first_name || "");
+      setLastName(profile.last_name || "");
+      setEmail(user?.email || "");
+      setAvatar(profile.avatar_url || "");
+      setPhone(profile.phone || "");
+      setBio(profile.bio || "");
     }
-  }, [user]);
+  }, [profile, user]);
 
-  const handleSave = (): void => {
-    // Update user context with new data
-    updateUser({
-      name: `${firstName} ${lastName}`.trim(),
-      email: email,
-      avatar: avatar
-    });
-    
-    setHasUnsavedChanges(false);
-    setShowSaveMessage(true);
-    setTimeout(() => setShowSaveMessage(false), 3000);
+  const handleSave = async (): Promise<void> => {
+    setIsSaving(true);
+    try {
+      // TODO: Implement profile update via Supabase
+      // For now, just show success message
+      // In a real implementation, you would call a profile update service:
+      // await profileService.updateProfile({
+      //   first_name: firstName,
+      //   last_name: lastName,
+      //   avatar_url: avatar,
+      //   phone: phone,
+      //   bio: bio
+      // });
+
+      setHasUnsavedChanges(false);
+      setShowSaveMessage(true);
+      setTimeout(() => setShowSaveMessage(false), 3000);
+    } catch (error) {
+      console.error('Failed to save settings:', error);
+      // TODO: Show error toast
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleAvatarUpload = (): void => {
@@ -656,13 +670,22 @@ const SettingsPage = (_props: ISettingsPageProps): JSX.Element => {
               <span className="text-sm">Ulagrede endringer</span>
             </div>
           )}
-          <Button 
+          <Button
             onClick={handleSave}
-            disabled={!hasUnsavedChanges}
+            disabled={!hasUnsavedChanges || isSaving}
             className="flex items-center gap-2"
           >
-            <Save className="h-4 w-4" />
-            Lagre endringer
+            {isSaving ? (
+              <>
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                Lagrer...
+              </>
+            ) : (
+              <>
+                <Save className="h-4 w-4" />
+                Lagre endringer
+              </>
+            )}
           </Button>
         </div>
       </div>

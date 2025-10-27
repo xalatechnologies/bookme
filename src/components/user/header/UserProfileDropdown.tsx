@@ -14,6 +14,7 @@ interface IUserProfileDropdownProps {
 const UserProfileDropdown = (_props: IUserProfileDropdownProps): JSX.Element => {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [isLoggingOut, setIsLoggingOut] = useState<boolean>(false);
   const { profile } = useUserProfile();
   const { signOut } = useAuth();
 
@@ -23,15 +24,26 @@ const UserProfileDropdown = (_props: IUserProfileDropdownProps): JSX.Element => 
     avatar: profile.avatar
   };
 
-  const handleLogout = async (): Promise<void> => {
+  const handleLogout = async (e: React.MouseEvent): Promise<void> => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (isLoggingOut) return; // Prevent double-click
+
+    console.log('🔴 Logout button clicked');
+    setIsLoggingOut(true);
+    setIsOpen(false); // Close dropdown immediately
+
     try {
+      console.log('🔄 Calling signOut...');
       await signOut();
+      console.log('✅ SignOut successful');
       toast.success('Du er nå logget ut!');
       navigate("/login-selection");
-      setIsOpen(false);
     } catch (error) {
-      console.error('Logout failed:', error);
+      console.error('❌ Logout failed:', error);
       toast.error('Kunne ikke logge ut. Prøv igjen.');
+      setIsLoggingOut(false);
     }
   };
 
@@ -152,10 +164,20 @@ const UserProfileDropdown = (_props: IUserProfileDropdownProps): JSX.Element => 
               
               <button
                 onClick={handleLogout}
-                className="flex items-center gap-3 w-full px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                disabled={isLoggingOut}
+                className="flex items-center gap-3 w-full px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <LogOut className="w-4 h-4" />
-                Logg ut
+                {isLoggingOut ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-red-600 border-t-transparent rounded-full animate-spin" />
+                    Logger ut...
+                  </>
+                ) : (
+                  <>
+                    <LogOut className="w-4 h-4" />
+                    Logg ut
+                  </>
+                )}
               </button>
             </div>
           </div>
