@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { RequireRole } from "@/components/features/auth/components/RequireRole";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -147,19 +148,20 @@ const getRoleIcon = (role: string): React.ComponentType<{ className?: string }> 
   return roleIcons[role as keyof typeof roleIcons] || EyeIcon;
 };
 
-const formatTimeAgo = (dateString: string): string => {
+const formatTimeAgo = (dateString: string, t: (key: string, options?: { count?: number }) => string): string => {
   const date = new Date(dateString);
   const now = new Date();
   const diffInDays = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
-  
-  if (diffInDays === 0) return "I dag";
-  if (diffInDays === 1) return "1 dag siden";
-  if (diffInDays < 7) return `${diffInDays} dager siden`;
-  if (diffInDays < 30) return `${Math.floor(diffInDays / 7)} uker siden`;
-  return `${Math.floor(diffInDays / 30)} måneder siden`;
+
+  if (diffInDays === 0) return t("admin:pages.users_roles.time.today");
+  if (diffInDays === 1) return t("admin:pages.users_roles.time.days_ago_one");
+  if (diffInDays < 7) return t("admin:pages.users_roles.time.days_ago_other", { count: diffInDays });
+  if (diffInDays < 30) return t("admin:pages.users_roles.time.weeks_ago_other", { count: Math.floor(diffInDays / 7) });
+  return t("admin:pages.users_roles.time.months_ago_other", { count: Math.floor(diffInDays / 30) });
 };
 
 const UserActionDropdown = ({ user, onEdit, onDeactivate, onDelete, onResendInvitation, onResetPassword }: IUserActionDropdownProps): JSX.Element => {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const dropdownRef = React.useRef<HTMLDivElement>(null);
 
@@ -189,7 +191,7 @@ const UserActionDropdown = ({ user, onEdit, onDeactivate, onDelete, onResendInvi
       >
         <MoreHorizontal className="h-4 w-4" />
       </Button>
-      
+
       {isOpen && (
         <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 z-10">
           <div className="py-1">
@@ -201,7 +203,7 @@ const UserActionDropdown = ({ user, onEdit, onDeactivate, onDelete, onResendInvi
               className="flex items-center w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
             >
               <Edit className="h-4 w-4 mr-2" />
-              Endre rolle
+              {t("admin:pages.users_roles.actions.edit_role")}
             </button>
             <button
               onClick={() => {
@@ -211,7 +213,7 @@ const UserActionDropdown = ({ user, onEdit, onDeactivate, onDelete, onResendInvi
               className="flex items-center w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
             >
               <Key className="h-4 w-4 mr-2" />
-              Tilbakestill passord
+              {t("admin:pages.users_roles.actions.reset_password")}
             </button>
             {user.status === "invitation_sent" && (
               <button
@@ -222,7 +224,7 @@ const UserActionDropdown = ({ user, onEdit, onDeactivate, onDelete, onResendInvi
                 className="flex items-center w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
               >
                 <Mail className="h-4 w-4 mr-2" />
-                Send invitasjon på nytt
+                {t("admin:pages.users_roles.actions.resend_invitation")}
               </button>
             )}
             <button
@@ -233,7 +235,7 @@ const UserActionDropdown = ({ user, onEdit, onDeactivate, onDelete, onResendInvi
               className="flex items-center w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
             >
               <Ban className="h-4 w-4 mr-2" />
-              Fjern tilgang
+              {t("admin:pages.users_roles.actions.remove_access")}
             </button>
             {user.status === "invitation_sent" && (
               <button
@@ -244,7 +246,7 @@ const UserActionDropdown = ({ user, onEdit, onDeactivate, onDelete, onResendInvi
                 className="flex items-center w-full px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
               >
                 <Trash2 className="h-4 w-4 mr-2" />
-                Slett bruker
+                {t("admin:pages.users_roles.actions.delete_user")}
               </button>
             )}
           </div>
@@ -255,6 +257,7 @@ const UserActionDropdown = ({ user, onEdit, onDeactivate, onDelete, onResendInvi
 };
 
 const UserModal = ({ user, isOpen, onClose, onSave, isEditing }: IUserModalProps): JSX.Element => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     name: user?.name || "",
     email: user?.email || "",
@@ -293,7 +296,7 @@ const UserModal = ({ user, isOpen, onClose, onSave, isEditing }: IUserModalProps
         <div className="p-6">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-              {isEditing ? "Rediger bruker" : "Ny bruker"}
+              {isEditing ? t("admin:pages.users_roles.modals.user.title_edit") : t("admin:pages.users_roles.modals.user.title_new")}
             </h2>
             <Button variant="ghost" size="sm" onClick={onClose}>
               <X className="h-4 w-4" />
@@ -303,58 +306,58 @@ const UserModal = ({ user, isOpen, onClose, onSave, isEditing }: IUserModalProps
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Navn
+                {t("admin:pages.users_roles.modals.user.name_label")}
               </label>
               <Input
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder="Fullt navn"
+                placeholder={t("admin:pages.users_roles.modals.user.name_placeholder")}
               />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                E-post
+                {t("admin:pages.users_roles.modals.user.email_label")}
               </label>
               <Input
                 type="email"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                placeholder="bruker@example.com"
+                placeholder={t("admin:pages.users_roles.modals.user.email_placeholder")}
                 disabled={isEditing}
               />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Rolle
+                {t("admin:pages.users_roles.modals.user.role_label")}
               </label>
               <select
                 value={formData.role}
                 onChange={(e) => setFormData({ ...formData, role: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
               >
-                <option value="">Velg rolle</option>
-                <option value="admin">Admin</option>
-                <option value="saksbehandler">Saksbehandler</option>
-                <option value="redaktor">Redaktør</option>
-                <option value="lesetilgang">Lesetilgang</option>
+                <option value="">{t("admin:pages.users_roles.modals.user.role_placeholder")}</option>
+                <option value="admin">{t("admin:pages.users_roles.filters.role_admin")}</option>
+                <option value="saksbehandler">{t("admin:pages.users_roles.filters.role_saksbehandler")}</option>
+                <option value="redaktor">{t("admin:pages.users_roles.filters.role_redaktor")}</option>
+                <option value="lesetilgang">{t("admin:pages.users_roles.filters.role_lesetilgang")}</option>
               </select>
             </div>
 
             {isEditing && (
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Status
+                  {t("admin:pages.users_roles.modals.user.status_label")}
                 </label>
                 <select
                   value={formData.status}
                   onChange={(e) => setFormData({ ...formData, status: e.target.value as IUser["status"] })}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
                 >
-                  <option value="active">Aktiv</option>
-                  <option value="inactive">Deaktivert</option>
-                  <option value="invitation_sent">Invitasjon sendt</option>
+                  <option value="active">{t("admin:pages.users_roles.filters.status_active")}</option>
+                  <option value="inactive">{t("admin:pages.users_roles.filters.status_inactive")}</option>
+                  <option value="invitation_sent">{t("admin:pages.users_roles.filters.status_invitation_sent")}</option>
                 </select>
               </div>
             )}
@@ -362,11 +365,11 @@ const UserModal = ({ user, isOpen, onClose, onSave, isEditing }: IUserModalProps
             {isEditing && (
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Tildelte tillatelser
+                  {t("admin:pages.users_roles.modals.user.permissions_label")}
                 </label>
                 <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-3">
                   <p className="text-sm text-gray-600 dark:text-gray-400">
-                    {user?.permissions.join(", ") || "Ingen spesielle tillatelser"}
+                    {user?.permissions.join(", ") || t("admin:pages.users_roles.modals.user.no_permissions")}
                   </p>
                 </div>
               </div>
@@ -375,10 +378,10 @@ const UserModal = ({ user, isOpen, onClose, onSave, isEditing }: IUserModalProps
 
           <div className="flex justify-end space-x-3 mt-6">
             <Button variant="outline" onClick={onClose}>
-              Avbryt
+              {t("admin:pages.users_roles.modals.user.cancel")}
             </Button>
             <Button onClick={handleSave}>
-              {isEditing ? "Lagre endringer" : "Send invitasjon"}
+              {isEditing ? t("admin:pages.users_roles.modals.user.save") : t("admin:pages.users_roles.modals.user.send_invitation")}
             </Button>
           </div>
         </div>
@@ -388,6 +391,7 @@ const UserModal = ({ user, isOpen, onClose, onSave, isEditing }: IUserModalProps
 };
 
 const RoleModal = ({ role, isOpen, onClose, onSave, isEditing }: IRoleModalProps): JSX.Element => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     name: role?.name || "",
     description: role?.description || "",
@@ -412,27 +416,27 @@ const RoleModal = ({ role, isOpen, onClose, onSave, isEditing }: IRoleModalProps
 
   const permissionGroups = [
     {
-      group: "Lokaler",
+      group: t("admin:pages.users_roles.permissions.facilities"),
       permissions: [
-        { id: "facilities.create", label: "Opprette" },
-        { id: "facilities.edit", label: "Redigere" },
-        { id: "facilities.publish", label: "Publisere" },
-        { id: "facilities.delete", label: "Slette" }
+        { id: "facilities.create", label: t("admin:pages.users_roles.permissions.facilities_create") },
+        { id: "facilities.edit", label: t("admin:pages.users_roles.permissions.facilities_edit") },
+        { id: "facilities.publish", label: t("admin:pages.users_roles.permissions.facilities_publish") },
+        { id: "facilities.delete", label: t("admin:pages.users_roles.permissions.facilities_delete") }
       ]
     },
     {
-      group: "Bookinger",
+      group: t("admin:pages.users_roles.permissions.bookings"),
       permissions: [
-        { id: "bookings.view", label: "Se" },
-        { id: "bookings.approve", label: "Godkjenne" },
-        { id: "bookings.reject", label: "Avvise" }
+        { id: "bookings.view", label: t("admin:pages.users_roles.permissions.bookings_view") },
+        { id: "bookings.approve", label: t("admin:pages.users_roles.permissions.bookings_approve") },
+        { id: "bookings.reject", label: t("admin:pages.users_roles.permissions.bookings_reject") }
       ]
     },
     {
-      group: "Rapporter",
+      group: t("admin:pages.users_roles.permissions.reports"),
       permissions: [
-        { id: "reports.view", label: "Se" },
-        { id: "reports.export", label: "Eksportere" }
+        { id: "reports.view", label: t("admin:pages.users_roles.permissions.reports_view") },
+        { id: "reports.export", label: t("admin:pages.users_roles.permissions.reports_export") }
       ]
     }
   ];
@@ -441,7 +445,7 @@ const RoleModal = ({ role, isOpen, onClose, onSave, isEditing }: IRoleModalProps
     const newPermissions = checked
       ? [...formData.permissions, permissionId]
       : formData.permissions.filter(p => p !== permissionId);
-    
+
     setFormData({ ...formData, permissions: newPermissions });
   };
 
@@ -458,7 +462,7 @@ const RoleModal = ({ role, isOpen, onClose, onSave, isEditing }: IRoleModalProps
         <div className="p-6">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-              {isEditing ? "Rediger rolle" : "Ny rolle"}
+              {isEditing ? t("admin:pages.users_roles.modals.role.title_edit") : t("admin:pages.users_roles.modals.role.title_new")}
             </h2>
             <Button variant="ghost" size="sm" onClick={onClose}>
               <X className="h-4 w-4" />
@@ -468,23 +472,23 @@ const RoleModal = ({ role, isOpen, onClose, onSave, isEditing }: IRoleModalProps
           <div className="space-y-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Rollenavn
+                {t("admin:pages.users_roles.modals.role.name_label")}
               </label>
               <Input
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder="F.eks. Saksbehandler"
+                placeholder={t("admin:pages.users_roles.modals.role.name_placeholder")}
               />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Beskrivelse
+                {t("admin:pages.users_roles.modals.role.description_label")}
               </label>
               <textarea
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                placeholder="Beskriv hva denne rollen kan gjøre..."
+                placeholder={t("admin:pages.users_roles.modals.role.description_placeholder")}
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
                 rows={3}
               />
@@ -492,7 +496,7 @@ const RoleModal = ({ role, isOpen, onClose, onSave, isEditing }: IRoleModalProps
 
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-                Tilganger
+                {t("admin:pages.users_roles.modals.role.permissions_label")}
               </label>
               <div className="space-y-4">
                 {permissionGroups.map(group => (
@@ -519,10 +523,10 @@ const RoleModal = ({ role, isOpen, onClose, onSave, isEditing }: IRoleModalProps
 
           <div className="flex justify-end space-x-3 mt-6">
             <Button variant="outline" onClick={onClose}>
-              Avbryt
+              {t("admin:pages.users_roles.modals.role.cancel")}
             </Button>
             <Button onClick={handleSave}>
-              {isEditing ? "Lagre endringer" : "Opprett rolle"}
+              {isEditing ? t("admin:pages.users_roles.modals.role.save") : t("admin:pages.users_roles.modals.role.create")}
             </Button>
           </div>
         </div>
@@ -532,12 +536,14 @@ const RoleModal = ({ role, isOpen, onClose, onSave, isEditing }: IRoleModalProps
 };
 
 const UserRow = ({ user, onEdit, onDeactivate, onDelete, onResendInvitation, isSelected, onSelect }: IUserRowProps): JSX.Element => {
+  const { t } = useTranslation();
+
   const getStatusBadge = (status: IUser["status"]): JSX.Element => {
     const statusConfig = {
-      active: { label: "Aktiv", className: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300", icon: null },
-      inactive: { label: "Deaktivert", className: "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300", icon: null },
-      invitation_sent: { 
-        label: user.invitationSentAt ? `Invitasjon sendt – ${formatTimeAgo(user.invitationSentAt)}` : "Invitasjon sendt", 
+      active: { label: t("admin:pages.users_roles.status_badges.active"), className: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300", icon: null },
+      inactive: { label: t("admin:pages.users_roles.status_badges.inactive"), className: "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300", icon: null },
+      invitation_sent: {
+        label: user.invitationSentAt ? t("admin:pages.users_roles.status_badges.invitation_sent_time", { time: formatTimeAgo(user.invitationSentAt, t) }) : t("admin:pages.users_roles.status_badges.invitation_sent"),
         className: "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300",
         icon: <Clock className="h-3 w-3 mr-1" />
       }
@@ -552,7 +558,7 @@ const UserRow = ({ user, onEdit, onDeactivate, onDelete, onResendInvitation, isS
   };
 
   const formatDate = (dateString?: string): string => {
-    if (!dateString) return "Aldri";
+    if (!dateString) return t("admin:pages.users_roles.table.never");
     return new Date(dateString).toLocaleDateString('nb-NO');
   };
 
@@ -609,6 +615,8 @@ const UserRow = ({ user, onEdit, onDeactivate, onDelete, onResendInvitation, isS
 };
 
 const RoleRow = ({ role, onEdit, onDeactivate, onViewUsers }: IRoleRowProps): JSX.Element => {
+  const { t } = useTranslation();
+
   return (
     <tr className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50">
       <td className="px-6 py-4">
@@ -618,11 +626,11 @@ const RoleRow = ({ role, onEdit, onDeactivate, onViewUsers }: IRoleRowProps): JS
         </div>
       </td>
       <td className="px-6 py-4">
-        <Badge variant="outline">{role.userCount} brukere</Badge>
+        <Badge variant="outline">{t("admin:pages.users_roles.table.users_count", { count: role.userCount })}</Badge>
       </td>
       <td className="px-6 py-4">
         <Badge className={role.isActive ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300" : "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300"}>
-          {role.isActive ? "Aktiv" : "Deaktivert"}
+          {role.isActive ? t("admin:pages.users_roles.status_badges.active") : t("admin:pages.users_roles.status_badges.inactive")}
         </Badge>
       </td>
       <td className="px-6 py-4">
@@ -633,7 +641,7 @@ const RoleRow = ({ role, onEdit, onDeactivate, onViewUsers }: IRoleRowProps): JS
             onClick={() => onEdit(role)}
           >
             <Edit className="h-4 w-4 mr-1" />
-            Rediger
+            {t("admin:pages.users_roles.actions.edit")}
           </Button>
           <Button
             size="sm"
@@ -641,7 +649,7 @@ const RoleRow = ({ role, onEdit, onDeactivate, onViewUsers }: IRoleRowProps): JS
             onClick={() => onViewUsers(role.id)}
           >
             <Eye className="h-4 w-4 mr-1" />
-            Se brukere
+            {t("admin:pages.users_roles.actions.view_users")}
           </Button>
           <Button
             size="sm"
@@ -649,7 +657,7 @@ const RoleRow = ({ role, onEdit, onDeactivate, onViewUsers }: IRoleRowProps): JS
             onClick={() => onDeactivate(role.id)}
             className={role.isActive ? "text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20" : "text-green-600 hover:text-green-700 hover:bg-green-50 dark:hover:bg-green-900/20"}
           >
-            {role.isActive ? "Deaktiver" : "Aktiver"}
+            {role.isActive ? t("admin:pages.users_roles.actions.deactivate") : t("admin:pages.users_roles.actions.activate")}
           </Button>
         </div>
       </td>
@@ -658,6 +666,7 @@ const RoleRow = ({ role, onEdit, onDeactivate, onViewUsers }: IRoleRowProps): JS
 };
 
 const UsersRolesPage = (): JSX.Element => {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<"users" | "roles">("users");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [roleFilter, setRoleFilter] = useState<string>("all");
@@ -814,14 +823,14 @@ const UsersRolesPage = (): JSX.Element => {
     try {
       // Simulate saving to backend/localStorage
       const users = JSON.parse(localStorage.getItem('adminUsers') || '[]');
-      
+
       if (userModal.isEditing && userModal.user) {
         // Update existing user
-        const updatedUsers = users.map((u: IUser) => 
+        const updatedUsers = users.map((u: IUser) =>
           u.id === userModal.user!.id ? { ...u, ...userData } : u
         );
         localStorage.setItem('adminUsers', JSON.stringify(updatedUsers));
-        alert('Bruker oppdatert!');
+        alert(t('admin:pages.users_roles.confirmations.user_updated'));
       } else {
         // Create new user
         const newUser: IUser = {
@@ -837,11 +846,11 @@ const UsersRolesPage = (): JSX.Element => {
         };
         users.push(newUser);
         localStorage.setItem('adminUsers', JSON.stringify(users));
-        alert('Invitasjon sendt til bruker!');
+        alert(t('admin:pages.users_roles.modals.user.send_invitation'));
       }
     } catch (error) {
       console.error('Failed to save user:', error);
-      alert('Kunne ikke lagre bruker. Prøv igjen.');
+      alert(t('admin:pages.users_roles.confirmations.error_save'));
     }
   };
 
@@ -849,14 +858,14 @@ const UsersRolesPage = (): JSX.Element => {
     try {
       // Simulate saving to backend/localStorage
       const roles = JSON.parse(localStorage.getItem('adminRoles') || '[]');
-      
+
       if (roleModal.isEditing && roleModal.role) {
         // Update existing role
-        const updatedRoles = roles.map((r: IRole) => 
+        const updatedRoles = roles.map((r: IRole) =>
           r.id === roleModal.role!.id ? { ...r, ...roleData } : r
         );
         localStorage.setItem('adminRoles', JSON.stringify(updatedRoles));
-        alert('Rolle oppdatert!');
+        alert(t('admin:pages.users_roles.confirmations.role_updated'));
       } else {
         // Create new role
         const newRole: IRole = {
@@ -869,40 +878,40 @@ const UsersRolesPage = (): JSX.Element => {
         };
         roles.push(newRole);
         localStorage.setItem('adminRoles', JSON.stringify(roles));
-        alert('Rolle opprettet!');
+        alert(t('admin:pages.users_roles.confirmations.role_created'));
       }
     } catch (error) {
       console.error('Failed to save role:', error);
-      alert('Kunne ikke lagre rolle. Prøv igjen.');
+      alert(t('admin:pages.users_roles.confirmations.error_save'));
     }
   };
 
   const handleDeactivateUser = (userId: string): void => {
-    if (window.confirm('Er du sikker på at du vil deaktivere denne brukeren?')) {
+    if (window.confirm(t('admin:pages.users_roles.confirmations.deactivate_user'))) {
       try {
         const users = JSON.parse(localStorage.getItem('adminUsers') || '[]');
-        const updatedUsers = users.map((u: IUser) => 
+        const updatedUsers = users.map((u: IUser) =>
           u.id === userId ? { ...u, status: 'inactive' as const } : u
         );
         localStorage.setItem('adminUsers', JSON.stringify(updatedUsers));
-        alert('Bruker deaktivert!');
+        alert(t('admin:pages.users_roles.confirmations.user_deactivated'));
       } catch (error) {
         console.error('Failed to deactivate user:', error);
-        alert('Kunne ikke deaktivere bruker. Prøv igjen.');
+        alert(t('admin:pages.users_roles.confirmations.error_deactivate'));
       }
     }
   };
 
   const handleDeleteUser = (userId: string): void => {
-    if (window.confirm('Er du sikker på at du vil slette denne brukeren permanent?')) {
+    if (window.confirm(t('admin:pages.users_roles.confirmations.delete_user'))) {
       try {
         const users = JSON.parse(localStorage.getItem('adminUsers') || '[]');
         const updatedUsers = users.filter((u: IUser) => u.id !== userId);
         localStorage.setItem('adminUsers', JSON.stringify(updatedUsers));
-        alert('Bruker slettet!');
+        alert(t('admin:pages.users_roles.confirmations.user_deleted'));
       } catch (error) {
         console.error('Failed to delete user:', error);
-        alert('Kunne ikke slette bruker. Prøv igjen.');
+        alert(t('admin:pages.users_roles.confirmations.error_delete'));
       }
     }
   };
@@ -910,28 +919,28 @@ const UsersRolesPage = (): JSX.Element => {
   const handleResendInvitation = (userId: string): void => {
     try {
       const users = JSON.parse(localStorage.getItem('adminUsers') || '[]');
-      const updatedUsers = users.map((u: IUser) => 
+      const updatedUsers = users.map((u: IUser) =>
         u.id === userId ? { ...u, invitationSentAt: new Date().toISOString() } : u
       );
       localStorage.setItem('adminUsers', JSON.stringify(updatedUsers));
-      alert('Invitasjon sendt på nytt!');
+      alert(t('admin:pages.users_roles.confirmations.invitation_resent'));
     } catch (error) {
       console.error('Failed to resend invitation:', error);
-      alert('Kunne ikke sende invitasjon. Prøv igjen.');
+      alert(t('admin:pages.users_roles.confirmations.error_invitation'));
     }
   };
 
   const handleDeactivateRole = (roleId: string): void => {
     try {
       const roles = JSON.parse(localStorage.getItem('adminRoles') || '[]');
-      const updatedRoles = roles.map((r: IRole) => 
+      const updatedRoles = roles.map((r: IRole) =>
         r.id === roleId ? { ...r, isActive: !r.isActive } : r
       );
       localStorage.setItem('adminRoles', JSON.stringify(updatedRoles));
-      alert('Rolle status endret!');
+      alert(t('admin:pages.users_roles.confirmations.role_status_changed'));
     } catch (error) {
       console.error('Failed to toggle role status:', error);
-      alert('Kunne ikke endre rolle status. Prøv igjen.');
+      alert(t('admin:pages.users_roles.confirmations.error_role_status'));
     }
   };
 
@@ -939,7 +948,10 @@ const UsersRolesPage = (): JSX.Element => {
     const role = roles.find(r => r.id === roleId);
     if (role) {
       const usersWithRole = users.filter(u => u.role === role.name);
-      alert(`Brukere med rolle "${role.name}":\n${usersWithRole.map(u => `• ${u.name} (${u.email})`).join('\n')}`);
+      alert(t('admin:pages.users_roles.users_with_role', {
+        role: role.name,
+        users: usersWithRole.map(u => `• ${u.name} (${u.email})`).join('\n')
+      }));
     }
   };
 
@@ -955,36 +967,36 @@ const UsersRolesPage = (): JSX.Element => {
 
   const handleBulkAction = (action: string): void => {
     if (selectedUsers.size === 0) return;
-    
+
     try {
       const users = JSON.parse(localStorage.getItem('adminUsers') || '[]');
-      
+
       switch (action) {
         case 'change-role':
-          const newRole = prompt('Skriv inn ny rolle for valgte brukere:');
+          const newRole = prompt(t('admin:pages.users_roles.actions.enter_new_role'));
           if (newRole) {
-            const updatedUsers = users.map((u: IUser) => 
+            const updatedUsers = users.map((u: IUser) =>
               selectedUsers.has(u.id) ? { ...u, role: newRole } : u
             );
             localStorage.setItem('adminUsers', JSON.stringify(updatedUsers));
-            alert(`${selectedUsers.size} bruker(e) oppdatert med ny rolle!`);
+            alert(t('admin:pages.users_roles.bulk_actions.users_updated', { count: selectedUsers.size }));
             setSelectedUsers(new Set());
           }
           break;
         case 'resend-invitation':
-          const updatedUsers = users.map((u: IUser) => 
+          const updatedUsers = users.map((u: IUser) =>
             selectedUsers.has(u.id) ? { ...u, invitationSentAt: new Date().toISOString() } : u
           );
           localStorage.setItem('adminUsers', JSON.stringify(updatedUsers));
-          alert(`Invitasjoner sendt på nytt til ${selectedUsers.size} bruker(e)!`);
+          alert(t('admin:pages.users_roles.bulk_actions.invitations_sent', { count: selectedUsers.size }));
           setSelectedUsers(new Set());
           break;
         default:
-          alert('Handling ikke implementert');
+          alert(t('admin:pages.users_roles.bulk_actions.action_not_implemented'));
       }
     } catch (error) {
       console.error('Failed to perform bulk action:', error);
-      alert('Kunne ikke utføre massehandling. Prøv igjen.');
+      alert(t('admin:pages.users_roles.confirmations.error_bulk_action'));
     }
   };
 
@@ -994,10 +1006,10 @@ const UsersRolesPage = (): JSX.Element => {
         {/* Header */}
         <header className="space-y-1">
           <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">
-            Brukere og roller
+            {t("admin:pages.users_roles.title")}
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
-            Administrer brukere, roller og tilgangsnivåer i systemet.
+            {t("admin:pages.users_roles.subtitle")}
           </p>
         </header>
 
@@ -1012,7 +1024,7 @@ const UsersRolesPage = (): JSX.Element => {
             }`}
           >
             <Users className="h-4 w-4 mr-2 inline" />
-            Brukere
+            {t("admin:pages.users_roles.users_tab.label")}
           </button>
           <button
             onClick={() => setActiveTab("roles")}
@@ -1023,20 +1035,20 @@ const UsersRolesPage = (): JSX.Element => {
             }`}
           >
             <Shield className="h-4 w-4 mr-2 inline" />
-            Roller
+            {t("admin:pages.users_roles.roles_tab.label")}
           </button>
         </div>
-        
+
         {/* Tab descriptions */}
         <div className="mt-2">
           {activeTab === "users" && (
             <p className="text-sm text-gray-600 dark:text-gray-400">
-              Se, opprett og administrer brukerkontoer i BookMe.
+              {t("admin:pages.users_roles.users_tab.description")}
             </p>
           )}
           {activeTab === "roles" && (
             <p className="text-sm text-gray-600 dark:text-gray-400">
-              Definer rettigheter og tilgangsnivåer for ulike roller i systemet.
+              {t("admin:pages.users_roles.roles_tab.description")}
             </p>
           )}
         </div>
@@ -1047,14 +1059,14 @@ const UsersRolesPage = (): JSX.Element => {
             <CardHeader>
               <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
                 <div>
-                  <CardTitle>Brukere</CardTitle>
+                  <CardTitle>{t("admin:pages.users_roles.users_tab.title")}</CardTitle>
                   <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                    Administrer systembrukere og deres tilganger
+                    {t("admin:pages.users_roles.users_tab.subtitle")}
                   </p>
                 </div>
                 <Button onClick={handleNewUser}>
                   <UserPlus className="h-4 w-4 mr-2" />
-                  Ny bruker
+                  {t("admin:pages.users_roles.users_tab.new_user")}
                 </Button>
               </div>
 
@@ -1063,7 +1075,7 @@ const UsersRolesPage = (): JSX.Element => {
                 <div className="relative flex-1">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                   <Input
-                    placeholder="Søk etter navn, e-post eller rolle..."
+                    placeholder={t("admin:pages.users_roles.search.placeholder")}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="pl-10"
@@ -1074,21 +1086,21 @@ const UsersRolesPage = (): JSX.Element => {
                   onChange={(e) => setRoleFilter(e.target.value)}
                   className="px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
                 >
-                  <option value="all">Alle roller</option>
-                  <option value="admin">Admin</option>
-                  <option value="saksbehandler">Saksbehandler</option>
-                  <option value="redaktor">Redaktør</option>
-                  <option value="lesetilgang">Lesetilgang</option>
+                  <option value="all">{t("admin:pages.users_roles.filters.all_roles")}</option>
+                  <option value="admin">{t("admin:pages.users_roles.filters.role_admin")}</option>
+                  <option value="saksbehandler">{t("admin:pages.users_roles.filters.role_saksbehandler")}</option>
+                  <option value="redaktor">{t("admin:pages.users_roles.filters.role_redaktor")}</option>
+                  <option value="lesetilgang">{t("admin:pages.users_roles.filters.role_lesetilgang")}</option>
                 </select>
                 <select
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
                   className="px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
                 >
-                  <option value="all">Alle statuser</option>
-                  <option value="active">Aktiv</option>
-                  <option value="inactive">Deaktivert</option>
-                  <option value="invitation_sent">Invitasjon sendt</option>
+                  <option value="all">{t("admin:pages.users_roles.filters.all_statuses")}</option>
+                  <option value="active">{t("admin:pages.users_roles.filters.status_active")}</option>
+                  <option value="inactive">{t("admin:pages.users_roles.filters.status_inactive")}</option>
+                  <option value="invitation_sent">{t("admin:pages.users_roles.filters.status_invitation_sent")}</option>
                 </select>
               </div>
 
@@ -1096,14 +1108,14 @@ const UsersRolesPage = (): JSX.Element => {
               {selectedUsers.size > 0 && (
                 <div className="flex items-center justify-between bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
                   <span className="text-sm text-blue-700 dark:text-blue-300">
-                    {selectedUsers.size} bruker(e) valgt
+                    {t("admin:pages.users_roles.users_tab.selected_count", { count: selectedUsers.size })}
                   </span>
                   <div className="flex space-x-2">
                     <Button size="sm" variant="outline" onClick={() => handleBulkAction("change-role")}>
-                      Endre rolle
+                      {t("admin:pages.users_roles.bulk_actions.change_role")}
                     </Button>
                     <Button size="sm" variant="outline" onClick={() => handleBulkAction("resend-invitation")}>
-                      Send invitasjon på nytt
+                      {t("admin:pages.users_roles.bulk_actions.resend_invitation")}
                     </Button>
                   </div>
                 </div>
@@ -1119,22 +1131,22 @@ const UsersRolesPage = (): JSX.Element => {
                         <input type="checkbox" className="rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                        Bruker
+                        {t("admin:pages.users_roles.table.user")}
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                        Rolle
+                        {t("admin:pages.users_roles.table.role")}
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                        Opprettet av
+                        {t("admin:pages.users_roles.table.created_by")}
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                        Sist innlogget
+                        {t("admin:pages.users_roles.table.last_login")}
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                        Status
+                        {t("admin:pages.users_roles.table.status")}
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                        Handlinger
+                        {t("admin:pages.users_roles.table.actions")}
                       </th>
                     </tr>
                   </thead>
@@ -1144,10 +1156,10 @@ const UsersRolesPage = (): JSX.Element => {
                         <td colSpan={6} className="px-6 py-12 text-center">
                           <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                           <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
-                            Ingen brukere funnet
+                            {t("admin:pages.users_roles.table.no_users_found")}
                           </h3>
                           <p className="text-gray-600 dark:text-gray-400">
-                            {searchQuery ? "Prøv å endre søkekriteriene" : "Det er ingen brukere å vise for øyeblikket"}
+                            {searchQuery ? t("admin:pages.users_roles.table.try_different_criteria") : t("admin:pages.users_roles.table.no_users_description")}
                           </p>
                         </td>
                       </tr>
@@ -1178,14 +1190,14 @@ const UsersRolesPage = (): JSX.Element => {
             <CardHeader>
               <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
                 <div>
-                  <CardTitle>Roller og tilgangsnivåer</CardTitle>
+                  <CardTitle>{t("admin:pages.users_roles.roles_tab.title")}</CardTitle>
                   <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                    Definer og administrer systemroller og deres rettigheter
+                    {t("admin:pages.users_roles.roles_tab.subtitle")}
                   </p>
                 </div>
                 <Button onClick={handleNewRole}>
                   <Plus className="h-4 w-4 mr-2" />
-                  Ny rolle
+                  {t("admin:pages.users_roles.roles_tab.new_role")}
                 </Button>
               </div>
             </CardHeader>
@@ -1196,16 +1208,16 @@ const UsersRolesPage = (): JSX.Element => {
                   <thead>
                     <tr className="border-b border-gray-200 dark:border-gray-700">
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                        Rolle
+                        {t("admin:pages.users_roles.table.role_name")}
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                        Antall brukere
+                        {t("admin:pages.users_roles.table.user_count")}
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                        Status
+                        {t("admin:pages.users_roles.table.status")}
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                        Handlinger
+                        {t("admin:pages.users_roles.table.actions")}
                       </th>
                     </tr>
                   </thead>
@@ -1215,10 +1227,10 @@ const UsersRolesPage = (): JSX.Element => {
                         <td colSpan={4} className="px-6 py-12 text-center">
                           <Shield className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                           <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
-                            Ingen roller funnet
+                            {t("admin:pages.users_roles.table.no_roles_found")}
                           </h3>
                           <p className="text-gray-600 dark:text-gray-400">
-                            Opprett din første rolle for å komme i gang
+                            {t("admin:pages.users_roles.table.create_first_role")}
                           </p>
                         </td>
                       </tr>

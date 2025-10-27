@@ -3,6 +3,7 @@
 // External libraries
 import React, { useState, useMemo, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { format, addDays, startOfWeek, isToday, isWeekend, isPast } from "date-fns";
 import { nb } from "date-fns/locale";
 import { Users, ChevronLeft, ChevronRight } from "lucide-react";
@@ -83,6 +84,7 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
   useStepByStepBooking = false,
 }) => {
   const navigate = useNavigate();
+  const { t } = useTranslation('calendar');
   const { addItem } = useCart();
   
   // State for current week
@@ -578,10 +580,10 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
       addItem(cartItem);
       clearSelection();
       clearRecurringSlots();
-      toast.success("Booking lagt til i kurven!");
+      toast.success(t('toast.booking_added_to_cart'));
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "En feil oppstod ved lagring";
-      toast.error(`Kunne ikke legge til i kurv: ${errorMessage}`);
+      const errorMessage = error instanceof Error ? error.message : t('errors.save_failed');
+      toast.error(`${t('errors.add_to_cart_failed')}: ${errorMessage}`);
     }
   }, [selectedZone, allSelectedSlots, calculatePricing, createCartItem, addItem, clearSelection, clearRecurringSlots, recurrencePattern]);
 
@@ -652,13 +654,13 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
       addItem(cartItem);
       clearSelection();
       clearRecurringSlots();
-      toast.success("Booking lagt til i kurven!");
-      
+      toast.success(t('toast.booking_added_to_cart'));
+
       // Navigate to checkout using React Router
       navigate("/checkout");
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "En feil oppstod ved lagring";
-      toast.error(`Kunne ikke fullføre booking: ${errorMessage}`);
+      const errorMessage = error instanceof Error ? error.message : t('errors.save_failed');
+      toast.error(`${t('errors.complete_booking_failed')}: ${errorMessage}`);
     }
   };
 
@@ -667,7 +669,7 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
       <div className="bg-gray-50 py-8">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center py-12">
-            <p className="text-gray-500">Laster kalender...</p>
+            <p className="text-gray-500">{t('loading.calendar')}</p>
           </div>
         </div>
       </div>
@@ -679,7 +681,7 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
       <div className="bg-gray-50 py-8">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center py-12">
-            <p className="text-red-500">Feil: {error}</p>
+            <p className="text-red-500">{t('messages.error_prefix')}: {error}</p>
           </div>
         </div>
       </div>
@@ -691,7 +693,7 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
       <div className="bg-gray-50 py-8">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center py-12">
-            <p className="text-gray-500">Ingen soner tilgjengelig for denne fasiliteten.</p>
+            <p className="text-gray-500">{t('messages.no_zones_available')}</p>
           </div>
         </div>
       </div>
@@ -703,7 +705,7 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
       <div className="bg-gray-50 py-8">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center py-12">
-            <p className="text-gray-500">Laster soner...</p>
+            <p className="text-gray-500">{t('loading.zones')}</p>
           </div>
         </div>
       </div>
@@ -785,7 +787,7 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
               <div className="flex items-center justify-between">
                 <Button variant="outline" onClick={handlePreviousWeek} size="lg">
                   <ChevronLeft className="h-4 w-4 mr-2" />
-                  Forrige uke
+                  {t('navigation.previous_week')}
                 </Button>
                 <div className="text-center">
                   <h3 className="text-xl font-semibold">
@@ -793,7 +795,7 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
                   </h3>
                 </div>
                 <Button variant="outline" onClick={handleNextWeek} size="lg">
-                  Neste uke
+                  {t('navigation.next_week')}
                   <ChevronRight className="h-4 w-4 ml-2" />
                 </Button>
               </div>

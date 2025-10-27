@@ -20,6 +20,32 @@
     "select": "Select Time Slot",
     "selected": "Selected Slots",
     "no_slots": "No Available Slots",
-    "loading": "Loading slots..."
+    "loading": "Loading calendar..."
+  },
+  "slot_status": {
+    "available": "Available - click or drag to select",
+    "busy": "Busy",
+    "unavailable": "Unavailable",
+    "selected": "Selected - click to remove",
+    "conflict": "Has conflict"
+  },
+  "errors": {
+    "loading_calendar": "Error loading calendar",
+    "save_failed": "An error occurred while saving",
+    "add_to_cart_failed": "Could not add to cart",
+    "complete_booking_failed": "Could not complete booking"
+  },
+  "toast": {
+    "booking_added_to_cart": "Booking added to cart!",
+    "slot_selected": "Time slot selected",
+    "slot_removed": "Time slot removed"
+  },
+  "loading": {
+    "calendar": "Loading calendar...",
+    "zones": "Loading zones..."
+  },
+  "messages": {
+    "no_zones_available": "No zones available for this facility.",
+    "error_prefix": "Error"
   }
 }

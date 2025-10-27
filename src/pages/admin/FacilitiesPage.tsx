@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { RequireRole } from "@/components/features/auth/components/RequireRole";
 import ViewToggle from "@/components/features/facilities/components/FacilityEditForm/ViewToggle";
 import AdminFacilityCard from "@/components/features/facilities/components/FacilityEditForm/AdminFacilityCard";
@@ -26,6 +27,7 @@ interface IFacilitiesPageProps {
 
 const FacilitiesPage = (_props: IFacilitiesPageProps): JSX.Element => {
   const navigate = useNavigate();
+  const { t } = useTranslation('admin');
   const [view, setView] = useState<TView>("grid");
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [sortBy, setSortBy] = useState<TSortBy>("name");
@@ -102,9 +104,9 @@ const FacilitiesPage = (_props: IFacilitiesPageProps): JSX.Element => {
     // Create a copy with modified name and status
     const duplicatedFacility = {
       ...originalFacility,
-      name: `${originalFacility.name} (Kopi)`,
+      name: `${originalFacility.name} ${t('pages.facilities.copy_suffix')}`,
       status: "draft" as const,
-      lastUpdated: "Nå",
+      lastUpdated: t('common:time.now'),
       updatedBy: "Admin User",
       // Remove id, createdAt, updatedAt to let addFacility generate new ones
       id: undefined,
@@ -118,7 +120,7 @@ const FacilitiesPage = (_props: IFacilitiesPageProps): JSX.Element => {
     // Navigate to edit the new facility after a short delay to ensure it's added
     setTimeout(() => {
       const newFacilities = facilities;
-      const newFacility = newFacilities.find(f => f.name === `${originalFacility.name} (Kopi)`);
+      const newFacility = newFacilities.find(f => f.name === `${originalFacility.name} ${t('pages.facilities.copy_suffix')}`);
       if (newFacility) {
         navigate(`/admin/facilities/${newFacility.id}/edit`);
       } else {
@@ -199,15 +201,15 @@ const FacilitiesPage = (_props: IFacilitiesPageProps): JSX.Element => {
 
   const handleBatchDelete = (): void => {
     // Confirm deletion
-    if (window.confirm(`Er du sikker på at du vil slette ${selectedFacilities.length} lokaler? Denne handlingen kan ikke angres.`)) {
+    if (window.confirm(t('pages.facilities.confirmations.delete_multiple', { count: selectedFacilities.length }))) {
       // Delete selected facilities
       selectedFacilities.forEach(facilityId => {
         deleteFacility(facilityId);
       });
-      
+
       // Clear selection after action
       setSelectedFacilities([]);
-      
+
       // Show success message
     }
   };
@@ -217,7 +219,7 @@ const FacilitiesPage = (_props: IFacilitiesPageProps): JSX.Element => {
     if (!facility) return;
 
     // Confirm deletion
-    if (window.confirm(`Er du sikker på at du vil slette "${facility.name}"? Denne handlingen kan ikke angres.`)) {
+    if (window.confirm(t('pages.facilities.confirmations.delete_single', { name: facility.name }))) {
       deleteFacility(facilityId);
     }
   };
@@ -278,10 +280,10 @@ const FacilitiesPage = (_props: IFacilitiesPageProps): JSX.Element => {
         <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="space-y-1">
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-              Lokaler
+              {t('pages.facilities.title')}
             </h1>
             <p className="text-gray-600 dark:text-gray-400">
-              Administrer lokaler, soner og tilgjengelighet
+              {t('pages.facilities.subtitle')}
             </p>
           </div>
           <Button
@@ -289,7 +291,7 @@ const FacilitiesPage = (_props: IFacilitiesPageProps): JSX.Element => {
             className="flex items-center gap-2"
           >
             <Plus className="w-4 h-4" />
-            Nytt lokale
+            {t('pages.facilities.create_new')}
           </Button>
         </header>
 
@@ -302,7 +304,7 @@ const FacilitiesPage = (_props: IFacilitiesPageProps): JSX.Element => {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
               <Input
                 type="text"
-                placeholder="Søk etter lokaler..."
+                placeholder={t('pages.facilities.search_placeholder')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10"
@@ -318,7 +320,7 @@ const FacilitiesPage = (_props: IFacilitiesPageProps): JSX.Element => {
                 className="flex items-center gap-2"
               >
                 <Filter className="w-4 h-4" />
-                Filter
+                {t('common:actions.filter')}
                 {(statusFilter.length > 0 || typeFilter.length > 0) && (
                   <Badge variant="secondary" className="ml-1">
                     {statusFilter.length + typeFilter.length}
@@ -333,7 +335,7 @@ const FacilitiesPage = (_props: IFacilitiesPageProps): JSX.Element => {
                   size="sm"
                   className={`flex items-center gap-1 ${sortBy === "name" ? "bg-blue-50 dark:bg-blue-900/20" : ""}`}
                 >
-                  Navn
+                  {t('pages.facilities.sort.name')}
                   {sortBy === "name" && (
                     sortOrder === "asc" ? <SortAsc className="w-3 h-3" /> : <SortDesc className="w-3 h-3" />
                   )}
@@ -344,7 +346,7 @@ const FacilitiesPage = (_props: IFacilitiesPageProps): JSX.Element => {
                   size="sm"
                   className={`flex items-center gap-1 ${sortBy === "capacity" ? "bg-blue-50 dark:bg-blue-900/20" : ""}`}
                 >
-                  Kapasitet
+                  {t('pages.facilities.sort.capacity')}
                   {sortBy === "capacity" && (
                     sortOrder === "asc" ? <SortAsc className="w-3 h-3" /> : <SortDesc className="w-3 h-3" />
                   )}
@@ -355,7 +357,7 @@ const FacilitiesPage = (_props: IFacilitiesPageProps): JSX.Element => {
                   size="sm"
                   className={`flex items-center gap-1 ${sortBy === "lastUpdated" ? "bg-blue-50 dark:bg-blue-900/20" : ""}`}
                 >
-                  Sist oppdatert
+                  {t('pages.facilities.sort.last_updated')}
                   {sortBy === "lastUpdated" && (
                     sortOrder === "asc" ? <SortAsc className="w-3 h-3" /> : <SortDesc className="w-3 h-3" />
                   )}
@@ -374,7 +376,7 @@ const FacilitiesPage = (_props: IFacilitiesPageProps): JSX.Element => {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   {/* Status Filter */}
                   <div>
-                    <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Status</h4>
+                    <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('common:status.status')}</h4>
                     <div className="flex flex-wrap gap-2">
                       {uniqueStatuses.map(status => (
                         <Button
@@ -384,8 +386,7 @@ const FacilitiesPage = (_props: IFacilitiesPageProps): JSX.Element => {
                           size="sm"
                           className="text-xs"
                         >
-                          {status === "published" ? "Publisert" : 
-                           status === "draft" ? "Utkast" : "Arkivert"}
+                          {t(`common:status.${status}`)}
                         </Button>
                       ))}
                     </div>
@@ -393,7 +394,7 @@ const FacilitiesPage = (_props: IFacilitiesPageProps): JSX.Element => {
 
                   {/* Type Filter */}
                   <div>
-                    <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Type</h4>
+                    <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('common:common.type')}</h4>
                     <div className="flex flex-wrap gap-2">
                       {uniqueTypes.map(type => (
                         <Button
@@ -411,12 +412,12 @@ const FacilitiesPage = (_props: IFacilitiesPageProps): JSX.Element => {
 
                   {/* Capacity Range Filter */}
                   <div>
-                    <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Kapasitet</h4>
+                    <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('pages.facilities.filters.capacity')}</h4>
                     <div className="space-y-2">
                       <div className="flex items-center gap-2">
                         <Input
                           type="number"
-                          placeholder="Min"
+                          placeholder={t('pages.facilities.filters.min')}
                           value={capacityRange.min}
                           onChange={(e) => setCapacityRange(prev => ({ ...prev, min: parseInt(e.target.value) || 0 }))}
                           className="w-20"
@@ -424,14 +425,14 @@ const FacilitiesPage = (_props: IFacilitiesPageProps): JSX.Element => {
                         <span className="text-sm text-gray-500">-</span>
                         <Input
                           type="number"
-                          placeholder="Max"
+                          placeholder={t('pages.facilities.filters.max')}
                           value={capacityRange.max}
                           onChange={(e) => setCapacityRange(prev => ({ ...prev, max: parseInt(e.target.value) || 1000 }))}
                           className="w-20"
                         />
                       </div>
                       <div className="text-xs text-gray-500">
-                        {filteredFacilities.length} lokaler matcher filteret
+                        {t('pages.facilities.results.matching', { count: filteredFacilities.length })}
                       </div>
                     </div>
                   </div>
@@ -447,7 +448,7 @@ const FacilitiesPage = (_props: IFacilitiesPageProps): JSX.Element => {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
-                      {selectedFacilities.length} lokaler valgt
+                      {t('pages.facilities.batch_actions.selected', { count: selectedFacilities.length })}
                     </span>
                     <Button
                       onClick={handleSelectAll}
@@ -455,7 +456,7 @@ const FacilitiesPage = (_props: IFacilitiesPageProps): JSX.Element => {
                       size="sm"
                       className="text-blue-600 hover:text-blue-700"
                     >
-                      {selectedFacilities.length === filteredFacilities.length ? "Fjern alle" : "Velg alle"}
+                      {selectedFacilities.length === filteredFacilities.length ? t('pages.facilities.batch_actions.clear_all') : t('pages.facilities.batch_actions.select_all')}
                     </Button>
                   </div>
                   <div className="flex items-center gap-2">
@@ -465,7 +466,7 @@ const FacilitiesPage = (_props: IFacilitiesPageProps): JSX.Element => {
                       className="bg-green-600 hover:bg-green-700"
                     >
                       <Eye className="w-4 h-4 mr-1" />
-                      Publiser
+                      {t('pages.facilities.batch_actions.publish')}
                     </Button>
                     <Button
                       onClick={handleBatchUnpublish}
@@ -473,7 +474,7 @@ const FacilitiesPage = (_props: IFacilitiesPageProps): JSX.Element => {
                       variant="outline"
                     >
                       <EyeOff className="w-4 h-4 mr-1" />
-                      Upubliser
+                      {t('pages.facilities.batch_actions.unpublish')}
                     </Button>
                     <Button
                       onClick={handleBatchArchive}
@@ -482,7 +483,7 @@ const FacilitiesPage = (_props: IFacilitiesPageProps): JSX.Element => {
                       className="border-orange-300 text-orange-700 hover:bg-orange-50"
                     >
                       <Square className="w-4 h-4 mr-1" />
-                      Arkiver
+                      {t('pages.facilities.batch_actions.archive')}
                     </Button>
                     <Button
                       onClick={handleBatchDelete}
@@ -490,7 +491,7 @@ const FacilitiesPage = (_props: IFacilitiesPageProps): JSX.Element => {
                       variant="destructive"
                     >
                       <Trash2 className="w-4 h-4 mr-1" />
-                      Slett
+                      {t('common:actions.delete')}
                     </Button>
                   </div>
                 </div>
@@ -502,11 +503,11 @@ const FacilitiesPage = (_props: IFacilitiesPageProps): JSX.Element => {
         {/* Results Count */}
         <div className="flex items-center justify-between">
           <p className="text-sm text-gray-600 dark:text-gray-400">
-            {filteredFacilities.length} lokaler funnet
+            {t('pages.facilities.results.count', { count: filteredFacilities.length })}
           </p>
           <p className="text-sm text-gray-500 dark:text-gray-500">
-            {view === "grid" ? "Rutenett visning" : 
-             view === "list" ? "Liste visning" : "Kart visning"}
+            {view === "grid" ? t('common:view_modes.grid') :
+             view === "list" ? t('common:view_modes.list') : t('common:view_modes.map')}
           </p>
         </div>
 
@@ -520,7 +521,7 @@ const FacilitiesPage = (_props: IFacilitiesPageProps): JSX.Element => {
                   <button
                     onClick={() => handleSelectFacility(facility.id)}
                     className="p-1 rounded bg-white/90 backdrop-blur-sm shadow-lg hover:bg-white transition-colors"
-                    aria-label={`Velg ${facility.name}`}
+                    aria-label={t('pages.facilities.confirmations.select', { name: facility.name })}
                   >
                     {selectedFacilities.includes(facility.id) ? (
                       <CheckSquare className="h-4 w-4 text-blue-600" />
@@ -549,7 +550,7 @@ const FacilitiesPage = (_props: IFacilitiesPageProps): JSX.Element => {
                   <button
                     onClick={() => handleSelectFacility(facility.id)}
                     className="p-1 rounded bg-white/90 backdrop-blur-sm shadow-lg hover:bg-white transition-colors"
-                    aria-label={`Velg ${facility.name}`}
+                    aria-label={t('pages.facilities.confirmations.select', { name: facility.name })}
                   >
                     {selectedFacilities.includes(facility.id) ? (
                       <CheckSquare className="h-4 w-4 text-blue-600" />
@@ -606,17 +607,17 @@ const FacilitiesPage = (_props: IFacilitiesPageProps): JSX.Element => {
               <Search className="w-8 h-8 text-gray-400" />
             </div>
             <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
-              Ingen lokaler funnet
+              {t('pages.facilities.empty.title')}
             </h3>
             <p className="text-gray-600 dark:text-gray-400 mb-4">
-              Prøv å endre søkekriteriene eller opprett et nytt lokale.
+              {t('pages.facilities.empty.description')}
             </p>
             <button
               onClick={handleNewFacility}
               className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
             >
               <Plus className="w-4 h-4" />
-              Opprett første lokale
+              {t('pages.facilities.empty.create_first')}
             </button>
           </div>
         )}

@@ -4,8 +4,10 @@ import React, { useMemo, useState } from "react";
 import { EnhancedCalendar } from "@/components/features/calendar/components/EnhancedCalendar";
 import { startOfMonth, endOfMonth, startOfWeek, endOfWeek, startOfDay, endOfDay } from "date-fns";
 import type { IBookingEvent } from "@/types/calendar";
+import { useTranslation } from "react-i18next";
 
 export default function CalendarPage(): JSX.Element {
+  const { t } = useTranslation('user');
   const [selectedEvent, setSelectedEvent] = useState<IBookingEvent | null>(null);
   const [view, setView] = useState<'month'|'week'|'day'>('month');
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
@@ -148,45 +150,45 @@ export default function CalendarPage(): JSX.Element {
               
               <div className="space-y-3">
                 <div className="flex justify-between">
-                  <span className="text-gray-600 dark:text-gray-400">Lokale:</span>
+                  <span className="text-gray-600 dark:text-gray-400">{t('pages.calendar.facility')}:</span>
                   <span className="text-gray-900 dark:text-white">{selectedEvent.facilityName}</span>
                 </div>
-                
+
                 <div className="flex justify-between">
-                  <span className="text-gray-600 dark:text-gray-400">Dato:</span>
+                  <span className="text-gray-600 dark:text-gray-400">{t('pages.calendar.date')}:</span>
                   <span className="text-gray-900 dark:text-white">
                     {new Date(selectedEvent.start).toLocaleDateString("nb-NO", { day: '2-digit', month: '2-digit', year: 'numeric' })}
                   </span>
                 </div>
-                
+
                 <div className="flex justify-between">
-                  <span className="text-gray-600 dark:text-gray-400">Tid:</span>
+                  <span className="text-gray-600 dark:text-gray-400">{t('pages.calendar.time')}:</span>
                   <span className="text-gray-900 dark:text-white">
-                    {new Date(selectedEvent.start).toLocaleTimeString("nb-NO", { 
-                      hour: "2-digit", 
-                      minute: "2-digit" 
-                    })} - {new Date(selectedEvent.end).toLocaleTimeString("nb-NO", { 
-                      hour: "2-digit", 
-                      minute: "2-digit" 
+                    {new Date(selectedEvent.start).toLocaleTimeString("nb-NO", {
+                      hour: "2-digit",
+                      minute: "2-digit"
+                    })} - {new Date(selectedEvent.end).toLocaleTimeString("nb-NO", {
+                      hour: "2-digit",
+                      minute: "2-digit"
                     })}
                   </span>
                 </div>
-                
+
                 <div className="flex justify-between">
-                  <span className="text-gray-600 dark:text-gray-400">Status:</span>
+                  <span className="text-gray-600 dark:text-gray-400">{t('pages.calendar.status')}:</span>
                   <span className={`px-2 py-1 rounded text-sm ${
                     selectedEvent.status === "confirmed" ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200" :
                     selectedEvent.status === "pending" ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200" :
                     "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
                   }`}>
-                    {selectedEvent.status === "confirmed" ? "Bekreftet" :
-                     selectedEvent.status === "pending" ? "Ventende" : "Avlyst"}
+                    {selectedEvent.status === "confirmed" ? t('pages.calendar.status_labels.confirmed') :
+                     selectedEvent.status === "pending" ? t('pages.calendar.status_labels.pending') : t('pages.calendar.status_labels.cancelled')}
                   </span>
                 </div>
-                
+
                 {((selectedEvent as any).meta?.priceText) && (
                   <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">Pris:</span>
+                    <span className="text-gray-600 dark:text-gray-400">{t('pages.calendar.price')}:</span>
                     <span className="text-gray-900 dark:text-white font-medium">
                       {(selectedEvent as any).meta?.priceText}
                     </span>
@@ -199,19 +201,19 @@ export default function CalendarPage(): JSX.Element {
                   onClick={() => handleEventEdit(selectedEvent)}
                   className="flex-1 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
                 >
-                  Rediger
+                  {t('pages.calendar.actions.edit')}
                 </button>
                 <button
                   onClick={() => handleEventDelete(selectedEvent)}
                   className="flex-1 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
                 >
-                  Slett
+                  {t('pages.calendar.actions.delete')}
                 </button>
                 <button
                   onClick={() => setSelectedEvent(null)}
                   className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800 transition-colors"
                 >
-                  Lukk
+                  {t('pages.calendar.actions.close')}
                 </button>
               </div>
             </div>

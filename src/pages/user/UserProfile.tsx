@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { useUserProfile } from "@/contexts/UserProfileContext";
+import { useTranslation } from "react-i18next";
 import { 
   User, 
   Mail, 
@@ -42,6 +43,7 @@ import {
 } from "lucide-react";
 
 const UserProfile = (): JSX.Element => {
+  const { t } = useTranslation('user');
   const { profile, updateProfile, isLoading } = useUserProfile();
   const [activeTab, setActiveTab] = useState<string>("profile");
   const [isEditing, setIsEditing] = useState<boolean>(false);
@@ -111,10 +113,10 @@ const UserProfile = (): JSX.Element => {
   ]);
 
   const tabs = [
-    { id: "profile", label: "Profil", icon: User },
-    { id: "security", label: "Sikkerhet", icon: Shield },
-    { id: "preferences", label: "Preferanser", icon: Settings },
-    { id: "privacy", label: "Personvern", icon: Lock }
+    { id: "profile", label: t('pages.profile.tabs.profile'), icon: User },
+    { id: "security", label: t('pages.profile.tabs.security'), icon: Shield },
+    { id: "preferences", label: t('pages.profile.tabs.preferences'), icon: Settings },
+    { id: "privacy", label: t('pages.profile.tabs.privacy'), icon: Lock }
   ];
 
   const showToastMessage = (message: string): void => {
@@ -133,7 +135,7 @@ const UserProfile = (): JSX.Element => {
     
     updateProfile(updates);
     setIsEditing(false);
-    showToastMessage("Endringer lagret");
+    showToastMessage(t('pages.profile.personal_info.changes_saved'));
   };
 
   const handleCancel = (): void => {
@@ -164,11 +166,11 @@ const UserProfile = (): JSX.Element => {
 
   const handlePasswordSave = (): void => {
     if (passwordForm.newPassword !== passwordForm.confirmPassword) {
-      showToastMessage("Passordene matcher ikke");
+      showToastMessage(t('pages.profile.security.password.mismatch'));
       return;
     }
     setPasswordForm({ currentPassword: "", newPassword: "", confirmPassword: "" });
-    showToastMessage("Passord oppdatert");
+    showToastMessage(t('pages.profile.security.password.updated'));
   };
 
   const handleAvatarUpload = (event: React.ChangeEvent<HTMLInputElement>): void => {
@@ -184,12 +186,12 @@ const UserProfile = (): JSX.Element => {
 
   const handleDeleteAccount = (): void => {
     if (deleteConfirmation !== profile.email) {
-      showToastMessage("E-postadressen matcher ikke");
+      showToastMessage(t('pages.profile.privacy.delete_account.email_mismatch'));
       return;
     }
-    
+
     // GDPR-compliant account deletion
-    if (window.confirm('Er du helt sikker på at du vil slette kontoen din permanent? Dette kan ikke angres.')) {
+    if (window.confirm(t('pages.profile.privacy.delete_account.confirm_final'))) {
       // In a real app, this would call an API to:
       // 1. Anonymize all personal data
       // 2. Delete all bookings and associated data
@@ -201,7 +203,7 @@ const UserProfile = (): JSX.Element => {
       
       // Simulate API call
       setTimeout(() => {
-        showToastMessage("Konto slettet permanent. Du vil motta en bekreftelse på e-post.");
+        showToastMessage(t('pages.profile.privacy.delete_account.success'));
         setShowDeleteModal(false);
         setDeleteConfirmation("");
         
@@ -220,10 +222,10 @@ const UserProfile = (): JSX.Element => {
     const now = new Date();
     const diffTime = Math.abs(now.getTime() - date.getTime());
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
-    if (diffDays === 1) return "i går";
-    if (diffDays < 7) return `${diffDays} dager siden`;
-    if (diffDays < 30) return `${Math.ceil(diffDays / 7)} uker siden`;
+
+    if (diffDays === 1) return t('pages.profile.time.yesterday');
+    if (diffDays < 7) return t('pages.profile.time.days_ago', { count: diffDays });
+    if (diffDays < 30) return t('pages.profile.time.weeks_ago', { count: Math.ceil(diffDays / 7) });
     
     return date.toLocaleDateString('nb-NO', {
       year: 'numeric',
@@ -250,9 +252,9 @@ const UserProfile = (): JSX.Element => {
             </h2>
             <p className="text-gray-600 dark:text-gray-400">{profile.role}</p>
             <div className="flex items-center space-x-4 mt-2 text-sm text-gray-500 dark:text-gray-500">
-              <span>Konto opprettet: {new Date(profile.accountCreated).toLocaleDateString('nb-NO')}</span>
+              <span>{t('pages.profile.account_overview.account_created')}: {new Date(profile.accountCreated).toLocaleDateString('nb-NO')}</span>
               <span>•</span>
-              <span>Sist aktiv: {formatDate(profile.lastActive)}</span>
+              <span>{t('pages.profile.account_overview.last_active')}: {formatDate(profile.lastActive)}</span>
             </div>
           </div>
           <Badge variant="outline" className="bg-white dark:bg-gray-800">
@@ -267,7 +269,7 @@ const UserProfile = (): JSX.Element => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-          Personlig informasjon
+          {t('pages.profile.personal_info.title')}
         </h2>
         <Button
           onClick={() => setIsEditing(!isEditing)}
@@ -275,7 +277,7 @@ const UserProfile = (): JSX.Element => {
           className="flex items-center gap-2"
         >
           <Edit className="h-4 w-4" />
-          {isEditing ? "Avbryt" : "Rediger"}
+          {isEditing ? t('pages.profile.personal_info.cancel') : t('pages.profile.personal_info.edit')}
         </Button>
       </div>
 
@@ -314,13 +316,13 @@ const UserProfile = (): JSX.Element => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-4">
                   <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-                    Personlige detaljer
+                    {t('pages.profile.personal_info.sections.personal_details')}
                   </h3>
-                  
+
                   <div>
                     <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
                       <User className="h-4 w-4 inline mr-1" />
-                      Fornavn
+                      {t('pages.profile.personal_info.fields.first_name')}
                     </label>
                     {isEditing ? (
                       <Input
@@ -337,7 +339,7 @@ const UserProfile = (): JSX.Element => {
                   <div>
                     <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
                       <User className="h-4 w-4 inline mr-1" />
-                      Etternavn
+                      {t('pages.profile.personal_info.fields.last_name')}
                     </label>
                     {isEditing ? (
                       <Input
@@ -354,7 +356,7 @@ const UserProfile = (): JSX.Element => {
                   <div>
                     <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
                       <Calendar className="h-4 w-4 inline mr-1" />
-                      Fødselsdato
+                      {t('pages.profile.personal_info.fields.date_of_birth')}
                     </label>
                     {isEditing ? (
                       <Input
@@ -373,13 +375,13 @@ const UserProfile = (): JSX.Element => {
                 
                 <div className="space-y-4">
                   <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-                    Kontaktinformasjon
+                    {t('pages.profile.personal_info.sections.contact_info')}
                   </h3>
-                  
+
                   <div>
                     <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
                       <Mail className="h-4 w-4 inline mr-1" />
-                      E-post
+                      {t('pages.profile.personal_info.fields.email')}
                     </label>
                     {isEditing ? (
                       <Input
@@ -396,7 +398,7 @@ const UserProfile = (): JSX.Element => {
                   <div>
                     <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
                       <Phone className="h-4 w-4 inline mr-1" />
-                      Telefon
+                      {t('pages.profile.personal_info.fields.phone')}
                     </label>
                     {isEditing ? (
                       <Input
@@ -413,7 +415,7 @@ const UserProfile = (): JSX.Element => {
                   <div>
                     <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
                       <MapPin className="h-4 w-4 inline mr-1" />
-                      Adresse
+                      {t('pages.profile.personal_info.fields.address')}
                     </label>
                     {isEditing ? (
                       <Input
@@ -433,11 +435,11 @@ const UserProfile = (): JSX.Element => {
                 <div className="flex space-x-3 pt-4 border-t border-gray-200 dark:border-gray-700">
                   <Button onClick={handleSave} className="flex items-center gap-2">
                     <Save className="h-4 w-4" />
-                    Lagre endringer
+                    {t('pages.profile.personal_info.save_changes')}
                   </Button>
                   <Button onClick={handleCancel} variant="outline" className="flex items-center gap-2">
                     <X className="h-4 w-4" />
-                    Avbryt
+                    {t('pages.profile.personal_info.cancel')}
                   </Button>
                 </div>
               )}
@@ -451,21 +453,21 @@ const UserProfile = (): JSX.Element => {
   const renderSecurityTab = (): JSX.Element => (
     <div className="space-y-6">
       <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-        Sikkerhet og tilgang
+        {t('pages.profile.security.title')}
       </h2>
-      
+
       {/* Password Change */}
       <Card className="bg-white shadow-sm rounded-2xl">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Key className="h-5 w-5" />
-            Endre passord
+            {t('pages.profile.security.password.title')}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
-              Nåværende passord
+              {t('pages.profile.security.password.current')}
             </label>
             <div className="relative">
               <Input
@@ -488,7 +490,7 @@ const UserProfile = (): JSX.Element => {
           
           <div>
             <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
-              Nytt passord
+              {t('pages.profile.security.password.new')}
             </label>
             <div className="relative">
               <Input
@@ -511,7 +513,7 @@ const UserProfile = (): JSX.Element => {
           
           <div>
             <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
-              Bekreft nytt passord
+              {t('pages.profile.security.password.confirm')}
             </label>
             <div className="relative">
               <Input
@@ -534,7 +536,7 @@ const UserProfile = (): JSX.Element => {
           
           <Button onClick={handlePasswordSave} className="flex items-center gap-2">
             <Save className="h-4 w-4" />
-            Oppdater passord
+            {t('pages.profile.security.password.update')}
           </Button>
         </CardContent>
       </Card>
@@ -887,16 +889,16 @@ const UserProfile = (): JSX.Element => {
       <CardContent className="p-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
           <div>
-            <p className="text-gray-500 dark:text-gray-400">Konto-ID</p>
+            <p className="text-gray-500 dark:text-gray-400">{t('pages.profile.account_summary.account_id')}</p>
             <p className="font-medium text-gray-900 dark:text-white">#{profile.accountId}</p>
           </div>
           <div>
-            <p className="text-gray-500 dark:text-gray-400">Abonnementstype</p>
+            <p className="text-gray-500 dark:text-gray-400">{t('pages.profile.account_summary.subscription_type')}</p>
             <p className="font-medium text-gray-900 dark:text-white">{profile.subscriptionType}</p>
           </div>
           <div>
-            <p className="text-gray-500 dark:text-gray-400">Tilgjengelige funksjoner</p>
-            <p className="font-medium text-gray-900 dark:text-white">Standard booking og favoritter</p>
+            <p className="text-gray-500 dark:text-gray-400">{t('pages.profile.account_summary.available_features')}</p>
+            <p className="font-medium text-gray-900 dark:text-white">{t('pages.profile.account_summary.standard_features')}</p>
           </div>
         </div>
       </CardContent>
@@ -922,10 +924,10 @@ const UserProfile = (): JSX.Element => {
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-          Innstillinger
+          {t('pages.profile.title')}
         </h1>
         <p className="text-gray-600 dark:text-gray-400">
-          Administrer din personlige informasjon og kontoinnstillinger
+          {t('pages.profile.subtitle')}
         </p>
       </div>
 

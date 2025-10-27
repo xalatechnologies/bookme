@@ -134,5 +134,404 @@
     "facility_favorited": "Lokale lagt til favoritter",
     "facility_unfavorited": "Lokale fjernet fra favoritter",
     "profile_updated": "Profil oppdatert"
+  },
+
+  "pages": {
+    "facilities": {
+      "title": "Tilgjengelige lokaler",
+      "subtitle": "Utforsk og book lokaler som passer dine behov",
+      "results_count": "{{count}} lokaler funnet",
+      "available_only": "Kun ledige",
+      "empty": {
+        "title": "Ingen lokaler funnet",
+        "no_results": "Prøv å justere søkekriteriene dine.",
+        "no_facilities": "Det er ingen lokaler tilgjengelige for øyeblikket.",
+        "reset_filters": "Tilbakestill filtre"
+      }
+    },
+    "favorites": {
+      "title": "Favoritter",
+      "subtitle": "Her finner du lokalene du liker best. Du kan enkelt se tilgjengelighet, sammenligne priser og booke direkte.",
+      "saved_count": "{{count}} lagrede lokaler",
+      "search_placeholder": "Søk i favoritter...",
+      "sort_by": "Sortér etter:",
+      "filter": "Filter",
+      "empty": {
+        "title": "Du har ingen favoritter ennå",
+        "no_results": "Ingen favoritter matcher søkekriteriene dine.",
+        "no_favorites": "Gå til Lokaler for å finne dine favoritter!",
+        "explore_facilities": "Utforsk lokaler"
+      },
+      "added_at": "Lagt til {{date}}",
+      "visits": "{{count}} besøk",
+      "last_visited": "Sist besøkt {{date}}",
+      "date_formats": {
+        "yesterday": "i går",
+        "days_ago": "{{count}} dager siden",
+        "weeks_ago": "{{count}} uker siden"
+      },
+      "filters": {
+        "type": "Type",
+        "capacity": "Kapasitet",
+        "location": "Lokasjon",
+        "availability": "Tilgjengelighet",
+        "price_range": "Pris per time: {{min}}–{{max}} kr",
+        "all_types": "Alle typer",
+        "all_sizes": "Alle størrelser",
+        "all_locations": "Alle steder",
+        "all_availability": "Alle",
+        "available_today": "Ledig i dag",
+        "partially_busy": "Delvis opptatt",
+        "fully_booked": "Fullbooket",
+        "capacity_ranges": {
+          "small": "0–20 personer",
+          "medium": "20–100 personer",
+          "large": "100+ personer"
+        }
+      },
+      "sort_options": {
+        "recently_added": "Sist lagt til",
+        "last_visited": "Sist besøkt",
+        "most_used": "Mest brukt",
+        "highest_rated": "Høyest vurdert",
+        "name": "Navn A–Å",
+        "price_low": "Pris lav–høy",
+        "price_high": "Pris høy–lav"
+      }
+    },
+    "calendar": {
+      "event_details": "Hendelsesdetaljer",
+      "facility": "Lokale",
+      "date": "Dato",
+      "time": "Tid",
+      "status": "Status",
+      "price": "Pris",
+      "status_labels": {
+        "confirmed": "Bekreftet",
+        "pending": "Ventende",
+        "cancelled": "Avlyst"
+      },
+      "actions": {
+        "edit": "Rediger",
+        "delete": "Slett",
+        "close": "Lukk"
+      }
+    },
+    "profile": {
+      "title": "Innstillinger",
+      "subtitle": "Administrer din personlige informasjon og kontoinnstillinger",
+
+      "tabs": {
+        "profile": "Profil",
+        "security": "Sikkerhet",
+        "preferences": "Preferanser",
+        "privacy": "Personvern"
+      },
+
+      "account_overview": {
+        "account_created": "Konto opprettet",
+        "last_active": "Sist aktiv"
+      },
+
+      "personal_info": {
+        "title": "Personlig informasjon",
+        "edit": "Rediger",
+        "cancel": "Avbryt",
+        "save_changes": "Lagre endringer",
+        "changes_saved": "Endringer lagret",
+
+        "sections": {
+          "personal_details": "Personlige detaljer",
+          "contact_info": "Kontaktinformasjon"
+        },
+
+        "fields": {
+          "first_name": "Fornavn",
+          "last_name": "Etternavn",
+          "date_of_birth": "Fødselsdato",
+          "email": "E-post",
+          "phone": "Telefon",
+          "address": "Adresse"
+        }
+      },
+
+      "security": {
+        "title": "Sikkerhet og tilgang",
+
+        "password": {
+          "title": "Endre passord",
+          "current": "Nåværende passord",
+          "new": "Nytt passord",
+          "confirm": "Bekreft nytt passord",
+          "update": "Oppdater passord",
+          "updated": "Passord oppdatert",
+          "mismatch": "Passordene matcher ikke"
+        },
+
+        "two_factor": {
+          "title": "Tofaktorautentisering (2FA)",
+          "description": "Få en sikkerhetskode på e-post eller SMS ved innlogging",
+          "enable": "Aktiver",
+          "disable": "Deaktiver"
+        },
+
+        "login_history": {
+          "title": "Påloggingshistorikk"
+        },
+
+        "connected_accounts": {
+          "title": "Tilknyttede kontoer",
+          "not_connected": "Ikke tilknyttet",
+          "connect": "Tilknytt"
+        }
+      },
+
+      "preferences": {
+        "title": "Preferanser og tilpasning",
+
+        "language_theme": {
+          "title": "Språk og utseende",
+          "language": "Språk",
+          "theme": "Tema",
+          "theme_light": "Lys",
+          "theme_dark": "Mørk",
+          "theme_system": "System"
+        },
+
+        "notifications": {
+          "title": "Varslingsinnstillinger",
+          "email": "E-postvarsler",
+          "email_desc": "Motta varsler på e-post",
+          "sms": "SMS-varsler",
+          "sms_desc": "Motta varsler på SMS",
+          "push": "Push-varsler",
+          "push_desc": "Motta push-varsler i nettleseren",
+          "reminders": "Påminnelser",
+          "reminders_desc": "Påminnelse dagen før booking",
+          "new_bookings": "Nye bookinger",
+          "new_bookings_desc": "Varsle om nye bookinger",
+          "on": "På",
+          "off": "Av"
+        },
+
+        "dashboard_view": {
+          "title": "Dashboardvisning",
+          "compact": "Kompakt",
+          "compact_desc": "Mindre kort og tett layout",
+          "extended": "Utvidet",
+          "extended_desc": "Store kort og luftig layout"
+        }
+      },
+
+      "privacy": {
+        "title": "Personvern og data",
+
+        "data_download": {
+          "title": "Last ned dine data",
+          "description": "Last ned en kopi av alle dine personlige data, inkludert bookinger, kvitteringer og profilinformasjon.",
+          "button": "Last ned data"
+        },
+
+        "deactivate": {
+          "title": "Deaktiver midlertidig",
+          "description": "Deaktiver kontoen din midlertidig. Du kan reaktivere den når som helst ved å logge inn igjen.",
+          "button": "Deaktiver midlertidig"
+        },
+
+        "delete_account": {
+          "title": "Slett konto permanent",
+          "description": "Når du sletter kontoen din, vil all data bli permanent fjernet. Dette inkluderer alle dine bookinger, favoritter og personlige opplysninger. Denne handlingen kan ikke angres.",
+          "button": "Slett konto permanent",
+          "modal_title": "Slett konto",
+          "modal_description": "Er du sikker på at du vil slette kontoen din? Alle bookinger og kvitteringer vil bli slettet permanent.",
+          "confirm_label": "Skriv inn din e-postadresse for å bekrefte",
+          "confirm_button": "Slett permanent",
+          "confirm_final": "Er du helt sikker på at du vil slette kontoen din permanent? Dette kan ikke angres.",
+          "success": "Konto slettet permanent. Du vil motta en bekreftelse på e-post.",
+          "email_mismatch": "E-postadressen matcher ikke"
+        }
+      },
+
+      "account_summary": {
+        "account_id": "Konto-ID",
+        "subscription_type": "Abonnementstype",
+        "available_features": "Tilgjengelige funksjoner",
+        "standard_features": "Standard booking og favoritter"
+      },
+
+      "time": {
+        "yesterday": "i går",
+        "days_ago": "{{count}} dager siden",
+        "weeks_ago": "{{count}} uker siden"
+      }
+    },
+
+    "history": {
+      "title": "Historikk",
+      "subtitle": "Se alle tidligere bookinger og last ned kvitteringer",
+
+      "export": "Eksporter CSV",
+
+      "kpis": {
+        "bookings": "Bookinger",
+        "hours_used": "Timer brukt",
+        "total_spent": "Sum betalt",
+        "cancellations": "Avlysninger"
+      },
+
+      "filters": {
+        "search_placeholder": "Søk i historikk...",
+        "from_date": "Fra dato",
+        "to_date": "Til dato",
+        "all_facilities": "Alle lokaler",
+        "select_facility": "Velg lokale",
+        "all_statuses": "Alle statuser",
+        "select_status": "Velg status",
+        "completed": "Fullført",
+        "cancelled": "Avlyst",
+        "sort": "Sorter",
+        "newest_first": "Nyeste først",
+        "oldest_first": "Eldste først"
+      },
+
+      "table": {
+        "title": "Bookinghistorikk",
+        "date": "Dato",
+        "time": "Tid",
+        "facility": "Lokale",
+        "activity": "Aktivitet",
+        "duration": "Varighet",
+        "status": "Status",
+        "total": "Sum",
+        "actions": "Handlinger",
+        "invoice": "Faktura"
+      },
+
+      "status": {
+        "confirmed": "Bekreftet",
+        "rejected": "Avvist",
+        "pending": "Ventende"
+      },
+
+      "details": {
+        "created_at": "Opprettet",
+        "invoice_id": "Faktura",
+        "download_receipt": "Last ned kvittering",
+        "rebook": "Rebook",
+        "add_to_calendar": "Legg til i kalender"
+      },
+
+      "empty": {
+        "title": "Ingen bookinger funnet",
+        "description": "Prøv å endre filter eller søkekriteriene."
+      },
+
+      "loading": "Laster historikk..."
+    },
+
+    "receipts": {
+      "title": "Kvitteringer & betalinger",
+      "subtitle": "Oversikt over alle dine betalinger og kvitteringer",
+      "disclaimer": "Alle priser vises i NOK og inkluderer MVA.",
+
+      "export": "Eksporter CSV",
+
+      "summary": {
+        "total_paid": "Totalt betalt hittil",
+        "updated_on": "Oppdatert per {{date}}",
+        "paid_bookings": "Betalte bookinger",
+        "completed_transactions": "Fullførte transaksjoner siste 6 måneder",
+        "pending_amount": "Sum ventende betalinger",
+        "awaiting_confirmation": "Avventer bekreftelse fra betalingsleverandør"
+      },
+
+      "filters": {
+        "search_placeholder": "Søk i kvitteringer...",
+        "status_label": "Status",
+        "year_label": "År",
+        "payment_method_label": "Betalingsmetode",
+        "sort_label": "Sortering",
+
+        "status": {
+          "all": "Alle",
+          "paid": "Betalt",
+          "pending": "Venter på betaling",
+          "cancelled": "Betaling avbrutt",
+          "refunded": "Beløp tilbakeført"
+        },
+
+        "years": {
+          "all": "Alle år",
+          "2024": "2024",
+          "2023": "2023"
+        },
+
+        "payment_methods": {
+          "all": "Alle metoder",
+          "visa": "Visa",
+          "mastercard": "Mastercard",
+          "invoice": "Faktura"
+        },
+
+        "sort": {
+          "newest": "Nyeste først",
+          "oldest": "Eldste først",
+          "amount_high": "Beløp høy–lav",
+          "amount_low": "Beløp lav–høy"
+        }
+      },
+
+      "card": {
+        "paid_with": "Betalt med",
+        "invoice_label": "Faktura",
+        "booking_label": "Booking",
+        "occurrences": "{{count}} forekomster"
+      },
+
+      "details": {
+        "recurring_title": "Gjentakende booking detaljer",
+        "invoice_details": "Faktura detaljer",
+        "invoice_number": "Fakturanummer",
+        "occurrence_count": "Antall forekomster",
+        "total_price": "Totalpris",
+        "mva": "MVA (25%)",
+        "actions_title": "Handlinger",
+        "download_pdf": "Last ned PDF",
+        "send_email": "Send på e-post",
+        "copy_invoice": "Kopier fakturanummer",
+        "all_occurrences": "Alle forekomster",
+        "booking_id": "Booking-ID",
+        "paid_date": "Betalt",
+        "refund_info": "Refunderingsinfo"
+      },
+
+      "actions": {
+        "download_success": "Kvittering lastet ned!",
+        "email_success": "E-post klargjort!",
+        "invoice_copied": "Fakturanummer kopiert til utklippstavle!",
+        "csv_downloaded": "CSV-fil lastet ned!",
+        "payment_redirect": "Omdirigerer til betalingsportal for {{facility}}...",
+        "payment_pending_tooltip": "Betaling avventer godkjenning. Prøv på nytt hvis dette tar mer enn 24 timer."
+      },
+
+      "empty": {
+        "title": "Ingen kvitteringer funnet",
+        "no_payments": "Du har ingen betalinger ennå. Start med å booke et lokale.",
+        "no_status": "Du har ingen {{status}} betalinger."
+      },
+
+      "statistics": {
+        "title": "Statistikk",
+        "by_category": "Totalt betalt per kategori",
+        "averages": "Gjennomsnitt",
+        "avg_booking_cost": "Gjennomsnittlig bookingkostnad"
+      },
+
+      "status_labels": {
+        "approved": "Godkjent",
+        "rejected": "Avvist",
+        "pending": "Ventende"
+      }
+    }
   }
 }

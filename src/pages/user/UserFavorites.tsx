@@ -33,6 +33,7 @@ import FacilityCardUser from "@/components/features/facilities/components/Facili
 import FacilityListItemUser from "@/components/features/facilities/components/FacilityCard/FacilityListItemUser";
 import { useFacilityStore } from "@/stores/facilityStore";
 import { useFavoritesStore } from "@/stores/favoritesStore";
+import { useTranslation } from "react-i18next";
 
 interface IFavoriteFacility {
   readonly id: string;
@@ -56,6 +57,7 @@ interface IFavoriteFacility {
 }
 
 const UserFavorites = (): JSX.Element => {
+  const { t } = useTranslation('user');
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [filterType, setFilterType] = useState<string>("all");
@@ -138,7 +140,7 @@ const UserFavorites = (): JSX.Element => {
     });
 
   const typeFilters = [
-    { value: "all", label: "Alle typer", color: "gray" },
+    { value: "all", label: t('pages.favorites.filters.all_types'), color: "gray" },
     { value: "Idrettshall", label: "Idrettshall", color: "blue" },
     { value: "Kulturhus", label: "Kulturhus", color: "purple" },
     { value: "Møterom", label: "Møterom", color: "green" },
@@ -148,14 +150,14 @@ const UserFavorites = (): JSX.Element => {
   ];
 
   const capacityFilters = [
-    { value: "all", label: "Alle størrelser" },
-    { value: "0-20", label: "0–20 personer" },
-    { value: "20-100", label: "20–100 personer" },
-    { value: "100+", label: "100+ personer" }
+    { value: "all", label: t('pages.favorites.filters.all_sizes') },
+    { value: "0-20", label: t('pages.favorites.filters.capacity_ranges.small') },
+    { value: "20-100", label: t('pages.favorites.filters.capacity_ranges.medium') },
+    { value: "100+", label: t('pages.favorites.filters.capacity_ranges.large') }
   ];
 
   const locationFilters = [
-    { value: "all", label: "Alle steder" },
+    { value: "all", label: t('pages.favorites.filters.all_locations') },
     { value: "Drammen Sentrum", label: "Drammen Sentrum" },
     { value: "Strømsø", label: "Strømsø" },
     { value: "Bragernes", label: "Bragernes" },
@@ -166,20 +168,20 @@ const UserFavorites = (): JSX.Element => {
   ];
 
   const availabilityFilters = [
-    { value: "all", label: "Alle" },
-    { value: "available", label: "Ledig i dag" },
-    { value: "busy", label: "Delvis opptatt" },
-    { value: "full", label: "Fullbooket" }
+    { value: "all", label: t('pages.favorites.filters.all_availability') },
+    { value: "available", label: t('pages.favorites.filters.available_today') },
+    { value: "busy", label: t('pages.favorites.filters.partially_busy') },
+    { value: "full", label: t('pages.favorites.filters.fully_booked') }
   ];
 
   const sortOptions = [
-    { value: "recently-added", label: "Sist lagt til" },
-    { value: "last-visited", label: "Sist besøkt" },
-    { value: "most-used", label: "Mest brukt" },
-    { value: "highest-rated", label: "Høyest vurdert" },
-    { value: "name", label: "Navn A–Å" },
-    { value: "price-low", label: "Pris lav–høy" },
-    { value: "price-high", label: "Pris høy–lav" }
+    { value: "recently-added", label: t('pages.favorites.sort_options.recently_added') },
+    { value: "last-visited", label: t('pages.favorites.sort_options.last_visited') },
+    { value: "most-used", label: t('pages.favorites.sort_options.most_used') },
+    { value: "highest-rated", label: t('pages.favorites.sort_options.highest_rated') },
+    { value: "name", label: t('pages.favorites.sort_options.name') },
+    { value: "price-low", label: t('pages.favorites.sort_options.price_low') },
+    { value: "price-high", label: t('pages.favorites.sort_options.price_high') }
   ];
 
   const filteredAndSortedFavorites = favorites
@@ -229,11 +231,11 @@ const UserFavorites = (): JSX.Element => {
     const now = new Date();
     const diffTime = Math.abs(now.getTime() - date.getTime());
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
-    if (diffDays === 1) return "i går";
-    if (diffDays < 7) return `${diffDays} dager siden`;
-    if (diffDays < 30) return `${Math.ceil(diffDays / 7)} uker siden`;
-    
+
+    if (diffDays === 1) return t('pages.favorites.date_formats.yesterday');
+    if (diffDays < 7) return t('pages.favorites.date_formats.days_ago', { count: diffDays });
+    if (diffDays < 30) return t('pages.favorites.date_formats.weeks_ago', { count: Math.ceil(diffDays / 7) });
+
     return date.toLocaleDateString('nb-NO', {
       year: 'numeric',
       month: 'long',
@@ -334,9 +336,9 @@ const UserFavorites = (): JSX.Element => {
           
           {/* Additional info for favorites */}
           <div className="mt-2 text-xs text-gray-500 dark:text-gray-500 text-center">
-            Lagt til {formatDate(facility.addedAt)}
+            {t('pages.favorites.added_at', { date: formatDate(facility.addedAt) })}
             {facility.usageCount && facility.usageCount > 0 && (
-              <span className="ml-2">• {facility.usageCount} besøk</span>
+              <span className="ml-2">• {t('pages.favorites.visits', { count: facility.usageCount })}</span>
             )}
           </div>
         </div>
@@ -371,12 +373,12 @@ const UserFavorites = (): JSX.Element => {
           
           {/* Additional info for favorites */}
           <div className="mt-2 text-xs text-gray-500 dark:text-gray-500 text-center">
-            Lagt til {formatDate(facility.addedAt)}
+            {t('pages.favorites.added_at', { date: formatDate(facility.addedAt) })}
             {facility.usageCount && facility.usageCount > 0 && (
-              <span className="ml-2">• {facility.usageCount} besøk</span>
+              <span className="ml-2">• {t('pages.favorites.visits', { count: facility.usageCount })}</span>
             )}
             {facility.lastVisited && (
-              <span className="ml-2">• Sist besøkt {formatDate(facility.lastVisited)}</span>
+              <span className="ml-2">• {t('pages.favorites.last_visited', { date: formatDate(facility.lastVisited) })}</span>
             )}
           </div>
         </div>
@@ -390,13 +392,13 @@ const UserFavorites = (): JSX.Element => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-            Favoritter
+            {t('pages.favorites.title')}
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
-            Her finner du lokalene du liker best. Du kan enkelt se tilgjengelighet, sammenligne priser og booke direkte.
+            {t('pages.favorites.subtitle')}
           </p>
           <p className="text-sm text-gray-500 dark:text-gray-500 mt-1">
-            {filteredAndSortedFavorites.length} lagrede lokaler
+            {t('pages.favorites.saved_count', { count: filteredAndSortedFavorites.length })}
           </p>
         </div>
       </div>
@@ -410,7 +412,7 @@ const UserFavorites = (): JSX.Element => {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
               <Input
                 type="text"
-                placeholder="Søk i favoritter..."
+                placeholder={t('pages.favorites.search_placeholder')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10"
@@ -420,7 +422,7 @@ const UserFavorites = (): JSX.Element => {
             {/* Sort Dropdown */}
             <div className="flex items-center space-x-2">
               <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                Sortér etter:
+                {t('pages.favorites.sort_by')}
               </span>
               <select
                 value={sortBy}
@@ -443,7 +445,7 @@ const UserFavorites = (): JSX.Element => {
               className="flex items-center gap-2"
             >
               <SlidersHorizontal className="w-4 h-4" />
-              Filter
+              {t('pages.favorites.filter')}
               <ChevronDown className={`w-4 h-4 transition-transform ${showFilters ? 'rotate-180' : ''}`} />
             </Button>
 
@@ -472,7 +474,7 @@ const UserFavorites = (): JSX.Element => {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 {/* Type Filter */}
                 <div>
-                  <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Type</h4>
+                  <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('pages.favorites.filters.type')}</h4>
                   <select
                     value={filterType}
                     onChange={(e) => setFilterType(e.target.value)}
@@ -488,7 +490,7 @@ const UserFavorites = (): JSX.Element => {
 
                 {/* Capacity Filter */}
                 <div>
-                  <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Kapasitet</h4>
+                  <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('pages.favorites.filters.capacity')}</h4>
                   <select
                     value={filterCapacity}
                     onChange={(e) => setFilterCapacity(e.target.value)}
@@ -504,7 +506,7 @@ const UserFavorites = (): JSX.Element => {
 
                 {/* Location Filter */}
                 <div>
-                  <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Lokasjon</h4>
+                  <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('pages.favorites.filters.location')}</h4>
                   <select
                     value={filterLocation}
                     onChange={(e) => setFilterLocation(e.target.value)}
@@ -520,7 +522,7 @@ const UserFavorites = (): JSX.Element => {
 
                 {/* Availability Filter */}
                 <div>
-                  <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Tilgjengelighet</h4>
+                  <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('pages.favorites.filters.availability')}</h4>
                   <select
                     value={filterAvailability}
                     onChange={(e) => setFilterAvailability(e.target.value)}
@@ -538,7 +540,7 @@ const UserFavorites = (): JSX.Element => {
               {/* Price Range */}
               <div className="mt-4">
                 <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Pris per time: {filterPrice[0]}–{filterPrice[1]} kr
+                  {t('pages.favorites.filters.price_range', { min: filterPrice[0], max: filterPrice[1] })}
                 </h4>
                 <div className="flex items-center space-x-4">
                   <input
@@ -572,18 +574,18 @@ const UserFavorites = (): JSX.Element => {
           <CardContent className="p-8 text-center">
             <Heart className="h-12 w-12 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
-              Du har ingen favoritter ennå
+              {t('pages.favorites.empty.title')}
             </h3>
             <p className="text-gray-600 dark:text-gray-400 mb-4">
               {searchTerm || filterType !== "all" || filterCapacity !== "all" || filterLocation !== "all" || filterAvailability !== "all"
-                ? "Ingen favoritter matcher søkekriteriene dine."
-                : "Gå til Lokaler for å finne dine favoritter!"
+                ? t('pages.favorites.empty.no_results')
+                : t('pages.favorites.empty.no_favorites')
               }
             </p>
             {!searchTerm && filterType === "all" && filterCapacity === "all" && filterLocation === "all" && filterAvailability === "all" && (
               <Button onClick={() => window.location.href = '/user/facilities'}>
                 <BookOpen className="h-4 w-4 mr-2" />
-                Utforsk lokaler
+                {t('pages.favorites.empty.explore_facilities')}
                 <ArrowRight className="h-4 w-4 ml-2" />
               </Button>
             )}

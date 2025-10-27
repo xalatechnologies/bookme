@@ -10,6 +10,7 @@ import FacilityListItemUser from "@/components/features/facilities/components/Fa
 import ViewToggleUser from "@/components/features/facilities/components/FacilitySearch/ViewToggle";
 import FilterBarUser from "@/components/features/facilities/components/FacilitySearch/FilterBar";
 import { MapView } from "@/components/features/facilities/components/FacilityMap/MapView";
+import { useTranslation } from "react-i18next";
 
 interface IUserFacility {
   readonly id: string;
@@ -28,6 +29,7 @@ interface IUserFacility {
 }
 
 const UserFacilities = (): JSX.Element => {
+  const { t } = useTranslation('user');
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [viewMode, setViewMode] = useState<"grid" | "list" | "map">("grid");
   const [selectedType, setSelectedType] = useState<string>("all");
@@ -216,10 +218,10 @@ const UserFacilities = (): JSX.Element => {
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-          Tilgjengelige lokaler
+          {t('pages.facilities.title')}
         </h1>
         <p className="text-gray-600 dark:text-gray-400">
-          Utforsk og book lokaler som passer dine behov
+          {t('pages.facilities.subtitle')}
         </p>
       </div>
 
@@ -242,11 +244,11 @@ const UserFacilities = (): JSX.Element => {
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-2">
           <span className="text-sm text-gray-600 dark:text-gray-400">
-            {filteredAndSortedFacilities.length} lokaler funnet
+            {t('pages.facilities.results_count', { count: filteredAndSortedFacilities.length })}
           </span>
           {showAvailableOnly && (
             <span className="text-xs text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-900/30 px-2 py-1 rounded-full">
-              Kun ledige
+              {t('pages.facilities.available_only')}
             </span>
           )}
         </div>
@@ -274,12 +276,12 @@ const UserFacilities = (): JSX.Element => {
           <CardContent className="p-8 text-center">
             <Map className="h-12 w-12 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
-              Ingen lokaler funnet
+              {t('pages.facilities.empty.title')}
             </h3>
             <p className="text-gray-600 dark:text-gray-400 mb-4">
               {searchQuery || selectedType !== "all" || showAvailableOnly
-                ? "Prøv å justere søkekriteriene dine."
-                : "Det er ingen lokaler tilgjengelige for øyeblikket."
+                ? t('pages.facilities.empty.no_results')
+                : t('pages.facilities.empty.no_facilities')
               }
             </p>
             {(searchQuery || selectedType !== "all" || showAvailableOnly) && (
@@ -292,7 +294,7 @@ const UserFacilities = (): JSX.Element => {
                   }}
                   className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 text-sm"
                 >
-                  Tilbakestill filtre
+                  {t('pages.facilities.empty.reset_filters')}
                 </button>
               </div>
             )}

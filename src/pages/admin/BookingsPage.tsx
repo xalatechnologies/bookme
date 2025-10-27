@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useMemo, useCallback, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { RequireRole } from "@/components/features/auth/components/RequireRole";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -120,6 +121,7 @@ interface IFilterState {
 }
 
 const BookingKPICard = ({ title, value, color, icon: Icon, subtext, onClick, trend }: IBookingKPICardProps): JSX.Element => {
+  const { t } = useTranslation('admin');
   const colorClasses = {
     blue: "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800 hover:bg-blue-100 dark:hover:bg-blue-900/30",
     orange: "bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400 border-orange-200 dark:border-orange-800 hover:bg-orange-100 dark:hover:bg-orange-900/30",
@@ -143,7 +145,7 @@ const BookingKPICard = ({ title, value, color, icon: Icon, subtext, onClick, tre
             <p className="text-xs opacity-70 mt-1">{subtext}</p>
             {trend && (
               <p className={`text-xs ${trend.isPositive ? 'text-green-600' : 'text-red-600'} mt-1`}>
-                {trend.isPositive ? '+' : ''}{trend.value}% fra i går
+                {trend.isPositive ? '+' : ''}{trend.value}% {t('dashboard.trends.since_yesterday')}
               </p>
             )}
           </div>
@@ -155,6 +157,7 @@ const BookingKPICard = ({ title, value, color, icon: Icon, subtext, onClick, tre
 };
 
 const FilterModal = ({ isOpen, onClose, onApplyFilters }: IFilterModalProps): JSX.Element => {
+  const { t } = useTranslation('admin');
   const [filters, setFilters] = useState<IFilterState>({
     dateFrom: "",
     dateTo: "",
@@ -186,7 +189,7 @@ const FilterModal = ({ isOpen, onClose, onApplyFilters }: IFilterModalProps): JS
         <div className="p-6">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-              Avanserte filtre
+              {t('pages.bookings.filters.advanced_title')}
             </h2>
             <Button variant="ghost" size="sm" onClick={onClose}>
               <X className="h-4 w-4" />
@@ -196,7 +199,7 @@ const FilterModal = ({ isOpen, onClose, onApplyFilters }: IFilterModalProps): JS
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Dato fra
+                {t('pages.bookings.filters.date_from')}
               </label>
               <Input
                 type="date"
@@ -207,7 +210,7 @@ const FilterModal = ({ isOpen, onClose, onApplyFilters }: IFilterModalProps): JS
 
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Dato til
+                {t('pages.bookings.filters.date_to')}
               </label>
               <Input
                 type="date"
@@ -218,63 +221,63 @@ const FilterModal = ({ isOpen, onClose, onApplyFilters }: IFilterModalProps): JS
 
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Lokaletype
+                {t('pages.bookings.filters.facility_type')}
               </label>
               <select
                 value={filters.facilityType}
                 onChange={(e) => setFilters({ ...filters, facilityType: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
               >
-                <option value="">Alle typer</option>
-                <option value="idrettshall">Idrettshall</option>
-                <option value="kulturhus">Kulturhus</option>
-                <option value="møterom">Møterom</option>
-                <option value="hall">Hall</option>
+                <option value="">{t('pages.bookings.filters.all_types')}</option>
+                <option value="idrettshall">{t('pages.bookings.filters.sports_hall')}</option>
+                <option value="kulturhus">{t('pages.bookings.filters.culture_house')}</option>
+                <option value="møterom">{t('pages.bookings.filters.meeting_room')}</option>
+                <option value="hall">{t('pages.bookings.filters.hall')}</option>
               </select>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Behandler
+                {t('pages.bookings.filters.handler')}
               </label>
               <select
                 value={filters.handler}
                 onChange={(e) => setFilters({ ...filters, handler: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
               >
-                <option value="">Alle behandlere</option>
-                <option value="admin">Admin</option>
-                <option value="saksbehandler">Saksbehandler</option>
+                <option value="">{t('pages.bookings.filters.all_handlers')}</option>
+                <option value="admin">{t('pages.bookings.filters.admin')}</option>
+                <option value="saksbehandler">{t('pages.bookings.filters.case_worker')}</option>
               </select>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Varighet
+                {t('pages.bookings.filters.duration')}
               </label>
               <select
                 value={filters.duration}
                 onChange={(e) => setFilters({ ...filters, duration: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
               >
-                <option value="">Alle varigheter</option>
-                <option value="1">1 time</option>
-                <option value="2">2 timer</option>
-                <option value="4">4 timer</option>
-                <option value="8">8 timer</option>
+                <option value="">{t('pages.bookings.filters.all_durations')}</option>
+                <option value="1">{t('pages.bookings.filters.one_hour')}</option>
+                <option value="2">{t('pages.bookings.filters.two_hours')}</option>
+                <option value="4">{t('pages.bookings.filters.four_hours')}</option>
+                <option value="8">{t('pages.bookings.filters.eight_hours')}</option>
               </select>
             </div>
           </div>
 
           <div className="flex justify-end space-x-3 mt-6">
             <Button variant="outline" onClick={handleReset}>
-              Tilbakestill
+              {t('common:actions.reset')}
             </Button>
             <Button variant="outline" onClick={onClose}>
-              Avbryt
+              {t('common:actions.cancel')}
             </Button>
             <Button onClick={handleApply}>
-              Bruk filtre
+              {t('common:actions.applyFilters')}
             </Button>
           </div>
         </div>
@@ -284,12 +287,13 @@ const FilterModal = ({ isOpen, onClose, onApplyFilters }: IFilterModalProps): JS
 };
 
 const BookingRow = ({ booking, onApprove, onReject, onViewDetails, onDelete, isSelected, onSelect }: IBookingRowProps): JSX.Element => {
+  const { t } = useTranslation('admin');
   const getStatusBadge = (status: IBooking["status"]): JSX.Element => {
     const statusConfig = {
-      pending: { label: "Ventende", className: "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300" },
-      approved: { label: "Godkjent", className: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300" },
-      rejected: { label: "Avvist", className: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300" },
-      cancelled: { label: "Avlyst", className: "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300" }
+      pending: { label: t('common:status.pending'), className: "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300" },
+      approved: { label: t('common:status.approved'), className: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300" },
+      rejected: { label: t('common:status.rejected'), className: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300" },
+      cancelled: { label: t('common:status.cancelled'), className: "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300" }
     };
 
     const config = statusConfig[status];
@@ -348,7 +352,7 @@ const BookingRow = ({ booking, onApprove, onReject, onViewDetails, onDelete, isS
             </div>
             <div className="flex items-center space-x-4 text-sm text-gray-600 dark:text-gray-400">
               <span>
-                {booking.startTime}-{booking.endTime} ({booking.duration === 1 ? '1 time' : `${booking.duration} timer`})
+                {booking.startTime}-{booking.endTime} ({booking.duration === 1 ? t('common:time.hour_singular') : t('common:time.hours_plural', { count: booking.duration })})
               </span>
               <span>
                 {new Date(booking.startDate).toLocaleDateString('nb-NO')}
@@ -368,7 +372,7 @@ const BookingRow = ({ booking, onApprove, onReject, onViewDetails, onDelete, isS
                   onViewDetails(booking.id);
                 }}
                 className="flex items-center justify-center p-2"
-                title="Vis detaljer"
+                title={t('pages.bookings.actions.view_details')}
               >
                 <Eye className="w-4 h-4" />
               </Button>
@@ -380,7 +384,7 @@ const BookingRow = ({ booking, onApprove, onReject, onViewDetails, onDelete, isS
                   onDelete(booking.id);
                 }}
                 className="flex items-center justify-center p-2 text-red-600 hover:text-red-700 hover:bg-red-50"
-                title="Slett"
+                title={t('common:actions.delete')}
               >
                 <Trash2 className="w-4 h-4" />
               </Button>
@@ -394,7 +398,7 @@ const BookingRow = ({ booking, onApprove, onReject, onViewDetails, onDelete, isS
                       onApprove(booking.id);
                     }}
                     className="flex items-center justify-center p-2 text-green-600 hover:text-green-700 hover:bg-green-50"
-                    title="Godkjenn"
+                    title={t('pages.bookings.actions.approve')}
                   >
                     <Check className="w-4 h-4" />
           </Button>
@@ -406,7 +410,7 @@ const BookingRow = ({ booking, onApprove, onReject, onViewDetails, onDelete, isS
                       onReject(booking.id);
                     }}
                     className="flex items-center justify-center p-2 text-red-600 hover:text-red-700 hover:bg-red-50"
-                    title="Avvis"
+                    title={t('pages.bookings.actions.reject')}
                   >
                     <X className="w-4 h-4" />
           </Button>
@@ -421,6 +425,7 @@ const BookingRow = ({ booking, onApprove, onReject, onViewDetails, onDelete, isS
 };
 
 const BookingDetailModal = ({ booking, isOpen, onClose, onApprove, onReject, onDelete }: IBookingDetailModalProps): JSX.Element => {
+  const { t } = useTranslation('admin');
   if (!isOpen || !booking) return <></>;
 
   const formatDateTime = (date: string, time: string): string => {
@@ -621,6 +626,7 @@ const BookingDetailModal = ({ booking, isOpen, onClose, onApprove, onReject, onD
 };
 
 const BookingsPage = (): JSX.Element => {
+  const { t } = useTranslation('admin');
   const [activeTab, setActiveTab] = useState<"all" | "pending" | "approved" | "rejected">("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [selectedBookings, setSelectedBookings] = useState<Set<string>>(new Set());
@@ -1038,10 +1044,10 @@ const BookingsPage = (): JSX.Element => {
   }, []);
 
   const tabs = [
-    { id: "all", label: "Alle", count: bookings.length },
-    { id: "pending", label: "Ventende", count: bookings.filter(b => b.status === "pending").length },
-    { id: "approved", label: "Godkjent", count: bookings.filter(b => b.status === "approved").length },
-    { id: "rejected", label: "Avvist", count: bookings.filter(b => b.status === "rejected").length }
+    { id: "all", label: t('pages.bookings.tabs.all'), count: bookings.length },
+    { id: "pending", label: t('pages.bookings.tabs.pending'), count: bookings.filter(b => b.status === "pending").length },
+    { id: "approved", label: t('pages.bookings.tabs.approved'), count: bookings.filter(b => b.status === "approved").length },
+    { id: "rejected", label: t('pages.bookings.tabs.rejected'), count: bookings.filter(b => b.status === "rejected").length }
   ] as const;
 
   return (
@@ -1051,10 +1057,10 @@ const BookingsPage = (): JSX.Element => {
         <header className="space-y-4">
           <div className="space-y-1">
           <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">
-            Bookinger & Godkjenninger
+            {t('pages.bookings.title')}
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
-            Administrer alle bookinger og godkjenningsprosesser i systemet.
+            {t('pages.bookings.subtitle')}
           </p>
           </div>
         </header>
@@ -1062,35 +1068,35 @@ const BookingsPage = (): JSX.Element => {
         {/* KPI Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <BookingKPICard
-            title="Totalt antall bookinger"
+            title={t('pages.bookings.kpi.total_bookings')}
             value={kpiData.total}
             color="blue"
             icon={Calendar}
-            subtext="Aktive siste 30 dager"
+            subtext={t('pages.bookings.kpi.active_last_30')}
             onClick={() => setActiveTab("all")}
           />
           <BookingKPICard
-            title="Ventende godkjenninger"
+            title={t('pages.bookings.kpi.pending_approvals')}
             value={kpiData.pending}
             color="orange"
             icon={AlertCircle}
-            subtext="Trenger behandling"
+            subtext={t('pages.bookings.kpi.requires_action')}
             onClick={() => setActiveTab("pending")}
           />
           <BookingKPICard
-            title="Godkjent i dag"
+            title={t('pages.bookings.kpi.approved_today')}
             value={kpiData.approvedToday}
             color="green"
             icon={CheckCircle}
-            subtext="Behandlet i dag"
+            subtext={t('pages.bookings.kpi.processed_today')}
             onClick={() => setActiveTab("approved")}
           />
           <BookingKPICard
-            title="Avvist i dag"
+            title={t('pages.bookings.kpi.rejected_today')}
             value={kpiData.rejectedToday}
             color="red"
             icon={XCircle}
-            subtext="Avvist i dag"
+            subtext={t('pages.bookings.kpi.rejected_today_sub')}
             onClick={() => setActiveTab("rejected")}
           />
         </div>
@@ -1122,19 +1128,19 @@ const BookingsPage = (): JSX.Element => {
                   <div className="relative flex-1">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                     <Input
-                      placeholder="Søk bookinger..."
+                      placeholder={t('pages.bookings.search_placeholder')}
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       className="pl-10"
                     />
                   </div>
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     size="sm"
                     onClick={() => setIsFilterModalOpen(true)}
                   >
                     <Filter className="h-4 w-4 mr-2" />
-                    Filter
+                    {t('common:actions.filter')}
                   </Button>
                 </div>
               </div>
@@ -1160,17 +1166,17 @@ const BookingsPage = (): JSX.Element => {
                     }}
                   />
                   <span className="text-sm text-gray-600 dark:text-gray-400">
-                    Velg alle ({(() => {
+                    {t('pages.bookings.select_all', { count: (() => {
                       const allBookings = [...groupedRecurring.values()].flat().concat(singletonBookings);
                       return allBookings.length;
-                    })()})
+                    })() })}
                   </span>
                 </div>
                 
             {selectedBookings.size > 0 && (
                   <div className="flex items-center gap-2">
                     <span className="text-sm text-gray-600 dark:text-gray-400">
-                      {selectedBookings.size} valgt
+                      {t('pages.bookings.selected_count', { count: selectedBookings.size })}
                     </span>
                   </div>
                 )}
@@ -1187,7 +1193,7 @@ const BookingsPage = (): JSX.Element => {
               return (
               <div className="flex items-center justify-between bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
                 <span className="text-sm text-blue-700 dark:text-blue-300">
-                  {selectedBookings.size} booking(er) valgt
+                  {t('pages.bookings.bulk_selected', { count: selectedBookings.size })}
                 </span>
                 <div className="flex space-x-2">
                     {hasPending && (
@@ -1198,7 +1204,7 @@ const BookingsPage = (): JSX.Element => {
                     className="bg-green-600 hover:bg-green-700 text-white"
                   >
                     <Check className="h-4 w-4 mr-1" />
-                    Godkjenn alle
+                    {t('pages.bookings.bulk_approve_all')}
                   </Button>
                   <Button
                     size="sm"
@@ -1206,7 +1212,7 @@ const BookingsPage = (): JSX.Element => {
                     onClick={handleBulkReject}
                   >
                     <X className="h-4 w-4 mr-1" />
-                    Avvis alle
+                    {t('pages.bookings.bulk_reject_all')}
                   </Button>
                       </>
                     )}
@@ -1218,7 +1224,7 @@ const BookingsPage = (): JSX.Element => {
                         className="bg-red-600 hover:bg-red-700 text-white"
                       >
                         <Trash2 className="h-4 w-4 mr-1" />
-                        Slett alle
+                        {t('pages.bookings.bulk_delete_all')}
                       </Button>
                     )}
                 </div>
@@ -1234,10 +1240,10 @@ const BookingsPage = (): JSX.Element => {
                 <div className="text-center py-12">
                   <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                   <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
-                    Ingen bookinger funnet
+                    {t('pages.bookings.empty.no_bookings')}
                   </h3>
                   <p className="text-gray-600 dark:text-gray-400">
-                    {searchQuery ? "Prøv å endre søkekriteriene" : "Det er ingen bookinger å vise for øyeblikket"}
+                    {searchQuery ? t('pages.bookings.empty.try_different_criteria') : t('pages.bookings.empty.no_bookings_currently')}
                   </p>
                 </div>
               ) : (
@@ -1245,19 +1251,19 @@ const BookingsPage = (): JSX.Element => {
                   {/* Recurring groups */}
                   {[...groupedRecurring.entries()].map(([groupId, items]) => {
                     const first = items[0];
-                    const title = `${first.title} – Gjentakende`;
+                    const title = `${first.title} – ${t('pages.bookings.recurring')}`;
                     const dates = items.map(i => i.startDate).sort();
                     const period = `${new Date(dates[0]).toLocaleDateString('nb-NO')} – ${new Date(dates[dates.length-1]).toLocaleDateString('nb-NO')}`;
                     const uniqueStatuses = Array.from(new Set(items.map(i => i.status)));
                     let badgeColor = "bg-yellow-100 text-yellow-800";
-                    let badgeText = "Ventende";
+                    let badgeText = t('common:status.pending');
                     if (uniqueStatuses.length === 1) {
-                      if (uniqueStatuses[0] === 'approved') { badgeColor = "bg-green-100 text-green-800"; badgeText = "Godkjent"; }
-                      else if (uniqueStatuses[0] === 'rejected') { badgeColor = "bg-red-100 text-red-800"; badgeText = "Avvist"; }
+                      if (uniqueStatuses[0] === 'approved') { badgeColor = "bg-green-100 text-green-800"; badgeText = t('common:status.approved'); }
+                      else if (uniqueStatuses[0] === 'rejected') { badgeColor = "bg-red-100 text-red-800"; badgeText = t('common:status.rejected'); }
                     } else {
                       // Mixed statuses
-                      if (uniqueStatuses.includes('pending')) { badgeColor = "bg-yellow-100 text-yellow-800"; badgeText = "Delvis ventende"; }
-                      else { badgeColor = "bg-blue-100 text-blue-800"; badgeText = "Delvis godkjent"; }
+                      if (uniqueStatuses.includes('pending')) { badgeColor = "bg-yellow-100 text-yellow-800"; badgeText = t('pages.bookings.status_mixed_pending'); }
+                      else { badgeColor = "bg-blue-100 text-blue-800"; badgeText = t('pages.bookings.status_mixed_approved'); }
                     }
                     return (
                       <div key={`group-${groupId}`} className="flex items-start gap-4">
@@ -1299,8 +1305,8 @@ const BookingsPage = (): JSX.Element => {
                                 </div>
                                 <div className="text-sm text-gray-600 dark:text-gray-400">
                                   <div className="flex flex-wrap gap-4">
-                                    <span>{items.length} forekomster</span>
-                                    <span>Periode: {period}</span>
+                                    <span>{t('pages.bookings.occurrences_count', { count: items.length })}</span>
+                                    <span>{t('pages.bookings.period')}: {period}</span>
                                   </div>
                                 </div>
                               </div>
@@ -1314,7 +1320,7 @@ const BookingsPage = (): JSX.Element => {
                                     handleViewDetails(first.id);
                                   }}
                                   className="flex items-center justify-center p-2"
-                                  title="Vis detaljer"
+                                  title={t('pages.bookings.actions.view_details')}
                                 >
                                   <Eye className="w-4 h-4" />
                                 </Button>
@@ -1327,7 +1333,7 @@ const BookingsPage = (): JSX.Element => {
                                     itemIds.forEach(id => handleDelete(id));
                                   }}
                                   className="flex items-center justify-center p-2 text-red-600 hover:text-red-700 hover:bg-red-50"
-                                  title="Slett"
+                                  title={t('common:actions.delete')}
                                 >
                                   <Trash2 className="w-4 h-4" />
                                 </Button>
@@ -1342,7 +1348,7 @@ const BookingsPage = (): JSX.Element => {
                                         itemIds.forEach(id => handleApprove(id));
                                       }}
                                       className="flex items-center justify-center p-2 text-green-600 hover:text-green-700 hover:bg-green-50"
-                                      title="Godkjenn"
+                                      title={t('pages.bookings.actions.approve')}
                                     >
                                       <Check className="w-4 h-4" />
                                     </Button>
@@ -1355,7 +1361,7 @@ const BookingsPage = (): JSX.Element => {
                                         itemIds.forEach(id => handleReject(id));
                                       }}
                                       className="flex items-center justify-center p-2 text-red-600 hover:text-red-700 hover:bg-red-50"
-                                      title="Avvis"
+                                      title={t('pages.bookings.actions.reject')}
                                     >
                                       <X className="w-4 h-4" />
                                     </Button>
@@ -1393,32 +1399,32 @@ const BookingsPage = (): JSX.Element => {
           <CardHeader>
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle className="text-lg">Godkjenningsflyter</CardTitle>
+                <CardTitle className="text-lg">{t('pages.bookings.workflows.title')}</CardTitle>
                 <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                  Administrer regler og flyter for godkjenning av bookinger
+                  {t('pages.bookings.workflows.subtitle')}
                 </p>
                 <p className="text-xs text-gray-500 dark:text-gray-500 mt-2">
-                  Definer hvordan ulike typer bookinger behandles og hvem som må godkjenne dem.
+                  {t('pages.bookings.workflows.description')}
                 </p>
               </div>
               <Button size="sm">
                 <Plus className="h-4 w-4 mr-2" />
-                Opprett ny flyt
+                {t('pages.bookings.workflows.create_new')}
               </Button>
             </div>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               {[
-                { name: "Skolebookinger", description: "Automatisk godkjenning for skoler", status: "Aktiv", isActive: true },
-                { name: "Idrettslag", description: "Manuell godkjenning påkrevd", status: "Aktiv", isActive: true },
-                { name: "Kommersiell leie", description: "Godkjenning av saksbehandler påkrevd", status: "Aktiv", isActive: true }
+                { name: t('pages.bookings.workflows.examples.schools_name'), description: t('pages.bookings.workflows.examples.schools_desc'), status: t('pages.bookings.workflows.status_active'), isActive: true },
+                { name: t('pages.bookings.workflows.examples.sports_name'), description: t('pages.bookings.workflows.examples.sports_desc'), status: t('pages.bookings.workflows.status_active'), isActive: true },
+                { name: t('pages.bookings.workflows.examples.commercial_name'), description: t('pages.bookings.workflows.examples.commercial_desc'), status: t('pages.bookings.workflows.status_active'), isActive: true }
               ].map((workflow, index) => (
-                <div 
-                  key={index} 
+                <div
+                  key={index}
                   className={`flex items-center justify-between p-4 border rounded-lg transition-all duration-200 cursor-pointer hover:shadow-md ${
-                    workflow.isActive 
-                      ? 'border-gray-200 dark:border-gray-700 hover:border-green-300 dark:hover:border-green-600' 
+                    workflow.isActive
+                      ? 'border-gray-200 dark:border-gray-700 hover:border-green-300 dark:hover:border-green-600'
                       : 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50'
                   }`}
                 >
@@ -1435,7 +1441,7 @@ const BookingsPage = (): JSX.Element => {
                     </Badge>
                     <Button size="sm" variant="outline">
                       <Settings className="h-4 w-4 mr-1" />
-                      Rediger
+                      {t('common:actions.edit')}
                     </Button>
                   </div>
                 </div>

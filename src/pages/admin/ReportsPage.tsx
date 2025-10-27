@@ -1,17 +1,18 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { RequireRole } from "@/components/features/auth/components/RequireRole";
 import SystemPageLayout from "@/components/layouts/AdminLayout/SystemPageLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { 
-  BarChart3, 
-  Users, 
-  Calendar, 
-  Download, 
+import {
+  BarChart3,
+  Users,
+  Calendar,
+  Download,
   TrendingUp,
   TrendingDown,
   CheckCircle,
@@ -46,6 +47,7 @@ interface IPopularFacility {
 }
 
 const ReportsPage = (): JSX.Element => {
+  const { t } = useTranslation('admin');
   const [dateFrom, setDateFrom] = useState<string>("");
   const [dateTo, setDateTo] = useState<string>("");
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -140,21 +142,21 @@ const ReportsPage = (): JSX.Element => {
 
   const getStatusBadge = (status: IUserActivity["status"]): JSX.Element => {
     const statusConfig = {
-      active: { 
-        label: "Aktiv", 
+      active: {
+        label: t('pages.reports.status.active'),
         className: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300",
         icon: CheckCircle
       },
-      inactive: { 
-        label: "Inaktiv", 
+      inactive: {
+        label: t('pages.reports.status.inactive'),
         className: "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300",
         icon: Clock
       }
     };
-    
+
     const config = statusConfig[status];
     const Icon = config.icon;
-    
+
     return (
       <Badge className={config.className}>
         <Icon className="h-3 w-3 mr-1" />
@@ -174,11 +176,11 @@ const ReportsPage = (): JSX.Element => {
   const handleExportCSV = (): void => {
     try {
       const csvHeaders = [
-        'Bruker',
-        'E-post',
-        'Antall handlinger',
-        'Sist aktiv',
-        'Status'
+        t('pages.reports.table.user'),
+        t('pages.reports.table.email'),
+        t('pages.reports.table.actions_count'),
+        t('pages.reports.table.last_active'),
+        t('pages.reports.table.status')
       ];
       
       const csvData = filteredUsers.map(user => [
@@ -197,14 +199,14 @@ const ReportsPage = (): JSX.Element => {
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `rapport-brukeraktivitet-${new Date().toISOString().split('T')[0]}.csv`;
+      link.download = `${t('pages.reports.export.filename_user_activity')}-${new Date().toISOString().split('T')[0]}.csv`;
       link.click();
       URL.revokeObjectURL(url);
-      
-      alert('Rapport eksportert til CSV!');
+
+      alert(t('pages.reports.export.csv_success'));
     } catch (error) {
       console.error('Failed to export CSV:', error);
-      alert('Kunne ikke eksportere CSV. Prøv igjen.');
+      alert(t('pages.reports.export.csv_error'));
     }
   };
 
@@ -212,64 +214,64 @@ const ReportsPage = (): JSX.Element => {
     try {
       // Simulate PDF generation
       const reportData = {
-        title: 'BookMe Rapport',
+        title: t('pages.reports.export.report_title'),
         date: new Date().toLocaleDateString('nb-NO'),
         bookingStats,
         userActivity: filteredUsers,
         popularFacilities
       };
-      
+
       // Create a simple text-based PDF simulation
       const pdfContent = `
-BOOKME RAPPORT
-Generert: ${reportData.date}
+${t('pages.reports.export.report_title').toUpperCase()}
+${t('pages.reports.export.generated')}: ${reportData.date}
 
-BOOKING STATISTIKK
+${t('pages.reports.export.booking_statistics').toUpperCase()}
 ==================
-Totalt bookinger: ${bookingStats.total}
-Godkjente: ${bookingStats.approved} (${((bookingStats.approved / bookingStats.total) * 100).toFixed(1)}%)
-Avviste: ${bookingStats.rejected} (${((bookingStats.rejected / bookingStats.total) * 100).toFixed(1)}%)
-Ventende: ${bookingStats.pending}
+${t('pages.reports.kpi.total_bookings')}: ${bookingStats.total}
+${t('pages.reports.kpi.approved')}: ${bookingStats.approved} (${((bookingStats.approved / bookingStats.total) * 100).toFixed(1)}%)
+${t('pages.reports.kpi.rejected')}: ${bookingStats.rejected} (${((bookingStats.rejected / bookingStats.total) * 100).toFixed(1)}%)
+${t('pages.reports.kpi.pending')}: ${bookingStats.pending}
 
-MEST BRUKTE LOKALER
+${t('pages.reports.popular_facilities_title').toUpperCase()}
 ===================
-${popularFacilities.map(f => `• ${f.name}: ${f.bookings} bookinger (${f.change > 0 ? '+' : ''}${f.change}%)`).join('\n')}
+${popularFacilities.map(f => `• ${f.name}: ${f.bookings} ${t('pages.reports.bookings')} (${f.change > 0 ? '+' : ''}${f.change}%)`).join('\n')}
 
-BRUKERAKTIVITET
+${t('pages.reports.user_activity_title').toUpperCase()}
 ===============
-${filteredUsers.map(u => `• ${u.name} (${u.email}): ${u.actionsCount} handlinger, sist aktiv ${formatDateTime(u.lastActive)}`).join('\n')}
+${filteredUsers.map(u => `• ${u.name} (${u.email}): ${u.actionsCount} ${t('pages.reports.table.actions')}, ${t('pages.reports.table.last_active')} ${formatDateTime(u.lastActive)}`).join('\n')}
       `.trim();
       
       const blob = new Blob([pdfContent], { type: 'text/plain' });
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `rapport-${new Date().toISOString().split('T')[0]}.txt`;
+      link.download = `${t('pages.reports.export.filename_report')}-${new Date().toISOString().split('T')[0]}.txt`;
       link.click();
       URL.revokeObjectURL(url);
-      
-      alert('Rapport eksportert! (Simulert PDF som tekstfil)');
+
+      alert(t('pages.reports.export.pdf_success'));
     } catch (error) {
       console.error('Failed to export PDF:', error);
-      alert('Kunne ikke eksportere PDF. Prøv igjen.');
+      alert(t('pages.reports.export.pdf_error'));
     }
   };
 
   return (
     <RequireRole roles={["org-admin", "system-admin", "facility-manager"]}>
       <SystemPageLayout
-        title="Rapporter"
-        description="Oversikt over aktivitet og bruk i systemet"
-        searchPlaceholder="Søk brukere..."
+        title={t('pages.reports.title')}
+        description={t('pages.reports.description')}
+        searchPlaceholder={t('pages.reports.search_placeholder')}
         onSearch={setSearchQuery}
         secondaryActions={[
           {
-            label: "Last ned CSV",
+            label: t('pages.reports.actions.download_csv'),
             icon: Download,
             onClick: handleExportCSV
           },
           {
-            label: "Last ned PDF",
+            label: t('pages.reports.actions.download_pdf'),
             icon: Download,
             onClick: handleExportPDF
           }
@@ -278,13 +280,13 @@ ${filteredUsers.map(u => `• ${u.name} (${u.email}): ${u.actionsCount} handling
         {/* Date Range Filter */}
         <Card>
           <CardHeader>
-            <CardTitle>Velg datointervall</CardTitle>
+            <CardTitle>{t('pages.reports.date_range.title')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex flex-col sm:flex-row gap-4">
               <div className="flex-1">
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Fra dato
+                  {t('pages.reports.date_range.from_date')}
                 </label>
                 <Input
                   type="date"
@@ -294,7 +296,7 @@ ${filteredUsers.map(u => `• ${u.name} (${u.email}): ${u.actionsCount} handling
               </div>
               <div className="flex-1">
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Til dato
+                  {t('pages.reports.date_range.to_date')}
                 </label>
                 <Input
                   type="date"
@@ -312,10 +314,10 @@ ${filteredUsers.map(u => `• ${u.name} (${u.email}): ${u.actionsCount} handling
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Totalt bookinger</p>
+                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">{t('pages.reports.kpi.total_bookings')}</p>
                   <p className="text-2xl font-bold text-gray-900 dark:text-white">{bookingStats.total}</p>
                   <p className="text-xs text-gray-500 dark:text-gray-500">
-                    {bookingStats.monthlyChange > 0 ? '+' : ''}{bookingStats.monthlyChange}% fra forrige måned
+                    {bookingStats.monthlyChange > 0 ? '+' : ''}{bookingStats.monthlyChange}% {t('pages.reports.kpi.from_last_month')}
                   </p>
                 </div>
                 <Calendar className="h-8 w-8 text-blue-600 dark:text-blue-400" />
@@ -327,10 +329,10 @@ ${filteredUsers.map(u => `• ${u.name} (${u.email}): ${u.actionsCount} handling
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Godkjente</p>
+                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">{t('pages.reports.kpi.approved')}</p>
                   <p className="text-2xl font-bold text-green-600 dark:text-green-400">{bookingStats.approved}</p>
                   <p className="text-xs text-gray-500 dark:text-gray-500">
-                    {((bookingStats.approved / bookingStats.total) * 100).toFixed(1)}% godkjenningsrate
+                    {((bookingStats.approved / bookingStats.total) * 100).toFixed(1)}% {t('pages.reports.kpi.approval_rate')}
                   </p>
                 </div>
                 <CheckCircle className="h-8 w-8 text-green-600 dark:text-green-400" />
@@ -342,10 +344,10 @@ ${filteredUsers.map(u => `• ${u.name} (${u.email}): ${u.actionsCount} handling
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Avviste</p>
+                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">{t('pages.reports.kpi.rejected')}</p>
                   <p className="text-2xl font-bold text-red-600 dark:text-red-400">{bookingStats.rejected}</p>
                   <p className="text-xs text-gray-500 dark:text-gray-500">
-                    {((bookingStats.rejected / bookingStats.total) * 100).toFixed(1)}% avvisningsrate
+                    {((bookingStats.rejected / bookingStats.total) * 100).toFixed(1)}% {t('pages.reports.kpi.rejection_rate')}
                   </p>
                 </div>
                 <XCircle className="h-8 w-8 text-red-600 dark:text-red-400" />
@@ -357,10 +359,10 @@ ${filteredUsers.map(u => `• ${u.name} (${u.email}): ${u.actionsCount} handling
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Ventende</p>
+                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">{t('pages.reports.kpi.pending')}</p>
                   <p className="text-2xl font-bold text-orange-600 dark:text-orange-400">{bookingStats.pending}</p>
                   <p className="text-xs text-gray-500 dark:text-gray-500">
-                    Trenger behandling
+                    {t('pages.reports.kpi.requires_processing')}
                   </p>
                 </div>
                 <Clock className="h-8 w-8 text-orange-600 dark:text-orange-400" />
@@ -374,7 +376,7 @@ ${filteredUsers.map(u => `• ${u.name} (${u.email}): ${u.actionsCount} handling
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Building2 className="h-5 w-5" />
-              Mest brukte lokaler
+              {t('pages.reports.popular_facilities_title')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -391,7 +393,7 @@ ${filteredUsers.map(u => `• ${u.name} (${u.email}): ${u.actionsCount} handling
                         {facility.name}
                       </h4>
                       <p className="text-sm text-gray-600 dark:text-gray-400">
-                        {facility.bookings} bookinger
+                        {facility.bookings} {t('pages.reports.bookings')}
                       </p>
                     </div>
                     <div className="flex items-center space-x-2">
@@ -412,7 +414,7 @@ ${filteredUsers.map(u => `• ${u.name} (${u.email}): ${u.actionsCount} handling
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Users className="h-5 w-5" />
-              Brukeraktivitet
+              {t('pages.reports.user_activity_title')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -420,10 +422,10 @@ ${filteredUsers.map(u => `• ${u.name} (${u.email}): ${u.actionsCount} handling
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-gray-200 dark:border-gray-700">
-                    <th className="text-left py-3 px-4 font-medium text-gray-900 dark:text-white">Bruker</th>
-                    <th className="text-left py-3 px-4 font-medium text-gray-900 dark:text-white">Antall handlinger</th>
-                    <th className="text-left py-3 px-4 font-medium text-gray-900 dark:text-white">Sist aktiv</th>
-                    <th className="text-left py-3 px-4 font-medium text-gray-900 dark:text-white">Status</th>
+                    <th className="text-left py-3 px-4 font-medium text-gray-900 dark:text-white">{t('pages.reports.table.user')}</th>
+                    <th className="text-left py-3 px-4 font-medium text-gray-900 dark:text-white">{t('pages.reports.table.actions_count')}</th>
+                    <th className="text-left py-3 px-4 font-medium text-gray-900 dark:text-white">{t('pages.reports.table.last_active')}</th>
+                    <th className="text-left py-3 px-4 font-medium text-gray-900 dark:text-white">{t('pages.reports.table.status')}</th>
                   </tr>
                 </thead>
                 <tbody>
