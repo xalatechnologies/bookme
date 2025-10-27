@@ -8,10 +8,10 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { useFacilityStore } from "@/stores/facilityStore";
-import FacilityCardUser from "@/components/facility/FacilityCardUser";
-import BookingFilters from "@/components/user/dashboard/BookingFilters";
-import SystemMessageFilters from "@/components/user/dashboard/SystemMessageFilters";
-import BookingList from "@/components/user/dashboard/BookingList";
+import FacilityCardUser from "@/components/features/facilities/components/FacilityCard/FacilityCardUser";
+import BookingFilters from "@/components/features/dashboard/user/BookingFilters";
+import SystemMessageFilters from "@/components/features/dashboard/user/SystemMessageFilters";
+import BookingList from "@/components/features/dashboard/user/BookingList";
 import {
   Calendar,
   Clock,

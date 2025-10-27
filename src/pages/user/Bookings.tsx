@@ -23,7 +23,7 @@ import {
   BookingDetailsPanel,
   BookingFiltersBar,
   RecurringBookingGroup,
-} from "@/components/bookings";
+} from "@/components/features/bookings";
 
 type BookingStatus = Database['public']['Enums']['booking_status'];
 

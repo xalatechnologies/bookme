@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { RequireRole } from "@/components/admin/guards/RequireRole";
+import { RequireRole } from "@/components/features/auth/components/RequireRole";
 
 interface IApprovalsPageProps {
   readonly children?: never;

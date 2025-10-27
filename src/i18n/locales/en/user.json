@@ -6,8 +6,110 @@
     "facilityRecommendations": "Recommended Facilities",
     "myBookings": "My Bookings",
     "myGroups": "My Groups",
-    "myFavorites": "My Favorites"
+    "myFavorites": "My Favorites",
+
+    "greeting": "Good {{dayOfWeek}}, {{name}}",
+    "welcome": "Welcome back, {{name}}!",
+    "weather_in_city": "{{description}} in Drammen.",
+    "perfect_day": "Perfect day to book an activity!",
+    "monthly_bookings": "Monthly bookings",
+    "of": "of",
+    "next_booking": "Next booking: {{facility}} - {{date}} at {{time}}",
+    "no_upcoming_bookings": "No upcoming bookings",
+    "new_booking": "New Booking",
+    "quick_actions": "Quick Actions",
+    "my_bookings": "My Bookings",
+    "recommended_facilities": "Recommended Facilities",
+    "system_messages": "System Messages",
+    "your_bookings": "Your bookings",
+    "upcoming": "Upcoming",
+    "past": "Past",
+    "activity_feed": "Activity",
+    "recommendations": "Recommendations",
+    "no_activity": "No recent activity",
+    "no_bookings": "You have no bookings",
+
+    "days": {
+      "monday": "Monday",
+      "tuesday": "Tuesday",
+      "wednesday": "Wednesday",
+      "thursday": "Thursday",
+      "friday": "Friday",
+      "saturday": "Saturday",
+      "sunday": "Sunday"
+    }
   },
+
+  "quick_actions": {
+    "calendar": {
+      "title": "Calendar",
+      "description": "View all your bookings"
+    },
+    "invoices": {
+      "title": "Invoices",
+      "description": "View receipts"
+    },
+    "favorites": {
+      "title": "Favorites",
+      "description": "Your favorite facilities"
+    },
+    "history": {
+      "title": "History",
+      "description": "Previous bookings"
+    }
+  },
+
+  "bookings": {
+    "status": {
+      "confirmed": "Confirmed",
+      "pending": "Pending",
+      "cancelled": "Cancelled",
+      "all": "All"
+    },
+    "filters": {
+      "all": "All Bookings",
+      "confirmed": "Confirmed",
+      "pending": "Pending",
+      "cancelled": "Cancelled"
+    },
+    "no_bookings": "No bookings found",
+    "view_facility": "View Facility",
+    "edit_booking": "Edit Booking",
+    "cancel_booking": "Cancel Booking",
+    "contact_admin": "Contact Admin",
+    "confirm_cancel": "Are you sure you want to cancel this booking?",
+    "booking_cancelled": "Booking has been cancelled",
+    "not_specified": "Not specified",
+    "cancellation_policy": "Free cancellation up to 24 hours before booking",
+    "booking_details": "Booking Details",
+    "purpose": "Purpose",
+    "participants": "Participants",
+    "qr_code": "QR Code",
+    "contact_info": "Contact Information",
+    "show_more": "Show More",
+    "show_less": "Show Less"
+  },
+
+  "recommendations": {
+    "frequent_bookings": "Recommended based on your previous bookings",
+    "preferred_times": "Available at your usual times",
+    "new_in_area": "New in the area"
+  },
+
+  "messages": {
+    "unread": "Unread",
+    "read": "Read",
+    "all": "All Messages",
+    "no_messages": "No messages",
+    "filters": {
+      "all": "All",
+      "unread": "Unread",
+      "booking": "Bookings",
+      "system": "System",
+      "news": "News"
+    }
+  },
+
   "profile": {
     "title": "My Profile",
     "editProfile": "Edit Profile",
@@ -15,10 +117,22 @@
     "settings": "Settings",
     "preferences": "Preferences"
   },
+
   "actions": {
     "viewProfile": "View Profile",
     "editProfile": "Edit Profile",
     "changePassword": "Change Password",
     "logout": "Log Out"
+  },
+
+  "activity": {
+    "title": "Recent Activity",
+    "no_activity": "No recent activity",
+    "booking_created": "Booking created",
+    "booking_confirmed": "Booking confirmed",
+    "booking_cancelled": "Booking cancelled",
+    "facility_favorited": "Facility added to favorites",
+    "facility_unfavorited": "Facility removed from favorites",
+    "profile_updated": "Profile updated"
   }
 }

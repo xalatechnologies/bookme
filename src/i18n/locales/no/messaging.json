@@ -1,0 +1,66 @@
+{
+  "inbox": {
+    "title": "Meldinger",
+    "threads_title": "Meldingstråder",
+    "search_placeholder": "Søk i meldinger...",
+    "no_messages": "Ingen meldinger",
+    "no_threads": "Ingen meldingstråder funnet",
+    "select_thread": "Velg en meldingstråd for å starte samtalen",
+    "new_message": "Ny melding",
+    "unread": "Ulest",
+    "all": "Alle",
+    "active": "Aktive",
+    "resolved": "Løst",
+    "closed": "Lukket",
+    "archived": "Arkivert"
+  },
+  "thread": {
+    "reply": "Svar",
+    "typing": "skriver...",
+    "online": "Pålogget",
+    "offline": "Frakoblet",
+    "load_more": "Last flere",
+    "participants": "deltakere",
+    "related_booking": "Relatert til booking",
+    "thread_not_found": "Tråd ikke funnet",
+    "mark_resolved": "Marker som løst",
+    "close_thread": "Lukk tråd",
+    "delete_thread": "Slett tråd"
+  },
+  "composer": {
+    "placeholder": "Skriv en melding...",
+    "send": "Send",
+    "attach": "Legg ved fil",
+    "emoji": "Legg til emoji",
+    "replying_to": "Svarer til {{name}}"
+  },
+  "status": {
+    "active": "Aktiv",
+    "resolved": "Løst",
+    "closed": "Lukket",
+    "sent": "Sendt",
+    "delivered": "Levert",
+    "read": "Lest",
+    "failed": "Feilet"
+  },
+  "priority": {
+    "high": "Høy",
+    "medium": "Medium",
+    "low": "Lav"
+  },
+  "actions": {
+    "mark_read": "Marker som lest",
+    "mark_unread": "Marker som ulest",
+    "archive": "Arkiver",
+    "delete": "Slett",
+    "forward": "Videresend",
+    "star": "Merk med stjerne",
+    "report": "Rapporter"
+  },
+  "filters": {
+    "status": "Status",
+    "priority": "Prioritet",
+    "all_statuses": "Alle",
+    "all_priorities": "Alle"
+  }
+}

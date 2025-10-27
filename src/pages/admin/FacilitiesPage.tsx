@@ -2,18 +2,18 @@
 
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { RequireRole } from "@/components/admin/guards/RequireRole";
-import ViewToggle from "@/components/admin/facilities/ViewToggle";
-import AdminFacilityCard from "@/components/admin/facilities/AdminFacilityCard";
-import AdminFacilityListItem from "@/components/admin/facilities/AdminFacilityListItem";
-import { FacilityEditForm } from "@/components/admin/facilities/FacilityEditForm";
+import { RequireRole } from "@/components/features/auth/components/RequireRole";
+import ViewToggle from "@/components/features/facilities/components/FacilityEditForm/ViewToggle";
+import AdminFacilityCard from "@/components/features/facilities/components/FacilityEditForm/AdminFacilityCard";
+import AdminFacilityListItem from "@/components/features/facilities/components/FacilityEditForm/AdminFacilityListItem";
+import { FacilityEditForm } from "@/components/features/facilities/components/FacilityEditForm/FacilityEditForm";
 import { useFacilityStore } from "@/stores/facilityStore";
 import { Plus, Search, Filter, SortAsc, SortDesc, CheckSquare, Square, Trash2, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { MapView } from "@/components/MapView";
+import { MapView } from "@/components/features/facilities/components/FacilityMap/MapView";
 import type { IFacility } from "@/stores/facilityStore";
 
 type TView = "list" | "grid" | "map";

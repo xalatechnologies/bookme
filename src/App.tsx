@@ -11,7 +11,7 @@ import { AuthProvider } from '@/contexts/AuthContext';
 import { LanguageProvider } from '@/contexts/LanguageContext';
 import { CartProvider } from '@/contexts/CartContext';
 import { UserProfileProvider } from '@/contexts/UserProfileContext';
-import ScrollToTop from '@/components/ScrollToTop';
+import ScrollToTop from '@/components/common/navigation/ScrollToTop';
 import i18n from '@/i18n/config';
 
 import { Index } from '@/pages/Index';

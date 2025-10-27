@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { SupportTicketForm } from "@/components/support/SupportTicketForm";
+import { SupportTicketForm } from "@/components/features/support/components/SupportTicketForm";
 import { 
   HelpCircle, 
   Search, 

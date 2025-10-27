@@ -1,24 +1,24 @@
 "use client";
 
 import { useCallback } from "react";
-import { ISelectedTimeSlot } from "@/components/booking/types";
+import { ISelectedTimeSlot } from "@/components/features/bookings/types";
 import { RecurringTimeSlot, RecurrencePattern } from "@/utils/recurrenceEngine";
 import { useSlotSelectionStore } from "@/stores/slotSelectionStore";
 
 /**
  * Slot selection hook for calendar time slot management
- * 
+ *
  * Provides functionality to manage selected time slots including
  * adding, removing, and bulk operations. Uses Zustand store for
  * persistent state management.
- * 
+ *
  * Features:
  * - Single slot selection/deselection
  * - Bulk slot operations
  * - Clear all selections
  * - Persistent state with localStorage
  * - Date normalization
- * 
+ *
  * @returns Slot selection state and handlers
  */
 export const useSlotSelection = () => {
@@ -38,7 +38,7 @@ export const useSlotSelection = () => {
 
   /**
    * Ensure date is a proper Date object
-   * 
+   *
    * @param date - Date or string to normalize
    * @returns Normalized Date object
    */
@@ -48,7 +48,7 @@ export const useSlotSelection = () => {
 
   /**
    * Handle single slot click
-   * 
+   *
    * @param zoneId - Zone ID
    * @param date - Date of the slot
    * @param timeSlot - Time slot string
@@ -69,7 +69,7 @@ export const useSlotSelection = () => {
     }
 
     const slotDate = ensureDate(date);
-    
+
     // Check if slot is already selected
     const isSelected = isSlotSelectedStore(zoneId, slotDate, timeSlot);
 
@@ -82,7 +82,7 @@ export const useSlotSelection = () => {
       const month = String(slotDate.getMonth() + 1).padStart(2, '0');
       const day = String(slotDate.getDate()).padStart(2, '0');
       const dayString = `${year}-${month}-${day}`; // YYYY-MM-DD format
-      
+
       const newSlot: ISelectedTimeSlot = {
         id: `${facilityId}-${zoneId}-${dayString}-${timeSlot}`,
         facilityId,
@@ -93,14 +93,14 @@ export const useSlotSelection = () => {
         duration: 60,
         pricePerHour,
       };
-      
+
       addSlot(newSlot);
     }
   }, [ensureDate, isSlotSelectedStore, removeSlot, addSlot]);
 
   /**
    * Handle bulk slot selection
-   * 
+   *
    * @param newSlots - Array of slots to add
    */
   const handleBulkSlotSelection = useCallback((newSlots: readonly ISelectedTimeSlot[]): void => {
@@ -116,7 +116,7 @@ export const useSlotSelection = () => {
       const month = String(slotDate.getMonth() + 1).padStart(2, '0');
       const day = String(slotDate.getDate()).padStart(2, '0');
       const dayString = `${year}-${month}-${day}`; // YYYY-MM-DD format
-      
+
       return {
         ...slot,
         date: slotDate,
@@ -132,7 +132,7 @@ export const useSlotSelection = () => {
 
   /**
    * Set selected slots (for external control)
-   * 
+   *
    * @param slots - Array of slots to set
    */
   const setSelectedSlots = useCallback((slots: readonly ISelectedTimeSlot[]): void => {
@@ -141,7 +141,7 @@ export const useSlotSelection = () => {
 
   /**
    * Generate recurring slots from a pattern
-   * 
+   *
    * @param pattern - Recurrence pattern
    * @param startDate - Start date for generation
    * @param zoneId - Zone ID
@@ -160,6 +160,22 @@ export const useSlotSelection = () => {
     generateRecurringSlotsStore(pattern, startDate, zoneId, facilityId, pricePerHour, maxOccurrences);
   }, [generateRecurringSlotsStore]);
 
+  /**
+   * Check if a slot is selected
+   *
+   * @param zoneId - Zone ID
+   * @param date - Date of the slot
+   * @param timeSlot - Time slot string
+   * @returns True if the slot is selected
+   */
+  const isSlotSelected = useCallback((
+    zoneId: string,
+    date: Date,
+    timeSlot: string
+  ): boolean => {
+    return isSlotSelectedStore(zoneId, date, timeSlot);
+  }, [isSlotSelectedStore]);
+
   return {
     selectedSlots,
     recurringSlots,
@@ -170,5 +186,6 @@ export const useSlotSelection = () => {
     generateRecurringSlots,
     clearRecurringSlots,
     getAllSlots,
+    isSlotSelected,
   };
 };

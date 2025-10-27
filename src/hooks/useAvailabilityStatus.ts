@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { ISelectedTimeSlot } from "@/components/booking/types";
+import { ISelectedTimeSlot } from "@/components/features/bookings/types";
 
 /**
  * Availability status result

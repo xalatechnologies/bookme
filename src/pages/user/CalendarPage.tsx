@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
-import { EnhancedCalendar } from "@/components/calendar/EnhancedCalendar";
+import { EnhancedCalendar } from "@/components/features/calendar/components/EnhancedCalendar";
 import { startOfMonth, endOfMonth, startOfWeek, endOfWeek, startOfDay, endOfDay } from "date-fns";
 import type { IBookingEvent } from "@/types/calendar";
 

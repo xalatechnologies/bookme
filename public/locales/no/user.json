@@ -6,8 +6,110 @@
     "facilityRecommendations": "Anbefalte fasiliteter",
     "myBookings": "Mine bookinger",
     "myGroups": "Mine grupper",
-    "myFavorites": "Mine favoritter"
+    "myFavorites": "Mine favoritter",
+
+    "greeting": "God {{dayOfWeek}}, {{name}}",
+    "welcome": "Velkommen tilbake, {{name}}!",
+    "weather_in_city": "{{description}} i Drammen.",
+    "perfect_day": "Perfekt dag for å booke en aktivitet!",
+    "monthly_bookings": "Månedlige bookinger",
+    "of": "av",
+    "next_booking": "Neste booking: {{facility}} - {{date}} kl. {{time}}",
+    "no_upcoming_bookings": "Ingen kommende bookinger",
+    "new_booking": "Ny booking",
+    "quick_actions": "Hurtigvalg",
+    "my_bookings": "Mine bookinger",
+    "recommended_facilities": "Anbefalte lokaler",
+    "system_messages": "Systemmeldinger",
+    "your_bookings": "Dine bookinger",
+    "upcoming": "Kommende",
+    "past": "Tidligere",
+    "activity_feed": "Aktivitet",
+    "recommendations": "Anbefalinger",
+    "no_activity": "Ingen nylig aktivitet",
+    "no_bookings": "Du har ingen bookinger",
+
+    "days": {
+      "monday": "mandag",
+      "tuesday": "tirsdag",
+      "wednesday": "onsdag",
+      "thursday": "torsdag",
+      "friday": "fredag",
+      "saturday": "lørdag",
+      "sunday": "søndag"
+    }
   },
+
+  "quick_actions": {
+    "calendar": {
+      "title": "Kalender",
+      "description": "Se alle dine bookinger"
+    },
+    "invoices": {
+      "title": "Faktura",
+      "description": "Vis kvitteringer"
+    },
+    "favorites": {
+      "title": "Favoritter",
+      "description": "Dine favorittlokaler"
+    },
+    "history": {
+      "title": "Historikk",
+      "description": "Tidligere bookinger"
+    }
+  },
+
+  "bookings": {
+    "status": {
+      "confirmed": "Bekreftet",
+      "pending": "Venter",
+      "cancelled": "Avbrutt",
+      "all": "Alle"
+    },
+    "filters": {
+      "all": "Alle bookinger",
+      "confirmed": "Bekreftede",
+      "pending": "Ventende",
+      "cancelled": "Avbrutte"
+    },
+    "no_bookings": "Ingen bookinger funnet",
+    "view_facility": "Se lokale",
+    "edit_booking": "Rediger booking",
+    "cancel_booking": "Avbryt booking",
+    "contact_admin": "Kontakt admin",
+    "confirm_cancel": "Er du sikker på at du vil avbryte denne bookingen?",
+    "booking_cancelled": "Bookingen er avbrutt",
+    "not_specified": "Ikke spesifisert",
+    "cancellation_policy": "Gratis avbestilling frem til 24 timer før booking",
+    "booking_details": "Bookingdetaljer",
+    "purpose": "Formål",
+    "participants": "Deltakere",
+    "qr_code": "QR-kode",
+    "contact_info": "Kontaktinformasjon",
+    "show_more": "Vis mer",
+    "show_less": "Vis mindre"
+  },
+
+  "recommendations": {
+    "frequent_bookings": "Anbefalt basert på dine tidligere bookinger",
+    "preferred_times": "Tilgjengelig på dine vanlige tider",
+    "new_in_area": "Ny i området"
+  },
+
+  "messages": {
+    "unread": "Uleste",
+    "read": "Leste",
+    "all": "Alle meldinger",
+    "no_messages": "Ingen meldinger",
+    "filters": {
+      "all": "Alle",
+      "unread": "Uleste",
+      "booking": "Bookinger",
+      "system": "System",
+      "news": "Nyheter"
+    }
+  },
+
   "profile": {
     "title": "Min profil",
     "editProfile": "Rediger profil",
@@ -15,10 +117,22 @@
     "settings": "Innstillinger",
     "preferences": "Preferanser"
   },
+
   "actions": {
     "viewProfile": "Se profil",
     "editProfile": "Rediger profil",
     "changePassword": "Endre passord",
     "logout": "Logg ut"
+  },
+
+  "activity": {
+    "title": "Nylig aktivitet",
+    "no_activity": "Ingen nylig aktivitet",
+    "booking_created": "Booking opprettet",
+    "booking_confirmed": "Booking bekreftet",
+    "booking_cancelled": "Booking avbrutt",
+    "facility_favorited": "Lokale lagt til favoritter",
+    "facility_unfavorited": "Lokale fjernet fra favoritter",
+    "profile_updated": "Profil oppdatert"
   }
 }

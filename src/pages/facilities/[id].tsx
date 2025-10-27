@@ -9,12 +9,12 @@ import type { RecurrencePattern } from "@/utils/recurrenceEngine";
 import { useFacility } from "@/hooks/useFacility";
 import { useZones } from "@/hooks/useZones";
 import { CartProvider } from "@/contexts/CartContext";
-import { GlobalHeader } from "@/components/GlobalHeader";
-import { FacilityDetailLayout } from "@/components/facility/detail/FacilityDetailLayout";
-import { FacilityDetailBreadcrumb } from "@/components/facility/detail/FacilityDetailBreadcrumb";
-import { FacilityDetailCalendar } from "@/components/facility/detail/FacilityDetailCalendar";
-import { MobileBookingPanel } from "@/components/facility/detail/MobileBookingPanel";
-import { LoadingState, ErrorState } from "@/components/facility/detail/FacilityDetailStates";
+import { GlobalHeader } from "@/components/layouts/PublicLayout/GlobalHeader";
+import { FacilityDetailLayout } from "@/components/features/facilities/components/FacilityDetail/FacilityDetailLayout";
+import { FacilityDetailBreadcrumb } from "@/components/features/facilities/components/FacilityDetail/FacilityDetailBreadcrumb";
+import { FacilityDetailCalendar } from "@/components/features/facilities/components/FacilityDetail/FacilityDetailCalendar";
+import { MobileBookingPanel } from "@/components/features/facilities/components/FacilityDetail/MobileBookingPanel";
+import { LoadingState, ErrorState } from "@/components/features/facilities/components/FacilityDetail/FacilityDetailStates";
 
 export const FacilityDetail = (): JSX.Element => {
   const { id } = useParams();

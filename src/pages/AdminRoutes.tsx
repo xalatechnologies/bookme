@@ -2,7 +2,7 @@
 
 import React, { Suspense, lazy } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
-import AdminLayout from "@/components/admin/layout/AdminLayout";
+import AdminLayout from "@/components/layouts/AdminLayout";
 
 // Lazy load admin pages for better performance
 const Overview = lazy(() => import("@/pages/admin/Overview"));

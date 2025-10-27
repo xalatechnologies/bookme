@@ -2,7 +2,7 @@
 
 import { addDays, addWeeks, addMonths, isSameDay, getDay } from 'date-fns';
 import type { RecurrencePattern } from '@/utils/recurrenceEngine';
-import type { ISelectedTimeSlot } from '@/components/booking/types';
+import type { ISelectedTimeSlot } from '@/components/features/bookings/types';
 
 /**
  * Recurring booking configuration

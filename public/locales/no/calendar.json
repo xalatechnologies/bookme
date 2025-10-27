@@ -1,0 +1,25 @@
+{
+  "navigation": {
+    "previous_week": "Forrige uke",
+    "next_week": "Neste uke",
+    "previous_month": "Forrige måned",
+    "next_month": "Neste måned",
+    "today": "I dag",
+    "go_to_date": "Gå til dato"
+  },
+  "availability": {
+    "available": "Tilgjengelig",
+    "booked": "Booket",
+    "selected": "Valgt",
+    "unavailable": "Ikke tilgjengelig",
+    "conflict": "Konflikt",
+    "pending": "Venter",
+    "legend": "Forklaring"
+  },
+  "time_slots": {
+    "select": "Velg tidspunkt",
+    "selected": "Valgte tidspunkter",
+    "no_slots": "Ingen ledige tider",
+    "loading": "Laster tider..."
+  }
+}

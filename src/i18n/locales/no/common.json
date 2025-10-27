@@ -150,6 +150,37 @@
     "privacyPolicy": "Personvernerklæring",
     "cookiePolicy": "Informasjonskapsler"
   },
+  "tabs": {
+    "general": "Generell info",
+    "zones": "Soner",
+    "facilities": "Fasiliteter",
+    "rules": "Regler",
+    "faq": "FAQ"
+  },
+  "about": "Om",
+  "available_zones": "Tilgjengelige soner",
+  "entire_facility": "Hele lokalet",
+  "book_entire_facility": "Book hele {{name}} for ditt arrangement. Perfekt for større grupper og spesielle anledninger.",
+  "rules": {
+    "smoking_not_allowed": "Røyking er ikke tillatt inne i lokalet.",
+    "cleanup_required_desc": "Lokalet må ryddes og rengjøres etter bruk.",
+    "noise_after_hours": "Støy etter kl. 22:00",
+    "noise_after_hours_desc": "Høy musikk og støy er ikke tillatt etter kl. 22:00.",
+    "cancellation": "Avbestilling",
+    "cancellation_desc": "Gratis avbestilling inntil 48 timer før arrangementet."
+  },
+  "faq": {
+    "title": "Ofte stilte spørsmål",
+    "booking_time": "Hvor lang tid i forveien kan jeg booke?",
+    "booking_time_answer": "Du kan booke inntil 90 dager i forveien.",
+    "cancellation": "Kan jeg avbestille bookingen min?",
+    "cancellation_answer": "Ja, du kan avbestille gratis inntil 48 timer før arrangementet starter.",
+    "parking": "Er det parkering tilgjengelig?",
+    "parking_available": "Ja, det er parkering tilgjengelig ved lokalet.",
+    "parking_contact": "Kontakt oss for informasjon om parkeringsmuligheter i området.",
+    "food_drinks": "Kan jeg ta med egen mat og drikke?",
+    "food_drinks_answer": "Ja, du kan ta med egen mat og drikke. Husk å rydde opp etter deg."
+  },
   "navigation": {
     "menu": "Meny",
     "sidebar": "Sidemeny",

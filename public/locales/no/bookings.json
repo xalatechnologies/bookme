@@ -114,7 +114,9 @@
     "share": "Del booking",
     "report_issue": "Rapporter problem",
     "request_refund": "Be om refusjon",
-    "leave_review": "Skriv anmeldelse"
+    "leave_review": "Skriv anmeldelse",
+    "clear_all": "Fjern alle valgte tidspunkter",
+    "complete_booking": "Fullfør booking"
   },
   "recurring": {
     "title": "Gjentakende booking",
@@ -191,7 +193,9 @@
     "includes_vat": "inkl. MVA",
     "excludes_vat": "ekskl. MVA",
     "selected_slots_pricing": "Valgte tidspunkter og prisberegning",
-    "select_slots_pricing": "Velg tidspunkter og få en prisberegning"
+    "select_slots_pricing": "Velg tidspunkter og få en prisberegning",
+    "recurring_slots_pricing": "Gjentakende tidspunkter og prisberegning",
+    "select_pattern": "Tidspunkter og prisberegning (velg gjentakelsesmønster)"
   },
   "cart": {
     "title": "Handlekurv",
@@ -310,24 +314,33 @@
   },
   "steps": {
     "calendar": {
-      "title": "Kalender",
-      "description": "Velg dato og tid for bookingen"
+      "title": "Velg tidspunkter",
+      "description": "Klikk på ledige tidspunkter for å velge dem. Du kan velge flere tidspunkter samtidig."
     },
     "details": {
-      "title": "Bookingdetaljer",
-      "description": "Fyll ut informasjon om bookingen"
+      "title": "Fyll ut bookingdetaljer",
+      "description": "Fortell oss om arrangementet ditt så kan vi hjelpe deg med riktig booking."
     },
     "recurrence": {
-      "title": "Gjentakelse",
-      "description": "Velg gjentakelsesmønster"
+      "title": "Velg gjentakelsesmønster",
+      "description": "Velg hvordan ofte bookingen skal gjentas. Dette gjelder for alle valgte tidspunkter."
     },
     "terms": {
       "title": "Vilkår og betingelser",
-      "description": "Les og godta vilkårene"
+      "description": "Les gjennom vilkårene og godta dem for å fortsette."
     },
     "actions": {
       "title": "Fullfør booking",
-      "description": "Legg i kurv eller fullfør direkte"
+      "description": "Gjennomgå opplysningene og velg hvordan du vil fortsette.",
+      "ready": "Klar for booking!",
+      "all_filled": "Alle opplysninger er fylt ut og vilkårene er godtatt."
+    },
+    "progress": {
+      "title": "Bookingprosess",
+      "current": "Steg {{current}} av {{total}}",
+      "current_step": "Gjeldende steg",
+      "completed": "Fullført",
+      "upcoming": "Kommende"
     }
   }
 }

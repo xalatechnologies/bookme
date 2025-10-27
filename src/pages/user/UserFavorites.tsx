@@ -29,8 +29,8 @@ import {
   ArrowRight,
   ExternalLink
 } from "lucide-react";
-import FacilityCardUser from "@/components/facility/FacilityCardUser";
-import FacilityListItemUser from "@/components/facility/FacilityListItemUser";
+import FacilityCardUser from "@/components/features/facilities/components/FacilityCard/FacilityCardUser";
+import FacilityListItemUser from "@/components/features/facilities/components/FacilityCard/FacilityListItemUser";
 import { useFacilityStore } from "@/stores/facilityStore";
 import { useFavoritesStore } from "@/stores/favoritesStore";
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback, useRef } from "react";
-import { ISelectedTimeSlot } from "@/components/booking/types";
+import { ISelectedTimeSlot } from "@/components/features/bookings/types";
 
 /**
  * Drag state interface for drag selection functionality

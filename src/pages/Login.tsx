@@ -11,7 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { GlobalHeader } from "@/components/GlobalHeader";
+import { GlobalHeader } from "@/components/layouts/PublicLayout/GlobalHeader";
 
 type LoginType = "user" | "admin";
 

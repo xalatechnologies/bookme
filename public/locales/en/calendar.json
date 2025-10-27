@@ -1,0 +1,25 @@
+{
+  "navigation": {
+    "previous_week": "Previous Week",
+    "next_week": "Next Week",
+    "previous_month": "Previous Month",
+    "next_month": "Next Month",
+    "today": "Today",
+    "go_to_date": "Go to Date"
+  },
+  "availability": {
+    "available": "Available",
+    "booked": "Booked",
+    "selected": "Selected",
+    "unavailable": "Unavailable",
+    "conflict": "Conflict",
+    "pending": "Pending",
+    "legend": "Legend"
+  },
+  "time_slots": {
+    "select": "Select Time Slot",
+    "selected": "Selected Slots",
+    "no_slots": "No Available Slots",
+    "loading": "Loading slots..."
+  }
+}

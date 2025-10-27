@@ -11,8 +11,8 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
-import { FieldConfigModal } from "@/components/admin/facilities/FieldConfigModal";
-import { ReadOnlyCalendar } from "@/components/calendar/ReadOnlyCalendar";
+import { FieldConfigModal } from "@/components/features/facilities/components/FacilityEditForm/FieldConfigModal";
+import { ReadOnlyCalendar } from "@/components/features/calendar/components/FacilityCalendar/ReadOnlyCalendar";
 import { Zone } from "@/types/booking";
 import { useZoneStore } from "@/stores/zoneStore";
 

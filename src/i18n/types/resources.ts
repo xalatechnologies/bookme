@@ -34,27 +34,29 @@ export type Namespaces =
   | 'facility';
 
 /**
+ * Resource type for each namespace
+ */
+export interface NamespaceResources {
+  common: typeof commonNo;
+  rbac: typeof rbacNo;
+  forms: typeof formsNo;
+  errors: typeof errorsNo;
+  validation: typeof validationNo;
+  booking: typeof bookingNo;
+  facility: typeof facilityNo;
+}
+
+/**
  * Resource type for each language
  */
 export interface Resources {
-  no: {
-    common: typeof commonNo;
-    rbac: typeof rbacNo;
-    forms: typeof formsNo;
-    errors: typeof errorsNo;
-    validation: typeof validationNo;
-    booking: typeof bookingNo;
-    facility: typeof facilityNo;
-  };
-  en: {
-    common: typeof commonNo; // English will have same structure
-    rbac: typeof rbacNo;
-    forms: typeof formsNo;
-    errors: typeof errorsNo;
-    validation: typeof validationNo;
-    booking: typeof bookingNo;
-    facility: typeof facilityNo;
-  };
+  common: typeof commonNo;
+  rbac: typeof rbacNo;
+  forms: typeof formsNo;
+  errors: typeof errorsNo;
+  validation: typeof validationNo;
+  booking: typeof bookingNo;
+  facility: typeof facilityNo;
 }
 
 /**
@@ -82,7 +84,7 @@ export type DotNotation<T, P extends string = ''> = T extends object
  * TranslationKey<'common'> = 'actions.save' | 'actions.cancel' | ...
  */
 export type TranslationKey<NS extends Namespaces = DefaultNamespace> =
-  NS extends keyof Resources['no'] ? DotNotation<Resources['no'][NS]> : never;
+  NS extends keyof Resources ? DotNotation<Resources[NS]> : never;
 
 /**
  * Get the type of a translation value for a specific key
@@ -90,9 +92,9 @@ export type TranslationKey<NS extends Namespaces = DefaultNamespace> =
 export type TranslationValue<
   NS extends Namespaces,
   K extends TranslationKey<NS>
-> = NS extends keyof Resources['no']
-  ? K extends keyof Resources['no'][NS]
-    ? Resources['no'][NS][K]
+> = NS extends keyof Resources
+  ? K extends keyof Resources[NS]
+    ? Resources[NS][K]
     : never
   : never;
 
