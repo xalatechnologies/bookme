@@ -28,14 +28,14 @@ function detectFrequency(bookings: BookingWithDetails[]): 'weekly' | 'biweekly' 
 
   // Sort by start time
   const sorted = [...bookings].sort((a, b) =>
-    new Date(a.start_time).getTime() - new Date(b.start_time).getTime()
+    new Date(a.starts_at).getTime() - new Date(b.starts_at).getTime()
   );
 
   // Calculate average interval in days
   let totalDays = 0;
   for (let i = 1; i < sorted.length; i++) {
-    const prev = new Date(sorted[i - 1].start_time);
-    const curr = new Date(sorted[i].start_time);
+    const prev = new Date(sorted[i - 1].starts_at);
+    const curr = new Date(sorted[i].starts_at);
     const days = (curr.getTime() - prev.getTime()) / (1000 * 60 * 60 * 24);
     totalDays += days;
   }
@@ -92,14 +92,14 @@ export function useRecurringBookingGroups(
     return Array.from(groups.entries()).map(([recurringId, groupBookings]) => {
       // Sort bookings by start time
       const sorted = [...groupBookings].sort((a, b) =>
-        new Date(a.start_time).getTime() - new Date(b.start_time).getTime()
+        new Date(a.starts_at).getTime() - new Date(b.starts_at).getTime()
       );
 
       // Find next upcoming booking
-      const nextBooking = sorted.find(b => new Date(b.start_time) >= now) || null;
+      const nextBooking = sorted.find(b => new Date(b.starts_at) >= now) || null;
 
       // Count upcoming and completed
-      const upcomingCount = sorted.filter(b => new Date(b.start_time) >= now).length;
+      const upcomingCount = sorted.filter(b => new Date(b.starts_at) >= now).length;
       const completedCount = sorted.filter(b => b.status === 'completed').length;
 
       // Get facility and zone names from first booking
@@ -127,8 +127,8 @@ export function useRecurringBookingGroups(
       if (!a.nextBooking) return 1;
       if (!b.nextBooking) return -1;
 
-      return new Date(a.nextBooking.start_time).getTime() -
-             new Date(b.nextBooking.start_time).getTime();
+      return new Date(a.nextBooking.starts_at).getTime() -
+             new Date(b.nextBooking.starts_at).getTime();
     });
   }, [bookings]);
 }

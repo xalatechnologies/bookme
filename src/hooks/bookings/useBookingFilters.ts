@@ -58,15 +58,15 @@ export function useBookingFilters(
         case 'today': {
           const today = now.toDateString();
           result = result.filter(b =>
-            new Date(b.start_time).toDateString() === today
+            new Date(b.starts_at).toDateString() === today
           );
           break;
         }
         case 'week': {
           const weekFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
           result = result.filter(b => {
-            const startTime = new Date(b.start_time);
-            return startTime >= now && startTime <= weekFromNow;
+            const startsAt = new Date(b.starts_at);
+            return startsAt >= now && startsAt <= weekFromNow;
           });
           break;
         }
@@ -74,18 +74,18 @@ export function useBookingFilters(
           const currentMonth = now.getMonth();
           const currentYear = now.getFullYear();
           result = result.filter(b => {
-            const startTime = new Date(b.start_time);
-            return startTime.getMonth() === currentMonth &&
-                   startTime.getFullYear() === currentYear;
+            const startsAt = new Date(b.starts_at);
+            return startsAt.getMonth() === currentMonth &&
+                   startsAt.getFullYear() === currentYear;
           });
           break;
         }
         case 'past': {
-          result = result.filter(b => new Date(b.end_time) < now);
+          result = result.filter(b => new Date(b.ends_at) < now);
           break;
         }
         case 'upcoming': {
-          result = result.filter(b => new Date(b.start_time) >= now);
+          result = result.filter(b => new Date(b.starts_at) >= now);
           break;
         }
       }
@@ -105,19 +105,19 @@ export function useBookingFilters(
     switch (filters.sortBy) {
       case 'date-asc':
         result.sort((a, b) =>
-          new Date(a.start_time).getTime() - new Date(b.start_time).getTime()
+          new Date(a.starts_at).getTime() - new Date(b.starts_at).getTime()
         );
         break;
       case 'date-desc':
         result.sort((a, b) =>
-          new Date(b.start_time).getTime() - new Date(a.start_time).getTime()
+          new Date(b.starts_at).getTime() - new Date(a.starts_at).getTime()
         );
         break;
       case 'price-asc':
-        result.sort((a, b) => a.total_price_cents - b.total_price_cents);
+        result.sort((a, b) => a.total_cents - b.total_cents);
         break;
       case 'price-desc':
-        result.sort((a, b) => b.total_price_cents - a.total_price_cents);
+        result.sort((a, b) => b.total_cents - a.total_cents);
         break;
       case 'created':
         result.sort((a, b) =>
@@ -127,7 +127,7 @@ export function useBookingFilters(
       default:
         // Default: sort by start time ascending
         result.sort((a, b) =>
-          new Date(a.start_time).getTime() - new Date(b.start_time).getTime()
+          new Date(a.starts_at).getTime() - new Date(b.starts_at).getTime()
         );
     }
 

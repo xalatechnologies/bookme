@@ -88,20 +88,20 @@ export function useBookingStats(
       switch (booking.status) {
         case 'pending':
           pending++;
-          pendingRevenue += booking.total_price_cents;
+          pendingRevenue += booking.total_cents;
           break;
         case 'awaiting_payment':
           awaitingPayment++;
-          pendingRevenue += booking.total_price_cents;
+          pendingRevenue += booking.total_cents;
           break;
         case 'paid':
           paid++;
-          totalRevenue += booking.total_price_cents;
+          totalRevenue += booking.total_cents;
           break;
         case 'completed':
           completed++;
-          totalRevenue += booking.total_price_cents;
-          completedRevenue += booking.total_price_cents;
+          totalRevenue += booking.total_cents;
+          completedRevenue += booking.total_cents;
           break;
         case 'cancelled':
           cancelled++;
@@ -115,12 +115,12 @@ export function useBookingStats(
       }
 
       // Time-based counts
-      const startTime = new Date(booking.start_time);
-      const endTime = new Date(booking.end_time);
+      const startsAt = new Date(booking.starts_at);
+      const endsAt = new Date(booking.ends_at);
 
-      if (startTime >= now) {
+      if (startsAt >= now) {
         upcoming++;
-      } else if (endTime < now) {
+      } else if (endsAt < now) {
         past++;
       }
     });
@@ -159,7 +159,7 @@ export function useBookingStatusStats(
     }
 
     const filtered = bookings.filter(b => b.status === status);
-    const revenue = filtered.reduce((sum, b) => sum + b.total_price_cents, 0);
+    const revenue = filtered.reduce((sum, b) => sum + b.total_cents, 0);
 
     return {
       count: filtered.length,
