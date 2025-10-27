@@ -50,7 +50,14 @@
     "start": "Start",
     "stop": "Stop",
     "pause": "Pause",
-    "resume": "Resume"
+    "resume": "Resume",
+    "login": "Login",
+    "applyFilters": "Apply Filters"
+  },
+  "view_modes": {
+    "grid": "Grid View",
+    "list": "List View",
+    "map": "Map View"
   },
   "status": {
     "active": "Active",
@@ -288,7 +295,9 @@
     "underConstruction": "Under Construction",
     "maintenanceMode": "Maintenance Mode",
     "logout_success": "You have been logged out!",
-    "logout_failed": "Could not log out. Please try again."
+    "logout_failed": "Could not log out. Please try again.",
+    "language_changed": "Language changed to {{language}}!",
+    "language_change_failed": "Could not change language. Please try again."
   },
   "placeholders": {
     "search": "Search...",
@@ -309,15 +318,18 @@
     "go_to_home": "Go to home",
     "search": "Search",
     "search_input": "Search field",
+    "sort_dropdown": "Sort dropdown",
     "notifications": "Notifications",
     "open_notifications": "Open notifications",
     "profile_menu": "Profile menu",
+    "profile_image": "Profile picture",
     "language_toggle": "Toggle language",
     "cart": "Shopping cart",
     "mobile_menu": "Mobile menu",
     "close_modal": "Close modal",
     "open_menu": "Open menu",
-    "close_menu": "Close menu"
+    "close_menu": "Close menu",
+    "remove_filter": "Remove {{label}} filter"
   },
   "accessibility": {
     "skipToContent": "Skip to content",
@@ -331,5 +343,16 @@
     "highContrast": "High contrast",
     "screenReader": "Screen reader",
     "keyboardNavigation": "Keyboard navigation"
+  },
+  "validation": {
+    "required_field": "This field is required",
+    "invalid_email": "Please enter a valid email address",
+    "invalid_phone": "Please enter a valid phone number",
+    "password_too_short": "Password must be at least 8 characters",
+    "passwords_must_match": "Passwords must match",
+    "select_requires_options": "Select field requires options"
+  },
+  "labels": {
+    "user": "User"
   }
 }

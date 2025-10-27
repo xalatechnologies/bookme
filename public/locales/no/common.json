@@ -51,7 +51,13 @@
     "stop": "Stopp",
     "pause": "Pause",
     "resume": "Gjenoppta",
-    "applyFilters": "Bruk filtre"
+    "applyFilters": "Bruk filtre",
+    "login": "Logg inn"
+  },
+  "view_modes": {
+    "grid": "Rutenett visning",
+    "list": "Liste visning",
+    "map": "Kart"
   },
   "status": {
     "active": "Aktiv",
@@ -329,7 +335,9 @@
     "underConstruction": "Under konstruksjon",
     "maintenanceMode": "Vedlikeholdsmodus",
     "logout_success": "Du er nå logget ut!",
-    "logout_failed": "Kunne ikke logge ut. Prøv igjen."
+    "logout_failed": "Kunne ikke logge ut. Prøv igjen.",
+    "language_changed": "Språk endret til {{language}}!",
+    "language_change_failed": "Kunne ikke endre språk. Prøv igjen."
   },
   "placeholders": {
     "search": "Søk...",
@@ -354,12 +362,14 @@
     "notifications": "Varslinger",
     "open_notifications": "Åpne notifikasjoner",
     "profile_menu": "Profilmeny",
+    "profile_image": "Profilbilde",
     "language_toggle": "Bytt språk",
     "cart": "Handlekurv",
     "mobile_menu": "Mobil meny",
     "close_modal": "Lukk modal",
     "open_menu": "Åpne meny",
-    "close_menu": "Lukk meny"
+    "close_menu": "Lukk meny",
+    "remove_filter": "Fjern {{label}} filter"
   },
   "accessibility": {
     "skipToContent": "Hopp til innhold",
@@ -372,6 +382,17 @@
     "decreaseTextSize": "Reduser tekststørrelse",
     "highContrast": "Høy kontrast",
     "screenReader": "Skjermleser",
-    "keyboardNavigation": "Tastaturnavigasjon"
+    "keyboardNavigasjon": "Tastaturnavigasjon"
+  },
+  "validation": {
+    "required_field": "Dette feltet er påkrevd",
+    "invalid_email": "Vennligst skriv inn en gyldig e-postadresse",
+    "invalid_phone": "Vennligst skriv inn et gyldig telefonnummer",
+    "password_too_short": "Passordet må være minst 8 tegn",
+    "passwords_must_match": "Passordene må være like",
+    "select_requires_options": "Valgfelt krever alternativer"
+  },
+  "labels": {
+    "user": "Bruker"
   }
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -30,13 +31,14 @@ const SystemPageLayout = ({
   title,
   description,
   children,
-  searchPlaceholder = "Søk...",
+  searchPlaceholder,
   onSearch,
   showFilter = false,
   onFilter,
   primaryAction,
   secondaryActions = []
 }: ISystemPageLayoutProps): JSX.Element => {
+  const { t } = useTranslation('common');
   const [searchQuery, setSearchQuery] = React.useState<string>("");
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
@@ -64,7 +66,7 @@ const SystemPageLayout = ({
             <div className="relative flex-1 max-w-md">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               <Input
-                placeholder={searchPlaceholder}
+                placeholder={searchPlaceholder || t('placeholders.search')}
                 value={searchQuery}
                 onChange={handleSearchChange}
                 className="pl-10"
@@ -74,7 +76,7 @@ const SystemPageLayout = ({
           {showFilter && onFilter && (
             <Button variant="outline" size="sm" onClick={onFilter}>
               <Filter className="h-4 w-4 mr-2" />
-              Filter
+              {t('actions.filter')}
             </Button>
           )}
         </div>

@@ -292,5 +292,127 @@
     "popular_times": "Popular Times",
     "booking_rate": "Booking Rate",
     "cancellation_rate": "Cancellation Rate"
+  },
+  "page": {
+    "user_title": "Bookings",
+    "user_subtitle": "Comprehensive overview of all your bookings",
+    "admin_title": "All Bookings",
+    "admin_subtitle": "Manage all facility bookings",
+    "loading": "Loading bookings...",
+    "error_loading": "Could not load bookings",
+    "error_message": "An error occurred while loading your bookings.",
+    "try_again": "Try again",
+    "no_match": "No bookings match the filter",
+    "no_match_message": "Try adjusting the search criteria or explore available facilities.",
+    "explore_facilities": "Explore facilities",
+    "showing_count": "Showing {{count}} of {{total}} bookings",
+    "select_all": "Select all ({{count}})",
+    "selected_count": "{{count}} selected",
+    "all_status": "All"
+  },
+  "terms": {
+    "title": "Terms and Conditions",
+    "accept_label": "I accept",
+    "accept_terms_and_privacy": "terms and conditions",
+    "and": "and",
+    "privacy_policy": "privacy policy",
+    "for_use": "for use of the facilities",
+    "rules_title": "Rules for use",
+    "rules": {
+      "cleaning": "Cleaning after use is required",
+      "key_pickup": "Keys are picked up at the entrance 15 min before start",
+      "free_cancellation": "Free cancellation up to 48 hours before start",
+      "no_show_fee": "No-show fee: 50% of rental price"
+    },
+    "privacy_title": "Privacy",
+    "privacy_text": "We process your personal data in accordance with our privacy policy. By accepting the terms, you consent to the processing of personal data for this booking.",
+    "cancellation_title": "Cancellation",
+    "cancellation_text": "You can cancel your booking free of charge up to 48 hours before the event starts. For cancellations later than this, a fee of 50% of the rental price will be charged.",
+    "warning_title": "Warning:",
+    "warning_text": "This action cannot be undone."
+  },
+  "navigation": {
+    "previous": "Previous",
+    "next": "Next",
+    "previous_week": "Previous week",
+    "next_week": "Next week",
+    "step_of": "Step {{current}} of {{total}}"
+  },
+  "sidebar": {
+    "title": "Booking process",
+    "zone_selector": "Select zone",
+    "booking_type": "Booking type",
+    "time_slots_title": "Time slots",
+    "clear_all_slots": "Remove all selected time slots",
+    "template_for_recurrence": "Template for recurrence",
+    "recurring_instances": "Recurring instances ({{count}} total):",
+    "and_more": "... and {{count}} more",
+    "no_slots_selected": "Select time slots to see a price calculation",
+    "one_hour": "1 hour",
+    "hours": "{{count}} hours",
+    "recurring_slots_and_price": "Recurring time slots and pricing",
+    "slots_and_price_select_pattern": "Time slots and pricing (select recurrence pattern)",
+    "selected_slots_and_price": "Selected time slots and pricing",
+    "select_slots_get_price": "Select time slots and get pricing"
+  },
+  "weekdays": {
+    "sunday": "Sunday",
+    "monday": "Monday",
+    "tuesday": "Tuesday",
+    "wednesday": "Wednesday",
+    "thursday": "Thursday",
+    "friday": "Friday",
+    "saturday": "Saturday"
+  },
+  "form": {
+    "purpose_label": "Purpose of booking",
+    "purpose_placeholder": "E.g., football training, meeting, event",
+    "attendees_label": "Number of participants",
+    "activity_type_label": "Activity type",
+    "activity_type_placeholder": "Select activity type",
+    "actor_type_label": "Actor type",
+    "actor_type_placeholder": "Select actor type",
+    "additional_info_label": "Additional information",
+    "additional_info_placeholder": "Any special requests or needs"
+  },
+  "validation": {
+    "form_incomplete": "Form is not complete",
+    "fill_required_fields": "Fill in all required fields to continue",
+    "terms_required": "Terms and Conditions",
+    "accept_terms_message": "You must accept the terms and conditions to continue",
+    "processing": "Processing request...",
+    "select_weekdays": "Select weekdays",
+    "select_time_slots": "Select time slots"
+  },
+  "booking_types": {
+    "one_time_label": "Single booking",
+    "one_time_description": "One-time booking",
+    "recurring_label": "Recurring booking",
+    "recurring_description": "Fixed time that repeats",
+    "select_label": "Select {{type}}"
+  },
+  "button_labels": {
+    "add_to_cart": "Add to reservation cart",
+    "complete_booking": "Complete booking",
+    "new_booking": "New booking",
+    "cancel_selected": "Cancel selected",
+    "cancel": "Cancel",
+    "cancel_booking": "Cancel booking"
+  },
+  "delete_confirm": {
+    "title_single": "Cancel booking",
+    "title_multiple": "Cancel bookings",
+    "message_single": "Are you sure you want to cancel 1 booking?",
+    "message_multiple": "Are you sure you want to cancel {{count}} bookings?",
+    "cancel_all": "Cancel all",
+    "canceling": "Canceling...",
+    "success_single": "Booking cancelled",
+    "success_multiple": "{{count}} bookings cancelled"
+  },
+  "toast": {
+    "booking_submitted": "Booking submitted! You will receive confirmation via email once approved.",
+    "calendar_added": "Booking added to calendar!",
+    "info_copied": "Booking info copied to clipboard!",
+    "recurring_coming_soon": "Viewing recurring bookings coming soon!"
   }
 }

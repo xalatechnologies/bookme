@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { RefreshCw, Plus, AlertCircle } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -40,6 +41,7 @@ export const EnhancedCalendar: React.FC<EnhancedCalendarProps> = ({
   currentDate: externalCurrentDate,
   onDateChange
 }): JSX.Element => {
+  const { t } = useTranslation(['calendar', 'common']);
   const {
     searchQuery,
     selectedFacilities,
@@ -104,13 +106,13 @@ export const EnhancedCalendar: React.FC<EnhancedCalendarProps> = ({
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-            Kalender
+            {t('calendar:title')}
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
-            {lastRefresh ? `Sist oppdatert: ${lastRefresh.toLocaleTimeString('no-NO')}` : 'Administrer bookinger'}
+            {lastRefresh ? t('calendar:messages.last_updated', { time: lastRefresh.toLocaleTimeString('no-NO') }) : t('calendar:manage_bookings')}
           </p>
         </div>
-        
+
         <div className="flex items-center gap-2">
           <Button
             variant="outline"
@@ -119,9 +121,9 @@ export const EnhancedCalendar: React.FC<EnhancedCalendarProps> = ({
             disabled={isLoading}
           >
             <RefreshCw className={`w-4 h-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
-            {isLoading ? 'Oppdaterer...' : 'Oppdater'}
+            {isLoading ? t('calendar:actions.refreshing') : t('calendar:actions.refresh')}
           </Button>
-          
+
         </div>
       </div>
 
@@ -144,13 +146,13 @@ export const EnhancedCalendar: React.FC<EnhancedCalendarProps> = ({
       {hasActiveFilters && (
         <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
           <span>
-            Viser {filteredEvents.length} av {events.length} bookinger
+            {t('calendar:filters.showing_results', { count: filteredEvents.length, total: events.length })}
           </span>
           {filteredEvents.length === 0 && (
             <Alert className="flex-1">
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>
-                Ingen bookinger funnet med de valgte filtrene. Prøv å justere søkekriteriene.
+                {t('calendar:filters.no_results_with_filters')}
               </AlertDescription>
             </Alert>
           )}
@@ -205,12 +207,12 @@ export const EnhancedCalendar: React.FC<EnhancedCalendarProps> = ({
               </div>
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                  Ingen bookinger funnet
+                  {t('calendar:event.no_bookings')}
                 </h3>
                 <p className="text-gray-600 dark:text-gray-400">
-                  {hasActiveFilters 
-                    ? 'Prøv å justere filtrene for å se flere resultater.'
-                    : 'Opprett din første booking for å komme i gang.'
+                  {hasActiveFilters
+                    ? t('calendar:event.adjust_filters')
+                    : t('calendar:event.create_first_booking')
                   }
                 </p>
               </div>

@@ -19,7 +19,7 @@ export const FacilityContactInfo: React.FC<FacilityContactInfoProps> = ({ facili
       window.location.href = `/facilities/${facility.id}/book`;
     } catch (error) {
       console.error('Failed to navigate to booking:', error);
-      alert('Kunne ikke navigere til bookingside. Prøv igjen.');
+      alert(t('facilities:contact.booking_failed'));
     }
   };
 
@@ -27,32 +27,32 @@ export const FacilityContactInfo: React.FC<FacilityContactInfoProps> = ({ facili
     try {
       // Create contact options
       const contactOptions = [
-        `Telefon: ${facility.emergencyContact || "+47 32 04 70 00"}`,
-        `E-post: ${facility.contactEmail || "booking@drammen.kommune.no"}`,
-        `Fasilitet: ${facility.name}`,
-        `Lokasjon: ${facility.location}`
+        `${t('facilities:contact.phone')}: ${facility.emergencyContact || "+47 32 04 70 00"}`,
+        `${t('facilities:contact.email')}: ${facility.contactEmail || "booking@drammen.kommune.no"}`,
+        `${t('facilities:contact.facility')}: ${facility.name}`,
+        `${t('facilities:contact.location')}: ${facility.location}`
       ].join('\n');
 
       // Show contact information
       const contactChoice = window.confirm(
-        `Kontaktinformasjon for ${facility.name}:\n\n${contactOptions}\n\nVil du åpne e-post klient?`
+        `${t('facilities:contact.contact_info_for', { name: facility.name })}\n\n${contactOptions}\n\n${t('facilities:contact.open_email_client')}`
       );
 
       if (contactChoice) {
         // Open email client
-        const subject = `Forespørsel om ${facility.name}`;
-        const body = `Hei,\n\nJeg er interessert i å booke ${facility.name}.\n\nKan dere gi meg mer informasjon?\n\nMvh`;
+        const subject = t('facilities:contact.inquiry_about', { name: facility.name });
+        const body = t('facilities:contact.email_template', { name: facility.name });
 
         const mailtoLink = `mailto:${facility.contactEmail || "booking@drammen.kommune.no"}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
         window.open(mailtoLink);
       } else {
         // Copy contact info to clipboard
         navigator.clipboard.writeText(contactOptions);
-        alert('Kontaktinformasjon kopiert til utklippstavle!');
+        alert(t('facilities:contact.contact_copied'));
       }
     } catch (error) {
       console.error('Failed to handle contact:', error);
-      alert('Kunne ikke åpne kontaktfunksjonalitet. Prøv igjen.');
+      alert(t('facilities:contact.contact_error'));
     }
   };
 
@@ -152,7 +152,7 @@ export const FacilityContactInfo: React.FC<FacilityContactInfoProps> = ({ facili
             ))}
             {facility.amenities.length > 6 && (
               <Badge variant="outline" className="text-xs">
-                +{facility.amenities.length - 6} flere
+                +{facility.amenities.length - 6} {t('facilities:card.more')}
               </Badge>
             )}
           </div>

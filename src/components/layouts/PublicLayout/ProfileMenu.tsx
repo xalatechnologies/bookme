@@ -53,7 +53,7 @@ export const ProfileMenu: React.FC<ProfileMenuProps> = ({
         <Button variant="ghost" className="flex items-center gap-2 h-10 px-3 bg-gray-100 hover:bg-gray-200">
           <User className="h-5 w-5 text-gray-700" />
           <span className="text-sm font-medium text-gray-700">
-            {userProfile ? `${userProfile.firstName} ${userProfile.lastName}` : 'Bruker'}
+            {userProfile ? `${userProfile.firstName} ${userProfile.lastName}` : t('labels.user')}
           </span>
         </Button>
       </DropdownMenuTrigger>

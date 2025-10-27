@@ -87,7 +87,15 @@
     "qr_code": "QR Code",
     "contact_info": "Contact Information",
     "show_more": "Show More",
-    "show_less": "Show Less"
+    "show_less": "Show Less",
+    "start_first_booking": "Start your first booking",
+    "no_bookings_yet": "You have no bookings yet. Explore our venues and book your first activity.",
+    "book_venue": "Book a venue",
+    "view_details": "View details",
+    "edit": "Edit",
+    "cancel": "Cancel",
+    "contact": "Contact",
+    "show_details": "View booking details for"
   },
 
   "recommendations": {

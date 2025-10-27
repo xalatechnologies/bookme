@@ -2,12 +2,13 @@
 
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { 
-  Heart, 
-  Share2, 
-  Calendar, 
+import {
+  Heart,
+  Share2,
+  Calendar,
   Eye,
   CheckCircle,
   Clock,
@@ -32,9 +33,10 @@ interface IFacilityCardUserProps {
 }
 
 const FacilityCardUser = (props: IFacilityCardUserProps): JSX.Element => {
+  const { t } = useTranslation(['facilities']);
   const navigate = useNavigate();
   const [isAnimating, setIsAnimating] = useState<boolean>(false);
-  
+
   // Use favorites store instead of local state
   const { isFavorite, toggleFavorite, incrementUsage, updateLastVisited } = useFavoritesStore();
 
@@ -87,56 +89,56 @@ const FacilityCardUser = (props: IFacilityCardUserProps): JSX.Element => {
 
   const handleShare = (e: React.MouseEvent): void => {
     e.stopPropagation();
-    
+
     try {
       const shareData = {
         title: name,
-        text: `Sjekk ut ${name} på BookMe - ${type} med kapasitet for ${capacity} personer`,
+        text: t('facilities:share.check_out', { name, type, capacity }),
         url: window.location.origin + `/facilities/${id}`
       };
-      
+
       if (navigator.share) {
         navigator.share(shareData).then(() => {
-          alert('Fasilitet delt!');
+          alert(t('facilities:share.facility_shared'));
         }).catch((error) => {
           console.error('Share failed:', error);
           // Fallback to clipboard
           navigator.clipboard.writeText(shareData.url);
-          alert('Lenke kopiert til utklippstavle!');
+          alert(t('facilities:share.link_copied'));
         });
       } else {
         // Fallback: copy to clipboard
         navigator.clipboard.writeText(shareData.url);
-        alert('Lenke kopiert til utklippstavle!');
+        alert(t('facilities:share.link_copied'));
       }
     } catch (error) {
       console.error('Share functionality failed:', error);
-      alert('Kunne ikke dele fasilitet. Prøv igjen.');
+      alert(t('facilities:share.share_failed'));
     }
   };
 
   const getAvailabilityBadge = (): JSX.Element => {
     const availabilityConfig = {
-      available: { 
-        label: "Ledig i dag", 
+      available: {
+        label: t('facilities:availability.available_today'),
         className: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300",
         icon: CheckCircle
       },
-      busy: { 
-        label: "Fullbooket i helgen", 
+      busy: {
+        label: t('facilities:availability.fully_booked_weekend'),
         className: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300",
         icon: Clock
       },
-      full: { 
-        label: "Fullbooket", 
+      full: {
+        label: t('facilities:availability.fully_booked'),
         className: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300",
         icon: XCircle
       }
     };
-    
+
     const config = availabilityConfig[availability];
     const Icon = config.icon;
-    
+
     return (
       <Badge className={`${config.className} text-xs`}>
         <Icon className="h-3 w-3 mr-1" />
@@ -202,16 +204,16 @@ const FacilityCardUser = (props: IFacilityCardUserProps): JSX.Element => {
             onClick={handleViewDetails}
           >
             <Eye className="h-4 w-4 mr-1" />
-            Se detaljer
+            {t('facilities:buttons.view_details')}
           </Button>
-          
+
           <Button
             size="sm"
             className="bg-blue-600 hover:bg-blue-700 text-white"
             onClick={handleBookNow}
           >
             <Calendar className="h-4 w-4 mr-1" />
-            Book nå
+            {t('facilities:buttons.book_now')}
           </Button>
         </div>
       </div>

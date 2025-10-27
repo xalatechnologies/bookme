@@ -3,6 +3,7 @@
 // External libraries
 import React, { useState, useCallback } from "react";
 import { isSameDay } from 'date-fns';
+import { useTranslation } from "react-i18next";
 
 // Internal libraries/utilities
 import type { ISelectedTimeSlot } from '@/components/features/bookings/types';
@@ -35,6 +36,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
   viewMode,
   setViewMode,
 }): JSX.Element => {
+  const { t } = useTranslation('calendar');
   // Fix the capacity type issue by ensuring it's properly typed as a tuple
   const capacityRange: [number, number] | undefined = capacity && Array.isArray(capacity) && capacity.length === 2
     ? [capacity[0], capacity[1]]
@@ -82,10 +84,10 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
         conflict: {
           id: `conflict-${hash}`,
           type: 'booking',
-          title: 'Eksisterende booking',
+          title: t('slot_selection.existing_booking'),
           startTime: timeSlot.split('-')[0],
           endTime: timeSlot.split('-')[1],
-          description: 'Dette tidspunktet er allerede booket'
+          description: t('slot_selection.time_not_available')
         }
       };
     }
@@ -185,7 +187,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
         <Card className="p-8">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Laster kalender...</p>
+            <p className="text-gray-600">{t('messages.loading_calendar')}</p>
           </div>
         </Card>
       </div>
@@ -204,7 +206,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
         <Card className="p-8">
           <div className="text-center">
             <div className="text-6xl mb-4">⚠️</div>
-            <h3 className="text-2xl font-bold text-gray-900 mb-2">Feil ved lasting av kalender</h3>
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">{t('messages.loading_error')}</h3>
             <p className="text-gray-600">{error}</p>
           </div>
         </Card>
@@ -229,8 +231,8 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
           <Card className="p-8">
             <div className="text-center">
               <div className="text-6xl mb-4">📅</div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">Ingen fasiliteter funnet</h3>
-              <p className="text-gray-600">Prøv å justere søkekriteriene dine</p>
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">{t('slot_selection.no_facilities')}</h3>
+              <p className="text-gray-600">{t('slot_selection.adjust_search')}</p>
             </div>
           </Card>
         </div>
@@ -242,9 +244,9 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
               <Card className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h4 className="font-semibold text-gray-900">Valgte tidspunkt: {selectedSlots.length}</h4>
+                    <h4 className="font-semibold text-gray-900">{t('slot_selection.selected_slots')}: {selectedSlots.length}</h4>
                     <p className="text-sm text-gray-600">
-                      Total pris: {selectedSlots.reduce((sum, slot) => sum + slot.pricePerHour, 0)} kr
+                      {t('slot_selection.total_price')}: {selectedSlots.reduce((sum, slot) => sum + slot.pricePerHour, 0)} kr
                     </p>
                   </div>
                   <div className="flex gap-2">
@@ -252,13 +254,13 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                       onClick={clearSelection}
                       className="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-md"
                     >
-                      Fjern alle
+                      {t('slot_selection.remove_all')}
                     </button>
                     <button
                       onClick={() => navigate('/checkout')}
                       className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md font-medium"
                     >
-                      Gå til bestilling
+                      {t('slot_selection.go_to_order')}
                     </button>
                   </div>
                 </div>

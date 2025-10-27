@@ -2,6 +2,7 @@
 
 import React from "react";
 import { MapPin, Users, Star } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Badge } from "@/components/ui/badge";
 
 interface IFacilityCardBaseProps {
@@ -19,6 +20,7 @@ interface IFacilityCardBaseProps {
 }
 
 const FacilityCardBase = (props: IFacilityCardBaseProps): JSX.Element => {
+  const { t } = useTranslation(['facilities']);
   const {
     id,
     name,
@@ -91,7 +93,7 @@ const FacilityCardBase = (props: IFacilityCardBaseProps): JSX.Element => {
           <div className="flex items-center space-x-2">
             <Users className="h-4 w-4 text-gray-400" />
             <span className="text-sm text-gray-600 dark:text-gray-400">
-              {capacity} personer
+              {capacity} {t('facilities:card.people')}
             </span>
           </div>
           {price && (
@@ -100,7 +102,7 @@ const FacilityCardBase = (props: IFacilityCardBaseProps): JSX.Element => {
             </span>
           )}
         </div>
-        
+
         {/* Amenities */}
         <div className="flex flex-wrap gap-1">
           {amenities.slice(0, 3).map((amenity, index) => (
@@ -110,7 +112,7 @@ const FacilityCardBase = (props: IFacilityCardBaseProps): JSX.Element => {
           ))}
           {amenities.length > 3 && (
             <Badge variant="outline" className="text-xs">
-              +{amenities.length - 3} flere
+              +{amenities.length - 3} {t('facilities:card.more')}
             </Badge>
           )}
         </div>

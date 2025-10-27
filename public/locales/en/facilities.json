@@ -214,5 +214,80 @@
     "instant_booking": "Instant booking available",
     "approval_required": "Approval required",
     "cancellation_notice": "Cancellation must be made {{hours}} hours in advance"
+  },
+  "card": {
+    "people": "people",
+    "squareMeters": "m²",
+    "pricePerHour": "kr/hour",
+    "outOf5": "out of 5",
+    "reviewCount": "reviews",
+    "yes": "Yes",
+    "no": "No",
+    "viewDetailsFor": "View details for {{name}} at {{address}}",
+    "addToFavorites": "Add to favorites",
+    "removeFavorites": "Remove from favorites",
+    "shareFacility": "Share facility",
+    "moreAmenities": "more amenities",
+    "more": "more"
+  },
+  "availability": {
+    "available_today": "Available today",
+    "fully_booked_weekend": "Fully booked on weekend",
+    "fully_booked": "Fully booked"
+  },
+  "buttons": {
+    "view_details": "View details",
+    "book_now": "Book now"
+  },
+  "share": {
+    "check_out": "Check out {{name}} on BookMe - {{type}} with capacity for {{capacity}} people",
+    "facility_shared": "Facility shared!",
+    "link_copied": "Link copied to clipboard!",
+    "share_failed": "Could not share facility. Try again."
+  },
+  "search": {
+    "placeholder": "Search for facilities...",
+    "filter": "Filter",
+    "sort_name": "Name",
+    "sort_price": "Price",
+    "sort_popularity": "Popularity",
+    "type_label": "Type",
+    "availability_label": "Availability",
+    "available_now": "Available now"
+  },
+  "facility_types": {
+    "all_types": "All types",
+    "sports_hall": "Sports Hall",
+    "cultural_center": "Cultural Center",
+    "meeting_room": "Meeting Room",
+    "fitness_center": "Fitness Center",
+    "outdoor": "Outdoor"
+  },
+  "contact": {
+    "contact_info_for": "Contact information for {{name}}:",
+    "phone": "Phone",
+    "email": "Email",
+    "facility": "Facility",
+    "location": "Location",
+    "open_email_client": "Would you like to open email client?",
+    "contact_copied": "Contact information copied to clipboard!",
+    "contact_error": "Could not open contact functionality. Try again.",
+    "booking_failed": "Could not navigate to booking page. Try again.",
+    "inquiry_about": "Inquiry about {{name}}",
+    "email_template": "Hi,\n\nI am interested in booking {{name}}.\n\nCan you provide me with more information?\n\nBest regards"
+  },
+  "mobile_panel": {
+    "see_booking_options": "See booking options",
+    "booking_coming_soon": "Booking functionality coming soon...",
+    "capacity_area": "Capacity: {{capacity}} | Area: {{area}} m²",
+    "opening_hours_label": "Opening hours: {{hours}}",
+    "book_now_coming_soon": "Book now (coming soon)"
+  },
+  "header": {
+    "more_images": "more",
+    "capacity_label": "Capacity: {{capacity}} people",
+    "reviews": "reviews",
+    "add_to_favorites": "Add to favorites",
+    "remove_from_favorites": "Remove from favorites"
   }
 }

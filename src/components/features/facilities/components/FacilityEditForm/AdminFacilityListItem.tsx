@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { MapPin, Users, Edit, Trash2, Eye, Plus, AlertTriangle, Copy, X, Save } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -22,6 +23,7 @@ interface IAdminFacilityListItemProps {
 }
 
 const AdminFacilityListItem = ({ facility, onDelete, onToggleStatus, onDuplicate }: IAdminFacilityListItemProps): JSX.Element => {
+  const { t } = useTranslation(['facilities']);
   const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [editValue, setEditValue] = useState<string>("");
@@ -366,7 +368,7 @@ const AdminFacilityListItem = ({ facility, onDelete, onToggleStatus, onDuplicate
               {/* Capacity */}
               <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
                 <Users className="h-5 w-5" />
-                <span className="font-medium text-base">{facility.capacity} personer</span>
+                <span className="font-medium text-base">{facility.capacity} {t('facilities:card.people')}</span>
               </div>
 
               {/* Admin Action Buttons - aligned to the right */}

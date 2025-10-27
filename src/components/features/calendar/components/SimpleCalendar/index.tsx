@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, Grid3X3, List } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import type { IBookingEvent } from '@/types/calendar';
@@ -29,6 +30,7 @@ export const SimpleCalendar: React.FC<SimpleCalendarProps> = ({
   currentDate: externalCurrentDate,
   onDateChange
 }) => {
+  const { t } = useTranslation('calendar');
   const [internalCurrentDate, setInternalCurrentDate] = useState(new Date());
   const currentDate = externalCurrentDate || internalCurrentDate;
   const setCurrentDate = onDateChange || setInternalCurrentDate;
@@ -204,7 +206,10 @@ export const SimpleCalendar: React.FC<SimpleCalendarProps> = ({
   };
 
   // Day names - starting with Monday
-  const dayNames = ['Man', 'Tir', 'Ons', 'Tor', 'Fre', 'Lør', 'Søn'];
+  const dayNames = [
+    t('days.mon'), t('days.tue'), t('days.wed'),
+    t('days.thu'), t('days.fri'), t('days.sat'), t('days.sun')
+  ];
 
   return (
     <div className={`bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 ${className}`}>
@@ -231,7 +236,7 @@ export const SimpleCalendar: React.FC<SimpleCalendarProps> = ({
             onClick={goToToday}
             className="text-sm"
           >
-            I dag
+            {t('navigation.today')}
           </Button>
           <Button
             variant="outline"
@@ -258,7 +263,7 @@ export const SimpleCalendar: React.FC<SimpleCalendarProps> = ({
               onClick={() => onViewChange?.('week')}
               className={`px-3 ${view === 'week' ? 'bg-blue-50 border-blue-300' : ''}`}
             >
-              Uke
+              {t('views.week')}
             </Button>
             <Button
               variant="outline"
@@ -266,7 +271,7 @@ export const SimpleCalendar: React.FC<SimpleCalendarProps> = ({
               onClick={() => onViewChange?.('day')}
               className={`px-3 ${view === 'day' ? 'bg-blue-50 border-blue-300' : ''}`}
             >
-              Dag
+              {t('views.day')}
             </Button>
           </div>
         </div>
@@ -477,7 +482,7 @@ export const SimpleCalendar: React.FC<SimpleCalendarProps> = ({
                       {/* Show "more" indicator if there are more than 3 events */}
                       {dayEvents.length > 3 && (
                         <div className="text-xs text-gray-500 dark:text-gray-400 text-center">
-                          +{dayEvents.length - 3} flere
+                          {t('event.more_events', { count: dayEvents.length - 3 })}
                         </div>
                       )}
                     </div>
@@ -494,15 +499,15 @@ export const SimpleCalendar: React.FC<SimpleCalendarProps> = ({
         <div className="flex items-center gap-4 text-sm">
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 bg-green-100 dark:bg-green-900 rounded"></div>
-            <span className="text-gray-600 dark:text-gray-400">Bekreftet</span>
+            <span className="text-gray-600 dark:text-gray-400">{t('status.confirmed')}</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 bg-yellow-100 dark:bg-yellow-900 rounded"></div>
-            <span className="text-gray-600 dark:text-gray-400">Venter</span>
+            <span className="text-gray-600 dark:text-gray-400">{t('status.pending')}</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 bg-red-100 dark:bg-red-900 rounded"></div>
-            <span className="text-gray-600 dark:text-gray-400">Avbrutt</span>
+            <span className="text-gray-600 dark:text-gray-400">{t('status.cancelled')}</span>
           </div>
         </div>
       </div>

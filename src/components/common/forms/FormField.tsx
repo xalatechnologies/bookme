@@ -95,7 +95,7 @@ export const FormField: React.FC<IFormFieldProps> = ({
       case 'select':
         if (!options) {
           console.error('Select field requires options prop');
-          return <div className="text-red-500">Select requires options</div>;
+          return <div className="text-red-500">{t('validation.select_requires_options')}</div>;
         }
         return (
           <Select
@@ -108,7 +108,7 @@ export const FormField: React.FC<IFormFieldProps> = ({
               aria-describedby={error ? `${id}-error` : helperText ? `${id}-helper` : undefined}
               aria-invalid={!!error}
             >
-              <SelectValue placeholder={placeholder || t('select')} />
+              <SelectValue placeholder={placeholder || t('placeholders.selectOption')} />
             </SelectTrigger>
             <SelectContent>
               {options.map((option) => (

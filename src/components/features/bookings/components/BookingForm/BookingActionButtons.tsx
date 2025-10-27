@@ -2,6 +2,7 @@
 
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ShoppingCart, CreditCard, Trash2 } from "lucide-react";
@@ -32,6 +33,7 @@ export const BookingActionButtons: React.FC<IBookingActionButtonsProps> = ({
   onClearSlots,
 }) => {
   const navigate = useNavigate();
+  const { t } = useTranslation(['bookings', 'common']);
   const [termsAccepted, setTermsAccepted] = React.useState<boolean>(false);
 
   /**
@@ -92,16 +94,25 @@ export const BookingActionButtons: React.FC<IBookingActionButtonsProps> = ({
         />
         <div className="text-sm leading-relaxed">
           <label htmlFor="terms" className="cursor-pointer">
-            Jeg aksepterer{" "}
+            {t('bookings:terms.accept_label')}{" "}
             <a
               href="/vilkar"
               target="_blank"
               rel="noopener noreferrer"
               className="text-blue-600 hover:text-blue-800 underline font-medium"
             >
-              vilkår og betingelser
+              {t('bookings:terms.accept_terms_and_privacy')}
             </a>
-            {" "}for bruk av lokalene{" "}
+            {" "}{t('bookings:terms.and')}{" "}
+            <a
+              href="/privacy"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-600 hover:text-blue-800 underline font-medium"
+            >
+              {t('bookings:terms.privacy_policy')}
+            </a>
+            {" "}{t('bookings:terms.for_use')}{" "}
             <span className="text-red-500">*</span>
           </label>
         </div>
@@ -118,7 +129,7 @@ export const BookingActionButtons: React.FC<IBookingActionButtonsProps> = ({
           size="lg"
         >
           <ShoppingCart className="h-5 w-5 mr-2" />
-          Legg i reservasjonskurv
+          {t('bookings:button_labels.add_to_cart')}
         </Button>
 
         {/* Complete Booking Button */}
@@ -129,7 +140,7 @@ export const BookingActionButtons: React.FC<IBookingActionButtonsProps> = ({
           size="lg"
         >
           <CreditCard className="h-5 w-5 mr-2" />
-          Fullfør booking
+          {t('bookings:button_labels.complete_booking')}
         </Button>
 
         {/* Clear All Button */}
@@ -141,25 +152,25 @@ export const BookingActionButtons: React.FC<IBookingActionButtonsProps> = ({
           size="sm"
         >
           <Trash2 className="h-4 w-4 mr-2" />
-          Fjern alle valgte tidspunkter
+          {t('bookings:sidebar.clear_all_slots')}
         </Button>
       </div>
 
       {/* Validation Messages */}
       {!isFormValid && (
         <div className="text-sm text-red-600 bg-red-50 p-3 rounded-lg border border-red-200">
-          <p className="font-medium">Skjemaet er ikke komplett</p>
+          <p className="font-medium">{t('bookings:validation.form_incomplete')}</p>
           <p className="text-xs mt-1">
-            Fyll ut alle påkrevde felt for å fortsette
+            {t('bookings:validation.fill_required_fields')}
           </p>
         </div>
       )}
 
       {!termsAccepted && isFormValid && (
         <div className="text-sm text-amber-600 bg-amber-50 p-3 rounded-lg border border-amber-200">
-          <p className="font-medium">Vilkår og betingelser</p>
+          <p className="font-medium">{t('bookings:validation.terms_required')}</p>
           <p className="text-xs mt-1">
-            Du må akseptere vilkår og betingelser for å fortsette
+            {t('bookings:validation.accept_terms_message')}
           </p>
         </div>
       )}
@@ -167,7 +178,7 @@ export const BookingActionButtons: React.FC<IBookingActionButtonsProps> = ({
       {/* Loading State */}
       {isLoading && (
         <div className="text-center py-4">
-          <div className="text-sm text-gray-500">Behandler forespørsel...</div>
+          <div className="text-sm text-gray-500">{t('bookings:validation.processing')}</div>
         </div>
       )}
     </div>

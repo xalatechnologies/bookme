@@ -342,5 +342,127 @@
       "completed": "Fullført",
       "upcoming": "Kommende"
     }
+  },
+  "page": {
+    "user_title": "Bookinger",
+    "user_subtitle": "Samlet oversikt over alle dine bookinger",
+    "admin_title": "Alle bookinger",
+    "admin_subtitle": "Administrer alle fasilitetsbookinger",
+    "loading": "Laster bookinger...",
+    "error_loading": "Kunne ikke laste bookinger",
+    "error_message": "Det oppstod en feil ved lasting av dine bookinger.",
+    "try_again": "Prøv igjen",
+    "no_match": "Ingen bookinger matcher filteret",
+    "no_match_message": "Prøv å justere søkekriteriene eller utforsk tilgjengelige lokaler.",
+    "explore_facilities": "Utforsk lokaler",
+    "showing_count": "Viser {{count}} av {{total}} bookinger",
+    "select_all": "Velg alle ({{count}})",
+    "selected_count": "{{count}} valgt",
+    "all_status": "Alle"
+  },
+  "terms": {
+    "title": "Vilkår og betingelser",
+    "accept_label": "Jeg godtar",
+    "accept_terms_and_privacy": "vilkår for leie",
+    "and": "og",
+    "privacy_policy": "personvernerklæring",
+    "for_use": "for bruk av lokalene",
+    "rules_title": "Regler for bruk",
+    "rules": {
+      "cleaning": "Renhold etter bruk er påkrevd",
+      "key_pickup": "Nøkler hentes ved inngang 15 min før start",
+      "free_cancellation": "Avbestilling gratis til 48 timer før start",
+      "no_show_fee": "Gebyr ved no-show: 50% av leiepris"
+    },
+    "privacy_title": "Personvern",
+    "privacy_text": "Vi behandler dine personopplysninger i henhold til vår personvernerklæring. Ved å godta vilkårene samtykker du til behandling av personopplysninger for denne bestillingen.",
+    "cancellation_title": "Avbestilling",
+    "cancellation_text": "Du kan avbestille bookingen din gratis inntil 48 timer før arrangementet starter. Ved avbestilling senere enn dette vil det bli trukket et gebyr på 50% av leieprisen.",
+    "warning_title": "Advarsel:",
+    "warning_text": "Denne handlingen kan ikke angres."
+  },
+  "navigation": {
+    "previous": "Forrige",
+    "next": "Neste",
+    "previous_week": "Forrige uke",
+    "next_week": "Neste uke",
+    "step_of": "Steg {{current}} av {{total}}"
+  },
+  "sidebar": {
+    "title": "Bookingprosess",
+    "zone_selector": "Velg sone",
+    "booking_type": "Bookingtype",
+    "time_slots_title": "Tidspunkter",
+    "clear_all_slots": "Fjern alle valgte tidspunkter",
+    "template_for_recurrence": "Mal for gjentakelse",
+    "recurring_instances": "Gjentakende forekomster ({{count}} totalt):",
+    "and_more": "... og {{count}} til",
+    "no_slots_selected": "Velg tidspunkter og få en prisberegning",
+    "one_hour": "1 time",
+    "hours": "{{count}} timer",
+    "recurring_slots_and_price": "Gjentakende tidspunkter og prisberegning",
+    "slots_and_price_select_pattern": "Tidspunkter og prisberegning (velg gjentakelsesmønster)",
+    "selected_slots_and_price": "Valgte tidspunkter og prisberegning",
+    "select_slots_get_price": "Velg tidspunkter og få en prisberegning"
+  },
+  "weekdays": {
+    "sunday": "Søndag",
+    "monday": "Mandag",
+    "tuesday": "Tirsdag",
+    "wednesday": "Onsdag",
+    "thursday": "Torsdag",
+    "friday": "Fredag",
+    "saturday": "Lørdag"
+  },
+  "form": {
+    "purpose_label": "Formål med bookingen",
+    "purpose_placeholder": "F.eks. fotballtrening, møte, arrangement",
+    "attendees_label": "Antall deltakere",
+    "activity_type_label": "Type aktivitet",
+    "activity_type_placeholder": "Velg aktivitetstype",
+    "actor_type_label": "Aktør type",
+    "actor_type_placeholder": "Velg aktør type",
+    "additional_info_label": "Tilleggsinformasjon",
+    "additional_info_placeholder": "Eventuelle spesielle ønsker eller behov"
+  },
+  "validation": {
+    "form_incomplete": "Skjemaet er ikke komplett",
+    "fill_required_fields": "Fyll ut alle påkrevde felt for å fortsette",
+    "terms_required": "Vilkår og betingelser",
+    "accept_terms_message": "Du må akseptere vilkår og betingelser for å fortsette",
+    "processing": "Behandler forespørsel...",
+    "select_weekdays": "Velg ukedager",
+    "select_time_slots": "Velg tidspunkter"
+  },
+  "booking_types": {
+    "one_time_label": "Enkelt booking",
+    "one_time_description": "Én gang booking",
+    "recurring_label": "Gjentakende booking",
+    "recurring_description": "Fast tid som gjentas",
+    "select_label": "Velg {{type}}"
+  },
+  "button_labels": {
+    "add_to_cart": "Legg i reservasjonskurv",
+    "complete_booking": "Fullfør booking",
+    "new_booking": "Ny booking",
+    "cancel_selected": "Avlys valgte",
+    "cancel": "Avbryt",
+    "cancel_booking": "Avlys booking"
+  },
+  "delete_confirm": {
+    "title_single": "Avlys booking",
+    "title_multiple": "Avlys bookinger",
+    "message_single": "Er du sikker på at du vil avlyse 1 booking?",
+    "message_multiple": "Er du sikker på at du vil avlyse {{count}} bookinger?",
+    "cancel_all": "Avlys alle",
+    "canceling": "Avlyser...",
+    "success_single": "Booking avlyst",
+    "success_multiple": "{{count}} bookinger avlyst"
+  },
+  "toast": {
+    "booking_submitted": "Booking sendt! Du vil få bekreftelse på e-post når den er godkjent.",
+    "calendar_added": "Booking lagt til i kalender!",
+    "info_copied": "Booking-info kopiert til utklippstavle!",
+    "recurring_coming_soon": "Visning av gjentakende booking kommer snart!"
   }
 }

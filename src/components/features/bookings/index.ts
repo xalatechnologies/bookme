@@ -11,7 +11,7 @@ export { default as BookingForm } from './components/BookingForm';
 export { default as StepByStepBooking } from './components/StepByStepBooking';
 
 // Recurring Booking Modal
-export { default as RecurringBookingModal } from './components/RecurringBookingModal';
+export { RecurringBookingModal } from './components/RecurringBookingModal';
 
 // Booking Card Components
 export { BookingCard } from './components/BookingCard';

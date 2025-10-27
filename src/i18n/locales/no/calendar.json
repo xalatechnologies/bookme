@@ -189,5 +189,36 @@
     "select_zone": "Velg sone",
     "opening_hours": "Åpningstider",
     "closed": "Stengt"
+  },
+  "availability_legend": {
+    "title": "Forklaring av farger",
+    "available_label": "Ledig",
+    "available_description": "Tilgjengelig for booking",
+    "busy_label": "Opptatt",
+    "busy_description": "Allerede booket",
+    "selected_label": "Valgt",
+    "selected_description": "Du har valgt dette tidspunktet",
+    "unavailable_label": "Ikke tilgjengelig",
+    "unavailable_description": "Ikke tilgjengelig (helg, ferie, fortid)",
+    "conflict_label": "Konflikt",
+    "conflict_description": "Har konflikt med andre bookinger",
+    "click_available": "Klikk på ledige tidspunkter for å velge dem",
+    "drag_select": "Du kan velge flere tidspunkter samtidig ved å dra og slippe"
+  },
+  "slot_selection": {
+    "selected_slots": "Valgte tidspunkt",
+    "total_price": "Total pris",
+    "remove_all": "Fjern alle",
+    "go_to_checkout": "Gå til kasse",
+    "go_to_order": "Gå til bestilling",
+    "clear_slots": "Tøm tidspunkter",
+    "no_facilities": "Ingen fasiliteter funnet",
+    "adjust_search": "Prøv å justere søkekriteriene dine",
+    "existing_booking": "Eksisterende booking",
+    "time_not_available": "Dette tidspunktet er allerede booket"
+  },
+  "search": {
+    "search_label": "Søk:",
+    "facilities_label": "Lokaler:"
   }
 }

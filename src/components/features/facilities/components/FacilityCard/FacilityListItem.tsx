@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { MapPin, Users, Heart, Share2 } from "lucide-react";
 
 import type { IFacility } from '@/stores/facilityStore';
@@ -20,9 +21,10 @@ export const FacilityListItem: React.FC<FacilityListItemProps> = ({
   facility,
   onAddressClick
 }): JSX.Element => {
+  const { t } = useTranslation(['facilities']);
   const navigate = useNavigate();
   const [isFavorited, setIsFavorited] = useState(false);
-  
+
   // Get field configs for this facility
   const { getFieldConfigsForFacility } = useFieldConfigStore();
   const fieldConfigs = getFieldConfigsForFacility(facility.id);
@@ -118,7 +120,7 @@ export const FacilityListItem: React.FC<FacilityListItemProps> = ({
               {facility.amenities.length > 0 && (
                 <div className="flex flex-wrap gap-2 mb-4">
                   {facility.amenities.slice(0, 4).map((amenity, index) => (
-                    <Badge 
+                    <Badge
                       key={index}
                       className="bg-blue-50 text-blue-700 border-blue-200 font-medium px-3 py-1 text-sm hover:bg-blue-100 transition-colors"
                     >
@@ -126,11 +128,11 @@ export const FacilityListItem: React.FC<FacilityListItemProps> = ({
                     </Badge>
                   ))}
                   {facility.amenities.length > 4 && (
-                    <Badge 
+                    <Badge
                       variant="outline"
                       className="bg-gray-50 text-gray-600 border-gray-300 font-medium px-3 py-1 text-sm"
                     >
-                      +{facility.amenities.length - 4} more
+                      +{facility.amenities.length - 4} {t('facilities:card.more')}
                     </Badge>
                   )}
                 </div>
@@ -151,7 +153,7 @@ export const FacilityListItem: React.FC<FacilityListItemProps> = ({
                       if (field.key === 'pricePerHour') return facility.pricePerHour || 0;
                       if (field.key === 'rating') return facility.rating || 0;
                       if (field.key === 'reviewCount') return facility.reviewCount || 0;
-                      return typeof field.value === 'boolean' ? (field.value ? 'Ja' : 'Nei') : field.value;
+                      return typeof field.value === 'boolean' ? (field.value ? t('facilities:card.yes') : t('facilities:card.no')) : field.value;
                     };
 
                     const getIcon = (): JSX.Element => {
@@ -164,11 +166,11 @@ export const FacilityListItem: React.FC<FacilityListItemProps> = ({
                     };
 
                     const getUnit = (): string => {
-                      if (field.key === 'capacity') return 'personer';
-                      if (field.key === 'area') return 'm²';
-                      if (field.key === 'pricePerHour') return 'kr/time';
-                      if (field.key === 'rating') return '/5';
-                      if (field.key === 'reviewCount') return 'anmeldelser';
+                      if (field.key === 'capacity') return t('facilities:card.people');
+                      if (field.key === 'area') return t('facilities:card.squareMeters');
+                      if (field.key === 'pricePerHour') return t('facilities:card.pricePerHour');
+                      if (field.key === 'rating') return t('facilities:card.outOf5');
+                      if (field.key === 'reviewCount') return t('facilities:card.reviewCount');
                       return '';
                     };
 
@@ -189,14 +191,14 @@ export const FacilityListItem: React.FC<FacilityListItemProps> = ({
                 <button
                   onClick={handleFavorite}
                   className="h-9 w-9 p-0 hover:bg-gray-100 rounded-full focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 flex items-center justify-center"
-                  aria-label={isFavorited ? "Fjern fra favoritter" : "Legg til favoritter"}
+                  aria-label={isFavorited ? t('facilities:card.removeFavorites') : t('facilities:card.addToFavorites')}
                 >
                   <Heart className={`h-4 w-4 ${isFavorited ? 'fill-red-500 text-red-500' : 'text-gray-400'}`} />
                 </button>
                 <button
                   onClick={handleShare}
                   className="h-9 w-9 p-0 hover:bg-gray-100 rounded-full focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 flex items-center justify-center"
-                  aria-label="Del lokale"
+                  aria-label={t('facilities:card.shareFacility')}
                 >
                   <Share2 className="h-4 w-4 text-gray-400" />
                 </button>

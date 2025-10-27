@@ -214,5 +214,80 @@
     "instant_booking": "Øyeblikkelig booking tilgjengelig",
     "approval_required": "Krever godkjenning",
     "cancellation_notice": "Avbestilling må gjøres {{hours}} timer i forveien"
+  },
+  "card": {
+    "people": "personer",
+    "squareMeters": "m²",
+    "pricePerHour": "kr/time",
+    "outOf5": "av 5",
+    "reviewCount": "anmeldelser",
+    "yes": "Ja",
+    "no": "Nei",
+    "viewDetailsFor": "Vis detaljer for {{name}} ved {{address}}",
+    "addToFavorites": "Legg til favoritter",
+    "removeFavorites": "Fjern fra favoritter",
+    "shareFacility": "Del fasilitet",
+    "moreAmenities": "flere fasiliteter",
+    "more": "flere"
+  },
+  "availability": {
+    "available_today": "Ledig i dag",
+    "fully_booked_weekend": "Fullbooket i helgen",
+    "fully_booked": "Fullbooket"
+  },
+  "buttons": {
+    "view_details": "Se detaljer",
+    "book_now": "Book nå"
+  },
+  "share": {
+    "check_out": "Sjekk ut {{name}} på BookMe - {{type}} med kapasitet for {{capacity}} personer",
+    "facility_shared": "Fasilitet delt!",
+    "link_copied": "Lenke kopiert til utklippstavle!",
+    "share_failed": "Kunne ikke dele fasilitet. Prøv igjen."
+  },
+  "search": {
+    "placeholder": "Søk etter lokaler...",
+    "filter": "Filter",
+    "sort_name": "Navn",
+    "sort_price": "Pris",
+    "sort_popularity": "Popularitet",
+    "type_label": "Type",
+    "availability_label": "Tilgjengelighet",
+    "available_now": "Ledig nå"
+  },
+  "facility_types": {
+    "all_types": "Alle typer",
+    "sports_hall": "Idrettshall",
+    "cultural_center": "Kulturhus",
+    "meeting_room": "Møterom",
+    "fitness_center": "Treningssenter",
+    "outdoor": "Utendørs"
+  },
+  "contact": {
+    "contact_info_for": "Kontaktinformasjon for {{name}}:",
+    "phone": "Telefon",
+    "email": "E-post",
+    "facility": "Fasilitet",
+    "location": "Lokasjon",
+    "open_email_client": "Vil du åpne e-post klient?",
+    "contact_copied": "Kontaktinformasjon kopiert til utklippstavle!",
+    "contact_error": "Kunne ikke åpne kontaktfunksjonalitet. Prøv igjen.",
+    "booking_failed": "Kunne ikke navigere til bookingside. Prøv igjen.",
+    "inquiry_about": "Forespørsel om {{name}}",
+    "email_template": "Hei,\n\nJeg er interessert i å booke {{name}}.\n\nKan dere gi meg mer informasjon?\n\nMvh"
+  },
+  "mobile_panel": {
+    "see_booking_options": "Se booking alternativer",
+    "booking_coming_soon": "Booking funksjonalitet kommer snart...",
+    "capacity_area": "Kapasitet: {{capacity}} | Areal: {{area}} m²",
+    "opening_hours_label": "Åpningstider: {{hours}}",
+    "book_now_coming_soon": "Book nå (kommer snart)"
+  },
+  "header": {
+    "more_images": "flere",
+    "capacity_label": "Kapasitet: {{capacity}} personer",
+    "reviews": "anmeldelser",
+    "add_to_favorites": "Legg til favoritter",
+    "remove_from_favorites": "Fjern fra favoritter"
   }
 }

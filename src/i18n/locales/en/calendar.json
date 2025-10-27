@@ -189,5 +189,36 @@
     "select_zone": "Select zone",
     "opening_hours": "Opening hours",
     "closed": "Closed"
+  },
+  "availability_legend": {
+    "title": "Color explanation",
+    "available_label": "Available",
+    "available_description": "Available for booking",
+    "busy_label": "Busy",
+    "busy_description": "Already booked",
+    "selected_label": "Selected",
+    "selected_description": "You have selected this time",
+    "unavailable_label": "Unavailable",
+    "unavailable_description": "Not available (weekend, holiday, past)",
+    "conflict_label": "Conflict",
+    "conflict_description": "Has conflict with other bookings",
+    "click_available": "Click on available times to select them",
+    "drag_select": "You can select multiple times by dragging"
+  },
+  "slot_selection": {
+    "selected_slots": "Selected slots",
+    "total_price": "Total price",
+    "remove_all": "Remove all",
+    "go_to_checkout": "Go to checkout",
+    "go_to_order": "Go to order",
+    "clear_slots": "Clear slots",
+    "no_facilities": "No facilities found",
+    "adjust_search": "Try adjusting your search criteria",
+    "existing_booking": "Existing booking",
+    "time_not_available": "This time is already booked"
+  },
+  "search": {
+    "search_label": "Search:",
+    "facilities_label": "Venues:"
   }
 }

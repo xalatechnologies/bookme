@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useCallback, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { ChevronLeft, ChevronRight, CheckCircle, Clock, Calendar, FileText, Shield, Users, X } from "lucide-react";
 import { startOfWeek, addWeeks, subWeeks, addDays, addMonths, format, isToday, isWeekend, isPast, getDay, parseISO, isValid } from "date-fns";
 import { nb } from "date-fns/locale";
@@ -71,6 +72,8 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
   getAvailabilityStatus,
   isSlotSelected,
 }) => {
+  const { t } = useTranslation(['bookings', 'common']);
+
   // Current step state
   const [currentStep, setCurrentStep] = useState<BookingStep>('calendar');
   
@@ -195,14 +198,14 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
     const baseSteps = [
       {
         id: 'calendar' as BookingStep,
-        title: 'Kalender',
-        description: 'Velg dato og tid for bookingen',
+        title: t('bookings:steps.calendar.title', 'Kalender'),
+        description: t('bookings:steps.calendar.description', 'Velg dato og tid for bookingen'),
         icon: Calendar,
       },
       {
         id: 'details' as BookingStep,
-        title: 'Bookingdetaljer',
-        description: 'Fyll ut informasjon om bookingen',
+        title: t('bookings:steps.details.title', 'Bookingdetaljer'),
+        description: t('bookings:steps.details.description', 'Fyll ut informasjon om bookingen'),
         icon: FileText,
       },
     ];
@@ -211,8 +214,8 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
     if (formData.bookingType === 'recurring') {
       baseSteps.push({
         id: 'recurrence' as BookingStep,
-        title: 'Gjentakelse',
-        description: 'Velg gjentakelsesmønster',
+        title: t('bookings:steps.recurrence.title', 'Gjentakelse'),
+        description: t('bookings:steps.recurrence.description', 'Velg gjentakelsesmønster'),
         icon: Clock,
       });
     }
@@ -220,20 +223,20 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
     baseSteps.push(
       {
         id: 'terms' as BookingStep,
-        title: 'Vilkår og betingelser',
-        description: 'Les og godta vilkårene',
+        title: t('bookings:steps.terms.title', 'Vilkår og betingelser'),
+        description: t('bookings:steps.terms.description', 'Les og godta vilkårene'),
         icon: Shield,
       },
       {
         id: 'actions' as BookingStep,
-        title: 'Fullfør booking',
-        description: 'Legg i kurv eller fullfør direkte',
+        title: t('bookings:steps.actions.title', 'Fullfør booking'),
+        description: t('bookings:steps.actions.description', 'Legg i kurv eller fullfør direkte'),
         icon: CheckCircle,
       }
     );
 
     return baseSteps;
-  }, [formData.bookingType]);
+  }, [formData.bookingType, t]);
 
   /**
    * Calculate current step index
@@ -797,9 +800,9 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
         return (
           <div className="space-y-6">
             <div>
-              <h3 className="text-lg font-semibold mb-2">Fyll ut bookingdetaljer</h3>
+              <h3 className="text-lg font-semibold mb-2">{t('bookings:steps.details.title')}</h3>
               <p className="text-gray-600 text-sm">
-                Fortell oss om arrangementet ditt så kan vi hjelpe deg med riktig booking.
+                {t('bookings:steps.details.description')}
               </p>
             </div>
             
@@ -808,13 +811,13 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
                 {/* Purpose */}
                 <div className="space-y-2">
                   <Label htmlFor="purpose" className="text-sm font-medium">
-                    Formål med bookingen <span className="text-red-500">*</span>
+                    {t('bookings:form.purpose_label')} <span className="text-red-500">*</span>
                   </Label>
                   <Input
                     id="purpose"
                     value={formData.purpose}
                     onChange={(e) => handleFormDataUpdate({ purpose: e.target.value })}
-                    placeholder="F.eks. fotballtrening, møte, arrangement"
+                    placeholder={t('bookings:form.purpose_placeholder')}
                     disabled={isLoading}
                     className="w-full"
                   />
@@ -823,7 +826,7 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
                 {/* Attendees */}
                 <div className="space-y-2">
                   <Label htmlFor="attendees" className="text-sm font-medium">
-                    Antall deltakere <span className="text-red-500">*</span>
+                    {t('bookings:form.attendees_label')} <span className="text-red-500">*</span>
                   </Label>
                   <Input
                     id="attendees"
@@ -839,7 +842,7 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
                 {/* Activity Type */}
                 <div className="space-y-2">
                   <Label htmlFor="activityType" className="text-sm font-medium">
-                    Type aktivitet <span className="text-red-500">*</span>
+                    {t('bookings:form.activity_type_label')} <span className="text-red-500">*</span>
                   </Label>
                   <Select
                     value={formData.activityType}
@@ -847,15 +850,15 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
                     disabled={isLoading}
                   >
                     <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Velg aktivitetstype" />
+                      <SelectValue placeholder={t('bookings:form.activity_type_placeholder')} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="sport">Sport</SelectItem>
-                      <SelectItem value="kultur">Kultur</SelectItem>
-                      <SelectItem value="møte">Møte</SelectItem>
-                      <SelectItem value="arrangement">Arrangement</SelectItem>
-                      <SelectItem value="trening">Trening</SelectItem>
-                      <SelectItem value="annet">Annet</SelectItem>
+                      <SelectItem value="sport">{t('bookings:activity_types.sport')}</SelectItem>
+                      <SelectItem value="kultur">{t('bookings:activity_types.culture')}</SelectItem>
+                      <SelectItem value="møte">{t('bookings:activity_types.meeting')}</SelectItem>
+                      <SelectItem value="arrangement">{t('bookings:activity_types.event')}</SelectItem>
+                      <SelectItem value="trening">{t('bookings:activity_types.training')}</SelectItem>
+                      <SelectItem value="annet">{t('common:other')}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -1217,11 +1220,11 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
             <Card className="w-full">
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm font-medium text-gray-700">
-                  {selectedSlots.length > 0 
-                    ? (formData.bookingType === 'recurring' 
-                        ? (recurringSlots.length > 0 ? "Gjentakende tidspunkter og prisberegning" : "Tidspunkter og prisberegning (velg gjentakelsesmønster)")
-                        : "Valgte tidspunkter og prisberegning")
-                    : "Velg tidspunkter og få en prisberegning"
+                  {selectedSlots.length > 0
+                    ? (formData.bookingType === 'recurring'
+                        ? (recurringSlots.length > 0 ? t('bookings:sidebar.recurring_slots_and_price') : t('bookings:sidebar.slots_and_price_select_pattern'))
+                        : t('bookings:sidebar.selected_slots_and_price'))
+                    : t('bookings:sidebar.select_slots_get_price')
                   }
                 </CardTitle>
               </CardHeader>

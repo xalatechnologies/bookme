@@ -4,6 +4,7 @@
 import React, { useMemo, useCallback } from "react";
 import { format, addDays, isToday, isWeekend, isPast } from "date-fns";
 import { nb } from "date-fns/locale";
+import { useTranslation } from "react-i18next";
 
 // Internal libraries/utilities
 import { useDragSelection } from "@/hooks/useDragSelection";
@@ -43,6 +44,7 @@ export const TimeSlotGrid: React.FC<ICalendarGridProps> = ({
   openingHoursStart = "08:00",
   openingHoursEnd = "22:00"
 }) => {
+  const { t } = useTranslation('calendar');
   // Generate time slots based on opening hours - memoized
   const timeSlots = useMemo(() => {
     const startHour = parseInt(openingHoursStart.split(':')[0]);
@@ -84,9 +86,32 @@ export const TimeSlotGrid: React.FC<ICalendarGridProps> = ({
   }, [zoneId, getAvailabilityStatus, isSlotSelected]);
 
   /**
+   * Get status label for accessibility
+   *
+   * @param status - Time slot status
+   * @returns Translated status label
+   */
+  const getStatusLabel = useCallback((status: TimeSlotStatus): string => {
+    switch (status) {
+      case "available":
+        return t('slot_status.available');
+      case "busy":
+        return t('slot_status.busy');
+      case "unavailable":
+        return t('slot_status.unavailable');
+      case "selected":
+        return t('slot_status.selected');
+      case "conflict":
+        return t('slot_status.conflict');
+      default:
+        return t('slot_status.conflict');
+    }
+  }, [t]);
+
+  /**
    * Get CSS classes for a time slot based on status
    * Memoized for performance
-   * 
+   *
    * @param status - Time slot status
    * @param isInPreview - Whether slot is in drag preview
    * @returns CSS class string
@@ -209,7 +234,7 @@ export const TimeSlotGrid: React.FC<ICalendarGridProps> = ({
   if (error) {
     return (
       <div className="p-8 text-center">
-        <div className="text-red-600 mb-2">Feil ved lasting av kalender</div>
+        <div className="text-red-600 mb-2">{t('errors.loading_calendar')}</div>
         <div className="text-sm text-gray-500">{error}</div>
       </div>
     );
@@ -241,7 +266,7 @@ export const TimeSlotGrid: React.FC<ICalendarGridProps> = ({
                   {format(day.date, "dd", { locale: nb })}
                 </div>
                 {isToday && (
-                  <div className="text-xs text-blue-200 mt-1">I dag</div>
+                  <div className="text-xs text-blue-200 mt-1">{t('navigation.today')}</div>
                 )}
               </div>
             );
@@ -269,13 +294,7 @@ export const TimeSlotGrid: React.FC<ICalendarGridProps> = ({
                       onMouseEnter={() => handleMouseEnter(day.date, timeSlot)}
                       onMouseUp={handleMouseUp}
                       onClick={(e) => handleSlotClick(day.date, timeSlot, e)}
-                      title={
-                        status === "available" ? "Ledig - klikk eller dra for å velge" :
-                        status === "busy" ? "Opptatt" :
-                        status === "unavailable" ? "Ikke tilgjengelig" :
-                        status === "selected" ? "Valgt - klikk for å fjerne" :
-                        "Har konflikt"
-                      }
+                      title={getStatusLabel(status)}
                       style={{ userSelect: 'none' }}
                     >
                       <div className="flex items-center justify-center h-full">
@@ -300,7 +319,7 @@ export const TimeSlotGrid: React.FC<ICalendarGridProps> = ({
         {/* Loading Overlay */}
         {isLoading && (
           <div className="absolute inset-0 bg-white/50 flex items-center justify-center rounded-lg">
-            <div className="text-gray-600">Laster kalender...</div>
+            <div className="text-gray-600">{t('time_slots.loading')}</div>
           </div>
         )}
       </div>

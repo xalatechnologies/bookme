@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Search, Filter, SortAsc, SortDesc } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,6 +24,7 @@ interface IFilterBarUserProps {
 }
 
 const FilterBarUser = (props: IFilterBarUserProps): JSX.Element => {
+  const { t } = useTranslation(['facilities']);
   const {
     searchQuery,
     onSearchChange,
@@ -40,12 +42,12 @@ const FilterBarUser = (props: IFilterBarUserProps): JSX.Element => {
   const [showFilters, setShowFilters] = useState<boolean>(false);
 
   const facilityTypes = [
-    { value: "all", label: "Alle typer" },
-    { value: "Idrettshall", label: "Idrettshall" },
-    { value: "Kulturhus", label: "Kulturhus" },
-    { value: "Møterom", label: "Møterom" },
-    { value: "Treningssenter", label: "Treningssenter" },
-    { value: "Utendørs", label: "Utendørs" }
+    { value: "all", label: t('facilities:facility_types.all_types') },
+    { value: "Idrettshall", label: t('facilities:facility_types.sports_hall') },
+    { value: "Kulturhus", label: t('facilities:facility_types.cultural_center') },
+    { value: "Møterom", label: t('facilities:facility_types.meeting_room') },
+    { value: "Treningssenter", label: t('facilities:facility_types.fitness_center') },
+    { value: "Utendørs", label: t('facilities:facility_types.outdoor') }
   ];
 
   const handleSortClick = (newSortBy: "price" | "popularity" | "name"): void => {
@@ -65,7 +67,7 @@ const FilterBarUser = (props: IFilterBarUserProps): JSX.Element => {
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
           <Input
             type="text"
-            placeholder="Søk etter lokaler..."
+            placeholder={t('facilities:search.placeholder')}
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
             className="pl-10"
@@ -81,7 +83,7 @@ const FilterBarUser = (props: IFilterBarUserProps): JSX.Element => {
             className="flex items-center gap-2"
           >
             <Filter className="w-4 h-4" />
-            Filter
+            {t('facilities:search.filter')}
             {(selectedType !== "all" || showAvailableOnly) && (
               <Badge variant="secondary" className="ml-1">
                 {(selectedType !== "all" ? 1 : 0) + (showAvailableOnly ? 1 : 0)}
@@ -96,7 +98,7 @@ const FilterBarUser = (props: IFilterBarUserProps): JSX.Element => {
               size="sm"
               className={`flex items-center gap-1 ${sortBy === "name" ? "bg-blue-50 dark:bg-blue-900/20" : ""}`}
             >
-              Navn
+              {t('facilities:search.sort_name')}
               {sortBy === "name" && (
                 sortOrder === "asc" ? <SortAsc className="w-3 h-3" /> : <SortDesc className="w-3 h-3" />
               )}
@@ -107,7 +109,7 @@ const FilterBarUser = (props: IFilterBarUserProps): JSX.Element => {
               size="sm"
               className={`flex items-center gap-1 ${sortBy === "price" ? "bg-blue-50 dark:bg-blue-900/20" : ""}`}
             >
-              Pris
+              {t('facilities:search.sort_price')}
               {sortBy === "price" && (
                 sortOrder === "asc" ? <SortAsc className="w-3 h-3" /> : <SortDesc className="w-3 h-3" />
               )}
@@ -118,7 +120,7 @@ const FilterBarUser = (props: IFilterBarUserProps): JSX.Element => {
               size="sm"
               className={`flex items-center gap-1 ${sortBy === "popularity" ? "bg-blue-50 dark:bg-blue-900/20" : ""}`}
             >
-              Popularitet
+              {t('facilities:search.sort_popularity')}
               {sortBy === "popularity" && (
                 sortOrder === "asc" ? <SortAsc className="w-3 h-3" /> : <SortDesc className="w-3 h-3" />
               )}
@@ -140,7 +142,7 @@ const FilterBarUser = (props: IFilterBarUserProps): JSX.Element => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Type Filter */}
               <div>
-                <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Type</h4>
+                <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('facilities:search.type_label')}</h4>
                 <div className="flex flex-wrap gap-2">
                   {facilityTypes.map(type => (
                     <Button
@@ -158,7 +160,7 @@ const FilterBarUser = (props: IFilterBarUserProps): JSX.Element => {
 
               {/* Availability Filter */}
               <div>
-                <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Tilgjengelighet</h4>
+                <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('facilities:search.availability_label')}</h4>
                 <div className="flex flex-wrap gap-2">
                   <Button
                     onClick={() => onAvailableToggle(!showAvailableOnly)}
@@ -166,7 +168,7 @@ const FilterBarUser = (props: IFilterBarUserProps): JSX.Element => {
                     size="sm"
                     className="text-xs"
                   >
-                    Ledig nå
+                    {t('facilities:search.available_now')}
                   </Button>
                 </div>
               </div>

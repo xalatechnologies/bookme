@@ -2,6 +2,7 @@
 
 // External libraries
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Calendar, Repeat } from 'lucide-react';
 
 // Internal libraries/utilities
@@ -34,22 +35,24 @@ interface BookingTypeSelectorProps {
  * - Use onTypeChange to handle selection changes
  * - Use disabled to prevent interaction when needed
  */
-export function BookingTypeSelector({ 
-  selectedType, 
-  onTypeChange, 
-  disabled = false 
+export function BookingTypeSelector({
+  selectedType,
+  onTypeChange,
+  disabled = false
 }: BookingTypeSelectorProps): JSX.Element {
+  const { t } = useTranslation(['bookings', 'common']);
+
   const types = [
-    { 
-      id: 'one-time' as BookingType, 
-      label: 'Enkelt booking', 
-      description: 'Én gang booking',
+    {
+      id: 'one-time' as BookingType,
+      label: t('bookings:booking_types.one_time_label'),
+      description: t('bookings:booking_types.one_time_description'),
       icon: Calendar
     },
-    { 
-      id: 'recurring' as BookingType, 
-      label: 'Gjentakende booking', 
-      description: 'Fast tid som gjentas',
+    {
+      id: 'recurring' as BookingType,
+      label: t('bookings:booking_types.recurring_label'),
+      description: t('bookings:booking_types.recurring_description'),
       icon: Repeat
     }
   ];
@@ -72,7 +75,7 @@ export function BookingTypeSelector({
                 : 'hover:bg-gray-50 border-gray-200'
             } ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
             aria-pressed={isSelected}
-            aria-label={`Velg ${type.label}`}
+            aria-label={t('bookings:booking_types.select_label', { type: type.label })}
           >
             <Icon className={`w-4 h-4 ${isSelected ? 'text-white' : 'text-gray-600'}`} />
             <span className={`font-medium ${isSelected ? 'text-white' : 'text-gray-900'}`}>

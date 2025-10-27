@@ -1,14 +1,15 @@
 "use client";
 
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { 
-  Calendar, 
-  Eye, 
-  Edit, 
-  Trash2, 
-  MessageSquare, 
+import {
+  Calendar,
+  Eye,
+  Edit,
+  Trash2,
+  MessageSquare,
   ChevronDown,
   Users,
   QrCode,
@@ -52,15 +53,16 @@ interface IBookingListProps {
 }
 
 const BookingList = (props: IBookingListProps): JSX.Element => {
-  const { 
-    bookings, 
-    expandedBookings, 
-    onToggleExpansion, 
-    onViewFacility, 
-    onEditBooking, 
-    onCancelBooking, 
-    onContactAdmin 
+  const {
+    bookings,
+    expandedBookings,
+    onToggleExpansion,
+    onViewFacility,
+    onEditBooking,
+    onCancelBooking,
+    onContactAdmin
   } = props;
+  const { t } = useTranslation('user');
 
   const formatDate = (dateString: string): string => {
     // Handle date display more carefully to avoid timezone issues
@@ -77,18 +79,18 @@ const BookingList = (props: IBookingListProps): JSX.Element => {
 
   const getStatusBadge = (status: IUserBooking["status"]): JSX.Element => {
     const statusConfig = {
-      confirmed: { 
-        label: "Bekreftet", 
+      confirmed: {
+        label: t('bookings.status.confirmed'),
         className: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300 border-l-4 border-green-500",
         icon: CheckCircle
       },
-      pending: { 
-        label: "Ventende", 
+      pending: {
+        label: t('bookings.status.pending'),
         className: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300 border-l-4 border-yellow-500",
         icon: Clock
       },
-      cancelled: { 
-        label: "Avlyst", 
+      cancelled: {
+        label: t('bookings.status.cancelled'),
         className: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300 border-l-4 border-red-500",
         icon: XCircle
       }
@@ -112,14 +114,14 @@ const BookingList = (props: IBookingListProps): JSX.Element => {
       <div className="text-center py-12">
         <Calendar className="h-16 w-16 text-gray-400 mx-auto mb-4" />
         <h3 className="text-xl font-medium text-gray-900 dark:text-white mb-2">
-          Start din første booking
+          {t('bookings.start_first_booking')}
         </h3>
         <p className="text-gray-600 dark:text-gray-400 mb-6 max-w-md mx-auto">
-          Du har ingen bookinger ennå. Utforsk våre lokaler og book din første aktivitet.
+          {t('bookings.no_bookings_yet')}
         </p>
         <Button onClick={() => onViewFacility('new')} size="lg">
           <Plus className="h-5 w-5 mr-2" />
-          Book et lokale
+          {t('bookings.book_venue')}
         </Button>
       </div>
     );
@@ -152,7 +154,7 @@ const BookingList = (props: IBookingListProps): JSX.Element => {
                 }
               }}
               aria-expanded={isExpanded}
-              aria-label={`Vis detaljer for booking ${booking.facility}`}
+              aria-label={`${t('bookings.show_details')} ${booking.facility}`}
             >
               <div className="flex items-center space-x-4">
                 <div className="w-12 h-12 bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center">
@@ -192,10 +194,10 @@ const BookingList = (props: IBookingListProps): JSX.Element => {
                     e.stopPropagation();
                     onViewFacility(booking.id);
                   }}
-                  aria-label={`Se detaljer for ${booking.facility}`}
+                  aria-label={`${t('bookings.view_details')} ${booking.facility}`}
                 >
                   <Eye className="h-4 w-4 mr-1" />
-                  Se detaljer
+                  {t('bookings.view_details')}
                 </Button>
                 
                 {booking.status === "confirmed" && (
@@ -208,10 +210,10 @@ const BookingList = (props: IBookingListProps): JSX.Element => {
                         onEditBooking(booking.id);
                       }}
                       className="text-green-600 hover:text-green-700 hover:bg-green-50 dark:hover:bg-green-900/20"
-                      aria-label={`Endre booking for ${booking.facility}`}
+                      aria-label={`${t('bookings.edit')} ${booking.facility}`}
                     >
                       <Edit className="h-4 w-4 mr-1" />
-                      Endre
+                      {t('bookings.edit')}
                     </Button>
                     <Button
                       size="sm"
@@ -221,10 +223,10 @@ const BookingList = (props: IBookingListProps): JSX.Element => {
                         onCancelBooking(booking.id);
                       }}
                       className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
-                      aria-label={`Avlys booking for ${booking.facility}`}
+                      aria-label={`${t('bookings.cancel')} ${booking.facility}`}
                     >
                       <Trash2 className="h-4 w-4 mr-1" />
-                      Avlys
+                      {t('bookings.cancel')}
                     </Button>
                   </>
                 )}
@@ -238,10 +240,10 @@ const BookingList = (props: IBookingListProps): JSX.Element => {
                       onContactAdmin(booking.id);
                     }}
                     className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900/20"
-                    aria-label={`Kontakt admin angående booking for ${booking.facility}`}
+                    aria-label={`${t('bookings.contact')} ${booking.facility}`}
                   >
                     <MessageSquare className="h-4 w-4 mr-1" />
-                    Kontakt
+                    {t('bookings.contact')}
                   </Button>
                 )}
                 
@@ -259,7 +261,7 @@ const BookingList = (props: IBookingListProps): JSX.Element => {
                     <div>
                       <h5 className="font-medium text-gray-900 dark:text-white mb-2 flex items-center gap-2">
                         <Users className="h-4 w-4" />
-                        Deltakere
+                        {t('bookings.participants')}
                       </h5>
                       <div className="flex flex-wrap gap-1">
                         {booking.participants.map((participant, index) => (
@@ -275,7 +277,7 @@ const BookingList = (props: IBookingListProps): JSX.Element => {
                     <div>
                       <h5 className="font-medium text-gray-900 dark:text-white mb-2 flex items-center gap-2">
                         <QrCode className="h-4 w-4" />
-                        QR-kode
+                        {t('bookings.qr_code')}
                       </h5>
                       <div className="bg-white dark:bg-gray-700 p-2 rounded border text-center">
                         <div className="text-xs font-mono">{booking.qrCode}</div>
@@ -286,7 +288,7 @@ const BookingList = (props: IBookingListProps): JSX.Element => {
                   {booking.cancellationPolicy && (
                     <div>
                       <h5 className="font-medium text-gray-900 dark:text-white mb-2">
-                        Avbestillingsregler
+                        {t('bookings.cancellation_policy')}
                       </h5>
                       <p className="text-sm text-gray-600 dark:text-gray-400">
                         {booking.cancellationPolicy}
@@ -297,7 +299,7 @@ const BookingList = (props: IBookingListProps): JSX.Element => {
                   {booking.contactInfo && (
                     <div>
                       <h5 className="font-medium text-gray-900 dark:text-white mb-2">
-                        Kontaktinfo
+                        {t('bookings.contact_info')}
                       </h5>
                       <div className="space-y-1">
                         <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">

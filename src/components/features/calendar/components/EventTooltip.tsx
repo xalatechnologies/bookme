@@ -1,5 +1,6 @@
 import React from 'react';
 import { Calendar, Clock, MapPin, User, DollarSign } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import type { IBookingEvent } from '@/types/calendar';
@@ -13,6 +14,7 @@ export const EventTooltip: React.FC<EventTooltipProps> = ({
   event,
   className = ''
 }): JSX.Element => {
+  const { t } = useTranslation('calendar');
   const getStatusColor = (status: string): string => {
     switch (status) {
       case 'confirmed':
@@ -29,13 +31,13 @@ export const EventTooltip: React.FC<EventTooltipProps> = ({
   const getStatusLabel = (status: string): string => {
     switch (status) {
       case 'confirmed':
-        return 'Bekreftet';
+        return t('status.confirmed');
       case 'pending':
-        return 'Ventende';
+        return t('status.pending');
       case 'cancelled':
-        return 'Avlyst';
+        return t('status.cancelled');
       default:
-        return 'Ukjent';
+        return 'Unknown';
     }
   };
 
@@ -110,10 +112,10 @@ export const EventTooltip: React.FC<EventTooltipProps> = ({
           {/* Actions */}
           <div className="flex gap-2 pt-2 border-t border-gray-200 dark:border-gray-700">
             <button className="flex-1 px-3 py-1.5 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
-              Se detaljer
+              {t('context_menu.view_details')}
             </button>
             <button className="flex-1 px-3 py-1.5 text-sm border border-gray-300 text-gray-700 rounded hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800 transition-colors">
-              Rediger
+              {t('context_menu.edit')}
             </button>
           </div>
         </div>

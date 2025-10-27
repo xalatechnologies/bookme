@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Heart, Share2, MapPin, Users, Star } from "lucide-react";
 
 import type { IFacility } from "@/stores/facilityStore";
@@ -24,6 +25,7 @@ export const FacilityDetailHeader: React.FC<FacilityDetailHeaderProps> = ({
   isFavorited,
   onToggleFavorite
 }): JSX.Element => {
+  const { t } = useTranslation(['facilities']);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   return (
@@ -77,7 +79,7 @@ export const FacilityDetailHeader: React.FC<FacilityDetailHeaderProps> = ({
           {/* Show more images button if there are more than 3 */}
           {facility.images.length > 3 && (
             <button className="relative overflow-hidden rounded-xl h-full bg-gray-900/80 flex items-center justify-center text-white font-medium hover:bg-gray-900/90 transition-colors">
-              +{facility.images.length - 3} flere
+              +{facility.images.length - 3} {t('facilities:header.more_images')}
             </button>
           )}
         </div>
@@ -96,7 +98,7 @@ export const FacilityDetailHeader: React.FC<FacilityDetailHeaderProps> = ({
                 <div className="flex items-center gap-1">
                   <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
                   <span className="font-medium">{facility.rating}</span>
-                  <span className="text-gray-500">({facility.reviewCount} anmeldelser)</span>
+                  <span className="text-gray-500">({facility.reviewCount} {t('facilities:header.reviews')})</span>
                 </div>
               </div>
               <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-3">
@@ -113,7 +115,7 @@ export const FacilityDetailHeader: React.FC<FacilityDetailHeaderProps> = ({
             </div>
             <div className="flex items-center gap-2">
               <Users className="h-5 w-5" />
-              <span className="font-medium">Kapasitet: {facility.capacity} personer</span>
+              <span className="font-medium">{t('facilities:header.capacity_label', { capacity: facility.capacity })}</span>
             </div>
           </div>
 
@@ -145,7 +147,7 @@ export const FacilityDetailHeader: React.FC<FacilityDetailHeaderProps> = ({
             className="flex items-center gap-2"
           >
             <Heart className={`h-5 w-5 ${isFavorited ? 'fill-red-500 text-red-500' : ''}`} />
-            {isFavorited ? 'Fjern fra favoritter' : 'Legg til favoritter'}
+            {isFavorited ? t('facilities:header.remove_from_favorites') : t('facilities:header.add_to_favorites')}
           </Button>
           
           <Button

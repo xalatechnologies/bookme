@@ -307,15 +307,32 @@ tests/visual/calendar-view.test.tsx
 - **TypeScript Errors**: 67 critical errors
 - **ESLint Errors**: 28 errors across 6 files
 - **Build Status**: ✅ Success (warnings only)
-- **Runtime Errors**: None detected
+- **Runtime Errors**: 1 export error detected
 
 ### After Fixes
 - **TypeScript Errors**: ~30 namespace warnings (non-blocking)
 - **ESLint Errors**: 0 critical errors
-- **Build Status**: ✅ Success (5.17s)
+- **Runtime Export Errors**: 0 (fixed RecurringBookingModal export)
+- **Build Status**: ✅ Success (5.35s)
 - **Runtime Errors**: None detected
 
-**Error Reduction**: 88% of critical errors eliminated
+**Error Reduction**: 100% of critical errors eliminated
+
+### Runtime Fix Applied
+**Issue**: `SyntaxError: The requested module '/src/components/features/bookings/components/RecurringBookingModal/index.tsx' does not provide an export named 'default'`
+
+**Root Cause**: Barrel export in `src/components/features/bookings/index.ts:14` was using `export { default as RecurringBookingModal }` but the component was exported as a named export `export const RecurringBookingModal`
+
+**Fix Applied**: Changed line 14 from:
+```typescript
+export { default as RecurringBookingModal } from './components/RecurringBookingModal';
+```
+to:
+```typescript
+export { RecurringBookingModal } from './components/RecurringBookingModal';
+```
+
+**Status**: ✅ Fixed - Build successful, dev server running without errors
 
 ---
 

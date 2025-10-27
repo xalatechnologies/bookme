@@ -32,6 +32,12 @@ import bookingNo from '../locales/no/booking.json';
 import bookingEn from '../locales/en/booking.json';
 import facilityNo from '../locales/no/facility.json';
 import facilityEn from '../locales/en/facility.json';
+import calendarNo from '../locales/no/calendar.json';
+import calendarEn from '../locales/en/calendar.json';
+import adminNo from '../locales/no/admin.json';
+import adminEn from '../locales/en/admin.json';
+import userNo from '../locales/no/user.json';
+import userEn from '../locales/en/user.json';
 
 export const defaultNS = 'common' as const;
 export const supportedLanguages = ['no', 'en'] as const;
@@ -49,6 +55,9 @@ const resources = {
     validation: validationNo,
     booking: bookingNo,
     facility: facilityNo,
+    calendar: calendarNo,
+    admin: adminNo,
+    user: userNo,
   },
   en: {
     common: commonEn,
@@ -58,6 +67,9 @@ const resources = {
     validation: validationEn,
     booking: bookingEn,
     facility: facilityEn,
+    calendar: calendarEn,
+    admin: adminEn,
+    user: userEn,
   },
 } as const;
 

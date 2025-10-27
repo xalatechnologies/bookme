@@ -6,6 +6,7 @@
  */
 
 import React, { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { X } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -16,6 +17,7 @@ export interface FilterChipProps {
   readonly onRemove: () => void;
   readonly variant?: 'default' | 'secondary' | 'outline' | 'destructive';
   readonly disabled?: boolean;
+  readonly namespace?: string;
 }
 
 /**
@@ -35,8 +37,11 @@ export const FilterChip = ({
   value,
   onRemove,
   variant = 'secondary',
-  disabled = false
+  disabled = false,
+  namespace = 'common'
 }: FilterChipProps): JSX.Element => {
+  const { t } = useTranslation(namespace);
+
   const handleRemove = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -57,7 +62,7 @@ export const FilterChip = ({
         onClick={handleRemove}
         disabled={disabled}
         className="h-4 w-4 p-0 ml-1 hover:bg-transparent"
-        aria-label={`Fjern ${label} filter`}
+        aria-label={t('aria.remove_filter', { label })}
       >
         <X className="h-3 w-3" />
       </Button>

@@ -87,7 +87,15 @@
     "qr_code": "QR-kode",
     "contact_info": "Kontaktinformasjon",
     "show_more": "Vis mer",
-    "show_less": "Vis mindre"
+    "show_less": "Vis mindre",
+    "start_first_booking": "Start din første booking",
+    "no_bookings_yet": "Du har ingen bookinger ennå. Utforsk våre lokaler og book din første aktivitet.",
+    "book_venue": "Book et lokale",
+    "view_details": "Se detaljer",
+    "edit": "Endre",
+    "cancel": "Avlys",
+    "contact": "Kontakt",
+    "show_details": "Vis detaljer for booking"
   },
 
   "recommendations": {

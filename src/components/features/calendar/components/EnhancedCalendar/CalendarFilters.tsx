@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { Search, Filter, X } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -29,6 +30,7 @@ export const CalendarFilters: React.FC<CalendarFiltersProps> = ({
   availableFacilities,
   className = ''
 }): JSX.Element => {
+  const { t } = useTranslation('calendar');
   const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
 
   const handleFacilityToggle = useCallback((facility: string): void => {
@@ -62,7 +64,7 @@ export const CalendarFilters: React.FC<CalendarFiltersProps> = ({
         <div className="flex-1 relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
           <Input
-            placeholder="Søk i bookinger..."
+            placeholder={t('filters.search_placeholder')}
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
             className="pl-10"
@@ -73,7 +75,7 @@ export const CalendarFilters: React.FC<CalendarFiltersProps> = ({
           <PopoverTrigger asChild>
             <Button variant="outline" className="relative">
               <Filter className="w-4 h-4 mr-2" />
-              Filtrer
+              {t('filters.filter_button')}
               {hasActiveFilters && (
                 <Badge variant="secondary" className="ml-2 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs">
                   {selectedFacilities.length + selectedStatuses.length + (searchQuery ? 1 : 0)}
@@ -84,7 +86,7 @@ export const CalendarFilters: React.FC<CalendarFiltersProps> = ({
           <PopoverContent className="w-80" align="end">
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <h3 className="font-semibold">Filtrer bookinger</h3>
+                <h3 className="font-semibold">{t('filters.title')}</h3>
                 {hasActiveFilters && (
                   <Button
                     variant="ghost"
@@ -93,14 +95,14 @@ export const CalendarFilters: React.FC<CalendarFiltersProps> = ({
                     className="text-red-600 hover:text-red-700"
                   >
                     <X className="w-4 h-4 mr-1" />
-                    Tøm alle
+                    {t('filters.clear_all')}
                   </Button>
                 )}
               </div>
-              
+
               {/* Facility Filter */}
               <div className="space-y-2">
-                <label className="text-sm font-medium">Lokaler</label>
+                <label className="text-sm font-medium">{t('filters.facilities')}</label>
                 <div className="space-y-2 max-h-32 overflow-y-auto">
                   {availableFacilities.map((facility) => (
                     <div key={facility} className="flex items-center space-x-2">
@@ -122,12 +124,12 @@ export const CalendarFilters: React.FC<CalendarFiltersProps> = ({
               
               {/* Status Filter */}
               <div className="space-y-2">
-                <label className="text-sm font-medium">Status</label>
+                <label className="text-sm font-medium">{t('filters.status')}</label>
                 <div className="space-y-2">
                   {[
-                    { value: 'confirmed', label: 'Bekreftet', color: 'bg-green-100 text-green-800' },
-                    { value: 'pending', label: 'Ventende', color: 'bg-yellow-100 text-yellow-800' },
-                    { value: 'cancelled', label: 'Avlyst', color: 'bg-red-100 text-red-800' }
+                    { value: 'confirmed', label: t('status.confirmed'), color: 'bg-green-100 text-green-800' },
+                    { value: 'pending', label: t('status.pending'), color: 'bg-yellow-100 text-yellow-800' },
+                    { value: 'cancelled', label: t('status.cancelled'), color: 'bg-red-100 text-red-800' }
                   ].map((status) => (
                     <div key={status.value} className="flex items-center space-x-2">
                       <Checkbox
@@ -155,7 +157,7 @@ export const CalendarFilters: React.FC<CalendarFiltersProps> = ({
         <div className="flex flex-wrap gap-2">
           {searchQuery && (
             <Badge variant="secondary" className="flex items-center gap-1">
-              Søk: "{searchQuery}"
+              {t('search.search_label')} "{searchQuery}"
               <Button
                 variant="ghost"
                 size="sm"
@@ -183,8 +185,8 @@ export const CalendarFilters: React.FC<CalendarFiltersProps> = ({
           
           {selectedStatuses.map((status) => (
             <Badge key={status} variant="secondary" className="flex items-center gap-1">
-              {status === 'confirmed' ? 'Bekreftet' : 
-               status === 'pending' ? 'Ventende' : 'Avlyst'}
+              {status === 'confirmed' ? t('status.confirmed') :
+               status === 'pending' ? t('status.pending') : t('status.cancelled')}
               <Button
                 variant="ghost"
                 size="sm"
