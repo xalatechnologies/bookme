@@ -1,0 +1,81 @@
+{
+  "title": "Grupper",
+  "subtitle": "Administrer grupper og medlemmer",
+  "fields": {
+    "name": "Gruppenavn",
+    "description": "Beskrivelse",
+    "members": "Medlemmer",
+    "owner": "Eier",
+    "created": "Opprettet",
+    "member_count": "Antall medlemmer"
+  },
+  "actions": {
+    "create": "Opprett gruppe",
+    "edit": "Rediger gruppe",
+    "delete": "Slett gruppe",
+    "leave": "Forlat gruppe",
+    "invite": "Inviter medlemmer",
+    "remove_member": "Fjern medlem"
+  },
+  "invitation_modal": {
+    "title": "Inviter medlemmer til {{groupName}}",
+    "description": "Send invitasjoner til nye medlemmer eller administrer eksisterende invitasjoner",
+    "tabs": {
+      "send": "Send invitasjon",
+      "pending": "Ventende invitasjoner",
+      "sent": "Sendte invitasjoner"
+    },
+    "form": {
+      "email": "E-postadresse",
+      "email_placeholder": "bruker@example.com",
+      "email_help": "E-postadressen til personen du vil invitere",
+      "message": "Personlig melding (valgfritt)",
+      "message_placeholder": "Hei! Jeg vil gjerne invitere deg til å bli medlem av vår gruppe...",
+      "info_title": "Invitasjon sendes via e-post",
+      "info_description": "Personen vil motta en e-post med lenke for å bli medlem av gruppen.",
+      "sending": "Sender...",
+      "send_invitation": "Send invitasjon"
+    },
+    "pending": {
+      "title": "Ingen ventende invitasjoner",
+      "description": "Alle invitasjoner er behandlet",
+      "invited_by": "Invitert av {{name}}",
+      "expires": "Utløper {{date}}",
+      "accept": "Godta",
+      "decline": "Avslå",
+      "status": "Ventende"
+    },
+    "sent": {
+      "title": "Ingen sendte invitasjoner",
+      "description": "Du har ikke sendt noen invitasjoner ennå",
+      "sent_date": "Sendt {{date}}",
+      "accepted_date": "Godtatt {{date}}",
+      "declined_date": "Avslått {{date}}",
+      "status_accepted": "Godtatt",
+      "status_declined": "Avslått",
+      "status_expired": "Utløpt",
+      "status_pending": "Ventende"
+    },
+    "validation": {
+      "email_required": "Vennligst fyll ut e-postadresse",
+      "email_invalid": "Vennligst oppgi en gyldig e-postadresse"
+    },
+    "messages": {
+      "success": "Invitasjon sendt!",
+      "error": "Kunne ikke sende invitasjon. Prøv igjen."
+    }
+  },
+  "status": {
+    "active": "Aktiv",
+    "inactive": "Inaktiv",
+    "pending": "Ventende"
+  },
+  "messages": {
+    "created": "Gruppe opprettet",
+    "updated": "Gruppe oppdatert",
+    "deleted": "Gruppe slettet",
+    "member_added": "Medlem lagt til",
+    "member_removed": "Medlem fjernet",
+    "left_group": "Du har forlatt gruppen"
+  }
+}

@@ -4,6 +4,10 @@
  * Centralized export point for all custom hooks
  */
 
+// Modal management
+export { useModal } from './useModal';
+export type { UseModalReturn } from './useModal';
+
 // Real-time subscriptions
 export {
   useRealtimeBookings,

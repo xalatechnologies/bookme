@@ -1,6 +1,18 @@
 "use client";
 
+/**
+ * GroupManagementCard Component
+ *
+ * SOLID Principles Applied:
+ * - Single Responsibility: Each sub-component handles one specific task
+ * - Open/Closed: Components are open for extension through props
+ * - Liskov Substitution: All dialog components follow the same interface
+ * - Interface Segregation: Props interfaces are specific to each component
+ * - Dependency Inversion: Uses i18n for translations
+ */
+
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { format } from "date-fns";
 import { Users, Settings, Plus, MoreHorizontal, Edit, Trash2, UserPlus, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -14,9 +26,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { BookingGroup, CreateGroupData } from "@/types/group";
 import { useGroupStore } from "@/stores/groupStore";
+import { getInitials } from "@/utils/card-formatters";
 
 /**
- * Props interface for GroupManagementCard component
+ * Props interfaces following Interface Segregation Principle
  */
 interface GroupManagementCardProps {
   readonly groups: readonly BookingGroup[];
@@ -27,14 +40,26 @@ interface GroupManagementCardProps {
   readonly onViewGroup: (groupId: string) => void;
 }
 
-/**
- * Create group dialog component
- */
-const CreateGroupDialog: React.FC<{
+interface CreateGroupDialogProps {
   readonly isOpen: boolean;
   readonly onClose: () => void;
   readonly onSubmit: (groupData: CreateGroupData) => void;
-}> = ({ isOpen, onClose, onSubmit }) => {
+}
+
+interface GroupCardProps {
+  readonly group: BookingGroup;
+  readonly onEdit: (groupId: string) => void;
+  readonly onDelete: (groupId: string) => void;
+  readonly onInvite: (groupId: string) => void;
+  readonly onView: (groupId: string) => void;
+}
+
+/**
+ * Create group dialog component
+ * Single Responsibility: Handles group creation form only
+ */
+const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({ isOpen, onClose, onSubmit }) => {
+  const { t } = useTranslation('group');
   const [name, setName] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [allowMemberBookings, setAllowMemberBookings] = useState<boolean>(true);
@@ -48,14 +73,14 @@ const CreateGroupDialog: React.FC<{
 
   const handleSubmit = (): void => {
     if (!name.trim()) {
-      alert("Vennligst fyll ut gruppenavn");
+      alert(t('dialog.fillGroupName'));
       return;
     }
 
     const groupData: CreateGroupData = {
       name: name.trim(),
       description: description.trim(),
-      ownerId: "current-user", // This should come from auth context
+      ownerId: "current-user",
       settings: {
         allowMemberBookings,
         requireApproval,
@@ -66,7 +91,7 @@ const CreateGroupDialog: React.FC<{
 
     onSubmit(groupData);
     onClose();
-    
+
     // Reset form
     setName("");
     setDescription("");
@@ -84,37 +109,35 @@ const CreateGroupDialog: React.FC<{
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>Opprett ny gruppe</DialogTitle>
-          <DialogDescription>
-            Opprett en ny gruppe for å dele bookinger med andre brukere
-          </DialogDescription>
+          <DialogTitle>{t('dialog.createTitle')}</DialogTitle>
+          <DialogDescription>{t('dialog.createDescription')}</DialogDescription>
         </DialogHeader>
 
         <div className="space-y-6">
           <div className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="group-name" className="text-sm font-medium">
-                Gruppenavn *
+                {t('dialog.groupName')} *
               </Label>
               <Input
                 id="group-name"
-                placeholder="f.eks. Fotballaget, Arbeidsgruppe, Familie"
+                placeholder={t('dialog.groupNamePlaceholder')}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 aria-describedby="group-name-help"
               />
               <p id="group-name-help" className="text-xs text-muted-foreground">
-                Velg et beskrivende navn for gruppen
+                {t('dialog.groupNameHelp')}
               </p>
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="group-description" className="text-sm font-medium">
-                Beskrivelse
+                {t('dialog.description')}
               </Label>
               <Textarea
                 id="group-description"
-                placeholder="Beskriv formålet med gruppen..."
+                placeholder={t('dialog.descriptionPlaceholder')}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 rows={3}
@@ -123,14 +146,14 @@ const CreateGroupDialog: React.FC<{
           </div>
 
           <div className="space-y-4">
-            <h4 className="text-sm font-medium">Gruppeinnstillinger</h4>
-            
+            <h4 className="text-sm font-medium">{t('dialog.groupSettings')}</h4>
+
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
-                  <Label className="text-sm font-medium">Tillat medlemsbookinger</Label>
+                  <Label className="text-sm font-medium">{t('dialog.allowMemberBookings')}</Label>
                   <p className="text-xs text-muted-foreground">
-                    La medlemmer opprette bookinger på vegne av gruppen
+                    {t('dialog.allowMemberBookingsHelp')}
                   </p>
                 </div>
                 <Switch
@@ -141,9 +164,9 @@ const CreateGroupDialog: React.FC<{
 
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
-                  <Label className="text-sm font-medium">Krev godkjenning</Label>
+                  <Label className="text-sm font-medium">{t('dialog.requireApproval')}</Label>
                   <p className="text-xs text-muted-foreground">
-                    Bookinger må godkjennes av gruppeadministrator
+                    {t('dialog.requireApprovalHelp')}
                   </p>
                 </div>
                 <Switch
@@ -154,7 +177,7 @@ const CreateGroupDialog: React.FC<{
 
               <div className="space-y-2">
                 <Label htmlFor="max-bookings" className="text-sm font-medium">
-                  Maksimalt antall bookinger per medlem
+                  {t('dialog.maxBookingsPerMember')}
                 </Label>
                 <Input
                   id="max-bookings"
@@ -169,14 +192,14 @@ const CreateGroupDialog: React.FC<{
           </div>
 
           <div className="space-y-4">
-            <h4 className="text-sm font-medium">Varslingsinnstillinger</h4>
-            
+            <h4 className="text-sm font-medium">{t('dialog.notificationSettings')}</h4>
+
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
-                  <Label className="text-sm font-medium">Nye bookinger</Label>
+                  <Label className="text-sm font-medium">{t('dialog.notifyNewBookings')}</Label>
                   <p className="text-xs text-muted-foreground">
-                    Varsle om nye bookinger i gruppen
+                    {t('dialog.notifyNewBookingsHelp')}
                   </p>
                 </div>
                 <Switch
@@ -189,9 +212,9 @@ const CreateGroupDialog: React.FC<{
 
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
-                  <Label className="text-sm font-medium">Avlysninger</Label>
+                  <Label className="text-sm font-medium">{t('dialog.notifyCancellations')}</Label>
                   <p className="text-xs text-muted-foreground">
-                    Varsle om avlyste bookinger
+                    {t('dialog.notifyCancellationsHelp')}
                   </p>
                 </div>
                 <Switch
@@ -204,9 +227,9 @@ const CreateGroupDialog: React.FC<{
 
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
-                  <Label className="text-sm font-medium">Medlemsendringer</Label>
+                  <Label className="text-sm font-medium">{t('dialog.notifyMemberChanges')}</Label>
                   <p className="text-xs text-muted-foreground">
-                    Varsle om nye medlemmer eller utmeldinger
+                    {t('dialog.notifyMemberChangesHelp')}
                   </p>
                 </div>
                 <Switch
@@ -222,10 +245,10 @@ const CreateGroupDialog: React.FC<{
 
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>
-            Avbryt
+            {t('dialog.cancel')}
           </Button>
           <Button onClick={handleSubmit} disabled={!name.trim()}>
-            Opprett gruppe
+            {t('dialog.create')}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -235,20 +258,25 @@ const CreateGroupDialog: React.FC<{
 
 /**
  * Group card component for displaying individual groups
+ * Single Responsibility: Displays a single group's information
  */
-const GroupCard: React.FC<{
-  readonly group: BookingGroup;
-  readonly onEdit: (groupId: string) => void;
-  readonly onDelete: (groupId: string) => void;
-  readonly onInvite: (groupId: string) => void;
-  readonly onView: (groupId: string) => void;
-}> = ({ group, onEdit, onDelete, onInvite, onView }) => {
+const GroupCard: React.FC<GroupCardProps> = ({ group, onEdit, onDelete, onInvite, onView }) => {
+  const { t } = useTranslation('group');
   const [showDeleteDialog, setShowDeleteDialog] = useState<boolean>(false);
   const isOwner = group.members.find(member => member.role === 'owner')?.userId === "current-user";
 
   const handleDelete = (): void => {
     onDelete(group.id);
     setShowDeleteDialog(false);
+  };
+
+  const getRoleLabel = (role: string): string => {
+    const roleMap: Record<string, string> = {
+      owner: t('roles.owner'),
+      admin: t('roles.admin'),
+      member: t('roles.member')
+    };
+    return roleMap[role] || role;
   };
 
   return (
@@ -262,42 +290,42 @@ const GroupCard: React.FC<{
                 <span>{group.name}</span>
                 {isOwner && (
                   <Badge variant="secondary" className="text-xs">
-                    Eier
+                    {t('card.owner')}
                   </Badge>
                 )}
               </CardTitle>
               <CardDescription>
-                {group.description || "Ingen beskrivelse"}
+                {group.description || t('common:messages.noDescription')}
               </CardDescription>
             </div>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="h-8 w-8">
                   <MoreHorizontal className="h-4 w-4" />
-                  <span className="sr-only">Åpne meny</span>
+                  <span className="sr-only">{t('card.openMenu')}</span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuItem onClick={() => onView(group.id)}>
                   <Calendar className="h-4 w-4 mr-2" />
-                  Se bookinger
+                  {t('card.viewBookings')}
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => onInvite(group.id)}>
                   <UserPlus className="h-4 w-4 mr-2" />
-                  Inviter medlem
+                  {t('card.inviteMember')}
                 </DropdownMenuItem>
                 {isOwner && (
                   <>
                     <DropdownMenuItem onClick={() => onEdit(group.id)}>
                       <Edit className="h-4 w-4 mr-2" />
-                      Rediger gruppe
+                      {t('card.editGroup')}
                     </DropdownMenuItem>
                     <DropdownMenuItem
                       onClick={() => setShowDeleteDialog(true)}
                       className="text-red-600 focus:text-red-600"
                     >
                       <Trash2 className="h-4 w-4 mr-2" />
-                      Slett gruppe
+                      {t('card.deleteGroup')}
                     </DropdownMenuItem>
                   </>
                 )}
@@ -311,38 +339,38 @@ const GroupCard: React.FC<{
           <div className="grid grid-cols-3 gap-4 p-3 bg-muted rounded-md">
             <div className="text-center">
               <div className="text-lg font-semibold">{group.members.length}</div>
-              <div className="text-xs text-muted-foreground">Medlemmer</div>
+              <div className="text-xs text-muted-foreground">{t('card.members')}</div>
             </div>
             <div className="text-center">
               <div className="text-lg font-semibold">{group.bookings.length}</div>
-              <div className="text-xs text-muted-foreground">Bookinger</div>
+              <div className="text-xs text-muted-foreground">{t('card.bookings')}</div>
             </div>
             <div className="text-center">
               <div className="text-lg font-semibold">{group.invitations.length}</div>
-              <div className="text-xs text-muted-foreground">Invitasjoner</div>
+              <div className="text-xs text-muted-foreground">{t('card.invitations')}</div>
             </div>
           </div>
 
           {/* Members List */}
           <div className="space-y-2">
-            <h4 className="text-sm font-medium">Medlemmer</h4>
+            <h4 className="text-sm font-medium">{t('card.members')}</h4>
             <div className="space-y-1">
               {group.members.slice(0, 3).map((member) => (
                 <div key={member.userId} className="flex items-center justify-between text-sm">
                   <div className="flex items-center space-x-2">
                     <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center text-xs text-primary-foreground">
-                      {member.name.charAt(0).toUpperCase()}
+                      {getInitials(member.name)}
                     </div>
                     <span>{member.name}</span>
                     <Badge variant="outline" className="text-xs">
-                      {member.role === 'owner' ? 'Eier' : member.role === 'admin' ? 'Admin' : 'Medlem'}
+                      {getRoleLabel(member.role)}
                     </Badge>
                   </div>
                 </div>
               ))}
               {group.members.length > 3 && (
                 <p className="text-xs text-muted-foreground">
-                  +{group.members.length - 3} flere medlemmer
+                  {t('card.moreMembers', { count: group.members.length - 3 })}
                 </p>
               )}
             </div>
@@ -350,16 +378,16 @@ const GroupCard: React.FC<{
 
           {/* Settings Summary */}
           <div className="space-y-2">
-            <h4 className="text-sm font-medium">Innstillinger</h4>
+            <h4 className="text-sm font-medium">{t('card.settings')}</h4>
             <div className="flex flex-wrap gap-2">
               <Badge variant={group.settings.allowMemberBookings ? "default" : "secondary"}>
-                {group.settings.allowMemberBookings ? "Medlemsbookinger" : "Kun eier bookinger"}
+                {group.settings.allowMemberBookings ? t('card.memberBookings') : t('card.ownerBookingsOnly')}
               </Badge>
               <Badge variant={group.settings.requireApproval ? "default" : "secondary"}>
-                {group.settings.requireApproval ? "Krev godkjenning" : "Automatisk godkjenning"}
+                {group.settings.requireApproval ? t('card.requireApproval') : t('card.autoApproval')}
               </Badge>
               <Badge variant="outline">
-                Maks {group.settings.maxBookingsPerMember} per medlem
+                {t('card.maxPerMember', { count: group.settings.maxBookingsPerMember })}
               </Badge>
             </div>
           </div>
@@ -373,7 +401,7 @@ const GroupCard: React.FC<{
               className="flex-1"
             >
               <Calendar className="h-4 w-4 mr-2" />
-              Se bookinger
+              {t('card.viewBookings')}
             </Button>
             <Button
               variant="outline"
@@ -382,7 +410,7 @@ const GroupCard: React.FC<{
               className="flex-1"
             >
               <UserPlus className="h-4 w-4 mr-2" />
-              Inviter
+              {t('card.inviteMember')}
             </Button>
           </div>
         </CardContent>
@@ -392,17 +420,17 @@ const GroupCard: React.FC<{
       <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Slett gruppe</DialogTitle>
+            <DialogTitle>{t('dialog.deleteTitle')}</DialogTitle>
             <DialogDescription>
-              Er du sikker på at du vil slette gruppen "{group.name}"? Dette kan ikke angres.
+              {t('dialog.deleteDescription', { name: group.name })}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowDeleteDialog(false)}>
-              Avbryt
+              {t('dialog.cancel')}
             </Button>
             <Button variant="destructive" onClick={handleDelete}>
-              Slett gruppe
+              {t('dialog.delete')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -413,7 +441,7 @@ const GroupCard: React.FC<{
 
 /**
  * Group management card component
- * 
+ *
  * Displays all user groups with management capabilities including
  * creation, editing, deletion, and member invitation.
  */
@@ -425,6 +453,7 @@ export const GroupManagementCard: React.FC<GroupManagementCardProps> = ({
   onInviteMember,
   onViewGroup
 }) => {
+  const { t } = useTranslation('group');
   const [showCreateDialog, setShowCreateDialog] = useState<boolean>(false);
 
   return (
@@ -432,14 +461,14 @@ export const GroupManagementCard: React.FC<GroupManagementCardProps> = ({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold">Mine grupper</h2>
+          <h2 className="text-2xl font-bold">{t('card.myGroups')}</h2>
           <p className="text-muted-foreground">
-            Administrer grupper for delte bookinger
+            {t('card.manageGroups')}
           </p>
         </div>
         <Button onClick={() => setShowCreateDialog(true)}>
           <Plus className="h-4 w-4 mr-2" />
-          Opprett gruppe
+          {t('card.createGroup')}
         </Button>
       </div>
 
@@ -448,13 +477,13 @@ export const GroupManagementCard: React.FC<GroupManagementCardProps> = ({
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12">
             <Users className="h-12 w-12 text-muted-foreground mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Ingen grupper ennå</h3>
+            <h3 className="text-lg font-semibold mb-2">{t('card.noGroups')}</h3>
             <p className="text-muted-foreground text-center mb-4">
-              Opprett din første gruppe for å dele bookinger med andre
+              {t('card.noGroupsDescription')}
             </p>
             <Button onClick={() => setShowCreateDialog(true)}>
               <Plus className="h-4 w-4 mr-2" />
-              Opprett gruppe
+              {t('card.createGroup')}
             </Button>
           </CardContent>
         </Card>
@@ -482,4 +511,3 @@ export const GroupManagementCard: React.FC<GroupManagementCardProps> = ({
     </div>
   );
 };
-

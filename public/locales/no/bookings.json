@@ -189,7 +189,9 @@
     "total_cost": "Totalkostnad",
     "per_hour": "per time",
     "includes_vat": "inkl. MVA",
-    "excludes_vat": "ekskl. MVA"
+    "excludes_vat": "ekskl. MVA",
+    "selected_slots_pricing": "Valgte tidspunkter og prisberegning",
+    "select_slots_pricing": "Velg tidspunkter og få en prisberegning"
   },
   "cart": {
     "title": "Handlekurv",
@@ -292,5 +294,40 @@
     "popular_times": "Populære tider",
     "booking_rate": "Bookingrate",
     "cancellation_rate": "Avbestillingsrate"
+  },
+  "activity_types": {
+    "sport": "Sport",
+    "culture": "Kultur",
+    "meeting": "Møte",
+    "event": "Arrangement",
+    "training": "Trening"
+  },
+  "placeholders": {
+    "purpose": "F.eks. fotballtrening, møte, arrangement",
+    "activity_type": "Velg aktivitetstype",
+    "actor_type": "Velg aktør type",
+    "additional_info": "Eventuelle spesielle ønsker eller behov"
+  },
+  "steps": {
+    "calendar": {
+      "title": "Kalender",
+      "description": "Velg dato og tid for bookingen"
+    },
+    "details": {
+      "title": "Bookingdetaljer",
+      "description": "Fyll ut informasjon om bookingen"
+    },
+    "recurrence": {
+      "title": "Gjentakelse",
+      "description": "Velg gjentakelsesmønster"
+    },
+    "terms": {
+      "title": "Vilkår og betingelser",
+      "description": "Les og godta vilkårene"
+    },
+    "actions": {
+      "title": "Fullfør booking",
+      "description": "Legg i kurv eller fullfør direkte"
+    }
   }
 }

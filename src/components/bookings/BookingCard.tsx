@@ -3,9 +3,15 @@
  *
  * Displays a single booking with all relevant information.
  * Supports selection, actions, and click handlers.
+ *
+ * SOLID Principles Applied:
+ * - Single Responsibility: Displays booking information only
+ * - Open/Closed: Extensible through props without modification
+ * - Dependency Inversion: Uses i18n translations and utility functions
  */
 
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -13,6 +19,14 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Calendar, Clock, MapPin, Eye, Trash2 } from 'lucide-react';
 import type { BookingWithDetails } from '@/services/supabase/bookings.service';
 import type { Database } from '@/types/database';
+import {
+  formatDate,
+  formatTime,
+  formatDuration,
+  formatPrice,
+  getStatusColor,
+  getStatusBadgeColor
+} from '@/utils/card-formatters';
 
 type BookingStatus = Database['public']['Enums']['booking_status'];
 
@@ -25,74 +39,23 @@ export interface BookingCardProps {
   readonly showCheckbox?: boolean;
 }
 
-const getStatusColor = (status: BookingStatus): string => {
-  switch (status) {
-    case "paid": return "bg-green-500";
-    case "completed": return "bg-blue-500";
-    case "pending": return "bg-yellow-500";
-    case "awaiting_payment": return "bg-orange-500";
-    case "cancelled": return "bg-red-500";
-    case "expired": return "bg-gray-500";
-    case "refunded": return "bg-purple-500";
-    default: return "bg-gray-500";
-  }
-};
+/**
+ * Get translated status label
+ */
+const useStatusLabel = (status: BookingStatus): string => {
+  const { t } = useTranslation('booking');
 
-const getStatusBadgeColor = (status: BookingStatus): string => {
-  switch (status) {
-    case "paid": return "bg-green-100 text-green-800";
-    case "completed": return "bg-blue-100 text-blue-800";
-    case "pending": return "bg-yellow-100 text-yellow-800";
-    case "awaiting_payment": return "bg-orange-100 text-orange-800";
-    case "cancelled": return "bg-red-100 text-red-800";
-    case "expired": return "bg-gray-100 text-gray-800";
-    case "refunded": return "bg-purple-100 text-purple-800";
-    default: return "bg-gray-100 text-gray-800";
-  }
-};
+  const statusMap: Record<BookingStatus, string> = {
+    paid: t('status.paid'),
+    completed: t('status.completed'),
+    pending: t('status.pending'),
+    awaiting_payment: t('status.awaiting_payment'),
+    cancelled: t('status.cancelled'),
+    expired: t('status.expired'),
+    refunded: t('status.refunded')
+  };
 
-const getStatusLabel = (status: BookingStatus): string => {
-  switch (status) {
-    case "paid": return "Bekreftet";
-    case "completed": return "Fullført";
-    case "pending": return "Ventende";
-    case "awaiting_payment": return "Venter betaling";
-    case "cancelled": return "Avlyst";
-    case "expired": return "Utløpt";
-    case "refunded": return "Refundert";
-    default: return status;
-  }
-};
-
-const formatDate = (dateString: string): string => {
-  const date = new Date(dateString);
-  return date.toLocaleDateString('nb-NO', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric'
-  });
-};
-
-const formatTime = (dateString: string): string => {
-  const date = new Date(dateString);
-  return date.toLocaleTimeString('nb-NO', {
-    hour: '2-digit',
-    minute: '2-digit'
-  });
-};
-
-const formatDuration = (startsAt: string, endsAt: string): string => {
-  const start = new Date(startsAt);
-  const end = new Date(endsAt);
-  const hours = (end.getTime() - start.getTime()) / (1000 * 60 * 60);
-  return hours === 1 ? '1 time' : `${hours} timer`;
-};
-
-const formatPrice = (cents: number): string => {
-  return new Intl.NumberFormat('nb-NO', {
-    style: 'currency',
-    currency: 'NOK'
-  }).format(cents / 100);
+  return statusMap[status] || status;
 };
 
 /**
@@ -118,6 +81,14 @@ export const BookingCard = ({
   onDelete,
   showCheckbox = true,
 }: BookingCardProps): JSX.Element => {
+  const { t } = useTranslation('booking');
+  const statusLabel = useStatusLabel(booking.status);
+
+  const durationTranslations = {
+    hour: t('card.hour'),
+    hours: t('card.hours')
+  };
+
   const handleCardClick = () => {
     if (onViewDetails) {
       onViewDetails(booking);
@@ -153,7 +124,7 @@ export const BookingCard = ({
             checked={selected}
             onCheckedChange={() => onSelect?.(booking.id)}
             className="mt-1"
-            aria-label={`Velg booking for ${booking.facility?.name}`}
+            aria-label={t('card.selectBooking', { facility: booking.facility?.name })}
           />
         </div>
       )}
@@ -170,10 +141,10 @@ export const BookingCard = ({
               {/* Header */}
               <div className="flex items-center justify-between mb-2">
                 <h3 className="font-semibold text-gray-900 text-lg">
-                  {booking.facility?.name || 'Ukjent lokale'}
+                  {booking.facility?.name || t('card.unknownFacility')}
                 </h3>
                 <Badge className={getStatusBadgeColor(booking.status)}>
-                  {getStatusLabel(booking.status)}
+                  {statusLabel}
                 </Badge>
               </div>
 
@@ -189,7 +160,7 @@ export const BookingCard = ({
                     {formatTime(booking.starts_at)} - {formatTime(booking.ends_at)}
                   </span>
                   <span className="text-gray-500">
-                    ({formatDuration(booking.starts_at, booking.ends_at)})
+                    ({formatDuration(booking.starts_at, booking.ends_at, durationTranslations)})
                   </span>
                 </div>
 
@@ -206,7 +177,7 @@ export const BookingCard = ({
                   </span>
                   {booking.notes && (
                     <span className="text-xs text-gray-500 italic">
-                      Har notater
+                      {t('card.hasNotes')}
                     </span>
                   )}
                 </div>
@@ -220,8 +191,8 @@ export const BookingCard = ({
                 size="sm"
                 onClick={handleViewClick}
                 className="h-9 w-9 p-0"
-                aria-label="Se detaljer"
-                title="Se detaljer"
+                aria-label={t('card.viewDetails')}
+                title={t('card.viewDetails')}
               >
                 <Eye className="w-4 h-4" />
               </Button>
@@ -231,8 +202,8 @@ export const BookingCard = ({
                   size="sm"
                   onClick={handleDeleteClick}
                   className="h-9 w-9 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
-                  aria-label="Avlys booking"
-                  title="Avlys booking"
+                  aria-label={t('card.cancelBooking')}
+                  title={t('card.cancelBooking')}
                 >
                   <Trash2 className="w-4 h-4" />
                 </Button>

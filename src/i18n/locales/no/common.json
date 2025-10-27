@@ -50,7 +50,8 @@
     "start": "Start",
     "stop": "Stopp",
     "pause": "Pause",
-    "resume": "Gjenoppta"
+    "resume": "Gjenoppta",
+    "applyFilters": "Bruk filtre"
   },
   "status": {
     "active": "Aktiv",
@@ -162,6 +163,84 @@
     "showing": "Viser {{from}} til {{to}} av {{total}}",
     "goToPage": "Gå til side"
   },
+  "search": {
+    "placeholder": "Søk...",
+    "search_facilities": "Søk etter fasiliteter...",
+    "search_admin": "Søk i admin...",
+    "search_venues": "Søk etter lokaler...",
+    "search_bookings": "Søk på lokale eller booking ID...",
+    "no_results": "Ingen resultater funnet",
+    "found_results": "Fant {{count}} resultater for \"{{query}}\"",
+    "recent_searches": "Nylige søk",
+    "clear_search": "Tøm søk",
+    "group_facilities": "Fasiliteter",
+    "group_locations": "Lokasjoner",
+    "group_categories": "Kategorier",
+    "group_users": "Brukere",
+    "group_bookings": "Bookinger",
+    "group_documents": "Dokumenter",
+    "available_count": "{{count}} lokaler tilgjengelig",
+    "capacity": "Kapasitet: {{count}}"
+  },
+  "filters": {
+    "title": "Filtre",
+    "apply": "Bruk filtre",
+    "clear": "Tøm filtre",
+    "clearAll": "Tilbakestill alle",
+    "active_filters": "Aktive filtre",
+    "results_count": "{{count}} resultater",
+    "results_filtered": "{{count}} av {{total}} resultater",
+    "no_results": "Ingen resultater",
+    "sort_by": "Sorter etter",
+    "filter_by": "Filtrer etter",
+    "date_range": "Datoperiode",
+    "all": "Alle",
+    "facility": "Lokale",
+    "all_facilities": "Alle lokaler",
+    "select_facility": "Velg lokale",
+    "date_period": "Tidsperiode"
+  },
+  "sort": {
+    "relevance": "Relevans",
+    "name_asc": "Navn (A-Å)",
+    "name_desc": "Navn (Å-A)",
+    "price_asc": "Pris (Lav til høy)",
+    "price_desc": "Pris (Høy til lav)",
+    "date_asc": "Dato (kommende først)",
+    "date_desc": "Dato (eldste først)",
+    "capacity_asc": "Kapasitet (liten til stor)",
+    "capacity_desc": "Kapasitet (stor til liten)",
+    "created_asc": "Opprettet (eldste først)",
+    "created_desc": "Opprettet (nyeste først)"
+  },
+  "dateRange": {
+    "all": "Alle",
+    "today": "I dag",
+    "week": "Denne uken",
+    "month": "Denne måneden",
+    "upcoming": "Kommende",
+    "past": "Tidligere"
+  },
+  "notifications": {
+    "title": "Notifikasjoner",
+    "no_notifications": "Ingen notifikasjoner",
+    "mark_all_read": "Marker alle som lest",
+    "mark_as_read": "Marker som lest",
+    "view_all": "Se alle",
+    "unread_count": "{{count}} uleste",
+    "notification_read": "Notifikasjon markert som lest!",
+    "all_read": "Alle notifikasjoner markert som lest!",
+    "failed_mark_read": "Kunne ikke markere notifikasjon som lest. Prøv igjen.",
+    "failed_mark_all_read": "Kunne ikke markere alle notifikasjoner som lest. Prøv igjen.",
+    "types": {
+      "booking_confirmed": "Booking bekreftet",
+      "booking_reminder": "Påminnelse om booking",
+      "booking_cancelled": "Booking avlyst",
+      "system_update": "Systemoppdatering tilgjengelig",
+      "high_load": "Høy serverbelastning",
+      "backup_complete": "Sikkerhetskopi fullført"
+    }
+  },
   "time": {
     "seconds": "sekunder",
     "minute": "minutt",
@@ -194,6 +273,8 @@
     "night": "Natt",
     "midnight": "Midnatt",
     "noon": "Middag",
+    "ago": "{{time}} siden",
+    "in": "om {{time}}",
     "weekdays": {
       "monday": "Mandag",
       "tuesday": "Tirsdag",
@@ -246,7 +327,9 @@
     "notFound": "Siden ble ikke funnet.",
     "comingSoon": "Kommer snart",
     "underConstruction": "Under konstruksjon",
-    "maintenanceMode": "Vedlikeholdsmodus"
+    "maintenanceMode": "Vedlikeholdsmodus",
+    "logout_success": "Du er nå logget ut!",
+    "logout_failed": "Kunne ikke logge ut. Prøv igjen."
   },
   "placeholders": {
     "search": "Søk...",
@@ -261,6 +344,22 @@
     "selectFile": "Velg fil",
     "dragDropFile": "Dra og slipp filer her eller klikk for å velge",
     "noOptions": "Ingen alternativer tilgjengelig"
+  },
+  "aria": {
+    "logo": "BookMe logo",
+    "go_to_home": "Gå til forsiden",
+    "search": "Søk",
+    "search_input": "Søkefelt",
+    "sort_dropdown": "Sorteringsvalg",
+    "notifications": "Varslinger",
+    "open_notifications": "Åpne notifikasjoner",
+    "profile_menu": "Profilmeny",
+    "language_toggle": "Bytt språk",
+    "cart": "Handlekurv",
+    "mobile_menu": "Mobil meny",
+    "close_modal": "Lukk modal",
+    "open_menu": "Åpne meny",
+    "close_menu": "Lukk meny"
   },
   "accessibility": {
     "skipToContent": "Hopp til innhold",

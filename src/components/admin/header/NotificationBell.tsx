@@ -1,51 +1,53 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
+import { useTranslation } from "react-i18next";
 import { Bell, X, CheckCircle, AlertTriangle, Info } from "lucide-react";
-
-interface INotification {
-  readonly id: string;
-  readonly type: "info" | "warning" | "success" | "error";
-  readonly title: string;
-  readonly message: string;
-  readonly timestamp: string;
-  readonly isRead: boolean;
-}
+import { useNotifications, INotification } from "@/hooks/useNotifications";
 
 interface INotificationBellProps {
   readonly children?: never;
 }
 
-const NotificationBell = (_props: INotificationBellProps): JSX.Element => {
-  const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [notifications, setNotifications] = useState<readonly INotification[]>([
-    {
-      id: "1",
-      type: "warning",
-      title: "Høy serverbelastning",
-      message: "Serveren opplever høy belastning. Ytelsen kan påvirkes.",
-      timestamp: "5 min siden",
-      isRead: false
-    },
-    {
-      id: "2",
-      type: "success",
-      title: "Sikkerhetskopi fullført",
-      message: "Dagens sikkerhetskopi ble fullført uten feil.",
-      timestamp: "2 timer siden",
-      isRead: true
-    },
-    {
-      id: "3",
-      type: "info",
-      title: "Systemoppdatering tilgjengelig",
-      message: "En ny versjon av BookMe er tilgjengelig.",
-      timestamp: "4 timer siden",
-      isRead: true
-    }
-  ]);
+// Initial mock notifications
+const initialNotifications: readonly INotification[] = [
+  {
+    id: "1",
+    type: "warning",
+    title: "notifications.types.high_load",
+    message: "Serveren opplever høy belastning. Ytelsen kan påvirkes.",
+    timestamp: "5 min siden",
+    isRead: false
+  },
+  {
+    id: "2",
+    type: "success",
+    title: "notifications.types.backup_complete",
+    message: "Dagens sikkerhetskopi ble fullført uten feil.",
+    timestamp: "2 timer siden",
+    isRead: true
+  },
+  {
+    id: "3",
+    type: "info",
+    title: "notifications.types.system_update",
+    message: "En ny versjon av BookMe er tilgjengelig.",
+    timestamp: "4 timer siden",
+    isRead: true
+  }
+];
 
-  const unreadCount = notifications.filter(n => !n.isRead).length;
+const NotificationBell = (_props: INotificationBellProps): JSX.Element => {
+  const { t } = useTranslation('common');
+  const {
+    isOpen,
+    notifications,
+    unreadCount,
+    toggleDropdown,
+    markAsRead,
+    markAllAsRead,
+    setIsOpen,
+  } = useNotifications(initialNotifications, 'adminNotifications');
 
   const getNotificationIcon = (type: string): React.ReactNode => {
     switch (type) {
@@ -73,51 +75,12 @@ const NotificationBell = (_props: INotificationBellProps): JSX.Element => {
     }
   };
 
-  const toggleDropdown = (): void => {
-    setIsOpen(!isOpen);
-  };
-
-  const markAsRead = (id: string): void => {
-    try {
-      const updatedNotifications = notifications.map(notification =>
-        notification.id === id ? { ...notification, isRead: true } : notification
-      );
-      setNotifications(updatedNotifications);
-      
-      // Save to localStorage (simulating backend)
-      localStorage.setItem('adminNotifications', JSON.stringify(updatedNotifications));
-      
-      alert('Notifikasjon markert som lest!');
-    } catch (error) {
-      console.error('Failed to mark notification as read:', error);
-      alert('Kunne ikke markere notifikasjon som lest. Prøv igjen.');
-    }
-  };
-
-  const markAllAsRead = (): void => {
-    try {
-      const updatedNotifications = notifications.map(notification => ({
-        ...notification,
-        isRead: true
-      }));
-      setNotifications(updatedNotifications);
-      
-      // Save to localStorage (simulating backend)
-      localStorage.setItem('adminNotifications', JSON.stringify(updatedNotifications));
-      
-      alert('Alle notifikasjoner markert som lest!');
-    } catch (error) {
-      console.error('Failed to mark all notifications as read:', error);
-      alert('Kunne ikke markere alle notifikasjoner som lest. Prøv igjen.');
-    }
-  };
-
   return (
     <div className="relative">
       <button
         onClick={toggleDropdown}
         className="relative p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
-        aria-label="Åpne notifikasjoner"
+        aria-label={t('aria.open_notifications')}
       >
         <Bell className="w-5 h-5" />
         {unreadCount > 0 && (
@@ -134,31 +97,31 @@ const NotificationBell = (_props: INotificationBellProps): JSX.Element => {
             className="fixed inset-0 z-40"
             onClick={() => setIsOpen(false)}
           />
-          
+
           {/* Dropdown */}
           <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50">
             <div className="p-4 border-b border-gray-200 dark:border-gray-700">
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                  Notifikasjoner
+                  {t('notifications.title')}
                 </h3>
                 {unreadCount > 0 && (
                   <button
                     onClick={markAllAsRead}
                     className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium"
                   >
-                    Marker alle som lest
+                    {t('notifications.mark_all_read')}
                   </button>
                 )}
               </div>
             </div>
-            
+
             <div className="max-h-96 overflow-y-auto">
               {notifications.length === 0 ? (
                 <div className="p-6 text-center">
                   <Bell className="w-12 h-12 text-gray-400 mx-auto mb-3" />
                   <p className="text-gray-600 dark:text-gray-400">
-                    Ingen notifikasjoner
+                    {t('notifications.no_notifications')}
                   </p>
                 </div>
               ) : (
@@ -170,6 +133,14 @@ const NotificationBell = (_props: INotificationBellProps): JSX.Element => {
                         !notification.isRead ? "bg-blue-50/50 dark:bg-blue-900/10" : ""
                       }`}
                       onClick={() => !notification.isRead && markAsRead(notification.id)}
+                      role="button"
+                      tabIndex={0}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          if (!notification.isRead) markAsRead(notification.id);
+                        }
+                      }}
                     >
                       <div className="flex items-start gap-3">
                         <div className={`p-2 rounded-lg ${getNotificationColor(notification.type)}`}>
@@ -178,11 +149,11 @@ const NotificationBell = (_props: INotificationBellProps): JSX.Element => {
                         <div className="flex-1 min-w-0">
                           <div className="flex items-start justify-between">
                             <h4 className={`text-sm font-medium ${
-                              !notification.isRead 
-                                ? "text-gray-900 dark:text-white" 
+                              !notification.isRead
+                                ? "text-gray-900 dark:text-white"
                                 : "text-gray-700 dark:text-gray-300"
                             }`}>
-                              {notification.title}
+                              {t(notification.title)}
                             </h4>
                             {!notification.isRead && (
                               <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0 mt-1.5" />

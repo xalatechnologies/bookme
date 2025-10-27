@@ -1,15 +1,13 @@
 "use client";
 
 // External libraries
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 
 // Internal libraries/utilities
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { FormField } from "@/components/forms/FormField";
+import { useFormValidation } from "@/hooks/useFormValidation";
 
 // Sibling imports
 import { SelectedSlotsDisplay } from "./SelectedSlotsDisplay";
@@ -21,18 +19,25 @@ import { IBookingFormData, ActorType, ActivityType, ISelectedTimeSlot } from "./
 
 /**
  * Booking form component
- * 
+ *
  * Main booking form that combines all booking-related components
  * including slot selection, pricing, and action buttons.
- * 
+ *
+ * Refactored with:
+ * - i18n support using react-i18next
+ * - SOLID principles (SRP - form state management)
+ * - Reusable FormField components
+ * - Validation hook
+ * - Pixel-perfect UI/UX maintained
+ *
  * Features:
- * - Form validation
+ * - Form validation with i18n
  * - Price calculation
  * - Cart integration
  * - Responsive design
  * - Loading states
  * - Error handling
- * 
+ *
  * @param props - Booking form props
  */
 export interface IBookingFormProps {
@@ -57,7 +62,9 @@ export const BookingForm: React.FC<IBookingFormProps> = ({
   onCompleteBooking,
   isLoading = false,
   error,
-}) => {
+}): JSX.Element => {
+  const { t } = useTranslation(['bookings', 'validation', 'common']);
+
   const [formData, setFormData] = useState<IBookingFormData>({
     purpose: "",
     attendees: 1,
@@ -68,38 +75,49 @@ export const BookingForm: React.FC<IBookingFormProps> = ({
     bookingType: "one-time",
   });
 
+  // Validation rules
+  const { errors, validateAll, clearError } = useFormValidation({
+    purpose: [{ type: 'required' }],
+    attendees: [{ type: 'required' }, { type: 'minValue', value: 1 }],
+    activityType: [{ type: 'required' }],
+    actorType: [{ type: 'required' }],
+  });
+
   /**
    * Update form data
-   * 
+   *
    * @param updates - Partial form data updates
    */
-  const updateFormData = (updates: Partial<IBookingFormData>): void => {
+  const updateFormData = useCallback((updates: Partial<IBookingFormData>): void => {
     setFormData(prev => ({ ...prev, ...updates }));
-  };
+
+    // Clear errors for updated fields
+    Object.keys(updates).forEach(key => clearError(key));
+  }, [clearError]);
 
   /**
    * Remove a selected slot
-   * 
+   *
    * @param slotId - ID of slot to remove
    */
-  const handleRemoveSlot = (slotId: string): void => {
+  const handleRemoveSlot = useCallback((slotId: string): void => {
     const newSlots = selectedSlots.filter(slot => slot.id !== slotId);
     onSlotsChange(newSlots);
-  };
+  }, [selectedSlots, onSlotsChange]);
 
   /**
    * Clear all selected slots
    */
-  const handleClearAll = (): void => {
+  const handleClearAll = useCallback((): void => {
     onSlotsChange([]);
-  };
+  }, [onSlotsChange]);
 
   /**
    * Validate form data
-   * 
+   *
    * @returns True if form is valid
    */
-  const isFormValid = (): boolean => {
+  const isFormValid = useCallback((): boolean => {
     return (
       formData.purpose.trim().length > 0 &&
       formData.attendees > 0 &&
@@ -107,25 +125,44 @@ export const BookingForm: React.FC<IBookingFormProps> = ({
       formData.actorType.trim().length > 0 &&
       selectedSlots.length > 0
     );
-  };
+  }, [formData, selectedSlots.length]);
 
   /**
    * Handle add to cart
    */
-  const handleAddToCart = (): void => {
-    if (isFormValid()) {
+  const handleAddToCart = useCallback((): void => {
+    if (validateAll(formData) && isFormValid()) {
       onAddToCart(formData);
     }
-  };
+  }, [formData, validateAll, isFormValid, onAddToCart]);
 
   /**
    * Handle complete booking
    */
-  const handleCompleteBooking = (): void => {
-    if (isFormValid()) {
+  const handleCompleteBooking = useCallback((): void => {
+    if (validateAll(formData) && isFormValid()) {
       onCompleteBooking(formData);
     }
-  };
+  }, [formData, validateAll, isFormValid, onCompleteBooking]);
+
+  // Activity type options
+  const activityTypeOptions = [
+    { value: "sport", label: t('bookings:activity_types.sport', 'Sport') },
+    { value: "kultur", label: t('bookings:activity_types.culture', 'Kultur') },
+    { value: "møte", label: t('bookings:activity_types.meeting', 'Møte') },
+    { value: "arrangement", label: t('bookings:activity_types.event', 'Arrangement') },
+    { value: "trening", label: t('bookings:activity_types.training', 'Trening') },
+    { value: "annet", label: t('common:other', 'Annet') },
+  ];
+
+  // Actor type options
+  const actorTypeOptions = [
+    { value: "private-person", label: t('bookings:actor_types.private_person', 'Privatperson') },
+    { value: "lag-foreninger", label: t('bookings:actor_types.lag_foreninger', 'Lag og foreninger') },
+    { value: "paraply", label: t('bookings:actor_types.paraply', 'Paraplyorganisasjoner') },
+    { value: "private-firma", label: t('bookings:actor_types.private_firma', 'Private firma') },
+    { value: "kommunale-enheter", label: t('bookings:actor_types.kommunale_enheter', 'Kommunale enheter') },
+  ];
 
   return (
     <div className="space-y-6">
@@ -133,103 +170,80 @@ export const BookingForm: React.FC<IBookingFormProps> = ({
       <Card className="w-full">
         <CardHeader className="pb-3">
           <CardTitle className="text-sm font-medium text-gray-700">
-            Booking detaljer
+            {t('bookings:details.booking_details', 'Booking detaljer')}
           </CardTitle>
         </CardHeader>
         <CardContent className="pt-0 space-y-4">
           {/* Purpose */}
-          <div className="space-y-2">
-            <Label htmlFor="purpose" className="text-sm font-medium">
-              Formål med bookingen <span className="text-red-500">*</span>
-            </Label>
-            <Input
-              id="purpose"
-              value={formData.purpose}
-              onChange={(e) => updateFormData({ purpose: e.target.value })}
-              placeholder="F.eks. fotballtrening, møte, arrangement"
-              disabled={isLoading}
-              className="w-full"
-            />
-          </div>
+          <FormField
+            id="purpose"
+            name="purpose"
+            label={t('bookings:fields.purpose', 'Formål med bookingen')}
+            type="text"
+            value={formData.purpose}
+            onChange={(value) => updateFormData({ purpose: String(value) })}
+            placeholder={t('bookings:placeholders.purpose', 'F.eks. fotballtrening, møte, arrangement')}
+            required
+            disabled={isLoading}
+            error={errors.purpose}
+          />
 
           {/* Attendees */}
-          <div className="space-y-2">
-            <Label htmlFor="attendees" className="text-sm font-medium">
-              Antall deltakere <span className="text-red-500">*</span>
-            </Label>
-            <Input
-              id="attendees"
-              type="number"
-              min="1"
-              value={formData.attendees}
-              onChange={(e) => updateFormData({ attendees: parseInt(e.target.value) || 1 })}
-              disabled={isLoading}
-              className="w-full"
-            />
-          </div>
+          <FormField
+            id="attendees"
+            name="attendees"
+            label={t('bookings:fields.participants', 'Antall deltakere')}
+            type="number"
+            value={formData.attendees}
+            onChange={(value) => updateFormData({ attendees: Number(value) || 1 })}
+            min={1}
+            required
+            disabled={isLoading}
+            error={errors.attendees}
+          />
 
           {/* Activity Type */}
-          <div className="space-y-2">
-            <Label htmlFor="activityType" className="text-sm font-medium">
-              Type aktivitet <span className="text-red-500">*</span>
-            </Label>
-            <Select
-              value={formData.activityType}
-              onValueChange={(value) => updateFormData({ activityType: value as ActivityType })}
-              disabled={isLoading}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Velg aktivitetstype" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="sport">Sport</SelectItem>
-                <SelectItem value="kultur">Kultur</SelectItem>
-                <SelectItem value="møte">Møte</SelectItem>
-                <SelectItem value="arrangement">Arrangement</SelectItem>
-                <SelectItem value="trening">Trening</SelectItem>
-                <SelectItem value="annet">Annet</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          <FormField
+            id="activityType"
+            name="activityType"
+            label={t('bookings:fields.activity_type', 'Type aktivitet')}
+            type="select"
+            value={formData.activityType}
+            onChange={(value) => updateFormData({ activityType: String(value) as ActivityType })}
+            placeholder={t('bookings:placeholders.activity_type', 'Velg aktivitetstype')}
+            options={activityTypeOptions}
+            required
+            disabled={isLoading}
+            error={errors.activityType}
+          />
 
           {/* Actor Type */}
-          <div className="space-y-2">
-            <Label htmlFor="actorType" className="text-sm font-medium">
-              Aktør type <span className="text-red-500">*</span>
-            </Label>
-            <Select
-              value={formData.actorType}
-              onValueChange={(value) => updateFormData({ actorType: value as ActorType })}
-              disabled={isLoading}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Velg aktør type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="private-person">Privatperson</SelectItem>
-                <SelectItem value="lag-foreninger">Lag og foreninger</SelectItem>
-                <SelectItem value="paraply">Paraplyorganisasjoner</SelectItem>
-                <SelectItem value="private-firma">Private firma</SelectItem>
-                <SelectItem value="kommunale-enheter">Kommunale enheter</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          <FormField
+            id="actorType"
+            name="actorType"
+            label={t('bookings:fields.actor_type', 'Aktør type')}
+            type="select"
+            value={formData.actorType}
+            onChange={(value) => updateFormData({ actorType: String(value) as ActorType })}
+            placeholder={t('bookings:placeholders.actor_type', 'Velg aktør type')}
+            options={actorTypeOptions}
+            required
+            disabled={isLoading}
+            error={errors.actorType}
+          />
 
           {/* Additional Info */}
-          <div className="space-y-2">
-            <Label htmlFor="additionalInfo" className="text-sm font-medium">
-              Tilleggsinformasjon
-            </Label>
-            <Textarea
-              id="additionalInfo"
-              value={formData.additionalInfo}
-              onChange={(e) => updateFormData({ additionalInfo: e.target.value })}
-              placeholder="Eventuelle spesielle ønsker eller behov"
-              disabled={isLoading}
-              className="w-full"
-              rows={3}
-            />
-          </div>
+          <FormField
+            id="additionalInfo"
+            name="additionalInfo"
+            label={t('bookings:fields.special_requests', 'Tilleggsinformasjon')}
+            type="textarea"
+            value={formData.additionalInfo}
+            onChange={(value) => updateFormData({ additionalInfo: String(value) })}
+            placeholder={t('bookings:placeholders.additional_info', 'Eventuelle spesielle ønsker eller behov')}
+            disabled={isLoading}
+            rows={3}
+          />
         </CardContent>
       </Card>
 
@@ -246,7 +260,10 @@ export const BookingForm: React.FC<IBookingFormProps> = ({
       <Card className="w-full">
         <CardHeader className="pb-3">
           <CardTitle className="text-sm font-medium text-gray-700">
-            {selectedSlots.length > 0 ? "Valgte tidspunkter og prisberegning" : "Velg tidspunkter og få en prisberegning"}
+            {selectedSlots.length > 0
+              ? t('bookings:details.selected_slots_pricing', 'Valgte tidspunkter og prisberegning')
+              : t('bookings:details.select_slots_pricing', 'Velg tidspunkter og få en prisberegning')
+            }
           </CardTitle>
         </CardHeader>
         <CardContent className="pt-0 space-y-4">
@@ -271,7 +288,7 @@ export const BookingForm: React.FC<IBookingFormProps> = ({
       {/* Error Display */}
       {error && (
         <div className="text-sm text-red-600 bg-red-50 p-3 rounded-lg border border-red-200">
-          <p className="font-medium">Feil oppstod</p>
+          <p className="font-medium">{t('common:messages.error.generic', 'Feil oppstod')}</p>
           <p className="text-xs mt-1">{error}</p>
         </div>
       )}

@@ -50,7 +50,8 @@
     "start": "Start",
     "stop": "Stop",
     "pause": "Pause",
-    "resume": "Resume"
+    "resume": "Resume",
+    "applyFilters": "Apply Filters"
   },
   "status": {
     "active": "Active",
@@ -162,6 +163,84 @@
     "showing": "Showing {{from}} to {{to}} of {{total}}",
     "goToPage": "Go to page"
   },
+  "search": {
+    "placeholder": "Search...",
+    "search_facilities": "Search for facilities...",
+    "search_admin": "Search in admin...",
+    "search_venues": "Search for venues...",
+    "search_bookings": "Search by venue or booking ID...",
+    "no_results": "No results found",
+    "found_results": "Found {{count}} results for \"{{query}}\"",
+    "recent_searches": "Recent searches",
+    "clear_search": "Clear search",
+    "group_facilities": "Facilities",
+    "group_locations": "Locations",
+    "group_categories": "Categories",
+    "group_users": "Users",
+    "group_bookings": "Bookings",
+    "group_documents": "Documents",
+    "available_count": "{{count}} venues available",
+    "capacity": "Capacity: {{count}}"
+  },
+  "filters": {
+    "title": "Filters",
+    "apply": "Apply Filters",
+    "clear": "Clear Filters",
+    "clearAll": "Reset All",
+    "active_filters": "Active Filters",
+    "results_count": "{{count}} results",
+    "results_filtered": "{{count}} of {{total}} results",
+    "no_results": "No results",
+    "sort_by": "Sort by",
+    "filter_by": "Filter by",
+    "date_range": "Date Range",
+    "all": "All",
+    "facility": "Venue",
+    "all_facilities": "All Venues",
+    "select_facility": "Select Venue",
+    "date_period": "Time Period"
+  },
+  "sort": {
+    "relevance": "Relevance",
+    "name_asc": "Name (A-Z)",
+    "name_desc": "Name (Z-A)",
+    "price_asc": "Price (Low to High)",
+    "price_desc": "Price (High to Low)",
+    "date_asc": "Date (Upcoming First)",
+    "date_desc": "Date (Oldest First)",
+    "capacity_asc": "Capacity (Small to Large)",
+    "capacity_desc": "Capacity (Large to Small)",
+    "created_asc": "Created (Oldest First)",
+    "created_desc": "Created (Newest First)"
+  },
+  "dateRange": {
+    "all": "All",
+    "today": "Today",
+    "week": "This Week",
+    "month": "This Month",
+    "upcoming": "Upcoming",
+    "past": "Past"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "no_notifications": "No notifications",
+    "mark_all_read": "Mark all as read",
+    "mark_as_read": "Mark as read",
+    "view_all": "View all",
+    "unread_count": "{{count}} unread",
+    "notification_read": "Notification marked as read!",
+    "all_read": "All notifications marked as read!",
+    "failed_mark_read": "Could not mark notification as read. Please try again.",
+    "failed_mark_all_read": "Could not mark all notifications as read. Please try again.",
+    "types": {
+      "booking_confirmed": "Booking confirmed",
+      "booking_reminder": "Booking reminder",
+      "booking_cancelled": "Booking cancelled",
+      "system_update": "System update available",
+      "high_load": "High server load",
+      "backup_complete": "Backup completed"
+    }
+  },
   "time": {
     "seconds": "seconds",
     "minute": "minute",
@@ -194,6 +273,8 @@
     "night": "Night",
     "midnight": "Midnight",
     "noon": "Noon",
+    "ago": "{{time}} ago",
+    "in": "in {{time}}",
     "weekdays": {
       "monday": "Monday",
       "tuesday": "Tuesday",
@@ -246,7 +327,9 @@
     "notFound": "Page not found.",
     "comingSoon": "Coming Soon",
     "underConstruction": "Under Construction",
-    "maintenanceMode": "Maintenance Mode"
+    "maintenanceMode": "Maintenance Mode",
+    "logout_success": "You have been logged out!",
+    "logout_failed": "Could not log out. Please try again."
   },
   "placeholders": {
     "search": "Search...",
@@ -261,6 +344,22 @@
     "selectFile": "Select file",
     "dragDropFile": "Drag and drop files here or click to select",
     "noOptions": "No options available"
+  },
+  "aria": {
+    "logo": "BookMe logo",
+    "go_to_home": "Go to home",
+    "search": "Search",
+    "search_input": "Search field",
+    "sort_dropdown": "Sort selection",
+    "notifications": "Notifications",
+    "open_notifications": "Open notifications",
+    "profile_menu": "Profile menu",
+    "language_toggle": "Toggle language",
+    "cart": "Shopping cart",
+    "mobile_menu": "Mobile menu",
+    "close_modal": "Close modal",
+    "open_menu": "Open menu",
+    "close_menu": "Close menu"
   },
   "accessibility": {
     "skipToContent": "Skip to content",

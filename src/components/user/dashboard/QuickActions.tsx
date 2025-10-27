@@ -1,6 +1,16 @@
 "use client";
 
+/**
+ * QuickActions Component
+ *
+ * SOLID Principles Applied:
+ * - Single Responsibility: Displays quick action buttons only
+ * - Open/Closed: Extensible through quickActions prop
+ * - Dependency Inversion: Uses i18n translations
+ */
+
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Settings } from "lucide-react";
@@ -19,8 +29,30 @@ interface IQuickActionsProps {
   readonly quickActions: readonly IQuickAction[];
 }
 
+/**
+ * QuickActions Component
+ *
+ * Displays a grid of quick action buttons for common user tasks
+ *
+ * @example
+ * ```tsx
+ * <QuickActions
+ *   quickActions={[
+ *     {
+ *       id: 'book',
+ *       title: 'Book Facility',
+ *       description: 'Make a new booking',
+ *       icon: Calendar,
+ *       path: '/facilities',
+ *       color: 'bg-blue-500'
+ *     }
+ *   ]}
+ * />
+ * ```
+ */
 const QuickActions = (props: IQuickActionsProps): JSX.Element => {
   const { quickActions } = props;
+  const { t } = useTranslation('user');
   const navigate = useNavigate();
 
   return (
@@ -28,7 +60,7 @@ const QuickActions = (props: IQuickActionsProps): JSX.Element => {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Settings className="h-5 w-5" />
-          Hurtighandlinger
+          {t('dashboard.quickActions')}
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -43,6 +75,7 @@ const QuickActions = (props: IQuickActionsProps): JSX.Element => {
                 onClick={() => {
                   navigate(action.path);
                 }}
+                aria-label={`${action.title}: ${action.description}`}
               >
                 <div className={`p-2 rounded-full ${action.color} text-white`}>
                   <IconComponent className="h-5 w-5" />

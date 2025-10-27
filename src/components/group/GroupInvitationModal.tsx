@@ -3,13 +3,15 @@
 import React, { useState, useEffect } from "react";
 import { format } from "date-fns";
 import { Mail, UserPlus, Check, X, Clock, AlertCircle } from "lucide-react";
+import { useTranslation } from "react-i18next";
+
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { BaseModal } from "@/components/ui/BaseModal";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { GroupInvitation, InviteMemberData } from "@/types/group";
 import { useGroupStore } from "@/stores/groupStore";
@@ -34,18 +36,19 @@ const InviteMemberForm: React.FC<{
   readonly onInvite: (groupId: string, invitation: InviteMemberData) => void;
   readonly onClose: () => void;
 }> = ({ groupId, onInvite, onClose }) => {
+  const { t } = useTranslation(['groups', 'common']);
   const [email, setEmail] = useState<string>("");
   const [message, setMessage] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const handleSubmit = async (): Promise<void> => {
     if (!email.trim()) {
-      alert("Vennligst fyll ut e-postadresse");
+      alert(t('invitation_modal.validation.email_required'));
       return;
     }
 
     if (!email.includes("@")) {
-      alert("Vennligst oppgi en gyldig e-postadresse");
+      alert(t('invitation_modal.validation.email_invalid'));
       return;
     }
 
@@ -53,8 +56,8 @@ const InviteMemberForm: React.FC<{
 
     const invitation: InviteMemberData = {
       email: email.trim().toLowerCase(),
-      invitedBy: "current-user", // This should come from auth context
-      invitedByName: "Current User" // This should come from user context
+      invitedBy: "current-user",
+      invitedByName: "Current User"
     };
 
     try {
@@ -63,7 +66,7 @@ const InviteMemberForm: React.FC<{
       setMessage("");
       onClose();
     } catch (error) {
-      alert("Kunne ikke sende invitasjon. Prøv igjen.");
+      alert(t('invitation_modal.messages.error'));
     } finally {
       setIsLoading(false);
     }
@@ -73,28 +76,28 @@ const InviteMemberForm: React.FC<{
     <div className="space-y-4">
       <div className="space-y-2">
         <Label htmlFor="invite-email" className="text-sm font-medium">
-          E-postadresse *
+          {t('invitation_modal.form.email')} *
         </Label>
         <Input
           id="invite-email"
           type="email"
-          placeholder="bruker@example.com"
+          placeholder={t('invitation_modal.form.email_placeholder')}
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           aria-describedby="invite-email-help"
         />
         <p id="invite-email-help" className="text-xs text-muted-foreground">
-          E-postadressen til personen du vil invitere
+          {t('invitation_modal.form.email_help')}
         </p>
       </div>
 
       <div className="space-y-2">
         <Label htmlFor="invite-message" className="text-sm font-medium">
-          Personlig melding (valgfritt)
+          {t('invitation_modal.form.message')}
         </Label>
         <Textarea
           id="invite-message"
-          placeholder="Hei! Jeg vil gjerne invitere deg til å bli medlem av vår gruppe..."
+          placeholder={t('invitation_modal.form.message_placeholder')}
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           rows={3}
@@ -105,22 +108,22 @@ const InviteMemberForm: React.FC<{
         <div className="flex items-start space-x-2">
           <AlertCircle className="h-4 w-4 text-blue-600 mt-0.5" />
           <div className="text-sm text-blue-800">
-            <p className="font-medium">Invitasjon sendes via e-post</p>
+            <p className="font-medium">{t('invitation_modal.form.info_title')}</p>
             <p className="text-xs mt-1">
-              Personen vil motta en e-post med lenke for å bli medlem av gruppen.
+              {t('invitation_modal.form.info_description')}
             </p>
           </div>
         </div>
       </div>
 
-      <DialogFooter>
+      <div className="flex justify-end space-x-2 pt-4">
         <Button variant="outline" onClick={onClose} disabled={isLoading}>
-          Avbryt
+          {t('common:actions.cancel')}
         </Button>
         <Button onClick={handleSubmit} disabled={isLoading || !email.trim()}>
-          {isLoading ? "Sender..." : "Send invitasjon"}
+          {isLoading ? t('invitation_modal.form.sending') : t('invitation_modal.form.send_invitation')}
         </Button>
-      </DialogFooter>
+      </div>
     </div>
   );
 };
@@ -132,15 +135,16 @@ const PendingInvitationsList: React.FC<{
   readonly invitations: readonly GroupInvitation[];
   readonly onRespond: (invitationId: string, response: 'accepted' | 'declined') => void;
 }> = ({ invitations, onRespond }) => {
+  const { t } = useTranslation('groups');
   const pendingInvitations = invitations.filter(inv => inv.status === 'pending');
 
   if (pendingInvitations.length === 0) {
     return (
       <div className="text-center py-8">
         <Mail className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-        <h3 className="text-lg font-semibold mb-2">Ingen ventende invitasjoner</h3>
+        <h3 className="text-lg font-semibold mb-2">{t('invitation_modal.pending.title')}</h3>
         <p className="text-muted-foreground">
-          Alle invitasjoner er behandlet
+          {t('invitation_modal.pending.description')}
         </p>
       </div>
     );
@@ -158,14 +162,14 @@ const PendingInvitationsList: React.FC<{
                   <span className="font-medium">{invitation.email}</span>
                   <Badge variant="secondary" className="text-xs">
                     <Clock className="h-3 w-3 mr-1" />
-                    Ventende
+                    {t('invitation_modal.pending.status')}
                   </Badge>
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  Invitert av {invitation.invitedByName} • {format(new Date(invitation.invitedAt), "dd.MM.yyyy HH:mm")}
+                  {t('invitation_modal.pending.invited_by', { name: invitation.invitedByName })} • {format(new Date(invitation.invitedAt), "dd.MM.yyyy HH:mm")}
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  Utløper {format(new Date(invitation.expiresAt), "dd.MM.yyyy HH:mm")}
+                  {t('invitation_modal.pending.expires', { date: format(new Date(invitation.expiresAt), "dd.MM.yyyy HH:mm") })}
                 </p>
               </div>
               <div className="flex space-x-2">
@@ -176,14 +180,14 @@ const PendingInvitationsList: React.FC<{
                   className="text-red-600 hover:text-red-700"
                 >
                   <X className="h-4 w-4 mr-1" />
-                  Avslå
+                  {t('invitation_modal.pending.decline')}
                 </Button>
                 <Button
                   size="sm"
                   onClick={() => onRespond(invitation.id, 'accepted')}
                 >
                   <Check className="h-4 w-4 mr-1" />
-                  Godta
+                  {t('invitation_modal.pending.accept')}
                 </Button>
               </div>
             </div>
@@ -200,19 +204,46 @@ const PendingInvitationsList: React.FC<{
 const SentInvitationsList: React.FC<{
   readonly invitations: readonly GroupInvitation[];
 }> = ({ invitations }) => {
+  const { t } = useTranslation('groups');
   const sentInvitations = invitations.filter(inv => inv.invitedBy === "current-user");
 
   if (sentInvitations.length === 0) {
     return (
       <div className="text-center py-8">
         <UserPlus className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-        <h3 className="text-lg font-semibold mb-2">Ingen sendte invitasjoner</h3>
+        <h3 className="text-lg font-semibold mb-2">{t('invitation_modal.sent.title')}</h3>
         <p className="text-muted-foreground">
-          Du har ikke sendt noen invitasjoner ennå
+          {t('invitation_modal.sent.description')}
         </p>
       </div>
     );
   }
+
+  const getStatusVariant = (status: string): "default" | "destructive" | "secondary" | "outline" => {
+    switch (status) {
+      case 'accepted':
+        return 'default';
+      case 'declined':
+        return 'destructive';
+      case 'expired':
+        return 'secondary';
+      default:
+        return 'outline';
+    }
+  };
+
+  const getStatusLabel = (status: string): string => {
+    switch (status) {
+      case 'accepted':
+        return t('invitation_modal.sent.status_accepted');
+      case 'declined':
+        return t('invitation_modal.sent.status_declined');
+      case 'expired':
+        return t('invitation_modal.sent.status_expired');
+      default:
+        return t('invitation_modal.sent.status_pending');
+    }
+  };
 
   return (
     <div className="space-y-3">
@@ -225,29 +256,23 @@ const SentInvitationsList: React.FC<{
                   <Mail className="h-4 w-4 text-muted-foreground" />
                   <span className="font-medium">{invitation.email}</span>
                   <Badge
-                    variant={
-                      invitation.status === 'accepted' ? 'default' :
-                      invitation.status === 'declined' ? 'destructive' :
-                      invitation.status === 'expired' ? 'secondary' : 'outline'
-                    }
+                    variant={getStatusVariant(invitation.status)}
                     className="text-xs"
                   >
-                    {invitation.status === 'accepted' ? 'Godtatt' :
-                     invitation.status === 'declined' ? 'Avslått' :
-                     invitation.status === 'expired' ? 'Utløpt' : 'Ventende'}
+                    {getStatusLabel(invitation.status)}
                   </Badge>
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  Sendt {format(new Date(invitation.invitedAt), "dd.MM.yyyy HH:mm")}
+                  {t('invitation_modal.sent.sent_date', { date: format(new Date(invitation.invitedAt), "dd.MM.yyyy HH:mm") })}
                 </p>
                 {invitation.acceptedAt && (
                   <p className="text-sm text-green-600">
-                    Godtatt {format(new Date(invitation.acceptedAt), "dd.MM.yyyy HH:mm")}
+                    {t('invitation_modal.sent.accepted_date', { date: format(new Date(invitation.acceptedAt), "dd.MM.yyyy HH:mm") })}
                   </p>
                 )}
                 {invitation.declinedAt && (
                   <p className="text-sm text-red-600">
-                    Avslått {format(new Date(invitation.declinedAt), "dd.MM.yyyy HH:mm")}
+                    {t('invitation_modal.sent.declined_date', { date: format(new Date(invitation.declinedAt), "dd.MM.yyyy HH:mm") })}
                   </p>
                 )}
               </div>
@@ -261,9 +286,14 @@ const SentInvitationsList: React.FC<{
 
 /**
  * Group invitation modal component
- * 
+ *
  * Provides comprehensive invitation management including sending new invitations,
  * viewing pending invitations, and managing sent invitations.
+ *
+ * Follows SOLID principles:
+ * - Single Responsibility: Each sub-component handles one specific aspect
+ * - Open/Closed: Extends BaseModal without modifying it
+ * - Dependency Inversion: Depends on BaseModal abstraction
  */
 export const GroupInvitationModal: React.FC<GroupInvitationModalProps> = ({
   isOpen,
@@ -272,13 +302,13 @@ export const GroupInvitationModal: React.FC<GroupInvitationModalProps> = ({
   groupName,
   onInviteMember,
   onRespondToInvitation
-}) => {
+}): JSX.Element => {
+  const { t } = useTranslation('groups');
   const { getUserInvitations } = useGroupStore();
   const [invitations, setInvitations] = useState<readonly GroupInvitation[]>([]);
 
   useEffect(() => {
     if (isOpen) {
-      // Load invitations for current user
       const userInvitations = getUserInvitations("current-user");
       setInvitations(userInvitations);
     }
@@ -286,59 +316,51 @@ export const GroupInvitationModal: React.FC<GroupInvitationModalProps> = ({
 
   const handleInviteMember = (groupId: string, invitation: InviteMemberData): void => {
     onInviteMember(groupId, invitation);
-    // Refresh invitations list
     const userInvitations = getUserInvitations("current-user");
     setInvitations(userInvitations);
   };
 
   const handleRespondToInvitation = (invitationId: string, response: 'accepted' | 'declined'): void => {
     onRespondToInvitation(invitationId, response);
-    // Refresh invitations list
     const userInvitations = getUserInvitations("current-user");
     setInvitations(userInvitations);
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="flex items-center space-x-2">
-            <UserPlus className="h-5 w-5" />
-            <span>Inviter medlemmer til {groupName}</span>
-          </DialogTitle>
-          <DialogDescription>
-            Send invitasjoner til nye medlemmer eller administrer eksisterende invitasjoner
-          </DialogDescription>
-        </DialogHeader>
+    <BaseModal
+      isOpen={isOpen}
+      onClose={onClose}
+      title={t('invitation_modal.title', { groupName })}
+      description={t('invitation_modal.description')}
+      size="4xl"
+      titleIcon={<UserPlus className="h-5 w-5" />}
+    >
+      <Tabs defaultValue="invite" className="w-full">
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="invite">{t('invitation_modal.tabs.send')}</TabsTrigger>
+          <TabsTrigger value="pending">{t('invitation_modal.tabs.pending')}</TabsTrigger>
+          <TabsTrigger value="sent">{t('invitation_modal.tabs.sent')}</TabsTrigger>
+        </TabsList>
 
-        <Tabs defaultValue="invite" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="invite">Send invitasjon</TabsTrigger>
-            <TabsTrigger value="pending">Ventende invitasjoner</TabsTrigger>
-            <TabsTrigger value="sent">Sendte invitasjoner</TabsTrigger>
-          </TabsList>
+        <TabsContent value="invite" className="space-y-4">
+          <InviteMemberForm
+            groupId={groupId}
+            onInvite={handleInviteMember}
+            onClose={onClose}
+          />
+        </TabsContent>
 
-          <TabsContent value="invite" className="space-y-4">
-            <InviteMemberForm
-              groupId={groupId}
-              onInvite={handleInviteMember}
-              onClose={onClose}
-            />
-          </TabsContent>
+        <TabsContent value="pending" className="space-y-4">
+          <PendingInvitationsList
+            invitations={invitations}
+            onRespond={handleRespondToInvitation}
+          />
+        </TabsContent>
 
-          <TabsContent value="pending" className="space-y-4">
-            <PendingInvitationsList
-              invitations={invitations}
-              onRespond={handleRespondToInvitation}
-            />
-          </TabsContent>
-
-          <TabsContent value="sent" className="space-y-4">
-            <SentInvitationsList invitations={invitations} />
-          </TabsContent>
-        </Tabs>
-      </DialogContent>
-    </Dialog>
+        <TabsContent value="sent" className="space-y-4">
+          <SentInvitationsList invitations={invitations} />
+        </TabsContent>
+      </Tabs>
+    </BaseModal>
   );
 };
-

@@ -1,0 +1,81 @@
+{
+  "title": "Groups",
+  "subtitle": "Manage groups and members",
+  "fields": {
+    "name": "Group name",
+    "description": "Description",
+    "members": "Members",
+    "owner": "Owner",
+    "created": "Created",
+    "member_count": "Member count"
+  },
+  "actions": {
+    "create": "Create group",
+    "edit": "Edit group",
+    "delete": "Delete group",
+    "leave": "Leave group",
+    "invite": "Invite members",
+    "remove_member": "Remove member"
+  },
+  "invitation_modal": {
+    "title": "Invite members to {{groupName}}",
+    "description": "Send invitations to new members or manage existing invitations",
+    "tabs": {
+      "send": "Send invitation",
+      "pending": "Pending invitations",
+      "sent": "Sent invitations"
+    },
+    "form": {
+      "email": "Email address",
+      "email_placeholder": "user@example.com",
+      "email_help": "The email address of the person you want to invite",
+      "message": "Personal message (optional)",
+      "message_placeholder": "Hi! I would like to invite you to join our group...",
+      "info_title": "Invitation sent via email",
+      "info_description": "The person will receive an email with a link to join the group.",
+      "sending": "Sending...",
+      "send_invitation": "Send invitation"
+    },
+    "pending": {
+      "title": "No pending invitations",
+      "description": "All invitations have been processed",
+      "invited_by": "Invited by {{name}}",
+      "expires": "Expires {{date}}",
+      "accept": "Accept",
+      "decline": "Decline",
+      "status": "Pending"
+    },
+    "sent": {
+      "title": "No sent invitations",
+      "description": "You haven't sent any invitations yet",
+      "sent_date": "Sent {{date}}",
+      "accepted_date": "Accepted {{date}}",
+      "declined_date": "Declined {{date}}",
+      "status_accepted": "Accepted",
+      "status_declined": "Declined",
+      "status_expired": "Expired",
+      "status_pending": "Pending"
+    },
+    "validation": {
+      "email_required": "Please enter an email address",
+      "email_invalid": "Please enter a valid email address"
+    },
+    "messages": {
+      "success": "Invitation sent!",
+      "error": "Could not send invitation. Please try again."
+    }
+  },
+  "status": {
+    "active": "Active",
+    "inactive": "Inactive",
+    "pending": "Pending"
+  },
+  "messages": {
+    "created": "Group created",
+    "updated": "Group updated",
+    "deleted": "Group deleted",
+    "member_added": "Member added",
+    "member_removed": "Member removed",
+    "left_group": "You have left the group"
+  }
+}

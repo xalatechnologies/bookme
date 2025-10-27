@@ -2,21 +2,23 @@
 
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 export const Logo = (): JSX.Element => {
   const navigate = useNavigate();
+  const { t } = useTranslation('common');
 
   const handleClick = (): void => {
     navigate("/");
   };
 
   return (
-    <div 
-      className="flex items-center cursor-pointer" 
+    <div
+      className="flex items-center cursor-pointer"
       onClick={handleClick}
       role="button"
       tabIndex={0}
-      aria-label="Gå til forsiden"
+      aria-label={t('aria.go_to_home')}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
@@ -24,11 +26,12 @@ export const Logo = (): JSX.Element => {
         }
       }}
     >
-      <svg 
-        xmlns="http://www.w3.org/2000/svg" 
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
         viewBox="30 26 542.69 142"
         className="h-8 w-auto"
-        aria-hidden="true"
+        aria-label={t('aria.logo')}
+        role="img"
       >
         <defs>
           <style>

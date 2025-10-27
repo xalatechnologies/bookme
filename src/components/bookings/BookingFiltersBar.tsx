@@ -3,14 +3,16 @@
  *
  * Comprehensive filter bar for bookings with search, date range,
  * facility selection, and sorting options.
+ * Refactored to use i18n and reusable components following SOLID principles.
  */
 
-import React from 'react';
+import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search, X, Calendar as CalendarIcon } from 'lucide-react';
+import { Calendar as CalendarIcon } from 'lucide-react';
+import { SearchInput } from '@/components/common/filters';
 import type { BookingFilters } from '@/hooks/bookings';
 
 export interface BookingFiltersBarProps {
@@ -51,22 +53,60 @@ export const BookingFiltersBar = ({
   onClearFilters,
   onOpenCalendar,
 }: BookingFiltersBarProps): JSX.Element => {
+  const { t } = useTranslation('common');
+
+  // Date range options
+  const dateRangeOptions = useMemo(() => [
+    { value: 'all', label: t('dateRange.all', 'Alle') },
+    { value: 'today', label: t('dateRange.today', 'I dag') },
+    { value: 'week', label: t('dateRange.week', 'Denne uken') },
+    { value: 'month', label: t('dateRange.month', 'Denne måneden') },
+    { value: 'upcoming', label: t('dateRange.upcoming', 'Kommende') },
+    { value: 'past', label: t('dateRange.past', 'Tidligere') }
+  ], [t]);
+
+  // Sort options
+  const sortOptions = useMemo(() => [
+    { value: 'date-asc', label: t('sort.date_asc', 'Dato (kommende først)') },
+    { value: 'date-desc', label: t('sort.date_desc', 'Dato (eldste først)') },
+    { value: 'price-asc', label: t('sort.price_asc', 'Pris (lav til høy)') },
+    { value: 'price-desc', label: t('sort.price_desc', 'Pris (høy til lav)') },
+    { value: 'created', label: t('sort.created_desc', 'Opprettet') }
+  ], [t]);
+
+  // Count active filters
+  const activeFiltersCount = useMemo(() => {
+    let count = 0;
+    if (filters.search) count++;
+    if (filters.dateRange && filters.dateRange !== 'all') count++;
+    if (filters.facilityId) count++;
+    if (filters.sortBy && filters.sortBy !== 'date-asc') count++;
+    return count;
+  }, [filters]);
+
+  // Active filter labels
+  const activeFilterLabels = useMemo(() => {
+    const labels: string[] = [];
+    if (filters.search) labels.push(t('actions.search', 'Søk'));
+    if (filters.dateRange && filters.dateRange !== 'all') labels.push(t('common.date', 'Dato'));
+    if (filters.facilityId) labels.push(t('filters.facility', 'Lokale'));
+    if (filters.sortBy && filters.sortBy !== 'date-asc') labels.push(t('actions.sort', 'Sortering'));
+    return labels;
+  }, [filters, t]);
+
   return (
     <Card>
       <CardContent className="p-4">
         <div className="flex flex-col lg:flex-row gap-4">
           {/* Search */}
           <div className="flex-1">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-              <Input
-                placeholder="Søk på lokale eller booking ID..."
-                value={filters.search || ""}
-                onChange={(e) => onSearchChange(e.target.value || undefined)}
-                className="pl-10 h-12"
-                aria-label="Søk i bookinger"
-              />
-            </div>
+            <SearchInput
+              value={filters.search || ''}
+              onChange={(value) => onSearchChange(value || undefined)}
+              placeholder={t('search.search_bookings', 'Søk på lokale eller booking ID...')}
+              ariaLabel={t('aria.search_input', 'Søk i bookinger')}
+              showClearButton
+            />
           </div>
 
           {/* Date Range */}
@@ -74,16 +114,15 @@ export const BookingFiltersBar = ({
             value={filters.dateRange || 'all'}
             onValueChange={(value) => onDateRangeChange(value as BookingFilters['dateRange'])}
           >
-            <SelectTrigger className="w-full lg:w-48 h-12" aria-label="Velg tidsperiode">
-              <SelectValue placeholder="Tidsperiode" />
+            <SelectTrigger className="w-full lg:w-48 h-12" aria-label={t('filters.date_period', 'Velg tidsperiode')}>
+              <SelectValue placeholder={t('filters.date_period', 'Tidsperiode')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Alle</SelectItem>
-              <SelectItem value="today">I dag</SelectItem>
-              <SelectItem value="week">Denne uken</SelectItem>
-              <SelectItem value="month">Denne måneden</SelectItem>
-              <SelectItem value="upcoming">Kommende</SelectItem>
-              <SelectItem value="past">Tidligere</SelectItem>
+              {dateRangeOptions.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
 
@@ -93,11 +132,11 @@ export const BookingFiltersBar = ({
               value={filters.facilityId || 'all'}
               onValueChange={(value) => onFacilityChange(value === 'all' ? undefined : value)}
             >
-              <SelectTrigger className="w-full lg:w-48 h-12" aria-label="Velg lokale">
-                <SelectValue placeholder="Velg lokale" />
+              <SelectTrigger className="w-full lg:w-48 h-12" aria-label={t('filters.select_facility', 'Velg lokale')}>
+                <SelectValue placeholder={t('filters.select_facility', 'Velg lokale')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Alle lokaler</SelectItem>
+                <SelectItem value="all">{t('filters.all_facilities', 'Alle lokaler')}</SelectItem>
                 {facilities.map((facility) => (
                   <SelectItem key={facility} value={facility}>
                     {facility}
@@ -112,15 +151,15 @@ export const BookingFiltersBar = ({
             value={filters.sortBy || 'date-asc'}
             onValueChange={(value) => onSortChange(value as BookingFilters['sortBy'])}
           >
-            <SelectTrigger className="w-full lg:w-48 h-12" aria-label="Sorter bookinger">
-              <SelectValue placeholder="Sorter" />
+            <SelectTrigger className="w-full lg:w-48 h-12" aria-label={t('aria.sort_dropdown', 'Sorter bookinger')}>
+              <SelectValue placeholder={t('filters.sort_by', 'Sorter')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="date-asc">Dato (kommende først)</SelectItem>
-              <SelectItem value="date-desc">Dato (eldste først)</SelectItem>
-              <SelectItem value="price-asc">Pris (lav til høy)</SelectItem>
-              <SelectItem value="price-desc">Pris (høy til lav)</SelectItem>
-              <SelectItem value="created">Opprettet</SelectItem>
+              {sortOptions.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
 
@@ -130,10 +169,10 @@ export const BookingFiltersBar = ({
               variant="outline"
               onClick={onClearFilters}
               className="flex items-center gap-2 h-12 px-4"
-              aria-label="Tøm alle filtre"
+              aria-label={t('filters.clear', 'Tøm alle filtre')}
             >
-              <X className="w-4 h-4" />
-              <span className="hidden sm:inline">Tøm filtre</span>
+              <span className="hidden sm:inline">{t('filters.clear', 'Tøm filtre')}</span>
+              <span className="sm:hidden">{t('filters.clear', 'Tøm')}</span>
             </Button>
 
             {onOpenCalendar && (
@@ -141,27 +180,21 @@ export const BookingFiltersBar = ({
                 variant="outline"
                 onClick={onOpenCalendar}
                 className="flex items-center gap-2 h-12 px-4"
-                aria-label="Åpne kalender"
+                aria-label={t('aria.calendar', 'Åpne kalender')}
               >
                 <CalendarIcon className="w-4 h-4" />
-                <span className="hidden sm:inline">Kalender</span>
+                <span className="hidden sm:inline">{t('common.calendar', 'Kalender')}</span>
               </Button>
             )}
           </div>
         </div>
 
         {/* Active Filters Indicator */}
-        {(filters.search || filters.dateRange !== 'all' || filters.facilityId || filters.sortBy !== 'date-asc') && (
+        {activeFiltersCount > 0 && (
           <div className="mt-3 pt-3 border-t border-gray-200">
             <div className="flex items-center justify-between text-sm">
               <span className="text-gray-600">
-                Aktive filtre:{' '}
-                {[
-                  filters.search && 'Søk',
-                  filters.dateRange && filters.dateRange !== 'all' && 'Dato',
-                  filters.facilityId && 'Lokale',
-                  filters.sortBy && filters.sortBy !== 'date-asc' && 'Sortering'
-                ].filter(Boolean).join(', ')}
+                {t('filters.active_filters', 'Aktive filtre')}: {activeFilterLabels.join(', ')}
               </span>
               <Button
                 variant="link"
@@ -169,7 +202,7 @@ export const BookingFiltersBar = ({
                 onClick={onClearFilters}
                 className="text-blue-600 hover:text-blue-700 p-0 h-auto"
               >
-                Tilbakestill alle
+                {t('filters.clearAll', 'Tilbakestill alle')}
               </Button>
             </div>
           </div>

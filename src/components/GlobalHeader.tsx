@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Menu, ShoppingCart } from "lucide-react";
 
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -21,6 +22,7 @@ import { CartDropdown } from "@/components/header/CartDropdown";
 export const GlobalHeader = (): JSX.Element => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useTranslation('common');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
   const { language, toggleLanguage } = useLanguage();
@@ -28,13 +30,13 @@ export const GlobalHeader = (): JSX.Element => {
   // Get cart data
   const { itemCount, totalPrice } = useCart();
   const { profile } = useUserProfile();
-  
+
   // Check if we're on a booking page, user pages, or checkout
   const isBookingPage = location.pathname.includes('/book');
   const isUserPage = location.pathname.startsWith('/user');
   const isCheckoutPage = location.pathname === '/checkout';
   const isAuthenticated = isBookingPage || isUserPage || isCheckoutPage;
-  
+
   const logout = (): void => {
     try {
       // Clear all user data from localStorage
@@ -46,27 +48,27 @@ export const GlobalHeader = (): JSX.Element => {
         }
       }
       keysToRemove.forEach(key => localStorage.removeItem(key));
-      
+
       // Clear cart data
       localStorage.removeItem('cart');
       localStorage.removeItem('cartItems');
-      
+
       // Clear search results
       localStorage.removeItem('searchResults');
       localStorage.removeItem('adminSearchResults');
-      
+
       // Clear any other session data
       localStorage.removeItem('sessionData');
       localStorage.removeItem('authToken');
-      
+
       // Show logout confirmation
-      alert('Du er nå logget ut!');
-      
+      alert(t('messages.logout_success'));
+
       // Navigate to home page
       navigate('/');
     } catch (error) {
       console.error('Global logout failed:', error);
-      alert('Kunne ikke logge ut. Prøv igjen.');
+      alert(t('messages.logout_failed'));
       // Still navigate to home page even if logout fails
       navigate('/');
     }
@@ -81,8 +83,6 @@ export const GlobalHeader = (): JSX.Element => {
   const handleLogout = (): void => {
     logout();
   };
-
-  // itemCount is now from useCart hook
 
   return (
     <header className="bg-white dark:bg-gray-900 py-3 shadow-md sticky top-0 z-10 border-b border-gray-200 dark:border-gray-700 w-full">
@@ -99,10 +99,11 @@ export const GlobalHeader = (): JSX.Element => {
           </div>
 
           {/* Mobile Menu Button */}
-          <Button 
-            variant="ghost" 
-            className="md:hidden p-2" 
+          <Button
+            variant="ghost"
+            className="md:hidden p-2"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label={t('aria.mobile_menu')}
           >
             <Menu className="h-6 w-6" />
           </Button>
@@ -112,14 +113,15 @@ export const GlobalHeader = (): JSX.Element => {
             {/* Cart Icon with Dropdown */}
             <Popover open={cartOpen} onOpenChange={setCartOpen}>
               <PopoverTrigger asChild>
-                <Button 
-                  variant="ghost" 
+                <Button
+                  variant="ghost"
                   className="relative hover:bg-gray-100 cursor-pointer"
                   onClick={() => setCartOpen(!cartOpen)}
+                  aria-label={t('aria.cart')}
                 >
                   <ShoppingCart className="h-6 w-6" />
                   {itemCount > 0 && (
-                    <Badge 
+                    <Badge
                       className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center text-xs bg-red-500 text-white rounded-full animate-pulse"
                     >
                       {itemCount > 99 ? '99+' : itemCount}
@@ -131,17 +133,17 @@ export const GlobalHeader = (): JSX.Element => {
                 <CartDropdown onClose={() => setCartOpen(false)} />
               </PopoverContent>
             </Popover>
-            
+
             {/* Language toggle */}
-            <LanguageToggle 
-              language={language} 
-              toggleLanguage={toggleLanguage} 
+            <LanguageToggle
+              language={language}
+              toggleLanguage={toggleLanguage}
             />
-            
+
             {/* Profile menu (login button or dropdown) */}
-            <ProfileMenu 
-              isLoggedIn={isAuthenticated} 
-              handleLogin={handleLogin} 
+            <ProfileMenu
+              isLoggedIn={isAuthenticated}
+              handleLogin={handleLogin}
               handleLogout={handleLogout}
               userProfile={isAuthenticated ? {
                 firstName: profile.firstName,
@@ -159,7 +161,7 @@ export const GlobalHeader = (): JSX.Element => {
       </div>
 
       {/* Mobile Menu */}
-      <MobileMenu 
+      <MobileMenu
         isOpen={mobileMenuOpen}
         isLoggedIn={isAuthenticated}
         setLanguage={(lang) => {

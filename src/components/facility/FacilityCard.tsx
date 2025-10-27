@@ -4,12 +4,13 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MapPin, Users, Heart, Share2 } from 'lucide-react';
 
-import { useTranslation } from '@/i18n';
+import { useTranslation } from 'react-i18next';
 import type { IFacility } from '@/stores/facilityStore';
 import { useFieldConfigStore } from '@/stores/fieldConfigStore';
 
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { getFieldUnit, generateShareUrl, copyToClipboard } from '@/utils/card-formatters';
 
 interface FacilityCardProps {
   readonly facility: IFacility;
@@ -17,17 +18,24 @@ interface FacilityCardProps {
   readonly viewMode?: "grid" | "list";
 }
 
-export const FacilityCard = ({ 
-  facility, 
+/**
+ * FacilityCard Component
+ *
+ * SOLID Principles Applied:
+ * - Single Responsibility: Displays facility information only
+ * - Open/Closed: Extensible through props without modification
+ * - Dependency Inversion: Uses i18n translations for text content
+ */
+export const FacilityCard = ({
+  facility,
   onAddressClick,
   viewMode = "grid"
 }: FacilityCardProps): JSX.Element => {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['facility', 'common']);
   const navigate = useNavigate();
   const [isFavorited, setIsFavorited] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
-  
-  // Get field configs for this facility
+
   const { getFieldConfigsForFacility } = useFieldConfigStore();
   const fieldConfigs = getFieldConfigsForFacility(facility.id);
 
@@ -38,21 +46,23 @@ export const FacilityCard = ({
   const handleShare = async (e: React.MouseEvent): Promise<void> => {
     e.stopPropagation();
     try {
+      const shareUrl = generateShareUrl(`/facilities/${facility.id}`);
+
       if (navigator.share) {
         await navigator.share({
           title: facility.name,
-          url: `${window.location.origin}/facilities/${facility.id}`,
+          url: shareUrl,
         });
       } else {
-        await navigator.clipboard.writeText(`${window.location.origin}/facilities/${facility.id}`);
+        await copyToClipboard(shareUrl);
       }
     } catch (error) {
-      // Handle share cancellation or other errors silently
       if (error instanceof Error && error.name !== 'AbortError') {
-        // Fallback to clipboard
         try {
-          await navigator.clipboard.writeText(`${window.location.origin}/facilities/${facility.id}`);
+          const shareUrl = generateShareUrl(`/facilities/${facility.id}`);
+          await copyToClipboard(shareUrl);
         } catch (clipboardError) {
+          console.error('Failed to share or copy:', clipboardError);
         }
       }
     }
@@ -63,15 +73,47 @@ export const FacilityCard = ({
     setIsFavorited(!isFavorited);
   };
 
+  const getFieldValue = (fieldKey: string): string | number => {
+    const valueMap: Record<string, string | number> = {
+      capacity: facility.capacity || 0,
+      area: facility.area || '',
+      pricePerHour: facility.pricePerHour || 0,
+      rating: facility.rating || 0,
+      reviewCount: facility.reviewCount || 0
+    };
+    return valueMap[fieldKey] || '';
+  };
+
+  const getFieldIcon = (fieldKey: string): JSX.Element => {
+    const iconMap: Record<string, JSX.Element> = {
+      capacity: <Users className="h-5 w-5" />,
+      area: <MapPin className="h-5 w-5" />,
+      pricePerHour: <span className="text-gray-400">💰</span>,
+      rating: <span className="text-yellow-500">★</span>,
+      reviewCount: <span className="text-gray-400">📝</span>
+    };
+    return iconMap[fieldKey] || <span className="text-gray-400">📋</span>;
+  };
+
+  const translationKeys = {
+    people: t('facility:card.people'),
+    squareMeters: t('facility:card.squareMeters'),
+    pricePerHour: t('facility:card.pricePerHour'),
+    outOf5: t('facility:card.outOf5'),
+    reviewCount: t('facility:card.reviewCount'),
+    yes: t('facility:card.yes'),
+    no: t('facility:card.no')
+  };
+
   return (
-    <Card 
+    <Card
       className="group overflow-hidden hover:shadow-2xl transition-all duration-500 hover:translate-y-[-8px] border-0 shadow-lg bg-white relative cursor-pointer focus:outline-none focus:ring-4 focus:ring-blue-500 focus:ring-opacity-50 h-full flex flex-col"
       onClick={handleCardClick}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       role="button"
       tabIndex={0}
-      aria-label={`Se detaljer for ${facility.name} på ${facility.address}`}
+      aria-label={t('facility:card.viewDetailsFor', { name: facility.name, address: facility.address })}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
@@ -86,20 +128,20 @@ export const FacilityCard = ({
           alt={facility.name}
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
         />
-        
+
         {/* Overlay buttons */}
         <div className="absolute top-2 sm:top-3 md:top-4 right-2 sm:right-3 md:right-4 flex gap-1 sm:gap-2">
           <button
             onClick={handleFavorite}
             className="p-1.5 sm:p-2 rounded-full bg-white/90 backdrop-blur-sm shadow-lg hover:bg-white transition-colors"
-            aria-label="Legg til favoritter"
+            aria-label={t('facility:card.addToFavorites')}
           >
             <Heart className={`h-3 w-3 sm:h-4 sm:w-4 ${isFavorited ? 'fill-red-500 text-red-500' : 'text-gray-600'}`} />
           </button>
           <button
             onClick={handleShare}
             className="p-1.5 sm:p-2 rounded-full bg-white/90 backdrop-blur-sm shadow-lg hover:bg-white transition-colors"
-            aria-label="Del fasilitet"
+            aria-label={t('facility:card.shareFacility')}
           >
             <Share2 className="h-3 w-3 sm:h-4 sm:w-4 text-gray-600" />
           </button>
@@ -112,7 +154,7 @@ export const FacilityCard = ({
           </Badge>
         </div>
       </div>
-      
+
       {/* Content Section */}
       <div className="flex-1 flex flex-col p-4 sm:p-5 md:p-6">
         {/* Facility Name */}
@@ -123,8 +165,8 @@ export const FacilityCard = ({
         {/* Location */}
         <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-5 text-gray-600 hover:text-blue-600 transition-colors group/location">
           <MapPin className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400 group-hover/location:text-blue-500 flex-shrink-0" />
-          <span 
-            className="text-sm sm:text-base font-medium line-clamp-1 cursor-pointer" 
+          <span
+            className="text-sm sm:text-base font-medium line-clamp-1 cursor-pointer"
             onClick={e => onAddressClick(e, facility)}
           >
             {facility.address}
@@ -140,7 +182,7 @@ export const FacilityCard = ({
         {facility.amenities.length > 0 && (
           <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-4 sm:mb-5">
             {facility.amenities.slice(0, 3).map((amenity, index) => (
-              <Badge 
+              <Badge
                 key={index}
                 className="bg-blue-50 text-blue-700 border-blue-200 font-medium px-2 py-1 text-xs sm:text-sm hover:bg-blue-100 transition-colors"
               >
@@ -148,11 +190,11 @@ export const FacilityCard = ({
               </Badge>
             ))}
             {facility.amenities.length > 3 && (
-              <Badge 
+              <Badge
                 variant="outline"
                 className="bg-gray-50 text-gray-600 border-gray-300 font-medium px-2 py-1 text-xs sm:text-sm"
               >
-                +{facility.amenities.length - 3} more
+                +{facility.amenities.length - 3} {t('facility:card.moreAmenities')}
               </Badge>
             )}
           </div>
@@ -163,39 +205,18 @@ export const FacilityCard = ({
           {fieldConfigs
             .filter(field => field.visible)
             .map(field => {
-              const getFieldValue = (): string | number => {
-                if (field.key === 'capacity') return facility.capacity || 0;
-                if (field.key === 'area') return facility.area || '';
-                if (field.key === 'pricePerHour') return facility.pricePerHour || 0;
-                if (field.key === 'rating') return facility.rating || 0;
-                if (field.key === 'reviewCount') return facility.reviewCount || 0;
-                return typeof field.value === 'boolean' ? (field.value ? 'Ja' : 'Nei') : field.value;
-              };
-
-              const getIcon = (): JSX.Element => {
-                if (field.key === 'capacity') return <Users className="h-5 w-5" />;
-                if (field.key === 'area') return <MapPin className="h-5 w-5" />;
-                if (field.key === 'pricePerHour') return <span className="text-gray-400">💰</span>;
-                if (field.key === 'rating') return <span className="text-yellow-500">★</span>;
-                if (field.key === 'reviewCount') return <span className="text-gray-400">📝</span>;
-                return <span className="text-gray-400">📋</span>;
-              };
-
-              const getUnit = (): string => {
-                if (field.key === 'capacity') return 'personer';
-                if (field.key === 'area') return 'm²';
-                if (field.key === 'pricePerHour') return 'kr/time';
-                if (field.key === 'rating') return '/5';
-                if (field.key === 'reviewCount') return 'anmeldelser';
-                return '';
-              };
+              const value = getFieldValue(field.key);
+              const unit = getFieldUnit(field.key, translationKeys);
+              const booleanValue = typeof field.value === 'boolean'
+                ? (field.value ? translationKeys.yes : translationKeys.no)
+                : '';
 
               return (
                 <div key={field.id} className="flex items-center gap-2 sm:gap-3 text-gray-600">
-                  {getIcon()}
+                  {getFieldIcon(field.key)}
                   <span className="text-sm sm:text-base font-medium">
-                    {field.label}: {getFieldValue()}
-                    {getUnit() && ` ${getUnit()}`}
+                    {field.label}: {value || booleanValue}
+                    {unit && ` ${unit}`}
                   </span>
                 </div>
               );

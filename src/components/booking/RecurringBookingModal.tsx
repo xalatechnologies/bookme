@@ -1,17 +1,18 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
-import { format, addDays, addWeeks, addMonths } from "date-fns";
-import { Calendar, Clock, Users, MapPin, Repeat, X } from "lucide-react";
+import { format, addDays } from "date-fns";
+import { Calendar, Clock, Repeat } from "lucide-react";
+import { useTranslation } from "react-i18next";
+
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { BaseModal } from "@/components/ui/BaseModal";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { RecurrencePattern } from "@/utils/recurrenceEngine";
 import { CreateRecurringBookingData } from "@/types/recurringBooking";
 
@@ -37,14 +38,16 @@ const WeekdaySelector: React.FC<{
   readonly selectedDays: readonly number[];
   readonly onDaysChange: (days: readonly number[]) => void;
 }> = ({ selectedDays, onDaysChange }) => {
+  const { t } = useTranslation('booking');
+
   const weekdays = [
-    { value: 0, label: "Søndag" },
-    { value: 1, label: "Mandag" },
-    { value: 2, label: "Tirsdag" },
-    { value: 3, label: "Onsdag" },
-    { value: 4, label: "Torsdag" },
-    { value: 5, label: "Fredag" },
-    { value: 6, label: "Lørdag" }
+    { value: 0, label: t('recurring_modal.weekdays.sunday') },
+    { value: 1, label: t('recurring_modal.weekdays.monday') },
+    { value: 2, label: t('recurring_modal.weekdays.tuesday') },
+    { value: 3, label: t('recurring_modal.weekdays.wednesday') },
+    { value: 4, label: t('recurring_modal.weekdays.thursday') },
+    { value: 5, label: t('recurring_modal.weekdays.friday') },
+    { value: 6, label: t('recurring_modal.weekdays.saturday') }
   ];
 
   const handleDayToggle = (day: number): void => {
@@ -57,7 +60,7 @@ const WeekdaySelector: React.FC<{
 
   return (
     <div className="space-y-3">
-      <Label className="text-sm font-medium">Velg dager i uken</Label>
+      <Label className="text-sm font-medium">{t('recurring_modal.select_weekdays')}</Label>
       <div className="grid grid-cols-2 gap-2">
         {weekdays.map((weekday) => (
           <div key={weekday.value} className="flex items-center space-x-2">
@@ -65,7 +68,7 @@ const WeekdaySelector: React.FC<{
               id={`day-${weekday.value}`}
               checked={selectedDays.includes(weekday.value)}
               onCheckedChange={() => handleDayToggle(weekday.value)}
-              aria-label={`Velg ${weekday.label}`}
+              aria-label={t('recurring_modal.select_weekday', { weekday: weekday.label })}
             />
             <Label
               htmlFor={`day-${weekday.value}`}
@@ -91,11 +94,13 @@ const TimeRangeSelector: React.FC<{
   readonly hasEndDate: boolean;
   readonly onHasEndDateChange: (hasEndDate: boolean) => void;
 }> = ({ startDate, endDate, onStartDateChange, onEndDateChange, hasEndDate, onHasEndDateChange }) => {
+  const { t } = useTranslation('booking');
+
   return (
     <div className="space-y-4">
       <div className="space-y-2">
         <Label htmlFor="start-date" className="text-sm font-medium">
-          Startdato
+          {t('recurring_modal.start_date')}
         </Label>
         <Input
           id="start-date"
@@ -106,7 +111,7 @@ const TimeRangeSelector: React.FC<{
           aria-describedby="start-date-help"
         />
         <p id="start-date-help" className="text-xs text-muted-foreground">
-          Velg når den gjentakende bookingen skal starte
+          {t('recurring_modal.start_date_help')}
         </p>
       </div>
 
@@ -118,14 +123,14 @@ const TimeRangeSelector: React.FC<{
           aria-describedby="end-date-help"
         />
         <Label htmlFor="has-end-date" className="text-sm font-medium">
-          Har sluttdato
+          {t('recurring_modal.has_end_date')}
         </Label>
       </div>
 
       {hasEndDate && (
         <div className="space-y-2">
           <Label htmlFor="end-date" className="text-sm font-medium">
-            Sluttdato
+            {t('recurring.endDate')}
           </Label>
           <Input
             id="end-date"
@@ -136,7 +141,7 @@ const TimeRangeSelector: React.FC<{
             aria-describedby="end-date-help"
           />
           <p id="end-date-help" className="text-xs text-muted-foreground">
-            Velg når den gjentakende bookingen skal slutte
+            {t('recurring_modal.end_date_help')}
           </p>
         </div>
       )}
@@ -153,15 +158,17 @@ const OccurrencePreview: React.FC<{
   readonly endDate: Date | undefined;
   readonly timeSlots: readonly string[];
 }> = ({ pattern, startDate, endDate, timeSlots }) => {
+  const { t } = useTranslation('booking');
+
   const occurrences = useMemo(() => {
     const results: Array<{ date: Date; timeSlot: string }> = [];
     let currentDate = new Date(startDate);
-    const maxOccurrences = 8; // Show next 8 occurrences
+    const maxOccurrences = 8;
     let count = 0;
 
     while (count < maxOccurrences && (!endDate || currentDate <= endDate)) {
       const dayOfWeek = currentDate.getDay();
-      
+
       if (pattern.weekdays.includes(dayOfWeek)) {
         timeSlots.forEach(timeSlot => {
           results.push({
@@ -172,14 +179,9 @@ const OccurrencePreview: React.FC<{
         count++;
       }
 
-      // Move to next date based on pattern type
       switch (pattern.type) {
         case 'weekly':
-          currentDate = addDays(currentDate, 1);
-          break;
         case 'biweekly':
-          currentDate = addDays(currentDate, 1);
-          break;
         case 'monthly':
           currentDate = addDays(currentDate, 1);
           break;
@@ -196,11 +198,11 @@ const OccurrencePreview: React.FC<{
 
   return (
     <div className="space-y-3">
-      <Label className="text-sm font-medium">Forhåndsvisning av bookinger</Label>
+      <Label className="text-sm font-medium">{t('recurring_modal.preview_title')}</Label>
       <div className="max-h-40 overflow-y-auto space-y-2">
         {occurrences.length === 0 ? (
           <p className="text-sm text-muted-foreground text-center py-4">
-            Ingen bookinger funnet for dette mønsteret
+            {t('recurring_modal.preview_empty')}
           </p>
         ) : (
           occurrences.map((occurrence, index) => (
@@ -236,22 +238,24 @@ const PricingSummary: React.FC<{
   readonly timeSlots: readonly string[];
   readonly pricePerHour: number;
 }> = ({ pattern, startDate, endDate, timeSlots, pricePerHour }) => {
+  const { t } = useTranslation('booking');
+
   const pricing = useMemo(() => {
     const occurrences = [];
     let currentDate = new Date(startDate);
-    const maxOccurrences = 5; // Limit to 5 occurrences
+    const maxOccurrences = 5;
     let count = 0;
 
     while (count < maxOccurrences && (!endDate || currentDate <= endDate)) {
       const dayOfWeek = currentDate.getDay();
-      
+
       if (pattern.weekdays.includes(dayOfWeek)) {
         timeSlots.forEach(timeSlot => {
           const [start, end] = timeSlot.split('-').map(t => t.trim());
           const startHour = parseInt(start.split(':')[0]);
           const endHour = parseInt(end.split(':')[0]);
           const duration = endHour - startHour;
-          
+
           occurrences.push({
             duration,
             price: duration * pricePerHour
@@ -260,14 +264,9 @@ const PricingSummary: React.FC<{
         count++;
       }
 
-      // Move to next date
       switch (pattern.type) {
         case 'weekly':
-          currentDate = addDays(currentDate, 1);
-          break;
         case 'biweekly':
-          currentDate = addDays(currentDate, 1);
-          break;
         case 'monthly':
           currentDate = addDays(currentDate, 1);
           break;
@@ -281,7 +280,7 @@ const PricingSummary: React.FC<{
 
     const totalOccurrences = occurrences.length;
     const basePrice = occurrences.reduce((sum, occ) => sum + occ.price, 0);
-    const discount = totalOccurrences >= 10 ? basePrice * 0.1 : 0; // 10% discount for 10+ occurrences
+    const discount = totalOccurrences >= 10 ? basePrice * 0.1 : 0;
     const totalPrice = basePrice - discount;
 
     return {
@@ -295,25 +294,25 @@ const PricingSummary: React.FC<{
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-lg">Prisoversikt</CardTitle>
+        <CardTitle className="text-lg">{t('recurring_modal.pricing_summary')}</CardTitle>
         <CardDescription>
-          {pricing.totalOccurrences} bookinger totalt
+          {t('recurring_modal.total_bookings', { count: pricing.totalOccurrences })}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-2">
         <div className="flex justify-between text-sm">
-          <span>Grunnpris ({pricing.totalOccurrences} bookinger):</span>
+          <span>{t('recurring_modal.base_price', { count: pricing.totalOccurrences })}</span>
           <span>{pricing.basePrice.toLocaleString('no-NO')} kr</span>
         </div>
         {pricing.discount > 0 && (
           <div className="flex justify-between text-sm text-green-600">
-            <span>Rabatt (10% for 10+ bookinger):</span>
+            <span>{t('recurring_modal.discount_label')}</span>
             <span>-{pricing.discount.toLocaleString('no-NO')} kr</span>
           </div>
         )}
         <div className="border-t pt-2">
           <div className="flex justify-between font-semibold">
-            <span>Totalpris:</span>
+            <span>{t('common.total')}:</span>
             <span>{pricing.totalPrice.toLocaleString('no-NO')} kr</span>
           </div>
         </div>
@@ -324,9 +323,14 @@ const PricingSummary: React.FC<{
 
 /**
  * Recurring booking modal component
- * 
+ *
  * Provides a comprehensive interface for creating recurring bookings with
  * pattern selection, time range configuration, and pricing preview.
+ *
+ * Follows SOLID principles:
+ * - Single Responsibility: Each sub-component handles one specific aspect
+ * - Open/Closed: Extends BaseModal without modifying it
+ * - Dependency Inversion: Depends on BaseModal abstraction
  */
 export const RecurringBookingModal: React.FC<RecurringBookingModalProps> = ({
   isOpen,
@@ -338,9 +342,11 @@ export const RecurringBookingModal: React.FC<RecurringBookingModalProps> = ({
   zoneName,
   availableTimeSlots,
   pricePerHour
-}) => {
+}): JSX.Element => {
+  const { t } = useTranslation(['booking', 'common']);
+
   const [recurrenceType, setRecurrenceType] = useState<RecurrencePattern['type']>('weekly');
-  const [selectedDays, setSelectedDays] = useState<readonly number[]>([1, 2, 3, 4, 5]); // Monday-Friday
+  const [selectedDays, setSelectedDays] = useState<readonly number[]>([1, 2, 3, 4, 5]);
   const [startDate, setStartDate] = useState<Date>(new Date());
   const [endDate, setEndDate] = useState<Date | undefined>(undefined);
   const [hasEndDate, setHasEndDate] = useState<boolean>(false);
@@ -363,17 +369,17 @@ export const RecurringBookingModal: React.FC<RecurringBookingModalProps> = ({
 
   const handleSubmit = (): void => {
     if (selectedTimeSlots.length === 0) {
-      alert("Vennligst velg minst ett tidspunkt");
+      alert(t('recurring_modal.validation.select_time_slot'));
       return;
     }
 
     if (!purpose.trim()) {
-      alert("Vennligst fyll ut formål");
+      alert(t('recurring_modal.validation.purpose_required'));
       return;
     }
 
     const bookingData: CreateRecurringBookingData = {
-      userId: "current-user", // This should come from auth context
+      userId: "current-user",
       facilityId,
       facilityName,
       zoneId,
@@ -387,8 +393,8 @@ export const RecurringBookingModal: React.FC<RecurringBookingModalProps> = ({
       activityType: activityType.trim(),
       actorType,
       pricing: {
-        basePrice: 0, // Will be calculated in the store
-        totalPrice: 0, // Will be calculated in the store
+        basePrice: 0,
+        totalPrice: 0,
         discount: 0
       }
     };
@@ -405,177 +411,193 @@ export const RecurringBookingModal: React.FC<RecurringBookingModalProps> = ({
     }
   };
 
-  return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="flex items-center space-x-2">
-            <Repeat className="h-5 w-5" />
-            <span>Opprett gjentakende booking</span>
-          </DialogTitle>
-          <DialogDescription>
-            Konfigurer en gjentakende booking for {facilityName} - {zoneName}
-          </DialogDescription>
-        </DialogHeader>
+  const modalActions = (
+    <>
+      <Button variant="outline" onClick={onClose}>
+        {t('common:actions.cancel')}
+      </Button>
+      <Button
+        onClick={handleSubmit}
+        disabled={selectedTimeSlots.length === 0 || !purpose.trim()}
+      >
+        {t('recurring_modal.create_recurring')}
+      </Button>
+    </>
+  );
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Left column - Configuration */}
-          <div className="space-y-6">
-            {/* Recurrence Type */}
+  return (
+    <BaseModal
+      isOpen={isOpen}
+      onClose={onClose}
+      title={t('recurring_modal.title')}
+      description={t('recurring_modal.description', { facilityName, zoneName })}
+      size="4xl"
+      titleIcon={<Repeat className="h-5 w-5" />}
+      actions={modalActions}
+    >
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Left column - Configuration */}
+        <div className="space-y-6">
+          {/* Recurrence Type */}
+          <div className="space-y-2">
+            <Label htmlFor="recurrence-type" className="text-sm font-medium">
+              {t('recurring_modal.recurrence_type')}
+            </Label>
+            <Select
+              value={recurrenceType}
+              onValueChange={(value: RecurrencePattern['type']) => setRecurrenceType(value)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder={t('recurring_modal.recurrence_type_placeholder')} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="single">{t('recurring_modal.single')}</SelectItem>
+                <SelectItem value="weekly">{t('recurring.weekly')}</SelectItem>
+                <SelectItem value="biweekly">{t('recurring.biweekly')}</SelectItem>
+                <SelectItem value="monthly">{t('recurring.monthly')}</SelectItem>
+                <SelectItem value="custom">{t('recurring.custom')}</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Weekday Selection */}
+          {recurrenceType !== 'single' && (
+            <WeekdaySelector
+              selectedDays={selectedDays}
+              onDaysChange={setSelectedDays}
+            />
+          )}
+
+          {/* Time Range */}
+          <TimeRangeSelector
+            startDate={startDate}
+            endDate={endDate}
+            onStartDateChange={setStartDate}
+            onEndDateChange={setEndDate}
+            hasEndDate={hasEndDate}
+            onHasEndDateChange={setHasEndDate}
+          />
+
+          {/* Time Slots */}
+          <div className="space-y-3">
+            <Label className="text-sm font-medium">{t('recurring_modal.select_time_slots')}</Label>
+            <div className="grid grid-cols-2 gap-2">
+              {availableTimeSlots.map((timeSlot) => (
+                <div key={timeSlot} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={`time-${timeSlot}`}
+                    checked={selectedTimeSlots.includes(timeSlot)}
+                    onCheckedChange={() => handleTimeSlotToggle(timeSlot)}
+                    aria-label={t('recurring_modal.select_time_slot', { timeSlot })}
+                  />
+                  <Label
+                    htmlFor={`time-${timeSlot}`}
+                    className="text-sm font-normal cursor-pointer"
+                  >
+                    {timeSlot}
+                  </Label>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Booking Details */}
+          <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="recurrence-type" className="text-sm font-medium">
-                Gjentakelsestype
+              <Label htmlFor="purpose" className="text-sm font-medium">
+                {t('recurring_modal.purpose_required')}
               </Label>
-              <Select value={recurrenceType} onValueChange={(value: RecurrencePattern['type']) => setRecurrenceType(value)}>
+              <Textarea
+                id="purpose"
+                placeholder={t('recurring_modal.purpose_placeholder')}
+                value={purpose}
+                onChange={(e) => setPurpose(e.target.value)}
+                rows={3}
+                aria-describedby="purpose-help"
+              />
+              <p id="purpose-help" className="text-xs text-muted-foreground">
+                {t('recurring_modal.purpose_help')}
+              </p>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="attendees" className="text-sm font-medium">
+                  {t('fields.attendees')}
+                </Label>
+                <Input
+                  id="attendees"
+                  type="number"
+                  min="1"
+                  value={attendees}
+                  onChange={(e) => setAttendees(parseInt(e.target.value) || 1)}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="activity-type" className="text-sm font-medium">
+                  {t('fields.activityType')}
+                </Label>
+                <Input
+                  id="activity-type"
+                  placeholder={t('recurring_modal.activity_type_placeholder')}
+                  value={activityType}
+                  onChange={(e) => setActivityType(e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="actor-type" className="text-sm font-medium">
+                {t('fields.actorType')}
+              </Label>
+              <Select
+                value={actorType}
+                onValueChange={(value: CreateRecurringBookingData['actorType']) => setActorType(value)}
+              >
                 <SelectTrigger>
-                  <SelectValue placeholder="Velg gjentakelsestype" />
+                  <SelectValue placeholder={t('common:placeholders.selectOption')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="single">Enkelt booking</SelectItem>
-                  <SelectItem value="weekly">Ukentlig</SelectItem>
-                  <SelectItem value="biweekly">Annenhver uke</SelectItem>
-                  <SelectItem value="monthly">Månedlig</SelectItem>
-                  <SelectItem value="custom">Egendefinert</SelectItem>
+                  <SelectItem value="private-person">
+                    {t('recurring_modal.actor_types.private-person')}
+                  </SelectItem>
+                  <SelectItem value="lag-foreninger">
+                    {t('recurring_modal.actor_types.lag-foreninger')}
+                  </SelectItem>
+                  <SelectItem value="paraply">
+                    {t('recurring_modal.actor_types.paraply')}
+                  </SelectItem>
+                  <SelectItem value="private-firma">
+                    {t('recurring_modal.actor_types.private-firma')}
+                  </SelectItem>
+                  <SelectItem value="kommunale-enheter">
+                    {t('recurring_modal.actor_types.kommunale-enheter')}
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
-
-            {/* Weekday Selection */}
-            {recurrenceType !== 'single' && (
-              <WeekdaySelector
-                selectedDays={selectedDays}
-                onDaysChange={setSelectedDays}
-              />
-            )}
-
-            {/* Time Range */}
-            <TimeRangeSelector
-              startDate={startDate}
-              endDate={endDate}
-              onStartDateChange={setStartDate}
-              onEndDateChange={setEndDate}
-              hasEndDate={hasEndDate}
-              onHasEndDateChange={setHasEndDate}
-            />
-
-            {/* Time Slots */}
-            <div className="space-y-3">
-              <Label className="text-sm font-medium">Velg tidspunkter</Label>
-              <div className="grid grid-cols-2 gap-2">
-                {availableTimeSlots.map((timeSlot) => (
-                  <div key={timeSlot} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`time-${timeSlot}`}
-                      checked={selectedTimeSlots.includes(timeSlot)}
-                      onCheckedChange={() => handleTimeSlotToggle(timeSlot)}
-                      aria-label={`Velg ${timeSlot}`}
-                    />
-                    <Label
-                      htmlFor={`time-${timeSlot}`}
-                      className="text-sm font-normal cursor-pointer"
-                    >
-                      {timeSlot}
-                    </Label>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Booking Details */}
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="purpose" className="text-sm font-medium">
-                  Formål *
-                </Label>
-                <Textarea
-                  id="purpose"
-                  placeholder="Beskriv formålet med bookingen..."
-                  value={purpose}
-                  onChange={(e) => setPurpose(e.target.value)}
-                  rows={3}
-                  aria-describedby="purpose-help"
-                />
-                <p id="purpose-help" className="text-xs text-muted-foreground">
-                  Beskriv hva lokalet skal brukes til
-                </p>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="attendees" className="text-sm font-medium">
-                    Antall deltakere
-                  </Label>
-                  <Input
-                    id="attendees"
-                    type="number"
-                    min="1"
-                    value={attendees}
-                    onChange={(e) => setAttendees(parseInt(e.target.value) || 1)}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="activity-type" className="text-sm font-medium">
-                    Aktivitetstype
-                  </Label>
-                  <Input
-                    id="activity-type"
-                    placeholder="f.eks. møte, kurs, arrangement"
-                    value={activityType}
-                    onChange={(e) => setActivityType(e.target.value)}
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="actor-type" className="text-sm font-medium">
-                  Aktørtype
-                </Label>
-                <Select value={actorType} onValueChange={(value: CreateRecurringBookingData['actorType']) => setActorType(value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Velg aktørtype" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="private-person">Privatperson</SelectItem>
-                    <SelectItem value="lag-foreninger">Lag/foreninger</SelectItem>
-                    <SelectItem value="paraply">Paraplyorganisasjon</SelectItem>
-                    <SelectItem value="private-firma">Privat firma</SelectItem>
-                    <SelectItem value="kommunale-enheter">Kommunale enheter</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          </div>
-
-          {/* Right column - Preview and Pricing */}
-          <div className="space-y-6">
-            <OccurrencePreview
-              pattern={recurrencePattern}
-              startDate={startDate}
-              endDate={hasEndDate ? endDate : undefined}
-              timeSlots={selectedTimeSlots}
-            />
-
-            <PricingSummary
-              pattern={recurrencePattern}
-              startDate={startDate}
-              endDate={hasEndDate ? endDate : undefined}
-              timeSlots={selectedTimeSlots}
-              pricePerHour={pricePerHour}
-            />
           </div>
         </div>
 
-        <DialogFooter>
-          <Button variant="outline" onClick={onClose}>
-            Avbryt
-          </Button>
-          <Button onClick={handleSubmit} disabled={selectedTimeSlots.length === 0 || !purpose.trim()}>
-            Opprett gjentakende booking
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        {/* Right column - Preview and Pricing */}
+        <div className="space-y-6">
+          <OccurrencePreview
+            pattern={recurrencePattern}
+            startDate={startDate}
+            endDate={hasEndDate ? endDate : undefined}
+            timeSlots={selectedTimeSlots}
+          />
+
+          <PricingSummary
+            pattern={recurrencePattern}
+            startDate={startDate}
+            endDate={hasEndDate ? endDate : undefined}
+            timeSlots={selectedTimeSlots}
+            pricePerHour={pricePerHour}
+          />
+        </div>
+      </div>
+    </BaseModal>
   );
 };
-

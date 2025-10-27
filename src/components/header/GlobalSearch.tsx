@@ -1,171 +1,30 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { Search, MapPin, Building, Clock, Users } from "lucide-react";
-
-import { useLanguage } from "@/contexts/LanguageContext";
-import { useFacilityStore } from "@/stores/facilityStore";
+import React from "react";
+import { useTranslation } from "react-i18next";
+import { Search, Building, MapPin, Users } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
-
-interface SearchResult {
-  readonly id: string;
-  readonly type: 'facility' | 'location' | 'category' | 'recent';
-  readonly title: string;
-  readonly subtitle?: string;
-  readonly icon: React.ReactNode;
-  readonly url: string;
-  readonly image?: string;
-  readonly searchParams?: Record<string, string>;
-}
+import { useGlobalSearch } from "@/hooks/useGlobalSearch";
 
 interface GlobalSearchProps {
   readonly onResultClick?: () => void;
 }
 
-export const GlobalSearch: React.FC<GlobalSearchProps> = ({ onResultClick }): JSX.Element => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [isOpen, setIsOpen] = useState(false);
-  const [results, setResults] = useState<SearchResult[]>([]);
-  const searchRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
-  const { language } = useLanguage();
-  const navigate = useNavigate();
-  const { getPublishedFacilities } = useFacilityStore();
-  const facilities = getPublishedFacilities();
-
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-        setSearchTerm(""); // Clear search term when clicking outside
-      }
-    };
-
-    // Also close when clicking on facility cards or other interactive elements
-    const handleFacilityClick = () => {
-      setIsOpen(false);
-      setSearchTerm("");
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    document.addEventListener('click', handleFacilityClick);
-    
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      document.removeEventListener('click', handleFacilityClick);
-    };
-  }, []);
-
-  // Create search results from facilities and other data
-  const createSearchResults = (searchTerm: string): SearchResult[] => {
-    if (!searchTerm.trim()) return [];
-
-    const searchLower = searchTerm.toLowerCase().trim();
-    
-    const facilityResults: SearchResult[] = facilities
-      .filter(facility => {
-        const matchesName = facility.name.toLowerCase().includes(searchLower);
-        const matchesDescription = facility.description?.toLowerCase().includes(searchLower);
-        const matchesType = facility.type.toLowerCase().includes(searchLower);
-        const matchesLocation = facility.location.toLowerCase().includes(searchLower);
-        const matchesAmenities = facility.amenities?.some(amenity => 
-          amenity.toLowerCase().includes(searchLower)
-        );
-        
-        return matchesName || matchesDescription || matchesType || matchesLocation || matchesAmenities;
-      })
-      .slice(0, 6) // Limit facility results
-      .map(facility => ({
-        id: facility.id.toString(),
-        type: 'facility' as const,
-        title: facility.name,
-        subtitle: `${facility.location} - Kapasitet: ${facility.capacity}`,
-        icon: <Building className="h-5 w-5" />,
-        url: `/facilities/${facility.id}`,
-        image: facility.images[0]
-      }));
-
-    // Add location results (unique locations from facilities)
-    const uniqueLocations = Array.from(new Set(facilities.map(f => f.location)))
-      .filter(location => location.toLowerCase().includes(searchLower))
-      .slice(0, 3)
-      .map(location => ({
-        id: `location-${location}`,
-        type: 'location' as const,
-        title: location,
-        subtitle: `${facilities.filter(f => f.location === location).length} lokaler tilgjengelig`,
-        icon: <MapPin className="h-5 w-5" />,
-        url: '/',
-        searchParams: { location: location.toLowerCase().replace(/\s+/g, '-') }
-      }));
-
-    // Add category results (unique types from facilities)
-    const uniqueTypes = Array.from(new Set(facilities.map(f => f.type)))
-      .filter(type => type.toLowerCase().includes(searchLower))
-      .slice(0, 3)
-      .map(type => ({
-        id: `category-${type}`,
-        type: 'category' as const,
-        title: type,
-        subtitle: `${facilities.filter(f => f.type === type).length} lokaler tilgjengelig`,
-        icon: <Users className="h-5 w-5" />,
-        url: '/',
-        searchParams: { facilityType: type.toLowerCase().replace(/\s+/g, '-') }
-      }));
-
-    return [...facilityResults, ...uniqueLocations, ...uniqueTypes];
-  };
-
-  // Handle search input change
-  const handleSearchChange = (value: string): void => {
-    setSearchTerm(value);
-    const searchResults = createSearchResults(value);
-    setResults(searchResults);
-    setIsOpen(value.trim().length > 0 && searchResults.length > 0);
-  };
-
-  // Handle result click
-  const handleResultClick = (result: SearchResult): void => {
-    if (result.searchParams) {
-      const params = new URLSearchParams();
-      Object.entries(result.searchParams).forEach(([key, value]) => {
-        params.set(key, value);
-      });
-      navigate(`${result.url}?${params.toString()}`);
-    } else {
-      navigate(result.url);
-    }
-    
-    setIsOpen(false);
-    setSearchTerm("");
-    onResultClick?.();
-  };
-
-  // Close dropdown when search term is cleared
-  useEffect(() => {
-    if (!searchTerm.trim()) {
-      setIsOpen(false);
-    }
-  }, [searchTerm]);
-
-  // Close dropdown on Escape key
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        setIsOpen(false);
-        setSearchTerm("");
-        inputRef.current?.blur();
-      }
-    };
-
-    document.addEventListener('keydown', handleKeyDown);
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-    };
-  }, []);
+export const GlobalSearch: React.FC<GlobalSearchProps> = ({
+  onResultClick,
+}): JSX.Element => {
+  const { t } = useTranslation('common');
+  const {
+    searchTerm,
+    isOpen,
+    results,
+    searchRef,
+    inputRef,
+    handleSearchChange,
+    handleResultClick: handleResult,
+    setIsOpen,
+  } = useGlobalSearch(onResultClick);
 
   // Group results by type
   const groupedResults = results.reduce((acc, result) => {
@@ -174,27 +33,52 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({ onResultClick }): JS
     }
     acc[result.type].push(result);
     return acc;
-  }, {} as Record<string, SearchResult[]>);
+  }, {} as Record<string, typeof results>);
 
-  // Get group titles
+  // Get group titles with i18n
   const getGroupTitle = (type: string): string => {
     switch (type) {
-      case 'facility': return 'Fasiliteter';
-      case 'location': return 'Lokasjoner';
-      case 'category': return 'Kategorier';
-      case 'recent': return 'Nylig søkt';
-      default: return type;
+      case 'facility':
+        return t('search.group_facilities');
+      case 'location':
+        return t('search.group_locations');
+      case 'category':
+        return t('search.group_categories');
+      case 'recent':
+        return t('search.recent_searches');
+      default:
+        return type;
+    }
+  };
+
+  // Get icon component based on icon type
+  const getIcon = (iconType: string): React.ReactNode => {
+    switch (iconType) {
+      case 'building':
+        return <Building className="h-5 w-5" />;
+      case 'location':
+        return <MapPin className="h-5 w-5" />;
+      case 'users':
+        return <Users className="h-5 w-5" />;
+      default:
+        return <Building className="h-5 w-5" />;
     }
   };
 
   return (
-    <div className="relative w-full max-w-2xl min-w-[350px]" ref={searchRef}>
+    <div
+      className="relative w-full max-w-2xl min-w-[350px]"
+      ref={searchRef}
+    >
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4 z-10" />
+        <Search
+          className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4 z-10"
+          aria-hidden="true"
+        />
         <Input
           ref={inputRef}
           type="text"
-          placeholder="Søk etter fasiliteter..."
+          placeholder={t('search.search_facilities')}
           value={searchTerm}
           onChange={(e) => handleSearchChange(e.target.value)}
           onFocus={() => {
@@ -203,6 +87,7 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({ onResultClick }): JS
             }
           }}
           className="pl-10 pr-4 py-2 w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+          aria-label={t('aria.search_input')}
         />
       </div>
 
@@ -213,32 +98,43 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({ onResultClick }): JS
             <div className="max-h-96 overflow-y-auto">
               {results.length === 0 ? (
                 <div className="py-6 text-center text-sm text-gray-500">
-                  Ingen resultater funnet.
+                  {t('search.no_results')}
                 </div>
               ) : (
                 <>
                   {Object.entries(groupedResults).map(([type, typeResults]) => (
-                    <div key={type} className="border-b border-gray-100 last:border-b-0">
+                    <div
+                      key={type}
+                      className="border-b border-gray-100 last:border-b-0"
+                    >
                       <div className="px-4 py-2 text-xs font-medium text-gray-500 bg-gray-50">
                         {getGroupTitle(type)}
                       </div>
                       {typeResults.map((result) => (
                         <div
                           key={result.id}
-                          onClick={() => handleResultClick(result)}
+                          onClick={() => handleResult(result)}
                           className="flex items-center gap-4 px-4 py-4 cursor-pointer hover:bg-gray-50 transition-colors"
+                          role="button"
+                          tabIndex={0}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                              e.preventDefault();
+                              handleResult(result);
+                            }
+                          }}
                         >
                           {result.image ? (
                             <div className="w-12 h-12 bg-gray-100 overflow-hidden flex-shrink-0 rounded">
-                              <img 
-                                src={result.image} 
+                              <img
+                                src={result.image}
                                 alt={result.title}
                                 className="w-full h-full object-cover"
                               />
                             </div>
                           ) : (
                             <div className="w-12 h-12 bg-gray-100 flex items-center justify-center flex-shrink-0 rounded">
-                              {result.icon}
+                              {getIcon(result.iconType)}
                             </div>
                           )}
                           <div className="flex-1 min-w-0">
@@ -264,4 +160,3 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({ onResultClick }): JS
     </div>
   );
 };
-
