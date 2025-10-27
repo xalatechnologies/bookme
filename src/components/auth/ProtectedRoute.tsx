@@ -196,6 +196,7 @@ export const ProtectedRoute = ({
  * RequireAuth Component
  *
  * Simpler version that only requires authentication without role checks.
+ * Does NOT use the useRole hook, avoiding unnecessary role fetching.
  *
  * @example
  * ```tsx
@@ -215,11 +216,27 @@ export const RequireAuth = ({
   readonly loginPath?: string;
   readonly loadingComponent?: React.ReactNode;
 }): JSX.Element => {
-  return (
-    <ProtectedRoute loginPath={loginPath} loadingComponent={loadingComponent}>
-      {children}
-    </ProtectedRoute>
-  );
+  const location = useLocation();
+  const { user, loading: authLoading } = useAuth();
+
+  // Show loading state while checking authentication
+  if (authLoading) {
+    return <>{loadingComponent || <DefaultLoadingComponent />}</>;
+  }
+
+  // Redirect to login if not authenticated
+  if (!user) {
+    return (
+      <Navigate
+        to={loginPath}
+        state={{ from: location.pathname }}
+        replace
+      />
+    );
+  }
+
+  // User is authenticated
+  return <>{children}</>;
 };
 
 /**

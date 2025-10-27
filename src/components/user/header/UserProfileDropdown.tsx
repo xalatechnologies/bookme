@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { User, Settings, LogOut, Globe, ChevronDown } from "lucide-react";
 import { useUserProfile } from "@/contexts/UserProfileContext";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "react-toastify";
 
 interface IUserProfileDropdownProps {
   readonly children?: never;
@@ -13,42 +15,23 @@ const UserProfileDropdown = (_props: IUserProfileDropdownProps): JSX.Element => 
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const { profile } = useUserProfile();
+  const { signOut } = useAuth();
 
   const user = {
-    name: `${profile.firstName} ${profile.lastName}`,
+    name: `${profile.firstName} ${profile.lastName}`.trim() || profile.email,
     email: profile.email,
     avatar: profile.avatar
   };
 
-  const handleLogout = (): void => {
+  const handleLogout = async (): Promise<void> => {
     try {
-      // Clear user data from localStorage
-      localStorage.removeItem('userProfile');
-      localStorage.removeItem('userNotifications');
-      localStorage.removeItem('userSettings');
-      localStorage.removeItem('userFavorites');
-      localStorage.removeItem('userBookings');
-      localStorage.removeItem('userReceipts');
-      
-      // Clear any other user-specific data
-      const keysToRemove = [];
-      for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        if (key && key.startsWith('user')) {
-          keysToRemove.push(key);
-        }
-      }
-      keysToRemove.forEach(key => localStorage.removeItem(key));
-      
-      // Show logout confirmation
-      alert('Du er nå logget ut!');
-      
-      // Navigate to login selection
+      await signOut();
+      toast.success('Du er nå logget ut!');
       navigate("/login-selection");
       setIsOpen(false);
     } catch (error) {
       console.error('Logout failed:', error);
-      alert('Kunne ikke logge ut. Prøv igjen.');
+      toast.error('Kunne ikke logge ut. Prøv igjen.');
     }
   };
 

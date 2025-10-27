@@ -65,6 +65,8 @@ export const bookingsService = {
    * Fetch bookings for a specific user
    */
   async getUserBookings(userId: string): Promise<BookingWithDetails[]> {
+    console.log('🔍 Fetching bookings for user:', userId);
+
     const { data, error } = await supabase
       .from('bookings')
       .select(`
@@ -73,9 +75,14 @@ export const bookingsService = {
         zone:zones (*)
       `)
       .eq('user_id', userId)
-      .order('start_time', { ascending: true });
+      .order('starts_at', { ascending: true });
 
-    if (error) throw error;
+    if (error) {
+      console.error('❌ Error fetching bookings:', error);
+      throw error;
+    }
+
+    console.log('✅ Fetched bookings:', data?.length || 0, 'bookings');
     return data as BookingWithDetails[];
   },
 

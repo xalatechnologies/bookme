@@ -56,6 +56,9 @@ interface AuthContextValue {
   /** Sign in with magic link (email only, passwordless) */
   readonly signIn: (email: string) => Promise<void>;
 
+  /** Sign in with email and password */
+  readonly signInWithPassword: (email: string, password: string) => Promise<void>;
+
   /** Sign out current user */
   readonly signOut: () => Promise<void>;
 
@@ -143,13 +146,15 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
       setMemberships(data);
 
       // If no default org set, use first membership
-      if (data.length > 0 && !currentOrgId) {
-        setCurrentOrgId(data[0].org_id);
-      }
+      // Use a function updater to avoid dependency on currentOrgId
+      setCurrentOrgId((prevOrgId) => {
+        if (prevOrgId) return prevOrgId;
+        return data.length > 0 ? data[0].org_id : null;
+      });
     } catch (error) {
       console.error('Error in fetchMemberships:', error);
     }
-  }, [currentOrgId]);
+  }, []);
 
   /**
    * Initialize auth state
@@ -202,16 +207,18 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
    */
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event, newSession) => {
+      (event, newSession) => {
         setSession(newSession);
         setUser(newSession?.user ?? null);
 
         if (newSession?.user) {
-          // Fetch profile and memberships for new user
-          await Promise.all([
+          // Fetch profile and memberships for new user (non-blocking)
+          Promise.all([
             fetchProfile(newSession.user.id),
             fetchMemberships(newSession.user.id),
-          ]);
+          ]).catch((error) => {
+            console.error('Error fetching profile/memberships:', error);
+          });
         } else {
           // Clear profile and memberships on logout
           setProfile(null);
@@ -219,6 +226,7 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
           setCurrentOrgId(null);
         }
 
+        // Set loading to false immediately, don't wait for profile/membership fetch
         setLoading(false);
       }
     );
@@ -249,22 +257,48 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
   }, []);
 
   /**
-   * Sign out current user
+   * Sign in with email and password
    */
-  const signOut = useCallback(async (): Promise<void> => {
-    const { error } = await supabase.auth.signOut();
+  const signInWithPassword = useCallback(async (email: string, password: string): Promise<void> => {
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
 
     if (error) {
-      console.error('Error signing out:', error);
+      console.error('Error signing in with password:', error);
       throw error;
     }
 
-    // Clear state
-    setUser(null);
-    setSession(null);
-    setProfile(null);
-    setMemberships([]);
-    setCurrentOrgId(null);
+    // Auth state will be updated automatically via onAuthStateChange listener
+  }, []);
+
+  /**
+   * Sign out current user
+   */
+  const signOut = useCallback(async (): Promise<void> => {
+    try {
+      const { error } = await supabase.auth.signOut();
+
+      // Ignore "session missing" errors - just clear local state
+      if (error && error.message !== 'Auth session missing!') {
+        console.error('Error signing out:', error);
+        throw error;
+      }
+    } catch (error: any) {
+      // If session is already missing, that's fine - just clear local state
+      if (error?.message !== 'Auth session missing!') {
+        console.error('Error signing out:', error);
+        throw error;
+      }
+    } finally {
+      // Always clear state regardless of errors
+      setUser(null);
+      setSession(null);
+      setProfile(null);
+      setMemberships([]);
+      setCurrentOrgId(null);
+    }
   }, []);
 
   /**
@@ -308,6 +342,7 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
     currentOrgId,
     loading,
     signIn,
+    signInWithPassword,
     signOut,
     refreshProfile,
     setCurrentOrg,

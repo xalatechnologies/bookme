@@ -1,358 +1,323 @@
--- BookMe Seed Data Migration
--- This file contains seed data converted from the existing mock data files
--- Original files:
---   - src/data/coreFacilities.ts
---   - src/data/zones/dummyZones.ts
---   - src/data/bookings/dummyBookings.ts
---   - src/data/additionalServices/dummyServices.ts
+-- BookMe Backend Seed Data
+-- This file seeds the database with test data for development
 
 -- ============================================================================
--- ORGANIZATIONS (Required for multi-tenancy)
+-- ORGANIZATIONS
 -- ============================================================================
 
-INSERT INTO organizations (id, name, slug, created_at)
+INSERT INTO organizations (id, name, slug, timezone, status)
 VALUES
-  ('org-drammen-001', 'Drammen Kommune', 'drammen-kommune', NOW()),
-  ('org-seed-001', 'BookMe Demo Organization', 'bookme-demo', NOW())
+  ('11111111-1111-1111-1111-111111111111'::uuid, 'Drammen Kommune', 'drammen-kommune', 'Europe/Oslo', 'active'),
+  ('22222222-2222-2222-2222-222222222222'::uuid, 'BookMe Demo Organization', 'bookme-demo', 'Europe/Oslo', 'active')
 ON CONFLICT (id) DO NOTHING;
 
 -- ============================================================================
--- FACILITIES (from coreFacilities.ts)
+-- FACILITIES
 -- ============================================================================
 
--- Insert Drammen Idrettshall
 INSERT INTO facilities (
-  id, org_id, name, description, type, address, capacity, price_per_hour,
-  amenities, images, coordinates, rating, status, created_at
+  id, org_id, name, description, facility_type, status,
+  address, city, postal_code, country,
+  capacity, rating, review_count,
+  amenities, images, location
 )
-VALUES (
-  'fac-drammen-idrettshall-001',
-  'org-drammen-001',
-  'Drammen Idrettshall',
-  'Moderne idrettshall med full utstyr for ballsport og trening. Perfekt for fotball, håndball, basketball og volleyball.',
-  'sports',
-  'Bragernes Torg 2, 3017 Drammen',
-  200,
-  850,
-  ARRAY['Garderober', 'Dusj', 'Parkering', 'Lyd/lys', 'Tribuner'],
-  ARRAY[
-    'https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=800&h=600&fit=crop&crop=center',
-    'https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?w=800&h=600&fit=crop&crop=center',
-    'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&h=600&fit=crop&crop=center'
-  ],
-  '{"lat": 59.7436, "lng": 10.2045}',
-  4.5,
-  'published',
-  NOW()
-) ON CONFLICT (id) DO NOTHING;
-
--- Insert Strømsø Kulturhus
-INSERT INTO facilities (
-  id, org_id, name, description, type, address, capacity, price_per_hour,
-  amenities, images, coordinates, rating, status, created_at
-)
-VALUES (
-  'fac-stromso-kulturhus-001',
-  'org-drammen-001',
-  'Strømsø Kulturhus',
-  'Fleksibelt kulturhus med scene og sal. Ideelt for konserter, teaterforestillinger, møter og kulturarrangementer.',
-  'conference',
-  'Gamle Kirkegate 18, 3019 Drammen',
-  150,
-  1200,
-  ARRAY['Scene', 'Lyd/lys', 'Projektor', 'Kjøkken', 'Garderober'],
-  ARRAY[
-    'https://images.unsplash.com/photo-1503095396549-807759245b35?w=800&h=600&fit=crop&crop=center',
-    'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=800&h=600&fit=crop&crop=center'
-  ],
-  '{"lat": 59.7389, "lng": 10.2134}',
-  4.2,
-  'published',
-  NOW()
-) ON CONFLICT (id) DO NOTHING;
-
--- Insert Bragernes Møterom
-INSERT INTO facilities (
-  id, org_id, name, description, type, address, capacity, price_per_hour,
-  amenities, images, coordinates, rating, status, created_at
-)
-VALUES (
-  'fac-bragernes-moterom-001',
-  'org-drammen-001',
-  'Bragernes Møterom',
-  'Profesjonelt møterom i hjertet av Drammen. Utstyrt med moderne teknologi for bedriftsmøter og presentasjoner.',
-  'conference',
-  'Nedre Storgate 15, 3015 Drammen',
-  25,
-  600,
-  ARRAY['Projektor', 'Tavle', 'WiFi', 'Kaffe/te', 'Video konferanse'],
-  ARRAY[
-    'https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&h=600&fit=crop&crop=center',
-    'https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=800&h=600&fit=crop&crop=center'
-  ],
-  '{"lat": 59.7445, "lng": 10.2034}',
-  4.7,
-  'published',
-  NOW()
-) ON CONFLICT (id) DO NOTHING;
-
--- Insert Konnerud Fotballbane
-INSERT INTO facilities (
-  id, org_id, name, description, type, address, capacity, price_per_hour,
-  amenities, images, coordinates, rating, status, created_at
-)
-VALUES (
-  'fac-konnerud-fotballbane-001',
-  'org-drammen-001',
-  'Konnerud Fotballbane',
-  'Moderne kunstgressbane med flombelysning. Perfekt for fotballkamper og trening året rundt.',
-  'sports',
-  'Konnerudgata 80, 3045 Drammen',
-  100,
-  750,
-  ARRAY['Garderober', 'Dusj', 'Flombelysning', 'Parkering', 'Tribuner'],
-  ARRAY[
-    'https://images.unsplash.com/photo-1459865264687-595d652de67e?w=800&h=600&fit=crop&crop=center',
-    'https://images.unsplash.com/photo-1518604666860-9ed391f76460?w=800&h=600&fit=crop&crop=center'
-  ],
-  '{"lat": 59.7234, "lng": 10.1845}',
-  4.4,
-  'published',
-  NOW()
-) ON CONFLICT (id) DO NOTHING;
-
--- Insert Drammen Svømmehall
-INSERT INTO facilities (
-  id, org_id, name, description, type, address, capacity, price_per_hour,
-  amenities, images, coordinates, rating, status, created_at
-)
-VALUES (
-  'fac-drammen-svommehall-001',
-  'org-drammen-001',
-  'Drammen Svømmehall',
-  'Moderne svømmeanlegg med 25m basseng, barnebasseng og badstue. Åpent for svømmetrening og arrangementer.',
-  'sports',
-  'Marienlystveien 2, 3016 Drammen',
-  80,
-  950,
-  ARRAY['25m basseng', 'Barnebasseng', 'Badstue', 'Garderober', 'Dusj', 'Parkering'],
-  ARRAY[
-    'https://images.unsplash.com/photo-1519315901367-f34ff9154487?w=800&h=600&fit=crop&crop=center',
-    'https://images.unsplash.com/photo-1576610616656-d3aa5d1f4534?w=800&h=600&fit=crop&crop=center'
-  ],
-  '{"lat": 59.7467, "lng": 10.2123}',
-  4.6,
-  'published',
-  NOW()
-) ON CONFLICT (id) DO NOTHING;
-
--- ============================================================================
--- ZONES (from dummyZones.ts)
--- ============================================================================
-
--- Zones for Drammen Idrettshall
-INSERT INTO zones (id, facility_id, name, description, capacity, price_adjustment, features, created_at)
 VALUES
+  -- Drammen Idrettshall
   (
-    'zone-idrettshall-main',
-    'fac-drammen-idrettshall-001',
+    '33333333-3333-3333-3333-333333333333'::uuid,
+    '11111111-1111-1111-1111-111111111111'::uuid,
+    'Drammen Idrettshall',
+    'Moderne idrettshall med full utstyr for ballsport og trening. Perfekt for fotball, håndball, basketball og volleyball.',
+    'sports',
+    'published',
+    'Bragernes Torg 2',
+    'Drammen',
+    '3017',
+    'NO',
+    200,
+    4.5,
+    45,
+    '["Garderober", "Dusj", "Parkering", "Lyd/lys", "Tribuner"]'::jsonb,
+    '[
+      "https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=800&h=600&fit=crop&crop=center",
+      "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?w=800&h=600&fit=crop&crop=center"
+    ]'::jsonb,
+    ST_SetSRID(ST_MakePoint(10.2045, 59.7436), 4326)::geography
+  ),
+
+  -- Strømsø Kulturhus
+  (
+    '44444444-4444-4444-4444-444444444444'::uuid,
+    '11111111-1111-1111-1111-111111111111'::uuid,
+    'Strømsø Kulturhus',
+    'Fleksibelt kulturhus med scene og sal. Ideelt for konserter, teaterforestillinger, møter og kulturarrangementer.',
+    'conference',
+    'published',
+    'Gamle Kirkegate 18',
+    'Drammen',
+    '3019',
+    'NO',
+    150,
+    4.2,
+    38,
+    '["Scene", "Lyd/lys", "Projektor", "Kjøkken", "Garderober"]'::jsonb,
+    '[
+      "https://images.unsplash.com/photo-1503095396549-807759245b35?w=800&h=600&fit=crop&crop=center",
+      "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=800&h=600&fit=crop&crop=center"
+    ]'::jsonb,
+    ST_SetSRID(ST_MakePoint(10.2134, 59.7389), 4326)::geography
+  ),
+
+  -- Bragernes Møterom
+  (
+    '55555555-5555-5555-5555-555555555555'::uuid,
+    '11111111-1111-1111-1111-111111111111'::uuid,
+    'Bragernes Møterom',
+    'Profesjonelt møterom i hjertet av Drammen. Utstyrt med moderne teknologi for bedriftsmøter og presentasjoner.',
+    'conference',
+    'published',
+    'Nedre Storgate 15',
+    'Drammen',
+    '3015',
+    'NO',
+    25,
+    4.7,
+    52,
+    '["Projektor", "Tavle", "WiFi", "Kaffe/te", "Video konferanse"]'::jsonb,
+    '[
+      "https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&h=600&fit=crop&crop=center",
+      "https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=800&h=600&fit=crop&crop=center"
+    ]'::jsonb,
+    ST_SetSRID(ST_MakePoint(10.2034, 59.7445), 4326)::geography
+  ),
+
+  -- Konnerud Fotballbane
+  (
+    '66666666-6666-6666-6666-666666666666'::uuid,
+    '11111111-1111-1111-1111-111111111111'::uuid,
+    'Konnerud Fotballbane',
+    'Moderne kunstgressbane med flombelysning. Perfekt for fotballkamper og trening året rundt.',
+    'sports',
+    'published',
+    'Konnerudgata 80',
+    'Drammen',
+    '3045',
+    'NO',
+    100,
+    4.4,
+    67,
+    '["Garderober", "Dusj", "Flombelysning", "Parkering", "Tribuner"]'::jsonb,
+    '[
+      "https://images.unsplash.com/photo-1459865264687-595d652de67e?w=800&h=600&fit=crop&crop=center",
+      "https://images.unsplash.com/photo-1518604666860-9ed391f76460?w=800&h=600&fit=crop&crop=center"
+    ]'::jsonb,
+    ST_SetSRID(ST_MakePoint(10.1845, 59.7234), 4326)::geography
+  ),
+
+  -- Drammen Svømmehall
+  (
+    '77777777-7777-7777-7777-777777777777'::uuid,
+    '11111111-1111-1111-1111-111111111111'::uuid,
+    'Drammen Svømmehall',
+    'Moderne svømmeanlegg med 25m basseng, barnebasseng og badstue. Åpent for svømmetrening og arrangementer.',
+    'sports',
+    'published',
+    'Marienlystveien 2',
+    'Drammen',
+    '3016',
+    'NO',
+    80,
+    4.6,
+    89,
+    '["25m basseng", "Barnebasseng", "Badstue", "Garderober", "Dusj", "Parkering"]'::jsonb,
+    '[
+      "https://images.unsplash.com/photo-1519315901367-f34ff9154487?w=800&h=600&fit=crop&crop=center",
+      "https://images.unsplash.com/photo-1576610616656-d3aa5d1f4534?w=800&h=600&fit=crop&crop=center"
+    ]'::jsonb,
+    ST_SetSRID(ST_MakePoint(10.2123, 59.7467), 4326)::geography
+  )
+ON CONFLICT (id) DO NOTHING;
+
+-- ============================================================================
+-- ZONES (Areas within facilities)
+-- ============================================================================
+
+INSERT INTO zones (
+  id, org_id, facility_id, name, description, capacity,
+  price_per_hour_cents, created_at
+)
+VALUES
+  -- Drammen Idrettshall zones
+  (
+    '88888888-8888-8888-8888-888888888888'::uuid,
+    '11111111-1111-1111-1111-111111111111'::uuid,
+    '33333333-3333-3333-3333-333333333333'::uuid,
     'Hovedhall',
     'Full idrettshall med alle fasiliteter',
     200,
-    0,
-    ARRAY['Fullsize bane', 'Tribuner', 'Lyd/lys'],
+    85000,
     NOW()
   ),
   (
-    'zone-idrettshall-half',
-    'fac-drammen-idrettshall-001',
+    '99999999-9999-9999-9999-999999999999'::uuid,
+    '11111111-1111-1111-1111-111111111111'::uuid,
+    '33333333-3333-3333-3333-333333333333'::uuid,
     'Halv Hall',
     'Halv idrettshall med nett skillevegg',
     100,
-    -300,
-    ARRAY['Halv bane', 'Nett skillevegg'],
+    55000,
     NOW()
-  )
-ON CONFLICT (id) DO NOTHING;
+  ),
 
--- Zones for Strømsø Kulturhus
-INSERT INTO zones (id, facility_id, name, description, capacity, price_adjustment, features, created_at)
-VALUES
+  -- Strømsø Kulturhus zones
   (
-    'zone-kulturhus-hall',
-    'fac-stromso-kulturhus-001',
+    'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'::uuid,
+    '11111111-1111-1111-1111-111111111111'::uuid,
+    '44444444-4444-4444-4444-444444444444'::uuid,
     'Store Sal',
     'Hovedsal med scene og full lyd/lys',
     150,
-    0,
-    ARRAY['Scene', 'Fullsize lyd/lys', 'Projektor'],
+    120000,
     NOW()
   ),
   (
-    'zone-kulturhus-small',
-    'fac-stromso-kulturhus-001',
+    'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb'::uuid,
+    '11111111-1111-1111-1111-111111111111'::uuid,
+    '44444444-4444-4444-4444-444444444444'::uuid,
     'Lille Sal',
     'Mindre sal for møter og mindre arrangementer',
     40,
-    -600,
-    ARRAY['Møtebord', 'Projektor', 'WiFi'],
+    60000,
     NOW()
-  )
-ON CONFLICT (id) DO NOTHING;
+  ),
 
--- Zones for Konnerud Fotballbane
-INSERT INTO zones (id, facility_id, name, description, capacity, price_adjustment, features, created_at)
-VALUES
+  -- Konnerud Fotballbane zones
   (
-    'zone-fotballbane-full',
-    'fac-konnerud-fotballbane-001',
+    'cccccccc-cccc-cccc-cccc-cccccccccccc'::uuid,
+    '11111111-1111-1111-1111-111111111111'::uuid,
+    '66666666-6666-6666-6666-666666666666'::uuid,
     'Full Bane',
     'Full 11-er fotballbane',
     100,
-    0,
-    ARRAY['11-er', 'Flombelysning', 'Kunstgress'],
+    75000,
     NOW()
   ),
   (
-    'zone-fotballbane-half',
-    'fac-konnerud-fotballbane-001',
+    'dddddddd-dddd-dddd-dddd-dddddddddddd'::uuid,
+    '11111111-1111-1111-1111-111111111111'::uuid,
+    '66666666-6666-6666-6666-666666666666'::uuid,
     'Halv Bane',
     '7-er fotballbane',
     50,
-    -350,
-    ARRAY['7-er', 'Flombelysning', 'Kunstgress'],
+    40000,
     NOW()
   )
 ON CONFLICT (id) DO NOTHING;
 
 -- ============================================================================
--- ADDITIONAL SERVICES (from dummyServices.ts)
+-- ADDITIONAL SERVICES
 -- ============================================================================
 
--- Services for sports facilities
-INSERT INTO additional_services (id, facility_id, name, description, price, category, created_at)
+INSERT INTO additional_services (
+  id, org_id, name, description, price_cents, price_type, category, created_at
+)
 VALUES
+  -- Sports facility services
   (
-    'service-equipment-rental',
-    'fac-drammen-idrettshall-001',
+    'eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee'::uuid,
+    '11111111-1111-1111-1111-111111111111'::uuid,
     'Utstyr Leie',
     'Leie av baller, nett, vester og annet treningsutstyr',
-    150,
+    15000,
+    'per-booking',
     'equipment',
     NOW()
   ),
   (
-    'service-referee',
-    'fac-konnerud-fotballbane-001',
+    'ffffffff-ffff-ffff-ffff-ffffffffffff'::uuid,
+    '11111111-1111-1111-1111-111111111111'::uuid,
     'Dommer',
     'Profesjonell dommer for kamper',
-    500,
-    'staff',
+    50000,
+    'per-booking',
+    'other',
     NOW()
   ),
   (
-    'service-cleaning',
-    'fac-drammen-idrettshall-001',
+    '10101010-1010-1010-1010-101010101010'::uuid,
+    '11111111-1111-1111-1111-111111111111'::uuid,
     'Ekstra Renhold',
     'Grundig renhold etter arrangement',
-    300,
+    30000,
+    'per-booking',
     'cleaning',
     NOW()
-  )
-ON CONFLICT (id) DO NOTHING;
+  ),
 
--- Services for conference/cultural facilities
-INSERT INTO additional_services (id, facility_id, name, description, price, category, created_at)
-VALUES
+  -- Conference/cultural facility services
   (
-    'service-av-equipment',
-    'fac-stromso-kulturhus-001',
+    '20202020-2020-2020-2020-202020202020'::uuid,
+    '11111111-1111-1111-1111-111111111111'::uuid,
     'Lyd/Lys Tekniker',
     'Profesjonell lyd og lys tekniker',
-    800,
-    'staff',
+    80000,
+    'per-hour',
+    'technical',
     NOW()
   ),
   (
-    'service-catering-basic',
-    'fac-bragernes-moterom-001',
+    '30303030-3030-3030-3030-303030303030'::uuid,
+    '11111111-1111-1111-1111-111111111111'::uuid,
     'Grunnleggende Servering',
     'Kaffe, te, vann og kjeks',
-    250,
+    2500,
+    'flat-rate',
     'catering',
     NOW()
   ),
   (
-    'service-catering-lunch',
-    'fac-bragernes-moterom-001',
+    '40404040-4040-4040-4040-404040404040'::uuid,
+    '11111111-1111-1111-1111-111111111111'::uuid,
     'Lunsj Servering',
     'Komplett lunsj for møtedeltakere',
-    400,
+    15000,
+    'flat-rate',
     'catering',
     NOW()
   )
 ON CONFLICT (id) DO NOTHING;
 
 -- ============================================================================
--- SAMPLE USERS (for testing)
+-- FACILITY_ADDITIONAL_SERVICES (Many-to-many relationship)
 -- ============================================================================
 
--- Note: These will be created through Supabase Auth
--- You can create test users through the Supabase dashboard or auth.signUp()
--- This is just documentation of what users should exist for testing
+INSERT INTO facility_additional_services (facility_id, service_id)
+VALUES
+  -- Drammen Idrettshall services
+  ('33333333-3333-3333-3333-333333333333'::uuid, 'eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee'::uuid),
+  ('33333333-3333-3333-3333-333333333333'::uuid, '10101010-1010-1010-1010-101010101010'::uuid),
 
--- Test User 1: test-user@example.com
--- Test User 2: admin@drammen.no
--- Test User 3: booking-manager@example.com
+  -- Konnerud Fotballbane services
+  ('66666666-6666-6666-6666-666666666666'::uuid, 'eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee'::uuid),
+  ('66666666-6666-6666-6666-666666666666'::uuid, 'ffffffff-ffff-ffff-ffff-ffffffffffff'::uuid),
 
--- ============================================================================
--- SAMPLE BOOKINGS (from dummyBookings.ts)
--- ============================================================================
+  -- Strømsø Kulturhus services
+  ('44444444-4444-4444-4444-444444444444'::uuid, '20202020-2020-2020-2020-202020202020'::uuid),
+  ('44444444-4444-4444-4444-444444444444'::uuid, '30303030-3030-3030-3030-303030303030'::uuid),
+  ('44444444-4444-4444-4444-444444444444'::uuid, '40404040-4040-4040-4040-404040404040'::uuid),
 
--- Note: Bookings require valid user_id from auth.users
--- These are example bookings - actual user_ids will be different
--- You should create these through the application after authentication
-
-/*
-Example bookings to create after auth setup:
-
-INSERT INTO bookings (
-  facility_id, user_id, start_time, end_time,
-  total_price, status, created_at
-)
-VALUES (
-  'fac-drammen-idrettshall-001',
-  '<actual-user-id>',
-  '2024-11-15 18:00:00',
-  '2024-11-15 20:00:00',
-  1700,
-  'confirmed',
-  NOW()
-);
-*/
+  -- Bragernes Møterom services
+  ('55555555-5555-5555-5555-555555555555'::uuid, '30303030-3030-3030-3030-303030303030'::uuid),
+  ('55555555-5555-5555-5555-555555555555'::uuid, '40404040-4040-4040-4040-404040404040'::uuid)
+ON CONFLICT (facility_id, service_id) DO NOTHING;
 
 -- ============================================================================
--- AVAILABILITY SETTINGS
+-- SUMMARY
 -- ============================================================================
-
--- These would typically be managed through facility settings
--- For now, availability is checked against existing bookings
--- Future: Add facility_availability table for recurring availability patterns
-
--- ============================================================================
--- SEED DATA SUMMARY
--- ============================================================================
-
--- Organizations: 2
--- Facilities: 5
--- Zones: 6
--- Additional Services: 6
--- Total Records: 19
-
--- Next Steps:
--- 1. Run this seed file: psql -d your_db < supabase/seed.sql
--- 2. Create test users through Supabase Auth
--- 3. Create sample bookings through the application
--- 4. Update frontend to use Supabase services instead of mock data
 
 SELECT 'Seed data inserted successfully!' AS status;
+SELECT COUNT(*) AS organizations FROM organizations;
+SELECT COUNT(*) AS facilities FROM facilities;
+SELECT COUNT(*) AS zones FROM zones;
+SELECT COUNT(*) AS additional_services FROM additional_services;
+SELECT COUNT(*) AS facility_services FROM facility_additional_services;

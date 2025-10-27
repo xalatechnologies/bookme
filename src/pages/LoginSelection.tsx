@@ -16,9 +16,9 @@ export const LoginSelection = (): JSX.Element => {
 
   const handleUserSelection = (userType: "admin" | "user"): void => {
     if (userType === "admin") {
-      navigate("/admin");
+      navigate("/login?type=admin");
     } else {
-      navigate("/user");
+      navigate("/login?type=user");
     }
   };
 

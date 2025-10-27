@@ -85,6 +85,8 @@ const defaultFilters: BookingFilters = {
 export function useBookingListPage(): BookingListPageState {
   const { user } = useAuth();
 
+  console.log('📋 useBookingListPage - Current user:', user?.id, 'User object:', user);
+
   // Filter state
   const [filters, setFilters] = useState<BookingFilters>(defaultFilters);
 
@@ -99,6 +101,8 @@ export function useBookingListPage(): BookingListPageState {
     error,
     refetch,
   } = useUserBookings(user?.id || '', !!user?.id);
+
+  console.log('📊 Bookings query state:', { isLoading, isError, error, bookingsCount: bookings?.length });
 
   // Apply filters using business logic hook
   const filteredBookings = useBookingFilters(bookings, filters);

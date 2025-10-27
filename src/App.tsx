@@ -18,6 +18,7 @@ import { FacilityDetail } from '@/pages/facilities/[id]';
 import { FacilityBooking } from '@/pages/facilities/[id]/book';
 import Checkout from './pages/Checkout';
 import { LoginSelection } from '@/pages/LoginSelection';
+import { Login } from '@/pages/Login';
 import AdminRoutes from '@/pages/AdminRoutes';
 import UserRoutes from '@/pages/UserRoutes';
 
@@ -37,6 +38,7 @@ export const App = (): React.JSX.Element => {
                     <Route path="/facilities/:id/book" element={<FacilityBooking />} />
                     <Route path="/checkout" element={<Checkout />} />
                     <Route path="/login-selection" element={<LoginSelection />} />
+                    <Route path="/login" element={<Login />} />
                     <Route path="/user/*" element={<UserRoutes />} />
                     <Route path="/admin/*" element={<AdminRoutes />} />
                   </Routes>
