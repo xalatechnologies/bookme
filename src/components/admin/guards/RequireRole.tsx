@@ -8,14 +8,22 @@ import type { Database } from "@/types/database";
 type OrgRole = Database['public']['Enums']['org_role'];
 
 /**
- * Role hierarchy for comparison
+ * Role hierarchy for comparison (ENGLISH)
  * Higher number = higher privilege
+ *
+ * UPDATED: Now uses English role names
+ * - case_handler (was: saksbehandler)
+ * - editor (was: redaktør)
+ * - read_only (was: lesetilgang)
  */
 const ROLE_HIERARCHY: Record<OrgRole, number> = {
-  customer: 1,
-  staff: 2,
-  admin: 3,
-  owner: 4,
+  owner: 100,
+  admin: 80,
+  case_handler: 60,
+  editor: 40,
+  read_only: 20,
+  customer: 10,
+  staff: 60, // DEPRECATED - maps to case_handler level
 };
 
 interface IRequireRoleProps {
@@ -104,14 +112,40 @@ export const RequireRole = ({
 };
 
 /**
- * Helper: StaffOnly
- * Requires at least staff role
+ * Helper: CaseHandlerOnly (UPDATED - was: StaffOnly)
+ * Requires at least case_handler role (main operational role)
  */
-export const StaffOnly = ({ children, orgId }: {
+export const CaseHandlerOnly = ({ children, orgId }: {
   children: React.ReactNode;
   orgId?: string;
 }): JSX.Element => (
-  <RequireRole minRole="staff" orgId={orgId}>
+  <RequireRole minRole="case_handler" orgId={orgId}>
+    {children}
+  </RequireRole>
+);
+
+/**
+ * Helper: EditorOnly (NEW)
+ * Requires at least editor role (content management)
+ */
+export const EditorOnly = ({ children, orgId }: {
+  children: React.ReactNode;
+  orgId?: string;
+}): JSX.Element => (
+  <RequireRole minRole="editor" orgId={orgId}>
+    {children}
+  </RequireRole>
+);
+
+/**
+ * Helper: ReadOnlyGuard (NEW)
+ * Requires at least read_only role (view-only access)
+ */
+export const ReadOnlyGuard = ({ children, orgId }: {
+  children: React.ReactNode;
+  orgId?: string;
+}): JSX.Element => (
+  <RequireRole minRole="read_only" orgId={orgId}>
     {children}
   </RequireRole>
 );
@@ -138,6 +172,20 @@ export const OwnerOnly = ({ children, orgId }: {
   orgId?: string;
 }): JSX.Element => (
   <RequireRole minRole="owner" orgId={orgId}>
+    {children}
+  </RequireRole>
+);
+
+/**
+ * DEPRECATED: StaffOnly
+ * Use CaseHandlerOnly instead - staff role has been replaced by case_handler
+ * @deprecated Use CaseHandlerOnly
+ */
+export const StaffOnly = ({ children, orgId }: {
+  children: React.ReactNode;
+  orgId?: string;
+}): JSX.Element => (
+  <RequireRole minRole="case_handler" orgId={orgId}>
     {children}
   </RequireRole>
 );

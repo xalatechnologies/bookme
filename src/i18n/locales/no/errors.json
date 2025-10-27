@@ -1,0 +1,89 @@
+{
+  "general": "Det oppstod en feil",
+  "network": "Nettverksfeil. Vennligst sjekk internettforbindelsen din.",
+  "server": "Serverfeil. Vennligst prøv igjen senere.",
+  "unauthorized": "Du er ikke autorisert til å utføre denne handlingen.",
+  "forbidden": "Tilgang nektet.",
+  "notFound": "Ressursen ble ikke funnet.",
+  "validation": "Valideringsfeil. Vennligst sjekk inndataene dine.",
+  "timeout": "Forespørselen tok for lang tid.",
+  "unknown": "En ukjent feil oppstod.",
+  "maintenance": "Systemet er under vedlikehold. Vennligst prøv igjen senere.",
+  "api": {
+    "400": "Ugyldig forespørsel",
+    "401": "Ikke autorisert",
+    "403": "Forbudt",
+    "404": "Ikke funnet",
+    "405": "Metode ikke tillatt",
+    "408": "Forespørsel tidsavbrudd",
+    "409": "Konflikt",
+    "422": "Kan ikke behandle enheten",
+    "429": "For mange forespørsler",
+    "500": "Intern serverfeil",
+    "502": "Ugyldig gateway",
+    "503": "Tjenesten er utilgjengelig",
+    "504": "Gateway tidsavbrudd"
+  },
+  "auth": {
+    "invalidCredentials": "Ugyldig e-post eller passord",
+    "accountLocked": "Kontoen din er låst. Vennligst kontakt support.",
+    "accountNotVerified": "Vennligst verifiser e-postadressen din.",
+    "emailAlreadyExists": "E-postadressen er allerede registrert.",
+    "weakPassword": "Passordet er for svakt.",
+    "tokenExpired": "Sesjonen din har utløpt. Vennligst logg inn på nytt.",
+    "invalidToken": "Ugyldig token.",
+    "passwordResetFailed": "Kunne ikke tilbakestille passord.",
+    "registrationFailed": "Registrering mislyktes.",
+    "loginFailed": "Innlogging mislyktes.",
+    "logoutFailed": "Utlogging mislyktes.",
+    "sessionExpired": "Din økt har utløpt"
+  },
+  "booking": {
+    "notAvailable": "Det valgte tidspunktet er ikke tilgjengelig.",
+    "capacityExceeded": "Kapasiteten er overskredet.",
+    "invalidTimeSlot": "Ugyldig tidsperiode valgt.",
+    "bookingConflict": "Det er en konflikt med en eksisterende booking.",
+    "pastDate": "Kan ikke booke for en tidligere dato.",
+    "tooFarInAdvance": "Kan ikke booke så langt frem i tid.",
+    "minimumNotice": "Minimum varsel på {{hours}} timer kreves.",
+    "maximumDuration": "Maksimal bookingvarighet er {{hours}} timer.",
+    "paymentRequired": "Betaling kreves for denne bookingen.",
+    "cancellationNotAllowed": "Avbestilling er ikke lenger mulig.",
+    "modificationNotAllowed": "Endring er ikke lenger mulig."
+  },
+  "facility": {
+    "notFound": "Fasilitet ikke funnet.",
+    "unavailable": "Fasiliteten er ikke tilgjengelig.",
+    "underMaintenance": "Fasiliteten er under vedlikehold.",
+    "accessDenied": "Du har ikke tilgang til denne fasiliteten.",
+    "invalidConfiguration": "Ugyldig fasilitetsoppsett."
+  },
+  "payment": {
+    "failed": "Betaling mislyktes.",
+    "declined": "Kortet ble avvist.",
+    "insufficientFunds": "Utilstrekkelige midler.",
+    "cardExpired": "Kortet har utløpt.",
+    "invalidCard": "Ugyldig kortnummer.",
+    "processingError": "Feil ved behandling av betaling.",
+    "refundFailed": "Refusjon mislyktes."
+  },
+  "upload": {
+    "failed": "Opplasting mislyktes.",
+    "fileTooLarge": "Filen er for stor.",
+    "invalidFileType": "Ugyldig filtype.",
+    "maxFilesExceeded": "Maksimalt antall filer overskredet.",
+    "virusDetected": "Virus oppdaget i fil."
+  },
+  "custom": {
+    "organizationNotFound": "Organisasjon ikke funnet.",
+    "userNotFound": "Bruker ikke funnet.",
+    "permissionDenied": "Tillatelse nektet.",
+    "roleChangeNotAllowed": "Rolleendring ikke tillatt.",
+    "dataIntegrityError": "Dataintegritetsbrudd.",
+    "duplicateEntry": "Duplikat oppføring.",
+    "dependencyError": "Kan ikke slette på grunn av avhengigheter.",
+    "quotaExceeded": "Kvote overskredet.",
+    "featureNotEnabled": "Funksjonen er ikke aktivert.",
+    "maintenanceMode": "System under vedlikehold."
+  }
+}

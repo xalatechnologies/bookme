@@ -1,0 +1,176 @@
+/**
+ * i18next Configuration
+ *
+ * Main configuration for the internationalization system using react-i18next.
+ * Supports Norwegian (primary) and English with type-safe translations.
+ *
+ * @module i18n/config/i18next.config
+ */
+
+import i18n from 'i18next';
+import { initReactI18next } from 'react-i18next';
+import LanguageDetector from 'i18next-browser-languagedetector';
+
+// Import formatters
+import { formatDate } from '../formatters/date';
+import { formatTime } from '../formatters/time';
+import { formatCurrency } from '../formatters/currency';
+import { formatNumber } from '../formatters/number';
+
+// Import all translation namespaces
+import commonNo from '../locales/no/common.json';
+import commonEn from '../locales/en/common.json';
+import rbacNo from '../locales/no/rbac.json';
+import rbacEn from '../locales/en/rbac.json';
+import formsNo from '../locales/no/forms.json';
+import formsEn from '../locales/en/forms.json';
+import errorsNo from '../locales/no/errors.json';
+import errorsEn from '../locales/en/errors.json';
+import validationNo from '../locales/no/validation.json';
+import validationEn from '../locales/en/validation.json';
+import bookingNo from '../locales/no/booking.json';
+import bookingEn from '../locales/en/booking.json';
+import facilityNo from '../locales/no/facility.json';
+import facilityEn from '../locales/en/facility.json';
+
+export const defaultNS = 'common' as const;
+export const supportedLanguages = ['no', 'en'] as const;
+export type SupportedLanguage = typeof supportedLanguages[number];
+
+/**
+ * Translation resources organized by language and namespace
+ */
+const resources = {
+  no: {
+    common: commonNo,
+    rbac: rbacNo,
+    forms: formsNo,
+    errors: errorsNo,
+    validation: validationNo,
+    booking: bookingNo,
+    facility: facilityNo,
+  },
+  en: {
+    common: commonEn,
+    rbac: rbacEn,
+    forms: formsEn,
+    errors: errorsEn,
+    validation: validationEn,
+    booking: bookingEn,
+    facility: facilityEn,
+  },
+} as const;
+
+/**
+ * Initialize i18next with configuration
+ */
+i18n
+  .use(LanguageDetector)
+  .use(initReactI18next)
+  .init({
+    resources,
+    fallbackLng: 'no', // Norwegian as fallback
+    defaultNS,
+    debug: import.meta.env.DEV, // Enable debug in development
+
+    // Language detection configuration
+    detection: {
+      order: ['localStorage', 'navigator', 'htmlTag'],
+      caches: ['localStorage'],
+      lookupLocalStorage: 'bookme-language',
+      convertDetectedLanguage: (lng: string) => {
+        // Convert NO/EN to no/en for consistency
+        const lower = lng.toLowerCase();
+        if (lower === 'no' || lower.startsWith('nb') || lower.startsWith('nn')) return 'no';
+        if (lower === 'en' || lower.startsWith('en')) return 'en';
+        return 'no'; // Default to Norwegian
+      },
+    },
+
+    // Interpolation configuration with formatters
+    interpolation: {
+      escapeValue: false, // React already escapes values
+      format: (value: any, format?: string, lng?: string): string => {
+        if (!format) return value;
+
+        switch (format) {
+          case 'date':
+            return formatDate(value, lng || 'no');
+          case 'dateShort':
+            return formatDate(value, lng || 'no', 'P');
+          case 'dateLong':
+            return formatDate(value, lng || 'no', 'PPP');
+          case 'time':
+            return formatTime(value, lng || 'no');
+          case 'datetime':
+            return `${formatDate(value, lng || 'no')} ${formatTime(value, lng || 'no')}`;
+          case 'currency':
+            return formatCurrency(value, lng || 'no');
+          case 'number':
+            return formatNumber(value, lng || 'no');
+          case 'percent':
+            return formatNumber(value, lng || 'no', { style: 'percent' });
+          case 'uppercase':
+            return String(value).toUpperCase();
+          case 'lowercase':
+            return String(value).toLowerCase();
+          case 'capitalize':
+            return String(value).charAt(0).toUpperCase() + String(value).slice(1).toLowerCase();
+          default:
+            return value;
+        }
+      },
+    },
+
+    // React-specific configuration
+    react: {
+      useSuspense: false, // Don't use Suspense for now
+      bindI18n: 'languageChanged loaded',
+      bindI18nStore: 'added removed',
+      transEmptyNodeValue: '',
+      transSupportBasicHtmlNodes: true,
+      transKeepBasicHtmlNodesFor: ['br', 'strong', 'b', 'i', 'em', 'p', 'span'],
+    },
+
+    // Namespace configuration
+    ns: Object.keys(resources.no),
+
+    // Missing key handling
+    saveMissing: import.meta.env.DEV, // Log missing keys in development
+    missingKeyHandler: (lngs: readonly string[], ns: string, key: string) => {
+      if (import.meta.env.DEV) {
+        console.warn(`Missing translation key: ${ns}:${key} for languages: ${lngs.join(', ')}`);
+      }
+    },
+
+    // Return objects for nested keys
+    returnObjects: true,
+
+    // Join arrays with commas
+    joinArrays: ', ',
+
+    // Context separator for plural forms
+    contextSeparator: '_',
+
+    // Plural separator
+    pluralSeparator: '_',
+  });
+
+/**
+ * Helper function to sync with legacy language context
+ */
+export const syncLanguage = (language: 'NO' | 'EN'): void => {
+  const lng = language === 'NO' ? 'no' : 'en';
+  if (i18n.language !== lng) {
+    i18n.changeLanguage(lng);
+  }
+};
+
+/**
+ * Helper function to get current language in legacy format
+ */
+export const getCurrentLanguage = (): 'NO' | 'EN' => {
+  return i18n.language === 'no' ? 'NO' : 'EN';
+};
+
+export default i18n;
