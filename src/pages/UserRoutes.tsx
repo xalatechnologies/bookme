@@ -2,6 +2,7 @@
 
 import React from "react";
 import { Routes, Route } from "react-router-dom";
+import { RequireAuth } from "@/components/auth/ProtectedRoute";
 import UserLayout from "@/components/user/layout/UserLayout";
 import UserDashboard from "@/pages/user/UserDashboard";
 import UserFacilities from "@/pages/user/UserFacilities";
@@ -17,23 +18,25 @@ import UserMessages from "@/pages/user/UserMessages";
 
 const UserRoutes = (): JSX.Element => {
   return (
-    <UserLayout>
-      <Routes>
-        <Route path="/" element={<UserDashboard />} />
-        <Route path="/facilities" element={<UserFacilities />} />
-        <Route path="/bookings" element={<Bookings />} />
-        <Route path="/mine-bookinger" element={<Bookings />} />
-        <Route path="/mine-foresporsler" element={<Bookings />} />
-        <Route path="/calendar" element={<CalendarPage />} />
-        <Route path="/history" element={<HistoryPage />} />
-        <Route path="/receipts" element={<UserReceipts />} />
-        <Route path="/favorites" element={<UserFavorites />} />
-        <Route path="/profile" element={<UserProfile />} />
-        <Route path="/notifications" element={<UserNotifications />} />
-        <Route path="/messages" element={<UserMessages />} />
-        <Route path="/help" element={<UserHelp />} />
-      </Routes>
-    </UserLayout>
+    <RequireAuth loginPath="/login?type=user">
+      <UserLayout>
+        <Routes>
+          <Route path="/" element={<UserDashboard />} />
+          <Route path="/facilities" element={<UserFacilities />} />
+          <Route path="/bookings" element={<Bookings />} />
+          <Route path="/mine-bookinger" element={<Bookings />} />
+          <Route path="/mine-foresporsler" element={<Bookings />} />
+          <Route path="/calendar" element={<CalendarPage />} />
+          <Route path="/history" element={<HistoryPage />} />
+          <Route path="/receipts" element={<UserReceipts />} />
+          <Route path="/favorites" element={<UserFavorites />} />
+          <Route path="/profile" element={<UserProfile />} />
+          <Route path="/notifications" element={<UserNotifications />} />
+          <Route path="/messages" element={<UserMessages />} />
+          <Route path="/help" element={<UserHelp />} />
+        </Routes>
+      </UserLayout>
+    </RequireAuth>
   );
 };
 

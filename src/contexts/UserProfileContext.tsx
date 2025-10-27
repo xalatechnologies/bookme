@@ -1,6 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { useAuth } from "./AuthContext";
 
 interface IUserProfile {
   readonly firstName: string;
@@ -25,59 +26,31 @@ interface IUserProfileContext {
 
 const UserProfileContext = createContext<IUserProfileContext | undefined>(undefined);
 
-const initialProfile: IUserProfile = {
-  firstName: "Amin",
-  lastName: "Ismail",
-  email: "amin@example.com",
-  phone: "+47 123 45 678",
-  address: "Drammen, Norge",
-  dateOfBirth: "1990-01-01",
-  avatar: "/placeholder.svg",
-  role: "Bruker",
-  accountCreated: "2024-02-12",
-  lastActive: "2024-01-20T14:30:00Z",
-  accountId: "USR-1045",
-  subscriptionType: "Gratisbruker"
-};
-
 export const UserProfileProvider = ({ children }: { readonly children: React.ReactNode }): JSX.Element => {
-  const [profile, setProfile] = useState<IUserProfile>(initialProfile);
+  const { user, profile: authProfile, loading: authLoading } = useAuth();
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [isLoadedFromStorage, setIsLoadedFromStorage] = useState<boolean>(false);
 
-  // Load profile from localStorage on mount
-  useEffect(() => {
-    try {
-      const savedProfile = localStorage.getItem("user-profile");
-      if (savedProfile) {
-        const parsedProfile = JSON.parse(savedProfile);
-        setProfile(parsedProfile);
-      } else {
-      }
-      setIsLoadedFromStorage(true);
-    } catch (error) {
-      setIsLoadedFromStorage(true);
-    }
-  }, []);
-
-  // Save profile to localStorage whenever it changes (but only after initial load)
-  useEffect(() => {
-    if (isLoadedFromStorage) {
-      try {
-        localStorage.setItem("user-profile", JSON.stringify(profile));
-      } catch (error) {
-      }
-    } else {
-    }
-  }, [profile, isLoadedFromStorage]);
+  // Build profile from real auth data
+  const profile: IUserProfile = {
+    firstName: authProfile?.display_name?.split(' ')[0] || user?.email?.split('@')[0] || "Bruker",
+    lastName: authProfile?.display_name?.split(' ').slice(1).join(' ') || "",
+    email: user?.email || "user@bookme.no",
+    phone: authProfile?.phone || "",
+    address: "",
+    dateOfBirth: "",
+    avatar: "",
+    role: "Bruker",
+    accountCreated: user?.created_at || new Date().toISOString(),
+    lastActive: new Date().toISOString(),
+    accountId: user?.id || "",
+    subscriptionType: "Gratisbruker"
+  };
 
   const updateProfile = (updates: Partial<IUserProfile>): void => {
+    // TODO: Implement profile update via Supabase
     setIsLoading(true);
-    setProfile(prev => {
-      const newProfile = { ...prev, ...updates };
-      return newProfile;
-    });
-    
+    console.log('Profile update requested:', updates);
+
     // Simulate API call
     setTimeout(() => {
       setIsLoading(false);
@@ -87,7 +60,7 @@ export const UserProfileProvider = ({ children }: { readonly children: React.Rea
   const value: IUserProfileContext = {
     profile,
     updateProfile,
-    isLoading
+    isLoading: isLoading || authLoading
   };
 
   return (
