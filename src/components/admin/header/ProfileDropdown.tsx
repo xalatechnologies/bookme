@@ -2,15 +2,17 @@
 
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "react-toastify";
-import { User, Settings, LogOut, Globe, ChevronDown } from "lucide-react";
+import { User, Settings, LogOut, ChevronDown } from "lucide-react";
 
 interface IProfileDropdownProps {
   readonly children?: never;
 }
 
 const ProfileDropdown = (_props: IProfileDropdownProps): JSX.Element => {
+  const { t } = useTranslation();
   const { user, profile, signOut } = useAuth();
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -30,11 +32,11 @@ const ProfileDropdown = (_props: IProfileDropdownProps): JSX.Element => {
       console.log('🔄 Calling signOut...');
       await signOut();
       console.log('✅ SignOut successful');
-      toast.success('Du er nå logget ut!');
+      toast.success(t('messages.success.logout', 'Du er nå logget ut!'));
       navigate("/login-selection");
     } catch (error) {
       console.error('❌ Admin logout failed:', error);
-      toast.error('Kunne ikke logge ut. Prøv igjen.');
+      toast.error(t('messages.error.logout', 'Kunne ikke logge ut. Prøv igjen.'));
       setIsLoggingOut(false);
     }
   };
@@ -42,33 +44,6 @@ const ProfileDropdown = (_props: IProfileDropdownProps): JSX.Element => {
   const handleSettings = (): void => {
     navigate('/admin/settings');
     setIsOpen(false);
-  };
-
-  const handleLanguageChange = (): void => {
-    try {
-      // Get current language from localStorage
-      const currentLanguage = localStorage.getItem('adminLanguage') || 'no';
-      
-      // Toggle between Norwegian and English
-      const newLanguage = currentLanguage === 'no' ? 'en' : 'no';
-      
-      // Save new language preference
-      localStorage.setItem('adminLanguage', newLanguage);
-      
-      // Show language change confirmation
-      const languageName = newLanguage === 'no' ? 'Norsk' : 'English';
-      alert(`Språk endret til ${languageName}!`);
-      
-      // Trigger a custom event for other components to listen to
-      window.dispatchEvent(new CustomEvent('adminLanguageChanged', {
-        detail: { language: newLanguage }
-      }));
-      
-      setIsOpen(false);
-    } catch (error) {
-      console.error('Admin language change failed:', error);
-      alert('Kunne ikke endre språk. Prøv igjen.');
-    }
   };
 
   const toggleDropdown = (): void => {
