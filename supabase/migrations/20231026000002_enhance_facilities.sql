@@ -42,7 +42,7 @@ alter table facilities
 
 -- Add weekly availability schedule (similar to zones)
 create table facility_availability (
-  id uuid primary key default uuid_generate_v4(),
+  id uuid primary key default gen_random_uuid(),
   facility_id uuid not null references facilities(id) on delete cascade,
   day_of_week int not null check (day_of_week between 0 and 6),
   starts_time time not null,

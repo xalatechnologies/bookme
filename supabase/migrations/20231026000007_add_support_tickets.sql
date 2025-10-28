@@ -10,7 +10,7 @@ exception when duplicate_object then null; end $$;
 
 -- Support tickets
 create table support_tickets (
-  id uuid primary key default uuid_generate_v4(),
+  id uuid primary key default gen_random_uuid(),
   org_id uuid not null references organizations(id) on delete cascade,
   user_id uuid not null references auth.users(id) on delete restrict,
 
@@ -44,7 +44,7 @@ comment on table support_tickets is 'Support tickets for help desk system';
 
 -- Ticket replies/comments
 create table support_ticket_replies (
-  id uuid primary key default uuid_generate_v4(),
+  id uuid primary key default gen_random_uuid(),
   ticket_id uuid not null references support_tickets(id) on delete cascade,
   author_id uuid not null references auth.users(id) on delete restrict,
   author_type text not null check (author_type in ('user', 'admin')),
@@ -63,7 +63,7 @@ comment on column support_ticket_replies.is_internal is 'If true, only visible t
 
 -- Ticket attachments (stored in Supabase Storage)
 create table support_ticket_attachments (
-  id uuid primary key default uuid_generate_v4(),
+  id uuid primary key default gen_random_uuid(),
   ticket_id uuid not null references support_tickets(id) on delete cascade,
   reply_id uuid references support_ticket_replies(id) on delete cascade,
   file_name text not null,
@@ -82,7 +82,7 @@ comment on table support_ticket_attachments is 'File attachments for tickets and
 
 -- Ticket activity log
 create table support_ticket_activity (
-  id uuid primary key default uuid_generate_v4(),
+  id uuid primary key default gen_random_uuid(),
   ticket_id uuid not null references support_tickets(id) on delete cascade,
   user_id uuid references auth.users(id) on delete set null,
   activity_type text not null check (activity_type in (

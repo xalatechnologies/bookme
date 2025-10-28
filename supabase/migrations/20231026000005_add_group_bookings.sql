@@ -8,7 +8,7 @@ exception when duplicate_object then null; end $$;
 
 -- Booking groups
 create table booking_groups (
-  id uuid primary key default uuid_generate_v4(),
+  id uuid primary key default gen_random_uuid(),
   org_id uuid not null references organizations(id) on delete cascade,
   name text not null,
   description text,
@@ -57,7 +57,7 @@ comment on table booking_group_members is 'Members of a booking group with role-
 
 -- Group invitations
 create table booking_group_invitations (
-  id uuid primary key default uuid_generate_v4(),
+  id uuid primary key default gen_random_uuid(),
   group_id uuid not null references booking_groups(id) on delete cascade,
   email text not null,
   invited_by uuid not null references auth.users(id) on delete cascade,
@@ -77,7 +77,7 @@ comment on table booking_group_invitations is 'Pending invitations to join booki
 
 -- Group bookings (links bookings to groups)
 create table group_bookings (
-  id uuid primary key default uuid_generate_v4(),
+  id uuid primary key default gen_random_uuid(),
   group_id uuid not null references booking_groups(id) on delete cascade,
   booking_id uuid not null references bookings(id) on delete cascade,
   created_by uuid not null references auth.users(id) on delete restrict,

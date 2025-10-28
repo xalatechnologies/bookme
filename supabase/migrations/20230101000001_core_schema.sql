@@ -17,7 +17,7 @@ exception when duplicate_object then null; end $$;
 
 -- Tenancy anchor
 create table organizations (
-  id            uuid primary key default uuid_generate_v4(),
+  id            uuid primary key default gen_random_uuid(),
   name          text not null,
   slug          text unique not null,
   timezone      text not null default 'Europe/Oslo',
@@ -47,7 +47,7 @@ create table memberships (
 
 -- Catalog
 create table facilities (
-  id           uuid primary key default uuid_generate_v4(),
+  id           uuid primary key default gen_random_uuid(),
   org_id       uuid not null references organizations(id) on delete cascade,
   title        text not null,
   description  text,
@@ -64,7 +64,7 @@ create table facilities (
 );
 
 create table tags (
-  id        uuid primary key default uuid_generate_v4(),
+  id        uuid primary key default gen_random_uuid(),
   name      text not null unique
 );
 
@@ -76,7 +76,7 @@ create table facility_tags (
 
 -- Availability rules and blackouts
 create table availability_rules (
-  id           uuid primary key default uuid_generate_v4(),
+  id           uuid primary key default gen_random_uuid(),
   org_id       uuid not null references organizations(id) on delete cascade,
   facility_id  uuid not null references facilities(id) on delete cascade,
   -- Recurring spec: day_of_week 0..6, local start/end (stored as time without tz)
@@ -92,7 +92,7 @@ create table availability_rules (
 );
 
 create table blackouts (
-  id           uuid primary key default uuid_generate_v4(),
+  id           uuid primary key default gen_random_uuid(),
   org_id       uuid not null references organizations(id) on delete cascade,
   facility_id  uuid not null references facilities(id) on delete cascade,
   starts_at    timestamptz not null,
@@ -103,7 +103,7 @@ create table blackouts (
 
 -- Booking core
 create table bookings (
-  id            uuid primary key default uuid_generate_v4(),
+  id            uuid primary key default gen_random_uuid(),
   org_id        uuid not null references organizations(id) on delete cascade,
   facility_id   uuid not null references facilities(id) on delete cascade,
   user_id       uuid not null references auth.users(id) on delete restrict,
@@ -127,7 +127,7 @@ create index on bookings (user_id);
 
 -- Payments (webhook-driven)
 create table payments (
-  id            uuid primary key default uuid_generate_v4(),
+  id            uuid primary key default gen_random_uuid(),
   booking_id    uuid not null references bookings(id) on delete cascade,
   provider      text not null,                    -- 'stripe' | 'vipps' | ...
   intent_id     text not null,
@@ -141,7 +141,7 @@ create table payments (
 
 -- Reviews and favorites
 create table reviews (
-  id          uuid primary key default uuid_generate_v4(),
+  id          uuid primary key default gen_random_uuid(),
   org_id      uuid not null references organizations(id) on delete cascade,
   facility_id uuid not null references facilities(id) on delete cascade,
   user_id     uuid not null references auth.users(id) on delete cascade,
@@ -161,7 +161,7 @@ create table favorites (
 
 -- Notifications (outbox for edge function worker)
 create table notifications (
-  id          uuid primary key default uuid_generate_v4(),
+  id          uuid primary key default gen_random_uuid(),
   user_id     uuid not null references auth.users(id) on delete cascade,
   channel     notification_channel not null default 'email',
   subject     text not null,
@@ -174,7 +174,7 @@ create table notifications (
 
 -- Auditing
 create table audit_events (
-  id         uuid primary key default uuid_generate_v4(),
+  id         uuid primary key default gen_random_uuid(),
   org_id     uuid references organizations(id) on delete set null,
   actor_id   uuid references auth.users(id) on delete set null,
   action     text not null,                 -- 'booking.create' | 'booking.status_change' | ...
@@ -186,7 +186,7 @@ create table audit_events (
 
 -- Error log for webhooks/jobs
 create table error_log (
-  id         uuid primary key default uuid_generate_v4(),
+  id         uuid primary key default gen_random_uuid(),
   scope      text not null,                 -- 'payments_webhook' | 'scheduler' | ...
   ref        text,
   payload    jsonb,
@@ -196,7 +196,7 @@ create table error_log (
 );
 
 create table pricing_rules (
-  id           uuid primary key default uuid_generate_v4(),
+  id           uuid primary key default gen_random_uuid(),
   org_id       uuid not null references organizations(id) on delete cascade,
   facility_id  uuid not null references facilities(id) on delete cascade,
   price_per_hour_cents bigint not null check (price_per_hour_cents >= 0),

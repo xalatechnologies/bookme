@@ -3,7 +3,7 @@
 
 -- Zones/Areas within facilities
 create table zones (
-  id uuid primary key default uuid_generate_v4(),
+  id uuid primary key default gen_random_uuid(),
   facility_id uuid not null references facilities(id) on delete cascade,
   org_id uuid not null references organizations(id) on delete cascade,
   name text not null,
@@ -27,7 +27,7 @@ comment on column zones.amenities is 'Array of amenity strings specific to this 
 
 -- Zone availability schedules (recurring weekly)
 create table zone_availability (
-  id uuid primary key default uuid_generate_v4(),
+  id uuid primary key default gen_random_uuid(),
   zone_id uuid not null references zones(id) on delete cascade,
   day_of_week int not null check (day_of_week between 0 and 6), -- 0=Sunday, 6=Saturday
   starts_time time not null,

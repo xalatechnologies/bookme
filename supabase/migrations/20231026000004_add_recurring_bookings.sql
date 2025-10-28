@@ -8,7 +8,7 @@ exception when duplicate_object then null; end $$;
 
 -- Recurring booking series
 create table recurring_bookings (
-  id uuid primary key default uuid_generate_v4(),
+  id uuid primary key default gen_random_uuid(),
   org_id uuid not null references organizations(id) on delete cascade,
   user_id uuid not null references auth.users(id) on delete restrict,
   facility_id uuid not null references facilities(id) on delete restrict,
@@ -61,7 +61,7 @@ comment on column recurring_bookings.time_slots is 'JSON array of time slot stri
 
 -- Individual occurrences of recurring bookings
 create table recurring_booking_occurrences (
-  id uuid primary key default uuid_generate_v4(),
+  id uuid primary key default gen_random_uuid(),
   recurring_booking_id uuid not null references recurring_bookings(id) on delete cascade,
   booking_id uuid references bookings(id) on delete set null, -- Links to actual confirmed booking
 

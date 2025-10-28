@@ -3,7 +3,7 @@
 
 -- Message threads
 create table message_threads (
-  id uuid primary key default uuid_generate_v4(),
+  id uuid primary key default gen_random_uuid(),
   org_id uuid not null references organizations(id) on delete cascade,
   subject text not null,
   related_booking_id uuid references bookings(id) on delete set null,
@@ -43,7 +43,7 @@ comment on table message_thread_participants is 'Users participating in message 
 
 -- Messages
 create table messages (
-  id uuid primary key default uuid_generate_v4(),
+  id uuid primary key default gen_random_uuid(),
   thread_id uuid not null references message_threads(id) on delete cascade,
   sender_id uuid not null references auth.users(id) on delete restrict,
   sender_type text not null check (sender_type in ('user', 'admin')),
@@ -63,7 +63,7 @@ comment on table messages is 'Individual messages within threads';
 
 -- Message attachments (stored in Supabase Storage)
 create table message_attachments (
-  id uuid primary key default uuid_generate_v4(),
+  id uuid primary key default gen_random_uuid(),
   message_id uuid not null references messages(id) on delete cascade,
   file_name text not null,
   file_type text not null,
@@ -78,7 +78,7 @@ comment on table message_attachments is 'File attachments for messages (stored i
 
 -- Message templates for common responses
 create table message_templates (
-  id uuid primary key default uuid_generate_v4(),
+  id uuid primary key default gen_random_uuid(),
   org_id uuid not null references organizations(id) on delete cascade,
   name text not null,
   category text not null check (category in ('booking', 'support', 'general', 'admin')),
