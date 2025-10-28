@@ -36,18 +36,23 @@ interface ITrendCardProps {
  * - Open/Closed: Extensible through color and icon props
  * - Liskov Substitution: Can accept any icon component with className prop
  */
-export const TrendCard = ({ title, data, icon: Icon, color }: ITrendCardProps): JSX.Element => {
-  const { t, i18n } = useTranslation(['admin', 'common']);
+export const TrendCard = ({
+  title,
+  data,
+  icon: Icon,
+  color,
+}: ITrendCardProps): JSX.Element => {
+  const { t, i18n } = useTranslation(["admin", "common"]);
 
-  const maxValue = Math.max(...data.map(d => d.value));
-  const minValue = Math.min(...data.map(d => d.value));
+  const maxValue = Math.max(...data.map((d) => d.value));
+  const minValue = Math.min(...data.map((d) => d.value));
   const range = maxValue - minValue;
 
   const getColorClasses = (): string => {
     const colors = {
       blue: "text-blue-600 dark:text-blue-400",
       green: "text-green-600 dark:text-green-400",
-      purple: "text-purple-600 dark:text-purple-400"
+      purple: "text-purple-600 dark:text-purple-400",
     };
     return colors[color];
   };
@@ -56,7 +61,7 @@ export const TrendCard = ({ title, data, icon: Icon, color }: ITrendCardProps): 
     const colors = {
       blue: "bg-blue-500",
       green: "bg-green-500",
-      purple: "bg-purple-500"
+      purple: "bg-purple-500",
     };
     return colors[color];
   };
@@ -80,22 +85,28 @@ export const TrendCard = ({ title, data, icon: Icon, color }: ITrendCardProps): 
 
   const getTrendLabel = (): string => {
     const direction = getTrendDirection();
-    if (direction === "stable") return t('admin:dashboard.trends.stable');
+    if (direction === "stable") return t("admin:dashboard.trends.stable");
     return "";
   };
 
   const getUnitLabel = (): string => {
     // Determine unit based on title content
     if (title.toLowerCase().includes("booking")) {
-      return t('admin:dashboard.trends.bookings');
+      return t("admin:dashboard.trends.bookings");
     }
-    if (title.toLowerCase().includes("lokal") || title.toLowerCase().includes("facilit")) {
-      return t('admin:dashboard.trends.facilities');
+    if (
+      title.toLowerCase().includes("lokal") ||
+      title.toLowerCase().includes("facilit")
+    ) {
+      return t("admin:dashboard.trends.facilities");
     }
-    if (title.toLowerCase().includes("bruker") || title.toLowerCase().includes("user")) {
-      return t('admin:dashboard.trends.users');
+    if (
+      title.toLowerCase().includes("bruker") ||
+      title.toLowerCase().includes("user")
+    ) {
+      return t("admin:dashboard.trends.users");
     }
-    return t('admin:dashboard.trends.bookings');
+    return t("admin:dashboard.trends.bookings");
   };
 
   const trendDirection = getTrendDirection();
@@ -140,14 +151,20 @@ export const TrendCard = ({ title, data, icon: Icon, color }: ITrendCardProps): 
                     ? "text-red-600 dark:text-red-400"
                     : "text-gray-600 dark:text-gray-400"
                 }`}
-                aria-label={`${trendDirection === "up" ? t('admin:dashboard.trends.up') : trendDirection === "down" ? t('admin:dashboard.trends.down') : getTrendLabel()} ${Math.abs(trendPercentage)}`}
+                aria-label={`${
+                  trendDirection === "up"
+                    ? t("admin:dashboard.trends.up")
+                    : trendDirection === "down"
+                    ? t("admin:dashboard.trends.down")
+                    : getTrendLabel()
+                } ${Math.abs(trendPercentage)}`}
               >
                 {trendPercentage > 0 ? "+" : ""}
                 {trendPercentage}%
               </span>
             </div>
             <Badge className="bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300">
-              {t('admin:dashboard.trends.last_7_days')}
+              {t("admin:dashboard.trends.last_7_days")}
             </Badge>
           </div>
 
@@ -155,11 +172,18 @@ export const TrendCard = ({ title, data, icon: Icon, color }: ITrendCardProps): 
           <div
             className="flex items-end justify-between h-16 space-x-1"
             role="img"
-            aria-label={`${title} ${t('admin:charts.trend')} ${t('admin:charts.chart_title', { title, period: t('admin:dashboard.trends.last_7_days') })}`}
+            aria-label={`${title} ${t("admin:charts.trend")} ${t(
+              "admin:charts.chart_title",
+              { title, period: t("admin:dashboard.trends.last_7_days") }
+            )}`}
           >
             {data.map((item, index) => {
-              const height = range > 0 ? ((item.value - minValue) / range) * 100 : 50;
-              const formattedItemValue = formatNumber(item.value, i18n.language);
+              const height =
+                range > 0 ? ((item.value - minValue) / range) * 100 : 50;
+              const formattedItemValue = formatNumber(
+                item.value,
+                i18n.language
+              );
 
               return (
                 <div key={index} className="flex flex-col items-center flex-1">
@@ -192,5 +216,3 @@ export const TrendCard = ({ title, data, icon: Icon, color }: ITrendCardProps): 
     </Card>
   );
 };
-
-

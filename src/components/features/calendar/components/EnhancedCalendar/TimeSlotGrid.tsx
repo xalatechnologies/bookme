@@ -15,10 +15,10 @@ import { ICalendarGridProps, TimeSlotStatus } from "../../types";
 
 /**
  * Time slot grid component for calendar
- * 
+ *
  * Displays a grid of time slots for a week, showing availability
  * and allowing users to select time slots for booking.
- * 
+ *
  * Features:
  * - Week view with 7 days
  * - Time slots from 08:00 to 22:00
@@ -26,7 +26,7 @@ import { ICalendarGridProps, TimeSlotStatus } from "../../types";
  * - Click handling for slot selection
  * - Responsive design
  * - Accessibility support
- * 
+ *
  * @param props - Calendar grid props
  */
 export const TimeSlotGrid: React.FC<ICalendarGridProps> = ({
@@ -42,50 +42,66 @@ export const TimeSlotGrid: React.FC<ICalendarGridProps> = ({
   getAvailabilityStatus: externalGetAvailabilityStatus,
   isSlotSelected: externalIsSlotSelected,
   openingHoursStart = "08:00",
-  openingHoursEnd = "22:00"
+  openingHoursEnd = "22:00",
 }) => {
-  const { t, i18n } = useTranslation('calendar');
-  const currentLocale = i18n.language === 'en' ? enUS : nb;
-  
+  const { t, i18n } = useTranslation("calendar");
+  const currentLocale = i18n.language === "en" ? enUS : nb;
+
   // Generate time slots based on opening hours - memoized
   const timeSlots = useMemo(() => {
-    const startHour = parseInt(openingHoursStart.split(':')[0]);
-    const endHour = parseInt(openingHoursEnd.split(':')[0]);
+    const startHour = parseInt(openingHoursStart.split(":")[0]);
+    const endHour = parseInt(openingHoursEnd.split(":")[0]);
     const totalHours = endHour - startHour;
-    
+
     return Array.from({ length: totalHours }, (_, i) => {
       const hour = startHour + i;
       const nextHour = hour + 1;
-      return `${hour.toString().padStart(2, '0')}:00-${nextHour.toString().padStart(2, '0')}:00`;
+      return `${hour.toString().padStart(2, "0")}:00-${nextHour
+        .toString()
+        .padStart(2, "0")}:00`;
     });
   }, [openingHoursStart, openingHoursEnd]);
 
   // Use hooks for drag selection and availability
-  const { dragState, startDrag, updateDrag, endDrag, cancelDrag, isSlotInPreview } = useDragSelection();
-  const { getAvailabilityStatus: internalGetAvailabilityStatus, isSlotSelected: internalIsSlotSelected } = useAvailabilityStatus(selectedSlots);
+  const {
+    dragState,
+    startDrag,
+    updateDrag,
+    endDrag,
+    cancelDrag,
+    isSlotInPreview,
+  } = useDragSelection();
+  const {
+    getAvailabilityStatus: internalGetAvailabilityStatus,
+    isSlotSelected: internalIsSlotSelected,
+  } = useAvailabilityStatus(selectedSlots);
 
   // Use external props if available, otherwise use internal state
-  const getAvailabilityStatus = externalGetAvailabilityStatus || internalGetAvailabilityStatus;
+  const getAvailabilityStatus =
+    externalGetAvailabilityStatus || internalGetAvailabilityStatus;
   const isSlotSelected = externalIsSlotSelected || internalIsSlotSelected;
 
   /**
    * Get status for a specific time slot using availability hook
    * Memoized for performance
-   * 
+   *
    * @param day - Calendar day
    * @param timeSlot - Time slot string
    * @returns Status of the time slot
    */
-  const getSlotStatus = useCallback((day: Date, timeSlot: string): TimeSlotStatus => {
-    const { status } = getAvailabilityStatus(zoneId, day, timeSlot);
-    const isSelected = isSlotSelected(zoneId, day, timeSlot);
-    
-    if (isSelected) {
-      return "selected";
-    }
-    
-    return status as TimeSlotStatus;
-  }, [zoneId, getAvailabilityStatus, isSlotSelected]);
+  const getSlotStatus = useCallback(
+    (day: Date, timeSlot: string): TimeSlotStatus => {
+      const { status } = getAvailabilityStatus(zoneId, day, timeSlot);
+      const isSelected = isSlotSelected(zoneId, day, timeSlot);
+
+      if (isSelected) {
+        return "selected";
+      }
+
+      return status as TimeSlotStatus;
+    },
+    [zoneId, getAvailabilityStatus, isSlotSelected]
+  );
 
   /**
    * Get status label for accessibility
@@ -93,22 +109,25 @@ export const TimeSlotGrid: React.FC<ICalendarGridProps> = ({
    * @param status - Time slot status
    * @returns Translated status label
    */
-  const getStatusLabel = useCallback((status: TimeSlotStatus): string => {
-    switch (status) {
-      case "available":
-        return t('slot_status.available');
-      case "busy":
-        return t('slot_status.busy');
-      case "unavailable":
-        return t('slot_status.unavailable');
-      case "selected":
-        return t('slot_status.selected');
-      case "conflict":
-        return t('slot_status.conflict');
-      default:
-        return t('slot_status.conflict');
-    }
-  }, [t]);
+  const getStatusLabel = useCallback(
+    (status: TimeSlotStatus): string => {
+      switch (status) {
+        case "available":
+          return t("slot_status.available");
+        case "busy":
+          return t("slot_status.busy");
+        case "unavailable":
+          return t("slot_status.unavailable");
+        case "selected":
+          return t("slot_status.selected");
+        case "conflict":
+          return t("slot_status.conflict");
+        default:
+          return t("slot_status.conflict");
+      }
+    },
+    [t]
+  );
 
   /**
    * Get CSS classes for a time slot based on status
@@ -118,149 +137,195 @@ export const TimeSlotGrid: React.FC<ICalendarGridProps> = ({
    * @param isInPreview - Whether slot is in drag preview
    * @returns CSS class string
    */
-  const getSlotClasses = useCallback((status: TimeSlotStatus, isInPreview: boolean = false): string => {
-    const baseClasses = "p-3 text-center rounded-lg transition-all duration-200 cursor-pointer border-2 font-medium text-sm";
-    
-    if (isInPreview) {
-      return `${baseClasses} bg-blue-200 hover:bg-blue-300 border-blue-400 text-blue-800 font-medium cursor-pointer`;
-    }
-    
-    switch (status) {
-      case "available":
-        return `${baseClasses} bg-green-100 hover:bg-green-200 border-green-300 text-green-800 hover:shadow-md transform hover:scale-105`;
-      case "busy":
-        return `${baseClasses} bg-red-100 border-red-300 text-red-700 cursor-not-allowed line-through`;
-      case "selected":
-        return `${baseClasses} bg-blue-600 border-blue-700 text-white shadow-md hover:bg-blue-700 hover:border-blue-800`;
-      case "unavailable":
-        return `${baseClasses} bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed line-through`;
-      case "conflict":
-        return `${baseClasses} bg-orange-100 border-orange-300 text-orange-800 hover:bg-orange-200`;
-      default:
-        return `${baseClasses} bg-gray-100 border-gray-200 text-gray-600`;
-    }
-  }, []);
+  const getSlotClasses = useCallback(
+    (status: TimeSlotStatus, isInPreview: boolean = false): string => {
+      const baseClasses =
+        "p-3 text-center rounded-lg transition-all duration-200 cursor-pointer border-2 font-medium text-sm";
+
+      if (isInPreview) {
+        return `${baseClasses} bg-blue-200 hover:bg-blue-300 border-blue-400 text-blue-800 font-medium cursor-pointer`;
+      }
+
+      switch (status) {
+        case "available":
+          return `${baseClasses} bg-green-100 hover:bg-green-200 border-green-300 text-green-800 hover:shadow-md transform hover:scale-105`;
+        case "busy":
+          return `${baseClasses} bg-red-100 border-red-300 text-red-700 cursor-not-allowed line-through`;
+        case "selected":
+          return `${baseClasses} bg-blue-600 border-blue-700 text-white shadow-md hover:bg-blue-700 hover:border-blue-800`;
+        case "unavailable":
+          return `${baseClasses} bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed line-through`;
+        case "conflict":
+          return `${baseClasses} bg-orange-100 border-orange-300 text-orange-800 hover:bg-orange-200`;
+        default:
+          return `${baseClasses} bg-gray-100 border-gray-200 text-gray-600`;
+      }
+    },
+    []
+  );
 
   /**
    * Handle mouse down for drag selection
-   * 
+   *
    * @param day - Calendar day
    * @param timeSlot - Time slot string
    * @param event - Mouse event
    */
-  const handleMouseDown = useCallback((day: Date, timeSlot: string, event: React.MouseEvent): void => {
-    const { status } = getAvailabilityStatus(zoneId, day, timeSlot);
-    
-    if ((status === "available" || status === "selected") && !!onBulkSelect) {
-      event.preventDefault();
-      startDrag(zoneId, day, timeSlot, event);
-    }
-  }, [zoneId, getAvailabilityStatus, onBulkSelect, startDrag]);
+  const handleMouseDown = useCallback(
+    (day: Date, timeSlot: string, event: React.MouseEvent): void => {
+      const { status } = getAvailabilityStatus(zoneId, day, timeSlot);
+
+      if ((status === "available" || status === "selected") && !!onBulkSelect) {
+        event.preventDefault();
+        startDrag(zoneId, day, timeSlot, event);
+      }
+    },
+    [zoneId, getAvailabilityStatus, onBulkSelect, startDrag]
+  );
 
   /**
    * Handle mouse enter for drag selection
-   * 
+   *
    * @param day - Calendar day
    * @param timeSlot - Time slot string
    */
-  const handleMouseEnter = useCallback((day: Date, timeSlot: string): void => {
-    if (dragState.isDragging && !!onBulkSelect) {
-      updateDrag(zoneId, day, timeSlot, timeSlots, week.days, getAvailabilityStatus, facilityId, pricePerHour);
-    }
-  }, [dragState.isDragging, onBulkSelect, updateDrag, zoneId, timeSlots, week.days, getAvailabilityStatus, facilityId, pricePerHour]);
+  const handleMouseEnter = useCallback(
+    (day: Date, timeSlot: string): void => {
+      if (dragState.isDragging && !!onBulkSelect) {
+        updateDrag(
+          zoneId,
+          day,
+          timeSlot,
+          timeSlots,
+          week.days,
+          getAvailabilityStatus,
+          facilityId,
+          pricePerHour
+        );
+      }
+    },
+    [
+      dragState.isDragging,
+      onBulkSelect,
+      updateDrag,
+      zoneId,
+      timeSlots,
+      week.days,
+      getAvailabilityStatus,
+      facilityId,
+      pricePerHour,
+    ]
+  );
 
   /**
    * Handle mouse up for drag selection
    */
-  const handleMouseUp = useCallback((event: React.MouseEvent): void => {
-    if (dragState.isDragging && !!onBulkSelect) {
-      event.preventDefault();
-      event.stopPropagation();
-      
-      const previewSlots = endDrag();
-      
-      if (previewSlots.length > 0) {
-        // Pass the full slot objects, not just IDs
-        onBulkSelect(previewSlots);
+  const handleMouseUp = useCallback(
+    (event: React.MouseEvent): void => {
+      if (dragState.isDragging && !!onBulkSelect) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        const previewSlots = endDrag();
+
+        if (previewSlots.length > 0) {
+          // Pass the full slot objects, not just IDs
+          onBulkSelect(previewSlots);
+        }
       }
-    }
-  }, [dragState.isDragging, onBulkSelect, endDrag]);
+    },
+    [dragState.isDragging, onBulkSelect, endDrag]
+  );
 
   /**
    * Handle time slot click
-   * 
+   *
    * @param day - Calendar day
    * @param timeSlot - Time slot string
    * @param event - Mouse event
    */
-  const handleSlotClick = useCallback((day: Date, timeSlot: string, event: React.MouseEvent): void => {
-    // Prevent click if we just finished dragging
-    if (dragState.isDragging) {
-      event.preventDefault();
-      event.stopPropagation();
-      return;
-    }
-    
-    const { status } = getAvailabilityStatus(zoneId, day, timeSlot);
-    
-    // Check if slot is already selected
-    const isSelected = isSlotSelected(zoneId, day, timeSlot);
-    const actualStatus = isSelected ? "selected" : (status as TimeSlotStatus);
-    
-    if (status === "available" || isSelected) {
-      // Pass the actual Date object and parameters directly instead of a complex slotId
-      onSlotClick(zoneId, day, timeSlot, actualStatus);
-    }
-  }, [dragState.isDragging, getAvailabilityStatus, zoneId, isSlotSelected, onSlotClick]);
+  const handleSlotClick = useCallback(
+    (day: Date, timeSlot: string, event: React.MouseEvent): void => {
+      // Prevent click if we just finished dragging
+      if (dragState.isDragging) {
+        event.preventDefault();
+        event.stopPropagation();
+        return;
+      }
+
+      const { status } = getAvailabilityStatus(zoneId, day, timeSlot);
+
+      // Check if slot is already selected
+      const isSelected = isSlotSelected(zoneId, day, timeSlot);
+      const actualStatus = isSelected ? "selected" : (status as TimeSlotStatus);
+
+      if (status === "available" || isSelected) {
+        // Pass the actual Date object and parameters directly instead of a complex slotId
+        onSlotClick(zoneId, day, timeSlot, actualStatus);
+      }
+    },
+    [
+      dragState.isDragging,
+      getAvailabilityStatus,
+      zoneId,
+      isSlotSelected,
+      onSlotClick,
+    ]
+  );
 
   /**
    * Get day header classes
-   * 
+   *
    * @param day - Calendar day
    * @returns CSS class string
    */
   const getDayHeaderClasses = (day: Date): string => {
     const baseClasses = "p-3 text-center rounded-lg font-medium";
-    
+
     if (isToday(day)) {
       return `${baseClasses} bg-blue-100 border-2 border-blue-300 text-blue-800`;
     }
-    
+
     if (isWeekend(day)) {
       return `${baseClasses} bg-amber-50 border border-amber-200 text-amber-800`;
     }
-    
+
     return `${baseClasses} bg-gray-50 border border-gray-200 text-gray-700`;
   };
 
   if (error) {
     return (
       <div className="p-8 text-center">
-        <div className="text-red-600 mb-2">{t('errors.loading_calendar')}</div>
+        <div className="text-red-600 mb-2">{t("errors.loading_calendar")}</div>
         <div className="text-sm text-gray-500">{error}</div>
       </div>
     );
   }
 
   return (
-    <div 
+    <div
       className="w-full"
       onMouseLeave={cancelDrag}
       onMouseUp={handleMouseUp}
-      style={{ userSelect: 'none' }}
+      style={{ userSelect: "none" }}
     >
       <div className="w-full">
         {/* Day Headers - Compact like drammen */}
         <div className="grid grid-cols-7 gap-1 mb-4">
           {week.days.map((day, index) => {
-            const isToday = format(day.date, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd');
-            
+            const isToday =
+              format(day.date, "yyyy-MM-dd") ===
+              format(new Date(), "yyyy-MM-dd");
+
             return (
-              <div key={index} className={`p-2 text-center rounded-lg border ${
-                isToday 
-                  ? 'bg-blue-600 border-blue-700 text-white' 
-                  : 'bg-gray-50 border-gray-200 text-gray-700'
-              }`}>
+              <div
+                key={index}
+                className={`p-2 text-center rounded-lg border ${
+                  isToday
+                    ? "bg-blue-600 border-blue-700 text-white"
+                    : "bg-gray-50 border-gray-200 text-gray-700"
+                }`}
+              >
                 <div className="text-xs font-medium uppercase tracking-wide">
                   {format(day.date, "EEE", { locale: currentLocale })}
                 </div>
@@ -268,7 +333,9 @@ export const TimeSlotGrid: React.FC<ICalendarGridProps> = ({
                   {format(day.date, "dd", { locale: currentLocale })}
                 </div>
                 {isToday && (
-                  <div className="text-xs text-blue-200 mt-1">{t('navigation.today')}</div>
+                  <div className="text-xs text-blue-200 mt-1">
+                    {t("navigation.today")}
+                  </div>
                 )}
               </div>
             );
@@ -283,28 +350,41 @@ export const TimeSlotGrid: React.FC<ICalendarGridProps> = ({
                 const status = getSlotStatus(day.date, timeSlot);
                 const isInPreview = isSlotInPreview(zoneId, day.date, timeSlot);
                 // No need to generate slotId anymore since we pass parameters directly
-                
+
                 return (
                   <div key={dayIndex} className="relative">
                     <button
-                      className={`w-full h-8 rounded border transition-all duration-200 text-sm select-none ${getSlotClasses(status, isInPreview)} ${
-                        status === "available" ? 'transform hover:scale-105' : 
-                        status === "selected" ? 'hover:scale-105' : ''
+                      className={`w-full h-8 rounded border transition-all duration-200 text-sm select-none ${getSlotClasses(
+                        status,
+                        isInPreview
+                      )} ${
+                        status === "available"
+                          ? "transform hover:scale-105"
+                          : status === "selected"
+                          ? "hover:scale-105"
+                          : ""
                       }`}
                       disabled={status !== "available" && status !== "selected"}
-                      onMouseDown={(e) => handleMouseDown(day.date, timeSlot, e)}
+                      onMouseDown={(e) =>
+                        handleMouseDown(day.date, timeSlot, e)
+                      }
                       onMouseEnter={() => handleMouseEnter(day.date, timeSlot)}
                       onMouseUp={handleMouseUp}
                       onClick={(e) => handleSlotClick(day.date, timeSlot, e)}
                       title={getStatusLabel(status)}
-                      style={{ userSelect: 'none' }}
+                      style={{ userSelect: "none" }}
                     >
                       <div className="flex items-center justify-center h-full">
-                        <span className={`text-sm font-medium ${
-                          status === "selected" ? 'text-white' : 
-                          isInPreview ? 'text-blue-800' : 'text-gray-700'
-                        }`}>
-                          {timeSlot.split('-')[0]}
+                        <span
+                          className={`text-sm font-medium ${
+                            status === "selected"
+                              ? "text-white"
+                              : isInPreview
+                              ? "text-blue-800"
+                              : "text-gray-700"
+                          }`}
+                        >
+                          {timeSlot.split("-")[0]}
                         </span>
                         {isInPreview && status !== "selected" && (
                           <span className="text-sm text-blue-800 ml-1">◯</span>
@@ -321,7 +401,7 @@ export const TimeSlotGrid: React.FC<ICalendarGridProps> = ({
         {/* Loading Overlay */}
         {isLoading && (
           <div className="absolute inset-0 bg-white/50 flex items-center justify-center rounded-lg">
-            <div className="text-gray-600">{t('time_slots.loading')}</div>
+            <div className="text-gray-600">{t("time_slots.loading")}</div>
           </div>
         )}
       </div>

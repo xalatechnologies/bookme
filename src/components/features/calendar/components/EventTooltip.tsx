@@ -1,10 +1,10 @@
-import React from 'react';
-import { Calendar, Clock, MapPin, DollarSign } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { StatusBadge } from '@/components/common/status/StatusBadge';
-import type { IBookingEvent } from '@/types/calendar';
+import React from "react";
+import { Calendar, Clock, MapPin, DollarSign } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { StatusBadge } from "@/components/common/status/StatusBadge";
+import type { IBookingEvent } from "@/types/calendar";
 
 interface EventTooltipProps {
   readonly event: IBookingEvent;
@@ -13,23 +13,23 @@ interface EventTooltipProps {
 
 export const EventTooltip: React.FC<EventTooltipProps> = ({
   event,
-  className = ''
+  className = "",
 }): JSX.Element => {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation("common");
 
   const formatDate = (dateString: string): string => {
-    return new Date(dateString).toLocaleDateString('no-NO', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
+    return new Date(dateString).toLocaleDateString("no-NO", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
     });
   };
 
   const formatTime = (dateString: string): string => {
-    return new Date(dateString).toLocaleTimeString('no-NO', {
-      hour: '2-digit',
-      minute: '2-digit'
+    return new Date(dateString).toLocaleTimeString("no-NO", {
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
@@ -56,19 +56,19 @@ export const EventTooltip: React.FC<EventTooltipProps> = ({
               <Calendar className="w-4 h-4 flex-shrink-0" />
               <span>{formatDate(event.start)}</span>
             </div>
-            
+
             <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
               <Clock className="w-4 h-4 flex-shrink-0" />
               <span>
                 {formatTime(event.start)} - {formatTime(event.end)}
               </span>
             </div>
-            
+
             <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
               <MapPin className="w-4 h-4 flex-shrink-0" />
               <span className="truncate">{event.facilityName}</span>
             </div>
-            
+
             {event.priceNok && event.priceNok > 0 && (
               <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                 <DollarSign className="w-4 h-4 flex-shrink-0" />
@@ -91,10 +91,10 @@ export const EventTooltip: React.FC<EventTooltipProps> = ({
           {/* Actions */}
           <div className="flex gap-2 pt-2 border-t border-gray-200 dark:border-gray-700">
             <button className="flex-1 px-3 py-1.5 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
-              {t('context_menu.view_details')}
+              {t("context_menu.view_details")}
             </button>
             <button className="flex-1 px-3 py-1.5 text-sm border border-gray-300 text-gray-700 rounded hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800 transition-colors">
-              {t('context_menu.edit')}
+              {t("context_menu.edit")}
             </button>
           </div>
         </div>

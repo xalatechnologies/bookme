@@ -1,9 +1,9 @@
-import React, { useCallback, useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { Search, X, ChevronDown } from 'lucide-react';
+import React, { useCallback, useMemo } from "react";
+import { useTranslation } from "react-i18next";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Search, X, ChevronDown } from "lucide-react";
 
 export interface FilterOption {
   readonly id: string;
@@ -35,27 +35,36 @@ export const FilterBar: React.FC<FilterBarProps> = ({
   onFilterChange,
   onReset,
   searchPlaceholder,
-  searchValue = '',
+  searchValue = "",
   onSearchChange,
-  className = '',
+  className = "",
 }) => {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation("common");
 
   const totalActiveFilters = useMemo(() => {
-    return Object.values(selectedValues).reduce((sum, vals) => sum + vals.length, 0);
+    return Object.values(selectedValues).reduce(
+      (sum, vals) => sum + vals.length,
+      0
+    );
   }, [selectedValues]);
 
-  const handleToggleFilter = useCallback((filterId: string, value: string) => {
-    const current = selectedValues[filterId] || [];
-    const updated = current.includes(value)
-      ? current.filter((v) => v !== value)
-      : [...current, value];
-    onFilterChange(filterId, updated);
-  }, [selectedValues, onFilterChange]);
+  const handleToggleFilter = useCallback(
+    (filterId: string, value: string) => {
+      const current = selectedValues[filterId] || [];
+      const updated = current.includes(value)
+        ? current.filter((v) => v !== value)
+        : [...current, value];
+      onFilterChange(filterId, updated);
+    },
+    [selectedValues, onFilterChange]
+  );
 
-  const handleClearFilter = useCallback((filterId: string) => {
-    onFilterChange(filterId, []);
-  }, [onFilterChange]);
+  const handleClearFilter = useCallback(
+    (filterId: string) => {
+      onFilterChange(filterId, []);
+    },
+    [onFilterChange]
+  );
 
   return (
     <div className={`space-y-4 ${className}`}>
@@ -65,7 +74,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
           <Input
             type="text"
-            placeholder={searchPlaceholder || t('actions.search', 'Search')}
+            placeholder={searchPlaceholder || t("actions.search", "Search")}
             value={searchValue}
             onChange={(e) => onSearchChange(e.target.value)}
             className="pl-10"
@@ -101,11 +110,17 @@ export const FilterBar: React.FC<FilterBarProps> = ({
                   >
                     <input
                       type="checkbox"
-                      checked={(selectedValues[group.id] || []).includes(option.value)}
-                      onChange={() => handleToggleFilter(group.id, option.value)}
+                      checked={(selectedValues[group.id] || []).includes(
+                        option.value
+                      )}
+                      onChange={() =>
+                        handleToggleFilter(group.id, option.value)
+                      }
                       className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                     />
-                    <span className="text-sm text-gray-700 dark:text-gray-300">{option.label}</span>
+                    <span className="text-sm text-gray-700 dark:text-gray-300">
+                      {option.label}
+                    </span>
                   </label>
                 ))}
               </div>
@@ -119,7 +134,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
                     className="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center gap-2"
                   >
                     <X className="h-3 w-3" />
-                    {t('actions.clear', 'Clear')}
+                    {t("actions.clear", "Clear")}
                   </button>
                 </>
               )}
@@ -136,7 +151,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
             className="text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
           >
             <X className="h-4 w-4 mr-1" />
-            {t('actions.resetAll', 'Reset All')}
+            {t("actions.resetAll", "Reset All")}
           </Button>
         )}
       </div>
@@ -148,7 +163,11 @@ export const FilterBar: React.FC<FilterBarProps> = ({
             (selectedValues[group.id] || []).map((value) => {
               const option = group.options.find((o) => o.value === value);
               return (
-                <Badge key={`${group.id}-${value}`} variant="secondary" className="flex items-center gap-1">
+                <Badge
+                  key={`${group.id}-${value}`}
+                  variant="secondary"
+                  className="flex items-center gap-1"
+                >
                   {option?.label || value}
                   <button
                     onClick={() => handleToggleFilter(group.id, value)}

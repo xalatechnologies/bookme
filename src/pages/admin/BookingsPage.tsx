@@ -802,107 +802,103 @@ const BookingsPage = (): JSX.Element => {
         localStorage.getItem("pendingBookings") || "[]"
       );
       /* eslint-disable @typescript-eslint/no-explicit-any */
-      return pendingBookings.map(
-        (booking: any, index: number) => {
-          // Calculate proper time range from timeSlots if available
-          let startTime: string;
-          let endTime: string;
+      return pendingBookings.map((booking: any, index: number) => {
+        // Calculate proper time range from timeSlots if available
+        let startTime: string;
+        let endTime: string;
 
-          if (booking.timeSlots && booking.timeSlots.length > 0) {
-            // Calculate time range from multiple time slots
-            const sortedSlots = [...booking.timeSlots].sort(
-              (
-                a: { readonly timeSlot: string },
-                b: { readonly timeSlot: string }
-              ) => {
-                const timeA = a.timeSlot.split("-")[0];
-                const timeB = b.timeSlot.split("-")[0];
-                return timeA.localeCompare(timeB);
-              }
-            );
-            startTime = sortedSlots[0].timeSlot.split("-")[0];
-            const lastSlot = sortedSlots[sortedSlots.length - 1];
-            endTime = lastSlot.timeSlot.split("-")[1];
-          } else if (booking.time) {
-            // If no timeSlots but has time, try to calculate from duration
-            const timeParts = booking.time.split("-");
-            if (timeParts.length === 2 && booking.duration) {
-              startTime = timeParts[0];
-              const durationStr =
-                typeof booking.duration === "string"
-                  ? booking.duration
-                  : String(booking.duration);
-              const duration = parseInt(durationStr.replace(/\D/g, ""));
-              if (duration > 1) {
-                // Calculate end time based on duration
-                const [hours, minutes] = startTime.split(":").map(Number);
-                const endTimeDate = new Date();
-                endTimeDate.setHours(hours + duration, minutes, 0, 0);
-                endTime = endTimeDate.toTimeString().slice(0, 5);
-              } else {
-                endTime = timeParts[1];
-              }
+        if (booking.timeSlots && booking.timeSlots.length > 0) {
+          // Calculate time range from multiple time slots
+          const sortedSlots = [...booking.timeSlots].sort(
+            (
+              a: { readonly timeSlot: string },
+              b: { readonly timeSlot: string }
+            ) => {
+              const timeA = a.timeSlot.split("-")[0];
+              const timeB = b.timeSlot.split("-")[0];
+              return timeA.localeCompare(timeB);
+            }
+          );
+          startTime = sortedSlots[0].timeSlot.split("-")[0];
+          const lastSlot = sortedSlots[sortedSlots.length - 1];
+          endTime = lastSlot.timeSlot.split("-")[1];
+        } else if (booking.time) {
+          // If no timeSlots but has time, try to calculate from duration
+          const timeParts = booking.time.split("-");
+          if (timeParts.length === 2 && booking.duration) {
+            startTime = timeParts[0];
+            const durationStr =
+              typeof booking.duration === "string"
+                ? booking.duration
+                : String(booking.duration);
+            const duration = parseInt(durationStr.replace(/\D/g, ""));
+            if (duration > 1) {
+              // Calculate end time based on duration
+              const [hours, minutes] = startTime.split(":").map(Number);
+              const endTimeDate = new Date();
+              endTimeDate.setHours(hours + duration, minutes, 0, 0);
+              endTime = endTimeDate.toTimeString().slice(0, 5);
             } else {
-              startTime = timeParts[0];
               endTime = timeParts[1];
             }
           } else {
-            startTime = "10:00";
-            endTime = "12:00";
+            startTime = timeParts[0];
+            endTime = timeParts[1];
           }
-
-          return {
-            id: booking.id || (index + 1).toString(),
-            title: `Booking #${booking.id || index + 1} – ${
-              booking.facilityName
-            }`,
-            facility: booking.facilityName,
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            facilityId: (booking as any).facilityId || "1",
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            bookerName: (booking as any).contactPerson || "Ukjent bruker",
-            bookerEmail: "bruker@example.com", // This should come from user profile
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            purpose:
-              booking.purpose || (booking as any).description || "Booking",
-            startDate:
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              (booking as any).date ||
-              (() => {
-                const today = new Date();
-                const year = today.getFullYear();
-                const month = String(today.getMonth() + 1).padStart(2, "0");
-                const day = String(today.getDate()).padStart(2, "0");
-                return `${year}-${month}-${day}`;
-              })(),
-            endDate:
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              (booking as any).date ||
-              (() => {
-                const today = new Date();
-                const year = today.getFullYear();
-                const month = String(today.getMonth() + 1).padStart(2, "0");
-                const day = String(today.getDate()).padStart(2, "0");
-                return `${year}-${month}-${day}`;
-              })(),
-            startTime,
-            endTime,
-            status: booking.status || "pending",
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            requestedAt:
-              (booking as any).submittedAt || new Date().toISOString(),
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            price: (booking as any).price
-              ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                parseInt((booking as any).price.replace(/\D/g, ""))
-              : 0,
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            duration: booking.duration ? parseInt(booking.duration as any) : 2,
-            isRecurring: booking.isRecurring,
-            parentBookingId: booking.parentBookingId,
-          };
+        } else {
+          startTime = "10:00";
+          endTime = "12:00";
         }
-      );
+
+        return {
+          id: booking.id || (index + 1).toString(),
+          title: `Booking #${booking.id || index + 1} – ${
+            booking.facilityName
+          }`,
+          facility: booking.facilityName,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          facilityId: (booking as any).facilityId || "1",
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          bookerName: (booking as any).contactPerson || "Ukjent bruker",
+          bookerEmail: "bruker@example.com", // This should come from user profile
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          purpose: booking.purpose || (booking as any).description || "Booking",
+          startDate:
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (booking as any).date ||
+            (() => {
+              const today = new Date();
+              const year = today.getFullYear();
+              const month = String(today.getMonth() + 1).padStart(2, "0");
+              const day = String(today.getDate()).padStart(2, "0");
+              return `${year}-${month}-${day}`;
+            })(),
+          endDate:
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (booking as any).date ||
+            (() => {
+              const today = new Date();
+              const year = today.getFullYear();
+              const month = String(today.getMonth() + 1).padStart(2, "0");
+              const day = String(today.getDate()).padStart(2, "0");
+              return `${year}-${month}-${day}`;
+            })(),
+          startTime,
+          endTime,
+          status: booking.status || "pending",
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          requestedAt: (booking as any).submittedAt || new Date().toISOString(),
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          price: (booking as any).price
+            ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              parseInt((booking as any).price.replace(/\D/g, ""))
+            : 0,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          duration: booking.duration ? parseInt(booking.duration as any) : 2,
+          isRecurring: booking.isRecurring,
+          parentBookingId: booking.parentBookingId,
+        };
+      });
       /* eslint-enable @typescript-eslint/no-explicit-any */
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
@@ -917,87 +913,85 @@ const BookingsPage = (): JSX.Element => {
         localStorage.getItem("processedBookings") || "[]"
       );
       /* eslint-disable @typescript-eslint/no-explicit-any */
-      return processedBookings.map(
-        (booking: any, index: number) => {
-          // Derive start/end time
-          let startTime: string;
-          let endTime: string;
-          if (booking.startTime && booking.endTime) {
-            startTime = booking.startTime;
-            endTime = booking.endTime;
-          } else if (booking.time) {
-            const timeParts = booking.time.split("-");
-            startTime = timeParts[0];
-            endTime = timeParts[1];
-          } else if (booking.timeSlots && booking.timeSlots.length > 0) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const sorted = [...booking.timeSlots].sort((a: any, b: any) =>
-              a.timeSlot.localeCompare(b.timeSlot)
-            );
-            startTime = sorted[0].timeSlot.split("-")[0];
-            endTime = sorted[sorted.length - 1].timeSlot.split("-")[1];
-          } else {
-            startTime = "10:00";
-            endTime = "12:00";
-          }
-
-          const startDate =
-            booking.date ||
-            booking.startDate ||
-            (() => {
-              const today = new Date();
-              const y = today.getFullYear();
-              const m = String(today.getMonth() + 1).padStart(2, "0");
-              const d = String(today.getDate()).padStart(2, "0");
-              return `${y}-${m}-${d}`;
-            })();
-
-          const endDate = startDate;
-
-          // Normalize price/duration
-          const priceNumber =
-            typeof booking.price === "string"
-              ? parseInt(booking.price.replace(/\D/g, ""))
-              : booking.price || 0;
-          const durationHours =
-            typeof booking.duration === "string"
-              ? parseFloat(
-                  booking.duration.replace(/[^0-9.,]/g, "").replace(",", ".")
-                ) || 1
-              : booking.duration
-              ? booking.duration
-              : 1;
-
-          return {
-            id: booking.id || (index + 1).toString(),
-            title: `Booking #${booking.id || index + 1} – ${
-              booking.facility || booking.facilityName || "Ukjent fasilitet"
-            }`,
-            facility:
-              booking.facility || booking.facilityName || "Ukjent fasilitet",
-            facilityId: booking.facilityId || "1",
-            bookerName:
-              booking.contactPerson || booking.bookerName || "Ukjent bruker",
-            bookerEmail: booking.bookerEmail || "bruker@example.com",
-            purpose: booking.purpose || booking.description || "Booking",
-            startDate,
-            endDate,
-            startTime,
-            endTime,
-            status: booking.status || "approved",
-            requestedAt:
-              booking.submittedAt ||
-              booking.requestedAt ||
-              new Date().toISOString(),
-            processedBy: booking.processedBy,
-            processedAt: booking.processedAt,
-            price: priceNumber,
-            duration: durationHours,
-            isRecurring: booking.isRecurring,
-            parentBookingId: booking.parentBookingId,
-          } as IBooking;
+      return processedBookings.map((booking: any, index: number) => {
+        // Derive start/end time
+        let startTime: string;
+        let endTime: string;
+        if (booking.startTime && booking.endTime) {
+          startTime = booking.startTime;
+          endTime = booking.endTime;
+        } else if (booking.time) {
+          const timeParts = booking.time.split("-");
+          startTime = timeParts[0];
+          endTime = timeParts[1];
+        } else if (booking.timeSlots && booking.timeSlots.length > 0) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const sorted = [...booking.timeSlots].sort((a: any, b: any) =>
+            a.timeSlot.localeCompare(b.timeSlot)
+          );
+          startTime = sorted[0].timeSlot.split("-")[0];
+          endTime = sorted[sorted.length - 1].timeSlot.split("-")[1];
+        } else {
+          startTime = "10:00";
+          endTime = "12:00";
         }
-      );
+
+        const startDate =
+          booking.date ||
+          booking.startDate ||
+          (() => {
+            const today = new Date();
+            const y = today.getFullYear();
+            const m = String(today.getMonth() + 1).padStart(2, "0");
+            const d = String(today.getDate()).padStart(2, "0");
+            return `${y}-${m}-${d}`;
+          })();
+
+        const endDate = startDate;
+
+        // Normalize price/duration
+        const priceNumber =
+          typeof booking.price === "string"
+            ? parseInt(booking.price.replace(/\D/g, ""))
+            : booking.price || 0;
+        const durationHours =
+          typeof booking.duration === "string"
+            ? parseFloat(
+                booking.duration.replace(/[^0-9.,]/g, "").replace(",", ".")
+              ) || 1
+            : booking.duration
+            ? booking.duration
+            : 1;
+
+        return {
+          id: booking.id || (index + 1).toString(),
+          title: `Booking #${booking.id || index + 1} – ${
+            booking.facility || booking.facilityName || "Ukjent fasilitet"
+          }`,
+          facility:
+            booking.facility || booking.facilityName || "Ukjent fasilitet",
+          facilityId: booking.facilityId || "1",
+          bookerName:
+            booking.contactPerson || booking.bookerName || "Ukjent bruker",
+          bookerEmail: booking.bookerEmail || "bruker@example.com",
+          purpose: booking.purpose || booking.description || "Booking",
+          startDate,
+          endDate,
+          startTime,
+          endTime,
+          status: booking.status || "approved",
+          requestedAt:
+            booking.submittedAt ||
+            booking.requestedAt ||
+            new Date().toISOString(),
+          processedBy: booking.processedBy,
+          processedAt: booking.processedAt,
+          price: priceNumber,
+          duration: durationHours,
+          isRecurring: booking.isRecurring,
+          parentBookingId: booking.parentBookingId,
+        } as IBooking;
+      });
       /* eslint-enable @typescript-eslint/no-explicit-any */
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {

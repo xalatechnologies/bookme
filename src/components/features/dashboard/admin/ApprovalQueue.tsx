@@ -9,7 +9,9 @@ interface IApprovalQueueProps {
   readonly requests: readonly IApprovalRequest[];
 }
 
-export const ApprovalQueue = ({ requests }: IApprovalQueueProps): JSX.Element => {
+export const ApprovalQueue = ({
+  requests,
+}: IApprovalQueueProps): JSX.Element => {
   const navigate = useNavigate();
 
   const getPriorityIcon = (priority: string): React.ReactNode => {
@@ -78,18 +80,20 @@ export const ApprovalQueue = ({ requests }: IApprovalQueueProps): JSX.Element =>
           Se alle ({requests.length})
         </button>
       </div>
-      
+
       <div className="space-y-3">
         {requests.slice(0, 3).map((request) => (
           <div
             key={request.id}
-            className={`p-4 rounded-lg border-l-4 ${getPriorityColor(request.priority)} hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors cursor-pointer`}
+            className={`p-4 rounded-lg border-l-4 ${getPriorityColor(
+              request.priority
+            )} hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors cursor-pointer`}
             onClick={() => navigate("/admin/approvals")}
             role="button"
             tabIndex={0}
             aria-label={`Se godkjenning ${request.title}`}
             onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
+              if (e.key === "Enter" || e.key === " ") {
                 e.preventDefault();
                 navigate("/admin/approvals");
               }
@@ -121,5 +125,3 @@ export const ApprovalQueue = ({ requests }: IApprovalQueueProps): JSX.Element =>
     </div>
   );
 };
-
-

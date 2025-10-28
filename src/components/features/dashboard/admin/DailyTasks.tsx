@@ -4,14 +4,14 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { 
-  Zap, 
-  CheckCircle, 
-  AlertTriangle, 
+import {
+  Zap,
+  CheckCircle,
+  AlertTriangle,
   ArrowRight,
   Clock,
   CreditCard,
-  Users
+  Users,
 } from "lucide-react";
 
 interface IDailyTask {
@@ -33,7 +33,7 @@ export const DailyTasks = (): JSX.Element => {
       count: 3,
       priority: "high",
       href: "/admin/bookings?filter=pending",
-      icon: CheckCircle
+      icon: CheckCircle,
     },
     {
       id: "2",
@@ -41,7 +41,7 @@ export const DailyTasks = (): JSX.Element => {
       count: 1,
       priority: "high",
       href: "/admin/bookings?filter=payment-error",
-      icon: CreditCard
+      icon: CreditCard,
     },
     {
       id: "3",
@@ -49,24 +49,27 @@ export const DailyTasks = (): JSX.Element => {
       count: 2,
       priority: "medium",
       href: "/admin/users-roles?filter=no-role",
-      icon: Users
-    }
+      icon: Users,
+    },
   ];
 
   const getPriorityColor = (priority: IDailyTask["priority"]): string => {
     const colors = {
       high: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300",
-      medium: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300",
-      low: "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300"
+      medium:
+        "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300",
+      low: "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300",
     };
     return colors[priority];
   };
 
-  const getPriorityIcon = (priority: IDailyTask["priority"]): React.ComponentType<{ className?: string }> => {
+  const getPriorityIcon = (
+    priority: IDailyTask["priority"]
+  ): React.ComponentType<{ className?: string }> => {
     const icons = {
       high: AlertTriangle,
       medium: Clock,
-      low: CheckCircle
+      low: CheckCircle,
     };
     return icons[priority];
   };
@@ -88,7 +91,7 @@ export const DailyTasks = (): JSX.Element => {
           {dailyTasks.map((task) => {
             const PriorityIcon = getPriorityIcon(task.priority);
             const TaskIcon = task.icon;
-            
+
             return (
               <div
                 key={task.id}
@@ -104,12 +107,16 @@ export const DailyTasks = (): JSX.Element => {
                     <div className="flex items-center space-x-2 mt-1">
                       <Badge className={getPriorityColor(task.priority)}>
                         <PriorityIcon className="h-3 w-3 mr-1" />
-                        {task.priority === "high" ? "Høy" : task.priority === "medium" ? "Medium" : "Lav"}
+                        {task.priority === "high"
+                          ? "Høy"
+                          : task.priority === "medium"
+                          ? "Medium"
+                          : "Lav"}
                       </Badge>
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="flex items-center space-x-2">
                   <span className="text-2xl font-bold text-gray-900 dark:text-white">
                     {task.count}
@@ -124,5 +131,3 @@ export const DailyTasks = (): JSX.Element => {
     </Card>
   );
 };
-
-

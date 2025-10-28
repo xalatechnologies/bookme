@@ -2,13 +2,42 @@
 
 import React, { useState } from "react";
 import { format } from "date-fns";
-import { Calendar, Clock, Users, MapPin, Repeat, Pause, Play, X, Edit, MoreHorizontal } from "lucide-react";
+import {
+  Calendar,
+  Clock,
+  Users,
+  MapPin,
+  Repeat,
+  Pause,
+  Play,
+  X,
+  Edit,
+  MoreHorizontal,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { StatusBadge } from "@/components/common/status/StatusBadge";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { RecurringBooking } from "@/types/recurringBooking";
 import { recurrenceEngine } from "@/utils/recurrenceEngine";
 
@@ -21,14 +50,22 @@ interface RecurringBookingCardProps {
   readonly onResume: (id: string) => void;
   readonly onCancel: (id: string) => void;
   readonly onEdit: (id: string) => void;
-  readonly onCancelOccurrence: (bookingId: string, occurrenceId: string) => void;
-  readonly onConfirmOccurrence: (bookingId: string, occurrenceId: string) => void;
+  readonly onCancelOccurrence: (
+    bookingId: string,
+    occurrenceId: string
+  ) => void;
+  readonly onConfirmOccurrence: (
+    bookingId: string,
+    occurrenceId: string
+  ) => void;
 }
 
 /**
  * Occurrence status badge component
  */
-const OccurrenceStatusBadge: React.FC<{ status: RecurringBooking['occurrences'][0]['status'] }> = ({ status }) => {
+const OccurrenceStatusBadge: React.FC<{
+  status: RecurringBooking["occurrences"][0]["status"];
+}> = ({ status }) => {
   return (
     <StatusBadge
       status={status}
@@ -43,25 +80,29 @@ const OccurrenceStatusBadge: React.FC<{ status: RecurringBooking['occurrences'][
  * Occurrence list component showing upcoming bookings
  */
 const OccurrenceList: React.FC<{
-  readonly occurrences: RecurringBooking['occurrences'];
+  readonly occurrences: RecurringBooking["occurrences"];
   readonly onCancelOccurrence: (occurrenceId: string) => void;
   readonly onConfirmOccurrence: (occurrenceId: string) => void;
 }> = ({ occurrences, onCancelOccurrence, onConfirmOccurrence }) => {
   const upcomingOccurrences = occurrences
-    .filter(occ => new Date(occ.date) >= new Date())
+    .filter((occ) => new Date(occ.date) >= new Date())
     .slice(0, 5); // Show next 5 occurrences
 
   if (upcomingOccurrences.length === 0) {
     return (
       <div className="text-center py-4">
-        <p className="text-sm text-muted-foreground">Ingen kommende bookinger</p>
+        <p className="text-sm text-muted-foreground">
+          Ingen kommende bookinger
+        </p>
       </div>
     );
   }
 
   return (
     <div className="space-y-2">
-      <h4 className="text-sm font-medium text-muted-foreground">Kommende bookinger</h4>
+      <h4 className="text-sm font-medium text-muted-foreground">
+        Kommende bookinger
+      </h4>
       <div className="space-y-1">
         {upcomingOccurrences.map((occurrence) => (
           <div
@@ -76,7 +117,7 @@ const OccurrenceList: React.FC<{
               <OccurrenceStatusBadge status={occurrence.status} />
             </div>
             <div className="flex items-center space-x-1">
-              {occurrence.status === 'pending' && (
+              {occurrence.status === "pending" && (
                 <>
                   <Button
                     size="sm"
@@ -124,7 +165,7 @@ const ConfirmationDialog: React.FC<{
   onCancel,
   confirmText = "Bekreft",
   cancelText = "Avbryt",
-  variant = "default"
+  variant = "default",
 }) => {
   return (
     <Dialog open={isOpen} onOpenChange={onCancel}>
@@ -151,7 +192,7 @@ const ConfirmationDialog: React.FC<{
 
 /**
  * Recurring booking card component
- * 
+ *
  * Displays a recurring booking with all details, actions, and upcoming occurrences.
  * Provides full management capabilities including pause, resume, cancel, and edit.
  */
@@ -162,16 +203,22 @@ export const RecurringBookingCard: React.FC<RecurringBookingCardProps> = ({
   onCancel,
   onEdit,
   onCancelOccurrence,
-  onConfirmOccurrence
+  onConfirmOccurrence,
 }) => {
   const [showCancelDialog, setShowCancelDialog] = useState<boolean>(false);
   const [showPauseDialog, setShowPauseDialog] = useState<boolean>(false);
   const [showResumeDialog, setShowResumeDialog] = useState<boolean>(false);
 
-  const patternDescription = recurrenceEngine.getPatternDescription(booking.recurrencePattern);
+  const patternDescription = recurrenceEngine.getPatternDescription(
+    booking.recurrencePattern
+  );
   const totalOccurrences = booking.occurrences.length;
-  const confirmedOccurrences = booking.occurrences.filter(occ => occ.status === 'confirmed').length;
-  const pendingOccurrences = booking.occurrences.filter(occ => occ.status === 'pending').length;
+  const confirmedOccurrences = booking.occurrences.filter(
+    (occ) => occ.status === "confirmed"
+  ).length;
+  const pendingOccurrences = booking.occurrences.filter(
+    (occ) => occ.status === "pending"
+  ).length;
 
   const handleCancelOccurrence = (occurrenceId: string): void => {
     onCancelOccurrence(booking.id, occurrenceId);
@@ -206,11 +253,11 @@ export const RecurringBookingCard: React.FC<RecurringBookingCardProps> = ({
                 <Repeat className="h-5 w-5" />
                 <span>{booking.facilityName}</span>
                 <StatusBadge
-              status={booking.status}
-              translationKey={`common:status.${booking.status}`}
-              showIcon={false}
-              size="sm"
-            />
+                  status={booking.status}
+                  translationKey={`common:status.${booking.status}`}
+                  showIcon={false}
+                  size="sm"
+                />
               </CardTitle>
               <CardDescription className="flex items-center space-x-4">
                 <span className="flex items-center space-x-1">
@@ -235,13 +282,13 @@ export const RecurringBookingCard: React.FC<RecurringBookingCardProps> = ({
                   <Edit className="h-4 w-4 mr-2" />
                   Rediger
                 </DropdownMenuItem>
-                {booking.status === 'active' && (
+                {booking.status === "active" && (
                   <DropdownMenuItem onClick={() => setShowPauseDialog(true)}>
                     <Pause className="h-4 w-4 mr-2" />
                     Pause
                   </DropdownMenuItem>
                 )}
-                {booking.status === 'paused' && (
+                {booking.status === "paused" && (
                   <DropdownMenuItem onClick={() => setShowResumeDialog(true)}>
                     <Play className="h-4 w-4 mr-2" />
                     Gjenoppta
@@ -271,13 +318,17 @@ export const RecurringBookingCard: React.FC<RecurringBookingCardProps> = ({
               <div className="flex items-center space-x-2">
                 <Calendar className="h-4 w-4 text-muted-foreground" />
                 <span className="text-sm font-medium">Startdato:</span>
-                <span className="text-sm">{format(new Date(booking.startDate), "dd.MM.yyyy")}</span>
+                <span className="text-sm">
+                  {format(new Date(booking.startDate), "dd.MM.yyyy")}
+                </span>
               </div>
               {booking.endDate && (
                 <div className="flex items-center space-x-2">
                   <Calendar className="h-4 w-4 text-muted-foreground" />
                   <span className="text-sm font-medium">Sluttdato:</span>
-                  <span className="text-sm">{format(new Date(booking.endDate), "dd.MM.yyyy")}</span>
+                  <span className="text-sm">
+                    {format(new Date(booking.endDate), "dd.MM.yyyy")}
+                  </span>
                 </div>
               )}
             </div>
@@ -289,7 +340,9 @@ export const RecurringBookingCard: React.FC<RecurringBookingCardProps> = ({
               {booking.activityType && (
                 <div className="text-sm">
                   <span className="font-medium">Aktivitetstype:</span>
-                  <span className="text-muted-foreground ml-1">{booking.activityType}</span>
+                  <span className="text-muted-foreground ml-1">
+                    {booking.activityType}
+                  </span>
                 </div>
               )}
             </div>
@@ -314,11 +367,15 @@ export const RecurringBookingCard: React.FC<RecurringBookingCardProps> = ({
               <div className="text-xs text-muted-foreground">Total</div>
             </div>
             <div className="text-center">
-              <div className="text-lg font-semibold text-green-600">{confirmedOccurrences}</div>
+              <div className="text-lg font-semibold text-green-600">
+                {confirmedOccurrences}
+              </div>
               <div className="text-xs text-muted-foreground">Bekreftet</div>
             </div>
             <div className="text-center">
-              <div className="text-lg font-semibold text-yellow-600">{pendingOccurrences}</div>
+              <div className="text-lg font-semibold text-yellow-600">
+                {pendingOccurrences}
+              </div>
               <div className="text-xs text-muted-foreground">Venter</div>
             </div>
           </div>
@@ -335,13 +392,15 @@ export const RecurringBookingCard: React.FC<RecurringBookingCardProps> = ({
             <div className="flex justify-between items-center">
               <span className="text-sm font-medium">Totalpris:</span>
               <span className="text-lg font-semibold">
-                {booking.pricing.totalPrice.toLocaleString('no-NO')} kr
+                {booking.pricing.totalPrice.toLocaleString("no-NO")} kr
               </span>
             </div>
             {booking.pricing.discount > 0 && (
               <div className="flex justify-between text-sm text-green-600">
                 <span>Rabatt:</span>
-                <span>-{booking.pricing.discount.toLocaleString('no-NO')} kr</span>
+                <span>
+                  -{booking.pricing.discount.toLocaleString("no-NO")} kr
+                </span>
               </div>
             )}
           </div>
@@ -379,4 +438,3 @@ export const RecurringBookingCard: React.FC<RecurringBookingCardProps> = ({
     </>
   );
 };
-

@@ -247,10 +247,13 @@ export const MessageInbox: React.FC<MessageInboxProps> = ({
   //   setPriorityFilter("all");
   // };
 
-  const handleThreadSelect = useCallback((threadId: string) => {
-    setSelectedThreadId(threadId);
-    onThreadSelect?.(threadId);
-  }, [onThreadSelect]);
+  const handleThreadSelect = useCallback(
+    (threadId: string) => {
+      setSelectedThreadId(threadId);
+      onThreadSelect?.(threadId);
+    },
+    [onThreadSelect]
+  );
 
   // const handleMarkResolved = useCallback((threadId: string) => {
   //   updateThread(threadId, { status: "resolved" });

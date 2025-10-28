@@ -167,7 +167,7 @@ export const I18N_NAMESPACE = 'bookings' as const;
  * Centralized translation keys for bookings domain
  * 
  * Usage:
- * const { t } = useTranslation('bookings');
+ * const { t } = useTranslation('booking');
  * <h1>{t(BOOKING_I18N_KEYS.TITLE)}</h1>
  */
 export const BOOKING_I18N_KEYS = {

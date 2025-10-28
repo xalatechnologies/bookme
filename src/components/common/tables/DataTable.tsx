@@ -1,7 +1,7 @@
-import React, { useState, useCallback, useMemo } from 'react';
-import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
-import { ArrowUpDown, ChevronUp, ChevronDown } from 'lucide-react';
+import React, { useState, useCallback, useMemo } from "react";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { ArrowUpDown, ChevronUp, ChevronDown } from "lucide-react";
 
 export interface DataTableColumn<T> {
   readonly id: string;
@@ -30,9 +30,12 @@ export interface DataTableProps<T> {
   readonly emptyMessage?: string;
 }
 
-type SortOrder = 'asc' | 'desc' | null;
+type SortOrder = "asc" | "desc" | null;
 
-export const DataTable = React.forwardRef<HTMLDivElement, DataTableProps<unknown>>(
+export const DataTable = React.forwardRef<
+  HTMLDivElement,
+  DataTableProps<unknown>
+>(
   (
     {
       data,
@@ -41,8 +44,8 @@ export const DataTable = React.forwardRef<HTMLDivElement, DataTableProps<unknown
       onSelectionChange,
       getRowId,
       onRowClick,
-      className = '',
-      emptyMessage = 'No data available',
+      className = "",
+      emptyMessage = "No data available",
     },
     ref
   ) => {
@@ -72,10 +75,11 @@ export const DataTable = React.forwardRef<HTMLDivElement, DataTableProps<unknown
         if (bValue === null || bValue === undefined) return -1;
 
         const comparison =
-          String(aValue).localeCompare(String(bValue), undefined, { numeric: true }) ||
-          (String(aValue) < String(bValue) ? -1 : 1);
+          String(aValue).localeCompare(String(bValue), undefined, {
+            numeric: true,
+          }) || (String(aValue) < String(bValue) ? -1 : 1);
 
-        return sortConfig.order === 'asc' ? comparison : -comparison;
+        return sortConfig.order === "asc" ? comparison : -comparison;
       });
 
       return sorted;
@@ -84,13 +88,13 @@ export const DataTable = React.forwardRef<HTMLDivElement, DataTableProps<unknown
     const handleSort = useCallback((columnId: string) => {
       setSortConfig((prev) => {
         if (prev.columnId === columnId) {
-          if (prev.order === 'asc') {
-            return { columnId, order: 'desc' };
-          } else if (prev.order === 'desc') {
+          if (prev.order === "asc") {
+            return { columnId, order: "desc" };
+          } else if (prev.order === "desc") {
             return { columnId: null, order: null };
           }
         }
-        return { columnId, order: 'asc' };
+        return { columnId, order: "asc" };
       });
     }, []);
 
@@ -100,7 +104,9 @@ export const DataTable = React.forwardRef<HTMLDivElement, DataTableProps<unknown
         setSelectedIds(newSelected);
         onSelectionChange?.([]);
       } else {
-        const newSelected = new Set(data.map((item) => getRowId(item as unknown)));
+        const newSelected = new Set(
+          data.map((item) => getRowId(item as unknown))
+        );
         setSelectedIds(newSelected);
         onSelectionChange?.(Array.from(newSelected));
       }
@@ -132,7 +138,10 @@ export const DataTable = React.forwardRef<HTMLDivElement, DataTableProps<unknown
     }
 
     return (
-      <div ref={ref} className={`w-full overflow-x-auto border border-gray-200 dark:border-gray-700 rounded-lg ${className}`}>
+      <div
+        ref={ref}
+        className={`w-full overflow-x-auto border border-gray-200 dark:border-gray-700 rounded-lg ${className}`}
+      >
         <div className="w-full border-collapse">
           {/* Header */}
           <div className="flex bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
@@ -146,7 +155,11 @@ export const DataTable = React.forwardRef<HTMLDivElement, DataTableProps<unknown
             )}
             {columns.map((column) => {
               return (
-                <div key={column.id} className="flex-1 p-4 font-semibold text-gray-900 dark:text-white border-r border-gray-200 dark:border-gray-700 last:border-r-0" style={{ width: column.width }}>
+                <div
+                  key={column.id}
+                  className="flex-1 p-4 font-semibold text-gray-900 dark:text-white border-r border-gray-200 dark:border-gray-700 last:border-r-0"
+                  style={{ width: column.width }}
+                >
                   {column.sortable ? (
                     <Button
                       variant="ghost"
@@ -156,14 +169,15 @@ export const DataTable = React.forwardRef<HTMLDivElement, DataTableProps<unknown
                     >
                       <span className="flex items-center gap-2">
                         {column.header}
-                        {sortConfig.columnId === column.id && sortConfig.order && (
-                          sortConfig.order === 'asc' ? (
+                        {sortConfig.columnId === column.id &&
+                          sortConfig.order &&
+                          (sortConfig.order === "asc" ? (
                             <ChevronUp className="h-4 w-4" />
                           ) : (
                             <ChevronDown className="h-4 w-4" />
-                          )
-                        )}
-                        {(!sortConfig.columnId || sortConfig.columnId !== column.id) && (
+                          ))}
+                        {(!sortConfig.columnId ||
+                          sortConfig.columnId !== column.id) && (
                           <ArrowUpDown className="h-4 w-4 text-gray-400 opacity-0 group-hover:opacity-100" />
                         )}
                       </span>
@@ -184,12 +198,17 @@ export const DataTable = React.forwardRef<HTMLDivElement, DataTableProps<unknown
                 <div
                   key={rowId}
                   className={`flex border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors ${
-                    onRowClick ? 'cursor-pointer' : ''
+                    onRowClick ? "cursor-pointer" : ""
                   }`}
                   onClick={() => onRowClick?.(item)}
                 >
                   {selectable && (
-                    <div className="p-4 w-12 border-r border-gray-200 dark:border-gray-700 flex items-center" onClick={(e: React.MouseEvent<HTMLDivElement>) => e.stopPropagation()}>
+                    <div
+                      className="p-4 w-12 border-r border-gray-200 dark:border-gray-700 flex items-center"
+                      onClick={(e: React.MouseEvent<HTMLDivElement>) =>
+                        e.stopPropagation()
+                      }
+                    >
                       <Checkbox
                         checked={selectedIds.has(rowId)}
                         onCheckedChange={() => handleSelectRow(rowId)}
@@ -198,9 +217,15 @@ export const DataTable = React.forwardRef<HTMLDivElement, DataTableProps<unknown
                   )}
                   {columns.map((column) => {
                     const value = column.accessor(item);
-                    const rendered = column.render ? column.render(value, item) : value;
+                    const rendered = column.render
+                      ? column.render(value, item)
+                      : value;
                     return (
-                      <div key={column.id} className="flex-1 p-4 border-r border-gray-200 dark:border-gray-700 last:border-r-0" style={{ width: column.width }}>
+                      <div
+                        key={column.id}
+                        className="flex-1 p-4 border-r border-gray-200 dark:border-gray-700 last:border-r-0"
+                        style={{ width: column.width }}
+                      >
                         {rendered}
                       </div>
                     );
@@ -215,4 +240,4 @@ export const DataTable = React.forwardRef<HTMLDivElement, DataTableProps<unknown
   }
 );
 
-DataTable.displayName = 'DataTable';
+DataTable.displayName = "DataTable";

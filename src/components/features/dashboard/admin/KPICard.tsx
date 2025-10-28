@@ -23,12 +23,15 @@ export const KPICard = ({ card }: IKPICardProps): JSX.Element => {
   };
 
   // Map color from IKPICard to KPICardProps
-  const colorMap: Record<string, 'blue' | 'green' | 'yellow' | 'red' | 'purple' | 'gray'> = {
-    blue: 'blue',
-    green: 'green',
-    yellow: 'yellow',
-    red: 'red',
-    purple: 'purple'
+  const colorMap: Record<
+    string,
+    "blue" | "green" | "yellow" | "red" | "purple" | "gray"
+  > = {
+    blue: "blue",
+    green: "green",
+    yellow: "yellow",
+    red: "red",
+    purple: "purple",
   };
 
   return (
@@ -40,14 +43,12 @@ export const KPICard = ({ card }: IKPICardProps): JSX.Element => {
       trend={{
         value: card.trend.percentage,
         direction: card.trend.direction,
-        period: card.trend.period
+        period: card.trend.period,
       }}
       icon={<card.icon className="w-6 h-6" />}
-      color={colorMap[card.color] || 'gray'}
+      color={colorMap[card.color] || "gray"}
       onClick={handleClick}
       size="md"
     />
   );
 };
-
-

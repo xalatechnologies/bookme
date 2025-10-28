@@ -6,7 +6,14 @@ import { Paperclip, Send, AlertCircle, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { FormField } from "@/components/common/forms/FormField";
 import { useFormValidation } from "@/hooks/shared";
 import { CreateSupportTicketData } from "@/types/support";
@@ -21,7 +28,7 @@ export interface ISupportTicketFormProps {
   readonly userId: string;
   readonly userName: string;
   readonly userEmail: string;
-  readonly userType?: 'tenant' | 'landlord';
+  readonly userType?: "tenant" | "landlord";
   readonly relatedBookingId?: string;
 }
 
@@ -35,15 +42,18 @@ const FileUpload: React.FC<{
   readonly files: readonly File[];
   readonly onFilesChange: (files: readonly File[]) => void;
 }> = ({ files, onFilesChange }): JSX.Element => {
-  const { t } = useTranslation('support');
+  const { t } = useTranslation("support");
   const [isDragOver, setIsDragOver] = useState<boolean>(false);
 
-  const handleFileSelect = useCallback((selectedFiles: FileList | null): void => {
-    if (selectedFiles) {
-      const newFiles = Array.from(selectedFiles);
-      onFilesChange([...files, ...newFiles]);
-    }
-  }, [files, onFilesChange]);
+  const handleFileSelect = useCallback(
+    (selectedFiles: FileList | null): void => {
+      if (selectedFiles) {
+        const newFiles = Array.from(selectedFiles);
+        onFilesChange([...files, ...newFiles]);
+      }
+    },
+    [files, onFilesChange]
+  );
 
   const handleDragOver = useCallback((e: React.DragEvent): void => {
     e.preventDefault();
@@ -55,34 +65,40 @@ const FileUpload: React.FC<{
     setIsDragOver(false);
   }, []);
 
-  const handleDrop = useCallback((e: React.DragEvent): void => {
-    e.preventDefault();
-    setIsDragOver(false);
-    handleFileSelect(e.dataTransfer.files);
-  }, [handleFileSelect]);
+  const handleDrop = useCallback(
+    (e: React.DragEvent): void => {
+      e.preventDefault();
+      setIsDragOver(false);
+      handleFileSelect(e.dataTransfer.files);
+    },
+    [handleFileSelect]
+  );
 
-  const removeFile = useCallback((index: number): void => {
-    const newFiles = files.filter((_, i) => i !== index);
-    onFilesChange(newFiles);
-  }, [files, onFilesChange]);
+  const removeFile = useCallback(
+    (index: number): void => {
+      const newFiles = files.filter((_, i) => i !== index);
+      onFilesChange(newFiles);
+    },
+    [files, onFilesChange]
+  );
 
   const formatFileSize = useCallback((bytes: number): string => {
-    if (bytes === 0) return '0 Bytes';
+    if (bytes === 0) return "0 Bytes";
     const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const sizes = ["Bytes", "KB", "MB", "GB"];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   }, []);
 
   return (
     <div className="space-y-3">
-      <label className="text-sm font-medium">{t('attachments.title')}</label>
+      <label className="text-sm font-medium">{t("attachments.title")}</label>
 
       <div
         className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
           isDragOver
-            ? 'border-primary bg-primary/5'
-            : 'border-muted-foreground/25 hover:border-muted-foreground/50'
+            ? "border-primary bg-primary/5"
+            : "border-muted-foreground/25 hover:border-muted-foreground/50"
         }`}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
@@ -90,7 +106,7 @@ const FileUpload: React.FC<{
       >
         <Paperclip className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
         <p className="text-sm text-muted-foreground mb-2">
-          {t('attachments.drag_drop')}
+          {t("attachments.drag_drop")}
         </p>
         <input
           type="file"
@@ -103,15 +119,17 @@ const FileUpload: React.FC<{
           variant="outline"
           size="sm"
           type="button"
-          onClick={() => document.getElementById('file-upload')?.click()}
+          onClick={() => document.getElementById("file-upload")?.click()}
         >
-          {t('attachments.select_files')}
+          {t("attachments.select_files")}
         </Button>
       </div>
 
       {files.length > 0 && (
         <div className="space-y-2">
-          <h4 className="text-sm font-medium">{t('attachments.selected_files')}</h4>
+          <h4 className="text-sm font-medium">
+            {t("attachments.selected_files")}
+          </h4>
           <div className="space-y-1">
             {files.map((file, index) => (
               <div
@@ -172,23 +190,25 @@ export const SupportTicketForm: React.FC<ISupportTicketFormProps> = ({
   userId,
   userName,
   userEmail,
-  userType = 'tenant',
-  relatedBookingId
+  userType = "tenant",
+  relatedBookingId,
 }): JSX.Element => {
-  const { t } = useTranslation(['support', 'validation', 'common']);
+  const { t } = useTranslation(["support", "validation", "common"]);
 
-  const [category, setCategory] = useState<CreateSupportTicketData['category']>('other');
+  const [category, setCategory] =
+    useState<CreateSupportTicketData["category"]>("other");
   const [subject, setSubject] = useState<string>("");
   const [description, setDescription] = useState<string>("");
-  const [priority, setPriority] = useState<CreateSupportTicketData['priority']>('medium');
+  const [priority, setPriority] =
+    useState<CreateSupportTicketData["priority"]>("medium");
   const [tags, setTags] = useState<string>("");
   const [files, setFiles] = useState<readonly File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   // Validation rules
   const { errors, validateAll, clearError, setError } = useFormValidation({
-    subject: [{ type: 'required' }],
-    description: [{ type: 'required' }],
+    subject: [{ type: "required" }],
+    description: [{ type: "required" }],
   });
 
   /**
@@ -197,12 +217,15 @@ export const SupportTicketForm: React.FC<ISupportTicketFormProps> = ({
   const handleSubmit = useCallback(async (): Promise<void> => {
     // Validate required fields
     if (!subject.trim()) {
-      setError('subject', t('support:messages.validation.subject_required'));
+      setError("subject", t("support:messages.validation.subject_required"));
       return;
     }
 
     if (!description.trim()) {
-      setError('description', t('support:messages.validation.description_required'));
+      setError(
+        "description",
+        t("support:messages.validation.description_required")
+      );
       return;
     }
 
@@ -214,11 +237,11 @@ export const SupportTicketForm: React.FC<ISupportTicketFormProps> = ({
 
     try {
       // Convert files to base64 (simplified - in real app would handle this properly)
-      const attachments = files.map(file => ({
+      const attachments = files.map((file) => ({
         name: file.name,
         type: file.type,
-        base64Data: '', // Would convert file to base64
-        size: file.size
+        base64Data: "", // Would convert file to base64
+        size: file.size,
       }));
 
       const ticketData: CreateSupportTicketData = {
@@ -231,56 +254,81 @@ export const SupportTicketForm: React.FC<ISupportTicketFormProps> = ({
         priority,
         attachments: attachments.length > 0 ? attachments : undefined,
         relatedBookingId,
-        tags: tags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0)
+        tags: tags
+          .split(",")
+          .map((tag) => tag.trim())
+          .filter((tag) => tag.length > 0),
       };
 
       onSubmit(ticketData);
 
       // Reset form
-      setCategory('other');
-      setSubject('');
-      setDescription('');
-      setPriority('medium');
-      setTags('');
+      setCategory("other");
+      setSubject("");
+      setDescription("");
+      setPriority("medium");
+      setTags("");
       setFiles([]);
 
       onClose();
     } catch (error) {
-      setError('general', t('support:messages.error.generic'));
+      setError("general", t("support:messages.error.generic"));
     } finally {
       setIsSubmitting(false);
     }
-  }, [subject, description, validateAll, files, userId, userName, userEmail, category, priority, relatedBookingId, tags, onSubmit, onClose, t, setError]);
+  }, [
+    subject,
+    description,
+    validateAll,
+    files,
+    userId,
+    userName,
+    userEmail,
+    category,
+    priority,
+    relatedBookingId,
+    tags,
+    onSubmit,
+    onClose,
+    t,
+    setError,
+  ]);
 
   /**
    * Get category description
    */
-  const getCategoryDescription = useCallback((cat: CreateSupportTicketData['category']): string => {
-    return t(`support:category_descriptions.${cat}`);
-  }, [t]);
+  const getCategoryDescription = useCallback(
+    (cat: CreateSupportTicketData["category"]): string => {
+      return t(`support:category_descriptions.${cat}`);
+    },
+    [t]
+  );
 
   /**
    * Get priority description
    */
-  const getPriorityDescription = useCallback((prio: CreateSupportTicketData['priority']): string => {
-    return t(`support:priority_descriptions.${prio}`);
-  }, [t]);
+  const getPriorityDescription = useCallback(
+    (prio: CreateSupportTicketData["priority"]): string => {
+      return t(`support:priority_descriptions.${prio}`);
+    },
+    [t]
+  );
 
   // Category options
   const categoryOptions = [
-    { value: 'booking', label: t('support:categories.booking') },
-    { value: 'technical', label: t('support:categories.technical') },
-    { value: 'billing', label: t('support:categories.billing') },
-    { value: 'feedback', label: t('support:categories.feedback') },
-    { value: 'other', label: t('support:categories.other') },
+    { value: "booking", label: t("support:categories.booking") },
+    { value: "technical", label: t("support:categories.technical") },
+    { value: "billing", label: t("support:categories.billing") },
+    { value: "feedback", label: t("support:categories.feedback") },
+    { value: "other", label: t("support:categories.other") },
   ];
 
   // Priority options
   const priorityOptions = [
-    { value: 'low', label: t('support:priorities.low') },
-    { value: 'medium', label: t('support:priorities.medium') },
-    { value: 'high', label: t('support:priorities.high') },
-    { value: 'urgent', label: t('support:priorities.urgent') },
+    { value: "low", label: t("support:priorities.low") },
+    { value: "medium", label: t("support:priorities.medium") },
+    { value: "high", label: t("support:priorities.high") },
+    { value: "urgent", label: t("support:priorities.urgent") },
   ];
 
   return (
@@ -289,10 +337,10 @@ export const SupportTicketForm: React.FC<ISupportTicketFormProps> = ({
         <DialogHeader>
           <DialogTitle className="flex items-center space-x-2">
             <AlertCircle className="h-5 w-5" />
-            <span>{t('support:dialogs.create.title')}</span>
+            <span>{t("support:dialogs.create.title")}</span>
           </DialogTitle>
           <DialogDescription>
-            {t('support:dialogs.create.description')}
+            {t("support:dialogs.create.description")}
           </DialogDescription>
         </DialogHeader>
 
@@ -301,10 +349,12 @@ export const SupportTicketForm: React.FC<ISupportTicketFormProps> = ({
           <FormField
             id="category"
             name="category"
-            label={t('support:fields.category')}
+            label={t("support:fields.category")}
             type="select"
             value={category}
-            onChange={(value) => setCategory(value as CreateSupportTicketData['category'])}
+            onChange={(value) =>
+              setCategory(value as CreateSupportTicketData["category"])
+            }
             options={categoryOptions}
             helperText={getCategoryDescription(category)}
             required
@@ -314,10 +364,12 @@ export const SupportTicketForm: React.FC<ISupportTicketFormProps> = ({
           <FormField
             id="priority"
             name="priority"
-            label={t('support:fields.priority')}
+            label={t("support:fields.priority")}
             type="select"
             value={priority}
-            onChange={(value) => setPriority(value as CreateSupportTicketData['priority'])}
+            onChange={(value) =>
+              setPriority(value as CreateSupportTicketData["priority"])
+            }
             options={priorityOptions}
             helperText={getPriorityDescription(priority)}
             required
@@ -327,15 +379,15 @@ export const SupportTicketForm: React.FC<ISupportTicketFormProps> = ({
           <FormField
             id="subject"
             name="subject"
-            label={t('support:fields.subject')}
+            label={t("support:fields.subject")}
             type="text"
             value={subject}
             onChange={(value) => {
               setSubject(String(value));
-              clearError('subject');
+              clearError("subject");
             }}
-            placeholder={t('support:placeholders.subject')}
-            helperText={t('support:helper_text.subject')}
+            placeholder={t("support:placeholders.subject")}
+            helperText={t("support:helper_text.subject")}
             required
             error={errors.subject}
           />
@@ -344,15 +396,15 @@ export const SupportTicketForm: React.FC<ISupportTicketFormProps> = ({
           <FormField
             id="description"
             name="description"
-            label={t('support:fields.description')}
+            label={t("support:fields.description")}
             type="textarea"
             value={description}
             onChange={(value) => {
               setDescription(String(value));
-              clearError('description');
+              clearError("description");
             }}
-            placeholder={t('support:placeholders.description')}
-            helperText={t('support:helper_text.description')}
+            placeholder={t("support:placeholders.description")}
+            helperText={t("support:helper_text.description")}
             rows={6}
             required
             error={errors.description}
@@ -362,12 +414,12 @@ export const SupportTicketForm: React.FC<ISupportTicketFormProps> = ({
           <FormField
             id="tags"
             name="tags"
-            label={t('support:fields.tags')}
+            label={t("support:fields.tags")}
             type="text"
             value={tags}
             onChange={(value) => setTags(String(value))}
-            placeholder={t('support:placeholders.tags')}
-            helperText={t('support:helper_text.tags')}
+            placeholder={t("support:placeholders.tags")}
+            helperText={t("support:helper_text.tags")}
           />
 
           {/* File Upload */}
@@ -379,10 +431,12 @@ export const SupportTicketForm: React.FC<ISupportTicketFormProps> = ({
               <CardContent className="p-4">
                 <div className="flex items-center space-x-2">
                   <Info className="h-4 w-4 text-blue-600" />
-                  <span className="text-sm font-medium">{t('support:related.booking')}</span>
+                  <span className="text-sm font-medium">
+                    {t("support:related.booking")}
+                  </span>
                 </div>
                 <p className="text-xs text-muted-foreground mt-1">
-                  {t('support:related.booking_id', { id: relatedBookingId })}
+                  {t("support:related.booking_id", { id: relatedBookingId })}
                 </p>
               </CardContent>
             </Card>
@@ -394,11 +448,13 @@ export const SupportTicketForm: React.FC<ISupportTicketFormProps> = ({
               <div className="space-y-2">
                 <div className="flex items-center space-x-2">
                   <Info className="h-4 w-4 text-blue-600" />
-                  <span className="text-sm font-medium">{t('support:contact_info.title')}</span>
+                  <span className="text-sm font-medium">
+                    {t("support:contact_info.title")}
+                  </span>
                 </div>
                 <div className="text-sm text-muted-foreground">
-                  <p>{t('support:contact_info.name', { name: userName })}</p>
-                  <p>{t('support:contact_info.email', { email: userEmail })}</p>
+                  <p>{t("support:contact_info.name", { name: userName })}</p>
+                  <p>{t("support:contact_info.email", { email: userEmail })}</p>
                 </div>
               </div>
             </CardContent>
@@ -412,7 +468,7 @@ export const SupportTicketForm: React.FC<ISupportTicketFormProps> = ({
             disabled={isSubmitting}
             type="button"
           >
-            {t('common:actions.cancel')}
+            {t("common:actions.cancel")}
           </Button>
           <Button
             onClick={handleSubmit}
@@ -422,12 +478,12 @@ export const SupportTicketForm: React.FC<ISupportTicketFormProps> = ({
             {isSubmitting ? (
               <>
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
-                {t('support:actions.submitting', 'Oppretter...')}
+                {t("support:actions.submitting", "Oppretter...")}
               </>
             ) : (
               <>
                 <Send className="h-4 w-4 mr-2" />
-                {t('support:actions.create_ticket')}
+                {t("support:actions.create_ticket")}
               </>
             )}
           </Button>

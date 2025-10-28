@@ -5,13 +5,13 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { MapPin, Users, Heart, Share2 } from "lucide-react";
 
-import type { IFacility } from '@/stores/facilityStore';
-import { useFieldConfigStore } from '@/stores/fieldConfigStore';
+import type { IFacility } from "@/stores/facilityStore";
+import { useFieldConfigStore } from "@/stores/fieldConfigStore";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { FacilityMiniMap } from "@/components/features/facilities/components/FacilityMap/FacilityMiniMap";
-import { useAmenityTranslation } from '@/hooks/shared';
+import { useAmenityTranslation } from "@/hooks/shared";
 
 interface FacilityListItemProps {
   readonly facility: IFacility;
@@ -20,9 +20,9 @@ interface FacilityListItemProps {
 
 export const FacilityListItem: React.FC<FacilityListItemProps> = ({
   facility,
-  onAddressClick
+  onAddressClick,
 }): JSX.Element => {
-  const { t } = useTranslation(['facilities']);
+  const { t } = useTranslation(["facilities"]);
   const translateAmenity = useAmenityTranslation();
   const navigate = useNavigate();
   const [isFavorited, setIsFavorited] = useState(false);
@@ -40,11 +40,13 @@ export const FacilityListItem: React.FC<FacilityListItemProps> = ({
           url: `${window.location.origin}/facilities/${facility.id}`,
         });
       } else {
-        await navigator.clipboard.writeText(`${window.location.origin}/facilities/${facility.id}`);
+        await navigator.clipboard.writeText(
+          `${window.location.origin}/facilities/${facility.id}`
+        );
       }
     } catch (error) {
       // Handle share cancellation or other errors silently; fallback to clipboard
-      if (error instanceof Error && error.name !== 'AbortError') {
+      if (error instanceof Error && error.name !== "AbortError") {
         await navigator.clipboard
           .writeText(`${window.location.origin}/facilities/${facility.id}`)
           .catch(() => undefined);
@@ -58,14 +60,14 @@ export const FacilityListItem: React.FC<FacilityListItemProps> = ({
   };
 
   return (
-    <Card 
-      className="group overflow-hidden hover:shadow-xl transition-all duration-500 hover:translate-y-[-2px] border border-slate-200/60 shadow-md bg-white cursor-pointer mb-3 focus:outline-none focus:ring-4 focus:ring-blue-500 focus:ring-opacity-50" 
-      onClick={() => navigate(`/facilities/${facility.id}`)} 
-      role="button" 
-      tabIndex={0} 
-      aria-label={`Se detaljer for ${facility.name} på ${facility.address}`} 
+    <Card
+      className="group overflow-hidden hover:shadow-xl transition-all duration-500 hover:translate-y-[-2px] border border-slate-200/60 shadow-md bg-white cursor-pointer mb-3 focus:outline-none focus:ring-4 focus:ring-blue-500 focus:ring-opacity-50"
+      onClick={() => navigate(`/facilities/${facility.id}`)}
+      role="button"
+      tabIndex={0}
+      aria-label={`Se detaljer for ${facility.name} på ${facility.address}`}
       onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
+        if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
           navigate(`/facilities/${facility.id}`);
         }
@@ -77,11 +79,11 @@ export const FacilityListItem: React.FC<FacilityListItemProps> = ({
           <div className="col-span-3 relative">
             <div className="relative h-full overflow-hidden">
               <img
-                src={facility.images[0] || '/placeholder.svg'}
+                src={facility.images[0] || "/placeholder.svg"}
                 alt={facility.name}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
               />
-              
+
               {/* Type badge */}
               <div className="absolute top-4 left-4">
                 <Badge className="bg-blue-600 text-white font-medium px-3 py-1">
@@ -90,7 +92,7 @@ export const FacilityListItem: React.FC<FacilityListItemProps> = ({
               </div>
             </div>
           </div>
-          
+
           {/* Main Content - 6 columns */}
           <div className="col-span-6 p-6 flex flex-col justify-between">
             {/* Top section */}
@@ -103,9 +105,9 @@ export const FacilityListItem: React.FC<FacilityListItemProps> = ({
               {/* Location */}
               <div className="flex items-center gap-3 mb-4 text-gray-600 hover:text-blue-600 transition-colors group/location">
                 <MapPin className="h-5 w-5 text-gray-400 group-hover/location:text-blue-500" />
-                <span 
-                  className="text-base font-medium cursor-pointer" 
-                  onClick={e => onAddressClick(e, facility)}
+                <span
+                  className="text-base font-medium cursor-pointer"
+                  onClick={(e) => onAddressClick(e, facility)}
                 >
                   {facility.address}
                 </span>
@@ -132,7 +134,8 @@ export const FacilityListItem: React.FC<FacilityListItemProps> = ({
                       variant="outline"
                       className="bg-gray-50 text-gray-600 border-gray-300 font-medium px-3 py-1 text-sm"
                     >
-                      +{facility.amenities.length - 4} {t('facilities:card.more')}
+                      +{facility.amenities.length - 4}{" "}
+                      {t("facilities:card.more")}
                     </Badge>
                   )}
                 </div>
@@ -144,34 +147,51 @@ export const FacilityListItem: React.FC<FacilityListItemProps> = ({
               {/* Dynamic fields based on configuration */}
               <div className="flex items-center gap-4 text-gray-600">
                 {fieldConfigs
-                  .filter(field => field.visible)
+                  .filter((field) => field.visible)
                   .slice(0, 2) // Show max 2 fields in list view
-                  .map(field => {
+                  .map((field) => {
                     const getFieldValue = (): string | number => {
-                      if (field.key === 'capacity') return facility.capacity || 0;
-                      if (field.key === 'area') return facility.area || '';
-                      if (field.key === 'pricePerHour') return facility.pricePerHour || 0;
-                      if (field.key === 'rating') return facility.rating || 0;
-                      if (field.key === 'reviewCount') return facility.reviewCount || 0;
-                      return typeof field.value === 'boolean' ? (field.value ? t('facilities:card.yes') : t('facilities:card.no')) : field.value;
+                      if (field.key === "capacity")
+                        return facility.capacity || 0;
+                      if (field.key === "area") return facility.area || "";
+                      if (field.key === "pricePerHour")
+                        return facility.pricePerHour || 0;
+                      if (field.key === "rating") return facility.rating || 0;
+                      if (field.key === "reviewCount")
+                        return facility.reviewCount || 0;
+                      return typeof field.value === "boolean"
+                        ? field.value
+                          ? t("facilities:card.yes")
+                          : t("facilities:card.no")
+                        : field.value;
                     };
 
                     const getIcon = (): JSX.Element => {
-                      if (field.key === 'capacity') return <Users className="h-5 w-5" />;
-                      if (field.key === 'area') return <MapPin className="h-5 w-5" />;
-                      if (field.key === 'pricePerHour') return <span className="text-gray-400">💰</span>;
-                      if (field.key === 'rating') return <span className="text-yellow-500">★</span>;
-                      if (field.key === 'reviewCount') return <span className="text-gray-400">📝</span>;
+                      if (field.key === "capacity")
+                        return <Users className="h-5 w-5" />;
+                      if (field.key === "area")
+                        return <MapPin className="h-5 w-5" />;
+                      if (field.key === "pricePerHour")
+                        return <span className="text-gray-400">💰</span>;
+                      if (field.key === "rating")
+                        return <span className="text-yellow-500">★</span>;
+                      if (field.key === "reviewCount")
+                        return <span className="text-gray-400">📝</span>;
                       return <span className="text-gray-400">📋</span>;
                     };
 
                     const getUnit = (): string => {
-                      if (field.key === 'capacity') return t('facilities:card.people');
-                      if (field.key === 'area') return t('facilities:card.squareMeters');
-                      if (field.key === 'pricePerHour') return t('facilities:card.pricePerHour');
-                      if (field.key === 'rating') return t('facilities:card.outOf5');
-                      if (field.key === 'reviewCount') return t('facilities:card.reviewCount');
-                      return '';
+                      if (field.key === "capacity")
+                        return t("facilities:card.people");
+                      if (field.key === "area")
+                        return t("facilities:card.squareMeters");
+                      if (field.key === "pricePerHour")
+                        return t("facilities:card.pricePerHour");
+                      if (field.key === "rating")
+                        return t("facilities:card.outOf5");
+                      if (field.key === "reviewCount")
+                        return t("facilities:card.reviewCount");
+                      return "";
                     };
 
                     return (
@@ -191,14 +211,24 @@ export const FacilityListItem: React.FC<FacilityListItemProps> = ({
                 <button
                   onClick={handleFavorite}
                   className="h-9 w-9 p-0 hover:bg-gray-100 rounded-full focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 flex items-center justify-center"
-                  aria-label={isFavorited ? t('facilities:card.removeFavorites') : t('facilities:card.addToFavorites')}
+                  aria-label={
+                    isFavorited
+                      ? t("facilities:card.removeFavorites")
+                      : t("facilities:card.addToFavorites")
+                  }
                 >
-                  <Heart className={`h-4 w-4 ${isFavorited ? 'fill-red-500 text-red-500' : 'text-gray-400'}`} />
+                  <Heart
+                    className={`h-4 w-4 ${
+                      isFavorited
+                        ? "fill-red-500 text-red-500"
+                        : "text-gray-400"
+                    }`}
+                  />
                 </button>
                 <button
                   onClick={handleShare}
                   className="h-9 w-9 p-0 hover:bg-gray-100 rounded-full focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 flex items-center justify-center"
-                  aria-label={t('facilities:card.shareFacility')}
+                  aria-label={t("facilities:card.shareFacility")}
                 >
                   <Share2 className="h-4 w-4 text-gray-400" />
                 </button>
@@ -208,7 +238,7 @@ export const FacilityListItem: React.FC<FacilityListItemProps> = ({
 
           {/* Map Section - 3 columns */}
           <div className="col-span-3 bg-gray-100 relative overflow-hidden">
-            <FacilityMiniMap 
+            <FacilityMiniMap
               facility={facility}
               mapboxToken="pk.eyJ1IjoiYW1pbjA3IiwiYSI6ImNtZzlqcjNnczBmMmsycXM2cm4xYzU0OGwifQ.1Vuiv_9pPIUY478LP3yccA"
             />
@@ -218,4 +248,3 @@ export const FacilityListItem: React.FC<FacilityListItemProps> = ({
     </Card>
   );
 };
-

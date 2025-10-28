@@ -16,7 +16,7 @@ const UserSearchField = (): JSX.Element => {
   } = useAdminSearch();
 
   // Type adapter: convert AdminSearchResult to ISearchResult
-  const adaptedResults: ISearchResult[] = results.map(r => ({
+  const adaptedResults: ISearchResult[] = results.map((r) => ({
     id: r.id,
     type: r.type,
     title: r.title,
@@ -26,7 +26,7 @@ const UserSearchField = (): JSX.Element => {
   }));
 
   const handleClick = (result: ISearchResult) => {
-    const originalResult = results.find(r => r.id === result.id);
+    const originalResult = results.find((r) => r.id === result.id);
     if (originalResult) {
       handleResultClick(originalResult);
     }

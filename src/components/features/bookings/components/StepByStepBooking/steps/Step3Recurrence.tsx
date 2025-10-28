@@ -25,7 +25,7 @@ export const Step3Recurrence = ({
   recurrencePattern,
   onPatternChange
 }: IStep3RecurrenceProps): JSX.Element => {
-  const { t } = useTranslation('bookings');
+  const { t } = useTranslation('booking');
 
   return (
     <div className="space-y-6">

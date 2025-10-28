@@ -1,7 +1,13 @@
 "use client";
 
 import React from "react";
-import { Info, AlertTriangle, XCircle, CheckCircle, ExternalLink } from "lucide-react";
+import {
+  Info,
+  AlertTriangle,
+  XCircle,
+  CheckCircle,
+  ExternalLink,
+} from "lucide-react";
 import { ISystemAlert } from "@/types/admin";
 
 interface ISystemAlertsProps {
@@ -63,7 +69,7 @@ export const SystemAlerts = ({ alerts }: ISystemAlertsProps): JSX.Element => {
       <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
         Systemvarsler
       </h3>
-      
+
       <div className="space-y-3">
         {alerts.slice(0, 3).map((alert) => (
           <div
@@ -100,5 +106,3 @@ export const SystemAlerts = ({ alerts }: ISystemAlertsProps): JSX.Element => {
     </div>
   );
 };
-
-

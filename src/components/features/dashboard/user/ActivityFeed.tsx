@@ -10,12 +10,18 @@ import {
   User,
   CheckCircle,
   XCircle,
-  Clock
+  Clock,
 } from "lucide-react";
 
 export interface IActivityItem {
   readonly id: string;
-  readonly type: "booking_created" | "booking_confirmed" | "booking_cancelled" | "facility_favorited" | "facility_unfavorited" | "profile_updated";
+  readonly type:
+    | "booking_created"
+    | "booking_confirmed"
+    | "booking_cancelled"
+    | "facility_favorited"
+    | "facility_unfavorited"
+    | "profile_updated";
   readonly title: string;
   readonly description: string;
   readonly timestamp: string;
@@ -44,20 +50,39 @@ interface IActivityFeedProps {
  * - Open/Closed: Extensible through activity types without modification
  * - Interface Segregation: Focused props interface
  */
-const ActivityFeed = ({ activities, maxItems = 10 }: IActivityFeedProps): JSX.Element => {
-  const { t } = useTranslation('common');
+const ActivityFeed = ({
+  activities,
+  maxItems = 10,
+}: IActivityFeedProps): JSX.Element => {
+  const { t } = useTranslation("common");
 
   const getActivityIcon = (type: IActivityItem["type"]): React.ReactNode => {
     const icons = {
-      booking_created: <Calendar className="h-4 w-4 text-blue-600 dark:text-blue-400" />,
-      booking_confirmed: <CheckCircle className="h-4 w-4 text-green-600 dark:text-green-400" />,
-      booking_cancelled: <XCircle className="h-4 w-4 text-red-600 dark:text-red-400" />,
-      facility_favorited: <Heart className="h-4 w-4 text-red-600 dark:text-red-400" />,
-      facility_unfavorited: <Heart className="h-4 w-4 text-gray-600 dark:text-gray-400" />,
-      profile_updated: <User className="h-4 w-4 text-purple-600 dark:text-purple-400" />
+      booking_created: (
+        <Calendar className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+      ),
+      booking_confirmed: (
+        <CheckCircle className="h-4 w-4 text-green-600 dark:text-green-400" />
+      ),
+      booking_cancelled: (
+        <XCircle className="h-4 w-4 text-red-600 dark:text-red-400" />
+      ),
+      facility_favorited: (
+        <Heart className="h-4 w-4 text-red-600 dark:text-red-400" />
+      ),
+      facility_unfavorited: (
+        <Heart className="h-4 w-4 text-gray-600 dark:text-gray-400" />
+      ),
+      profile_updated: (
+        <User className="h-4 w-4 text-purple-600 dark:text-purple-400" />
+      ),
     };
 
-    return icons[type] || <Clock className="h-4 w-4 text-gray-600 dark:text-gray-400" />;
+    return (
+      icons[type] || (
+        <Clock className="h-4 w-4 text-gray-600 dark:text-gray-400" />
+      )
+    );
   };
 
   const getActivityTypeLabel = (type: IActivityItem["type"]): string => {
@@ -66,15 +91,24 @@ const ActivityFeed = ({ activities, maxItems = 10 }: IActivityFeedProps): JSX.El
 
   const getActivityBadgeColor = (type: IActivityItem["type"]): string => {
     const colors = {
-      booking_created: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300",
-      booking_confirmed: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300",
-      booking_cancelled: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300",
-      facility_favorited: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300",
-      facility_unfavorited: "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300",
-      profile_updated: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300"
+      booking_created:
+        "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300",
+      booking_confirmed:
+        "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300",
+      booking_cancelled:
+        "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300",
+      facility_favorited:
+        "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300",
+      facility_unfavorited:
+        "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300",
+      profile_updated:
+        "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300",
     };
 
-    return colors[type] || "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300";
+    return (
+      colors[type] ||
+      "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300"
+    );
   };
 
   const formatRelativeTime = (timestamp: string): string => {
@@ -83,26 +117,36 @@ const ActivityFeed = ({ activities, maxItems = 10 }: IActivityFeedProps): JSX.El
     const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
 
     if (diffInSeconds < 60) {
-      return t('common:time.ago', { time: `${diffInSeconds} ${t('common:time.seconds')}` });
+      return t("common:time.ago", {
+        time: `${diffInSeconds} ${t("common:time.seconds")}`,
+      });
     }
 
     const diffInMinutes = Math.floor(diffInSeconds / 60);
     if (diffInMinutes < 60) {
-      return t('common:time.ago', {
-        time: `${diffInMinutes} ${diffInMinutes === 1 ? t('common:time.minute') : t('common:time.minutes')}`
+      return t("common:time.ago", {
+        time: `${diffInMinutes} ${
+          diffInMinutes === 1
+            ? t("common:time.minute")
+            : t("common:time.minutes")
+        }`,
       });
     }
 
     const diffInHours = Math.floor(diffInMinutes / 60);
     if (diffInHours < 24) {
-      return t('common:time.ago', {
-        time: `${diffInHours} ${diffInHours === 1 ? t('common:time.hour') : t('common:time.hours')}`
+      return t("common:time.ago", {
+        time: `${diffInHours} ${
+          diffInHours === 1 ? t("common:time.hour") : t("common:time.hours")
+        }`,
       });
     }
 
     const diffInDays = Math.floor(diffInHours / 24);
-    return t('common:time.ago', {
-      time: `${diffInDays} ${diffInDays === 1 ? t('common:time.day') : t('common:time.days')}`
+    return t("common:time.ago", {
+      time: `${diffInDays} ${
+        diffInDays === 1 ? t("common:time.day") : t("common:time.days")
+      }`,
     });
   };
 
@@ -113,7 +157,7 @@ const ActivityFeed = ({ activities, maxItems = 10 }: IActivityFeedProps): JSX.El
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Clock className="h-5 w-5" aria-hidden="true" />
-          {t('user:activity.title')}
+          {t("user:activity.title")}
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -121,7 +165,7 @@ const ActivityFeed = ({ activities, maxItems = 10 }: IActivityFeedProps): JSX.El
           <div className="text-center py-8">
             <Clock className="h-12 w-12 text-gray-400 dark:text-gray-600 mx-auto mb-3" />
             <p className="text-gray-600 dark:text-gray-400">
-              {t('user:activity.no_activity')}
+              {t("user:activity.no_activity")}
             </p>
           </div>
         ) : (
@@ -139,7 +183,11 @@ const ActivityFeed = ({ activities, maxItems = 10 }: IActivityFeedProps): JSX.El
                     <h4 className="font-medium text-gray-900 dark:text-white truncate">
                       {activity.title}
                     </h4>
-                    <Badge className={`flex-shrink-0 text-xs ${getActivityBadgeColor(activity.type)}`}>
+                    <Badge
+                      className={`flex-shrink-0 text-xs ${getActivityBadgeColor(
+                        activity.type
+                      )}`}
+                    >
                       {getActivityTypeLabel(activity.type)}
                     </Badge>
                   </div>

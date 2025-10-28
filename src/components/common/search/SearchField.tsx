@@ -1,9 +1,9 @@
 /**
  * SearchField - Reusable Universal Search Component
- * 
+ *
  * A highly configurable search input with dropdown results,
  * keyboard shortcuts, grouping, and multiple variants.
- * 
+ *
  * @example
  * ```tsx
  * <SearchField
@@ -19,18 +19,18 @@
  * ```
  */
 
-import React from 'react';
-import { useTranslation } from 'react-i18next';
-import { 
-  Search, 
-  Command, 
-  Building, 
-  Users, 
-  Calendar, 
-  FileText, 
-  MapPin 
-} from 'lucide-react';
-import { Input } from '@/components/ui/input';
+import React from "react";
+import { useTranslation } from "react-i18next";
+import {
+  Search,
+  Command,
+  Building,
+  Users,
+  Calendar,
+  FileText,
+  MapPin,
+} from "lucide-react";
+import { Input } from "@/components/ui/input";
 
 /**
  * Search result item structure
@@ -51,7 +51,7 @@ export interface ISearchResult {
  */
 export interface SearchFieldProps {
   /** Search variant - controls styling and behavior */
-  variant?: 'admin' | 'user' | 'global' | 'simple';
+  variant?: "admin" | "user" | "global" | "simple";
   /** Placeholder text */
   placeholder?: string;
   /** Current search value */
@@ -90,18 +90,18 @@ export interface SearchFieldProps {
  * Default icon mapper
  */
 const defaultGetIcon = (iconType: string): React.ReactNode => {
-  const iconClass = 'h-5 w-5';
-  
+  const iconClass = "h-5 w-5";
+
   switch (iconType) {
-    case 'building':
+    case "building":
       return <Building className={iconClass} />;
-    case 'users':
+    case "users":
       return <Users className={iconClass} />;
-    case 'calendar':
+    case "calendar":
       return <Calendar className={iconClass} />;
-    case 'document':
+    case "document":
       return <FileText className={iconClass} />;
-    case 'location':
+    case "location":
       return <MapPin className={iconClass} />;
     default:
       return <Building className={iconClass} />;
@@ -112,7 +112,7 @@ const defaultGetIcon = (iconType: string): React.ReactNode => {
  * SearchField Component
  */
 export const SearchField: React.FC<SearchFieldProps> = ({
-  variant = 'simple',
+  variant = "simple",
   placeholder,
   value,
   onChange,
@@ -128,43 +128,43 @@ export const SearchField: React.FC<SearchFieldProps> = ({
   getGroupTitle,
   getIcon = defaultGetIcon,
   ariaLabel,
-  className = '',
+  className = "",
 }) => {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation("common");
 
   // Variant-specific configurations
   const variantConfig = {
     admin: {
-      maxWidth: 'max-w-2xl',
-      minWidth: 'min-w-[300px]',
-      iconSize: 'w-8 h-8',
-      resultPadding: 'px-4 py-3',
-      titleSize: 'text-sm',
-      placeholder: placeholder || t('search.search_admin'),
+      maxWidth: "max-w-2xl",
+      minWidth: "min-w-[300px]",
+      iconSize: "w-8 h-8",
+      resultPadding: "px-4 py-3",
+      titleSize: "text-sm",
+      placeholder: placeholder || t("search.search_admin"),
     },
     user: {
-      maxWidth: 'max-w-2xl',
-      minWidth: 'min-w-[300px]',
-      iconSize: 'w-10 h-10',
-      resultPadding: 'px-4 py-3',
-      titleSize: 'text-sm',
-      placeholder: placeholder || t('search.search_venues'),
+      maxWidth: "max-w-2xl",
+      minWidth: "min-w-[300px]",
+      iconSize: "w-10 h-10",
+      resultPadding: "px-4 py-3",
+      titleSize: "text-sm",
+      placeholder: placeholder || t("search.search_venues"),
     },
     global: {
-      maxWidth: 'max-w-2xl',
-      minWidth: 'min-w-[350px]',
-      iconSize: 'w-12 h-12',
-      resultPadding: 'px-4 py-4',
-      titleSize: 'text-base',
-      placeholder: placeholder || t('search.search_facilities'),
+      maxWidth: "max-w-2xl",
+      minWidth: "min-w-[350px]",
+      iconSize: "w-12 h-12",
+      resultPadding: "px-4 py-4",
+      titleSize: "text-base",
+      placeholder: placeholder || t("search.search_facilities"),
     },
     simple: {
-      maxWidth: 'max-w-md',
-      minWidth: 'min-w-[250px]',
-      iconSize: 'w-8 h-8',
-      resultPadding: 'px-3 py-2',
-      titleSize: 'text-sm',
-      placeholder: placeholder || t('search.placeholder'),
+      maxWidth: "max-w-md",
+      minWidth: "min-w-[250px]",
+      iconSize: "w-8 h-8",
+      resultPadding: "px-3 py-2",
+      titleSize: "text-sm",
+      placeholder: placeholder || t("search.placeholder"),
     },
   };
 
@@ -190,20 +190,20 @@ export const SearchField: React.FC<SearchFieldProps> = ({
 
     // Default mapping
     switch (type) {
-      case 'facility':
-        return t('search.group_facilities');
-      case 'user':
-        return t('search.group_users');
-      case 'booking':
-        return t('search.group_bookings');
-      case 'document':
-        return t('search.group_documents');
-      case 'location':
-        return t('search.group_locations');
-      case 'category':
-        return t('search.group_categories');
-      case 'recent':
-        return t('search.recent_searches');
+      case "facility":
+        return t("search.group_facilities");
+      case "user":
+        return t("search.group_users");
+      case "booking":
+        return t("search.group_bookings");
+      case "document":
+        return t("search.group_documents");
+      case "location":
+        return t("search.group_locations");
+      case "category":
+        return t("search.group_categories");
+      case "recent":
+        return t("search.recent_searches");
       default:
         return type;
     }
@@ -220,7 +220,7 @@ export const SearchField: React.FC<SearchFieldProps> = ({
     e: React.KeyboardEvent,
     result: ISearchResult
   ): void => {
-    if (e.key === 'Enter' || e.key === ' ') {
+    if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
       handleResultClick(result);
     }
@@ -253,7 +253,7 @@ export const SearchField: React.FC<SearchFieldProps> = ({
           }}
           className={`
             pl-10 
-            ${showShortcut ? 'pr-16' : 'pr-4'} 
+            ${showShortcut ? "pr-16" : "pr-4"} 
             py-2 
             w-full 
             border-gray-300 
@@ -261,7 +261,7 @@ export const SearchField: React.FC<SearchFieldProps> = ({
             focus:border-blue-500 
             focus:ring-blue-500
           `}
-          aria-label={ariaLabel || t('aria.search_input')}
+          aria-label={ariaLabel || t("aria.search_input")}
         />
 
         {/* Keyboard Shortcut Hint */}
@@ -280,7 +280,7 @@ export const SearchField: React.FC<SearchFieldProps> = ({
             <div className="max-h-96 overflow-y-auto">
               {results.length === 0 ? (
                 <div className="py-6 text-center text-sm text-gray-500 dark:text-gray-400">
-                  {t('search.no_results')}
+                  {t("search.no_results")}
                 </div>
               ) : (
                 <>
@@ -315,7 +315,9 @@ export const SearchField: React.FC<SearchFieldProps> = ({
                         >
                           {/* Icon or Image */}
                           {result.image ? (
-                            <div className={`${config.iconSize} bg-gray-100 dark:bg-gray-600 overflow-hidden flex-shrink-0 rounded`}>
+                            <div
+                              className={`${config.iconSize} bg-gray-100 dark:bg-gray-600 overflow-hidden flex-shrink-0 rounded`}
+                            >
                               <img
                                 src={result.image}
                                 alt={result.title}
@@ -323,18 +325,26 @@ export const SearchField: React.FC<SearchFieldProps> = ({
                               />
                             </div>
                           ) : (
-                            <div className={`${config.iconSize} bg-gray-100 dark:bg-gray-600 flex items-center justify-center flex-shrink-0 rounded`}>
+                            <div
+                              className={`${config.iconSize} bg-gray-100 dark:bg-gray-600 flex items-center justify-center flex-shrink-0 rounded`}
+                            >
                               {getIcon(result.iconType)}
                             </div>
                           )}
 
                           {/* Text */}
                           <div className="flex-1 min-w-0">
-                            <div className={`font-medium text-gray-900 dark:text-white truncate ${config.titleSize}`}>
+                            <div
+                              className={`font-medium text-gray-900 dark:text-white truncate ${config.titleSize}`}
+                            >
                               {result.title}
                             </div>
                             {result.subtitle && (
-                              <div className={`text-xs text-gray-500 dark:text-gray-400 truncate mt-1 ${variant === 'global' ? 'text-base' : ''}`}>
+                              <div
+                                className={`text-xs text-gray-500 dark:text-gray-400 truncate mt-1 ${
+                                  variant === "global" ? "text-base" : ""
+                                }`}
+                              >
                                 {result.subtitle}
                               </div>
                             )}

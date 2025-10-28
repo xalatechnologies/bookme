@@ -60,7 +60,7 @@ export const RecentEvents = ({ events }: IRecentEventsProps): JSX.Element => {
       <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
         Siste hendelser
       </h3>
-      
+
       <div className="space-y-3">
         {events.slice(0, 5).map((event) => (
           <div
@@ -86,5 +86,3 @@ export const RecentEvents = ({ events }: IRecentEventsProps): JSX.Element => {
     </div>
   );
 };
-
-

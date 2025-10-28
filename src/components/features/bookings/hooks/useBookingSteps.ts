@@ -39,7 +39,7 @@ export const useBookingSteps = (
   selectedSlotsCount: number,
   recurrencePattern: RecurrencePattern | null
 ) => {
-  const { t } = useTranslation('bookings');
+  const { t } = useTranslation('booking');
   const [currentStep, setCurrentStep] = useState<BookingStep>('calendar');
 
   /**

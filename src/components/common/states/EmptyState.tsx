@@ -1,9 +1,9 @@
 /**
  * EmptyState - Reusable No-Data Placeholder Component
- * 
+ *
  * A consistent, accessible component for displaying empty states
  * across the application with optional actions.
- * 
+ *
  * @example
  * ```tsx
  * <EmptyState
@@ -19,8 +19,8 @@
  * ```
  */
 
-import React from 'react';
-import { Button } from '@/components/ui/button';
+import React from "react";
+import { Button } from "@/components/ui/button";
 
 /**
  * Action button configuration
@@ -31,9 +31,15 @@ export interface EmptyStateAction {
   /** Click handler */
   onClick: () => void;
   /** Button variant */
-  variant?: 'default' | 'outline' | 'secondary' | 'ghost' | 'link' | 'destructive';
+  variant?:
+    | "default"
+    | "outline"
+    | "secondary"
+    | "ghost"
+    | "link"
+    | "destructive";
   /** Button size */
-  size?: 'default' | 'sm' | 'lg' | 'icon';
+  size?: "default" | "sm" | "lg" | "icon";
   /** Icon to display in button */
   icon?: React.ReactNode;
 }
@@ -55,7 +61,7 @@ export interface EmptyStateProps {
   /** Additional className for container */
   className?: string;
   /** Size variant */
-  size?: 'sm' | 'md' | 'lg';
+  size?: "sm" | "md" | "lg";
 }
 
 /**
@@ -67,34 +73,34 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
   description,
   action,
   secondaryAction,
-  className = '',
-  size = 'md',
+  className = "",
+  size = "md",
 }) => {
   // Size configurations
   const sizeConfig = {
     sm: {
-      container: 'py-8',
-      iconSize: 'w-12 h-12',
-      titleSize: 'text-base',
-      descriptionSize: 'text-xs',
-      spacing: 'mt-2',
-      actionSpacing: 'mt-3',
+      container: "py-8",
+      iconSize: "w-12 h-12",
+      titleSize: "text-base",
+      descriptionSize: "text-xs",
+      spacing: "mt-2",
+      actionSpacing: "mt-3",
     },
     md: {
-      container: 'py-12',
-      iconSize: 'w-16 h-16',
-      titleSize: 'text-lg',
-      descriptionSize: 'text-sm',
-      spacing: 'mt-4',
-      actionSpacing: 'mt-4',
+      container: "py-12",
+      iconSize: "w-16 h-16",
+      titleSize: "text-lg",
+      descriptionSize: "text-sm",
+      spacing: "mt-4",
+      actionSpacing: "mt-4",
     },
     lg: {
-      container: 'py-16',
-      iconSize: 'w-20 h-20',
-      titleSize: 'text-xl',
-      descriptionSize: 'text-base',
-      spacing: 'mt-6',
-      actionSpacing: 'mt-6',
+      container: "py-16",
+      iconSize: "w-20 h-20",
+      titleSize: "text-xl",
+      descriptionSize: "text-base",
+      spacing: "mt-6",
+      actionSpacing: "mt-6",
     },
   };
 
@@ -105,32 +111,40 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
       {/* Icon */}
       {icon && (
         <div className="flex justify-center">
-          <div className={`${config.iconSize} text-gray-400 dark:text-gray-600`}>
+          <div
+            className={`${config.iconSize} text-gray-400 dark:text-gray-600`}
+          >
             {icon}
           </div>
         </div>
       )}
 
       {/* Title */}
-      <h3 className={`${config.spacing} ${config.titleSize} font-medium text-gray-900 dark:text-white`}>
+      <h3
+        className={`${config.spacing} ${config.titleSize} font-medium text-gray-900 dark:text-white`}
+      >
         {title}
       </h3>
 
       {/* Description */}
       {description && (
-        <p className={`mt-2 ${config.descriptionSize} text-gray-500 dark:text-gray-400 max-w-md mx-auto`}>
+        <p
+          className={`mt-2 ${config.descriptionSize} text-gray-500 dark:text-gray-400 max-w-md mx-auto`}
+        >
           {description}
         </p>
       )}
 
       {/* Actions */}
       {(action || secondaryAction) && (
-        <div className={`${config.actionSpacing} flex items-center justify-center gap-3`}>
+        <div
+          className={`${config.actionSpacing} flex items-center justify-center gap-3`}
+        >
           {action && (
             <Button
               onClick={action.onClick}
-              variant={action.variant || 'default'}
-              size={action.size || 'default'}
+              variant={action.variant || "default"}
+              size={action.size || "default"}
             >
               {action.icon && <span className="mr-2">{action.icon}</span>}
               {action.label}
@@ -139,10 +153,12 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
           {secondaryAction && (
             <Button
               onClick={secondaryAction.onClick}
-              variant={secondaryAction.variant || 'outline'}
-              size={secondaryAction.size || 'default'}
+              variant={secondaryAction.variant || "outline"}
+              size={secondaryAction.size || "default"}
             >
-              {secondaryAction.icon && <span className="mr-2">{secondaryAction.icon}</span>}
+              {secondaryAction.icon && (
+                <span className="mr-2">{secondaryAction.icon}</span>
+              )}
               {secondaryAction.label}
             </Button>
           )}

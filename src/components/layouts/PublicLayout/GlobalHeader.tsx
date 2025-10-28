@@ -11,7 +11,11 @@ import { useUserProfile } from "@/contexts/UserProfileContext";
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Logo } from "@/components/layouts/PublicLayout/Logo";
 import { LanguageToggle } from "@/components/layouts/PublicLayout/LanguageToggle";
 import { ProfileMenu } from "@/components/layouts/PublicLayout/ProfileMenu";
@@ -22,7 +26,7 @@ import { CartDropdown } from "@/components/layouts/PublicLayout/CartDropdown";
 export const GlobalHeader = (): JSX.Element => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { t } = useTranslation('common');
+  const { t } = useTranslation("common");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
   const { language, toggleLanguage } = useLanguage();
@@ -32,9 +36,9 @@ export const GlobalHeader = (): JSX.Element => {
   const { profile } = useUserProfile();
 
   // Check if we're on a booking page, user pages, or checkout
-  const isBookingPage = location.pathname.includes('/book');
-  const isUserPage = location.pathname.startsWith('/user');
-  const isCheckoutPage = location.pathname === '/checkout';
+  const isBookingPage = location.pathname.includes("/book");
+  const isUserPage = location.pathname.startsWith("/user");
+  const isCheckoutPage = location.pathname === "/checkout";
   const isAuthenticated = isBookingPage || isUserPage || isCheckoutPage;
 
   const logout = (): void => {
@@ -43,34 +47,34 @@ export const GlobalHeader = (): JSX.Element => {
       const keysToRemove = [];
       for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
-        if (key && (key.startsWith('user') || key.startsWith('admin'))) {
+        if (key && (key.startsWith("user") || key.startsWith("admin"))) {
           keysToRemove.push(key);
         }
       }
-      keysToRemove.forEach(key => localStorage.removeItem(key));
+      keysToRemove.forEach((key) => localStorage.removeItem(key));
 
       // Clear cart data
-      localStorage.removeItem('cart');
-      localStorage.removeItem('cartItems');
+      localStorage.removeItem("cart");
+      localStorage.removeItem("cartItems");
 
       // Clear search results
-      localStorage.removeItem('searchResults');
-      localStorage.removeItem('adminSearchResults');
+      localStorage.removeItem("searchResults");
+      localStorage.removeItem("adminSearchResults");
 
       // Clear any other session data
-      localStorage.removeItem('sessionData');
-      localStorage.removeItem('authToken');
+      localStorage.removeItem("sessionData");
+      localStorage.removeItem("authToken");
 
       // Show logout confirmation
-      alert(t('messages.logout_success'));
+      alert(t("messages.logout_success"));
 
       // Navigate to home page
-      navigate('/');
+      navigate("/");
     } catch (error) {
-      console.error('Global logout failed:', error);
-      alert(t('messages.logout_failed'));
+      console.error("Global logout failed:", error);
+      alert(t("messages.logout_failed"));
       // Still navigate to home page even if logout fails
-      navigate('/');
+      navigate("/");
     }
   };
 
@@ -103,7 +107,7 @@ export const GlobalHeader = (): JSX.Element => {
             variant="ghost"
             className="md:hidden p-2"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            aria-label={t('aria.mobile_menu')}
+            aria-label={t("aria.mobile_menu")}
           >
             <Menu className="h-6 w-6" />
           </Button>
@@ -117,14 +121,12 @@ export const GlobalHeader = (): JSX.Element => {
                   variant="ghost"
                   className="relative hover:bg-gray-100 cursor-pointer"
                   onClick={() => setCartOpen(!cartOpen)}
-                  aria-label={t('aria.cart')}
+                  aria-label={t("aria.cart")}
                 >
                   <ShoppingCart className="h-6 w-6" />
                   {itemCount > 0 && (
-                    <Badge
-                      className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center text-xs bg-red-500 text-white rounded-full animate-pulse"
-                    >
-                      {itemCount > 99 ? '99+' : itemCount}
+                    <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center text-xs bg-red-500 text-white rounded-full animate-pulse">
+                      {itemCount > 99 ? "99+" : itemCount}
                     </Badge>
                   )}
                 </Button>
@@ -145,11 +147,15 @@ export const GlobalHeader = (): JSX.Element => {
               isLoggedIn={isAuthenticated}
               handleLogin={handleLogin}
               handleLogout={handleLogout}
-              userProfile={isAuthenticated ? {
-                firstName: profile.firstName,
-                lastName: profile.lastName,
-                email: profile.email
-              } : undefined}
+              userProfile={
+                isAuthenticated
+                  ? {
+                      firstName: profile.firstName,
+                      lastName: profile.lastName,
+                      email: profile.email,
+                    }
+                  : undefined
+              }
             />
           </div>
         </div>
@@ -165,19 +171,23 @@ export const GlobalHeader = (): JSX.Element => {
         isOpen={mobileMenuOpen}
         isLoggedIn={isAuthenticated}
         setLanguage={(lang) => {
-          if (lang === 'NO' || lang === 'EN') {
-            const event = new CustomEvent('setLanguage', { detail: lang });
+          if (lang === "NO" || lang === "EN") {
+            const event = new CustomEvent("setLanguage", { detail: lang });
             window.dispatchEvent(event);
           }
         }}
         handleLogin={handleLogin}
         handleLogout={handleLogout}
         closeMobileMenu={() => setMobileMenuOpen(false)}
-        userProfile={isAuthenticated ? {
-          firstName: profile.firstName,
-          lastName: profile.lastName,
-          email: profile.email
-        } : undefined}
+        userProfile={
+          isAuthenticated
+            ? {
+                firstName: profile.firstName,
+                lastName: profile.lastName,
+                email: profile.email,
+              }
+            : undefined
+        }
       />
     </header>
   );

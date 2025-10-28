@@ -1,17 +1,17 @@
 /**
  * PermissionGuard - Declarative RBAC Wrapper Component
- * 
+ *
  * A flexible permission guard that integrates with all domain permission systems.
  * Provides declarative RBAC in JSX with automatic fallback rendering.
- * 
+ *
  * @example
  * ```tsx
  * <PermissionGuard domain="bookings" permission="APPROVE">
  *   <ApproveButton />
  * </PermissionGuard>
- * 
- * <PermissionGuard 
- *   domain="auth" 
+ *
+ * <PermissionGuard
+ *   domain="auth"
  *   permission="MANAGE_USERS"
  *   fallback={<AccessDenied />}
  * >
@@ -20,36 +20,66 @@
  * ```
  */
 
-import React from 'react';
-import { useTranslation } from 'react-i18next';
-import { useAuth } from '@/contexts/AuthContext';
+import React from "react";
+import { useTranslation } from "react-i18next";
+import { useAuth } from "@/contexts/AuthContext";
 
 // Import all domain permission helpers
-import { hasBookingPermission, BOOKING_PERMISSIONS } from '@/components/features/bookings';
-import { hasFacilityPermission, FACILITY_PERMISSIONS } from '@/components/features/facilities';
-import { hasCalendarPermission, CALENDAR_PERMISSIONS } from '@/components/features/calendar';
-import { hasMessagingPermission, MESSAGING_PERMISSIONS } from '@/components/features/messaging';
-import { hasCartPermission, CART_PERMISSIONS } from '@/components/features/cart';
-import { hasAuthPermission, AUTH_PERMISSIONS } from '@/components/features/auth';
-import { hasDashboardPermission, DASHBOARD_PERMISSIONS } from '@/components/features/dashboard';
-import { hasGroupPermission, GROUPS_PERMISSIONS } from '@/components/features/groups';
-import { hasSearchPermission, SEARCH_PERMISSIONS } from '@/components/features/search';
-import { hasSupportPermission, SUPPORT_PERMISSIONS } from '@/components/features/support';
+import {
+  hasBookingPermission,
+  BOOKING_PERMISSIONS,
+} from "@/components/features/bookings";
+import {
+  hasFacilityPermission,
+  FACILITY_PERMISSIONS,
+} from "@/components/features/facilities";
+import {
+  hasCalendarPermission,
+  CALENDAR_PERMISSIONS,
+} from "@/components/features/calendar";
+import {
+  hasMessagingPermission,
+  MESSAGING_PERMISSIONS,
+} from "@/components/features/messaging";
+import {
+  hasCartPermission,
+  CART_PERMISSIONS,
+} from "@/components/features/cart";
+import {
+  hasAuthPermission,
+  AUTH_PERMISSIONS,
+} from "@/components/features/auth";
+import {
+  hasDashboardPermission,
+  DASHBOARD_PERMISSIONS,
+} from "@/components/features/dashboard";
+import {
+  hasGroupPermission,
+  GROUPS_PERMISSIONS,
+} from "@/components/features/groups";
+import {
+  hasSearchPermission,
+  SEARCH_PERMISSIONS,
+} from "@/components/features/search";
+import {
+  hasSupportPermission,
+  SUPPORT_PERMISSIONS,
+} from "@/components/features/support";
 
 /**
  * Supported domains for permission checking
  */
-export type PermissionDomain = 
-  | 'bookings' 
-  | 'facilities' 
-  | 'calendar' 
-  | 'messaging' 
-  | 'cart' 
-  | 'auth' 
-  | 'dashboard' 
-  | 'groups' 
-  | 'search' 
-  | 'support';
+export type PermissionDomain =
+  | "bookings"
+  | "facilities"
+  | "calendar"
+  | "messaging"
+  | "cart"
+  | "auth"
+  | "dashboard"
+  | "groups"
+  | "search"
+  | "support";
 
 /**
  * PermissionGuard Props
@@ -73,8 +103,8 @@ export interface PermissionGuardProps {
  * Default AccessDenied component
  */
 const DefaultAccessDenied: React.FC<{ message?: string }> = ({ message }) => {
-  const { t } = useTranslation('common');
-  
+  const { t } = useTranslation("common");
+
   return (
     <div className="text-center py-8 px-4">
       <div className="text-gray-400 dark:text-gray-600 mb-2">
@@ -93,7 +123,7 @@ const DefaultAccessDenied: React.FC<{ message?: string }> = ({ message }) => {
         </svg>
       </div>
       <p className="text-sm text-gray-600 dark:text-gray-400">
-        {message || t('permissions.access_denied')}
+        {message || t("permissions.access_denied")}
       </p>
     </div>
   );
@@ -108,10 +138,10 @@ export const PermissionGuard: React.FC<PermissionGuardProps> = ({
   children,
   fallback,
   showMessage = false,
-  className = '',
+  className = "",
 }) => {
   const { user, memberships } = useAuth();
-  const { t } = useTranslation('common');
+  const { t } = useTranslation("common");
 
   // If no user, deny access
   if (!user) {
@@ -128,45 +158,78 @@ export const PermissionGuard: React.FC<PermissionGuardProps> = ({
 
   try {
     switch (domain) {
-      case 'bookings':
-        hasPermission = hasBookingPermission(userRoles, permission as keyof typeof BOOKING_PERMISSIONS);
-        break;
-      case 'facilities':
-        hasPermission = hasFacilityPermission(userRoles, permission as keyof typeof FACILITY_PERMISSIONS);
-        break;
-      case 'calendar':
-        hasPermission = hasCalendarPermission(userRoles, permission as keyof typeof CALENDAR_PERMISSIONS);
-        break;
-      case 'messaging':
-        hasPermission = hasMessagingPermission(userRoles, permission as keyof typeof MESSAGING_PERMISSIONS);
-        break;
-      case 'cart':
-        hasPermission = hasCartPermission(userRoles, permission as keyof typeof CART_PERMISSIONS);
-        break;
-      case 'auth':
-        hasPermission = hasAuthPermission(userRoles, permission as keyof typeof AUTH_PERMISSIONS);
-        break;
-      case 'dashboard':
-        hasPermission = hasDashboardPermission(userRoles, permission as keyof typeof DASHBOARD_PERMISSIONS);
-        break;
-      case 'groups':
-        // Groups uses single role instead of array
-        hasPermission = userRoles.some((role: string) => 
-          hasGroupPermission(role, permission as keyof typeof GROUPS_PERMISSIONS)
+      case "bookings":
+        hasPermission = hasBookingPermission(
+          userRoles,
+          permission as keyof typeof BOOKING_PERMISSIONS
         );
         break;
-      case 'search':
-        hasPermission = hasSearchPermission(userRoles, permission as keyof typeof SEARCH_PERMISSIONS);
+      case "facilities":
+        hasPermission = hasFacilityPermission(
+          userRoles,
+          permission as keyof typeof FACILITY_PERMISSIONS
+        );
         break;
-      case 'support':
-        hasPermission = hasSupportPermission(userRoles, permission as keyof typeof SUPPORT_PERMISSIONS);
+      case "calendar":
+        hasPermission = hasCalendarPermission(
+          userRoles,
+          permission as keyof typeof CALENDAR_PERMISSIONS
+        );
+        break;
+      case "messaging":
+        hasPermission = hasMessagingPermission(
+          userRoles,
+          permission as keyof typeof MESSAGING_PERMISSIONS
+        );
+        break;
+      case "cart":
+        hasPermission = hasCartPermission(
+          userRoles,
+          permission as keyof typeof CART_PERMISSIONS
+        );
+        break;
+      case "auth":
+        hasPermission = hasAuthPermission(
+          userRoles,
+          permission as keyof typeof AUTH_PERMISSIONS
+        );
+        break;
+      case "dashboard":
+        hasPermission = hasDashboardPermission(
+          userRoles,
+          permission as keyof typeof DASHBOARD_PERMISSIONS
+        );
+        break;
+      case "groups":
+        // Groups uses single role instead of array
+        hasPermission = userRoles.some((role: string) =>
+          hasGroupPermission(
+            role,
+            permission as keyof typeof GROUPS_PERMISSIONS
+          )
+        );
+        break;
+      case "search":
+        hasPermission = hasSearchPermission(
+          userRoles,
+          permission as keyof typeof SEARCH_PERMISSIONS
+        );
+        break;
+      case "support":
+        hasPermission = hasSupportPermission(
+          userRoles,
+          permission as keyof typeof SUPPORT_PERMISSIONS
+        );
         break;
       default:
         console.warn(`Unknown permission domain: ${domain}`);
         hasPermission = false;
     }
   } catch (error) {
-    console.error(`Permission check failed for ${domain}.${permission}:`, error);
+    console.error(
+      `Permission check failed for ${domain}.${permission}:`,
+      error
+    );
     hasPermission = false;
   }
 
@@ -183,10 +246,10 @@ export const PermissionGuard: React.FC<PermissionGuardProps> = ({
   if (showMessage) {
     return (
       <div className={className}>
-        <DefaultAccessDenied 
-          message={t('permissions.insufficient_permissions', { 
-            domain, 
-            permission 
+        <DefaultAccessDenied
+          message={t("permissions.insufficient_permissions", {
+            domain,
+            permission,
           })}
         />
       </div>
@@ -200,14 +263,24 @@ export const PermissionGuard: React.FC<PermissionGuardProps> = ({
  * Convenience components for common permissions
  */
 
-export const AdminOnly: React.FC<{ children: React.ReactNode; fallback?: React.ReactNode }> = ({ children, fallback }) => (
+export const AdminOnly: React.FC<{
+  children: React.ReactNode;
+  fallback?: React.ReactNode;
+}> = ({ children, fallback }) => (
   <PermissionGuard domain="auth" permission="MANAGE_USERS" fallback={fallback}>
     {children}
   </PermissionGuard>
 );
 
-export const ManagerOnly: React.FC<{ children: React.ReactNode; fallback?: React.ReactNode }> = ({ children, fallback }) => (
-  <PermissionGuard domain="dashboard" permission="VIEW_ADMIN_DASHBOARD" fallback={fallback}>
+export const ManagerOnly: React.FC<{
+  children: React.ReactNode;
+  fallback?: React.ReactNode;
+}> = ({ children, fallback }) => (
+  <PermissionGuard
+    domain="dashboard"
+    permission="VIEW_ADMIN_DASHBOARD"
+    fallback={fallback}
+  >
     {children}
   </PermissionGuard>
 );

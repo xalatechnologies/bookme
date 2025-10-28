@@ -21,7 +21,7 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({
   } = useGlobalSearch(onResultClick);
 
   // Type adapter: convert SearchResult to ISearchResult
-  const adaptedResults: ISearchResult[] = results.map(r => ({
+  const adaptedResults: ISearchResult[] = results.map((r) => ({
     id: r.id,
     type: r.type,
     title: r.title,
@@ -32,7 +32,7 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({
   }));
 
   const handleClick = (result: ISearchResult) => {
-    const originalResult = results.find(r => r.id === result.id);
+    const originalResult = results.find((r) => r.id === result.id);
     if (originalResult) {
       handleResult(originalResult);
     }
