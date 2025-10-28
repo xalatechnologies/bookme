@@ -485,5 +485,30 @@
   "time": {
     "hour": "time",
     "hours": "timer"
+  },
+  "steps": {
+    "calendar": {
+      "title": "Velg tidspunkter",
+      "description": "Klikk på ledige tidspunkter for å velge dem. Du kan velge flere tidspunkter samtidig."
+    },
+    "details": {
+      "title": "Bookingdetaljer",
+      "description": "Fyll ut informasjon om booking"
+    },
+    "terms": {
+      "title": "Vilkår og betingelser",
+      "description": "Les og godta vilkårene"
+    },
+    "actions": {
+      "title": "Fullfør booking",
+      "description": "Legg i kurv eller fullfør nå"
+    }
+  },
+  "progress": {
+    "title": "Bookingprosess",
+    "step_of": "Steg {{current}} av {{total}}"
+  },
+  "sidebar": {
+    "select_slots_pricing": "Velg tidspunkter og få en prisberegning"
   }
 }

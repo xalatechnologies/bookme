@@ -3,7 +3,7 @@
 // External libraries
 import React, { useMemo, useCallback } from "react";
 import { format, addDays, isToday, isWeekend, isPast } from "date-fns";
-import { nb } from "date-fns/locale";
+import { nb, enUS } from "date-fns/locale";
 import { useTranslation } from "react-i18next";
 
 // Internal libraries/utilities
@@ -44,7 +44,9 @@ export const TimeSlotGrid: React.FC<ICalendarGridProps> = ({
   openingHoursStart = "08:00",
   openingHoursEnd = "22:00"
 }) => {
-  const { t } = useTranslation('calendar');
+  const { t, i18n } = useTranslation('calendar');
+  const currentLocale = i18n.language === 'en' ? enUS : nb;
+  
   // Generate time slots based on opening hours - memoized
   const timeSlots = useMemo(() => {
     const startHour = parseInt(openingHoursStart.split(':')[0]);
@@ -260,10 +262,10 @@ export const TimeSlotGrid: React.FC<ICalendarGridProps> = ({
                   : 'bg-gray-50 border-gray-200 text-gray-700'
               }`}>
                 <div className="text-xs font-medium uppercase tracking-wide">
-                  {format(day.date, "EEE", { locale: nb })}
+                  {format(day.date, "EEE", { locale: currentLocale })}
                 </div>
                 <div className="text-lg font-bold mt-1">
-                  {format(day.date, "dd", { locale: nb })}
+                  {format(day.date, "dd", { locale: currentLocale })}
                 </div>
                 {isToday && (
                   <div className="text-xs text-blue-200 mt-1">{t('navigation.today')}</div>

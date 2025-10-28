@@ -30,11 +30,11 @@ interface FieldConfigActions {
 type FieldConfigStore = FieldConfigState & FieldConfigActions;
 
 // Default field configurations
-// Note: labels use translation keys from facility namespace (facility:fields.*)
+// Note: labels use translation keys from facilities namespace (facilities:fields.*)
 const defaultFieldConfigs: readonly FieldConfig[] = [
   {
     id: 'capacity',
-    label: 'facility:fields.capacity',
+    label: 'facilities:fields.capacity',
     key: 'capacity',
     type: 'number',
     visible: true,
@@ -42,7 +42,7 @@ const defaultFieldConfigs: readonly FieldConfig[] = [
   },
   {
     id: 'area',
-    label: 'facility:fields.area',
+    label: 'facilities:fields.area',
     key: 'area',
     type: 'text',
     visible: false,
@@ -50,7 +50,7 @@ const defaultFieldConfigs: readonly FieldConfig[] = [
   },
   {
     id: 'pricePerHour',
-    label: 'facility:fields.pricePerHour',
+    label: 'facilities:fields.pricePerHour',
     key: 'pricePerHour',
     type: 'number',
     visible: false,
@@ -58,7 +58,7 @@ const defaultFieldConfigs: readonly FieldConfig[] = [
   },
   {
     id: 'rating',
-    label: 'facility:fields.rating',
+    label: 'facilities:fields.rating',
     key: 'rating',
     type: 'number',
     visible: false,
@@ -66,7 +66,7 @@ const defaultFieldConfigs: readonly FieldConfig[] = [
   },
   {
     id: 'reviewCount',
-    label: 'facility:fields.reviewCount',
+    label: 'facilities:fields.reviewCount',
     key: 'reviewCount',
     type: 'number',
     visible: false,
@@ -74,7 +74,7 @@ const defaultFieldConfigs: readonly FieldConfig[] = [
   },
   {
     id: 'floor',
-    label: 'facility:fields.floor',
+    label: 'facilities:fields.floor',
     key: 'floor',
     type: 'number',
     visible: false,
@@ -82,7 +82,7 @@ const defaultFieldConfigs: readonly FieldConfig[] = [
   },
   {
     id: 'accessibility',
-    label: 'facility:fields.accessibility',
+    label: 'facilities:fields.accessibility',
     key: 'accessibility',
     type: 'boolean',
     visible: false,
@@ -90,7 +90,7 @@ const defaultFieldConfigs: readonly FieldConfig[] = [
   },
   {
     id: 'parking',
-    label: 'facility:fields.parking',
+    label: 'facilities:fields.parking',
     key: 'parking',
     type: 'text',
     visible: false,
@@ -98,7 +98,7 @@ const defaultFieldConfigs: readonly FieldConfig[] = [
   },
   {
     id: 'wifi',
-    label: 'facility:fields.wifi',
+    label: 'facilities:fields.wifi',
     key: 'wifi',
     type: 'boolean',
     visible: false,
@@ -106,7 +106,7 @@ const defaultFieldConfigs: readonly FieldConfig[] = [
   },
   {
     id: 'projector',
-    label: 'facility:fields.projector',
+    label: 'facilities:fields.projector',
     key: 'projector',
     type: 'boolean',
     visible: false,
@@ -114,7 +114,7 @@ const defaultFieldConfigs: readonly FieldConfig[] = [
   },
   {
     id: 'whiteboard',
-    label: 'facility:fields.whiteboard',
+    label: 'facilities:fields.whiteboard',
     key: 'whiteboard',
     type: 'boolean',
     visible: false,
@@ -122,7 +122,7 @@ const defaultFieldConfigs: readonly FieldConfig[] = [
   },
   {
     id: 'soundSystem',
-    label: 'facility:fields.soundSystem',
+    label: 'facilities:fields.soundSystem',
     key: 'soundSystem',
     type: 'boolean',
     visible: false,
@@ -130,7 +130,7 @@ const defaultFieldConfigs: readonly FieldConfig[] = [
   },
   {
     id: 'airConditioning',
-    label: 'facility:fields.airConditioning',
+    label: 'facilities:fields.airConditioning',
     key: 'airConditioning',
     type: 'boolean',
     visible: false,
@@ -138,7 +138,7 @@ const defaultFieldConfigs: readonly FieldConfig[] = [
   },
   {
     id: 'heating',
-    label: 'facility:fields.heating',
+    label: 'facilities:fields.heating',
     key: 'heating',
     type: 'boolean',
     visible: false,
@@ -146,7 +146,7 @@ const defaultFieldConfigs: readonly FieldConfig[] = [
   },
   {
     id: 'naturalLight',
-    label: 'facility:fields.naturalLight',
+    label: 'facilities:fields.naturalLight',
     key: 'naturalLight',
     type: 'boolean',
     visible: false,
@@ -154,7 +154,7 @@ const defaultFieldConfigs: readonly FieldConfig[] = [
   },
   {
     id: 'windows',
-    label: 'facility:fields.windows',
+    label: 'facilities:fields.windows',
     key: 'windows',
     type: 'number',
     visible: false,
@@ -162,7 +162,7 @@ const defaultFieldConfigs: readonly FieldConfig[] = [
   },
   {
     id: 'doors',
-    label: 'facility:fields.doors',
+    label: 'facilities:fields.doors',
     key: 'doors',
     type: 'number',
     visible: false,
@@ -170,7 +170,7 @@ const defaultFieldConfigs: readonly FieldConfig[] = [
   },
   {
     id: 'ceilingHeight',
-    label: 'facility:fields.ceilingHeight',
+    label: 'facilities:fields.ceilingHeight',
     key: 'ceilingHeight',
     type: 'number',
     visible: false,
@@ -178,7 +178,7 @@ const defaultFieldConfigs: readonly FieldConfig[] = [
   },
   {
     id: 'floorType',
-    label: 'facility:fields.floorType',
+    label: 'facilities:fields.floorType',
     key: 'floorType',
     type: 'text',
     visible: false,
@@ -186,7 +186,7 @@ const defaultFieldConfigs: readonly FieldConfig[] = [
   },
   {
     id: 'wallColor',
-    label: 'facility:fields.wallColor',
+    label: 'facilities:fields.wallColor',
     key: 'wallColor',
     type: 'text',
     visible: false,

@@ -42,6 +42,7 @@
     "processing": "Behandler...",
     "book": "Book",
     "bookNow": "Book nå",
+    "book_now": "Book nå",
     "reserve": "Reserver",
     "checkout": "Til kassen",
     "pay": "Betal",
@@ -52,7 +53,9 @@
     "pause": "Pause",
     "resume": "Gjenoppta",
     "applyFilters": "Bruk filtre",
-    "login": "Logg inn"
+    "login": "Logg inn",
+    "like": "Lik",
+    "contact_us": "Kontakt oss"
   },
   "view_modes": {
     "grid": "Rutenett visning",
@@ -174,7 +177,14 @@
     "previousPage": "Forrige side",
     "pageOf": "Side {{current}} av {{total}}",
     "showing": "Viser {{from}} til {{to}} av {{total}}",
-    "goToPage": "Gå til side"
+    "goToPage": "Gå til side",
+    "previous": "Forrige",
+    "next": "Neste"
+  },
+  "breadcrumbs": {
+    "home": "Hjem",
+    "facilities": "Lokaler",
+    "book_facility_for": "Book {{name}}"
   },
   "search": {
     "placeholder": "Søk...",
@@ -480,5 +490,34 @@
     "adjustCriteria": "Prøv å justere søkekriteriene dine",
     "capacity": "Kapasitet:",
     "people": "personer"
+  }
+  ,
+  "faq": {
+    "title": "Ofte stilte spørsmål",
+    "food_drinks": "Mat og drikke",
+    "booking_time": "Bookingtid",
+    "cancellation": "Avbestillingsregler",
+    "parking": "Parkering"
+  },
+  "loading": {
+    "facility": "Laster lokale...",
+    "please_wait": "Vennligst vent..."
+  },
+  "tabs": {
+    "general": "Generelt",
+    "zones": "Soner",
+    "facilities": "Fasiliteter",
+    "rules": "Regler",
+    "faq": "FAQ"
+  },
+  "about": "Om",
+  "available_zones": "Tilgjengelige soner",
+  "rules": {
+    "smoking_not_allowed": "Røyking ikke tillatt",
+    "cleanup_required_desc": "Opprydding påkrevd etter bruk",
+    "noise_after_hours": "Ingen støy etter åpningstid",
+    "noise_after_hours_desc": "Vennligst vær stille etter åpningstid",
+    "cancellation": "Avbestilling",
+    "cancellation_desc": "Avbestilling må gjøres 24 timer i forveien"
   }
 }

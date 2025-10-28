@@ -14,13 +14,28 @@
     "floor": "Etasje",
     "room": "Rom",
     "zone": "Sone",
+    "price": "Pris",
     "price_per_hour": "Pris per time",
+    "pricePerHour": "Pris per time",
     "price_range": "Prisområde",
     "min_price": "Min. pris",
     "max_price": "Maks. pris",
     "amenities": "Fasiliteter",
     "equipment": "Utstyr",
     "accessibility": "Tilgjengelighet",
+    "parking": "Parkering",
+    "wifi": "WiFi",
+    "projector": "Projektor",
+    "whiteboard": "Whiteboard",
+    "soundSystem": "Lydanlegg",
+    "airConditioning": "Klimaanlegg",
+    "heating": "Oppvarming",
+    "naturalLight": "Dagslys",
+    "windows": "Vinduer",
+    "doors": "Dører",
+    "ceilingHeight": "Takhøyde",
+    "floorType": "Gulvtype",
+    "wallColor": "Veggfarve",
     "opening_hours": "Åpningstider",
     "available_from": "Tilgjengelig fra",
     "available_until": "Tilgjengelig til",
@@ -39,6 +54,7 @@
     "popular": "Populær",
     "featured": "Fremhevet",
     "rating": "Vurdering",
+    "reviewCount": "Anmeldelser",
     "reviews": "Anmeldelser"
   },
   "types": {
@@ -59,6 +75,7 @@
     "other": "Annet"
   },
   "amenities": {
+    "available_title": "Tilgjengelige fasiliteter",
     "wifi": "WiFi",
     "projector": "Projektor",
     "whiteboard": "Tavle",
@@ -289,5 +306,10 @@
     "reviews": "anmeldelser",
     "add_to_favorites": "Legg til favoritter",
     "remove_from_favorites": "Fjern fra favoritter"
+  },
+  "rules": {
+    "title": "Regler og retningslinjer",
+    "noSmoking": "Røyking forbudt",
+    "cleanupRequired": "Opprydding påkrevd"
   }
 }

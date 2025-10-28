@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { MapPin, Clock, Euro, Phone, Mail, Calendar } from "lucide-react";
 import type { IFacility } from "@/stores/facilityStore";
 import { useTranslation } from "react-i18next";
+import { useAmenityTranslation } from '@/hooks/useAmenityTranslation';
 
 interface FacilityContactInfoProps {
   readonly facility: IFacility;
@@ -12,6 +13,23 @@ interface FacilityContactInfoProps {
 
 export const FacilityContactInfo: React.FC<FacilityContactInfoProps> = ({ facility }) => {
   const { t } = useTranslation(['facilities', 'common']);
+  const translateAmenity = useAmenityTranslation();
+
+  // Defensive: handle initial loading state where facility may be undefined
+  if (!facility) {
+    return (
+      <div className="space-y-6">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg">{t('loading.facility', { ns: 'common' })}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-sm text-gray-500">{t('loading.please_wait', { ns: 'common' })}</div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   const handleBookNow = (): void => {
     try {
@@ -68,7 +86,7 @@ export const FacilityContactInfo: React.FC<FacilityContactInfoProps> = ({ facili
             <Euro className="h-5 w-5 text-gray-400" />
             <div>
               <p className="text-sm text-gray-500">{t('fields.price_per_hour', { ns: 'facilities' })}</p>
-              <p className="font-medium">{facility.pricePerHour} kr</p>
+              <p className="font-medium">{(facility.pricePerHour ?? 0)} kr</p>
             </div>
           </div>
 
@@ -76,7 +94,7 @@ export const FacilityContactInfo: React.FC<FacilityContactInfoProps> = ({ facili
             <MapPin className="h-5 w-5 text-gray-400" />
             <div>
               <p className="text-sm text-gray-500">{t('fields.location', { ns: 'facilities' })}</p>
-              <p className="font-medium">{facility.location}</p>
+              <p className="font-medium">{facility.location || t('common:unknown')}</p>
             </div>
           </div>
         </CardContent>
@@ -90,7 +108,7 @@ export const FacilityContactInfo: React.FC<FacilityContactInfoProps> = ({ facili
         <CardContent className="space-y-4">
           <div className="text-center">
             <div className="text-2xl font-bold text-green-600 mb-1">
-              {facility.pricePerHour} kr
+              {(facility.pricePerHour ?? 0)} kr
             </div>
             <p className="text-sm text-gray-500">{t('details.per_hour', { ns: 'facilities' })}</p>
           </div>
@@ -122,15 +140,19 @@ export const FacilityContactInfo: React.FC<FacilityContactInfoProps> = ({ facili
           <CardTitle className="text-lg">{t('details.opening_hours_today', { ns: 'facilities' })}</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex items-center gap-3">
-            <Clock className="h-5 w-5 text-gray-400" />
-            <div>
-              <p className="font-medium text-green-600">{t('status.open_now', { ns: 'facilities' })}</p>
-              <p className="text-sm text-gray-500">
-                {facility.availability.monday.start} - {facility.availability.monday.end}
-              </p>
+          {facility.availability?.monday?.start && facility.availability?.monday?.end ? (
+            <div className="flex items-center gap-3">
+              <Clock className="h-5 w-5 text-gray-400" />
+              <div>
+                <p className="font-medium text-green-600">{t('status.open_now', { ns: 'facilities' })}</p>
+                <p className="text-sm text-gray-500">
+                  {facility.availability.monday.start} - {facility.availability.monday.end}
+                </p>
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className="text-sm text-gray-500">-</div>
+          )}
         </CardContent>
       </Card>
 
@@ -141,18 +163,18 @@ export const FacilityContactInfo: React.FC<FacilityContactInfoProps> = ({ facili
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap gap-2">
-            {facility.amenities.slice(0, 6).map((amenity, index) => (
+            {(facility.amenities ?? []).slice(0, 6).map((amenity, index) => (
               <Badge
                 key={index}
                 variant="outline"
                 className="text-xs"
               >
-                {amenity}
+                {translateAmenity(amenity)}
               </Badge>
             ))}
-            {facility.amenities.length > 6 && (
+            {(facility.amenities?.length ?? 0) > 6 && (
               <Badge variant="outline" className="text-xs">
-                +{facility.amenities.length - 6} {t('facilities:card.more')}
+                +{(facility.amenities?.length ?? 0) - 6} {t('facilities:card.more')}
               </Badge>
             )}
           </div>

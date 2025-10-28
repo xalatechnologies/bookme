@@ -90,10 +90,10 @@ export const FacilityInfoTabs: React.FC<FacilityInfoTabsProps> = ({
                   const getFieldValue = (): string | number => {
                     if (field.key === 'capacity') return capacity;
                     if (field.key === 'area') return area;
-                    if (field.key === 'pricePerHour') return typeof field.value === 'boolean' ? (field.value ? t('facility:card.yes') : t('facility:card.no')) : field.value;
-                    if (field.key === 'rating') return typeof field.value === 'boolean' ? (field.value ? t('facility:card.yes') : t('facility:card.no')) : field.value;
-                    if (field.key === 'reviewCount') return typeof field.value === 'boolean' ? (field.value ? t('facility:card.yes') : t('facility:card.no')) : field.value;
-                    return typeof field.value === 'boolean' ? (field.value ? t('facility:card.yes') : t('facility:card.no')) : field.value;
+                    if (field.key === 'pricePerHour') return typeof field.value === 'boolean' ? (field.value ? t('facilities:card.yes') : t('facilities:card.no')) : field.value;
+                    if (field.key === 'rating') return typeof field.value === 'boolean' ? (field.value ? t('facilities:card.yes') : t('facilities:card.no')) : field.value;
+                    if (field.key === 'reviewCount') return typeof field.value === 'boolean' ? (field.value ? t('facilities:card.yes') : t('facilities:card.no')) : field.value;
+                    return typeof field.value === 'boolean' ? (field.value ? t('facilities:card.yes') : t('facilities:card.no')) : field.value;
                   };
 
                   const getIcon = (): JSX.Element => {
@@ -106,11 +106,11 @@ export const FacilityInfoTabs: React.FC<FacilityInfoTabsProps> = ({
                   };
 
                   const getUnit = (): string => {
-                    if (field.key === 'capacity') return t('facility:card.people');
-                    if (field.key === 'area') return t('facility:card.squareMeters');
-                    if (field.key === 'pricePerHour') return t('facility:card.pricePerHour');
-                    if (field.key === 'rating') return t('facility:card.outOf5');
-                    if (field.key === 'reviewCount') return t('facility:card.reviewCount');
+                    if (field.key === 'capacity') return t('facilities:card.people');
+                    if (field.key === 'area') return t('facilities:card.squareMeters');
+                    if (field.key === 'pricePerHour') return t('facilities:card.pricePerHour');
+                    if (field.key === 'rating') return t('facilities:card.outOf5');
+                    if (field.key === 'reviewCount') return t('facilities:card.reviewCount');
                     return '';
                   };
 
@@ -118,7 +118,7 @@ export const FacilityInfoTabs: React.FC<FacilityInfoTabsProps> = ({
                     <div key={field.id} className="flex items-center">
                       {getIcon()}
                       <div>
-                        <span className="font-medium">{field.label}:</span>
+                        <span className="font-medium">{t(field.label)}:</span>
                         <span className="ml-2 text-gray-600">
                           {getFieldValue()}
                           {getUnit() && ` ${getUnit()}`}
@@ -138,10 +138,10 @@ export const FacilityInfoTabs: React.FC<FacilityInfoTabsProps> = ({
                   const getFieldValue = (): string | number => {
                     if (field.key === 'capacity') return capacity;
                     if (field.key === 'area') return area;
-                    if (field.key === 'pricePerHour') return typeof field.value === 'boolean' ? (field.value ? t('facility:card.yes') : t('facility:card.no')) : field.value;
-                    if (field.key === 'rating') return typeof field.value === 'boolean' ? (field.value ? t('facility:card.yes') : t('facility:card.no')) : field.value;
-                    if (field.key === 'reviewCount') return typeof field.value === 'boolean' ? (field.value ? t('facility:card.yes') : t('facility:card.no')) : field.value;
-                    return typeof field.value === 'boolean' ? (field.value ? t('facility:card.yes') : t('facility:card.no')) : field.value;
+                    if (field.key === 'pricePerHour') return typeof field.value === 'boolean' ? (field.value ? t('facilities:card.yes') : t('facilities:card.no')) : field.value;
+                    if (field.key === 'rating') return typeof field.value === 'boolean' ? (field.value ? t('facilities:card.yes') : t('facilities:card.no')) : field.value;
+                    if (field.key === 'reviewCount') return typeof field.value === 'boolean' ? (field.value ? t('facilities:card.yes') : t('facilities:card.no')) : field.value;
+                    return typeof field.value === 'boolean' ? (field.value ? t('facilities:card.yes') : t('facilities:card.no')) : field.value;
                   };
 
                   const getIcon = (): JSX.Element => {
@@ -154,11 +154,11 @@ export const FacilityInfoTabs: React.FC<FacilityInfoTabsProps> = ({
                   };
 
                   const getUnit = (): string => {
-                    if (field.key === 'capacity') return t('facility:card.people');
-                    if (field.key === 'area') return t('facility:card.squareMeters');
-                    if (field.key === 'pricePerHour') return t('facility:card.pricePerHour');
-                    if (field.key === 'rating') return t('facility:card.outOf5');
-                    if (field.key === 'reviewCount') return t('facility:card.reviewCount');
+                    if (field.key === 'capacity') return t('facilities:card.people');
+                    if (field.key === 'area') return t('facilities:card.squareMeters');
+                    if (field.key === 'pricePerHour') return t('facilities:card.pricePerHour');
+                    if (field.key === 'rating') return t('facilities:card.outOf5');
+                    if (field.key === 'reviewCount') return t('facilities:card.reviewCount');
                     return '';
                   };
 
@@ -166,7 +166,7 @@ export const FacilityInfoTabs: React.FC<FacilityInfoTabsProps> = ({
                     <div key={field.id} className="flex items-center">
                       {getIcon()}
                       <div>
-                        <span className="font-medium">{field.label}:</span>
+                        <span className="font-medium">{t(field.label)}:</span>
                         <span className="ml-2 text-gray-600">
                           {getFieldValue()}
                           {getUnit() && ` ${getUnit()}`}
@@ -178,9 +178,9 @@ export const FacilityInfoTabs: React.FC<FacilityInfoTabsProps> = ({
 
               {equipment.length > 0 && (
                 <div>
-                  <span className="font-medium">{t('facility:fields.equipment')}:</span>
+                  <span className="font-medium">{t('facilities:fields.equipment')}:</span>
                   <span className="ml-2 text-gray-600">{equipment.slice(0, 2).join(', ')}</span>
-                  {equipment.length > 2 && <span className="text-gray-500"> +{equipment.length - 2} {t('facility:card.moreAmenities')}</span>}
+                  {equipment.length > 2 && <span className="text-gray-500"> +{equipment.length - 2} {t('facilities:card.moreAmenities')}</span>}
                 </div>
               )}
             </div>
@@ -202,16 +202,16 @@ export const FacilityInfoTabs: React.FC<FacilityInfoTabsProps> = ({
                   <p className="text-gray-600 mb-4">{zone.description}</p>
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
-                      <span className="font-medium">{t('facility:fields.capacity')}:</span>
-                      <span className="ml-2">{zone.capacity} {t('facility:card.people')}</span>
+                      <span className="font-medium">{t('facilities:fields.capacity')}:</span>
+                      <span className="ml-2">{zone.capacity} {t('facilities:card.people')}</span>
                     </div>
                     <div>
-                      <span className="font-medium">{t('facility:fields.price')}:</span>
-                      <span className="ml-2">{zone.pricePerHour} {t('facility:card.pricePerHour')}</span>
+                      <span className="font-medium">{t('facilities:fields.price')}:</span>
+                      <span className="ml-2">{zone.pricePerHour} {t('facilities:card.pricePerHour')}</span>
                     </div>
                     <div>
-                      <span className="font-medium">{t('facility:fields.area')}:</span>
-                      <span className="ml-2">{zone.area} {t('facility:card.squareMeters')}</span>
+                      <span className="font-medium">{t('facilities:fields.area')}:</span>
+                      <span className="ml-2">{zone.area} {t('facilities:card.squareMeters')}</span>
                     </div>
                   </div>
                 </div>
@@ -228,12 +228,12 @@ export const FacilityInfoTabs: React.FC<FacilityInfoTabsProps> = ({
               </p>
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
-                  <span className="font-medium">{t('facility:fields.capacity')}:</span>
-                  <span className="ml-2">{capacity} {t('facility:card.people')}</span>
+                  <span className="font-medium">{t('facilities:fields.capacity')}:</span>
+                  <span className="ml-2">{capacity} {t('facilities:card.people')}</span>
                 </div>
                 <div>
-                  <span className="font-medium">{t('facility:fields.area')}:</span>
-                  <span className="ml-2">{area} {t('facility:card.squareMeters')}</span>
+                  <span className="font-medium">{t('facilities:fields.area')}:</span>
+                  <span className="ml-2">{area} {t('facilities:card.squareMeters')}</span>
                 </div>
               </div>
             </div>
@@ -243,7 +243,7 @@ export const FacilityInfoTabs: React.FC<FacilityInfoTabsProps> = ({
 
       <TabsContent value="facilities" className="space-y-6 mt-6">
         <div>
-          <h3 className="text-xl font-semibold mb-4">{t('facility:amenities.available_title')}</h3>
+          <h3 className="text-xl font-semibold mb-4">{t('facilities:amenities.available_title')}</h3>
           {amenities.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {amenities.map((amenity, index) => (
@@ -256,12 +256,12 @@ export const FacilityInfoTabs: React.FC<FacilityInfoTabsProps> = ({
               ))}
             </div>
           ) : (
-            <p className="text-gray-600">{t('facility:amenities.no_amenities')}</p>
+            <p className="text-gray-600">{t('facilities:amenities.no_amenities')}</p>
           )}
 
           {equipment.length > 0 && (
             <div className="mt-8">
-              <h4 className="text-lg font-semibold mb-4">{t('facility:amenities.equipment_title')}</h4>
+              <h4 className="text-lg font-semibold mb-4">{t('facilities:amenities.equipment_title')}</h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {equipment.map((item, index) => (
                   <div key={index} className="flex items-center p-3 bg-blue-50 rounded-lg">
@@ -277,7 +277,7 @@ export const FacilityInfoTabs: React.FC<FacilityInfoTabsProps> = ({
 
           {suitableFor.length > 0 && (
             <div className="mt-8">
-              <h4 className="text-lg font-semibold mb-4">{t('facility:amenities.suitable_for')}</h4>
+              <h4 className="text-lg font-semibold mb-4">{t('facilities:amenities.suitable_for')}</h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {suitableFor.map((activity, index) => (
                   <div key={index} className="flex items-center p-3 bg-green-50 rounded-lg">
@@ -295,12 +295,12 @@ export const FacilityInfoTabs: React.FC<FacilityInfoTabsProps> = ({
 
       <TabsContent value="rules" className="space-y-6 mt-6">
         <div>
-          <h3 className="text-xl font-semibold mb-4">{t('facility:rules.title')}</h3>
+          <h3 className="text-xl font-semibold mb-4">{t('facilities:rules.title')}</h3>
           <div className="space-y-4">
             <div className="flex items-start">
               <CheckCircle className="h-5 w-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
               <div>
-                <p className="font-medium">{t('facility:rules.noSmoking')}</p>
+                <p className="font-medium">{t('facilities:rules.noSmoking')}</p>
                 <p className="text-gray-600 text-sm">{t('common:rules.smoking_not_allowed')}</p>
               </div>
             </div>
@@ -308,7 +308,7 @@ export const FacilityInfoTabs: React.FC<FacilityInfoTabsProps> = ({
             <div className="flex items-start">
               <CheckCircle className="h-5 w-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
               <div>
-                <p className="font-medium">{t('facility:rules.cleanupRequired')}</p>
+                <p className="font-medium">{t('facilities:rules.cleanupRequired')}</p>
                 <p className="text-gray-600 text-sm">{t('common:rules.cleanup_required_desc')}</p>
               </div>
             </div>

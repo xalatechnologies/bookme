@@ -4,7 +4,7 @@ import React, { useState, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { ChevronLeft, ChevronRight, CheckCircle, Clock, Calendar, FileText, Shield, Users, X } from "lucide-react";
 import { startOfWeek, addWeeks, subWeeks, addDays, addMonths, format, isToday, isWeekend, isPast, getDay, parseISO, isValid } from "date-fns";
-import { nb } from "date-fns/locale";
+import { nb, enUS } from "date-fns/locale";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -72,7 +72,8 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
   getAvailabilityStatus,
   isSlotSelected,
 }) => {
-  const { t } = useTranslation(['bookings', 'common']);
+  const { t, i18n } = useTranslation(['bookings', 'common']);
+  const currentLocale = i18n.language === 'en' ? enUS : nb;
 
   // Current step state
   const [currentStep, setCurrentStep] = useState<BookingStep>('calendar');
@@ -871,9 +872,9 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
         return (
           <div className="space-y-6">
             <div>
-              <h3 className="text-lg font-semibold mb-2">Velg tidspunkter</h3>
+              <h3 className="text-lg font-semibold mb-2">{t('bookings:steps.calendar.title')}</h3>
               <p className="text-gray-600 text-sm">
-                Klikk på ledige tidspunkter for å velge dem. Du kan velge flere tidspunkter samtidig.
+                {t('bookings:steps.calendar.description')}
               </p>
             </div>
 
@@ -883,15 +884,15 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
                 <div className="flex items-center justify-between">
                   <Button variant="outline" size="lg" onClick={handlePreviousWeek}>
                     <ChevronLeft className="h-4 w-4 mr-2" />
-                    Forrige uke
+                    {t('calendar:navigation.previous_week')}
                   </Button>
                   <div className="text-center">
                     <h3 className="text-xl font-semibold">
-                      {format(currentWeek.startDate, 'dd. MMM', { locale: nb })} - {format(currentWeek.endDate, 'dd. MMM yyyy', { locale: nb })}
+                      {format(currentWeek.startDate, 'dd. MMM', { locale: currentLocale })} - {format(currentWeek.endDate, 'dd. MMM yyyy', { locale: currentLocale })}
                     </h3>
                   </div>
                   <Button variant="outline" size="lg" onClick={handleNextWeek}>
-                    Neste uke
+                    {t('calendar:navigation.next_week')}
                     <ChevronRight className="h-4 w-4 ml-2" />
                   </Button>
                 </div>
@@ -1143,9 +1144,9 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
             <CardContent className="p-4">
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <h3 className="font-semibold">Bookingprosess</h3>
+                  <h3 className="font-semibold">{t('bookings:progress.title')}</h3>
                   <span className="text-sm text-gray-500">
-                    Steg {currentStepIndex + 1} av {steps.length}
+                    {t('bookings:progress.step_of', { current: currentStepIndex + 1, total: steps.length })}
                   </span>
                 </div>
                 
@@ -1199,7 +1200,7 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
               className="flex items-center gap-2"
             >
               <ChevronLeft className="h-4 w-4" />
-              Forrige
+              {t('common:navigation.previous')}
             </Button>
             
             <Button
@@ -1207,7 +1208,7 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
               disabled={currentStepIndex === steps.length - 1 || !validateStep(currentStep)}
               className="flex items-center gap-2"
             >
-              Neste
+              {t('common:navigation.next')}
               <ChevronRight className="h-4 w-4" />
             </Button>
           </div>
@@ -1224,7 +1225,7 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
                     ? (formData.bookingType === 'recurring'
                         ? (recurringSlots.length > 0 ? t('bookings:sidebar.recurring_slots_and_price') : t('bookings:sidebar.slots_and_price_select_pattern'))
                         : t('bookings:sidebar.selected_slots_and_price'))
-                    : t('bookings:sidebar.select_slots_get_price')
+                    : t('bookings:sidebar.select_slots_pricing')
                   }
                 </CardTitle>
               </CardHeader>
@@ -1665,7 +1666,7 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
                   <div className="text-center py-8">
                     <Calendar className="h-16 w-16 text-gray-400 mx-auto mb-4" />
                     <p className="text-gray-500 text-sm">
-                      Velg tidspunkter og få en prisberegning
+                      {t('bookings:sidebar.select_slots_pricing')}
                     </p>
                   </div>
                 )}

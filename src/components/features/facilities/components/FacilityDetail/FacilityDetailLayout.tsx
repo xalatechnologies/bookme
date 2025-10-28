@@ -71,15 +71,7 @@ export const FacilityDetailLayout = ({
         {/* Right Column - Contact Info Sidebar (30%) */}
         <div className="lg:col-span-3 hidden lg:block">
           <div className="sticky top-20 h-[calc(100vh-8rem)] overflow-y-auto">
-            <FacilityContactInfo 
-              facilityName={facility.name} 
-              address={facility.address} 
-              openingHours={facility.openingHours}
-              openingHoursStart={facility.openingHoursStart}
-              openingHoursEnd={facility.openingHoursEnd}
-              contactEmail={facility.contactEmail}
-              emergencyContact={facility.emergencyContact}
-            />
+            <FacilityContactInfo facility={facility} />
           </div>
         </div>
       </div>

@@ -435,5 +435,30 @@
   "time": {
     "hour": "hour",
     "hours": "hours"
+  },
+  "steps": {
+    "calendar": {
+      "title": "Select Time",
+      "description": "Click on available time slots to select them. You can select multiple time slots."
+    },
+    "details": {
+      "title": "Booking Details",
+      "description": "Fill in booking information"
+    },
+    "terms": {
+      "title": "Terms and Conditions",
+      "description": "Read and accept the terms"
+    },
+    "actions": {
+      "title": "Complete Booking",
+      "description": "Add to cart or complete now"
+    }
+  },
+  "progress": {
+    "title": "Booking Process",
+    "step_of": "Step {{current}} of {{total}}"
+  },
+  "sidebar": {
+    "select_slots_pricing": "Select time slots and get pricing"
   }
 }

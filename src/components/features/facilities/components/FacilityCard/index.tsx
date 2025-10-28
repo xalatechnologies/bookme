@@ -11,6 +11,7 @@ import { useFieldConfigStore } from '@/stores/fieldConfigStore';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { getFieldUnit, generateShareUrl, copyToClipboard } from '@/utils/card-formatters';
+import { useAmenityTranslation } from '@/hooks/useAmenityTranslation';
 
 interface FacilityCardProps {
   readonly facility: IFacility;
@@ -32,6 +33,7 @@ export const FacilityCard = ({
   viewMode = "grid"
 }: FacilityCardProps): JSX.Element => {
   const { t } = useTranslation(['facility', 'common']);
+  const translateAmenity = useAmenityTranslation();
   const navigate = useNavigate();
   const [isFavorited, setIsFavorited] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
@@ -96,13 +98,13 @@ export const FacilityCard = ({
   };
 
   const translationKeys = {
-    people: t('facility:card.people'),
-    squareMeters: t('facility:card.squareMeters'),
-    pricePerHour: t('facility:card.pricePerHour'),
-    outOf5: t('facility:card.outOf5'),
-    reviewCount: t('facility:card.reviewCount'),
-    yes: t('facility:card.yes'),
-    no: t('facility:card.no')
+    people: t('facilities:card.people'),
+    squareMeters: t('facilities:card.squareMeters'),
+    pricePerHour: t('facilities:card.pricePerHour'),
+    outOf5: t('facilities:card.outOf5'),
+    reviewCount: t('facilities:card.reviewCount'),
+    yes: t('facilities:card.yes'),
+    no: t('facilities:card.no')
   };
 
   return (
@@ -113,7 +115,7 @@ export const FacilityCard = ({
       onMouseLeave={() => setIsHovered(false)}
       role="button"
       tabIndex={0}
-      aria-label={t('facility:card.viewDetailsFor', { name: facility.name, address: facility.address })}
+      aria-label={t('facilities:card.viewDetailsFor', { name: facility.name, address: facility.address })}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
@@ -134,14 +136,14 @@ export const FacilityCard = ({
           <button
             onClick={handleFavorite}
             className="p-1.5 sm:p-2 rounded-full bg-white/90 backdrop-blur-sm shadow-lg hover:bg-white transition-colors"
-            aria-label={t('facility:card.addToFavorites')}
+            aria-label={t('facilities:card.addToFavorites')}
           >
             <Heart className={`h-3 w-3 sm:h-4 sm:w-4 ${isFavorited ? 'fill-red-500 text-red-500' : 'text-gray-600'}`} />
           </button>
           <button
             onClick={handleShare}
             className="p-1.5 sm:p-2 rounded-full bg-white/90 backdrop-blur-sm shadow-lg hover:bg-white transition-colors"
-            aria-label={t('facility:card.shareFacility')}
+            aria-label={t('facilities:card.shareFacility')}
           >
             <Share2 className="h-3 w-3 sm:h-4 sm:w-4 text-gray-600" />
           </button>
@@ -194,7 +196,7 @@ export const FacilityCard = ({
                 variant="outline"
                 className="bg-gray-50 text-gray-600 border-gray-300 font-medium px-2 py-1 text-xs sm:text-sm"
               >
-                +{facility.amenities.length - 3} {t('facility:card.moreAmenities')}
+                +{facility.amenities.length - 3} {t('facilities:card.moreAmenities')}
               </Badge>
             )}
           </div>

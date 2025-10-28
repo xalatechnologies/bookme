@@ -3,6 +3,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Home } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 import { Button } from '@/components/ui/button';
 
@@ -13,6 +14,7 @@ interface FacilityDetailBreadcrumbProps {
 
 export const FacilityDetailBreadcrumb = ({ facilityName, showBookingPage = false }: FacilityDetailBreadcrumbProps): JSX.Element => {
   const navigate = useNavigate();
+  const { t } = useTranslation('common');
 
   return (
     <div className="bg-gray-50 border-b border-gray-200">
@@ -25,7 +27,7 @@ export const FacilityDetailBreadcrumb = ({ facilityName, showBookingPage = false
             onClick={() => navigate("/")}
           >
             <Home className="h-4 w-4 mr-1" />
-            Hjem
+            {t('breadcrumbs.home')}
           </Button>
           <span className="text-gray-400">/</span>
           <Button 
@@ -34,11 +36,11 @@ export const FacilityDetailBreadcrumb = ({ facilityName, showBookingPage = false
             className="text-gray-600 hover:text-gray-900 p-0 h-auto font-normal" 
             onClick={() => navigate("/")}
           >
-            Lokaler
+            {t('breadcrumbs.facilities')}
           </Button>
           <span className="text-gray-400">/</span>
           <span className="text-gray-900 font-medium">
-            {showBookingPage ? `Book ${facilityName}` : facilityName}
+            {showBookingPage ? t('breadcrumbs.book_facility_for', { name: facilityName }) : facilityName}
           </span>
         </nav>
       </div>

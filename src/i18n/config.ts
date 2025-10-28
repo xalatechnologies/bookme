@@ -23,8 +23,6 @@ import navigationEN from '../../public/locales/en/navigation.json';
 import navigationNO from '../../public/locales/no/navigation.json';
 import authEN from '../../public/locales/en/auth.json';
 import authNO from '../../public/locales/no/auth.json';
-import facilitiesEN from '../../public/locales/en/facilities.json';
-import facilitiesNO from '../../public/locales/no/facilities.json';
 import bookingsEN from '../../public/locales/en/bookings.json';
 import bookingsNO from '../../public/locales/no/bookings.json';
 
@@ -131,7 +129,6 @@ i18n
         common: commonEN,
         navigation: navigationEN,
         auth: authEN,
-        facilities: facilitiesEN,
         bookings: bookingsEN,
       },
       no: {
@@ -139,7 +136,6 @@ i18n
         common: commonNO,
         navigation: navigationNO,
         auth: authNO,
-        facilities: facilitiesNO,
         bookings: bookingsNO,
       },
     },

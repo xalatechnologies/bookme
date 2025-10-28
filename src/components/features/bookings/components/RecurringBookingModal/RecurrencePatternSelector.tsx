@@ -61,13 +61,13 @@ export function RecurrencePatternSelector({
   );
 
   const weekdays = [
-    { id: 0, name: 'Søndag', short: 'Søn' },
-    { id: 1, name: 'Mandag', short: 'Man' },
-    { id: 2, name: 'Tirsdag', short: 'Tir' },
-    { id: 3, name: 'Onsdag', short: 'Ons' },
-    { id: 4, name: 'Torsdag', short: 'Tor' },
-    { id: 5, name: 'Fredag', short: 'Fre' },
-    { id: 6, name: 'Lørdag', short: 'Lør' }
+    { id: 0, name: t('common:time.weekdays.sunday'), short: t('common:time.weekdays.sunday').substring(0, 3) },
+    { id: 1, name: t('common:time.weekdays.monday'), short: t('common:time.weekdays.monday').substring(0, 3) },
+    { id: 2, name: t('common:time.weekdays.tuesday'), short: t('common:time.weekdays.tuesday').substring(0, 3) },
+    { id: 3, name: t('common:time.weekdays.wednesday'), short: t('common:time.weekdays.wednesday').substring(0, 3) },
+    { id: 4, name: t('common:time.weekdays.thursday'), short: t('common:time.weekdays.thursday').substring(0, 3) },
+    { id: 5, name: t('common:time.weekdays.friday'), short: t('common:time.weekdays.friday').substring(0, 3) },
+    { id: 6, name: t('common:time.weekdays.saturday'), short: t('common:time.weekdays.saturday').substring(0, 3) }
   ];
 
   const monthlyPatterns = [

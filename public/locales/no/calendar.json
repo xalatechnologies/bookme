@@ -47,5 +47,20 @@
   "messages": {
     "no_zones_available": "Ingen soner tilgjengelig for denne fasiliteten.",
     "error_prefix": "Feil"
+  },
+  "availability_legend": {
+    "title": "Forklaring",
+    "available_label": "Ledig",
+    "available_description": "Klikk for å velge",
+    "busy_label": "Opptatt",
+    "busy_description": "Allerede booket",
+    "selected_label": "Valgt",
+    "selected_description": "Ditt valg",
+    "unavailable_label": "Ikke tilgjengelig",
+    "unavailable_description": "Ikke tilgjengelig",
+    "conflict_label": "Konflikt",
+    "conflict_description": "Bookingkonflikt",
+    "click_available": "Klikk på ledige tidspunkter for å velge",
+    "drag_select": "Dra for å velge flere tidspunkter"
   }
 }

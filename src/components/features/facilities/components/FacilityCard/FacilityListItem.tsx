@@ -11,6 +11,7 @@ import { useFieldConfigStore } from '@/stores/fieldConfigStore';
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { FacilityMiniMap } from "@/components/features/facilities/components/FacilityMap/FacilityMiniMap";
+import { useAmenityTranslation } from '@/hooks/useAmenityTranslation';
 
 interface FacilityListItemProps {
   readonly facility: IFacility;
@@ -42,13 +43,11 @@ export const FacilityListItem: React.FC<FacilityListItemProps> = ({
         await navigator.clipboard.writeText(`${window.location.origin}/facilities/${facility.id}`);
       }
     } catch (error) {
-      // Handle share cancellation or other errors silently
+      // Handle share cancellation or other errors silently; fallback to clipboard
       if (error instanceof Error && error.name !== 'AbortError') {
-        // Fallback to clipboard
-        try {
-          await navigator.clipboard.writeText(`${window.location.origin}/facilities/${facility.id}`);
-        } catch (clipboardError) {
-        }
+        await navigator.clipboard
+          .writeText(`${window.location.origin}/facilities/${facility.id}`)
+          .catch(() => undefined);
       }
     }
   };

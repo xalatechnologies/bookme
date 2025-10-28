@@ -42,6 +42,7 @@
     "processing": "Processing...",
     "book": "Book",
     "bookNow": "Book Now",
+    "book_now": "Book Now",
     "reserve": "Reserve",
     "checkout": "Checkout",
     "pay": "Pay",
@@ -52,7 +53,9 @@
     "pause": "Pause",
     "resume": "Resume",
     "login": "Login",
-    "applyFilters": "Apply Filters"
+    "applyFilters": "Apply Filters",
+    "like": "Like",
+    "contact_us": "Contact Us"
   },
   "view_modes": {
     "grid": "Grid View",
@@ -174,7 +177,14 @@
     "previousPage": "Previous Page",
     "pageOf": "Page {{current}} of {{total}}",
     "showing": "Showing {{from}} to {{to}} of {{total}}",
-    "goToPage": "Go to page"
+    "goToPage": "Go to page",
+    "previous": "Previous",
+    "next": "Next"
+  },
+  "breadcrumbs": {
+    "home": "Home",
+    "facilities": "Facilities",
+    "book_facility_for": "Book {{name}}"
   },
   "search": {
     "placeholder": "Search...",
@@ -438,5 +448,34 @@
     "adjustCriteria": "Try adjusting your search criteria",
     "capacity": "Capacity:",
     "people": "people"
+  }
+  ,
+  "faq": {
+    "title": "Frequently Asked Questions",
+    "food_drinks": "Food & drinks",
+    "booking_time": "Booking time",
+    "cancellation": "Cancellation policy",
+    "parking": "Parking"
+  },
+  "loading": {
+    "facility": "Loading facility...",
+    "please_wait": "Please wait..."
+  },
+  "tabs": {
+    "general": "General",
+    "zones": "Zones",
+    "facilities": "Facilities",
+    "rules": "Rules",
+    "faq": "FAQ"
+  },
+  "about": "About",
+  "available_zones": "Available zones",
+  "rules": {
+    "smoking_not_allowed": "Smoking not allowed",
+    "cleanup_required_desc": "Cleanup required after use",
+    "noise_after_hours": "No noise after hours",
+    "noise_after_hours_desc": "Please be quiet after opening hours",
+    "cancellation": "Cancellation",
+    "cancellation_desc": "Cancellation must be made 24 hours in advance"
   }
 }

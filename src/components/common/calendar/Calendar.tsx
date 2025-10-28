@@ -94,10 +94,10 @@ export const Calendar: React.FC<CalendarProps> = ({
           <div className="flex items-center space-x-2">
             <Button variant="outline" size="sm" onClick={handlePreviousWeek}>
               <ChevronLeft className="h-4 w-4" />
-              Forrige uke
+              {t('calendar:navigation.previous_week')}
             </Button>
             <Button variant="outline" size="sm" onClick={handleNextWeek}>
-              Neste uke
+              {t('calendar:navigation.next_week')}
               <ChevronRight className="h-4 w-4" />
             </Button>
           </div>

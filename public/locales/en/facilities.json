@@ -14,13 +14,28 @@
     "floor": "Floor",
     "room": "Room",
     "zone": "Zone",
+    "price": "Price",
     "price_per_hour": "Price per hour",
+    "pricePerHour": "Price per Hour",
     "price_range": "Price range",
     "min_price": "Min. price",
     "max_price": "Max. price",
     "amenities": "Amenities",
     "equipment": "Equipment",
     "accessibility": "Accessibility",
+    "parking": "Parking",
+    "wifi": "WiFi",
+    "projector": "Projector",
+    "whiteboard": "Whiteboard",
+    "soundSystem": "Sound System",
+    "airConditioning": "Air Conditioning",
+    "heating": "Heating",
+    "naturalLight": "Natural Light",
+    "windows": "Windows",
+    "doors": "Doors",
+    "ceilingHeight": "Ceiling Height",
+    "floorType": "Floor Type",
+    "wallColor": "Wall Color",
     "opening_hours": "Opening hours",
     "available_from": "Available from",
     "available_until": "Available until",
@@ -39,6 +54,7 @@
     "popular": "Popular",
     "featured": "Featured",
     "rating": "Rating",
+    "reviewCount": "Reviews",
     "reviews": "Reviews"
   },
   "types": {
@@ -59,6 +75,7 @@
     "other": "Other"
   },
   "amenities": {
+    "available_title": "Available Amenities",
     "wifi": "WiFi",
     "projector": "Projector",
     "whiteboard": "Whiteboard",
@@ -289,5 +306,10 @@
     "reviews": "reviews",
     "add_to_favorites": "Add to favorites",
     "remove_from_favorites": "Remove from favorites"
+  },
+  "rules": {
+    "title": "Rules and Guidelines",
+    "noSmoking": "No Smoking",
+    "cleanupRequired": "Cleanup Required"
   }
 }

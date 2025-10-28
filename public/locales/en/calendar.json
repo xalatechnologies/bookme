@@ -47,5 +47,20 @@
   "messages": {
     "no_zones_available": "No zones available for this facility.",
     "error_prefix": "Error"
+  },
+  "availability_legend": {
+    "title": "Legend",
+    "available_label": "Available",
+    "available_description": "Click to select",
+    "busy_label": "Busy",
+    "busy_description": "Already booked",
+    "selected_label": "Selected",
+    "selected_description": "Your selection",
+    "unavailable_label": "Unavailable",
+    "unavailable_description": "Not available",
+    "conflict_label": "Conflict",
+    "conflict_description": "Booking conflict",
+    "click_available": "Click on available slots to select",
+    "drag_select": "Drag to select multiple slots"
   }
 }

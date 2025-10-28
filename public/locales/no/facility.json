@@ -208,5 +208,8 @@
     "cleanupRequired": "Opprydding påkrevd",
     "damageResponsibility": "Ansvar for skader",
     "securityDeposit": "Depositum: {{amount}}"
+  },
+  "amenities": {
+    "available_title": "Tilgjengelige fasiliteter"
   }
 }

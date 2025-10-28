@@ -198,5 +198,8 @@
     "cleanupRequired": "Cleanup required",
     "damageResponsibility": "Responsible for damages",
     "securityDeposit": "Security deposit: {{amount}}"
+  },
+  "amenities": {
+    "available_title": "Available Amenities"
   }
 }
