@@ -164,7 +164,13 @@
     "about": "About",
     "termsOfService": "Terms of Service",
     "privacyPolicy": "Privacy Policy",
-    "cookiePolicy": "Cookie Policy"
+    "cookiePolicy": "Cookie Policy",
+    "loading": "Loading...",
+    "select_option": "Select an option",
+    "no_options": "No options available",
+    "system_messages": "System Messages",
+    "view_details": "View details",
+    "all_bookings_completed": "All bookings completed"
   },
   "navigation": {
     "menu": "Menu",
