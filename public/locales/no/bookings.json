@@ -464,5 +464,26 @@
     "calendar_added": "Booking lagt til i kalender!",
     "info_copied": "Booking-info kopiert til utklippstavle!",
     "recurring_coming_soon": "Visning av gjentakende booking kommer snart!"
+  },
+  "details": {
+    "title": "Bookingdetaljer",
+    "unknownVenue": "Ukjent lokale",
+    "statusLabel": "Status:",
+    "dateLabel": "Dato:",
+    "timeLabel": "Tidspunkt:",
+    "durationLabel": "Varighet:",
+    "totalPriceLabel": "Totalpris:",
+    "notesLabel": "Notater:",
+    "bookingIdLabel": "Booking-ID:",
+    "actionsLabel": "Handlinger:",
+    "editBooking": "Rediger",
+    "cancelBooking": "Avlys",
+    "shareBooking": "Del",
+    "addToCalendar": "Legg til kalender",
+    "close": "Lukk"
+  },
+  "time": {
+    "hour": "time",
+    "hours": "timer"
   }
 }

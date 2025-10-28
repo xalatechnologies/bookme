@@ -2,6 +2,7 @@
 
 // External libraries
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
 
 // Internal libraries/utilities

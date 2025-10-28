@@ -27,6 +27,26 @@
     "closed": "Closed",
     "comingSoon": "Coming Soon"
   },
+  "card": {
+    "capacity": "Capacity",
+    "area": "Area",
+    "pricePerHour": "kr/hour",
+    "rating": "Rating",
+    "reviewCount": "reviews",
+    "people": "people",
+    "squareMeters": "m²",
+    "outOf5": "/5",
+    "available": "Available",
+    "unavailable": "Unavailable",
+    "viewDetails": "View Details",
+    "bookNow": "Book Now",
+    "addToFavorites": "Add to Favorites",
+    "shareFacility": "Share Facility",
+    "moreAmenities": "more",
+    "yes": "Yes",
+    "no": "No",
+    "viewDetailsFor": "View details for {{name}} at {{address}}"
+  },
   "amenities": {
     "wifi": "WiFi",
     "projector": "Projector",

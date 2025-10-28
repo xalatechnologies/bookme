@@ -38,6 +38,7 @@ const GroupSelector: React.FC<{
   readonly selectedGroupId: string;
   readonly onGroupChange: (groupId: string) => void;
 }> = ({ groups, selectedGroupId, onGroupChange }) => {
+  const { t } = useTranslation('common');
   const selectedGroup = groups.find(group => group.id === selectedGroupId);
 
   return (
@@ -207,7 +208,7 @@ const BookingDetailsForm: React.FC<{
         </Label>
         <Input
           id="group-purpose"
-          placeholder="Beskriv formålet med gruppebokingen..."
+          placeholder={t('common:placeholders.groupBookingPurpose')}
           value={purpose}
           onChange={(e) => onPurposeChange(e.target.value)}
           aria-describedby="group-purpose-help"
@@ -237,7 +238,7 @@ const BookingDetailsForm: React.FC<{
           </Label>
           <Select value={timeSlot} onValueChange={onTimeSlotChange}>
             <SelectTrigger>
-              <SelectValue placeholder="Velg tidspunkt" />
+              <SelectValue placeholder={t('common:placeholders.selectTimeSlot')} />
             </SelectTrigger>
             <SelectContent>
               {availableTimeSlots.map((slot) => (

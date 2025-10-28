@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { MapPin, Users, Building, ChevronDown, ChevronUp, Filter } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { useLocalizedDbValues } from "@/hooks/useLocalizedDbValues";
 
 interface SearchFilterProps {
   readonly date?: Date;
@@ -42,19 +44,35 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
   capacity,
   setCapacity
 }) => {
-  const [availableTypes, setAvailableTypes] = useState<string[]>([]);
-  const [availableAreas, setAvailableAreas] = useState<string[]>([]);
-  const [availableAccessibility, setAvailableAccessibility] = useState<string[]>([]);
-  const [loading, setLoading] = useState(false);
+  const { t } = useTranslation('common');
   const [isExpanded, setIsExpanded] = useState(false);
 
-  // Mock data for now - will be replaced with real data later
-  useEffect(() => {
-    setAvailableTypes(['Idrettshall', 'Kulturhus', 'Møterom', 'Fotballbane', 'Svømmehall', 'Tennisbane']);
-    setAvailableAreas(['Drammen Sentrum', 'Strømsø', 'Bragernes', 'Spiralen', 'Konnerud', 'Åssiden']);
-    setAvailableAccessibility(['wheelchair', 'hearing-loop', 'visual-aids']);
-    setLoading(false);
-  }, []);
+  // Fetch localized values from database
+  const { data: facilityTypes, isLoading: loadingTypes } = useLocalizedDbValues('facility_type');
+  const { data: locations, isLoading: loadingLocations } = useLocalizedDbValues('location');
+  const { data: accessibilityFeatures, isLoading: loadingAccessibility } = useLocalizedDbValues('accessibility');
+  const { data: capacityRanges } = useLocalizedDbValues('capacity_range');
+
+  const loading = loadingTypes || loadingLocations || loadingAccessibility;
+
+  // Map database values to arrays for backward compatibility
+  const availableTypes = useMemo(() => 
+    facilityTypes?.map(item => item.entity_key) || [], 
+    [facilityTypes]
+  );
+  const availableAreas = useMemo(() => 
+    locations?.map(item => item.entity_key) || [], 
+    [locations]
+  );
+  const availableAccessibility = useMemo(() => 
+    accessibilityFeatures?.map(item => item.entity_key) || [], 
+    [accessibilityFeatures]
+  );
+
+  // Helper to find label by entity_key
+  const getLabel = (items: ReturnType<typeof useLocalizedDbValues>['data'], key: string): string => {
+    return items?.find(item => item.entity_key === key)?.label || key;
+  };
 
   const handleCapacityChange = (value: string) => {
     switch (value) {
@@ -96,7 +114,7 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
           >
             <div className="flex items-center">
               <Filter className="mr-2 h-4 w-4" />
-              <span className="text-sm font-medium">Filtrer</span>
+              <span className="text-sm font-medium">{t('searchFilters.filter')}</span>
             </div>
             {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
           </Button>
@@ -111,13 +129,15 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
                 <SelectTrigger className="h-10 md:h-12 w-full border-gray-300 hover:border-blue-500 text-sm md:text-base rounded-lg bg-white/95 backdrop-blur-sm shadow-sm">
                   <div className="flex items-center text-left">
                     <Building className="mr-2 h-4 w-4 flex-shrink-0" />
-                    <SelectValue placeholder="Alle typer" />
+                    <SelectValue placeholder={t('searchFilters.facilityTypes.all')} />
                   </div>
                 </SelectTrigger>
                 <SelectContent className="bg-white z-50">
-                  <SelectItem value="all" className="text-sm md:text-base">Alle typer</SelectItem>
-                  {availableTypes.map((type) => (
-                    <SelectItem key={type} value={type} className="text-sm md:text-base">{type}</SelectItem>
+                  <SelectItem value="all" className="text-sm md:text-base">{t('searchFilters.facilityTypes.all')}</SelectItem>
+                  {facilityTypes?.map((type) => (
+                    <SelectItem key={type.entity_key} value={type.entity_key} className="text-sm md:text-base">
+                      {type.label}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -129,13 +149,15 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
                 <SelectTrigger className="h-10 md:h-12 w-full border-gray-300 hover:border-blue-500 text-sm md:text-base rounded-lg bg-white/95 backdrop-blur-sm shadow-sm">
                   <div className="flex items-center text-left">
                     <MapPin className="mr-2 h-4 w-4 flex-shrink-0" />
-                    <SelectValue placeholder="Alle områder" />
+                    <SelectValue placeholder={t('searchFilters.locations.all')} />
                   </div>
                 </SelectTrigger>
                 <SelectContent className="bg-white z-50">
-                  <SelectItem value="all" className="text-sm md:text-base">Alle områder</SelectItem>
-                  {availableAreas.map((area) => (
-                    <SelectItem key={area} value={area} className="text-sm md:text-base">{area}</SelectItem>
+                  <SelectItem value="all" className="text-sm md:text-base">{t('searchFilters.locations.all')}</SelectItem>
+                  {locations?.map((location) => (
+                    <SelectItem key={location.entity_key} value={location.entity_key} className="text-sm md:text-base">
+                      {location.label}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -147,15 +169,16 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
                 <SelectTrigger className="h-10 md:h-12 w-full border-gray-300 hover:border-blue-500 text-sm md:text-base rounded-lg bg-white/95 backdrop-blur-sm shadow-sm">
                   <div className="flex items-center text-left">
                     <Users className="mr-2 h-4 w-4 flex-shrink-0" />
-                    <SelectValue placeholder="Alle størrelser" />
+                    <SelectValue placeholder={t('searchFilters.capacity.all')} />
                   </div>
                 </SelectTrigger>
                 <SelectContent className="bg-white z-50">
-                  <SelectItem value="all" className="text-sm md:text-base">Alle størrelser</SelectItem>
-                  <SelectItem value="small" className="text-sm md:text-base">Liten (1-20)</SelectItem>
-                  <SelectItem value="medium" className="text-sm md:text-base">Middels (21-50)</SelectItem>
-                  <SelectItem value="large" className="text-sm md:text-base">Stor (51-100)</SelectItem>
-                  <SelectItem value="extra-large" className="text-sm md:text-base">Ekstra stor (100+)</SelectItem>
+                  <SelectItem value="all" className="text-sm md:text-base">{t('searchFilters.capacity.all')}</SelectItem>
+                  {capacityRanges?.map((range) => (
+                    <SelectItem key={range.entity_key} value={range.entity_key} className="text-sm md:text-base">
+                      {range.label}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
@@ -168,16 +191,14 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="mr-2 h-4 w-4 flex-shrink-0">
                       <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
                     </svg>
-                    <SelectValue placeholder="Alle" />
+                    <SelectValue placeholder={t('searchFilters.accessibility.all')} />
                   </div>
                 </SelectTrigger>
                 <SelectContent className="bg-white z-50">
-                  <SelectItem value="all" className="text-sm md:text-base">Alle</SelectItem>
-                  {availableAccessibility.map((feature) => (
-                    <SelectItem key={feature} value={feature} className="text-sm md:text-base">
-                      {feature === 'wheelchair' ? 'Rullestoltilpasset' : 
-                       feature === 'hearing-loop' ? 'Teleslynge' : 
-                       feature === 'visual-aids' ? 'Synshjelpemidler' : feature}
+                  <SelectItem value="all" className="text-sm md:text-base">{t('searchFilters.accessibility.all')}</SelectItem>
+                  {accessibilityFeatures?.map((feature) => (
+                    <SelectItem key={feature.entity_key} value={feature.entity_key} className="text-sm md:text-base">
+                      {feature.label}
                     </SelectItem>
                   ))}
                 </SelectContent>

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { X, Paperclip, Send, User, Users, Building } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -33,6 +34,7 @@ const CreateThreadModal: React.FC<CreateThreadModalProps> = ({
   currentUserName,
   currentUserType
 }) => {
+  const { t } = useTranslation('common');
   const { createThread, getAvailableParticipants, getBookedFacilities } = useMessageStore();
   const [subject, setSubject] = useState<string>("");
   const [content, setContent] = useState<string>("");
@@ -53,19 +55,19 @@ const CreateThreadModal: React.FC<CreateThreadModalProps> = ({
         <Card className="w-full max-w-md">
           <CardHeader>
             <CardTitle className="text-xl font-semibold text-center">
-              Ingen tilgjengelige kontakter
+              {t('messages.noAvailableContacts', 'Ingen tilgjengelige kontakter')}
             </CardTitle>
           </CardHeader>
           <CardContent className="text-center space-y-4">
             <p className="text-muted-foreground">
               {currentUserType === 'tenant' 
-                ? 'Du har ingen bookinger ennå. Book et lokale først for å kunne sende meldinger til utleier.'
-                : 'Du har ingen bookinger ennå. Godkjenn bookinger først for å kunne sende meldinger til leietakere.'
+                ? t('messages.noBookingsYetTenant')
+                : t('messages.noBookingsYetLandlord')
               }
             </p>
             {bookedFacilities.length === 0 && (
               <p className="text-sm text-muted-foreground">
-                Du trenger bookede lokaler for å kunne sende meldinger.
+                {t('messages.needBookedVenues', 'Du trenger bookede lokaler for å kunne sende meldinger.')}
               </p>
             )}
             <div className="flex gap-2 justify-center">
@@ -180,7 +182,7 @@ const CreateThreadModal: React.FC<CreateThreadModalProps> = ({
       <Card className="w-full max-w-2xl max-h-[75vh] flex flex-col">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4 flex-shrink-0">
           <CardTitle className="text-xl font-semibold">
-            {currentUserType === 'tenant' ? 'Send melding til utleier' : 'Send melding til leietaker'}
+            {currentUserType === 'tenant' ? t('messages.sendToLandlord', 'Send melding til utleier') : t('messages.sendToTenant', 'Send melding til leietaker')}
           </CardTitle>
           <Button
             variant="ghost"
@@ -195,27 +197,27 @@ const CreateThreadModal: React.FC<CreateThreadModalProps> = ({
         <CardContent className="space-y-6 overflow-y-auto flex-1 min-h-0">
           {/* Subject */}
           <div className="space-y-2">
-            <Label htmlFor="subject">Emne *</Label>
+            <Label htmlFor="subject">{t('common.subject', 'Emne')} *</Label>
             <Input
               id="subject"
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
-              placeholder="Skriv emne for meldingen..."
+              placeholder={t('common:placeholders.threadSubject')}
               maxLength={100}
             />
             <p className="text-xs text-muted-foreground">
-              {subject.length}/100 tegn
+              {subject.length}/100 {t('common.characters')}
             </p>
           </div>
 
           {/* Recipient */}
           <div className="space-y-2">
             <Label htmlFor="recipient">
-              {currentUserType === 'tenant' ? 'Utleier *' : 'Leietaker *'}
+              {currentUserType === 'tenant' ? t('common.landlord') : t('common.tenant')} *
             </Label>
             <Select value={selectedParticipant} onValueChange={setSelectedParticipant}>
               <SelectTrigger>
-                <SelectValue placeholder={currentUserType === 'tenant' ? 'Velg utleier' : 'Velg leietaker'} />
+                <SelectValue placeholder={currentUserType === 'tenant' ? t('placeholders.selectLandlord', 'Velg utleier') : t('placeholders.selectTenant', 'Velg leietaker')} />
               </SelectTrigger>
               <SelectContent>
                 {availableParticipants.map((participant) => (
@@ -228,7 +230,7 @@ const CreateThreadModal: React.FC<CreateThreadModalProps> = ({
                       )}
                       <span>{participant.name}</span>
                       <Badge variant="outline" className="text-xs">
-                        {participant.type === 'landlord' ? 'Utleier' : 'Leietaker'}
+                        {participant.type === 'landlord' ? t('common.landlord') : t('common.tenant')}
                       </Badge>
                     </div>
                   </SelectItem>
@@ -239,10 +241,10 @@ const CreateThreadModal: React.FC<CreateThreadModalProps> = ({
 
           {/* Facility Selection */}
           <div className="space-y-2">
-            <Label htmlFor="facility">Lokale *</Label>
+            <Label htmlFor="facility">{t('filters.facility')} *</Label>
             <Select value={selectedFacility} onValueChange={setSelectedFacility}>
               <SelectTrigger>
-                <SelectValue placeholder="Velg lokale" />
+                <SelectValue placeholder={t('common:placeholders.selectVenue')} />
               </SelectTrigger>
               <SelectContent>
                 {bookedFacilities.map((facility) => (
@@ -256,13 +258,13 @@ const CreateThreadModal: React.FC<CreateThreadModalProps> = ({
               </SelectContent>
             </Select>
             <p className="text-xs text-muted-foreground">
-              Velg hvilket lokale meldingen gjelder
+              {t('messages.selectFacilityInfo')}
             </p>
           </div>
 
           {/* Priority */}
           <div className="space-y-2">
-            <Label htmlFor="priority">Prioritet</Label>
+            <Label htmlFor="priority">{t('filters.priority')}</Label>
             <Select value={priority} onValueChange={(value: 'low' | 'medium' | 'high') => setPriority(value)}>
               <SelectTrigger>
                 <SelectValue />
@@ -271,19 +273,19 @@ const CreateThreadModal: React.FC<CreateThreadModalProps> = ({
                 <SelectItem value="low">
                   <div className="flex items-center gap-2">
                     <div className="w-2 h-2 rounded-full bg-green-500" />
-                    <span>Lav prioritet</span>
+                    <span>{t('messages.lowPriority')}</span>
                   </div>
                 </SelectItem>
                 <SelectItem value="medium">
                   <div className="flex items-center gap-2">
                     <div className="w-2 h-2 rounded-full bg-yellow-500" />
-                    <span>Medium prioritet</span>
+                    <span>{t('messages.mediumPriority')}</span>
                   </div>
                 </SelectItem>
                 <SelectItem value="high">
                   <div className="flex items-center gap-2">
                     <div className="w-2 h-2 rounded-full bg-red-500" />
-                    <span>Høy prioritet</span>
+                    <span>{t('messages.highPriority')}</span>
                   </div>
                 </SelectItem>
               </SelectContent>
@@ -292,30 +294,30 @@ const CreateThreadModal: React.FC<CreateThreadModalProps> = ({
 
           {/* Message content */}
           <div className="space-y-2">
-            <Label htmlFor="content">Melding *</Label>
+            <Label htmlFor="content">{t('messages.message')} *</Label>
             <Textarea
               id="content"
               value={content}
               onChange={(e) => setContent(e.target.value)}
-              placeholder="Skriv meldingen din her..."
+              placeholder={t('placeholders.threadMessage')}
               rows={6}
               className="resize-none"
             />
             <p className="text-xs text-muted-foreground">
-              {content.length} tegn
+              {content.length} {t('common.characters')}
             </p>
           </div>
 
           {/* File attachments */}
           <div className="space-y-2">
-            <Label>Vedlegg (valgfritt)</Label>
+            <Label>{t('common.attachments')} ({t('common.optional')})</Label>
             <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-4">
               <div className="flex flex-col items-center gap-2">
                 <Paperclip className="h-8 w-8 text-muted-foreground" />
                 <div className="text-center">
-                  <p className="text-sm font-medium">Legg til vedlegg</p>
+                  <p className="text-sm font-medium">{t('messages.addAttachment')}</p>
                   <p className="text-xs text-muted-foreground">
-                    Dra og slipp filer her, eller klikk for å velge
+                    {t('messages.dragDropFiles')}
                   </p>
                 </div>
                 <input
@@ -330,7 +332,7 @@ const CreateThreadModal: React.FC<CreateThreadModalProps> = ({
                   size="sm"
                   onClick={() => document.getElementById('file-upload')?.click()}
                 >
-                  Velg filer
+                  {t('messages.selectFiles')}
                 </Button>
               </div>
             </div>
@@ -371,7 +373,7 @@ const CreateThreadModal: React.FC<CreateThreadModalProps> = ({
         {/* Footer */}
         <div className="flex items-center justify-end gap-2 p-4 border-t bg-muted/50 flex-shrink-0">
           <Button variant="outline" onClick={onClose} disabled={isLoading}>
-            Avbryt
+            {t('messages.cancel')}
           </Button>
           <Button 
             onClick={handleSubmit} 
@@ -380,12 +382,12 @@ const CreateThreadModal: React.FC<CreateThreadModalProps> = ({
             {isLoading ? (
               <>
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
-                Sender...
+                {t('messages.sending', 'Sender...')}
               </>
             ) : (
               <>
                 <Send className="h-4 w-4 mr-2" />
-                {currentUserType === 'tenant' ? 'Send til utleier' : 'Send til leietaker'}
+                {t('messages.sendMessage')}
               </>
             )}
           </Button>

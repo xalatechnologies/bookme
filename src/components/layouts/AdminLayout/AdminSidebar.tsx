@@ -15,6 +15,7 @@ import {
   BarChart3,
   FileText,
   Trash2,
+  Globe,
   ChevronLeft,
   ChevronRight
 } from "lucide-react";
@@ -69,6 +70,7 @@ const AdminSidebar = (_props: IAdminSidebarProps): JSX.Element => {
         { id: "reports", labelKey: "reports", path: "/admin/reports", icon: BarChart3 },
         { id: "audit", labelKey: "audit_log", path: "/admin/audit-logs", icon: FileText },
         { id: "data-retention", labelKey: "data_retention", path: "/admin/data-retention", icon: Trash2 },
+        { id: "localization", labelKey: "localization", path: "/admin/localization", icon: Globe },
       ]
     }
   ];

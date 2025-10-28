@@ -239,7 +239,7 @@ export const MessageInbox: React.FC<MessageInboxProps> = ({
         <div className="p-3 border-b bg-background flex-shrink-0">
           <div className="space-y-2">
             <Input
-              placeholder="Søk i meldinger..."
+              placeholder={t('common:placeholders.messageSearch')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="h-8"
@@ -247,7 +247,7 @@ export const MessageInbox: React.FC<MessageInboxProps> = ({
             <div className="flex gap-2">
               <Select value={statusFilter} onValueChange={setStatusFilter}>
                 <SelectTrigger className="h-8 text-xs">
-                  <SelectValue placeholder="Status" />
+                  <SelectValue placeholder={t('common:filters.status')} />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Alle</SelectItem>
@@ -258,7 +258,7 @@ export const MessageInbox: React.FC<MessageInboxProps> = ({
               </Select>
               <Select value={priorityFilter} onValueChange={setPriorityFilter}>
                 <SelectTrigger className="h-8 text-xs">
-                  <SelectValue placeholder="Prioritet" />
+                  <SelectValue placeholder={t('common:filters.priority')} />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Alle</SelectItem>

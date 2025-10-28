@@ -414,5 +414,26 @@
     "calendar_added": "Booking added to calendar!",
     "info_copied": "Booking info copied to clipboard!",
     "recurring_coming_soon": "Viewing recurring bookings coming soon!"
+  },
+  "details": {
+    "title": "Booking Details",
+    "unknownVenue": "Unknown venue",
+    "statusLabel": "Status:",
+    "dateLabel": "Date:",
+    "timeLabel": "Time:",
+    "durationLabel": "Duration:",
+    "totalPriceLabel": "Total Price:",
+    "notesLabel": "Notes:",
+    "bookingIdLabel": "Booking ID:",
+    "actionsLabel": "Actions:",
+    "editBooking": "Edit",
+    "cancelBooking": "Cancel",
+    "shareBooking": "Share",
+    "addToCalendar": "Add to Calendar",
+    "close": "Close"
+  },
+  "time": {
+    "hour": "hour",
+    "hours": "hours"
   }
 }

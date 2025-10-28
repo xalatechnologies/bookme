@@ -114,6 +114,13 @@
     "type": "Type",
     "price": "Pris",
     "quantity": "Antall",
+    "subject": "Emne",
+    "recipient": "Mottaker",
+    "landlord": "Utleier",
+    "tenant": "Leietaker",
+    "attachment": "Vedlegg",
+    "attachments": "Vedlegg",
+    "characters": "tegn",
     "total": "Total",
     "subtotal": "Delsum",
     "tax": "MVA",
@@ -204,7 +211,9 @@
     "facility": "Lokale",
     "all_facilities": "Alle lokaler",
     "select_facility": "Velg lokale",
-    "date_period": "Tidsperiode"
+    "date_period": "Tidsperiode",
+    "status": "Status",
+    "priority": "Prioritet"
   },
   "sort": {
     "relevance": "Relevans",
@@ -337,7 +346,24 @@
     "logout_success": "Du er nå logget ut!",
     "logout_failed": "Kunne ikke logge ut. Prøv igjen.",
     "language_changed": "Språk endret til {{language}}!",
-    "language_change_failed": "Kunne ikke endre språk. Prøv igjen."
+    "language_change_failed": "Kunne ikke endre språk. Prøv igjen.",
+    "noAvailableContacts": "Ingen tilgjengelige kontakter",
+    "noBookingsYetTenant": "Du har ingen bookinger ennå. Book et lokale først for å kunne sende meldinger til utleier.",
+    "noBookingsYetLandlord": "Du har ingen bookinger ennå. Godkjenn bookinger først for å kunne sende meldinger til leietakere.",
+    "selectFacilityInfo": "Velg hvilket lokale meldingen gjelder",
+    "lowPriority": "Lav prioritet",
+    "mediumPriority": "Medium prioritet",
+    "highPriority": "Høy prioritet",
+    "message": "Melding",
+    "addAttachment": "Legg til vedlegg",
+    "dragDropFiles": "Dra og slipp filer her, eller klikk for å velge",
+    "selectFiles": "Velg filer",
+    "cancel": "Avbryt",
+    "sendMessage": "Send melding",
+    "sending": "Sender...",
+    "sendToLandlord": "Send melding til utleier",
+    "sendToTenant": "Send melding til leietaker",
+    "needBookedVenues": "Du trenger bookede lokaler for å kunne sende meldinger."
   },
   "placeholders": {
     "search": "Søk...",
@@ -351,7 +377,20 @@
     "selectTime": "Velg tid",
     "selectFile": "Velg fil",
     "dragDropFile": "Dra og slipp filer her eller klikk for å velge",
-    "noOptions": "Ingen alternativer tilgjengelig"
+    "noOptions": "Ingen alternativer tilgjengelig",
+    "threadSubject": "Skriv emne for meldingen...",
+    "threadMessage": "Skriv meldingen din her...",
+    "messageSearch": "Søk i meldinger...",
+    "groupBookingPurpose": "Beskriv formålet med gruppebokingen...",
+    "selectTimeSlot": "Velg tidspunkt",
+    "selectWeek": "Velg uke",
+    "selectDay": "Velg dag",
+    "selectEndDate": "Velg sluttdato",
+    "selectVenue": "Velg lokale",
+    "selectLandlord": "Velg utleier",
+    "selectTenant": "Velg leietaker",
+    "fieldExample": "F.eks. 'Etasje nummer'",
+    "fieldKey": "F.eks. 'floorNumber'"
   },
   "aria": {
     "logo": "BookMe logo",
@@ -394,5 +433,39 @@
   },
   "labels": {
     "user": "Bruker"
+  },
+  "searchFilters": {
+    "filter": "Filtrer",
+    "facilityTypes": {
+      "all": "Alle typer",
+      "idrettshall": "Idrettshall",
+      "kulturhus": "Kulturhus",
+      "møterom": "Møterom",
+      "fotballbane": "Fotballbane",
+      "svømmehall": "Svømmehall",
+      "tennisbane": "Tennisbane"
+    },
+    "locations": {
+      "all": "Alle områder",
+      "drammen_sentrum": "Drammen Sentrum",
+      "strømsø": "Strømsø",
+      "bragernes": "Bragernes",
+      "spiralen": "Spiralen",
+      "konnerud": "Konnerud",
+      "åssiden": "Åssiden"
+    },
+    "capacity": {
+      "all": "Alle størrelser",
+      "small": "Liten (1-20)",
+      "medium": "Middels (21-50)",
+      "large": "Stor (51-100)",
+      "extraLarge": "Ekstra stor (100+)"
+    },
+    "accessibility": {
+      "all": "Alle",
+      "wheelchair": "Rullestoltilpasset",
+      "hearingLoop": "Teleslynge",
+      "visualAids": "Synshjelpemidler"
+    }
   }
 }

@@ -502,7 +502,7 @@ export const MessageThread: React.FC<MessageThreadProps> = ({
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
               onKeyPress={handleKeyPress}
-              placeholder="Skriv en melding..."
+              placeholder={t('common:placeholders.message')}
               className="min-h-[32px] max-h-24 resize-none text-sm"
               rows={1}
             />

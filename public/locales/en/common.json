@@ -114,6 +114,13 @@
     "type": "Type",
     "price": "Price",
     "quantity": "Quantity",
+    "subject": "Subject",
+    "recipient": "Recipient",
+    "landlord": "Landlord",
+    "tenant": "Tenant",
+    "attachment": "Attachment",
+    "attachments": "Attachments",
+    "characters": "characters",
     "total": "Total",
     "subtotal": "Subtotal",
     "tax": "Tax",
@@ -297,7 +304,24 @@
     "logout_success": "You have been logged out!",
     "logout_failed": "Could not log out. Please try again.",
     "language_changed": "Language changed to {{language}}!",
-    "language_change_failed": "Could not change language. Please try again."
+    "language_change_failed": "Could not change language. Please try again.",
+    "noAvailableContacts": "No available contacts",
+    "noBookingsYetTenant": "You have no bookings yet. Book a venue first to be able to send messages to the landlord.",
+    "noBookingsYetLandlord": "You have no bookings yet. Approve bookings first to be able to send messages to tenants.",
+    "selectFacilityInfo": "Select which venue the message is about",
+    "lowPriority": "Low priority",
+    "mediumPriority": "Medium priority",
+    "highPriority": "High priority",
+    "message": "Message",
+    "addAttachment": "Add attachment",
+    "dragDropFiles": "Drag and drop files here, or click to select",
+    "selectFiles": "Select files",
+    "cancel": "Cancel",
+    "sendMessage": "Send Message",
+    "sending": "Sending...",
+    "sendToLandlord": "Send message to landlord",
+    "sendToTenant": "Send message to tenant",
+    "needBookedVenues": "You need booked venues to send messages."
   },
   "placeholders": {
     "search": "Search...",
@@ -311,7 +335,20 @@
     "selectTime": "Select time",
     "selectFile": "Select file",
     "dragDropFile": "Drag and drop files here or click to select",
-    "noOptions": "No options available"
+    "noOptions": "No options available",
+    "threadSubject": "Enter subject for the message...",
+    "threadMessage": "Write your message here...",
+    "messageSearch": "Search in messages...",
+    "groupBookingPurpose": "Describe the purpose of the group booking...",
+    "selectTimeSlot": "Select time",
+    "selectWeek": "Select week",
+    "selectDay": "Select day",
+    "selectEndDate": "Select end date",
+    "selectVenue": "Select venue",
+    "selectLandlord": "Select landlord",
+    "selectTenant": "Select tenant",
+    "fieldExample": "E.g., 'Floor number'",
+    "fieldKey": "E.g., 'floorNumber'"
   },
   "aria": {
     "logo": "BookMe logo",
@@ -354,5 +391,39 @@
   },
   "labels": {
     "user": "User"
+  },
+  "searchFilters": {
+    "filter": "Filter",
+    "facilityTypes": {
+      "all": "All Types",
+      "idrettshall": "Sports Hall",
+      "kulturhus": "Culture House",
+      "møterom": "Meeting Room",
+      "fotballbane": "Football Field",
+      "svømmehall": "Swimming Pool",
+      "tennisbane": "Tennis Court"
+    },
+    "locations": {
+      "all": "All Areas",
+      "drammen_sentrum": "Drammen City Center",
+      "strømsø": "Strømsø",
+      "bragernes": "Bragernes",
+      "spiralen": "Spiralen",
+      "konnerud": "Konnerud",
+      "åssiden": "Åssiden"
+    },
+    "capacity": {
+      "all": "All Sizes",
+      "small": "Small (1-20)",
+      "medium": "Medium (21-50)",
+      "large": "Large (51-100)",
+      "extraLarge": "Extra Large (100+)"
+    },
+    "accessibility": {
+      "all": "All",
+      "wheelchair": "Wheelchair Accessible",
+      "hearingLoop": "Hearing Loop",
+      "visualAids": "Visual Aids"
+    }
   }
 }

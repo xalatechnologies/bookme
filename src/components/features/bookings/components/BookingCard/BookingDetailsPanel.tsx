@@ -6,11 +6,13 @@
  */
 
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { X, Calendar, Clock, MapPin, Edit, Trash2, Share2, CalendarPlus } from 'lucide-react';
 import type { BookingWithDetails } from '@/services/supabase/bookings.service';
 import type { Database } from '@/types/database';
+import { useLocalizedDbValue } from '@/hooks/useLocalizedDbValues';
 
 type BookingStatus = Database['public']['Enums']['booking_status'];
 
@@ -36,17 +38,14 @@ const getStatusBadgeColor = (status: BookingStatus): string => {
   }
 };
 
-const getStatusLabel = (status: BookingStatus): string => {
-  switch (status) {
-    case "paid": return "Bekreftet";
-    case "completed": return "Fullført";
-    case "pending": return "Ventende";
-    case "awaiting_payment": return "Venter betaling";
-    case "cancelled": return "Avlyst";
-    case "expired": return "Utløpt";
-    case "refunded": return "Refundert";
-    default: return status;
-  }
+// Helper component to get translated status label
+const StatusLabel = ({ status }: { status: BookingStatus }): JSX.Element => {
+  const dbLabel = useLocalizedDbValue('booking_status', status);
+  const { t } = useTranslation('booking');
+  
+  // Use database translation if available, otherwise use JSON translation
+  const label = dbLabel !== status ? dbLabel : t(`status.${status}`, { defaultValue: status });
+  return <>{label}</>;
 };
 
 const formatDate = (dateString: string): string => {
@@ -67,11 +66,16 @@ const formatTime = (dateString: string): string => {
   });
 };
 
-const formatDuration = (startsAt: string, endsAt: string): string => {
+/**
+ * Format duration using translations
+ */
+const DurationLabel = ({ startsAt, endsAt }: { startsAt: string; endsAt: string }): JSX.Element => {
+  const { t } = useTranslation('bookings');
   const start = new Date(startsAt);
   const end = new Date(endsAt);
   const hours = (end.getTime() - start.getTime()) / (1000 * 60 * 60);
-  return hours === 1 ? '1 time' : `${hours} timer`;
+  const label = hours === 1 ? `1 ${t('time.hour')}` : `${hours} ${t('time.hours')}`;
+  return <>{label}</>;
 };
 
 const formatPrice = (cents: number): string => {
@@ -106,6 +110,8 @@ export const BookingDetailsPanel = ({
   onShare,
   onAddToCalendar,
 }: BookingDetailsPanelProps): JSX.Element => {
+  const { t } = useTranslation('bookings');
+  
   const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget) {
       onClose();
@@ -134,14 +140,14 @@ export const BookingDetailsPanel = ({
         <div className="p-6 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center justify-between">
             <h2 id="booking-details-title" className="text-2xl font-semibold text-gray-900 dark:text-white">
-              Bookingdetaljer
+              {t('details.title')}
             </h2>
             <Button
               variant="ghost"
               size="sm"
               onClick={onClose}
               className="h-9 w-9 p-0"
-              aria-label="Lukk"
+              aria-label={t('details.close')}
             >
               <X className="w-5 h-5" />
             </Button>
@@ -154,7 +160,7 @@ export const BookingDetailsPanel = ({
             {/* Facility Info */}
             <div>
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-1">
-                {booking.facility?.name || 'Ukjent lokale'}
+                {booking.facility?.name || t('details.unknownVenue')}
               </h3>
               {booking.zone?.name && (
                 <p className="text-gray-600 dark:text-gray-400 flex items-center gap-1">
@@ -166,9 +172,9 @@ export const BookingDetailsPanel = ({
 
             {/* Status */}
             <div className="flex items-center gap-2">
-              <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Status:</span>
+              <span className="text-sm font-medium text-gray-600 dark:text-gray-400">{t('details.statusLabel')}</span>
               <Badge className={getStatusBadgeColor(booking.status)}>
-                {getStatusLabel(booking.status)}
+                <StatusLabel status={booking.status} />
               </Badge>
             </div>
 
@@ -177,7 +183,7 @@ export const BookingDetailsPanel = ({
               <div className="flex items-start justify-between py-3 border-b border-gray-200 dark:border-gray-700">
                 <span className="text-sm font-medium text-gray-600 dark:text-gray-400 flex items-center gap-2">
                   <Calendar className="w-4 h-4" />
-                  Dato
+                  {t('details.dateLabel')}
                 </span>
                 <span className="text-sm text-gray-900 dark:text-white text-right">
                   {formatDate(booking.starts_at)}
@@ -187,7 +193,7 @@ export const BookingDetailsPanel = ({
               <div className="flex items-start justify-between py-3 border-b border-gray-200 dark:border-gray-700">
                 <span className="text-sm font-medium text-gray-600 dark:text-gray-400 flex items-center gap-2">
                   <Clock className="w-4 h-4" />
-                  Tid
+                  {t('details.timeLabel')}
                 </span>
                 <span className="text-sm text-gray-900 dark:text-white text-right">
                   {formatTime(booking.starts_at)} - {formatTime(booking.ends_at)}
@@ -196,16 +202,16 @@ export const BookingDetailsPanel = ({
 
               <div className="flex items-start justify-between py-3 border-b border-gray-200 dark:border-gray-700">
                 <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                  Varighet
+                  {t('details.durationLabel')}
                 </span>
                 <span className="text-sm text-gray-900 dark:text-white text-right">
-                  {formatDuration(booking.starts_at, booking.ends_at)}
+                  <DurationLabel startsAt={booking.starts_at} endsAt={booking.ends_at} />
                 </span>
               </div>
 
               <div className="flex items-start justify-between py-3 border-b border-gray-200 dark:border-gray-700">
                 <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                  Pris
+                  {t('details.totalPriceLabel')}
                 </span>
                 <span className="text-base font-semibold text-gray-900 dark:text-white text-right">
                   {formatPrice(booking.total_cents)}
@@ -215,7 +221,7 @@ export const BookingDetailsPanel = ({
               {booking.notes && (
                 <div className="py-3 border-b border-gray-200 dark:border-gray-700">
                   <span className="text-sm font-medium text-gray-600 dark:text-gray-400 block mb-2">
-                    Notater
+                    {t('details.notesLabel')}
                   </span>
                   <p className="text-sm text-gray-900 dark:text-white whitespace-pre-wrap">
                     {booking.notes}
@@ -239,7 +245,7 @@ export const BookingDetailsPanel = ({
         <div className="p-6 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
           <div className="space-y-3">
             <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-              Handlinger
+              {t('details.actionsLabel')}
             </p>
 
             <div className="grid grid-cols-2 gap-2">
@@ -251,7 +257,7 @@ export const BookingDetailsPanel = ({
                   className="flex items-center justify-center gap-2"
                 >
                   <Edit className="w-4 h-4" />
-                  Rediger
+                  {t('details.editBooking')}
                 </Button>
               )}
 
@@ -263,7 +269,7 @@ export const BookingDetailsPanel = ({
                   className="flex items-center justify-center gap-2 text-red-600 hover:text-red-700 hover:bg-red-50"
                 >
                   <Trash2 className="w-4 h-4" />
-                  Avlys
+                  {t('details.cancelBooking')}
                 </Button>
               )}
 
@@ -275,7 +281,7 @@ export const BookingDetailsPanel = ({
                   className="flex items-center justify-center gap-2"
                 >
                   <Share2 className="w-4 h-4" />
-                  Del
+                  {t('details.shareBooking')}
                 </Button>
               )}
 
@@ -287,7 +293,7 @@ export const BookingDetailsPanel = ({
                   className="flex items-center justify-center gap-2"
                 >
                   <CalendarPlus className="w-4 h-4" />
-                  Legg til kalender
+                  {t('details.addToCalendar')}
                 </Button>
               )}
             </div>
