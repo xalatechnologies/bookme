@@ -1,10 +1,12 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { LocalizedSelect } from "@/components/common/LocalizedSelect";
 import { 
   Receipt, 
   Download, 
@@ -60,6 +62,7 @@ interface IReceipt {
 }
 
 const UserReceipts = (): JSX.Element => {
+  const { t } = useTranslation('common');
   const [filterStatus, setFilterStatus] = useState<string>("all");
   const [filterYear, setFilterYear] = useState<string>("all");
   const [filterPaymentMethod, setFilterPaymentMethod] = useState<string>("all");
@@ -740,7 +743,7 @@ BookMe - Drammen kommune
               <div className="flex items-center space-x-2">
                 <Filter className="h-4 w-4 text-gray-400" />
                 <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Status:
+                {t('common.status', 'Status')}:
                 </span>
                 <div className="flex space-x-1">
                   {statusFilters.map((filter) => {
@@ -769,37 +772,30 @@ BookMe - Drammen kommune
           <div className="flex flex-col sm:flex-row gap-4 mt-4">
             <div className="flex items-center space-x-2">
               <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                År:
+                {t('filters.year', 'År')}:
               </span>
-              <div className="flex space-x-2">
-                {yearFilters.map((filter) => (
-                  <Button
-                    key={filter.value}
-                    size="sm"
-                    variant={filterYear === filter.value ? "default" : "outline"}
-                    onClick={() => setFilterYear(filter.value)}
-                  >
-                    {filter.label}
-                  </Button>
-                ))}
-              </div>
+              <LocalizedSelect
+                entityType="year"
+                value={filterYear}
+                onValueChange={setFilterYear}
+                includeAll={true}
+                allValue="all"
+                className="w-[140px]"
+              />
             </div>
 
             <div className="flex items-center space-x-2">
               <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                Betalingsmetode:
+                {t('filters.payment_method', 'Betalingsmetode')}:
               </span>
-              <select
+              <LocalizedSelect
+                entityType="payment_method"
                 value={filterPaymentMethod}
-                onChange={(e) => setFilterPaymentMethod(e.target.value)}
-                className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-800"
-              >
-                {paymentMethodFilters.map((filter) => (
-                  <option key={filter.value} value={filter.value}>
-                    {filter.label}
-                  </option>
-                ))}
-              </select>
+                onValueChange={setFilterPaymentMethod}
+                includeAll={true}
+                allValue="all"
+                className="w-[180px]"
+              />
             </div>
 
             <div className="flex items-center space-x-2">
