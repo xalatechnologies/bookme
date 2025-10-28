@@ -22,6 +22,7 @@ export const FacilityListItem: React.FC<FacilityListItemProps> = ({
   onAddressClick
 }): JSX.Element => {
   const { t } = useTranslation(['facilities']);
+  const translateAmenity = useAmenityTranslation();
   const navigate = useNavigate();
   const [isFavorited, setIsFavorited] = useState(false);
 
@@ -124,7 +125,7 @@ export const FacilityListItem: React.FC<FacilityListItemProps> = ({
                       key={index}
                       className="bg-blue-50 text-blue-700 border-blue-200 font-medium px-3 py-1 text-sm hover:bg-blue-100 transition-colors"
                     >
-                      {amenity}
+                      {translateAmenity(amenity)}
                     </Badge>
                   ))}
                   {facility.amenities.length > 4 && (

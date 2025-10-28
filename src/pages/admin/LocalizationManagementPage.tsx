@@ -32,8 +32,13 @@ import { toast } from "sonner";
 const ENTITY_TYPES = [
   { value: 'facility_type', label: 'Facility Types' },
   { value: 'location', label: 'Locations' },
+  { value: 'amenity', label: 'Amenities' },
   { value: 'accessibility', label: 'Accessibility Features' },
   { value: 'capacity_range', label: 'Capacity Ranges' },
+  { value: 'booking_status', label: 'Booking Statuses' },
+  { value: 'ticket_status', label: 'Ticket Statuses' },
+  { value: 'ticket_priority', label: 'Ticket Priorities' },
+  { value: 'ticket_category', label: 'Ticket Categories' },
 ] as const;
 
 interface LocalizedValueForm {

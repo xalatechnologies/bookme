@@ -186,7 +186,7 @@ export const FacilityCard = ({
                 key={index}
                 className="bg-blue-50 text-blue-700 border-blue-200 font-medium px-2 py-1 text-xs sm:text-sm hover:bg-blue-100 transition-colors"
               >
-                {amenity}
+                {translateAmenity(amenity)}
               </Badge>
             ))}
             {facility.amenities.length > 3 && (
