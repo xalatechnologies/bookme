@@ -19,6 +19,9 @@ export * from './forms';
 // Guards
 export * from './guards';
 
+// Metrics
+export * from './metrics';
+
 // Modals
 export * from './modals';
 

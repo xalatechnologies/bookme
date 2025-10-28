@@ -43,6 +43,7 @@ export interface ISearchResult {
   iconType: string;
   image?: string;
   href?: string;
+  url?: string; // Added for backward compatibility with hooks
 }
 
 /**

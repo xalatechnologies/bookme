@@ -9,12 +9,8 @@ import SearchField from "@/components/features/search/components/AdminSearchFiel
 import NotificationBell from "@/components/layouts/AdminLayout/NotificationBell";
 import ProfileDropdown from "@/components/layouts/AdminLayout/ProfileDropdown";
 
-interface IAdminHeaderProps {
-  readonly children?: never;
-}
-
-const AdminHeader = (_props: IAdminHeaderProps): JSX.Element => {
-  const { t } = useTranslation('navigation');
+const AdminHeader = (): JSX.Element => {
+  const { t } = useTranslation('common');
   const { language, toggleLanguage } = useLanguage();
 
   return (

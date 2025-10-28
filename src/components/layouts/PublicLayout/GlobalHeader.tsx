@@ -28,7 +28,7 @@ export const GlobalHeader = (): JSX.Element => {
   const { language, toggleLanguage } = useLanguage();
 
   // Get cart data
-  const { itemCount, totalPrice } = useCart();
+  const { itemCount } = useCart();
   const { profile } = useUserProfile();
 
   // Check if we're on a booking page, user pages, or checkout
