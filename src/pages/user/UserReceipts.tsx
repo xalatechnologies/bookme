@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -16,7 +16,6 @@ import {
   CheckCircle,
   XCircle,
   Clock,
-  FileText,
   Filter,
   Search,
   Eye,
@@ -24,11 +23,9 @@ import {
   Mail,
   ExternalLink,
   DollarSign,
-  TrendingUp,
   BarChart3,
   ChevronDown,
   ChevronUp,
-  Plus,
   Repeat
 } from "lucide-react";
 
@@ -80,9 +77,27 @@ const UserReceipts = (): JSX.Element => {
       
       // Group recurring bookings by parentBookingId or fallback key
       const groupedRecurring = new Map();
-      const singleBookings = [];
+      const singleBookings: Booking[] = [];
       
-      all.forEach((booking: any) => {
+interface Booking {
+  readonly id: string;
+  readonly facility?: string;
+  readonly facilityName?: string;
+  readonly zoneName?: string;
+  readonly price?: string;
+  readonly startDate?: string;
+  readonly date?: string;
+  readonly status: string;
+  readonly duration?: string;
+  readonly purpose?: string;
+  readonly parentBookingId?: string;
+  readonly time?: string;
+  readonly startTime?: string;
+  readonly bookingType?: string;
+  readonly isRecurring?: boolean;
+}
+
+      all.forEach((booking: Booking) => {
         const parentKey = booking.parentBookingId || 
           `${booking.facility || booking.facilityName}-${booking.purpose}-${booking.time || booking.startTime}`;
         
@@ -97,7 +112,7 @@ const UserReceipts = (): JSX.Element => {
       });
       
       // Convert single bookings to receipts format
-      const singleReceipts = singleBookings.map((booking: any, index: number) => {
+      const singleReceipts = singleBookings.map((booking: Booking, index: number) => {
         const amount = parseFloat(booking.price?.replace(/[^\d,]/g, '').replace(',', '.') || '0');
         const mvaAmount = amount * 0.25; // 25% VAT
         const facilityName = booking.facility || booking.facilityName || booking.zoneName || 'Ukjent lokale';
@@ -107,8 +122,8 @@ const UserReceipts = (): JSX.Element => {
           facility: facilityName,
           date: booking.startDate || new Date().toISOString().split('T')[0],
           amount: amount,
-          status: booking.status === 'approved' ? 'paid' : 
-                  booking.status === 'rejected' ? 'cancelled' : 'pending',
+          status: (booking.status === 'approved' ? 'paid' : 
+                  booking.status === 'rejected' ? 'cancelled' : 'pending') as IReceipt['status'],
           paymentMethod: "Visa •••• 1234",
           bookingId: booking.id,
           location: facilityName,
@@ -122,11 +137,11 @@ const UserReceipts = (): JSX.Element => {
           mvaAmount: mvaAmount,
           refundReason: booking.status === 'rejected' ? 'Avvist av administrator' : undefined,
           isRecurring: false
-        };
+        } as IReceipt;
       });
       
       // Convert recurring booking groups to receipts format
-      const recurringReceipts = Array.from(groupedRecurring.entries()).map(([parentKey, bookings], index) => {
+      const recurringReceipts = Array.from(groupedRecurring.entries()).map(([parentKey, bookings]: [string, Booking[]], index: number) => {
         const first = bookings[0];
         const facilityName = first.facility || first.facilityName || first.zoneName || 'Ukjent lokale';
         
@@ -168,7 +183,7 @@ const UserReceipts = (): JSX.Element => {
             status: booking.status,
             amount: parseFloat(booking.price?.replace(/[^\d,]/g, '').replace(',', '.') || '0')
           }))
-        };
+        } as IReceipt;
       });
       
       // Combine single and recurring receipts
@@ -185,19 +200,6 @@ const UserReceipts = (): JSX.Element => {
     { value: "pending", label: "Venter på betaling", icon: Clock, count: receipts.filter(r => r.status === "pending").length },
     { value: "cancelled", label: "Betaling avbrutt", icon: XCircle, count: receipts.filter(r => r.status === "cancelled").length },
     { value: "refunded", label: "Beløp tilbakeført", icon: CheckCircle, count: receipts.filter(r => r.status === "refunded").length }
-  ];
-
-  const yearFilters = [
-    { value: "all", label: "Alle år" },
-    { value: "2024", label: "2024" },
-    { value: "2023", label: "2023" }
-  ];
-
-  const paymentMethodFilters = [
-    { value: "all", label: "Alle metoder" },
-    { value: "Visa", label: "Visa" },
-    { value: "Mastercard", label: "Mastercard" },
-    { value: "Faktura", label: "Faktura" }
   ];
 
   const sortOptions = [
@@ -269,7 +271,7 @@ const UserReceipts = (): JSX.Element => {
     );
   };
 
-  const getStatusBackgroundColor = (status: IReceipt["status"], isRecurring: boolean = false): string => {
+  const getStatusBackgroundColor = (status: IReceipt["status"]): string => {
     switch (status) {
       case "paid":
         return "bg-green-50 dark:bg-green-900/10 border-l-4 border-l-green-500";
@@ -299,7 +301,7 @@ const UserReceipts = (): JSX.Element => {
     }).format(amount);
   };
 
-  const handleDownloadReceipt = (receiptId: string): void => {
+  const handleDownloadReceipt = useCallback((receiptId: string): void => {
     // Implement download receipt
     const receipt = receipts.find(r => r.id === receiptId);
     if (receipt) {
@@ -337,19 +339,19 @@ BookMe - Drammen kommune
       // Show success message
       alert('Kvittering lastet ned!');
     }
-  };
+  }, [receipts, formatDate, formatAmount]);
 
-  const handleViewInvoice = (receiptId: string): void => {
+  const handleViewInvoice = useCallback((receiptId: string): void => {
     setShowReceiptDetails(showReceiptDetails === receiptId ? null : receiptId);
-  };
+  }, [showReceiptDetails]);
 
-  const handleCopyInvoiceNumber = (invoiceNumber: string): void => {
+  const handleCopyInvoiceNumber = useCallback((invoiceNumber: string): void => {
     navigator.clipboard.writeText(invoiceNumber);
     // Show toast notification
     alert('Fakturanummer kopiert til utklippstavle!');
-  };
+  }, []);
 
-  const handleSendReceiptEmail = (receiptId: string): void => {
+  const handleSendReceiptEmail = useCallback((receiptId: string): void => {
     // Implement send receipt email
     const receipt = receipts.find(r => r.id === receiptId);
     if (receipt) {
@@ -376,9 +378,9 @@ BookMe - Drammen kommune
       // Show success message
       alert('E-post klargjort!');
     }
-  };
+  }, [receipts, formatDate, formatAmount]);
 
-  const handleCompletePayment = (receiptId: string): void => {
+  const handleCompletePayment = useCallback((receiptId: string): void => {
     // Navigate to payment portal
     const receipt = receipts.find(r => r.id === receiptId);
     if (receipt) {
@@ -389,7 +391,7 @@ BookMe - Drammen kommune
         window.location.href = `/payment/${receipt.bookingId}`;
       }, 1000);
     }
-  };
+  }, [receipts]);
 
   const handleExportCSV = (): void => {
     // Implement CSV export
@@ -824,7 +826,7 @@ BookMe - Drammen kommune
           filteredAndSortedReceipts.map((receipt) => (
             <Card 
               key={receipt.id} 
-              className={`hover:shadow-lg transition-all duration-200 cursor-pointer ${getStatusBackgroundColor(receipt.status, receipt.isRecurring)}`}
+              className={`hover:shadow-lg transition-all duration-200 cursor-pointer ${getStatusBackgroundColor(receipt.status)}`}
               onClick={() => setExpandedReceipt(expandedReceipt === receipt.id ? null : receipt.id)}
             >
               <CardContent className="p-6">

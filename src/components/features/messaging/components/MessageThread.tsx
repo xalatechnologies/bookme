@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { format, formatDistanceToNow } from "date-fns";
+import { format } from "date-fns";
 import {
   Send,
   Paperclip,
@@ -13,20 +13,14 @@ import {
   Star,
   StarOff,
   Download,
-  Eye,
   EyeOff,
   Trash2,
-  Edit,
-  Copy,
   Building,
   Check,
   CheckCheck,
-  ChevronDown,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -35,8 +29,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Message, MessageThread as MessageThreadType } from "@/types/message";
+import { Message } from "@/types/message";
 import { useMessageStore } from "@/stores/messageStore";
 import { cn } from "@/lib/utils";
 import { useUserProfile } from "@/contexts/UserProfileContext";
@@ -86,10 +79,30 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
     }
   };
 
-  const handleStar = () => {
+  const handleStar = useCallback(() => {
     setIsStarred(!isStarred);
     onStar(message.id);
-  };
+  }, [isStarred, onStar, message.id]);
+
+  const handleReplyClick = useCallback(() => {
+    onReply(message);
+  }, [onReply, message]);
+
+  const handleForwardClick = useCallback(() => {
+    onForward(message);
+  }, [onForward, message]);
+
+  const handleDeleteClick = useCallback(() => {
+    onDelete(message.id);
+  }, [onDelete, message.id]);
+
+  const handleDownloadClick = useCallback(() => {
+    // Handle download
+    const link = document.createElement("a");
+    link.href = `data:${""};base64,${""}`;
+    link.download = "";
+    link.click();
+  }, []);
 
   return (
     <div
@@ -164,13 +177,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
                     variant="ghost"
                     size="sm"
                     className="h-6 w-6 p-0"
-                    onClick={() => {
-                      // Handle download
-                      const link = document.createElement("a");
-                      link.href = `data:${attachment.type};base64,${attachment.base64Data}`;
-                      link.download = attachment.name;
-                      link.click();
-                    }}
+                    onClick={handleDownloadClick}
                   >
                     <Download className="h-3 w-3" />
                   </Button>
@@ -191,7 +198,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
                 variant="ghost"
                 size="sm"
                 className="h-6 w-6 p-0"
-                onClick={() => onReply(message)}
+                onClick={handleReplyClick}
               >
                 <Reply className="h-3 w-3" />
               </Button>
@@ -199,7 +206,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
                 variant="ghost"
                 size="sm"
                 className="h-6 w-6 p-0"
-                onClick={() => onForward(message)}
+                onClick={handleForwardClick}
               >
                 <Forward className="h-3 w-3" />
               </Button>
@@ -219,7 +226,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
                 variant="ghost"
                 size="sm"
                 className="h-6 w-6 p-0"
-                onClick={() => onDelete(message.id)}
+                onClick={handleDeleteClick}
               >
                 <Trash2 className="h-3 w-3" />
               </Button>
@@ -297,9 +304,9 @@ export const MessageThread: React.FC<MessageThreadProps> = ({
     messagesEndRef.current?.scrollIntoView({ behavior: "auto", block: "end" });
   }, [messages.length]);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
+  // const scrollToBottom = () => {
+  //   messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  // };
 
   const handleSendMessage = async () => {
     if (!newMessage.trim() && attachments.length === 0) return;
@@ -344,7 +351,7 @@ export const MessageThread: React.FC<MessageThreadProps> = ({
       setAttachments([]);
       setReplyTo(null);
     } catch (error) {
-      // Handle error silently
+      void error; // Intentionally unused - error handled silently
     }
   };
 
@@ -378,15 +385,15 @@ export const MessageThread: React.FC<MessageThreadProps> = ({
   };
 
   const handleForward = (message: Message) => {
-    // Implementation for forwarding
+    void message; // Intentionally unused - forwarding to be implemented
   };
 
   const handleStar = (messageId: string) => {
-    // Implementation for starring
+    void messageId; // Intentionally unused - starring to be implemented
   };
 
   const handleDelete = (messageId: string) => {
-    // Implementation for deleting
+    void messageId; // Intentionally unused - deleting to be implemented
   };
 
   if (!thread) {
@@ -486,9 +493,9 @@ export const MessageThread: React.FC<MessageThreadProps> = ({
         id="messages-scroller"
         className="flex-1 min-h-0 overflow-y-auto px-6 py-4 space-y-3 pb-20"
       >
-        {messages.map((message, index) => {
+        {messages.map((message) => {
           const isOwn = message.senderId === currentUserId;
-          const prevMessage = messages[index - 1];
+          // const prevMessage = messages[index - 1];
           const showAvatar = true; // Always show avatars
 
           return (

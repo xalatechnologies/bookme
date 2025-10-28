@@ -2,11 +2,12 @@
 
 import React, { useState, useEffect } from "react";
 import { format } from "date-fns";
-import { Search, Plus, MoreHorizontal, Eye, Edit, Trash2, Archive, CheckCircle, Clock, AlertTriangle, XCircle } from "lucide-react";
+import { Search, Plus, MoreHorizontal, Eye, Edit, Trash2, Archive, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { StatusBadge } from "@/components/common/status/StatusBadge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -39,40 +40,6 @@ const TicketCard: React.FC<TicketCardProps> = ({ ticket, onSelect, onEdit, onDel
   const { t } = useTranslation();
   const [showActions, setShowActions] = useState<boolean>(false);
 
-  const getStatusIcon = (status: SupportTicket['status']): JSX.Element => {
-    switch (status) {
-      case 'open':
-        return <Clock className="h-4 w-4 text-blue-600" />;
-      case 'in-progress':
-        return <AlertTriangle className="h-4 w-4 text-yellow-600" />;
-      case 'waiting-user':
-        return <Clock className="h-4 w-4 text-orange-600" />;
-      case 'resolved':
-        return <CheckCircle className="h-4 w-4 text-green-600" />;
-      case 'closed':
-        return <XCircle className="h-4 w-4 text-gray-600" />;
-      default:
-        return <Clock className="h-4 w-4 text-gray-600" />;
-    }
-  };
-
-  const getStatusColor = (status: SupportTicket['status']): string => {
-    switch (status) {
-      case 'open':
-        return 'bg-blue-100 text-blue-800';
-      case 'in-progress':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'waiting-user':
-        return 'bg-orange-100 text-orange-800';
-      case 'resolved':
-        return 'bg-green-100 text-green-800';
-      case 'closed':
-        return 'bg-gray-100 text-gray-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
-    }
-  };
-
   const getPriorityColor = (priority: SupportTicket['priority']): string => {
     switch (priority) {
       case 'urgent':
@@ -100,16 +67,18 @@ const TicketCard: React.FC<TicketCardProps> = ({ ticket, onSelect, onEdit, onDel
       <CardContent className="p-4">
         <div className="flex items-start justify-between">
           <div className="flex-1 space-y-2">
-            <div className="flex items-center space-x-2">
-              {getStatusIcon(ticket.status)}
-              <h3 className="font-semibold text-sm">{ticket.subject}</h3>
-              <Badge variant="outline" className={`text-xs ${getStatusColor(ticket.status)}`}>
-                {t(`support:tickets.status.${ticket.status.replace('-', '_')}`)}
-              </Badge>
-              <Badge variant="outline" className={`text-xs ${getPriorityColor(ticket.priority)}`}>
-                {t(`support:tickets.priority.${ticket.priority}`)}
-              </Badge>
-            </div>
+          <div className="flex items-center space-x-2">
+            <StatusBadge
+              status={ticket.status}
+              translationKey={`support:tickets.status.${ticket.status.replace('-', '_')}`}
+              showIcon={true}
+              size="sm"
+            />
+            <h3 className="font-semibold text-sm">{ticket.subject}</h3>
+            <Badge variant="outline" className={`text-xs ${getPriorityColor(ticket.priority)}`}>
+              {t(`support:tickets.priority.${ticket.priority}`)}
+            </Badge>
+          </div>
 
             <p className="text-sm text-muted-foreground line-clamp-2">
               {ticket.description}
@@ -213,7 +182,7 @@ export const SupportTicketList: React.FC<SupportTicketListProps> = ({
     getTicketStatistics
   } = useSupportStore();
 
-  const [tickets, setTickets] = useState<readonly SupportTicket[]>([]);
+  // const [tickets, setTickets] = useState<readonly SupportTicket[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [priorityFilter, setPriorityFilter] = useState<string>("all");
@@ -221,8 +190,12 @@ export const SupportTicketList: React.FC<SupportTicketListProps> = ({
   const [activeTab, setActiveTab] = useState<string>("all");
 
   useEffect(() => {
-    const userTickets = userId ? getUserTickets(userId) : getAdminTickets();
-    setTickets(userTickets);
+    // Trigger data fetch from store when userId changes
+    if (userId) {
+      getUserTickets(userId);
+    } else {
+      getAdminTickets();
+    }
   }, [userId, getUserTickets, getAdminTickets]);
 
   const searchCriteria: SupportTicketSearchCriteria = {
@@ -246,15 +219,18 @@ export const SupportTicketList: React.FC<SupportTicketListProps> = ({
   const closedTickets = filteredTickets.filter(t => t.status === 'closed');
 
   const handleEdit = (ticketId: string): void => {
-    // Implementation would open edit dialog
+    // TODO: Implementation would open edit dialog
+    console.log('Edit ticket:', ticketId);
   };
 
   const handleDelete = (ticketId: string): void => {
-    // Implementation would delete ticket
+    // TODO: Implementation would delete ticket
+    console.log('Delete ticket:', ticketId);
   };
 
   const handleArchive = (ticketId: string): void => {
-    // Implementation would archive ticket
+    // TODO: Implementation would archive ticket
+    console.log('Archive ticket:', ticketId);
   };
 
   return (

@@ -5,7 +5,7 @@
  * Includes actions like edit, cancel, share, and add to calendar.
  */
 
-import React from 'react';
+import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -70,7 +70,7 @@ const formatTime = (dateString: string): string => {
  * Format duration using translations
  */
 const DurationLabel = ({ startsAt, endsAt }: { startsAt: string; endsAt: string }): JSX.Element => {
-  const { t } = useTranslation('bookings');
+  const { t } = useTranslation('booking');
   const start = new Date(startsAt);
   const end = new Date(endsAt);
   const hours = (end.getTime() - start.getTime()) / (1000 * 60 * 60);
@@ -110,13 +110,41 @@ export const BookingDetailsPanel = ({
   onShare,
   onAddToCalendar,
 }: BookingDetailsPanelProps): JSX.Element => {
-  const { t } = useTranslation('bookings');
+  const { t } = useTranslation('booking');
   
-  const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleBackdropClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget) {
       onClose();
     }
-  };
+  }, [onClose]);
+
+  const handleContentClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    e.stopPropagation();
+  }, []);
+
+  const handleEdit = useCallback(() => {
+    if (onEdit) {
+      onEdit(booking);
+    }
+  }, [onEdit, booking]);
+
+  const handleCancel = useCallback(() => {
+    if (onCancel) {
+      onCancel(booking);
+    }
+  }, [onCancel, booking]);
+
+  const handleShare = useCallback(() => {
+    if (onShare) {
+      onShare(booking);
+    }
+  }, [onShare, booking]);
+
+  const handleAddToCalendar = useCallback(() => {
+    if (onAddToCalendar) {
+      onAddToCalendar(booking);
+    }
+  }, [onAddToCalendar, booking]);
 
   // Determine available actions based on booking status
   const canEdit = booking.status === 'pending' || booking.status === 'awaiting_payment';
@@ -134,7 +162,7 @@ export const BookingDetailsPanel = ({
     >
       <div
         className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-2xl w-full max-h-[85vh] overflow-hidden flex flex-col"
-        onClick={(e) => e.stopPropagation()}
+        onClick={handleContentClick}
       >
         {/* Header */}
         <div className="p-6 border-b border-gray-200 dark:border-gray-700">
@@ -253,7 +281,7 @@ export const BookingDetailsPanel = ({
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => onEdit(booking)}
+                  onClick={handleEdit}
                   className="flex items-center justify-center gap-2"
                 >
                   <Edit className="w-4 h-4" />
@@ -265,7 +293,7 @@ export const BookingDetailsPanel = ({
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => onCancel(booking)}
+                  onClick={handleCancel}
                   className="flex items-center justify-center gap-2 text-red-600 hover:text-red-700 hover:bg-red-50"
                 >
                   <Trash2 className="w-4 h-4" />
@@ -277,7 +305,7 @@ export const BookingDetailsPanel = ({
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => onShare(booking)}
+                  onClick={handleShare}
                   className="flex items-center justify-center gap-2"
                 >
                   <Share2 className="w-4 h-4" />
@@ -289,7 +317,7 @@ export const BookingDetailsPanel = ({
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => onAddToCalendar(booking)}
+                  onClick={handleAddToCalendar}
                   className="flex items-center justify-center gap-2"
                 >
                   <CalendarPlus className="w-4 h-4" />

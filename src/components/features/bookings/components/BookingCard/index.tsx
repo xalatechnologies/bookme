@@ -10,7 +10,7 @@
  * - Dependency Inversion: Uses i18n translations and utility functions
  */
 
-import React from 'react';
+import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -89,32 +89,38 @@ export const BookingCard = ({
     hours: t('card.hours')
   };
 
-  const handleCardClick = () => {
+  const handleCardClick = useCallback(() => {
     if (onViewDetails) {
       onViewDetails(booking);
     }
-  };
+  }, [onViewDetails, booking]);
 
-  const handleSelectClick = (e: React.MouseEvent) => {
+  const handleSelectClick = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
     if (onSelect) {
       onSelect(booking.id);
     }
-  };
+  }, [onSelect, booking.id]);
 
-  const handleViewClick = (e: React.MouseEvent) => {
+  const handleViewClick = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
     if (onViewDetails) {
       onViewDetails(booking);
     }
-  };
+  }, [onViewDetails, booking]);
 
-  const handleDeleteClick = (e: React.MouseEvent) => {
+  const handleDeleteClick = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
     if (onDelete) {
       onDelete(booking.id);
     }
-  };
+  }, [onDelete, booking.id]);
+
+  const handleCheckboxChange = useCallback(() => {
+    if (onSelect) {
+      onSelect(booking.id);
+    }
+  }, [onSelect, booking.id]);
 
   return (
     <div className="flex items-start gap-4">
@@ -122,7 +128,7 @@ export const BookingCard = ({
         <div onClick={handleSelectClick}>
           <Checkbox
             checked={selected}
-            onCheckedChange={() => onSelect?.(booking.id)}
+            onCheckedChange={handleCheckboxChange}
             className="mt-1"
             aria-label={t('card.selectBooking', { facility: booking.facility?.name })}
           />

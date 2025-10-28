@@ -1,8 +1,9 @@
 import React from 'react';
-import { Calendar, Clock, MapPin, User, DollarSign } from 'lucide-react';
+import { Calendar, Clock, MapPin, DollarSign } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { StatusBadge } from '@/components/common/status/StatusBadge';
 import type { IBookingEvent } from '@/types/calendar';
 
 interface EventTooltipProps {
@@ -14,32 +15,7 @@ export const EventTooltip: React.FC<EventTooltipProps> = ({
   event,
   className = ''
 }): JSX.Element => {
-  const { t } = useTranslation('calendar');
-  const getStatusColor = (status: string): string => {
-    switch (status) {
-      case 'confirmed':
-        return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
-      case 'pending':
-        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200';
-      case 'cancelled':
-        return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
-      default:
-        return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
-    }
-  };
-
-  const getStatusLabel = (status: string): string => {
-    switch (status) {
-      case 'confirmed':
-        return t('status.confirmed');
-      case 'pending':
-        return t('status.pending');
-      case 'cancelled':
-        return t('status.cancelled');
-      default:
-        return 'Unknown';
-    }
-  };
+  const { t } = useTranslation('common');
 
   const formatDate = (dateString: string): string => {
     return new Date(dateString).toLocaleDateString('no-NO', {
@@ -66,9 +42,12 @@ export const EventTooltip: React.FC<EventTooltipProps> = ({
             <h3 className="font-semibold text-lg text-gray-900 dark:text-white line-clamp-2">
               {event.title}
             </h3>
-            <Badge className={getStatusColor(event.status)}>
-              {getStatusLabel(event.status)}
-            </Badge>
+            <StatusBadge
+              status={event.status}
+              translationKey={`calendar:status.${event.status}`}
+              showIcon={false}
+              size="sm"
+            />
           </div>
 
           {/* Event Details */}

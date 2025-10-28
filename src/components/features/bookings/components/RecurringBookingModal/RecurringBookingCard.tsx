@@ -6,6 +6,7 @@ import { Calendar, Clock, Users, MapPin, Repeat, Pause, Play, X, Edit, MoreHoriz
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { StatusBadge } from "@/components/common/status/StatusBadge";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { RecurringBooking } from "@/types/recurringBooking";
@@ -25,40 +26,16 @@ interface RecurringBookingCardProps {
 }
 
 /**
- * Status badge component for recurring booking status
- */
-const StatusBadge: React.FC<{ status: RecurringBooking['status'] }> = ({ status }) => {
-  const statusConfig = {
-    active: { label: "Aktiv", variant: "default" as const, className: "bg-green-100 text-green-800" },
-    paused: { label: "Pauset", variant: "secondary" as const, className: "bg-yellow-100 text-yellow-800" },
-    cancelled: { label: "Avbrutt", variant: "destructive" as const, className: "bg-red-100 text-red-800" }
-  };
-
-  const config = statusConfig[status];
-
-  return (
-    <Badge variant={config.variant} className={config.className}>
-      {config.label}
-    </Badge>
-  );
-};
-
-/**
  * Occurrence status badge component
  */
 const OccurrenceStatusBadge: React.FC<{ status: RecurringBooking['occurrences'][0]['status'] }> = ({ status }) => {
-  const statusConfig = {
-    pending: { label: "Venter", variant: "secondary" as const, className: "bg-yellow-100 text-yellow-800" },
-    confirmed: { label: "Bekreftet", variant: "default" as const, className: "bg-green-100 text-green-800" },
-    cancelled: { label: "Avbrutt", variant: "destructive" as const, className: "bg-red-100 text-red-800" }
-  };
-
-  const config = statusConfig[status];
-
   return (
-    <Badge variant={config.variant} className={`text-xs ${config.className}`}>
-      {config.label}
-    </Badge>
+    <StatusBadge
+      status={status}
+      translationKey={`common:status.${status}`}
+      showIcon={false}
+      size="sm"
+    />
   );
 };
 
@@ -228,7 +205,12 @@ export const RecurringBookingCard: React.FC<RecurringBookingCardProps> = ({
               <CardTitle className="flex items-center space-x-2">
                 <Repeat className="h-5 w-5" />
                 <span>{booking.facilityName}</span>
-                <StatusBadge status={booking.status} />
+                <StatusBadge
+              status={booking.status}
+              translationKey={`common:status.${booking.status}`}
+              showIcon={false}
+              size="sm"
+            />
               </CardTitle>
               <CardDescription className="flex items-center space-x-4">
                 <span className="flex items-center space-x-1">

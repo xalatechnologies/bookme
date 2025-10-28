@@ -17,18 +17,12 @@ import {
   User,
   Edit3,
   Plus,
-  Minus,
   Lock,
   FileText,
   AlertCircle,
   Check,
-  X,
   Info,
   ExternalLink,
-  Star,
-  Zap,
-  Wifi,
-  Camera,
   Users,
   Settings,
   ChevronRight,
@@ -49,11 +43,9 @@ import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 // Types
-import type { ICartItem } from "@/types/cart";
 import type { ISelectedTimeSlot } from "@/components/features/bookings/types";
 
 /**
@@ -75,8 +67,8 @@ import type { ISelectedTimeSlot } from "@/components/features/bookings/types";
 export const Checkout = (): JSX.Element => {
   const navigate = useNavigate();
   const { items, totalPrice, clearCart, removeItem } = useCart();
-  const { profile, updateProfile } = useUserProfile();
-  const { t, i18n } = useTranslation(['checkout', 'common', 'bookings']);
+  const { profile } = useUserProfile();
+  const { t, i18n } = useTranslation('common');
   const currentLocale = i18n.language === 'en' ? 'en-US' : 'nb-NO';
   
   // State management
@@ -215,6 +207,7 @@ export const Checkout = (): JSX.Element => {
         year: "numeric"
       }).format(dateObj);
     } catch (error) {
+      void error; // Error handled by returning fallback message
       return t('checkout:labels.invalid_date', 'Ugyldig dato');
     }
   }, [currentLocale, t]);
@@ -356,6 +349,7 @@ export const Checkout = (): JSX.Element => {
       localStorage.setItem('lastBookingNumber', nextNumber.toString());
       return nextNumber;
     } catch (error) {
+      void error; // Error handled by returning default booking number
       return 1;
     }
   }, []);
@@ -406,7 +400,7 @@ export const Checkout = (): JSX.Element => {
               participants: item.attendees || 1,
               zone: item.zoneName || 'Hovedbasseng',
               isRecurring: true,
-              parentBookingId: (slot as any).parentBookingId ?? `${item.facilityId}-${item.zoneId}`,
+              parentBookingId: ((slot as unknown) as Record<string, unknown>).parentBookingId ?? `${item.facilityId}-${item.zoneId}`,
               recurrencePattern: item.recurrencePattern,
               bookingType: 'recurring' as const,
               timeSlots: [slot]
@@ -507,6 +501,7 @@ export const Checkout = (): JSX.Element => {
       clearCart();
       navigate("/user/bookings?success=true");
     } catch (error) {
+      void error; // Error handled by displaying payment error message
       setErrors({ payment: t('checkout:errors.payment_failed', 'Betalingen feilet. Prøv igjen eller velg en annen metode.') });
       setIsProcessing(false);
     }
@@ -793,7 +788,7 @@ export const Checkout = (): JSX.Element => {
                   </div>
                 ) : (
                   <>
-                {items.map((item, index) => (
+                {items.map((item) => (
                   <div key={item.id} className="border rounded-lg p-4">
                     <div className="flex justify-between items-start mb-3">
                       <div>
@@ -1147,7 +1142,7 @@ export const Checkout = (): JSX.Element => {
               </CardHeader>
                 <CardContent className="space-y-4 p-6">
                   {/* Booking Type Breakdown */}
-                  {items.map((item, index) => (
+                  {items.map((item) => (
                     <div key={item.id} className="space-y-2">
                       <div className="flex justify-between items-center py-2">
                         <span className="text-gray-700 font-medium">

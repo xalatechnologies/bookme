@@ -4,6 +4,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { StatusBadge } from "@/components/common/status/StatusBadge";
 import {
   Calendar,
   Eye,
@@ -15,9 +16,6 @@ import {
   QrCode,
   Phone,
   Mail,
-  CheckCircle,
-  Clock,
-  XCircle,
   Plus,
   MapPin
 } from "lucide-react";
@@ -62,7 +60,7 @@ const BookingList = (props: IBookingListProps): JSX.Element => {
     onCancelBooking,
     onContactAdmin
   } = props;
-  const { t } = useTranslation('user');
+  const { t } = useTranslation('booking');
 
   const formatDate = (dateString: string): string => {
     // Handle date display more carefully to avoid timezone issues
@@ -75,36 +73,6 @@ const BookingList = (props: IBookingListProps): JSX.Element => {
       // Fallback to original method
       return new Date(dateString).toLocaleDateString('nb-NO');
     }
-  };
-
-  const getStatusBadge = (status: IUserBooking["status"]): JSX.Element => {
-    const statusConfig = {
-      confirmed: {
-        label: t('bookings.status.confirmed'),
-        className: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300 border-l-4 border-green-500",
-        icon: CheckCircle
-      },
-      pending: {
-        label: t('bookings.status.pending'),
-        className: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300 border-l-4 border-yellow-500",
-        icon: Clock
-      },
-      cancelled: {
-        label: t('bookings.status.cancelled'),
-        className: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300 border-l-4 border-red-500",
-        icon: XCircle
-      }
-    };
-    
-    const config = statusConfig[status];
-    const Icon = config.icon;
-    
-    return (
-      <Badge className={config.className}>
-        <Icon className="h-3 w-3 mr-1" />
-        {config.label}
-      </Badge>
-    );
   };
 
   
@@ -169,7 +137,12 @@ const BookingList = (props: IBookingListProps): JSX.Element => {
                     }`}>
                       {booking.facility}
                     </h4>
-                    {getStatusBadge(booking.status)}
+                    <StatusBadge
+                      status={booking.status}
+                      translationKey={`bookings.status.${booking.status}`}
+                      showIcon={true}
+                      size="sm"
+                    />
                   </div>
                   <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
                     {formatDate(booking.date)} kl. {booking.time} • {booking.duration}
@@ -325,4 +298,5 @@ const BookingList = (props: IBookingListProps): JSX.Element => {
 
 
 
+export { BookingList };
 export default BookingList;

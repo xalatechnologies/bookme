@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { format } from "date-fns";
 import { MessageCircle, Plus, Trash2, Building, Check } from "lucide-react";
@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { StatusBadge } from "@/components/common/status/StatusBadge";
 import {
   Select,
   SelectContent,
@@ -38,19 +39,6 @@ const ThreadCard: React.FC<{
   currentUserType,
 }) => {
   const [showActions, setShowActions] = useState<boolean>(false);
-
-  const getStatusColor = (status: MessageThreadType["status"]): string => {
-    switch (status) {
-      case "active":
-        return "bg-green-100 text-green-800";
-      case "resolved":
-        return "bg-blue-100 text-blue-800";
-      case "closed":
-        return "bg-gray-100 text-gray-800";
-      default:
-        return "bg-gray-100 text-gray-800";
-    }
-  };
 
   const getPriorityColor = (
     priority: MessageThreadType["priority"]
@@ -86,16 +74,12 @@ const ThreadCard: React.FC<{
                   {unreadCount}
                 </Badge>
               )}
-              <Badge
-                variant="outline"
-                className={`text-xs ${getStatusColor(thread.status)}`}
-              >
-                {thread.status === "active"
-                  ? "Aktiv"
-                  : thread.status === "resolved"
-                  ? "Løst"
-                  : "Lukket"}
-              </Badge>
+              <StatusBadge
+                status={thread.status}
+                translationKey={`common:status.${thread.status}`}
+                showIcon={false}
+                size="sm"
+              />
               <Badge
                 variant="outline"
                 className={`text-xs ${getPriorityColor(thread.priority)}`}
@@ -194,8 +178,8 @@ export const MessageInbox: React.FC<MessageInboxProps> = ({
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [priorityFilter, setPriorityFilter] = useState<string>("all");
   const [selectedThreadId, setSelectedThreadId] = useState<string | null>(null);
-  const [notificationsEnabled, setNotificationsEnabled] =
-    useState<boolean>(true);
+  // const [notificationsEnabled, setNotificationsEnabled] =
+  //   useState<boolean>(true);
   const [showCreateModal, setShowCreateModal] = useState<boolean>(false);
 
   // Get available participants to check if messaging is possible
@@ -249,24 +233,32 @@ export const MessageInbox: React.FC<MessageInboxProps> = ({
     return lastMessage ? lastMessage.content : "Ingen meldinger";
   };
 
-  const handleArchive = (threadId: string): void => {
-    // Implementation would archive the thread
-  };
+  // const handleArchive = (threadId: string): void => {
+  //   // Implementation would archive the thread
+  // };
 
-  const handleDelete = (threadId: string): void => {
-    // Implementation would delete the thread
-  };
+  // const handleDelete = (threadId: string): void => {
+  //   // Implementation would delete the thread
+  // };
 
-  const clearFilters = (): void => {
-    setSearchQuery("");
-    setStatusFilter("all");
-    setPriorityFilter("all");
-  };
+  // const clearFilters = (): void => {
+  //   setSearchQuery("");
+  //   setStatusFilter("all");
+  //   setPriorityFilter("all");
+  // };
 
-  const handleThreadSelect = (threadId: string) => {
+  const handleThreadSelect = useCallback((threadId: string) => {
     setSelectedThreadId(threadId);
     onThreadSelect?.(threadId);
-  };
+  }, [onThreadSelect]);
+
+  // const handleMarkResolved = useCallback((threadId: string) => {
+  //   updateThread(threadId, { status: "resolved" });
+  // }, [updateThread]);
+
+  // const handleDeleteThread = useCallback((threadId: string) => {
+  //   deleteThread(threadId);
+  // }, [deleteThread]);
 
   const handleCreateThread = () => {
     setShowCreateModal(true);
