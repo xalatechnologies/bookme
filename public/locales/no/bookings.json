@@ -530,5 +530,29 @@
     "recurring_slots_and_price": "Gjentakende tidspunkter og prisberegning",
     "slots_and_price_select_pattern": "Tidspunkter og prisberegning (velg gjentakelsesmønster)",
     "clear_all_slots": "Fjern alle valgte tidspunkter"
+  },
+  "recurrence": {
+    "title": "Gjentakende mønster",
+    "select_pattern": "Velg mønster",
+    "weekly": "Ukentlig",
+    "weekly_desc": "Hver uke",
+    "biweekly": "Annenhver uke",
+    "biweekly_desc": "Hver 2. uke",
+    "monthly": "Månedlig",
+    "monthly_desc": "Hver måned",
+    "custom": "Egendefinert",
+    "custom_desc": "Tilpasset intervall",
+    "select_days": "Velg dager",
+    "which_week": "Hvilken uke i måneden",
+    "which_day": "Hvilken dag",
+    "interval_days": "Intervall (dager)",
+    "max_occurrences": "Maks antall forekomster (valgfri)",
+    "pattern": "Mønster",
+    "errors_title": "Feil i mønster:",
+    "first": "Første",
+    "second": "Andre",
+    "third": "Tredje",
+    "fourth": "Fjerde",
+    "last": "Siste"
   }
 }

@@ -21,7 +21,7 @@ exception when duplicate_object then null; end $$;
 
 -- Translation keys table - stores all translation keys with metadata
 create table translation_keys (
-  id uuid primary key default uuid_generate_v4(),
+  id uuid primary key default gen_random_uuid(),
   namespace translation_namespace not null,
   key_path text not null, -- e.g., 'filters.clear', 'actions.save'
   description text, -- Human-readable description of what this translation is for
@@ -38,7 +38,7 @@ create index idx_translation_keys_category on translation_keys(category) where c
 
 -- Translations table - stores actual translations for each language
 create table translations (
-  id uuid primary key default uuid_generate_v4(),
+  id uuid primary key default gen_random_uuid(),
   translation_key_id uuid not null references translation_keys(id) on delete cascade,
   language_code text not null default 'no', -- ISO 639-1 codes: 'en', 'no', etc.
   translation text not null,
@@ -57,7 +57,7 @@ create index idx_translations_key_lang on translations(translation_key_id, langu
 -- Localized database values - for storing translated content from database
 -- This is for values that come from the database but need translation (e.g., facility types, statuses)
 create table localized_db_values (
-  id uuid primary key default uuid_generate_v4(),
+  id uuid primary key default gen_random_uuid(),
   entity_type text not null, -- e.g., 'facility_type', 'booking_status', 'location'
   entity_key text not null, -- e.g., 'idrettshall', 'pending', 'drammen_sentrum'
   language_code text not null default 'no',
@@ -78,7 +78,7 @@ create index idx_localized_db_values_active on localized_db_values(is_active) wh
 
 -- Translation history - track changes to translations
 create table translation_history (
-  id uuid primary key default uuid_generate_v4(),
+  id uuid primary key default gen_random_uuid(),
   translation_id uuid not null references translations(id) on delete cascade,
   old_value text,
   new_value text not null,

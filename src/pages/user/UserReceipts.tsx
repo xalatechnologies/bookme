@@ -96,7 +96,7 @@ const UserReceipts = (): JSX.Element => {
       // Convert single bookings to receipts format
       const singleReceipts = singleBookings.map((booking: any, index: number) => {
         const amount = parseFloat(booking.price?.replace(/[^\d,]/g, '').replace(',', '.') || '0');
-        const mvaAmount = amount * 0.25; // 25% MVA
+        const mvaAmount = amount * 0.25; // 25% VAT
         const facilityName = booking.facility || booking.facilityName || booking.zoneName || 'Ukjent lokale';
         
         return {
@@ -131,7 +131,7 @@ const UserReceipts = (): JSX.Element => {
         const totalAmount = bookings.reduce((sum, booking) => {
           return sum + parseFloat(booking.price?.replace(/[^\d,]/g, '').replace(',', '.') || '0');
         }, 0);
-        const mvaAmount = totalAmount * 0.25; // 25% MVA
+        const mvaAmount = totalAmount * 0.25; // 25% VAT
         
         // Determine group status
         const statuses = bookings.map(b => b.status);
@@ -147,7 +147,7 @@ const UserReceipts = (): JSX.Element => {
           paymentMethod: "Visa •••• 1234",
           bookingId: parentKey,
           location: facilityName,
-          duration: `${bookings.length} forekomster`,
+          duration: `${bookings.length} occurrences`,
           purpose: first.purpose || 'Ikke spesifisert',
           invoiceNumber: `INV-${new Date().getFullYear()}-${String(index + 1).padStart(3, '0')}`,
           paidAt: groupStatus === 'paid' ? new Date().toISOString() : undefined,

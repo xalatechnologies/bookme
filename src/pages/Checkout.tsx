@@ -397,7 +397,7 @@ export const Checkout = (): JSX.Element => {
         facility: item.facilityName,
               date: bookingDate,
               time: slot.timeSlot,
-              duration: hours === 1 ? '1 time' : `${hours} timer`,
+              duration: hours === 1 ? t('bookings:time.hour', '1 hour') : `${hours} ${t('bookings:time.hours', 'hours')}`,
               status: 'pending' as const,
               location: 'Drammen',
               price: `${(item.pricing?.finalPrice / (item.timeSlots.length || 1)).toLocaleString('nb-NO')} kr`,
@@ -477,9 +477,9 @@ export const Checkout = (): JSX.Element => {
         duration: item.timeSlots && item.timeSlots.length > 0 
             ? (() => {
                 const totalHours = item.timeSlots.reduce((total, slot) => total + (slot.duration ?? 60), 0) / 60;
-                return totalHours === 1 ? '1 time' : `${totalHours} timer`;
+                return totalHours === 1 ? t('bookings:time.hour', '1 hour') : `${totalHours} ${t('bookings:time.hours', 'hours')}`;
               })()
-            : '1 time',
+            : t('bookings:time.hour', '1 hour'),
         status: 'pending' as const,
         location: 'Drammen', // This could be dynamic based on facility
         price: `${item.pricing.finalPrice.toLocaleString('nb-NO')} kr`,
