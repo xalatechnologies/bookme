@@ -7,7 +7,6 @@ import { Calendar, Repeat } from 'lucide-react';
 
 // Internal libraries/utilities
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 // Types
 import type { BookingType } from '@/types/booking';

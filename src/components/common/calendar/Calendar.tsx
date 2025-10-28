@@ -2,8 +2,9 @@
 
 // External imports
 import React, { useState, useCallback, useMemo } from "react";
-import { format, addDays, startOfWeek, addWeeks, subWeeks } from "date-fns";
+import { format, startOfWeek, addWeeks, subWeeks } from "date-fns";
 import { ChevronLeft, ChevronRight, Calendar as CalendarIcon } from "lucide-react";
+import { useTranslation } from 'react-i18next';
 
 // Internal imports
 import type { Zone, SelectedTimeSlot, AvailabilityStatus } from '@/types/booking';
@@ -40,6 +41,7 @@ export const Calendar: React.FC<CalendarProps> = ({
   openingHoursEnd = "22:00",
   compact = false
 }): JSX.Element => {
+  const { t } = useTranslation('common');
   const [currentWeekStart, setCurrentWeekStart] = useState(() =>
     startOfWeek(new Date(), { weekStartsOn: 1 })
   );
