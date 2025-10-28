@@ -215,7 +215,7 @@ export const FacilityCard = ({
                 <div key={field.id} className="flex items-center gap-2 sm:gap-3 text-gray-600">
                   {getFieldIcon(field.key)}
                   <span className="text-sm sm:text-base font-medium">
-                    {field.label}: {value || booleanValue}
+                    {t(field.label)}: {value || booleanValue}
                     {unit && ` ${unit}`}
                   </span>
                 </div>

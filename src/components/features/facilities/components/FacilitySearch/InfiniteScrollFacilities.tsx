@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 
 import { FacilityFilters } from "@/types/facility";
 import { useFacilityStore } from "@/stores/facilityStore";
@@ -20,6 +21,7 @@ export const InfiniteScrollFacilities: React.FC<InfiniteScrollFacilitiesProps> =
   viewMode,
   setViewMode
 }): JSX.Element => {
+  const { t } = useTranslation('common');
   const { getPublishedFacilities } = useFacilityStore();
   const [filteredFacilities, setFilteredFacilities] = useState(() => getPublishedFacilities());
 
@@ -74,10 +76,10 @@ export const InfiniteScrollFacilities: React.FC<InfiniteScrollFacilitiesProps> =
       {filteredFacilities.length === 0 ? (
         <div className="text-center py-12">
           <div className="text-muted-foreground text-lg mb-2">
-            Ingen fasiliteter funnet
+            {t('facilities.noFacilitiesFound')}
           </div>
           <p className="text-sm text-muted-foreground">
-            Prøv å justere søkekriteriene dine
+            {t('facilities.adjustCriteria')}
           </p>
         </div>
       ) : viewMode === "grid" ? (

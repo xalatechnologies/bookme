@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import { ViewModeToggle } from "./ViewModeToggle";
 
@@ -17,18 +18,20 @@ export const ViewHeader: React.FC<ViewHeaderProps> = ({
   viewMode,
   setViewMode
 }): JSX.Element => {
+  const { t } = useTranslation('common');
+  
   const getViewLabel = (): string => {
     switch (viewMode) {
       case "grid":
-        return "Rutenett visning";
+        return t('viewModes.grid');
       case "list":
-        return "Liste visning";
+        return t('viewModes.list');
       case "map":
-        return "Kart";
+        return t('viewModes.map');
       case "calendar":
-        return "Kalender";
+        return t('common.calendar', 'Kalender');
       default:
-        return "Rutenett visning";
+        return t('viewModes.grid');
     }
   };
 
@@ -39,11 +42,11 @@ export const ViewHeader: React.FC<ViewHeaderProps> = ({
           <span className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900">
             {isLoading ? "..." : facilityCount}
           </span>
-          <span className="text-lg sm:text-xl font-semibold text-gray-700">lokaler</span>
+          <span className="text-lg sm:text-xl font-semibold text-gray-700">{t('facilities.count')}</span>
         </div>
         <div className="flex items-center gap-2">
           <div className="text-sm sm:text-base md:text-lg px-3 sm:px-4 md:px-6 py-2 sm:py-3 font-medium text-gray-600 bg-gray-100 rounded-full">
-            {isLoading ? "Laster..." : getViewLabel()}
+            {isLoading ? t('facilities.loading') : getViewLabel()}
           </div>
         </div>
       </div>

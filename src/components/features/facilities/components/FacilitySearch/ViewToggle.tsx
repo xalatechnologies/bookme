@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Grid3X3, List, Map } from "lucide-react";
 
 type TView = "grid" | "list" | "map";
@@ -11,10 +12,12 @@ interface IViewToggleUserProps {
 }
 
 const ViewToggleUser = ({ currentView, onViewChange }: IViewToggleUserProps): JSX.Element => {
+  const { t } = useTranslation('common');
+  
   const views: readonly { id: TView; icon: React.ComponentType<{ className?: string }>; label: string }[] = [
-    { id: "grid", icon: Grid3X3, label: "Rutenett visning" },
-    { id: "list", icon: List, label: "Liste visning" },
-    { id: "map", icon: Map, label: "Kart" }
+    { id: "grid", icon: Grid3X3, label: t('viewModes.grid', 'Rutenett visning') },
+    { id: "list", icon: List, label: t('viewModes.list', 'Liste visning') },
+    { id: "map", icon: Map, label: t('viewModes.map', 'Kart') }
   ];
 
   return (

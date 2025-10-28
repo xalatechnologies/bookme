@@ -425,5 +425,18 @@
       "hearingLoop": "Hearing Loop",
       "visualAids": "Visual Aids"
     }
+  },
+  "viewModes": {
+    "grid": "Grid View",
+    "list": "List View",
+    "map": "Map"
+  },
+  "facilities": {
+    "count": "venues",
+    "loading": "Loading...",
+    "noFacilitiesFound": "No facilities found",
+    "adjustCriteria": "Try adjusting your search criteria",
+    "capacity": "Capacity:",
+    "people": "people"
   }
 }

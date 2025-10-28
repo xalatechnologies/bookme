@@ -467,5 +467,18 @@
       "hearingLoop": "Teleslynge",
       "visualAids": "Synshjelpemidler"
     }
+  },
+  "viewModes": {
+    "grid": "Rutenett visning",
+    "list": "Liste visning",
+    "map": "Kart"
+  },
+  "facilities": {
+    "count": "lokaler",
+    "loading": "Laster...",
+    "noFacilitiesFound": "Ingen fasiliteter funnet",
+    "adjustCriteria": "Prøv å justere søkekriteriene dine",
+    "capacity": "Kapasitet:",
+    "people": "personer"
   }
 }
