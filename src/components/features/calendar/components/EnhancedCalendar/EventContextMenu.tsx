@@ -1,8 +1,9 @@
-import React, { useState, useCallback } from 'react';
-import { Edit, Trash2, Copy, Share2, CalendarPlus, Eye } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import type { IBookingEvent } from '@/types/calendar';
+import React, { useState, useCallback } from "react";
+import { useTranslation } from "react-i18next";
+import { Edit, Trash2, Copy, Share2, CalendarPlus, Eye } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import type { IBookingEvent } from "@/types/calendar";
 
 interface EventContextMenuProps {
   readonly event: IBookingEvent;
@@ -27,15 +28,19 @@ export const EventContextMenu: React.FC<EventContextMenuProps> = ({
   onShare,
   onAddToCalendar,
   onView,
-  className = ''
+  className = "",
 }): JSX.Element => {
   const [isVisible, setIsVisible] = useState<boolean>(true);
+  const { t } = useTranslation("common");
 
-  const handleAction = useCallback((action: () => void): void => {
-    action();
-    setIsVisible(false);
-    onClose();
-  }, [onClose]);
+  const handleAction = useCallback(
+    (action: () => void): void => {
+      action();
+      setIsVisible(false);
+      onClose();
+    },
+    [onClose]
+  );
 
   const handleEdit = useCallback((): void => {
     if (onEdit) {
@@ -74,7 +79,7 @@ export const EventContextMenu: React.FC<EventContextMenuProps> = ({
   }, [onView, event, handleAction]);
 
   if (!isVisible) {
-    return null;
+    return <></>;
   }
 
   return (
@@ -82,7 +87,7 @@ export const EventContextMenu: React.FC<EventContextMenuProps> = ({
       className="fixed z-50"
       style={{
         left: position.x,
-        top: position.y
+        top: position.y,
       }}
     >
       <Card className={`w-48 shadow-lg border-0 ${className}`}>
@@ -96,10 +101,10 @@ export const EventContextMenu: React.FC<EventContextMenuProps> = ({
                 className="w-full justify-start"
               >
                 <Eye className="w-4 h-4 mr-2" />
-                Se detaljer
+                {t("common.view_details")}
               </Button>
             )}
-            
+
             {onEdit && (
               <Button
                 variant="ghost"
@@ -108,10 +113,10 @@ export const EventContextMenu: React.FC<EventContextMenuProps> = ({
                 className="w-full justify-start"
               >
                 <Edit className="w-4 h-4 mr-2" />
-                Rediger
+                {t("actions.edit")}
               </Button>
             )}
-            
+
             {onCopy && (
               <Button
                 variant="ghost"
@@ -120,10 +125,10 @@ export const EventContextMenu: React.FC<EventContextMenuProps> = ({
                 className="w-full justify-start"
               >
                 <Copy className="w-4 h-4 mr-2" />
-                Kopier
+                {t("actions.copy")}
               </Button>
             )}
-            
+
             {onShare && (
               <Button
                 variant="ghost"
@@ -132,10 +137,10 @@ export const EventContextMenu: React.FC<EventContextMenuProps> = ({
                 className="w-full justify-start"
               >
                 <Share2 className="w-4 h-4 mr-2" />
-                Del
+                {t("actions.share")}
               </Button>
             )}
-            
+
             {onAddToCalendar && (
               <Button
                 variant="ghost"
@@ -144,10 +149,10 @@ export const EventContextMenu: React.FC<EventContextMenuProps> = ({
                 className="w-full justify-start"
               >
                 <CalendarPlus className="w-4 h-4 mr-2" />
-                Legg til i kalender
+                {t("calendar.add_to_calendar", "Legg til i kalender")}
               </Button>
             )}
-            
+
             {onDelete && (
               <>
                 <div className="border-t border-gray-200 dark:border-gray-700 my-1" />
@@ -158,7 +163,7 @@ export const EventContextMenu: React.FC<EventContextMenuProps> = ({
                   className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-900/20"
                 >
                   <Trash2 className="w-4 h-4 mr-2" />
-                  Slett
+                  {t("actions.delete")}
                 </Button>
               </>
             )}

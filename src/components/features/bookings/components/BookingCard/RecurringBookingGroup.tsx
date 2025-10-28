@@ -5,12 +5,13 @@
  * Shows frequency, count, and provides expansion to view all instances.
  */
 
-import React from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Repeat, Eye, Calendar, Clock } from 'lucide-react';
-import type { RecurringBookingGroup as RecurringGroup } from '@/hooks/bookings';
+import React from "react";
+import { useTranslation } from "react-i18next";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Repeat, Eye, Calendar, Clock } from "lucide-react";
+import type { RecurringBookingGroup as RecurringGroup } from "@/hooks/bookings";
 
 export interface RecurringBookingGroupProps {
   readonly group: RecurringGroup;
@@ -19,36 +20,44 @@ export interface RecurringBookingGroupProps {
 
 const getFrequencyLabel = (frequency: string): string => {
   switch (frequency) {
-    case 'weekly': return 'Ukentlig';
-    case 'biweekly': return 'Annenhver uke';
-    case 'monthly': return 'Månedlig';
-    default: return 'Gjentakende';
+    case "weekly":
+      return "Ukentlig";
+    case "biweekly":
+      return "Annenhver uke";
+    case "monthly":
+      return "Månedlig";
+    default:
+      return "Gjentakende";
   }
 };
 
 const getFrequencyColor = (frequency: string): string => {
   switch (frequency) {
-    case 'weekly': return 'bg-purple-100 text-purple-800';
-    case 'biweekly': return 'bg-blue-100 text-blue-800';
-    case 'monthly': return 'bg-indigo-100 text-indigo-800';
-    default: return 'bg-gray-100 text-gray-800';
+    case "weekly":
+      return "bg-purple-100 text-purple-800";
+    case "biweekly":
+      return "bg-blue-100 text-blue-800";
+    case "monthly":
+      return "bg-indigo-100 text-indigo-800";
+    default:
+      return "bg-gray-100 text-gray-800";
   }
 };
 
 const formatDate = (dateString: string): string => {
   const date = new Date(dateString);
-  return date.toLocaleDateString('nb-NO', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric'
+  return date.toLocaleDateString("nb-NO", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
   });
 };
 
 const formatTime = (dateString: string): string => {
   const date = new Date(dateString);
-  return date.toLocaleTimeString('nb-NO', {
-    hour: '2-digit',
-    minute: '2-digit'
+  return date.toLocaleTimeString("nb-NO", {
+    hour: "2-digit",
+    minute: "2-digit",
   });
 };
 
@@ -67,6 +76,7 @@ export const RecurringBookingGroup = ({
   group,
   onViewDetails,
 }: RecurringBookingGroupProps): JSX.Element => {
+  const { t } = useTranslation("common");
   const handleClick = () => {
     if (onViewDetails) {
       onViewDetails(group.recurringId);
@@ -108,9 +118,7 @@ export const RecurringBookingGroup = ({
 
             {/* Zone info */}
             {group.zoneName && (
-              <p className="text-sm text-gray-600 mb-2">
-                {group.zoneName}
-              </p>
+              <p className="text-sm text-gray-600 mb-2">{group.zoneName}</p>
             )}
 
             {/* Summary stats */}
@@ -143,7 +151,7 @@ export const RecurringBookingGroup = ({
 
             {!nextBooking && group.completedCount > 0 && (
               <p className="text-sm text-gray-500 italic">
-                Alle bookinger fullført
+                {t("common.all_bookings_completed")}
               </p>
             )}
           </div>

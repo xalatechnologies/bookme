@@ -1,11 +1,12 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { format } from "date-fns";
-import { MessageCircle, Search, Filter, Plus, MoreHorizontal, Trash2, Bell, BellOff, X, Building, Check } from "lucide-react";
+import { MessageCircle, Plus, Trash2, Building, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { MessageThread } from "./MessageThread";
@@ -142,7 +143,8 @@ export const MessageInbox: React.FC<MessageInboxProps> = ({
   showThreadView = true,
   currentUserType = 'tenant'
 }) => {
-  const { getUserThreads, filterThreads, getMessagesByThread, getAvailableParticipants, updateThread, deleteThread } = useMessageStore();
+  const { t } = useTranslation('common');
+  const { getUserThreads, getMessagesByThread, getAvailableParticipants, updateThread, deleteThread } = useMessageStore();
   const [threads, setThreads] = useState<readonly MessageThreadType[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [statusFilter, setStatusFilter] = useState<string>("all");

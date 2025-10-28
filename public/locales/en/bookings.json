@@ -457,6 +457,10 @@
       "title": "Select Time",
       "description": "Click on available time slots to select them. You can select multiple time slots."
     },
+    "recurrence": {
+      "title": "Recurrence",
+      "description": "Select recurrence pattern"
+    },
     "details": {
       "title": "Booking Details",
       "description": "Fill in booking information"
