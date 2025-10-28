@@ -23,8 +23,10 @@ import navigationEN from '../../public/locales/en/navigation.json';
 import navigationNO from '../../public/locales/no/navigation.json';
 import authEN from '../../public/locales/en/auth.json';
 import authNO from '../../public/locales/no/auth.json';
-import bookingsEN from '../../public/locales/en/bookings.json';
-import bookingsNO from '../../public/locales/no/bookings.json';
+import bookingEN from '../../public/locales/en/booking.json';
+import bookingNO from '../../public/locales/no/booking.json';
+import facilityEN from '../../public/locales/en/facility.json';
+import facilityNO from '../../public/locales/no/facility.json';
 
 // Supported languages
 export const SUPPORTED_LANGUAGES = {
@@ -44,8 +46,8 @@ export const LANGUAGE_NAMES: Record<SupportedLanguage, string> = {
 export const NAMESPACES = {
   ROLES: 'roles',
   COMMON: 'common',
-  FACILITIES: 'facilities',
-  BOOKINGS: 'bookings',
+  FACILITY: 'facility',
+  BOOKING: 'booking',
   AUTH: 'auth',
   NAVIGATION: 'navigation',
   ERRORS: 'errors',
@@ -129,14 +131,16 @@ i18n
         common: commonEN,
         navigation: navigationEN,
         auth: authEN,
-        bookings: bookingsEN,
+        booking: bookingEN,
+        facility: facilityEN,
       },
       no: {
         roles: rolesNO,
         common: commonNO,
         navigation: navigationNO,
         auth: authNO,
-        bookings: bookingsNO,
+        booking: bookingNO,
+        facility: facilityNO,
       },
     },
 

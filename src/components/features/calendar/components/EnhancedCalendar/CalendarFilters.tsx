@@ -30,7 +30,7 @@ export const CalendarFilters: React.FC<CalendarFiltersProps> = ({
   availableFacilities,
   className = ''
 }): JSX.Element => {
-  const { t } = useTranslation('calendar');
+  const { t } = useTranslation('common');
   const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
 
   const handleFacilityToggle = useCallback((facility: string): void => {

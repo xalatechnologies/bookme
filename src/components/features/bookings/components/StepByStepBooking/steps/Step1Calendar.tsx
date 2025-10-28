@@ -55,7 +55,7 @@ export const Step1Calendar = ({
   getAvailabilityStatus,
   isSlotSelected
 }: IStep1CalendarProps): JSX.Element => {
-  const { t } = useTranslation(['bookings', 'calendar', 'common']);
+  const { t } = useTranslation(['booking', 'calendar', 'common']);
 
   /**
    * Week navigation state
@@ -162,10 +162,10 @@ export const Step1Calendar = ({
     <div className="space-y-6">
       <div>
         <h3 className="text-lg font-semibold mb-2">
-          {t('bookings:steps.calendar.title', 'Velg tidspunkter')}
+          {t('booking:steps.calendar.title', 'Velg tidspunkter')}
         </h3>
         <p className="text-gray-600 text-sm">
-          {t('bookings:steps.calendar.description', 'Klikk på ledige tidspunkter for å velge dem. Du kan velge flere tidspunkter samtidig.')}
+          {t('booking:steps.calendar.description', 'Klikk på ledige tidspunkter for å velge dem. Du kan velge flere tidspunkter samtidig.')}
         </p>
       </div>
 

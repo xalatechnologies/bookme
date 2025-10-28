@@ -25,16 +25,16 @@ export const Step4Terms = ({
   termsAccepted,
   onTermsChange
 }: IStep4TermsProps): JSX.Element => {
-  const { t } = useTranslation(['bookings', 'common']);
+  const { t } = useTranslation(['booking', 'common']);
 
   return (
     <div className="space-y-6">
       <div>
         <h3 className="text-lg font-semibold mb-2">
-          {t('bookings:steps.terms.title', 'Vilkår og betingelser')}
+          {t('booking:steps.terms.title', 'Vilkår og betingelser')}
         </h3>
         <p className="text-gray-600 text-sm">
-          {t('bookings:steps.terms.description', 'Les gjennom vilkårene og godta dem for å fortsette.')}
+          {t('booking:steps.terms.description', 'Les gjennom vilkårene og godta dem for å fortsette.')}
         </p>
       </div>
 
@@ -87,7 +87,7 @@ export const Step4Terms = ({
                 htmlFor="terms"
                 className="text-sm cursor-pointer leading-relaxed"
               >
-                {t('bookings:checkout.accept_terms', 'Jeg godtar')}{' '}
+                {t('booking:checkout.accept_terms', 'Jeg godtar')}{' '}
                 <a
                   href="/terms"
                   target="_blank"

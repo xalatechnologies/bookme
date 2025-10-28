@@ -127,7 +127,7 @@ export const supportService = {
       .from('support_tickets')
       .select('*')
       .eq('user_id', userId)
-      .in('status', ['open', 'in_progress'])
+      .in('status', ['open', 'in-progress'])
       .order('created_at', { ascending: false });
 
     if (error) throw error;
@@ -204,7 +204,7 @@ export const supportService = {
       .from('support_tickets')
       .update({
         assigned_to: agentId,
-        status: 'in_progress',
+        status: 'in-progress',
         updated_at: new Date().toISOString(),
       })
       .eq('id', id)

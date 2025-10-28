@@ -23,7 +23,7 @@ interface IAdminFacilityListItemProps {
 }
 
 const AdminFacilityListItem = ({ facility, onDelete, onToggleStatus, onDuplicate }: IAdminFacilityListItemProps): JSX.Element => {
-  const { t } = useTranslation(['facilities']);
+  const { t } = useTranslation(['facility']);
   const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [editValue, setEditValue] = useState<string>("");
@@ -368,7 +368,7 @@ const AdminFacilityListItem = ({ facility, onDelete, onToggleStatus, onDuplicate
               {/* Capacity */}
               <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
                 <Users className="h-5 w-5" />
-                <span className="font-medium text-base">{facility.capacity} {t('facilities:card.people')}</span>
+                <span className="font-medium text-base">{facility.capacity} {t('facility:card.people')}</span>
               </div>
 
               {/* Admin Action Buttons - aligned to the right */}

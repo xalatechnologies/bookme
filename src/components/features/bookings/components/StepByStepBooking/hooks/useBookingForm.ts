@@ -6,11 +6,11 @@ import type { RecurrencePattern } from '@/utils/recurrenceEngine';
  * Form validation errors
  */
 export interface IFormErrors {
-  readonly purpose?: string;
-  readonly attendees?: string;
-  readonly activityType?: string;
-  readonly actorType?: string;
-  readonly termsAccepted?: string;
+  purpose?: string;
+  attendees?: string;
+  activityType?: string;
+  actorType?: string;
+  termsAccepted?: string;
 }
 
 /**

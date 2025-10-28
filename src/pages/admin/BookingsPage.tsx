@@ -856,15 +856,15 @@ const BookingsPage = (): JSX.Element => {
             booking.facilityName
           }`,
           facility: booking.facilityName,
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+           
           facilityId: (booking as any).facilityId || "1",
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+           
           bookerName: (booking as any).contactPerson || "Ukjent bruker",
           bookerEmail: "bruker@example.com", // This should come from user profile
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+           
           purpose: booking.purpose || (booking as any).description || "Booking",
           startDate:
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+             
             (booking as any).date ||
             (() => {
               const today = new Date();
@@ -874,7 +874,7 @@ const BookingsPage = (): JSX.Element => {
               return `${year}-${month}-${day}`;
             })(),
           endDate:
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+             
             (booking as any).date ||
             (() => {
               const today = new Date();
@@ -886,14 +886,14 @@ const BookingsPage = (): JSX.Element => {
           startTime,
           endTime,
           status: booking.status || "pending",
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+           
           requestedAt: (booking as any).submittedAt || new Date().toISOString(),
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+           
           price: (booking as any).price
-            ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            ?  
               parseInt((booking as any).price.replace(/\D/g, ""))
             : 0,
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+           
           duration: booking.duration ? parseInt(booking.duration as any) : 2,
           isRecurring: booking.isRecurring,
           parentBookingId: booking.parentBookingId,
@@ -925,7 +925,7 @@ const BookingsPage = (): JSX.Element => {
           startTime = timeParts[0];
           endTime = timeParts[1];
         } else if (booking.timeSlots && booking.timeSlots.length > 0) {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+           
           const sorted = [...booking.timeSlots].sort((a: any, b: any) =>
             a.timeSlot.localeCompare(b.timeSlot)
           );

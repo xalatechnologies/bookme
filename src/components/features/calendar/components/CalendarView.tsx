@@ -36,7 +36,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
   viewMode,
   setViewMode,
 }): JSX.Element => {
-  const { t } = useTranslation("calendar");
+  const { t } = useTranslation("common");
   // Fix the capacity type issue by ensuring it's properly typed as a tuple
   const capacityRange: [number, number] | undefined =
     capacity && Array.isArray(capacity) && capacity.length === 2
