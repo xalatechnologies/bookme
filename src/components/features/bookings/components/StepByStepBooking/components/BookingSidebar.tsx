@@ -35,7 +35,8 @@ export const BookingSidebar = ({
   priceCalculation,
   onClearAll
 }: IBookingSidebarProps): JSX.Element => {
-  const { t } = useTranslation('bookings');
+  const { t, i18n } = useTranslation('bookings');
+  const currentLocale = i18n.language === 'en' ? 'en-US' : 'nb-NO';
 
   const hasSlots = selectedSlots.length > 0 || recurringSlots.length > 0;
   const isRecurring = bookingType === 'recurring';
@@ -100,8 +101,8 @@ export const BookingSidebar = ({
                               <Calendar className="h-3 w-3 text-blue-600" />
                               <span className="text-sm font-medium text-blue-900">
                                 {slot.date instanceof Date
-                                  ? slot.date.toLocaleDateString('nb-NO')
-                                  : new Date(slot.date).toLocaleDateString('nb-NO')}
+                                  ? slot.date.toLocaleDateString(currentLocale)
+                                  : new Date(slot.date).toLocaleDateString(currentLocale)}
                                 {' - '}
                                 {slot.timeSlot}
                               </span>
@@ -130,10 +131,10 @@ export const BookingSidebar = ({
                       size="sm"
                       onClick={onClearAll}
                       className="w-full text-gray-500 hover:text-red-500 hover:bg-red-50"
-                      aria-label={t('actions.clear_all', 'Fjern alle valgte tidspunkter')}
+                      aria-label={t('sidebar.clear_all_slots', 'Fjern alle valgte tidspunkter')}
                     >
                       <X className="h-3 w-3 mr-1" />
-                      {t('actions.clear_all', 'Fjern alle valgte tidspunkter')}
+                      {t('sidebar.clear_all_slots', 'Fjern alle valgte tidspunkter')}
                     </Button>
                   </div>
                 )}

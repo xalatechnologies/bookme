@@ -480,5 +480,29 @@
     "recurring_slots_and_price": "Recurring time slots and pricing",
     "slots_and_price_select_pattern": "Time slots and pricing (select recurrence pattern)",
     "clear_all_slots": "Remove all selected time slots"
+  },
+  "recurrence": {
+    "title": "Recurrence pattern",
+    "select_pattern": "Choose pattern",
+    "weekly": "Weekly",
+    "weekly_desc": "Every week",
+    "biweekly": "Every other week",
+    "biweekly_desc": "Every 2nd week",
+    "monthly": "Monthly",
+    "monthly_desc": "Every month",
+    "custom": "Custom",
+    "custom_desc": "Custom interval",
+    "select_days": "Select days",
+    "which_week": "Which week of the month",
+    "which_day": "Which day",
+    "interval_days": "Interval (days)",
+    "max_occurrences": "Max occurrences (optional)",
+    "pattern": "Pattern",
+    "errors_title": "Pattern error:",
+    "first": "First",
+    "second": "Second",
+    "third": "Third",
+    "fourth": "Fourth",
+    "last": "Last"
   }
 }

@@ -1007,12 +1007,12 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
               <CardContent className="p-6">
                 <div className="space-y-4">
                   <div className="space-y-3">
-                    <h4 className="font-medium">Regler for bruk</h4>
+                    <h4 className="font-medium">{t('bookings:terms.rules_title', 'Regler for bruk')}</h4>
                     <ul className="text-sm text-gray-600 space-y-2">
-                      <li>• Renhold etter bruk er påkrevd</li>
-                      <li>• Nøkler hentes ved inngang 15 min før start</li>
-                      <li>• Avbestilling gratis til 48 timer før start</li>
-                      <li>• Gebyr ved no-show: 50% av leiepris</li>
+                      <li>• {t('bookings:terms.rules.cleaning', 'Renhold etter bruk er påkrevd')}</li>
+                      <li>• {t('bookings:terms.rules.key_pickup', 'Nøkler hentes ved inngang 15 min før start')}</li>
+                      <li>• {t('bookings:terms.rules.free_cancellation', 'Avbestilling gratis til 48 timer før start')}</li>
+                      <li>• {t('bookings:terms.rules.no_show_fee', 'Gebyr ved no-show: 50% av leiepris')}</li>
                     </ul>
                   </div>
 
