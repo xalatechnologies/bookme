@@ -1,0 +1,132 @@
+{
+  "steps": {
+    "details": "Choose details",
+    "payment": "Payment",
+    "receipt": "Receipt",
+    "completed": "Completed",
+    "active": "Active step",
+    "next": "Next"
+  },
+  "sections": {
+    "your_info": "Your information",
+    "verify_info": "Please verify your information",
+    "booking_details": "Booking details",
+    "verify_booking": "Verify date, time and attendees",
+    "payment_method": "Payment method",
+    "payment_method_desc": "Choose how you want to pay for the booking",
+    "addons": "Add-ons",
+    "addons_desc": "Add extra services to your booking"
+  },
+  "fields": {
+    "first_name": "First name",
+    "last_name": "Last name",
+    "email": "Email",
+    "phone": "Phone",
+    "address": "Address",
+    "purpose": "Purpose",
+    "attendees": "Number of attendees",
+    "activity_type": "Activity type",
+    "additional_info": "Additional information"
+  },
+  "placeholders": {
+    "purpose": "Describe the purpose of the booking",
+    "activity_type": "E.g. football, meeting, party",
+    "additional_info": "Special requests or requirements"
+  },
+  "edit": {
+    "title": "Edit booking details",
+    "description": "You can change purpose, attendees and activity type for your bookings."
+  },
+  "labels": {
+    "invalid_date": "Invalid date",
+    "invalid_time": "Invalid time",
+    "no_time": "No time",
+    "no_date": "No date",
+    "purpose": "Purpose",
+    "period": "Period",
+    "usage_rules": "Usage rules",
+    "recommended": "Recommended",
+    "business_only": "Business only",
+    "selected": "Selected",
+    "recurring": "Recurring",
+    "single": "Single"
+  },
+  "rules": {
+    "cleanup_required": "Cleaning after use is required",
+    "keys_info": "Keys are picked up at the entrance 15 minutes before start",
+    "free_cancellation": "Free cancellation up to 48 hours before start",
+    "no_show_fee": "No-show fee: 50% of rental price"
+  },
+  "payment": {
+    "card": "Credit card",
+    "card_desc": "Charged now. Receipt by email.",
+    "mobile": "Mobile payment",
+    "mobile_desc": "Fast and secure payment with mobile",
+    "invoice": "Invoice/EHF",
+    "invoice_desc": "25 days payment deadline. Fee 50 NOK.",
+    "ehf_supported": "EHF supported"
+  },
+  "invoice": {
+    "title": "Invoice details",
+    "org_name": "Organization name",
+    "org_number": "Organization number",
+    "reference": "Reference",
+    "project_code": "Project code"
+  },
+  "addons": {
+    "extra_time": {"name": "Extra time", "description": "Per 30 min", "details": "Extend booking by 30 minutes"},
+    "equipment": {"name": "Equipment", "description": "Ball net, sound system", "details": "Includes ball net, sound system and other equipment"},
+    "janitor": {"name": "Janitor help", "description": "Setup/teardown", "details": "Help with setup and teardown"},
+    "security": {"name": "Security", "description": "On-site janitor", "details": "Janitor present during the whole event"}
+  },
+  "pricing": {
+    "title": "Price overview",
+    "note": "You will not be charged until the booking is confirmed",
+    "price_ex_vat": "Price (excl. VAT)",
+    "vat_25": "VAT (25%)",
+    "addons_title": "Add-on equipment/services",
+    "ex_vat": "excl. VAT",
+    "vat": "VAT",
+    "subtotal_ex_vat": "Subtotal excl. VAT",
+    "total_incl_vat": "Total incl. VAT"
+  },
+  "consents": {
+    "accept_prefix": "I accept",
+    "terms": "rental terms",
+    "read_prefix": "I have read",
+    "cancellation": "the cancellation policy",
+    "privacy": "I consent to processing of personal data for this booking"
+  },
+  "status": {
+    "ready_to_pay": "Ready to pay!",
+    "all_consents": "All consents accepted."
+  },
+  "trust": {
+    "ssl": "SSL encrypted",
+    "secure_payment": "Secure payment",
+    "legal_prefix": "By completing you accept ",
+    "terms": "terms",
+    "and": "and",
+    "privacy": "privacy policy"
+  },
+  "actions": {
+    "processing_payment": "Processing payment...",
+    "order_with_invoice": "Order with invoice",
+    "complete_and_pay": "Complete and pay"
+  },
+  "errors": {
+    "invalid_discount": "Invalid discount code",
+    "select_payment_method": "Please select a payment method",
+    "must_accept_terms": "You must accept the terms",
+    "must_read_cancellation": "You must read the cancellation policy",
+    "must_accept_privacy": "You must accept privacy",
+    "payment_failed": "Payment failed. Try again or choose another method."
+  },
+  "empty": {
+    "title": "No bookings to pay for",
+    "description": "You have no active bookings in the cart.",
+    "back_to_facilities": "Back to facilities"
+  }
+}
+
+

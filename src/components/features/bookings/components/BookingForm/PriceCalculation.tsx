@@ -2,6 +2,7 @@
 
 // External libraries
 import React, { useMemo } from "react";
+import { useTranslation } from 'react-i18next';
 import { Calculator, Info } from "lucide-react";
 
 // Internal libraries/utilities
@@ -44,6 +45,7 @@ export const PriceCalculation: React.FC<IPriceCalculationProps> = ({
   isLoading = false,
   bookingType = 'one-time',
 }): JSX.Element | null => {
+  const { t } = useTranslation(['bookings','common']);
   /**
    * Get actor type multiplier for pricing
    *
@@ -103,7 +105,7 @@ export const PriceCalculation: React.FC<IPriceCalculationProps> = ({
    * @returns Description string
    */
   const getActorDescription = (actorType: ActorType | ""): string => {
-    if (!actorType) return "Velg aktør type";
+    if (!actorType) return t('bookings:form.actor_type_placeholder', 'Velg aktør type');
 
     switch (actorType) {
       case "lag-foreninger":
@@ -126,7 +128,7 @@ export const PriceCalculation: React.FC<IPriceCalculationProps> = ({
    * @returns Description string
    */
   const getActivityDescription = (activityType: ActivityType | ""): string => {
-    if (!activityType) return "Velg aktivitetstype";
+    if (!activityType) return t('bookings:form.activity_type_placeholder', 'Velg aktivitetstype');
 
     switch (activityType) {
       case "kultur":
@@ -184,7 +186,7 @@ export const PriceCalculation: React.FC<IPriceCalculationProps> = ({
     // Create breakdown
     const breakdown: PriceBreakdownItem[] = [
       {
-        description: "Grunnpris",
+        description: t('bookings:pricing.base_price', 'Grunnpris'),
         amount: basePrice,
         type: "base",
       },
@@ -228,10 +230,10 @@ export const PriceCalculation: React.FC<IPriceCalculationProps> = ({
     <div className="space-y-4">
       <h4 className="text-sm font-medium text-gray-700 flex items-center gap-2">
         <Calculator className="h-4 w-4" />
-        Prisberegning
+        {t('bookings:details.pricing_breakdown', 'Prisberegning')}
         {pricing.totalOccurrences > 0 && (
           <Badge variant="secondary" className="ml-2">
-            {pricing.totalOccurrences} forekomster
+            {pricing.totalOccurrences} {t('bookings:labels.occurrences', 'forekomster')}
           </Badge>
         )}
       </h4>
@@ -255,14 +257,14 @@ export const PriceCalculation: React.FC<IPriceCalculationProps> = ({
           ))}
 
           {/* VAT */}
-          <div className="flex justify-between text-sm text-gray-700 pt-2 border-t border-gray-200">
-            <span>MVA (25%):</span>
+        <div className="flex justify-between text-sm text-gray-700 pt-2 border-t border-gray-200">
+          <span>{t('bookings:pricing.vat_25', 'MVA (25%):')}</span>
             <span>{Math.round(pricing.vatAmount)} kr</span>
           </div>
 
           {/* Total */}
-          <div className="flex justify-between text-lg font-semibold pt-2 border-t border-gray-300">
-            <span>Total inkl. MVA:</span>
+        <div className="flex justify-between text-lg font-semibold pt-2 border-t border-gray-300">
+          <span>{t('bookings:pricing.total_incl_vat', 'Total inkl. MVA:')}</span>
             <span>{Math.round(pricing.finalPrice)} kr</span>
           </div>
         </div>
@@ -273,10 +275,8 @@ export const PriceCalculation: React.FC<IPriceCalculationProps> = ({
             <div className="flex items-start gap-2">
               <Info className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
               <div className="text-sm text-blue-800">
-                <p className="font-medium">Godkjenning påkrevd</p>
-                <p className="text-xs mt-1">
-                  Denne bookingen krever godkjenning fra administrator
-                </p>
+                <p className="font-medium">{t('bookings:warnings.approval_required', 'Godkjenning påkrevd')}</p>
+                <p className="text-xs mt-1">{t('bookings:messages.warning_title_text', 'Denne bookingen krever godkjenning fra administrator')}</p>
               </div>
             </div>
           </div>
@@ -285,7 +285,7 @@ export const PriceCalculation: React.FC<IPriceCalculationProps> = ({
         {/* Loading State */}
         {isLoading && (
           <div className="text-center py-4">
-            <div className="text-sm text-gray-500">Beregner pris...</div>
+            <div className="text-sm text-gray-500">{t('bookings:validation.processing', 'Beregner pris...')}</div>
           </div>
         )}
     </div>

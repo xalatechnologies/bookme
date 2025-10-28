@@ -197,6 +197,14 @@
     "recurring_slots_pricing": "Gjentakende tidspunkter og prisberegning",
     "select_pattern": "Tidspunkter og prisberegning (velg gjentakelsesmønster)"
   },
+  "pricing": {
+    "base_price": "Grunnpris",
+    "vat_25": "MVA (25%):",
+    "total_incl_vat": "Total inkl. MVA:"
+  },
+  "labels": {
+    "occurrences": "forekomster"
+  },
   "cart": {
     "title": "Handlekurv",
     "your_cart": "Din handlekurv",
@@ -276,6 +284,7 @@
       "upcoming": "Din booking starter snart"
     }
   },
+  "warning_title_text": "Denne bookingen krever godkjenning fra administrator",
   "notifications": {
     "new_booking": "Ny booking opprettet",
     "booking_confirmed": "Booking bekreftet",
@@ -425,6 +434,13 @@
     "additional_info_label": "Tilleggsinformasjon",
     "additional_info_placeholder": "Eventuelle spesielle ønsker eller behov"
   },
+  "activity_types": {
+    "sport": "Sport",
+    "culture": "Kultur",
+    "meeting": "Møte",
+    "event": "Arrangement",
+    "training": "Trening"
+  },
   "validation": {
     "form_incomplete": "Skjemaet er ikke komplett",
     "fill_required_fields": "Fyll ut alle påkrevde felt for å fortsette",
@@ -509,6 +525,10 @@
     "step_of": "Steg {{current}} av {{total}}"
   },
   "sidebar": {
-    "select_slots_pricing": "Velg tidspunkter og få en prisberegning"
+    "select_slots_pricing": "Velg tidspunkter og få en prisberegning",
+    "selected_slots_and_price": "Valgte tidspunkter og prisberegning",
+    "recurring_slots_and_price": "Gjentakende tidspunkter og prisberegning",
+    "slots_and_price_select_pattern": "Tidspunkter og prisberegning (velg gjentakelsesmønster)",
+    "clear_all_slots": "Fjern alle valgte tidspunkter"
   }
 }

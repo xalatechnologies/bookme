@@ -174,7 +174,7 @@
     "time_slot": "Time Slot",
     "time_slots": "Time Slots",
     "selected_slots": "Selected Slots",
-    "pricing_breakdown": "Pricing Breakdown",
+    "pricing_breakdown": "Price calculation",
     "customer_info": "Customer Information",
     "payment_info": "Payment Information",
     "additional_info": "Additional Information",
@@ -190,6 +190,14 @@
     "per_hour": "per hour",
     "includes_vat": "incl. VAT",
     "excludes_vat": "excl. VAT"
+  },
+  "pricing": {
+    "base_price": "Base price",
+    "vat_25": "VAT (25%):",
+    "total_incl_vat": "Total incl. VAT:"
+  },
+  "labels": {
+    "occurrences": "occurrences"
   },
   "cart": {
     "title": "Cart",
@@ -249,6 +257,7 @@
       "maximum_duration": "Maximum duration exceeded",
       "advance_booking": "Advance booking requirement not met"
     },
+    "warning_title_text": "This booking requires approval from the administrator",
     "empty": {
       "no_bookings": "No bookings found",
       "no_upcoming": "No upcoming bookings",
@@ -375,6 +384,13 @@
     "additional_info_label": "Additional information",
     "additional_info_placeholder": "Any special requests or needs"
   },
+  "activity_types": {
+    "sport": "Sport",
+    "culture": "Culture",
+    "meeting": "Meeting",
+    "event": "Event",
+    "training": "Training"
+  },
   "validation": {
     "form_incomplete": "Form is not complete",
     "fill_required_fields": "Fill in all required fields to continue",
@@ -459,6 +475,10 @@
     "step_of": "Step {{current}} of {{total}}"
   },
   "sidebar": {
-    "select_slots_pricing": "Select time slots and get pricing"
+    "select_slots_pricing": "Select time slots and get pricing",
+    "selected_slots_and_price": "Selected time slots and pricing",
+    "recurring_slots_and_price": "Recurring time slots and pricing",
+    "slots_and_price_select_pattern": "Time slots and pricing (select recurrence pattern)",
+    "clear_all_slots": "Remove all selected time slots"
   }
 }

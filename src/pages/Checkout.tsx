@@ -3,6 +3,7 @@
 // External libraries
 import React, { useState, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { 
   CreditCard, 
   Smartphone, 
@@ -75,6 +76,8 @@ export const Checkout = (): JSX.Element => {
   const navigate = useNavigate();
   const { items, totalPrice, clearCart, removeItem } = useCart();
   const { profile, updateProfile } = useUserProfile();
+  const { t, i18n } = useTranslation(['checkout', 'common', 'bookings']);
+  const currentLocale = i18n.language === 'en' ? 'en-US' : 'nb-NO';
   
   // State management
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>("");
@@ -118,35 +121,35 @@ export const Checkout = (): JSX.Element => {
   const availableAddons = [
     { 
       id: "extra-time", 
-      name: "Ekstra tid", 
+      name: t('checkout:addons.extra_time.name', 'Ekstra tid'), 
       price: 200, 
-      description: "Per 30 min",
+      description: t('checkout:addons.extra_time.description', 'Per 30 min'),
       icon: Clock,
-      details: "Forleng bookingen med 30 minutter"
+      details: t('checkout:addons.extra_time.details', 'Forleng bookingen med 30 minutter')
     },
     { 
       id: "equipment", 
-      name: "Utstyr", 
+      name: t('checkout:addons.equipment.name', 'Utstyr'), 
       price: 150, 
-      description: "Ballnett, musikkanlegg",
+      description: t('checkout:addons.equipment.description', 'Ballnett, musikkanlegg'),
       icon: Settings,
-      details: "Inkluderer ballnett, musikkanlegg og annet utstyr"
+      details: t('checkout:addons.equipment.details', 'Inkluderer ballnett, musikkanlegg og annet utstyr')
     },
     { 
       id: "janitor", 
-      name: "Vaktmesterhjelp", 
+      name: t('checkout:addons.janitor.name', 'Vaktmesterhjelp'), 
       price: 300, 
-      description: "Rigg/nedrigg",
+      description: t('checkout:addons.janitor.description', 'Rigg/nedrigg'),
       icon: Users,
-      details: "Hjelp med oppsett og nedrigg av utstyr"
+      details: t('checkout:addons.janitor.details', 'Hjelp med oppsett og nedrigg av utstyr')
     },
     { 
       id: "security", 
-      name: "Sikkerhet", 
+      name: t('checkout:addons.security.name', 'Sikkerhet'), 
       price: 500, 
-      description: "Vaktmester på stedet",
+      description: t('checkout:addons.security.description', 'Vaktmester på stedet'),
       icon: Shield,
-      details: "Vaktmester til stede under hele arrangementet"
+      details: t('checkout:addons.security.details', 'Vaktmester til stede under hele arrangementet')
     }
   ];
 
@@ -203,28 +206,28 @@ export const Checkout = (): JSX.Element => {
       }
       
       if (isNaN(dateObj.getTime())) {
-        return 'Ugyldig dato';
+        return t('checkout:labels.invalid_date', 'Ugyldig dato');
       }
       
-      return new Intl.DateTimeFormat("nb-NO", {
+      return new Intl.DateTimeFormat(currentLocale, {
         day: "numeric",
         month: "long",
         year: "numeric"
       }).format(dateObj);
     } catch (error) {
-      return 'Ugyldig dato';
+      return t('checkout:labels.invalid_date', 'Ugyldig dato');
     }
-  }, []);
+  }, [currentLocale, t]);
 
   /**
    * Format time for display
    */
   const formatTime = useCallback((timeSlot: string): string => {
     if (!timeSlot || typeof timeSlot !== 'string') {
-      return 'Ugyldig tid';
+      return t('checkout:labels.invalid_time', 'Ugyldig tid');
     }
     return timeSlot.replace("-", " - ");
-  }, []);
+  }, [t]);
 
   /**
    * Calculate time range for multiple time slots
@@ -234,7 +237,7 @@ export const Checkout = (): JSX.Element => {
    */
   const calculateTimeRange = useCallback((timeSlots: readonly ISelectedTimeSlot[]): string => {
     if (!timeSlots || timeSlots.length === 0) {
-      return 'Ingen tid';
+      return t('checkout:labels.no_time', 'Ingen tid');
     }
 
     if (timeSlots.length === 1) {
@@ -264,7 +267,7 @@ export const Checkout = (): JSX.Element => {
       setDiscountApplied(true);
       setErrors(prev => ({ ...prev, discount: '' }));
     } else {
-      setErrors(prev => ({ ...prev, discount: 'Ugyldig rabattkode' }));
+      setErrors(prev => ({ ...prev, discount: t('checkout:errors.invalid_discount', 'Ugyldig rabattkode') }));
     }
   }, [discountCode]);
 
@@ -323,20 +326,20 @@ export const Checkout = (): JSX.Element => {
     
     
     if (!selectedPaymentMethod) {
-      newErrors.payment = 'Velg en betalingsmetode';
+      newErrors.payment = t('checkout:errors.select_payment_method', 'Velg en betalingsmetode');
     }
     
     // Make consent validation less strict for testing
     if (!consents.terms) {
-      newErrors.consents = 'Du må godta vilkårene';
+      newErrors.consents = t('checkout:errors.must_accept_terms', 'Du må godta vilkårene');
     }
     
     if (!consents.cancellation) {
-      newErrors.consents = 'Du må lese avbestillingsreglene';
+      newErrors.consents = t('checkout:errors.must_read_cancellation', 'Du må lese avbestillingsreglene');
     }
     
     if (!consents.privacy) {
-      newErrors.consents = 'Du må samtykke til personvern';
+      newErrors.consents = t('checkout:errors.must_accept_privacy', 'Du må samtykke til personvern');
     }
     
     setErrors(newErrors);
@@ -504,7 +507,7 @@ export const Checkout = (): JSX.Element => {
       clearCart();
       navigate("/user/bookings?success=true");
     } catch (error) {
-      setErrors({ payment: 'Betalingen feilet. Prøv igjen eller velg en annen metode.' });
+      setErrors({ payment: t('checkout:errors.payment_failed', 'Betalingen feilet. Prøv igjen eller velg en annen metode.') });
       setIsProcessing(false);
     }
   }, [validateForm, clearCart, navigate, selectedPaymentMethod, items, getNextBookingNumber]);
@@ -518,14 +521,14 @@ export const Checkout = (): JSX.Element => {
             <CardContent className="p-8 text-center">
               <CheckCircle className="h-16 w-16 text-gray-400 mx-auto mb-4" />
               <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                Ingen bookinger å betale for
+                {t('checkout:empty.title', 'Ingen bookinger å betale for')}
               </h2>
               <p className="text-gray-600 mb-6">
-                Du har ingen aktive bookinger i handlekurven.
+                {t('checkout:empty.description', 'Du har ingen aktive bookinger i handlekurven.')}
               </p>
               <Button onClick={() => navigate("/user/facilities")}>
                 <ArrowLeft className="h-4 w-4 mr-2" />
-                Tilbake til lokaler
+                {t('checkout:empty.back_to_facilities', 'Tilbake til lokaler')}
               </Button>
             </CardContent>
           </Card>
@@ -548,8 +551,8 @@ export const Checkout = (): JSX.Element => {
                   <CheckCircle className="h-5 w-5" />
               </div>
                 <div className="ml-3">
-                  <span className="text-sm font-semibold text-green-600">Velg detaljer</span>
-                  <p className="text-xs text-gray-500">Fullført</p>
+                  <span className="text-sm font-semibold text-green-600">{t('checkout:steps.details', 'Velg detaljer')}</span>
+                  <p className="text-xs text-gray-500">{t('checkout:steps.completed', 'Fullført')}</p>
             </div>
               </div>
               <div className="w-20 h-1 bg-green-200 rounded-full relative">
@@ -560,8 +563,8 @@ export const Checkout = (): JSX.Element => {
                 2
               </div>
                 <div className="ml-3">
-                  <span className="text-sm font-semibold text-blue-600">Betaling</span>
-                  <p className="text-xs text-gray-500">Aktivt trinn</p>
+                  <span className="text-sm font-semibold text-blue-600">{t('checkout:steps.payment', 'Betaling')}</span>
+                  <p className="text-xs text-gray-500">{t('checkout:steps.active', 'Aktivt trinn')}</p>
             </div>
               </div>
               <div className="w-20 h-1 bg-gray-200 rounded-full"></div>
@@ -570,8 +573,8 @@ export const Checkout = (): JSX.Element => {
                 3
               </div>
                 <div className="ml-3">
-                  <span className="text-sm font-semibold text-gray-400">Kvittering</span>
-                  <p className="text-xs text-gray-400">Neste</p>
+                  <span className="text-sm font-semibold text-gray-400">{t('checkout:steps.receipt', 'Kvittering')}</span>
+                  <p className="text-xs text-gray-400">{t('checkout:steps.next', 'Neste')}</p>
             </div>
           </div>
         </div>
@@ -596,9 +599,9 @@ export const Checkout = (): JSX.Element => {
                       }`} 
                     />
                   <div>
-                    <CardTitle className="text-lg">Dine opplysninger</CardTitle>
+                    <CardTitle className="text-lg">{t('checkout:sections.your_info', 'Dine opplysninger')}</CardTitle>
                     <p className="text-sm text-gray-600 mt-1">
-                      Kontrollér at opplysningene er riktige
+                      {t('checkout:sections.verify_info', 'Kontrollér at opplysningene er riktige')}
                     </p>
                   </div>
                   </div>
@@ -612,7 +615,7 @@ export const Checkout = (): JSX.Element => {
                       }}
                   >
                     <Edit3 className="h-4 w-4 mr-2" />
-                    {editingInfo ? 'Ferdig' : 'Endre'}
+                    {editingInfo ? t('common:actions.done', 'Ferdig') : t('common:actions.edit', 'Endre')}
                   </Button>
                   </div>
                 </div>
@@ -622,7 +625,7 @@ export const Checkout = (): JSX.Element => {
                 {editingInfo ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <Label htmlFor="firstName">Fornavn</Label>
+                    <Label htmlFor="firstName">{t('checkout:fields.first_name', 'Fornavn')}</Label>
                       <Input
                         id="firstName"
                         value={userInfo.firstName}
@@ -630,7 +633,7 @@ export const Checkout = (): JSX.Element => {
                       />
                     </div>
                     <div>
-                      <Label htmlFor="lastName">Etternavn</Label>
+                    <Label htmlFor="lastName">{t('checkout:fields.last_name', 'Etternavn')}</Label>
                       <Input
                         id="lastName"
                         value={userInfo.lastName}
@@ -638,7 +641,7 @@ export const Checkout = (): JSX.Element => {
                       />
                     </div>
                     <div>
-                      <Label htmlFor="email">E-post</Label>
+                    <Label htmlFor="email">{t('checkout:fields.email', 'E-post')}</Label>
                       <Input
                         id="email"
                         type="email"
@@ -647,7 +650,7 @@ export const Checkout = (): JSX.Element => {
                       />
                     </div>
                     <div>
-                      <Label htmlFor="phone">Telefon</Label>
+                    <Label htmlFor="phone">{t('checkout:fields.phone', 'Telefon')}</Label>
                       <Input
                         id="phone"
                         value={userInfo.phone}
@@ -655,7 +658,7 @@ export const Checkout = (): JSX.Element => {
                       />
                     </div>
                     <div className="md:col-span-2">
-                      <Label htmlFor="address">Adresse</Label>
+                    <Label htmlFor="address">{t('checkout:fields.address', 'Adresse')}</Label>
                       <Input
                         id="address"
                         value={userInfo.address}
@@ -701,9 +704,9 @@ export const Checkout = (): JSX.Element => {
                       }`} 
                     />
                   <div>
-                    <CardTitle className="text-lg">Bookingdetaljer</CardTitle>
+                    <CardTitle className="text-lg">{t('checkout:sections.booking_details', 'Bookingdetaljer')}</CardTitle>
                     <p className="text-sm text-gray-600 mt-1">
-                      Kontrollér dato, tid og deltakere
+                      {t('checkout:sections.verify_booking', 'Kontrollér dato, tid og deltakere')}
                     </p>
                   </div>
                   </div>
@@ -716,7 +719,7 @@ export const Checkout = (): JSX.Element => {
                     }}
                   >
                     <Edit3 className="h-4 w-4 mr-2" />
-                    {editingBookingDetails ? 'Avbryt' : 'Endre'}
+                    {editingBookingDetails ? t('common:actions.cancel', 'Avbryt') : t('common:actions.edit', 'Endre')}
                   </Button>
                 </div>
               </CardHeader>
@@ -725,9 +728,9 @@ export const Checkout = (): JSX.Element => {
                 {editingBookingDetails ? (
                   <div className="space-y-4">
                     <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                      <h4 className="font-semibold text-blue-900 mb-2">Rediger bookingdetaljer</h4>
+                      <h4 className="font-semibold text-blue-900 mb-2">{t('checkout:edit.title', 'Rediger bookingdetaljer')}</h4>
                       <p className="text-sm text-blue-700 mb-4">
-                        Du kan endre formål, antall deltakere og aktivitetstype for dine bookinger.
+                        {t('checkout:edit.description', 'Du kan endre formål, antall deltakere og aktivitetstype for dine bookinger.')}
                       </p>
                       <div className="space-y-4">
                         {items.map((item, index) => (
@@ -735,15 +738,15 @@ export const Checkout = (): JSX.Element => {
                             <h5 className="font-medium text-gray-900 mb-3">{item.facilityName}</h5>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                               <div>
-                                <Label htmlFor={`purpose-${index}`}>Formål</Label>
+                                <Label htmlFor={`purpose-${index}`}>{t('checkout:fields.purpose', 'Formål')}</Label>
                                 <Input
                                   id={`purpose-${index}`}
                                   defaultValue={item.purpose || ''}
-                                  placeholder="Beskriv formålet med bookingen"
+                                  placeholder={t('checkout:placeholders.purpose', 'Beskriv formålet med bookingen')}
                                 />
                               </div>
                               <div>
-                                <Label htmlFor={`attendees-${index}`}>Antall deltakere</Label>
+                                <Label htmlFor={`attendees-${index}`}>{t('checkout:fields.attendees', 'Antall deltakere')}</Label>
                                 <Input
                                   id={`attendees-${index}`}
                                   type="number"
@@ -752,19 +755,19 @@ export const Checkout = (): JSX.Element => {
                                 />
                               </div>
                               <div>
-                                <Label htmlFor={`activity-${index}`}>Aktivitetstype</Label>
+                                <Label htmlFor={`activity-${index}`}>{t('checkout:fields.activity_type', 'Aktivitetstype')}</Label>
                                 <Input
                                   id={`activity-${index}`}
                                   defaultValue={item.activityType || ''}
-                                  placeholder="F.eks. fotball, møte, fest"
+                                  placeholder={t('checkout:placeholders.activity_type', 'F.eks. fotball, møte, fest')}
                                 />
                               </div>
                               <div>
-                                <Label htmlFor={`additional-${index}`}>Tilleggsinformasjon</Label>
+                                <Label htmlFor={`additional-${index}`}>{t('checkout:fields.additional_info', 'Tilleggsinformasjon')}</Label>
                                 <Input
                                   id={`additional-${index}`}
                                   defaultValue={item.additionalInfo || ''}
-                                  placeholder="Spesielle ønsker eller krav"
+                                  placeholder={t('checkout:placeholders.additional_info', 'Spesielle ønsker eller krav')}
                                 />
                               </div>
                             </div>
@@ -776,14 +779,14 @@ export const Checkout = (): JSX.Element => {
                           variant="outline"
                           onClick={handleBookingDetailsEdit}
                         >
-                          Avbryt
+                          {t('common:actions.cancel', 'Avbryt')}
                         </Button>
                         <Button
                           onClick={handleBookingDetailsSave}
                           className="bg-blue-600 hover:bg-blue-700"
                         >
                           <CheckCircle className="h-4 w-4 mr-2" />
-                          Lagre endringer
+                          {t('common:actions.save', 'Lagre endringer')}
                         </Button>
                       </div>
                     </div>
@@ -808,7 +811,7 @@ export const Checkout = (): JSX.Element => {
                         <span>
                           {item.timeSlots && item.timeSlots.length > 0 
                             ? formatDate(item.timeSlots[0].date) 
-                            : 'Ingen dato'
+                        : t('checkout:labels.no_date', 'Ingen dato')
                           }
                         </span>
                       </div>
@@ -817,7 +820,7 @@ export const Checkout = (): JSX.Element => {
                         <span>
                           {item.timeSlots && item.timeSlots.length > 0 
                             ? calculateTimeRange(item.timeSlots) 
-                            : 'Ingen tid'
+                        : t('checkout:labels.no_time', 'Ingen tid')
                           }
                         </span>
                       </div>
@@ -827,9 +830,9 @@ export const Checkout = (): JSX.Element => {
                           {item.timeSlots && item.timeSlots.length > 0 
                             ? (() => {
                                 const totalHours = item.timeSlots.reduce((total, slot) => total + (slot.duration ?? 60), 0) / 60;
-                                return totalHours === 1 ? '1 time' : `${totalHours} timer`;
+                                return totalHours === 1 ? t('bookings:time.hour', '1 time') : `${totalHours} ${t('bookings:time.hours', 'timer')}`;
                               })()
-                            : '0 timer'
+                            : `0 ${t('bookings:time.hours', 'timer')}`
                           }
                         </span>
                       </div>
@@ -841,7 +844,7 @@ export const Checkout = (): JSX.Element => {
                     
                     {item.purpose && (
                       <div className="mt-3">
-                        <p className="text-sm text-gray-600">Formål:</p>
+                        <p className="text-sm text-gray-600">{t('checkout:labels.purpose', 'Formål')}:</p>
                         <p className="text-sm">{item.purpose}</p>
                       </div>
                     )}
@@ -849,7 +852,7 @@ export const Checkout = (): JSX.Element => {
                     {/* Show period for recurring bookings */}
                     {item.bookingType === "recurring" && item.timeSlots && item.timeSlots.length > 1 && (
                       <div className="mt-3">
-                        <p className="text-sm text-gray-600">Periode:</p>
+                        <p className="text-sm text-gray-600">{t('checkout:labels.period', 'Periode')}:</p>
                         <p className="text-sm">
                           {formatDate(item.timeSlots[0].date)} – {formatDate(item.timeSlots[item.timeSlots.length - 1].date)}
                         </p>
@@ -858,12 +861,12 @@ export const Checkout = (): JSX.Element => {
 
                     {/* Usage Rules */}
                     <div className="mt-4 p-3 bg-blue-50 rounded-lg">
-                      <h4 className="text-sm font-medium text-blue-900 mb-2">Regler for bruk</h4>
+                      <h4 className="text-sm font-medium text-blue-900 mb-2">{t('checkout:labels.usage_rules', 'Regler for bruk')}</h4>
                       <ul className="text-xs text-blue-800 space-y-1">
-                        <li>• Renhold etter bruk er påkrevd</li>
-                        <li>• Nøkler hentes ved inngang 15 min før start</li>
-                        <li>• Avbestilling gratis til 48 timer før start</li>
-                        <li>• Gebyr ved no-show: 50% av leiepris</li>
+                        <li>• {t('checkout:rules.cleanup_required', 'Renhold etter bruk er påkrevd')}</li>
+                        <li>• {t('checkout:rules.keys_info', 'Nøkler hentes ved inngang 15 min før start')}</li>
+                        <li>• {t('checkout:rules.free_cancellation', 'Avbestilling gratis til 48 timer før start')}</li>
+                        <li>• {t('checkout:rules.no_show_fee', 'Gebyr ved no-show: 50% av leiepris')}</li>
                       </ul>
                     </div>
                   </div>
@@ -889,10 +892,10 @@ export const Checkout = (): JSX.Element => {
                       <div>
                     <CardTitle className="text-lg flex items-center">
                       <CreditCard className="h-5 w-5 mr-2 text-blue-600" />
-                      Betalingsmetode
+                      {t('checkout:sections.payment_method', 'Betalingsmetode')}
                     </CardTitle>
                 <p className="text-sm text-gray-600 mt-1">
-                  Velg hvordan du vil betale for bookingen
+                  {t('checkout:sections.payment_method_desc', 'Velg hvordan du vil betale for bookingen')}
                 </p>
                   </div>
                 </div>
@@ -910,11 +913,11 @@ export const Checkout = (): JSX.Element => {
                     <div className="flex-1">
                       <Label htmlFor="card" className="flex items-center cursor-pointer">
                         <CreditCard className="h-6 w-6 mr-3 text-blue-600" />
-                        <span className="font-semibold text-lg">Kredittkort</span>
-                        <Badge variant="secondary" className="ml-2">Anbefalt</Badge>
+                        <span className="font-semibold text-lg">{t('checkout:payment.card', 'Kredittkort')}</span>
+                        <Badge variant="secondary" className="ml-2">{t('checkout:labels.recommended', 'Anbefalt')}</Badge>
                       </Label>
                       <p className="text-sm text-gray-600 mt-2">
-                        Trekkes nå. Kvittering på e-post.
+                        {t('checkout:payment.card_desc', 'Trekkes nå. Kvittering på e-post.')}
                       </p>
                       <div className="flex items-center space-x-4 mt-3">
                         <div className="flex items-center space-x-2">
@@ -943,10 +946,10 @@ export const Checkout = (): JSX.Element => {
                     <div className="flex-1">
                       <Label htmlFor="mobile" className="flex items-center cursor-pointer">
                         <Smartphone className="h-6 w-6 mr-3 text-green-600" />
-                        <span className="font-semibold text-lg">Mobilbetaling</span>
+                        <span className="font-semibold text-lg">{t('checkout:payment.mobile', 'Mobilbetaling')}</span>
                       </Label>
                       <p className="text-sm text-gray-600 mt-2">
-                        Rask og sikker betaling med mobil
+                        {t('checkout:payment.mobile_desc', 'Rask og sikker betaling med mobil')}
                       </p>
                       <div className="flex items-center space-x-4 mt-3">
                         <div className="flex items-center space-x-2">
@@ -975,11 +978,11 @@ export const Checkout = (): JSX.Element => {
                     <div className="flex-1">
                       <Label htmlFor="invoice" className="flex items-center cursor-pointer">
                         <Building2 className="h-6 w-6 mr-3 text-orange-600" />
-                        <span className="font-semibold text-lg">Faktura/EHF</span>
-                        <Badge variant="outline" className="ml-2">Kun virksomheter</Badge>
+                        <span className="font-semibold text-lg">{t('checkout:payment.invoice', 'Faktura/EHF')}</span>
+                        <Badge variant="outline" className="ml-2">{t('checkout:labels.business_only', 'Kun virksomheter')}</Badge>
                       </Label>
                       <p className="text-sm text-gray-600 mt-2">
-                        25 dager betalingsfrist. Gebyr 50 kr.
+                        {t('checkout:payment.invoice_desc', '25 dager betalingsfrist. Gebyr 50 kr.')}
                       </p>
                       <div className="flex items-center space-x-4 mt-3">
                         <div className="flex items-center text-xs text-gray-500">
@@ -992,7 +995,7 @@ export const Checkout = (): JSX.Element => {
                         </div>
                         <div className="flex items-center text-xs text-gray-500">
                           <FileText className="h-3 w-3 mr-1" />
-                          <span>EHF støttet</span>
+                          <span>{t('checkout:payment.ehf_supported', 'EHF støttet')}</span>
                         </div>
                       </div>
                     </div>
@@ -1002,10 +1005,10 @@ export const Checkout = (): JSX.Element => {
                 {/* EHF Fields */}
                 {selectedPaymentMethod === "invoice" && (
                   <div className="mt-4 p-4 bg-blue-50 rounded-lg space-y-4">
-                    <h4 className="font-medium text-blue-900">Fakturaopplysninger</h4>
+                    <h4 className="font-medium text-blue-900">{t('checkout:invoice.title', 'Fakturaopplysninger')}</h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
-                        <Label htmlFor="orgName">Organisasjonsnavn</Label>
+                        <Label htmlFor="orgName">{t('checkout:invoice.org_name', 'Organisasjonsnavn')}</Label>
                         <Input
                           id="orgName"
                           value={userInfo.organizationName}
@@ -1013,7 +1016,7 @@ export const Checkout = (): JSX.Element => {
                         />
                       </div>
                       <div>
-                        <Label htmlFor="orgNumber">Organisasjonsnummer</Label>
+                        <Label htmlFor="orgNumber">{t('checkout:invoice.org_number', 'Organisasjonsnummer')}</Label>
                         <Input
                           id="orgNumber"
                           value={userInfo.organizationNumber}
@@ -1021,7 +1024,7 @@ export const Checkout = (): JSX.Element => {
                         />
                       </div>
                       <div>
-                        <Label htmlFor="invoiceRef">Referanse</Label>
+                        <Label htmlFor="invoiceRef">{t('checkout:invoice.reference', 'Referanse')}</Label>
                         <Input
                           id="invoiceRef"
                           value={userInfo.invoiceReference}
@@ -1029,7 +1032,7 @@ export const Checkout = (): JSX.Element => {
                         />
                       </div>
                       <div>
-                        <Label htmlFor="projectCode">Prosjektkode</Label>
+                        <Label htmlFor="projectCode">{t('checkout:invoice.project_code', 'Prosjektkode')}</Label>
                         <Input
                           id="projectCode"
                           value={userInfo.projectCode}
@@ -1065,10 +1068,10 @@ export const Checkout = (): JSX.Element => {
                   <div>
                     <CardTitle className="text-lg flex items-center">
                       <Plus className="h-5 w-5 mr-2 text-blue-600" />
-                      Tillegg
+                      {t('checkout:sections.addons', 'Tillegg')}
                     </CardTitle>
                 <p className="text-sm text-gray-600 mt-1">
-                  Legg til ekstra tjenester for din booking
+                  {t('checkout:sections.addons_desc', 'Legg til ekstra tjenester for din booking')}
                 </p>
                   </div>
                 </div>
@@ -1116,7 +1119,7 @@ export const Checkout = (): JSX.Element => {
                         {isSelected && (
                           <div className="flex items-center text-green-600 text-xs mt-1">
                             <Check className="h-3 w-3 mr-1" />
-                            Valgt
+                            {t('checkout:labels.selected', 'Valgt')}
                           </div>
                         )}
                       </div>
@@ -1134,12 +1137,12 @@ export const Checkout = (): JSX.Element => {
             <div className="sticky top-20 lg:block hidden">
               <Card className="shadow-lg border-2">
                 <CardHeader className="bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-t-lg">
-                  <CardTitle className="text-xl flex items-center">
+                    <CardTitle className="text-xl flex items-center">
                     <CreditCard className="h-6 w-6 mr-2" />
-                    Prisoversikt
+                    {t('checkout:pricing.title', 'Prisoversikt')}
                   </CardTitle>
                   <p className="text-blue-100 text-sm">
-                    Du blir ikke belastet før bestillingen er bekreftet
+                    {t('checkout:pricing.note', 'Du blir ikke belastet før bestillingen er bekreftet')}
                 </p>
               </CardHeader>
                 <CardContent className="space-y-4 p-6">
@@ -1148,7 +1151,7 @@ export const Checkout = (): JSX.Element => {
                     <div key={item.id} className="space-y-2">
                       <div className="flex justify-between items-center py-2">
                         <span className="text-gray-700 font-medium">
-                          {item.bookingType === "recurring" ? "Gjentakende" : "Enkelt"}
+                        {item.bookingType === "recurring" ? t('checkout:labels.recurring', 'Gjentakende') : t('checkout:labels.single', 'Enkelt')}
                         </span>
                         <div className="flex items-center space-x-2">
                           <Badge variant="outline" className="text-xs">
@@ -1168,7 +1171,7 @@ export const Checkout = (): JSX.Element => {
                       {/* Price breakdown for this booking */}
                       <div className="ml-4 space-y-1 text-sm">
                         <div className="flex justify-between items-center">
-                          <span className="text-gray-600">Pris (ekskl. MVA)</span>
+                          <span className="text-gray-600">{t('checkout:pricing.price_ex_vat', 'Pris (ekskl. MVA)')}</span>
                           <span className="font-medium">
                             {(() => {
                               // Calculate price excluding VAT for this specific item
@@ -1180,7 +1183,7 @@ export const Checkout = (): JSX.Element => {
                           </span>
                   </div>
                         <div className="flex justify-between items-center">
-                          <span className="text-gray-600">MVA (25%)</span>
+                          <span className="text-gray-600">{t('checkout:pricing.vat_25', 'MVA (25%)')}</span>
                           <span className="font-medium">
                             {(() => {
                               // Calculate VAT for this specific item
@@ -1198,7 +1201,7 @@ export const Checkout = (): JSX.Element => {
                   {pricing.addonPrice > 0 && (
                     <div className="space-y-2 border-t pt-4">
                       <div className="flex justify-between items-center py-2">
-                        <span className="text-gray-700 font-medium">Tillegg utstyr/tjenester</span>
+                        <span className="text-gray-700 font-medium">{t('checkout:pricing.addons_title', 'Tillegg utstyr/tjenester')}</span>
                   </div>
 
                       <div className="ml-4 space-y-1 text-sm">
@@ -1211,9 +1214,9 @@ export const Checkout = (): JSX.Element => {
                             <div key={id} className="flex justify-between items-center">
                               <span className="text-gray-600">{addon.name}</span>
                               <div className="flex items-center space-x-2">
-                                <div className="text-right">
-                                  <div className="font-medium">{addon.price.toLocaleString("nb-NO")} kr (ekskl. MVA)</div>
-                                  <div className="text-xs text-gray-500">+{(addon.price * 0.25).toLocaleString("nb-NO")} kr MVA</div>
+                                  <div className="text-right">
+                                  <div className="font-medium">{addon.price.toLocaleString(currentLocale)} kr ({t('checkout:pricing.ex_vat', 'ekskl. MVA')})</div>
+                                  <div className="text-xs text-gray-500">+{(addon.price * 0.25).toLocaleString(currentLocale)} kr {t('checkout:pricing.vat', 'MVA')}</div>
                                 </div>
                                 <Button
                                   variant="ghost"
@@ -1281,22 +1284,22 @@ export const Checkout = (): JSX.Element => {
 
                   {/* Subtotal */}
                   <div className="flex justify-between items-center py-2">
-                    <span className="text-gray-600">Sum ekskl. MVA</span>
-                    <span className="font-medium">{(pricing.basePriceExcludingVat + pricing.addonPrice).toLocaleString("nb-NO")} kr</span>
+                    <span className="text-gray-600">{t('checkout:pricing.subtotal_ex_vat', 'Sum ekskl. MVA')}</span>
+                    <span className="font-medium">{(pricing.basePriceExcludingVat + pricing.addonPrice).toLocaleString(currentLocale)} kr</span>
                   </div>
 
                   {/* VAT */}
                   <div className="flex justify-between items-center py-2">
-                    <span className="text-gray-600">MVA (25%)</span>
-                    <span className="font-medium">{pricing.vatAmount.toLocaleString("nb-NO")} kr</span>
+                    <span className="text-gray-600">{t('checkout:pricing.vat_25', 'MVA (25%)')}</span>
+                    <span className="font-medium">{pricing.vatAmount.toLocaleString(currentLocale)} kr</span>
                   </div>
 
                   <Separator className="my-4" />
 
                   {/* Total */}
                   <div className="flex justify-between items-center py-4 bg-blue-50 rounded-lg px-4">
-                    <span className="text-xl font-bold text-gray-900">Totalt inkl. MVA</span>
-                    <span className="text-2xl font-bold text-blue-600">{pricing.total.toLocaleString("nb-NO")} kr</span>
+                    <span className="text-xl font-bold text-gray-900">{t('checkout:pricing.total_incl_vat', 'Totalt inkl. MVA')}</span>
+                    <span className="text-2xl font-bold text-blue-600">{pricing.total.toLocaleString(currentLocale)} kr</span>
                   </div>
 
 
@@ -1311,13 +1314,13 @@ export const Checkout = (): JSX.Element => {
                       />
                       <div className="flex-1">
                         <Label htmlFor="terms" className="text-sm cursor-pointer flex items-start">
-                          <span>Jeg godtar </span>
+                          <span>{t('checkout:consents.accept_prefix', 'Jeg godtar ')} </span>
                           <a 
                             href="/terms" 
                             target="_blank" 
                             className="text-blue-600 hover:underline mx-1 flex items-center"
                           >
-                            vilkår for leie
+                            {t('checkout:consents.terms', 'vilkår for leie')}
                             <ExternalLink className="h-3 w-3 ml-1" />
                           </a>
                         </Label>
@@ -1336,13 +1339,13 @@ export const Checkout = (): JSX.Element => {
                       />
                       <div className="flex-1">
                         <Label htmlFor="cancellation" className="text-sm cursor-pointer flex items-start">
-                          <span>Jeg har lest </span>
+                          <span>{t('checkout:consents.read_prefix', 'Jeg har lest ')} </span>
                           <a 
                             href="/cancellation" 
                             target="_blank" 
                             className="text-blue-600 hover:underline mx-1 flex items-center"
                           >
-                            avbestillingsreglene
+                            {t('checkout:consents.cancellation', 'avbestillingsreglene')}
                             <ExternalLink className="h-3 w-3 ml-1" />
                           </a>
                         </Label>
@@ -1361,7 +1364,7 @@ export const Checkout = (): JSX.Element => {
                       />
                       <div className="flex-1">
                         <Label htmlFor="privacy" className="text-sm cursor-pointer">
-                          Jeg samtykker til behandling av personopplysninger for denne bestillingen
+                          {t('checkout:consents.privacy', 'Jeg samtykker til behandling av personopplysninger for denne bestillingen')}
                         </Label>
                       </div>
                       {consents.privacy && (
@@ -1376,8 +1379,8 @@ export const Checkout = (): JSX.Element => {
                       <div className="flex items-center">
                         <CheckCircle className="h-6 w-6 text-green-600 mr-3" />
                         <div>
-                          <p className="font-semibold text-green-800">Klar til betaling!</p>
-                          <p className="text-sm text-green-700">Alle samtykker er godtatt.</p>
+                          <p className="font-semibold text-green-800">{t('checkout:status.ready_to_pay', 'Klar til betaling!')}</p>
+                          <p className="text-sm text-green-700">{t('checkout:status.all_consents', 'Alle samtykker er godtatt.')}</p>
                         </div>
                       </div>
                     </div>
@@ -1399,12 +1402,12 @@ export const Checkout = (): JSX.Element => {
                     {isProcessing ? (
                       <>
                         <Loader2 className="h-6 w-6 mr-3 animate-spin" />
-                        Behandler betaling...
+                        {t('checkout:actions.processing_payment', 'Behandler betaling...')}
                       </>
                     ) : (
                       <>
                         <CheckCircle className="h-6 w-6 mr-3" />
-                        {selectedPaymentMethod === "invoice" ? "Bestill med faktura" : "Fullfør og betal"}
+                        {selectedPaymentMethod === "invoice" ? t('checkout:actions.order_with_invoice', 'Bestill med faktura') : t('checkout:actions.complete_and_pay', 'Fullfør og betal')}
                         <ChevronRight className="h-5 w-5 ml-2" />
                       </>
                     )}
@@ -1415,15 +1418,15 @@ export const Checkout = (): JSX.Element => {
                     <div className="flex items-center justify-center space-x-4 text-xs text-gray-500">
                       <div className="flex items-center">
                         <Shield className="h-3 w-3 mr-1" />
-                        <span>SSL-kryptert</span>
+                        <span>{t('checkout:trust.ssl', 'SSL-kryptert')}</span>
                       </div>
                       <div className="flex items-center">
                         <Lock className="h-3 w-3 mr-1" />
-                        <span>Sikker betaling</span>
+                        <span>{t('checkout:trust.secure_payment', 'Sikker betaling')}</span>
                       </div>
                     </div>
                     <p className="text-xs text-gray-500 text-center">
-                      Ved å fullføre godtar du <a href="/terms" target="_blank" className="text-blue-600 hover:underline">vilkår</a> og <a href="/privacy" target="_blank" className="text-blue-600 hover:underline">personvernerklæring</a>.
+                      {t('checkout:trust.legal_prefix', 'Ved å fullføre godtar du ')}<a href="/terms" target="_blank" className="text-blue-600 hover:underline">{t('checkout:trust.terms', 'vilkår')}</a> {t('checkout:trust.and', 'og')} <a href="/privacy" target="_blank" className="text-blue-600 hover:underline">{t('checkout:trust.privacy', 'personvernerklæring')}</a>.
                     </p>
                   </div>
                 </CardContent>
@@ -1439,7 +1442,7 @@ export const Checkout = (): JSX.Element => {
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center">
                 <CreditCard className="h-5 w-5 mr-2 text-blue-600" />
-                <span className="font-bold text-lg">Prisoversikt</span>
+                <span className="font-bold text-lg">{t('checkout:pricing.title', 'Prisoversikt')}</span>
               </div>
               <div className="text-right">
                 <div className="text-2xl font-bold text-blue-600">{pricing.total.toLocaleString("nb-NO")} kr</div>
@@ -1454,12 +1457,12 @@ export const Checkout = (): JSX.Element => {
               {isProcessing ? (
                 <>
                   <Loader2 className="h-5 w-5 mr-2 animate-spin" />
-                  Behandler betaling...
+                  {t('checkout:actions.processing_payment', 'Behandler betaling...')}
                 </>
               ) : (
                 <>
                   <CheckCircle className="h-5 w-5 mr-2" />
-                  {selectedPaymentMethod === "invoice" ? "Bestill med faktura" : "Fullfør og betal"}
+                  {selectedPaymentMethod === "invoice" ? t('checkout:actions.order_with_invoice', 'Bestill med faktura') : t('checkout:actions.complete_and_pay', 'Fullfør og betal')}
                 </>
               )}
             </Button>

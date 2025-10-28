@@ -1,0 +1,132 @@
+{
+  "steps": {
+    "details": "Velg detaljer",
+    "payment": "Betaling",
+    "receipt": "Kvittering",
+    "completed": "Fullført",
+    "active": "Aktivt trinn",
+    "next": "Neste"
+  },
+  "sections": {
+    "your_info": "Dine opplysninger",
+    "verify_info": "Kontrollér at opplysningene er riktige",
+    "booking_details": "Bookingdetaljer",
+    "verify_booking": "Kontrollér dato, tid og deltakere",
+    "payment_method": "Betalingsmetode",
+    "payment_method_desc": "Velg hvordan du vil betale for bookingen",
+    "addons": "Tillegg",
+    "addons_desc": "Legg til ekstra tjenester for din booking"
+  },
+  "fields": {
+    "first_name": "Fornavn",
+    "last_name": "Etternavn",
+    "email": "E-post",
+    "phone": "Telefon",
+    "address": "Adresse",
+    "purpose": "Formål",
+    "attendees": "Antall deltakere",
+    "activity_type": "Aktivitetstype",
+    "additional_info": "Tilleggsinformasjon"
+  },
+  "placeholders": {
+    "purpose": "Beskriv formålet med bookingen",
+    "activity_type": "F.eks. fotball, møte, fest",
+    "additional_info": "Spesielle ønsker eller krav"
+  },
+  "edit": {
+    "title": "Rediger bookingdetaljer",
+    "description": "Du kan endre formål, antall deltakere og aktivitetstype for dine bookinger."
+  },
+  "labels": {
+    "invalid_date": "Ugyldig dato",
+    "invalid_time": "Ugyldig tid",
+    "no_time": "Ingen tid",
+    "no_date": "Ingen dato",
+    "purpose": "Formål",
+    "period": "Periode",
+    "usage_rules": "Regler for bruk",
+    "recommended": "Anbefalt",
+    "business_only": "Kun virksomheter",
+    "selected": "Valgt",
+    "recurring": "Gjentakende",
+    "single": "Enkelt"
+  },
+  "rules": {
+    "cleanup_required": "Renhold etter bruk er påkrevd",
+    "keys_info": "Nøkler hentes ved inngang 15 min før start",
+    "free_cancellation": "Avbestilling gratis til 48 timer før start",
+    "no_show_fee": "Gebyr ved no-show: 50% av leiepris"
+  },
+  "payment": {
+    "card": "Kredittkort",
+    "card_desc": "Trekkes nå. Kvittering på e-post.",
+    "mobile": "Mobilbetaling",
+    "mobile_desc": "Rask og sikker betaling med mobil",
+    "invoice": "Faktura/EHF",
+    "invoice_desc": "25 dager betalingsfrist. Gebyr 50 kr.",
+    "ehf_supported": "EHF støttet"
+  },
+  "invoice": {
+    "title": "Fakturaopplysninger",
+    "org_name": "Organisasjonsnavn",
+    "org_number": "Organisasjonsnummer",
+    "reference": "Referanse",
+    "project_code": "Prosjektkode"
+  },
+  "addons": {
+    "extra_time": {"name": "Ekstra tid", "description": "Per 30 min", "details": "Forleng bookingen med 30 minutter"},
+    "equipment": {"name": "Utstyr", "description": "Ballnett, musikkanlegg", "details": "Inkluderer ballnett, musikkanlegg og annet utstyr"},
+    "janitor": {"name": "Vaktmesterhjelp", "description": "Rigg/nedrigg", "details": "Hjelp med oppsett og nedrigg av utstyr"},
+    "security": {"name": "Sikkerhet", "description": "Vaktmester på stedet", "details": "Vaktmester til stede under hele arrangementet"}
+  },
+  "pricing": {
+    "title": "Prisoversikt",
+    "note": "Du blir ikke belastet før bestillingen er bekreftet",
+    "price_ex_vat": "Pris (ekskl. MVA)",
+    "vat_25": "MVA (25%)",
+    "addons_title": "Tillegg utstyr/tjenester",
+    "ex_vat": "ekskl. MVA",
+    "vat": "MVA",
+    "subtotal_ex_vat": "Sum ekskl. MVA",
+    "total_incl_vat": "Totalt inkl. MVA"
+  },
+  "consents": {
+    "accept_prefix": "Jeg godtar",
+    "terms": "vilkår for leie",
+    "read_prefix": "Jeg har lest",
+    "cancellation": "avbestillingsreglene",
+    "privacy": "Jeg samtykker til behandling av personopplysninger for denne bestillingen"
+  },
+  "status": {
+    "ready_to_pay": "Klar til betaling!",
+    "all_consents": "Alle samtykker er godtatt."
+  },
+  "trust": {
+    "ssl": "SSL-kryptert",
+    "secure_payment": "Sikker betaling",
+    "legal_prefix": "Ved å fullføre godtar du ",
+    "terms": "vilkår",
+    "and": "og",
+    "privacy": "personvernerklæring"
+  },
+  "actions": {
+    "processing_payment": "Behandler betaling...",
+    "order_with_invoice": "Bestill med faktura",
+    "complete_and_pay": "Fullfør og betal"
+  },
+  "errors": {
+    "invalid_discount": "Ugyldig rabattkode",
+    "select_payment_method": "Velg en betalingsmetode",
+    "must_accept_terms": "Du må godta vilkårene",
+    "must_read_cancellation": "Du må lese avbestillingsreglene",
+    "must_accept_privacy": "Du må samtykke til personvern",
+    "payment_failed": "Betalingen feilet. Prøv igjen eller velg en annen metode."
+  },
+  "empty": {
+    "title": "Ingen bookinger å betale for",
+    "description": "Du har ingen aktive bookinger i handlekurven.",
+    "back_to_facilities": "Tilbake til lokaler"
+  }
+}
+
+
