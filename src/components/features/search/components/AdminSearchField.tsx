@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { useAdminSearch } from "@/hooks/useAdminSearch";
+import { useAdminSearch } from "../hooks";
 import { SearchField, type ISearchResult } from "@/components/common";
 
 const AdminSearchField = (): JSX.Element => {

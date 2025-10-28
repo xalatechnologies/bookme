@@ -6,3 +6,6 @@
 
 // Facility data fetching
 export { useFacility } from './useFacility';
+
+// Zone management
+export { useZones } from './useZones';

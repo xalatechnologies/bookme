@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { useGlobalSearch } from "@/hooks/useGlobalSearch";
+import { useGlobalSearch } from "../hooks";
 import { SearchField, type ISearchResult } from "@/components/common";
 
 interface GlobalSearchProps {

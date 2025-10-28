@@ -24,7 +24,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Globe, Plus, Edit, Trash2, Save } from "lucide-react";
-import { useLocalizedDbValues } from "@/hooks/useLocalizedDbValues";
+import { useLocalizedDbValues } from "@/hooks/shared/useLocalizedDbValues";
 import { supabase } from "@/lib/supabase";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";

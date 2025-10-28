@@ -6,7 +6,7 @@ import { format, addDays } from 'date-fns';
 
 // Internal imports
 import type { Zone, SelectedTimeSlot, AvailabilityStatus } from '@/types/booking';
-import { useDragSelection } from '@/hooks/useDragSelection';
+import { useDragSelection } from '../../hooks';
 
 // Sibling imports
 import { Card, CardContent } from '@/components/ui/card';

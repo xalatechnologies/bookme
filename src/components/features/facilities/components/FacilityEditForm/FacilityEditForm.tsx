@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FormField } from "@/components/common/forms/FormField";
 import { FormActions } from "@/components/common/forms/FormActions";
-import { useFormValidation } from "@/hooks/useFormValidation";
+import { useFormValidation } from "@/hooks/shared";
 import { useFacilityStore } from "@/stores/facilityStore";
 import { X, GripVertical, Image as ImageIcon, Upload, AlertTriangle, CheckCircle, Loader2 } from "lucide-react";
 

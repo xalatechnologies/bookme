@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { MapPin, Users, Building, ChevronDown, ChevronUp, Filter } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { useLocalizedDbValues } from "@/hooks/useLocalizedDbValues";
+import { useLocalizedDbValues } from "@/hooks/shared/useLocalizedDbValues";
 
 interface SearchFilterProps {
   readonly date?: Date;

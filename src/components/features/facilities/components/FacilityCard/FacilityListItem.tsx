@@ -11,7 +11,7 @@ import { useFieldConfigStore } from '@/stores/fieldConfigStore';
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { FacilityMiniMap } from "@/components/features/facilities/components/FacilityMap/FacilityMiniMap";
-import { useAmenityTranslation } from '@/hooks/useAmenityTranslation';
+import { useAmenityTranslation } from '@/hooks/shared';
 
 interface FacilityListItemProps {
   readonly facility: IFacility;

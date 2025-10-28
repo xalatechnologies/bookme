@@ -14,5 +14,11 @@ export { useBookingSteps } from './useBookingSteps';
 // Statistics and analytics
 export { useBookingStats } from './useBookingStats';
 
+// Availability checking
+export { useAvailabilityStatus } from './useAvailabilityStatus';
+
+// Slot selection
+export { useSlotSelection } from './useSlotSelection';
+
 // Form management (already in feature domain)
 export { useBookingForm } from '../components/StepByStepBooking/hooks/useBookingForm';

@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next";
 // Internal libraries/utilities
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FormField } from "@/components/common/forms/FormField";
-import { useFormValidation } from "@/hooks/useFormValidation";
+import { useFormValidation } from "@/hooks/shared";
 
 // Sibling imports
 import { SelectedSlotsDisplay } from "./SelectedSlotsDisplay";

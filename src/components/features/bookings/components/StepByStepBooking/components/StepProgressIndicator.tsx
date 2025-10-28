@@ -2,7 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { BookingStep, IStepConfig } from '@/hooks/useBookingSteps';
+import { BookingStep, IStepConfig } from '../../../hooks/useBookingSteps';
 import { Calendar, FileText, Clock, Shield, CheckCircle } from 'lucide-react';
 
 /**

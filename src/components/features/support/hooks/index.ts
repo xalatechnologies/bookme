@@ -2,5 +2,6 @@
  * Support Domain Hooks
  */
 
-// Placeholder
-// export { useTicketMessages } from './useTicketMessages';
+// Support tickets management
+export { useTickets } from './useTickets';
+export type { TicketStatusFilter, TicketPriorityFilter } from './useTickets';

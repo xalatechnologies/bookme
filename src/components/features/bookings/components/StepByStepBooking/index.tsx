@@ -24,7 +24,7 @@ import { PriceCalculation } from "../BookingForm/PriceCalculation";
 import { ISelectedTimeSlot, IZone, BookingType, IBookingFormData } from "../../types";
 import type { RecurrencePattern } from "@/utils/recurrenceEngine";
 import { RecurrenceEngine } from "@/utils/recurrenceEngine";
-import { useAvailabilityStatus } from "@/hooks/useAvailabilityStatus";
+import { useAvailabilityStatus } from "../../hooks";
 
 export interface IStepByStepBookingProps {
   readonly facilityId: string;

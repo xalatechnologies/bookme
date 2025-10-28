@@ -7,8 +7,8 @@ import { nb, enUS } from "date-fns/locale";
 import { useTranslation } from "react-i18next";
 
 // Internal libraries/utilities
-import { useDragSelection } from "@/hooks/useDragSelection";
-import { useAvailabilityStatus } from "@/hooks/useAvailabilityStatus";
+import { useDragSelection } from "../../hooks";
+import { useAvailabilityStatus } from "@/components/features/bookings/hooks";
 
 // Types
 import { ICalendarGridProps, TimeSlotStatus } from "../../types";

@@ -14,8 +14,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useCart } from "@/contexts/CartContext";
-import { useSlotSelection } from "@/hooks/useSlotSelection";
-import { useAvailabilityStatus } from "@/hooks/useAvailabilityStatus";
+import { useSlotSelection } from "@/components/features/bookings/hooks";
+import { useAvailabilityStatus } from "@/components/features/bookings/hooks";
 
 // Sibling imports
 import { WeekNavigation } from "../EnhancedCalendar/WeekNavigation";

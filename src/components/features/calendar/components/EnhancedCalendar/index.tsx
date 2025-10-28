@@ -2,13 +2,13 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { RefreshCw, Plus, AlertCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { SimpleCalendar } from '../SimpleCalendar';
 import { CalendarFilters } from './CalendarFilters';
 import { EventTooltip } from '../EventTooltip';
 import { EventContextMenu } from './EventContextMenu';
-import { useCalendarEnhancements, useFilteredEvents, useAvailableFacilities } from '@/hooks/useCalendarEnhancements';
+import { useCalendarEnhancements, useFilteredEvents, useAvailableFacilities } from '../../hooks/useCalendarEnhancements';
 import type { IBookingEvent } from '@/types/calendar';
 
 interface EnhancedCalendarProps {
@@ -41,7 +41,7 @@ export const EnhancedCalendar: React.FC<EnhancedCalendarProps> = ({
   currentDate: externalCurrentDate,
   onDateChange
 }): JSX.Element => {
-  const { t } = useTranslation(['calendar', 'common']);
+  const { t } = useTranslation('common');
   const {
     searchQuery,
     selectedFacilities,

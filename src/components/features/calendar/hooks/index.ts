@@ -5,7 +5,14 @@
  */
 
 // Calendar state management
-export { useCalendarState } from '@/hooks/useCalendarState';
-export { useCalendarView } from '@/hooks/useCalendarView';
-export { useCalendarEvents } from '@/hooks/useCalendarEvents';
-export { useCalendarEnhancements } from '@/hooks/useCalendarEnhancements';
+export { useCalendarState } from './useCalendarState';
+export { useCalendarView } from './useCalendarView';
+export { useCalendarEvents } from './useCalendarEvents';
+export { useCalendarEnhancements } from './useCalendarEnhancements';
+
+// Time slot selection
+export { useDragSelection } from './useDragSelection';
+export { useTimeSlotSelection } from './useTimeSlotSelection';
+
+// Event handling
+export { useEventHandling } from './useEventHandling';

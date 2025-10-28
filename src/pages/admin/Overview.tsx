@@ -13,7 +13,7 @@ import {
   TrendCard,
   KPICard
 } from "@/components/features/dashboard/admin";
-import { useDashboardData } from "@/hooks/useDashboardData";
+import { useDashboardData } from "@/components/features/dashboard/hooks";
 import { useStatistics } from "@/hooks/useStatistics";
 import { trendCards } from "@/data/admin/trendData";
 import { IKPICard, IApprovalRequest, IRecentEvent, ITodaysBooking, ISystemAlert } from "@/types/admin";

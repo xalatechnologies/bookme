@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { MapPin, Clock, Euro, Phone, Mail, Calendar } from "lucide-react";
 import type { IFacility } from "@/stores/facilityStore";
 import { useTranslation } from "react-i18next";
-import { useAmenityTranslation } from '@/hooks/useAmenityTranslation';
+import { useAmenityTranslation } from '@/hooks/shared';
 
 interface FacilityContactInfoProps {
   readonly facility: IFacility;
@@ -53,7 +53,11 @@ export const FacilityContactInfo: React.FC<FacilityContactInfoProps> = ({ facili
 
       // Show contact information
       const contactChoice = window.confirm(
-        `${t('facilities:contact.contact_info_for', { name: facility.name })}\n\n${contactOptions}\n\n${t('facilities:contact.open_email_client')}`
+        `${t('facilities:contact.contact_info_for', { name: facility.name })}
+
+${contactOptions}
+
+${t('facilities:contact.open_email_client')}`
       );
 
       if (contactChoice) {

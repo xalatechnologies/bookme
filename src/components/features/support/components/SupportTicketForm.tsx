@@ -8,7 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { FormField } from "@/components/common/forms/FormField";
-import { useFormValidation } from "@/hooks/useFormValidation";
+import { useFormValidation } from "@/hooks/shared";
 import { CreateSupportTicketData } from "@/types/support";
 
 /**

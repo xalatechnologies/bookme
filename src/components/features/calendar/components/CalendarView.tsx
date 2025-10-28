@@ -8,8 +8,8 @@ import { useTranslation } from "react-i18next";
 // Internal libraries/utilities
 import type { ISelectedTimeSlot } from '@/components/features/bookings/types';
 import type { AvailabilityStatus } from '@/types/booking';
-import { useCalendarView } from '@/hooks/useCalendarView';
-import { useSlotSelection } from '@/hooks/useSlotSelection';
+import { useCalendarView } from '../hooks';
+import { useSlotSelection } from '@/components/features/bookings/hooks';
 import { Card } from '@/components/ui/card';
 import { ViewHeader } from "@/components/features/search/components/ViewHeader";
 import { Accordion } from "@/components/ui/accordion";

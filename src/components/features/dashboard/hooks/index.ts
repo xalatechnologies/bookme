@@ -4,7 +4,5 @@
  * Custom hooks for dashboard functionality
  */
 
-// Placeholder for future dashboard-specific hooks
-// export { useDashboardStats } from './useDashboardStats';
-// export { useRealtimeUpdates } from './useRealtimeUpdates';
-// export { useActivityFeed } from './useActivityFeed';
+// Dashboard data management
+export { useDashboardData } from './useDashboardData';

@@ -11,7 +11,7 @@ import { useFieldConfigStore } from '@/stores/fieldConfigStore';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { getFieldUnit, generateShareUrl, copyToClipboard } from '@/utils/card-formatters';
-import { useAmenityTranslation } from '@/hooks/useAmenityTranslation';
+import { useAmenityTranslation } from '@/hooks/shared';
 
 interface FacilityCardProps {
   readonly facility: IFacility;

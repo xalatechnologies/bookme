@@ -6,8 +6,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import type { RecurrencePattern } from "@/utils/recurrenceEngine";
 
-import { useFacility } from "@/hooks/useFacility";
-import { useZones } from "@/hooks/useZones";
+import { useFacility } from "@/components/features/facilities/hooks";
+import { useZones } from "@/components/features/facilities/hooks";
 import { CartProvider } from "@/contexts/CartContext";
 import { GlobalHeader } from "@/components/layouts/PublicLayout/GlobalHeader";
 import { FacilityDetailLayout } from "@/components/features/facilities/components/FacilityDetail/FacilityDetailLayout";
