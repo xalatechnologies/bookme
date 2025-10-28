@@ -1,11 +1,11 @@
 /**
- * Facilities Feature Components
+ * Facilities Feature - Complete Domain Export
  *
- * All facility-related components including cards, details, search, and maps
+ * All facility-related components, hooks, types, and constants.
  */
 
 // Facility Card
-export { default as FacilityCard } from './components/FacilityCard';
+export { FacilityCard } from './components/FacilityCard';
 
 // Facility Detail
 export * from './components/FacilityDetail/FacilityDetailLayout';
@@ -21,3 +21,12 @@ export * from './components/FacilityEditForm/FacilityEditForm';
 
 // Facility Map
 export * from './components/FacilityMap/MapContainer';
+
+// Hooks
+export * from './hooks';
+
+// Types
+export * from './types';
+
+// Constants
+export * from './constants';

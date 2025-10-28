@@ -8,11 +8,10 @@
 import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { StatusBadge } from '@/components/common/status/StatusBadge';
 import { X, Calendar, Clock, MapPin, Edit, Trash2, Share2, CalendarPlus } from 'lucide-react';
 import type { BookingWithDetails } from '@/services/supabase/bookings.service';
 import type { Database } from '@/types/database';
-import { useLocalizedDbValue } from '@/hooks/useLocalizedDbValues';
 
 type BookingStatus = Database['public']['Enums']['booking_status'];
 
@@ -25,27 +24,18 @@ export interface BookingDetailsPanelProps {
   readonly onAddToCalendar?: (booking: BookingWithDetails) => void;
 }
 
-const getStatusBadgeColor = (status: BookingStatus): string => {
+// Mapping for StatusBadge variant
+const getStatusVariant = (status: BookingStatus): 'success' | 'warning' | 'error' | 'info' | 'pending' => {
   switch (status) {
-    case "paid": return "bg-green-100 text-green-800";
-    case "completed": return "bg-blue-100 text-blue-800";
-    case "pending": return "bg-yellow-100 text-yellow-800";
-    case "awaiting_payment": return "bg-orange-100 text-orange-800";
-    case "cancelled": return "bg-red-100 text-red-800";
-    case "expired": return "bg-gray-100 text-gray-800";
-    case "refunded": return "bg-purple-100 text-purple-800";
-    default: return "bg-gray-100 text-gray-800";
+    case "paid": return "success";
+    case "completed": return "success";
+    case "pending": return "pending";
+    case "awaiting_payment": return "warning";
+    case "cancelled": return "error";
+    case "expired": return "error";
+    case "refunded": return "info";
+    default: return "info";
   }
-};
-
-// Helper component to get translated status label
-const StatusLabel = ({ status }: { status: BookingStatus }): JSX.Element => {
-  const dbLabel = useLocalizedDbValue('booking_status', status);
-  const { t } = useTranslation('booking');
-  
-  // Use database translation if available, otherwise use JSON translation
-  const label = dbLabel !== status ? dbLabel : t(`status.${status}`, { defaultValue: status });
-  return <>{label}</>;
 };
 
 const formatDate = (dateString: string): string => {
@@ -201,9 +191,11 @@ export const BookingDetailsPanel = ({
             {/* Status */}
             <div className="flex items-center gap-2">
               <span className="text-sm font-medium text-gray-600 dark:text-gray-400">{t('details.statusLabel')}</span>
-              <Badge className={getStatusBadgeColor(booking.status)}>
-                <StatusLabel status={booking.status} />
-              </Badge>
+              <StatusBadge
+                status={booking.status}
+                variant={getStatusVariant(booking.status)}
+                showIcon={true}
+              />
             </div>
 
             {/* Details Grid */}
