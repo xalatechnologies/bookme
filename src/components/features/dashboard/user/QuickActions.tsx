@@ -50,7 +50,7 @@ interface IQuickActionsProps {
  * />
  * ```
  */
-const QuickActions = (props: IQuickActionsProps): JSX.Element => {
+export const QuickActions = (props: IQuickActionsProps): JSX.Element => {
   const { quickActions } = props;
   const { t } = useTranslation('user');
   const navigate = useNavigate();
@@ -95,4 +95,4 @@ const QuickActions = (props: IQuickActionsProps): JSX.Element => {
   );
 };
 
-export default QuickActions;
+

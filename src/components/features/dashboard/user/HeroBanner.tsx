@@ -1,7 +1,7 @@
 import React from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 
-const HeroBanner = (): JSX.Element => {
+export const HeroBanner = (): JSX.Element => {
   const { language } = useLanguage();
   
   const translations = {
@@ -42,4 +42,4 @@ const HeroBanner = (): JSX.Element => {
   );
 };
 
-export default HeroBanner;
+

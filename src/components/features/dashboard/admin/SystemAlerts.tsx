@@ -8,7 +8,7 @@ interface ISystemAlertsProps {
   readonly alerts: readonly ISystemAlert[];
 }
 
-const SystemAlerts = ({ alerts }: ISystemAlertsProps): JSX.Element => {
+export const SystemAlerts = ({ alerts }: ISystemAlertsProps): JSX.Element => {
   const getAlertIcon = (type: string): React.ReactNode => {
     switch (type) {
       case "info":
@@ -101,4 +101,4 @@ const SystemAlerts = ({ alerts }: ISystemAlertsProps): JSX.Element => {
   );
 };
 
-export default SystemAlerts;
+

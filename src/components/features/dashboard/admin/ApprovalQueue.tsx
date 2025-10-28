@@ -9,7 +9,7 @@ interface IApprovalQueueProps {
   readonly requests: readonly IApprovalRequest[];
 }
 
-const ApprovalQueue = ({ requests }: IApprovalQueueProps): JSX.Element => {
+export const ApprovalQueue = ({ requests }: IApprovalQueueProps): JSX.Element => {
   const navigate = useNavigate();
 
   const getPriorityIcon = (priority: string): React.ReactNode => {
@@ -122,4 +122,4 @@ const ApprovalQueue = ({ requests }: IApprovalQueueProps): JSX.Element => {
   );
 };
 
-export default ApprovalQueue;
+

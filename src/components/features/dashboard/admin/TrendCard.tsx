@@ -36,7 +36,7 @@ interface ITrendCardProps {
  * - Open/Closed: Extensible through color and icon props
  * - Liskov Substitution: Can accept any icon component with className prop
  */
-const TrendCard = ({ title, data, icon: Icon, color }: ITrendCardProps): JSX.Element => {
+export const TrendCard = ({ title, data, icon: Icon, color }: ITrendCardProps): JSX.Element => {
   const { t, i18n } = useTranslation(['admin', 'common']);
 
   const maxValue = Math.max(...data.map(d => d.value));
@@ -193,4 +193,4 @@ const TrendCard = ({ title, data, icon: Icon, color }: ITrendCardProps): JSX.Ele
   );
 };
 
-export default TrendCard;
+

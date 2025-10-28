@@ -24,9 +24,9 @@ interface IHeroSectionProps {
   readonly onNewBooking: () => void;
 }
 
-const HeroSection = (props: IHeroSectionProps): JSX.Element => {
+export const HeroSection = (props: IHeroSectionProps): JSX.Element => {
   const { userName, weather, totalBookings, monthlyBookingLimit, nextBooking, onNewBooking } = props;
-  const { t } = useTranslation(['user', 'common']);
+  const { t } = useTranslation('common');
 
   const getDayOfWeek = (): string => {
     const dayIndex = new Date().getDay();
@@ -111,4 +111,4 @@ const HeroSection = (props: IHeroSectionProps): JSX.Element => {
   );
 };
 
-export default HeroSection;
+

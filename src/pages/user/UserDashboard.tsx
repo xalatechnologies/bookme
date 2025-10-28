@@ -9,9 +9,11 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { useFacilityStore } from "@/stores/facilityStore";
 import FacilityCardUser from "@/components/features/facilities/components/FacilityCard/FacilityCardUser";
-import BookingFilters from "@/components/features/dashboard/user/BookingFilters";
-import SystemMessageFilters from "@/components/features/dashboard/user/SystemMessageFilters";
-import BookingList from "@/components/features/dashboard/user/BookingList";
+import { 
+  BookingFilters,
+  SystemMessageFilters,
+  BookingList
+} from "@/components/features/dashboard/user";
 import {
   Calendar,
   Clock,
@@ -70,7 +72,7 @@ interface ISystemMessage {
 
 const UserDashboard = (): JSX.Element => {
   const navigate = useNavigate();
-  const { t } = useTranslation(['user', 'common']);
+  const { t } = useTranslation('common');
   const [bookingFilter, setBookingFilter] = useState<string>("all");
   const [expandedBookings, setExpandedBookings] = useState<Set<string>>(new Set());
   const [messageFilter, setMessageFilter] = useState<string>("all");

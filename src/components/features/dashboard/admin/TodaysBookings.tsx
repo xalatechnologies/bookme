@@ -72,7 +72,7 @@ const useStatusLabel = (status: string): string => {
  *
  * Displays a card with today's bookings in the admin dashboard
  */
-const TodaysBookings = ({ bookings }: ITodaysBookingsProps): JSX.Element => {
+export const TodaysBookings = ({ bookings }: ITodaysBookingsProps): JSX.Element => {
   const { t } = useTranslation('booking');
   const navigate = useNavigate();
 
@@ -180,4 +180,4 @@ const TodaysBookings = ({ bookings }: ITodaysBookingsProps): JSX.Element => {
   );
 };
 
-export default TodaysBookings;
+

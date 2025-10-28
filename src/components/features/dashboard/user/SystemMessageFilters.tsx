@@ -12,7 +12,7 @@ interface ISystemMessageFiltersProps {
   readonly unreadMessagesCount: number;
 }
 
-const SystemMessageFilters = (
+export const SystemMessageFilters = (
   props: ISystemMessageFiltersProps
 ): JSX.Element => {
   const { messageFilter, onFilterChange, unreadMessagesCount } = props;
@@ -45,4 +45,4 @@ const SystemMessageFilters = (
   );
 };
 
-export default SystemMessageFilters;
+

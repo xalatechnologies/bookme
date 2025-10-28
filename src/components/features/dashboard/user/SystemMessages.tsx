@@ -25,7 +25,7 @@ interface ISystemMessagesProps {
   readonly formatMessageDate: (dateString: string) => string;
 }
 
-const SystemMessages = (props: ISystemMessagesProps): JSX.Element => {
+export const SystemMessages = (props: ISystemMessagesProps): JSX.Element => {
   const { messages, onMarkAsRead, formatMessageDate } = props;
 
   const getMessageIcon = (type: ISystemMessage["type"]): JSX.Element => {
@@ -98,4 +98,3 @@ const SystemMessages = (props: ISystemMessagesProps): JSX.Element => {
   );
 };
 
-export default SystemMessages;

@@ -45,7 +45,7 @@ interface IActivityFeedProps {
  * - Interface Segregation: Focused props interface
  */
 const ActivityFeed = ({ activities, maxItems = 10 }: IActivityFeedProps): JSX.Element => {
-  const { t } = useTranslation(['user', 'common']);
+  const { t } = useTranslation('common');
 
   const getActivityIcon = (type: IActivityItem["type"]): React.ReactNode => {
     const icons = {

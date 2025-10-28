@@ -8,7 +8,7 @@ interface IRecentEventsProps {
   readonly events: readonly IRecentEvent[];
 }
 
-const RecentEvents = ({ events }: IRecentEventsProps): JSX.Element => {
+export const RecentEvents = ({ events }: IRecentEventsProps): JSX.Element => {
   const getEventIcon = (type: string): React.ReactNode => {
     switch (type) {
       case "booking":
@@ -87,4 +87,4 @@ const RecentEvents = ({ events }: IRecentEventsProps): JSX.Element => {
   );
 };
 
-export default RecentEvents;
+

@@ -3,13 +3,11 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { 
   Zap, 
   CheckCircle, 
   AlertTriangle, 
-  User, 
   ArrowRight,
   Clock,
   CreditCard,
@@ -25,7 +23,7 @@ interface IDailyTask {
   readonly icon: React.ComponentType<{ className?: string }>;
 }
 
-const DailyTasks = (): JSX.Element => {
+export const DailyTasks = (): JSX.Element => {
   const navigate = useNavigate();
 
   const dailyTasks: readonly IDailyTask[] = [
@@ -127,4 +125,4 @@ const DailyTasks = (): JSX.Element => {
   );
 };
 
-export default DailyTasks;
+

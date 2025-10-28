@@ -4,23 +4,21 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Plus, Home, Calendar, AlertTriangle, User } from "lucide-react";
-import KPICard from "@/components/features/dashboard/admin/KPICard";
-import ApprovalQueue from "@/components/features/dashboard/admin/ApprovalQueue";
-import RecentEvents from "@/components/features/dashboard/admin/RecentEvents";
-import TodaysBookings from "@/components/features/dashboard/admin/TodaysBookings";
-import SystemAlerts from "@/components/features/dashboard/admin/SystemAlerts";
-import DailyTasks from "@/components/features/dashboard/admin/DailyTasks";
-import TrendCard from "@/components/features/dashboard/admin/TrendCard";
+import { 
+  ApprovalQueue,
+  RecentEvents,
+  TodaysBookings,
+  SystemAlerts,
+  DailyTasks,
+  TrendCard,
+  KPICard
+} from "@/components/features/dashboard/admin";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { useStatistics } from "@/hooks/useStatistics";
 import { trendCards } from "@/data/admin/trendData";
 import { IKPICard, IApprovalRequest, IRecentEvent, ITodaysBooking, ISystemAlert } from "@/types/admin";
 import { useFacilityStore } from "@/stores/facilityStore";
 import { useRecurringBookingStore } from "@/stores/recurringBookingStore";
-
-interface IOverviewProps {
-  readonly children?: never;
-}
 
 /**
  * Admin Overview Dashboard Component
@@ -40,9 +38,9 @@ interface IOverviewProps {
  * - Dependency Inversion: Depends on custom hooks and store abstractions
  * - Interface Segregation: Each child component has focused interface
  */
-const Overview = (_props: IOverviewProps): JSX.Element => {
+const Overview = (): JSX.Element => {
   const navigate = useNavigate();
-  const { t } = useTranslation(['admin', 'common']);
+  const { t } = useTranslation('common');
 
   const { facilities } = useFacilityStore();
   const { bookings } = useRecurringBookingStore();
