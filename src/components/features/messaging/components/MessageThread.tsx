@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { format, formatDistanceToNow } from "date-fns";
 import { 
   Send, 
@@ -231,6 +232,7 @@ export const MessageThread: React.FC<MessageThreadProps> = ({
   currentUserType = 'tenant',
   showHeader = true
 }) => {
+  const { t } = useTranslation('common');
   const { 
     getThreadById, 
     getMessagesByThread, 

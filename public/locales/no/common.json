@@ -164,7 +164,14 @@
     "about": "Om oss",
     "termsOfService": "Vilkår for bruk",
     "privacyPolicy": "Personvernerklæring",
-    "cookiePolicy": "Informasjonskapsler"
+    "cookiePolicy": "Informasjonskapsler",
+    "loading": "Laster...",
+    "select_option": "Velg et alternativ",
+    "no_options": "Ingen alternativer tilgjengelige",
+    "system_messages": "Systemmeldinger",
+    "view_details": "Se detaljer",
+    "all_bookings_completed": "Alle bookinger fullført",
+    "status": "Status"
   },
   "navigation": {
     "menu": "Meny",
@@ -490,8 +497,7 @@
     "adjustCriteria": "Prøv å justere søkekriteriene dine",
     "capacity": "Kapasitet:",
     "people": "personer"
-  }
-  ,
+  },
   "faq": {
     "title": "Ofte stilte spørsmål",
     "food_drinks": "Mat og drikke",

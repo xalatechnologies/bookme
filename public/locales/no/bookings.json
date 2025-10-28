@@ -507,6 +507,10 @@
       "title": "Velg tidspunkter",
       "description": "Klikk på ledige tidspunkter for å velge dem. Du kan velge flere tidspunkter samtidig."
     },
+    "recurrence": {
+      "title": "Gjentakelse",
+      "description": "Velg gjentakelsesmønster"
+    },
     "details": {
       "title": "Bookingdetaljer",
       "description": "Fyll ut informasjon om booking"

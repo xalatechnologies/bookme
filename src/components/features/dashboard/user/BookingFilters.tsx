@@ -1,7 +1,14 @@
 "use client";
 
 import React from "react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useTranslation } from "react-i18next";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { CardTitle } from "@/components/ui/card";
 import { Calendar } from "lucide-react";
 
@@ -12,23 +19,27 @@ interface IBookingFiltersProps {
 
 const BookingFilters = (props: IBookingFiltersProps): JSX.Element => {
   const { bookingFilter, onFilterChange } = props;
+  const { t } = useTranslation("common");
 
   const bookingFilters = [
-    { value: "all", label: "Alle" },
-    { value: "confirmed", label: "Bekreftet" },
-    { value: "pending", label: "Ventende" },
-    { value: "cancelled", label: "Avlyst" }
+    { value: "all", label: t("common.all") },
+    { value: "confirmed", label: t("status.confirmed") },
+    { value: "pending", label: t("status.pending") },
+    { value: "cancelled", label: t("status.cancelled") },
   ];
 
   return (
     <div className="flex items-center justify-between">
       <CardTitle className="flex items-center gap-2">
         <Calendar className="h-5 w-5" />
-        Mine bookinger
+        {t("dashboard.my_bookings", "Mine bookinger")}
       </CardTitle>
       <div className="flex items-center space-x-2">
         <Select value={bookingFilter} onValueChange={onFilterChange}>
-          <SelectTrigger className="w-[180px]" aria-label="Filtrer bookinger">
+          <SelectTrigger
+            className="w-[180px]"
+            aria-label={t("aria.filter_bookings", "Filter bookings")}
+          >
             <SelectValue />
           </SelectTrigger>
           <SelectContent>

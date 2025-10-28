@@ -1,9 +1,10 @@
 "use client";
 
 import React from "react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useTranslation } from "react-i18next";
 import { CardTitle } from "@/components/ui/card";
 import { Bell } from "lucide-react";
+import { LocalizedSelect } from "@/components/common/LocalizedSelect";
 
 interface ISystemMessageFiltersProps {
   readonly messageFilter: string;
@@ -11,15 +12,18 @@ interface ISystemMessageFiltersProps {
   readonly unreadMessagesCount: number;
 }
 
-const SystemMessageFilters = (props: ISystemMessageFiltersProps): JSX.Element => {
+const SystemMessageFilters = (
+  props: ISystemMessageFiltersProps
+): JSX.Element => {
   const { messageFilter, onFilterChange, unreadMessagesCount } = props;
+  const { t } = useTranslation("common");
 
   return (
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-2">
         <CardTitle className="flex items-center gap-2">
           <Bell className="h-5 w-5" />
-          Systemmeldinger
+          {t("common.system_messages")}
         </CardTitle>
         {unreadMessagesCount > 0 && (
           <span className="flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white">
@@ -28,17 +32,14 @@ const SystemMessageFilters = (props: ISystemMessageFiltersProps): JSX.Element =>
         )}
       </div>
       <div className="flex items-center space-x-2">
-        <Select value={messageFilter} onValueChange={onFilterChange}>
-          <SelectTrigger className="w-[180px]" aria-label="Filtrer systemmeldinger">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Alle</SelectItem>
-            <SelectItem value="system">System</SelectItem>
-            <SelectItem value="booking">Booking</SelectItem>
-            <SelectItem value="news">Nyheter</SelectItem>
-          </SelectContent>
-        </Select>
+        <LocalizedSelect
+          entityType="message_type"
+          value={messageFilter}
+          onValueChange={onFilterChange}
+          className="w-[180px]"
+          ariaLabel={t("aria.filter_system_messages", "Filter system messages")}
+          includeAll={true}
+        />
       </div>
     </div>
   );
