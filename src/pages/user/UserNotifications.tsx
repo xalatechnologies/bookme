@@ -201,122 +201,128 @@ const UserNotifications = (): JSX.Element => {
       <div className="space-y-6">
         {/* Desktop View */}
         <div className="hidden md:block space-y-6">
-          {Object.entries(groupedPreferences).map(([category, prefs]) => (
-            <Card key={category} className={`${getCategoryAccentColor(category as INotificationPreference["category"])} border-l-4 transition-all duration-200 hover:shadow-md`}>
-              <CardHeader className="pb-4">
-                <CardTitle className="flex items-center gap-3">
-                  {getCategoryIcon(category as INotificationPreference["category"])}
-                  <span className={getCategoryColor(category as INotificationPreference["category"])}>
-                    {getCategoryLabel(category as INotificationPreference["category"])}
-                  </span>
-                  <Badge variant="secondary" className="ml-auto">
-                    {prefs.filter(p => p.email || p.sms || p.push).length} aktive
-                  </Badge>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {prefs.map((preference) => (
-                  <div key={preference.id} className="group p-4 rounded-lg border border-border/60 bg-background/50 hover:bg-muted/50 transition-all duration-150">
-                    <div className="flex items-center justify-between">
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-gray-900 dark:text-white group-hover:text-gray-700 dark:group-hover:text-gray-200">
-                          {preference.title}
-                        </h3>
-                        <p className="text-sm text-muted-foreground mt-1">
-                          {preference.description}
-                        </p>
-                      </div>
+          {Object.entries(groupedPreferences).map(([category, prefs]) => {
+            const CategoryIcon = getCategoryIcon(category as INotificationPreference["category"]);
+            return (
+              <Card key={category} className={`${getCategoryAccentColor(category as INotificationPreference["category"])} border-l-4 transition-all duration-200 hover:shadow-md`}>
+                <CardHeader className="pb-4">
+                  <CardTitle className="flex items-center gap-3">
+                    <CategoryIcon className="h-5 w-5" />
+                    <span className={getCategoryColor(category as INotificationPreference["category"])}>
+                      {getCategoryLabel(category as INotificationPreference["category"])}
+                    </span>
+                    <Badge variant="secondary" className="ml-auto">
+                      {prefs.filter(p => p.email || p.sms || p.push).length} aktive
+                    </Badge>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {prefs.map((preference) => (
+                    <div key={preference.id} className="group p-4 rounded-lg border border-border/60 bg-background/50 hover:bg-muted/50 transition-all duration-150">
+                      <div className="flex items-center justify-between">
+                        <div className="flex-1">
+                          <h3 className="font-semibold text-gray-900 dark:text-white group-hover:text-gray-700 dark:group-hover:text-gray-200">
+                            {preference.title}
+                          </h3>
+                          <p className="text-sm text-muted-foreground mt-1">
+                            {preference.description}
+                          </p>
+                        </div>
 
-                      <div className="flex items-center gap-4 ml-4">
-                        {(["email", "sms", "push"] as const).map((channel) => (
-                          <div key={channel} className="flex items-center gap-2">
-                            <div className={`p-1.5 rounded-md transition-colors ${
-                              preference[channel]
-                                ? "text-blue-600 dark:text-blue-400"
-                                : "text-gray-400 dark:text-gray-500"
-                            }`}>
-                              {getChannelIcon(channel)}
+                        <div className="flex items-center gap-4 ml-4">
+                          {(["email", "sms", "push"] as const).map((channel) => (
+                            <div key={channel} className="flex items-center gap-2">
+                              <div className={`p-1.5 rounded-md transition-colors ${
+                                preference[channel]
+                                  ? "text-blue-600 dark:text-blue-400"
+                                  : "text-gray-400 dark:text-gray-500"
+                              }`}>
+                                {getChannelIcon(channel)}
+                              </div>
+                              <Switch
+                                checked={preference[channel]}
+                                onCheckedChange={() => {
+                                  togglePreference(preference.id, channel);
+                                  addSuccessMessage(`${channel === "email" ? "E-post" : channel === "sms" ? "SMS" : "Push"}-varsler ${preference[channel] ? "deaktivert" : "aktivert"}`);
+                                }}
+                                className="data-[state=checked]:bg-blue-600"
+                              />
                             </div>
-                            <Switch
-                              checked={preference[channel]}
-                              onCheckedChange={() => {
-                                togglePreference(preference.id, channel);
-                                addSuccessMessage(`${channel === "email" ? "E-post" : channel === "sms" ? "SMS" : "Push"}-varsler ${preference[channel] ? "deaktivert" : "aktivert"}`);
-                              }}
-                              className="data-[state=checked]:bg-blue-600"
-                            />
-                          </div>
-                        ))}
+                          ))}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
-          ))}
+                  ))}
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
 
         {/* Mobile View with Accordion */}
         <div className="md:hidden">
           <Accordion type="multiple" className="space-y-4">
-            {Object.entries(groupedPreferences).map(([category, prefs]) => (
-              <AccordionItem key={category} value={category} className="border border-border/60 rounded-lg">
-                <AccordionTrigger className={`${getCategoryAccentColor(category as INotificationPreference["category"])} px-4 py-3 hover:no-underline`}>
-                  <div className="flex items-center gap-3 text-left">
-                    {getCategoryIcon(category as INotificationPreference["category"])}
-                    <span className={getCategoryColor(category as INotificationPreference["category"])}>
-                      {getCategoryLabel(category as INotificationPreference["category"])}
-                    </span>
-                    <Badge variant="secondary" className="ml-2">
-                      {prefs.filter(p => p.email || p.sms || p.push).length} aktive
-                    </Badge>
-                  </div>
-                </AccordionTrigger>
-                <AccordionContent className="px-4 pb-4">
-                  <div className="space-y-3 pt-2">
-                    {prefs.map((preference) => (
-                      <div key={preference.id} className="group p-3 rounded-lg border border-border/60 bg-background/50 hover:bg-muted/50 transition-all duration-150">
-                        <div className="space-y-3">
-                          <div>
-                            <h3 className="font-semibold text-gray-900 dark:text-white">
-                              {preference.title}
-                            </h3>
-                            <p className="text-sm text-muted-foreground mt-1">
-                              {preference.description}
-                            </p>
-                          </div>
+            {Object.entries(groupedPreferences).map(([category, prefs]) => {
+              const CategoryIcon = getCategoryIcon(category as INotificationPreference["category"]);
+              return (
+                <AccordionItem key={category} value={category} className="border border-border/60 rounded-lg">
+                  <AccordionTrigger className={`${getCategoryAccentColor(category as INotificationPreference["category"])} px-4 py-3 hover:no-underline`}>
+                    <div className="flex items-center gap-3 text-left">
+                      <CategoryIcon className="h-5 w-5" />
+                      <span className={getCategoryColor(category as INotificationPreference["category"])}>
+                        {getCategoryLabel(category as INotificationPreference["category"])}
+                      </span>
+                      <Badge variant="secondary" className="ml-2">
+                        {prefs.filter(p => p.email || p.sms || p.push).length} aktive
+                      </Badge>
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent className="px-4 pb-4">
+                    <div className="space-y-3 pt-2">
+                      {prefs.map((preference) => (
+                        <div key={preference.id} className="group p-3 rounded-lg border border-border/60 bg-background/50 hover:bg-muted/50 transition-all duration-150">
+                          <div className="space-y-3">
+                            <div>
+                              <h3 className="font-semibold text-gray-900 dark:text-white">
+                                {preference.title}
+                              </h3>
+                              <p className="text-sm text-muted-foreground mt-1">
+                                {preference.description}
+                              </p>
+                            </div>
 
-                          <div className="flex flex-wrap gap-3">
-                            {(["email", "sms", "push"] as const).map((channel) => (
-                              <div key={channel} className="flex items-center gap-2 min-w-0 flex-1">
-                                <div className={`p-1.5 rounded-md transition-colors ${
-                                  preference[channel]
-                                    ? "text-blue-600 dark:text-blue-400"
-                                    : "text-gray-400 dark:text-gray-500"
-                                }`}>
-                                  {getChannelIcon(channel)}
+                            <div className="flex flex-wrap gap-3">
+                              {(["email", "sms", "push"] as const).map((channel) => (
+                                <div key={channel} className="flex items-center gap-2 min-w-0 flex-1">
+                                  <div className={`p-1.5 rounded-md transition-colors ${
+                                    preference[channel]
+                                      ? "text-blue-600 dark:text-blue-400"
+                                      : "text-gray-400 dark:text-gray-500"
+                                  }`}>
+                                    {getChannelIcon(channel)}
+                                  </div>
+                                  <span className="text-xs text-muted-foreground capitalize">
+                                    {channel === "email" ? "E-post" : channel === "sms" ? "SMS" : "Push"}
+                                  </span>
+                                  <Switch
+                                    checked={preference[channel]}
+                                    onCheckedChange={() => {
+                                      togglePreference(preference.id, channel);
+                                      addSuccessMessage(`${channel === "email" ? "E-post" : channel === "sms" ? "SMS" : "Push"}-varsler ${preference[channel] ? "deaktivert" : "aktivert"}`);
+                                    }}
+                                    className="data-[state=checked]:bg-blue-600 ml-auto"
+                                  />
                                 </div>
-                                <span className="text-xs text-muted-foreground capitalize">
-                                  {channel === "email" ? "E-post" : channel === "sms" ? "SMS" : "Push"}
-                                </span>
-                                <Switch
-                                  checked={preference[channel]}
-                                  onCheckedChange={() => {
-                                    togglePreference(preference.id, channel);
-                                    addSuccessMessage(`${channel === "email" ? "E-post" : channel === "sms" ? "SMS" : "Push"}-varsler ${preference[channel] ? "deaktivert" : "aktivert"}`);
-                                  }}
-                                  className="data-[state=checked]:bg-blue-600 ml-auto"
-                                />
-                              </div>
-                            ))}
+                              ))}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-            ))}
+                      ))}
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              );
+            })}
           </Accordion>
         </div>
       </div>
