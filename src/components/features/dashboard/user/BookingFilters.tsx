@@ -9,7 +9,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CardTitle } from "@/components/ui/card";
 import { Calendar } from "lucide-react";
 
 interface IBookingFiltersProps {
@@ -29,28 +28,22 @@ const BookingFilters = (props: IBookingFiltersProps): JSX.Element => {
   ];
 
   return (
-    <div className="flex items-center justify-between">
-      <CardTitle className="flex items-center gap-2">
-        <Calendar className="h-5 w-5" />
-        {t("dashboard.my_bookings", "Mine bookinger")}
-      </CardTitle>
-      <div className="flex items-center space-x-2">
-        <Select value={bookingFilter} onValueChange={onFilterChange}>
-          <SelectTrigger
-            className="w-[180px]"
-            aria-label={t("aria.filter_bookings", "Filter bookings")}
-          >
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {bookingFilters.map((filter) => (
-              <SelectItem key={filter.value} value={filter.value}>
-                {filter.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+    <div className="flex items-center space-x-2">
+      <Select value={bookingFilter} onValueChange={onFilterChange}>
+        <SelectTrigger
+          className="w-[180px]"
+          aria-label={t("aria.filter_bookings", "Filter bookings")}
+        >
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          {bookingFilters.map((filter) => (
+            <SelectItem key={filter.value} value={filter.value}>
+              {filter.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
     </div>
   );
 };
