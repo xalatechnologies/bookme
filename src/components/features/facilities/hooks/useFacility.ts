@@ -8,6 +8,7 @@ import {
   useFacility as useSupabaseFacility,
   useFacilityBySlug
 } from '@/services/supabase/facilities.service';
+import { useLocalFacility } from './useLocalFacility';
 import type { Database } from '@/types/database';
 
 type Facility = Database['public']['Tables']['facilities']['Row'];
@@ -28,6 +29,9 @@ interface FacilityState {
  */
 export const useFacility = (idOrSlug: string | number): FacilityState => {
   const idOrSlugStr = typeof idOrSlug === 'number' ? idOrSlug.toString() : idOrSlug;
+
+  // Use local facility as fallback
+  const { facility: localFacility, notFound: localNotFound } = useLocalFacility(idOrSlugStr);
 
   // Detect if parameter is UUID or slug
   // UUID format: 8-4-4-4-12 hex characters
@@ -50,14 +54,17 @@ export const useFacility = (idOrSlug: string | number): FacilityState => {
   } = useFacilityBySlug(idOrSlugStr, !isUUID);
 
   // Combine results based on which query is active
-  const facility = isUUID ? facilityById : facilityBySlug;
+  const supabaseFacility = isUUID ? facilityById : facilityBySlug;
   const loading = isUUID ? loadingById : loadingBySlug;
   const error = isUUID ? errorById : errorBySlug;
+
+  // Use local facility as fallback if Supabase facility is not found
+  const facility = supabaseFacility || localFacility || null;
 
   return {
     facility: facility || null,
     loading,
     error: error?.message || null,
-    notFound: !loading && !facility && !error
+    notFound: !loading && !facility && !error && localNotFound
   };
 };

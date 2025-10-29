@@ -93,7 +93,11 @@ const initialFacilities: readonly IFacility[] = [
     owner: "Anna Hansen",
     lastUpdated: "2 timer siden",
     createdAt: "2023-01-15",
-    updatedAt: "2023-10-20"
+    updatedAt: "2023-10-20",
+    contactEmail: "idrettshall@drammen.no",
+    emergencyContact: "+47 987 65 432",
+    openingHoursStart: "08:00",
+    openingHoursEnd: "22:00"
   },
   {
     id: "11111111-1111-1111-1111-111111111002",
@@ -128,7 +132,11 @@ const initialFacilities: readonly IFacility[] = [
     owner: "Erik Larsen",
     lastUpdated: "1 dag siden",
     createdAt: "2023-02-10",
-    updatedAt: "2023-10-18"
+    updatedAt: "2023-10-18",
+    contactEmail: "kulturhus@stromso.no",
+    emergencyContact: "+47 912 34 567",
+    openingHoursStart: "09:00",
+    openingHoursEnd: "23:00"
   },
   {
     id: "11111111-1111-1111-1111-111111111003",
@@ -162,7 +170,11 @@ const initialFacilities: readonly IFacility[] = [
     owner: "Maria Olsen",
     lastUpdated: "3 timer siden",
     createdAt: "2023-03-05",
-    updatedAt: "2023-10-15"
+    updatedAt: "2023-10-15",
+    contactEmail: "moterom@bragernes.no",
+    emergencyContact: "+47 923 45 678",
+    openingHoursStart: "07:00",
+    openingHoursEnd: "20:00"
   },
   {
     id: "11111111-1111-1111-1111-111111111004",
@@ -197,7 +209,11 @@ const initialFacilities: readonly IFacility[] = [
     owner: "Lars Andersen",
     lastUpdated: "1 uke siden",
     createdAt: "2023-04-12",
-    updatedAt: "2023-10-22"
+    updatedAt: "2023-10-22",
+    contactEmail: "fotballbane@spiralen.no",
+    emergencyContact: "+47 934 56 789",
+    openingHoursStart: "08:00",
+    openingHoursEnd: "22:00"
   },
   {
     id: "11111111-1111-1111-1111-111111111005",
@@ -233,7 +249,11 @@ const initialFacilities: readonly IFacility[] = [
     owner: "Sofia Johansen",
     lastUpdated: "5 timer siden",
     createdAt: "2023-05-20",
-    updatedAt: "2023-10-19"
+    updatedAt: "2023-10-19",
+    contactEmail: "svommehall@konnerud.no",
+    emergencyContact: "+47 945 67 890",
+    openingHoursStart: "06:00",
+    openingHoursEnd: "22:00"
   },
   {
     id: "11111111-1111-1111-1111-111111111006",
@@ -267,7 +287,11 @@ const initialFacilities: readonly IFacility[] = [
     owner: "Amin Ismail",
     lastUpdated: "04.10.2025, 23:50:38. Oppdatert av: Admin User",
     createdAt: "2023-07-15",
-    updatedAt: "2023-10-20"
+    updatedAt: "2023-10-20",
+    contactEmail: "solberghallen@solberg.no",
+    emergencyContact: "+47 956 78 901",
+    openingHoursStart: "08:00",
+    openingHoursEnd: "22:00"
   },
   {
     id: "11111111-1111-1111-1111-111111111007",
@@ -301,7 +325,11 @@ const initialFacilities: readonly IFacility[] = [
     owner: "Tom Hansen",
     lastUpdated: "2 uker siden",
     createdAt: "2023-06-08",
-    updatedAt: "2023-10-17"
+    updatedAt: "2023-10-17",
+    contactEmail: "tennis@assiden.no",
+    emergencyContact: "+47 967 89 012",
+    openingHoursStart: "07:00",
+    openingHoursEnd: "23:00"
   }
 ] as const;
 

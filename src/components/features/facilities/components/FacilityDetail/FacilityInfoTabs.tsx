@@ -1,12 +1,13 @@
 "use client";
 
 import React, { useState } from 'react';
-import { CheckCircle, XCircle, Users, MapPin, Wifi, Car, Camera, Volume2, Calendar, ChevronDown, ChevronRight, Phone, Mail } from 'lucide-react';
+import { CheckCircle, XCircle, Users, MapPin, Wifi, Car, Camera, Volume2, Calendar, ChevronDown, ChevronRight, Phone, Mail, Clock } from 'lucide-react';
 
 import type { Zone } from '@/types/booking';
 import type { IFacility } from '@/stores/facilityStore';
 import { useTranslation } from '@/i18n';
 import { useFieldConfigStore } from '@/stores/fieldConfigStore';
+import { StepByStepBooking } from '@/components/features/bookings/components/StepByStepBooking';
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
@@ -69,8 +70,9 @@ export const FacilityInfoTabs: React.FC<FacilityInfoTabsProps> = ({
   const fieldConfigs = getFieldConfigsForFacility(facilityId);
 
   return (
-    <Tabs defaultValue="general" className="w-full">
-      <TabsList className="grid w-full grid-cols-5">
+    <Tabs defaultValue="book" className="w-full">
+      <TabsList className="grid w-full grid-cols-6">
+        <TabsTrigger value="book">{t('common:tabs.book')}</TabsTrigger>
         <TabsTrigger value="general">{t('common:tabs.general')}</TabsTrigger>
         <TabsTrigger value="zones">{t('common:tabs.zones')}</TabsTrigger>
         <TabsTrigger value="facilities">{t('common:tabs.facilities')}</TabsTrigger>
@@ -78,144 +80,90 @@ export const FacilityInfoTabs: React.FC<FacilityInfoTabsProps> = ({
         <TabsTrigger value="faq">{t('common:tabs.faq')}</TabsTrigger>
       </TabsList>
 
+      <TabsContent value="book" className="space-y-6 mt-6">
+        <div>
+          <h3 className="text-xl font-semibold mb-4">{t('common:tabs.book')} {facilityName}</h3>
+          <StepByStepBooking
+            facilityId={facilityId}
+            facilityName={facilityName}
+            zones={zones}
+            selectedZoneId={zones?.[0]?.id || ""}
+            onZoneChange={() => {}}
+            selectedSlots={[]}
+            onSlotsChange={() => {}}
+            onAddToCart={() => {}}
+            onCompleteBooking={() => {}}
+            openingHoursStart="08:00"
+            openingHoursEnd="22:00"
+          />
+        </div>
+      </TabsContent>
+
       <TabsContent value="general" className="space-y-6 mt-6">
         <div>
-          <h3 className="text-xl font-semibold mb-4">{t('common:about')} {facilityName}</h3>
-          <p className="text-gray-700 leading-relaxed mb-6">{description}</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Left Column - Description and Capacity */}
+            <div>
+              {/* Description Section */}
+              <div className="mb-8">
+                <h4 className="text-lg font-semibold mb-4">Beskrivelse</h4>
+                <p className="text-gray-700 leading-relaxed">{description}</p>
+              </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-4">
-              {/* Dynamic fields from configuration - first column */}
-              {fieldConfigs
-                .filter(field => field.visible)
-                .slice(0, Math.ceil(fieldConfigs.filter(field => field.visible).length / 2))
-                .map(field => {
-                  const getFieldValue = (): string | number => {
-                    if (field.key === 'capacity') return capacity;
-                    if (field.key === 'area') return area;
-                    if (field.key === 'pricePerHour') return typeof field.value === 'boolean' ? (field.value ? t('facility:card.yes') : t('facility:card.no')) : field.value;
-                    if (field.key === 'rating') return typeof field.value === 'boolean' ? (field.value ? t('facility:card.yes') : t('facility:card.no')) : field.value;
-                    if (field.key === 'reviewCount') return typeof field.value === 'boolean' ? (field.value ? t('facility:card.yes') : t('facility:card.no')) : field.value;
-                    return typeof field.value === 'boolean' ? (field.value ? t('facility:card.yes') : t('facility:card.no')) : field.value;
-                  };
-
-                  const getIcon = (): JSX.Element => {
-                    if (field.key === 'capacity') return <Users className="h-5 w-5 text-gray-400 mr-3" />;
-                    if (field.key === 'area') return <MapPin className="h-5 w-5 text-gray-400 mr-3" />;
-                    if (field.key === 'pricePerHour') return <span className="text-gray-400 mr-3">💰</span>;
-                    if (field.key === 'rating') return <span className="text-yellow-500 mr-3">★</span>;
-                    if (field.key === 'reviewCount') return <span className="text-gray-400 mr-3">📝</span>;
-                    return <span className="text-gray-400 mr-3">📋</span>;
-                  };
-
-                  const getUnit = (): string => {
-                    if (field.key === 'capacity') return t('facility:card.people');
-                    if (field.key === 'area') return t('facility:card.squareMeters');
-                    if (field.key === 'pricePerHour') return t('facility:card.pricePerHour');
-                    if (field.key === 'rating') return t('facility:card.outOf5');
-                    if (field.key === 'reviewCount') return t('facility:card.reviewCount');
-                    return '';
-                  };
-
-                  return (
-                    <div key={field.id} className="flex items-center">
-                      {getIcon()}
-                      <div>
-                        <span className="font-medium">{field.label}:</span>
-                        <span className="ml-2 text-gray-600">
-                          {getFieldValue()}
-                          {getUnit() && ` ${getUnit()}`}
-                        </span>
-                      </div>
-                    </div>
-                  );
-                })}
-            </div>
-
-            <div className="space-y-4">
-              {/* Dynamic fields from configuration - second column */}
-              {fieldConfigs
-                .filter(field => field.visible)
-                .slice(Math.ceil(fieldConfigs.filter(field => field.visible).length / 2))
-                .map(field => {
-                  const getFieldValue = (): string | number => {
-                    if (field.key === 'capacity') return capacity;
-                    if (field.key === 'area') return area;
-                    if (field.key === 'pricePerHour') return typeof field.value === 'boolean' ? (field.value ? t('facility:card.yes') : t('facility:card.no')) : field.value;
-                    if (field.key === 'rating') return typeof field.value === 'boolean' ? (field.value ? t('facility:card.yes') : t('facility:card.no')) : field.value;
-                    if (field.key === 'reviewCount') return typeof field.value === 'boolean' ? (field.value ? t('facility:card.yes') : t('facility:card.no')) : field.value;
-                    return typeof field.value === 'boolean' ? (field.value ? t('facility:card.yes') : t('facility:card.no')) : field.value;
-                  };
-
-                  const getIcon = (): JSX.Element => {
-                    if (field.key === 'capacity') return <Users className="h-5 w-5 text-gray-400 mr-3" />;
-                    if (field.key === 'area') return <MapPin className="h-5 w-5 text-gray-400 mr-3" />;
-                    if (field.key === 'pricePerHour') return <span className="text-gray-400 mr-3">💰</span>;
-                    if (field.key === 'rating') return <span className="text-yellow-500 mr-3">★</span>;
-                    if (field.key === 'reviewCount') return <span className="text-gray-400 mr-3">📝</span>;
-                    return <span className="text-gray-400 mr-3">📋</span>;
-                  };
-
-                  const getUnit = (): string => {
-                    if (field.key === 'capacity') return t('facility:card.people');
-                    if (field.key === 'area') return t('facility:card.squareMeters');
-                    if (field.key === 'pricePerHour') return t('facility:card.pricePerHour');
-                    if (field.key === 'rating') return t('facility:card.outOf5');
-                    if (field.key === 'reviewCount') return t('facility:card.reviewCount');
-                    return '';
-                  };
-
-                  return (
-                    <div key={field.id} className="flex items-center">
-                      {getIcon()}
-                      <div>
-                        <span className="font-medium">{field.label}:</span>
-                        <span className="ml-2 text-gray-600">
-                          {getFieldValue()}
-                          {getUnit() && ` ${getUnit()}`}
-                        </span>
-                      </div>
-                    </div>
-                  );
-                })}
-
-              {equipment.length > 0 && (
-                <div>
-                  <span className="font-medium">{t('facility:fields.equipment')}:</span>
-                  <span className="ml-2 text-gray-600">{equipment.slice(0, 2).join(', ')}</span>
-                  {equipment.length > 2 && <span className="text-gray-500"> +{equipment.length - 2} {t('facility:card.moreAmenities')}</span>}
+              {/* Capacity Section */}
+              <div className="mb-8">
+                <h4 className="text-lg font-semibold mb-4">{t('facility:fields.capacity')}</h4>
+                <div className="flex items-center">
+                  <Users className="h-5 w-5 text-gray-400 mr-3" />
+                  <span className="text-gray-600">{capacity} {t('facility:card.people')}</span>
                 </div>
-              )}
+              </div>
             </div>
-          </div>
 
-          {/* Contact Information Fields - Added at the bottom of the general tab */}
-          {contactInfo && (contactInfo.contactEmail || contactInfo.emergencyContact) && (
-            <div className="mt-8 pt-6 border-t border-gray-200">
-              <h4 className="text-lg font-semibold mb-4">{t('facility:details.contact_info')}</h4>
-              <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
-                {contactInfo.contactEmail && (
-                  <div className="flex items-center">
-                    <Mail className="h-5 w-5 text-gray-400 mr-3" />
-                    <div>
-                      <span className="font-medium">{t('facility:contact.email')}</span>
-                      <span className="ml-2 text-gray-600">{contactInfo.contactEmail}</span>
+            {/* Right Column - Contact Information and Opening Hours */}
+            <div>
+              {/* Contact Information Section */}
+              <div className="mb-8">
+                <h4 className="text-lg font-semibold mb-4">{t('facility:details.contact_info')}</h4>
+                <div className="space-y-4">
+                  {contactInfo?.contactEmail && (
+                    <div className="flex items-center">
+                      <Mail className="h-5 w-5 text-gray-400 mr-3" />
+                      <div>
+                        <span className="font-medium">{t('facility:contact.email')}</span>
+                        <span className="ml-2 text-gray-600">{contactInfo.contactEmail}</span>
+                      </div>
                     </div>
-                  </div>
-                )}
-                
-                {contactInfo.emergencyContact && (
-                  <div className="flex items-center">
-                    <Phone className="h-5 w-5 text-gray-400 mr-3" />
-                    <div>
-                      <span className="font-medium">{t('facility:contact.phone')}</span>
-                      <span className="ml-2 text-gray-600">{contactInfo.emergencyContact}</span>
+                  )}
+                  
+                  {contactInfo?.emergencyContact && (
+                    <div className="flex items-center">
+                      <Phone className="h-5 w-5 text-gray-400 mr-3" />
+                      <div>
+                        <span className="font-medium">{t('facility:contact.phone')}</span>
+                        <span className="ml-2 text-gray-600">{contactInfo.emergencyContact}</span>
+                      </div>
                     </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Opening Hours Section */}
+              <div className="mb-8">
+                <h4 className="text-lg font-semibold mb-4">{t('facility:fields.opening_hours')}</h4>
+                {contactInfo?.openingHoursStart && contactInfo?.openingHoursEnd ? (
+                  <div className="flex items-center">
+                    <Clock className="h-5 w-5 text-gray-400 mr-3" />
+                    <span className="text-gray-600">
+                      {contactInfo.openingHoursStart} - {contactInfo.openingHoursEnd}
+                    </span>
                   </div>
+                ) : (
+                  <span className="text-gray-500">{t('common:loading.please_wait')}</span>
                 )}
               </div>
             </div>
-          )}
+          </div>
         </div>
       </TabsContent>
 
