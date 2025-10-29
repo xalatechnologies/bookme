@@ -20,7 +20,7 @@ import {
   ChevronDown,
   ChevronRight
 } from "lucide-react";
-import { downloadICS } from "@/utils/ics";
+import { downloadICS } from "@/shared/export/ics";
 import type { IBookingHistoryItem } from "@/types/history";
 
 export default function HistoryPage(): JSX.Element {

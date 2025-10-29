@@ -1,14 +1,18 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
 import { FacilityFilters } from "@/types/facility";
-import { useFacilityStore } from "@/stores/facilityStore";
+import { usePublishedFacilities } from "@/services/supabase/facilities.service";
+import { useOrganizationId } from "@/hooks/useOrganizationId";
+import type { Database } from "@/types/database";
 
 import { FacilityCard } from "../FacilityCard";
 import { FacilityListItem } from "../FacilityCard/FacilityListItem";
 import { ViewHeader } from "@/components/features/search/components/ViewHeader";
+
+type Facility = Database['public']['Tables']['facilities']['Row'];
 
 interface InfiniteScrollFacilitiesProps {
   readonly filters: FacilityFilters;
@@ -22,41 +26,41 @@ export const InfiniteScrollFacilities: React.FC<InfiniteScrollFacilitiesProps> =
   setViewMode
 }): JSX.Element => {
   const { t } = useTranslation('common');
-  const { getPublishedFacilities } = useFacilityStore();
-  const [filteredFacilities, setFilteredFacilities] = useState(() => getPublishedFacilities());
+  const orgId = useOrganizationId();
+  const { data: facilities = [], isLoading } = usePublishedFacilities(orgId);
 
-  // Apply filters
-  useEffect(() => {
-    const facilities = getPublishedFacilities();
+  // Apply filters using useMemo for performance
+  const filteredFacilities = useMemo(() => {
     let filtered = [...facilities];
 
     if (filters.searchTerm) {
       filtered = filtered.filter(facility =>
         facility.name.toLowerCase().includes(filters.searchTerm!.toLowerCase()) ||
-        facility.description.toLowerCase().includes(filters.searchTerm!.toLowerCase())
+        (facility.description && facility.description.toLowerCase().includes(filters.searchTerm!.toLowerCase()))
       );
     }
 
     if (filters.facilityType && filters.facilityType !== 'all') {
       filtered = filtered.filter(facility =>
-        facility.type.toLowerCase() === filters.facilityType!.toLowerCase()
+        facility.facility_type?.toLowerCase() === filters.facilityType!.toLowerCase()
       );
     }
 
     if (filters.location && filters.location !== 'all') {
       filtered = filtered.filter(facility =>
-        facility.location.toLowerCase().includes(filters.location!.toLowerCase())
+        (facility.address && facility.address.toLowerCase().includes(filters.location!.toLowerCase())) ||
+        (facility.area && facility.area.toLowerCase().includes(filters.location!.toLowerCase()))
       );
     }
 
     if (filters.capacity && (filters.capacity[0] > 0 || filters.capacity[1] < 200)) {
       filtered = filtered.filter(facility =>
-        facility.capacity >= filters.capacity![0] && facility.capacity <= filters.capacity![1]
+        facility.capacity && facility.capacity >= filters.capacity![0] && facility.capacity <= filters.capacity![1]
       );
     }
 
-    setFilteredFacilities(filtered);
-  }, [filters, getPublishedFacilities]);
+    return filtered;
+  }, [facilities, filters]);
 
   const handleAddressClick = (e: React.MouseEvent, facility: { readonly address: string }): void => {
     e.stopPropagation();
@@ -65,15 +69,21 @@ export const InfiniteScrollFacilities: React.FC<InfiniteScrollFacilitiesProps> =
   return (
     <div className="w-full">
       {/* ViewHeader component */}
-      <ViewHeader 
+      <ViewHeader
         facilityCount={filteredFacilities.length}
-        isLoading={false}
+        isLoading={isLoading}
         viewMode={viewMode}
         setViewMode={setViewMode}
       />
 
       {/* Facilities Grid/List */}
-      {filteredFacilities.length === 0 ? (
+      {isLoading ? (
+        <div className="text-center py-12">
+          <div className="text-muted-foreground text-lg">
+            {t('facilities.loading')}
+          </div>
+        </div>
+      ) : filteredFacilities.length === 0 ? (
         <div className="text-center py-12">
           <div className="text-muted-foreground text-lg mb-2">
             {t('facilities.noFacilitiesFound')}
@@ -87,7 +97,7 @@ export const InfiniteScrollFacilities: React.FC<InfiniteScrollFacilitiesProps> =
           {filteredFacilities.map((facility) => (
             <FacilityCard
               key={facility.id}
-              facility={facility}
+              facility={facility as any}
               onAddressClick={handleAddressClick}
             />
           ))}
@@ -97,7 +107,7 @@ export const InfiniteScrollFacilities: React.FC<InfiniteScrollFacilitiesProps> =
           {filteredFacilities.map((facility) => (
             <FacilityListItem
               key={facility.id}
-              facility={facility}
+              facility={facility as any}
               onAddressClick={handleAddressClick}
             />
           ))}

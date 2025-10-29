@@ -24,7 +24,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/lib/clients/supabase';
 
 export interface LocalizedDbValue {
   readonly entity_key: string;

@@ -1,4 +1,4 @@
-import { RecurrencePattern } from '@/utils/recurrenceEngine';
+import { RecurrencePattern } from '@/components/features/bookings/utils/recurrence';
 
 /**
  * Recurring booking interface for managing recurring facility bookings

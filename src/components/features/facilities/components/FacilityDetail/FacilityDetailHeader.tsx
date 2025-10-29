@@ -4,10 +4,10 @@ import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Heart, Share2, MapPin, Users, Star } from "lucide-react";
 
-import type { IFacility } from "@/stores/facilityStore";
+import type { Database } from "@/types/database";
 
-// Alias for backward compatibility
-type Facility = IFacility;
+// Use Supabase facility type
+type Facility = Database['public']['Tables']['facilities']['Row'];
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";

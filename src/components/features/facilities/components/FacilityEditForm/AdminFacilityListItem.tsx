@@ -13,10 +13,12 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { FacilityMiniMap } from "@/components/features/facilities/components/FacilityMap/FacilityMiniMap";
 
-import type { IFacility } from '@/stores/facilityStore';
+import type { Database } from '@/types/database';
+
+type Facility = Database['public']['Tables']['facilities']['Row'];
 
 interface IAdminFacilityListItemProps {
-  readonly facility: IFacility;
+  readonly facility: Facility;
   readonly onDelete?: (facilityId: string) => void;
   readonly onToggleStatus?: (facilityId: string, newStatus: "published" | "draft" | "archived") => void;
   readonly onDuplicate?: (facilityId: string) => void;

@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { MapPin, Users, Heart, Share2 } from "lucide-react";
 
 import { useTranslation } from "react-i18next";
-import type { IFacility } from "@/stores/facilityStore";
+import type { Database } from "@/types/database";
 import { useFieldConfigStore } from "@/stores/fieldConfigStore";
 
 import { Card, CardContent } from "@/components/ui/card";
@@ -14,12 +14,14 @@ import {
   getFieldUnit,
   generateShareUrl,
   copyToClipboard,
-} from "@/utils/card-formatters";
+} from "@/components/features/facilities/utils/formatters";
 import { useAmenityTranslation } from "@/hooks/shared";
 
+type Facility = Database['public']['Tables']['facilities']['Row'];
+
 interface FacilityCardProps {
-  readonly facility: IFacility;
-  readonly onAddressClick: (e: React.MouseEvent, facility: IFacility) => void;
+  readonly facility: Facility;
+  readonly onAddressClick: (e: React.MouseEvent, facility: Facility) => void;
   readonly viewMode?: "grid" | "list";
 }
 
@@ -46,13 +48,16 @@ export const FacilityCard = ({
   const fieldConfigs = getFieldConfigsForFacility(facility.id);
 
   const handleCardClick = (): void => {
-    navigate(`/facilities/${facility.id}`);
+    // Use slug for SEO-friendly URLs, fallback to id for backward compatibility
+    const facilityPath = (facility as any).slug || facility.id;
+    navigate(`/facilities/${facilityPath}`);
   };
 
   const handleShare = async (e: React.MouseEvent): Promise<void> => {
     e.stopPropagation();
     try {
-      const shareUrl = generateShareUrl(`/facilities/${facility.id}`);
+      const facilityPath = (facility as any).slug || facility.id;
+      const shareUrl = generateShareUrl(`/facilities/${facilityPath}`);
 
       if (navigator.share) {
         await navigator.share({
@@ -65,7 +70,8 @@ export const FacilityCard = ({
     } catch (error) {
       if (error instanceof Error && error.name !== "AbortError") {
         try {
-          const shareUrl = generateShareUrl(`/facilities/${facility.id}`);
+          const facilityPath = (facility as any).slug || facility.id;
+          const shareUrl = generateShareUrl(`/facilities/${facilityPath}`);
           await copyToClipboard(shareUrl);
         } catch (clipboardError) {
           console.error("Failed to share or copy:", clipboardError);
@@ -102,13 +108,13 @@ export const FacilityCard = ({
   };
 
   const translationKeys = {
-    people: t("facilities:card.people"),
-    squareMeters: t("facilities:card.squareMeters"),
-    pricePerHour: t("facilities:card.pricePerHour"),
-    outOf5: t("facilities:card.outOf5"),
-    reviewCount: t("facilities:card.reviewCount"),
-    yes: t("facilities:card.yes"),
-    no: t("facilities:card.no"),
+    people: t("facility:card.people"),
+    squareMeters: t("facility:card.squareMeters"),
+    pricePerHour: t("facility:card.pricePerHour"),
+    outOf5: t("facility:card.outOf5"),
+    reviewCount: t("facility:card.reviewCount"),
+    yes: t("facility:card.yes"),
+    no: t("facility:card.no"),
   };
 
   return (
@@ -119,7 +125,7 @@ export const FacilityCard = ({
       onMouseLeave={() => setIsHovered(false)}
       role="button"
       tabIndex={0}
-      aria-label={t("facilities:card.viewDetailsFor", {
+      aria-label={t("facility:card.viewDetailsFor", {
         name: facility.name,
         address: facility.address,
       })}
@@ -143,7 +149,7 @@ export const FacilityCard = ({
           <button
             onClick={handleFavorite}
             className="p-1.5 sm:p-2 rounded-full bg-white/90 backdrop-blur-sm shadow-lg hover:bg-white transition-colors"
-            aria-label={t("facilities:card.addToFavorites")}
+            aria-label={t("facility:card.addToFavorites")}
           >
             <Heart
               className={`h-3 w-3 sm:h-4 sm:w-4 ${
@@ -154,7 +160,7 @@ export const FacilityCard = ({
           <button
             onClick={handleShare}
             className="p-1.5 sm:p-2 rounded-full bg-white/90 backdrop-blur-sm shadow-lg hover:bg-white transition-colors"
-            aria-label={t("facilities:card.shareFacility")}
+            aria-label={t("facility:card.shareFacility")}
           >
             <Share2 className="h-3 w-3 sm:h-4 sm:w-4 text-gray-600" />
           </button>
@@ -208,7 +214,7 @@ export const FacilityCard = ({
                 className="bg-gray-50 text-gray-600 border-gray-300 font-medium px-2 py-1 text-xs sm:text-sm"
               >
                 +{facility.amenities.length - 3}{" "}
-                {t("facilities:card.moreAmenities")}
+                {t("facility:card.moreAmenities")}
               </Badge>
             )}
           </div>

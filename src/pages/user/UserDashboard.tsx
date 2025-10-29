@@ -7,7 +7,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { useFacilityStore } from "@/stores/facilityStore";
+import { usePublishedFacilities } from "@/services/supabase/facilities.service";
+import { useOrganizationId } from "@/hooks/useOrganizationId";
 import FacilityCardUser from "@/components/features/facilities/components/FacilityCard/FacilityCardUser";
 import {
   BookingFilters,
@@ -78,8 +79,9 @@ const UserDashboard = (): JSX.Element => {
   const [messageFilter, setMessageFilter] = useState<string>("all");
   const [weather, setWeather] = useState<IWeatherData | null>(null);
 
-  // Get facilities from store
-  const { getPublishedFacilities } = useFacilityStore();
+  // Get facilities from Supabase
+  const orgId = useOrganizationId();
+  const { data: facilities = [], isLoading: facilitiesLoading } = usePublishedFacilities(orgId);
 
   // Get user data from localStorage
   const user = useMemo(() => {
@@ -110,12 +112,12 @@ const UserDashboard = (): JSX.Element => {
       const nextBooking = upcomingBookings[0];
 
       return {
-        name: "Amin", // Could be from user profile context
+        name: t("user:dashboard.default_username"), // Could be from user profile context
         totalBookings: all.length,
         monthlyBookingLimit: 5,
         nextBooking: nextBooking
           ? {
-              facility: nextBooking.facilityName || "Ukjent lokale",
+              facility: nextBooking.facilityName || t("user:dashboard.unknown_facility"),
               date: new Date(nextBooking.startDate).toLocaleDateString(
                 "nb-NO",
                 { day: "2-digit", month: "2-digit" }
@@ -127,7 +129,7 @@ const UserDashboard = (): JSX.Element => {
     } catch (error) {
       console.error("Error loading user data:", error);
       return {
-        name: "Amin",
+        name: t("user:dashboard.default_username"),
         totalBookings: 0,
         monthlyBookingLimit: 5,
         nextBooking: null,
@@ -141,7 +143,7 @@ const UserDashboard = (): JSX.Element => {
     setWeather({
       temperature: 8,
       condition: "cloudy",
-      description: "Overskyet",
+      description: t("user:dashboard.weather.cloudy"),
     });
   }, []);
 
@@ -206,7 +208,7 @@ const UserDashboard = (): JSX.Element => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       return recentBookings.map((booking: any) => ({
         id: booking.id,
-        facility: booking.facilityName || "Ukjent lokale",
+        facility: booking.facilityName || t("user:dashboard.unknown_facility"),
         date: booking.startDate || new Date().toISOString().split("T")[0],
         time: booking.startTime || "14:00",
         duration: booking.duration || "1 time",
@@ -216,10 +218,10 @@ const UserDashboard = (): JSX.Element => {
             : booking.status === "rejected"
             ? ("cancelled" as const)
             : ("pending" as const),
-        location: booking.facilityName || "Ukjent lokale",
+        location: booking.facilityName || t("user:dashboard.unknown_facility"),
         price: booking.price || "0 kr",
         purpose: booking.purpose || t("user:bookings.not_specified"),
-        participants: ["Amin"], // Default participant
+        participants: [t("user:dashboard.default_username")], // Default participant
         qrCode: `QR${booking.id.slice(-6)}`,
         cancellationPolicy: t("user:bookings.cancellation_policy"),
         contactInfo: {
@@ -245,38 +247,40 @@ const UserDashboard = (): JSX.Element => {
    * This ensures consistency between the facilities page and dashboard recommendations.
    * The facilities are then rendered using FacilityCardUser component for unified functionality.
    */
-  const storeFacilities = getPublishedFacilities();
-  const recommendedFacilities: readonly IUserFacility[] = storeFacilities
-    .slice(0, 3)
-    .map((facility, index) => ({
-      id: facility.id,
-      name: facility.name,
-      description: facility.description,
-      type: facility.type,
-      location: facility.location,
-      address: facility.address,
-      capacity: facility.capacity,
-      amenities: facility.amenities,
-      image: facility.images[0] || "/placeholder.svg",
-      rating: facility.rating,
-      price: `${facility.pricePerHour} kr/time`,
-      availability: "available" as const,
-      recommendationReason:
-        index === 0
-          ? t("user:recommendations.frequent_bookings")
-          : index === 1
-          ? t("user:recommendations.preferred_times")
-          : t("user:recommendations.new_in_area"),
-      isFrequentlyBooked: index === 0,
-      matchesPreferredTimes: index === 1,
-      isNewInArea: index === 2,
-    }));
+  const recommendedFacilities: readonly IUserFacility[] = useMemo(() => {
+    return facilities
+      .slice(0, 3)
+      .map((facility, index) => ({
+        id: facility.id,
+        name: facility.name,
+        description: facility.description || '',
+        type: facility.facility_type || '',
+        location: facility.area || '',
+        address: facility.address || '',
+        capacity: facility.capacity || 0,
+        amenities: facility.amenities || [],
+        image: (facility.images as any)?.[0] || "/placeholder.svg",
+        rating: facility.rating || 0,
+        price: `${(facility.price_per_hour_cents || 0) / 100} kr/time`,
+        availability: "available" as const,
+        recommendationReason:
+          index === 0
+            ? t("user:recommendations.frequent_bookings")
+            : index === 1
+            ? t("user:recommendations.preferred_times")
+            : t("user:recommendations.new_in_area"),
+        isFrequentlyBooked: index === 0,
+        matchesPreferredTimes: index === 1,
+        isNewInArea: index === 2,
+        slug: facility.slug
+      }));
+  }, [facilities, t]);
 
   const systemMessages: ISystemMessage[] = [
     {
       id: "1",
-      title: "Booking oppdatert",
-      message: "Booking for Solberghallen er oppdatert med nye tider.",
+      title: t("user:dashboard.system_messages.booking_updated"),
+      message: t("user:dashboard.system_messages.booking_updated_desc", { facility: "Solberghallen" }),
       type: "info" as const,
       date: "2024-01-19T10:30:00Z",
       isRead: false,
@@ -284,8 +288,8 @@ const UserDashboard = (): JSX.Element => {
     },
     {
       id: "2",
-      title: "Nytt regelverk",
-      message: "Nye regler for avbestillinger trer i kraft fra 1. februar.",
+      title: t("user:dashboard.system_messages.new_regulation"),
+      message: t("user:dashboard.system_messages.new_regulation_desc"),
       type: "warning" as const,
       date: "2024-01-18T14:15:00Z",
       isRead: false,
@@ -293,8 +297,8 @@ const UserDashboard = (): JSX.Element => {
     },
     {
       id: "3",
-      title: "Vedlikehold planlagt",
-      message: "Vedlikehold av systemet planlagt søndag 08:00–10:00.",
+      title: t("user:dashboard.system_messages.maintenance"),
+      message: t("user:dashboard.system_messages.maintenance_desc"),
       type: "maintenance" as const,
       date: "2024-01-17T16:45:00Z",
       isRead: true,
@@ -302,8 +306,8 @@ const UserDashboard = (): JSX.Element => {
     },
     {
       id: "4",
-      title: "Booking bekreftet",
-      message: "Din booking for Drammen Idrettshall er bekreftet! 🎉",
+      title: t("user:dashboard.system_messages.booking_confirmed"),
+      message: t("user:dashboard.system_messages.booking_confirmed_desc", { facility: "Drammen Idrettshall" }),
       type: "success" as const,
       date: "2024-01-20T09:00:00Z",
       isRead: false,

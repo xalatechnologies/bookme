@@ -19,7 +19,7 @@
  */
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/lib/clients/supabase';
 import type { Database } from '@/types/database';
 
 type Notification = Database['public']['Tables']['notifications']['Row'];

@@ -12,10 +12,10 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { recurrenceEngine } from '@/utils/recurrenceEngine';
+import { recurrenceEngine } from '@/components/features/bookings/utils/recurrence';
 
 // Types
-import type { RecurrencePattern } from '@/utils/recurrenceEngine';
+import type { RecurrencePattern } from '@/components/features/bookings/utils/recurrence';
 
 interface RecurrencePatternSelectorProps {
   readonly pattern: RecurrencePattern | null;

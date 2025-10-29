@@ -2,7 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent } from '@/components/ui/card';
 import { RecurrencePatternSelector } from '@/components/features/bookings/components/RecurringBookingModal/RecurrencePatternSelector';
-import type { RecurrencePattern } from '@/utils/recurrenceEngine';
+import type { RecurrencePattern } from '@/components/features/bookings/utils/recurrence';
 
 /**
  * Step 3 Recurrence props

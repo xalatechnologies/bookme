@@ -6,7 +6,7 @@ import { useParams, useNavigate } from "react-router-dom";
 
 // Internal libraries/utilities
 import { useTranslation } from "react-i18next";
-import type { RecurrencePattern } from "@/utils/recurrenceEngine";
+import type { RecurrencePattern } from "@/components/features/bookings/utils/recurrence";
 import { useFacility } from "@/components/features/facilities/hooks";
 import { useZones } from "@/components/features/facilities/hooks";
 import { CartProvider } from "@/contexts/CartContext";

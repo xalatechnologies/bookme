@@ -5,7 +5,7 @@
  * used throughout the booking and reservation system.
  */
 
-import type { RecurrencePattern } from '@/utils/recurrenceEngine';
+import type { RecurrencePattern } from '@/components/features/bookings/utils/recurrence';
 
 /**
  * Represents a selected time slot for booking

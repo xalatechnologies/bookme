@@ -10,7 +10,7 @@
  * validation and consistency checking utilities.
  */
 
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/lib/clients/supabase';
 import type { IStoredBooking, IBookingFilters } from '@/utils/localStorageTypes';
 import { getStoredBookings, setStoredBookings } from '@/utils/localStorageTypes';
 

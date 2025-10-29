@@ -39,7 +39,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { RecurringBooking } from "@/types/recurringBooking";
-import { recurrenceEngine } from "@/utils/recurrenceEngine";
+import { recurrenceEngine } from "@/components/features/bookings/utils/recurrence";
 
 /**
  * Props interface for RecurringBookingCard component

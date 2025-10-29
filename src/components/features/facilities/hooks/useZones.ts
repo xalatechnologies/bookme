@@ -1,11 +1,11 @@
 "use client";
 
 // External imports
-import { useState, useEffect } from 'react';
+import { useMemo } from 'react';
 
 // Internal imports
 import type { Zone } from '@/types/booking';
-import { getZonesForFacility } from '@/data/zones/dummyZones';
+import { useFacilityZones } from '@/services/supabase/zones.service';
 import { useZoneStore } from '@/stores/zoneStore';
 
 interface ZonesState {
@@ -14,51 +14,38 @@ interface ZonesState {
   readonly error: string | null;
 }
 
+/**
+ * Hook to fetch zones for a facility
+ *
+ * Prioritizes zones from the store (for immediate access),
+ * then falls back to fetching from Supabase.
+ *
+ * @param facilityId - The facility ID to fetch zones for
+ * @returns Zones state with zones array, loading status, and error
+ */
 export const useZones = (facilityId: string | number): ZonesState => {
-  const [state, setState] = useState<ZonesState>({
-    zones: [],
-    loading: true,
-    error: null
-  });
-
   const { getZonesForFacility: storeGetZonesForFacility } = useZoneStore();
 
-  useEffect(() => {
-    const fetchZones = async (): Promise<void> => {
-      try {
-        setState(prev => ({ ...prev, loading: true, error: null }));
+  // Convert facilityId to string
+  const facilityIdStr = typeof facilityId === 'number' ? facilityId.toString() : facilityId;
 
-        // Simulate API delay
-        await new Promise(resolve => setTimeout(resolve, 100));
+  // Fetch zones from Supabase using React Query
+  const { data: supabaseZones, isLoading, error: queryError } = useFacilityZones(facilityIdStr);
 
-        // Get zones for the facility from store first, then fallback to dummy data
-        const facilityIdStr = typeof facilityId === 'number' ? facilityId.toString() : facilityId;
-        let zones = storeGetZonesForFacility(facilityIdStr);
-        
-        // If no zones in store, use dummy data
-        if (zones.length === 0) {
-          const dummyZones = getZonesForFacility(facilityIdStr);
-          zones = dummyZones;
-        }
+  // Get zones from store (local state)
+  const storeZones = storeGetZonesForFacility(facilityIdStr);
 
-        setState({
-          zones,
-          loading: false,
-          error: null
-        });
-      } catch (error) {
-        setState({
-          zones: [],
-          loading: false,
-          error: error instanceof Error ? error.message : 'Unknown error occurred'
-        });
-      }
-    };
-
-    if (facilityId) {
-      fetchZones();
+  // Prioritize store zones for immediate display, fallback to Supabase data
+  const zones = useMemo(() => {
+    if (storeZones.length > 0) {
+      return storeZones;
     }
-  }, [facilityId, storeGetZonesForFacility]);
+    return (supabaseZones as readonly Zone[]) || [];
+  }, [storeZones, supabaseZones]);
 
-  return state;
+  return {
+    zones,
+    loading: isLoading,
+    error: queryError ? 'Failed to fetch zones' : null
+  };
 };

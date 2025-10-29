@@ -48,6 +48,8 @@
     "pay": "Betal",
     "continue": "Fortsett",
     "finish": "Fullfør",
+    "go_back": "Gå tilbake",
+    "go_home": "Gå hjem",
     "start": "Start",
     "stop": "Stopp",
     "pause": "Pause",
@@ -356,6 +358,8 @@
     "unauthorized": "Du har ikke tilgang til denne ressursen.",
     "forbidden": "Denne handlingen er ikke tillatt.",
     "notFound": "Siden ble ikke funnet.",
+    "facility_not_found": "Lokalet ble ikke funnet",
+    "facility_not_found_desc": "Lokalet du leter etter finnes ikke eller er ikke lenger tilgjengelig.",
     "comingSoon": "Kommer snart",
     "underConstruction": "Under konstruksjon",
     "maintenanceMode": "Vedlikeholdsmodus",
@@ -531,5 +535,20 @@
     "cancellation_desc": "Avbestilling må gjøres 24 timer i forveien"
   },
   "entire_facility": "Hele anlegget",
-  "book_entire_facility": "Book hele anlegget"
+  "book_entire_facility": "Book hele anlegget",
+  "availability_legend": {
+    "title": "Tilgjengelighetsoversikt",
+    "available_label": "Ledig",
+    "available_description": "Tidspunktet er ledig for booking",
+    "busy_label": "Opptatt",
+    "busy_description": "Tidspunktet er allerede booket",
+    "selected_label": "Valgt",
+    "selected_description": "Tidspunkt du har valgt",
+    "unavailable_label": "Ikke tilgjengelig",
+    "unavailable_description": "Tidspunktet er ikke tilgjengelig",
+    "conflict_label": "Konflikt",
+    "conflict_description": "Tidspunktet har en bookingkonflikt",
+    "click_available": "Klikk på ledige tidspunkter for å velge",
+    "drag_select": "Dra for å velge flere tidspunkter"
+  }
 }

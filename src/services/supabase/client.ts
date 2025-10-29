@@ -7,7 +7,7 @@
  * @module services/supabase/client
  */
 
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/lib/clients/supabase';
 
 /**
  * Re-export the configured Supabase client

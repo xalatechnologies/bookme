@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { useFacilityStore } from "@/stores/facilityStore";
+import { useFacilities } from "@/services/supabase/facilities.service";
+import { useOrganizationId } from "@/hooks/useOrganizationId";
 import { useRecurringBookingStore } from "@/stores/recurringBookingStore";
 
 export interface IDashboardData {
@@ -38,7 +39,9 @@ export const useDashboardData = (role: 'admin' | 'user'): IUseDashboardDataRetur
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<Error | null>(null);
 
-  const { facilities } = useFacilityStore();
+  // Get organization context and fetch facilities from Supabase
+  const orgId = useOrganizationId();
+  const { data: facilities = [], isLoading: facilitiesLoading } = useFacilities(orgId);
   const { bookings } = useRecurringBookingStore();
 
   const fetchDashboardData = useCallback(() => {
@@ -86,20 +89,23 @@ export const useDashboardData = (role: 'admin' | 'user'): IUseDashboardDataRetur
       };
 
       setData(dashboardData);
-      setLoading(false);
+      setLoading(facilitiesLoading);
     } catch (err) {
       setError(err instanceof Error ? err : new Error('Failed to fetch dashboard data'));
       setLoading(false);
     }
-  }, [facilities, bookings]);
+  }, [facilities, bookings, facilitiesLoading]);
 
   useEffect(() => {
-    fetchDashboardData();
-  }, [fetchDashboardData]);
+    // Only fetch dashboard data when facilities are loaded
+    if (!facilitiesLoading) {
+      fetchDashboardData();
+    }
+  }, [fetchDashboardData, facilitiesLoading]);
 
   return {
     data,
-    loading,
+    loading: loading || facilitiesLoading,
     error,
     refetch: fetchDashboardData
   };
