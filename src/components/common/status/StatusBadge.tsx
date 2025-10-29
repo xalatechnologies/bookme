@@ -25,6 +25,7 @@ export interface StatusBadgeProps {
 const defaultStatusConfig: Record<string, StatusConfig> = {
   // Booking statuses
   approved: { variant: "success", icon: CheckCircle },
+  confirmed: { variant: "success", icon: CheckCircle },
   pending: { variant: "warning", icon: Clock },
   rejected: { variant: "error", icon: XCircle },
   cancelled: { variant: "error", icon: XCircle },

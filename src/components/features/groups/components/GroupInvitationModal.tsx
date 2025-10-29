@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { format } from "date-fns";
-import { Mail, UserPlus, Check, X, Clock, AlertCircle } from "lucide-react";
+import { Mail, UserPlus, Check, X, AlertCircle } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui/button";
@@ -10,11 +10,11 @@ import { BaseModal } from "@/components/common/modals/BaseModal";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { GroupInvitation, InviteMemberData } from "@/types/group";
 import { useGroupStore } from "@/stores/groupStore";
+import { StatusBadge } from "@/components/common/status/StatusBadge";
 
 /**
  * Props interface for GroupInvitationModal component
@@ -160,10 +160,12 @@ const PendingInvitationsList: React.FC<{
                 <div className="flex items-center space-x-2">
                   <Mail className="h-4 w-4 text-muted-foreground" />
                   <span className="font-medium">{invitation.email}</span>
-                  <Badge variant="secondary" className="text-xs">
-                    <Clock className="h-3 w-3 mr-1" />
-                    {t('invitation_modal.pending.status')}
-                  </Badge>
+                  <StatusBadge
+                    status="pending"
+                    translationKey="groups:invitation_modal.pending.status"
+                    showIcon={true}
+                    size="sm"
+                  />
                 </div>
                 <p className="text-sm text-muted-foreground">
                   {t('invitation_modal.pending.invited_by', { name: invitation.invitedByName })} • {format(new Date(invitation.invitedAt), "dd.MM.yyyy HH:mm")}

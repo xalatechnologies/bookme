@@ -22,7 +22,6 @@ import {
   ChevronLeft,
   ChevronRight,
   List,
-  Timeline,
   Table,
   Eye,
   CheckCircle,
@@ -104,7 +103,7 @@ const AuditLogPage = (): JSX.Element => {
    * View modes
    */
   const viewModes = [
-    { value: 'timeline' as const, label: 'Timeline', icon: Timeline },
+    { value: 'timeline' as const, label: 'Timeline', icon: Activity },
     { value: 'list' as const, label: 'List', icon: List },
     { value: 'table' as const, label: 'Table', icon: Table },
   ];
