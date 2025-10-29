@@ -1,15 +1,19 @@
-import React, { useState, useCallback, useEffect } from 'react';
-import { RefreshCw, Plus, AlertCircle } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { SimpleCalendar } from '../SimpleCalendar';
-import { CalendarFilters } from './CalendarFilters';
-import { EventTooltip } from '../EventTooltip';
-import { EventContextMenu } from './EventContextMenu';
-import { useCalendarEnhancements, useFilteredEvents, useAvailableFacilities } from '@/hooks/useCalendarEnhancements';
-import type { IBookingEvent } from '@/types/calendar';
+import React, { useState, useCallback, useEffect } from "react";
+import { RefreshCw, Plus, AlertCircle } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { SimpleCalendar } from "../SimpleCalendar";
+import { CalendarFilters } from "./CalendarFilters";
+import { EventTooltip } from "../EventTooltip";
+import { EventContextMenu } from "./EventContextMenu";
+import {
+  useCalendarEnhancements,
+  useFilteredEvents,
+  useAvailableFacilities,
+} from "../../hooks/useCalendarEnhancements";
+import type { IBookingEvent } from "@/types/calendar";
 
 interface EnhancedCalendarProps {
   readonly events: readonly IBookingEvent[];
@@ -21,8 +25,8 @@ interface EnhancedCalendarProps {
   readonly onEventAddToCalendar?: (event: IBookingEvent) => void;
   readonly className?: string;
   // External control (optional)
-  readonly view?: 'month' | 'week' | 'day';
-  readonly onViewChange?: (view: 'month' | 'week' | 'day') => void;
+  readonly view?: "month" | "week" | "day";
+  readonly onViewChange?: (view: "month" | "week" | "day") => void;
   readonly currentDate?: Date;
   readonly onDateChange?: (date: Date) => void;
 }
@@ -35,13 +39,13 @@ export const EnhancedCalendar: React.FC<EnhancedCalendarProps> = ({
   onEventCopy,
   onEventShare,
   onEventAddToCalendar,
-  className = '',
+  className = "",
   view: externalView,
   onViewChange,
   currentDate: externalCurrentDate,
-  onDateChange
+  onDateChange,
 }): JSX.Element => {
-  const { t } = useTranslation(['calendar', 'common']);
+  const { t } = useTranslation("common");
   const {
     searchQuery,
     selectedFacilities,
@@ -57,13 +61,20 @@ export const EnhancedCalendar: React.FC<EnhancedCalendarProps> = ({
     setHoveredEvent,
     handleEventRightClick,
     handleContextMenuClose,
-    refreshCalendar
+    refreshCalendar,
   } = useCalendarEnhancements();
 
   const availableFacilities = useAvailableFacilities(events);
-  const filteredEvents = useFilteredEvents(events, searchQuery, selectedFacilities, selectedStatuses);
+  const filteredEvents = useFilteredEvents(
+    events,
+    searchQuery,
+    selectedFacilities,
+    selectedStatuses
+  );
 
-  const [internalView, setInternalView] = useState<'month' | 'week' | 'day'>('month');
+  const [internalView, setInternalView] = useState<"month" | "week" | "day">(
+    "month"
+  );
   const [internalCurrentDate, setInternalCurrentDate] = useState(new Date());
   const view = externalView ?? internalView;
   const setView = onViewChange ?? setInternalView;
@@ -79,25 +90,39 @@ export const EnhancedCalendar: React.FC<EnhancedCalendarProps> = ({
     return () => clearInterval(interval);
   }, [refreshCalendar]);
 
-  const handleEventClick = useCallback((event: IBookingEvent): void => {
-    onEventClick?.(event);
-  }, [onEventClick]);
+  const handleEventClick = useCallback(
+    (event: IBookingEvent): void => {
+      onEventClick?.(event);
+    },
+    [onEventClick]
+  );
 
-  const handleEventHover = useCallback((event: IBookingEvent | null): void => {
-    setHoveredEvent(event);
-  }, [setHoveredEvent]);
+  const handleEventHover = useCallback(
+    (event: IBookingEvent | null): void => {
+      setHoveredEvent(event);
+    },
+    [setHoveredEvent]
+  );
 
-  const handleEventRightClickCallback = useCallback((event: IBookingEvent, position: { x: number; y: number }): void => {
-    handleEventRightClick(event, position);
-  }, [handleEventRightClick]);
+  const handleEventRightClickCallback = useCallback(
+    (event: IBookingEvent, position: { x: number; y: number }): void => {
+      handleEventRightClick(event, position);
+    },
+    [handleEventRightClick]
+  );
 
-  const handleContextMenuAction = useCallback((action: (event: IBookingEvent) => void, event: IBookingEvent): void => {
-    action(event);
-    handleContextMenuClose();
-  }, [handleContextMenuClose]);
+  const handleContextMenuAction = useCallback(
+    (action: (event: IBookingEvent) => void, event: IBookingEvent): void => {
+      action(event);
+      handleContextMenuClose();
+    },
+    [handleContextMenuClose]
+  );
 
-
-  const hasActiveFilters = searchQuery !== '' || selectedFacilities.length > 0 || selectedStatuses.length > 0;
+  const hasActiveFilters =
+    searchQuery !== "" ||
+    selectedFacilities.length > 0 ||
+    selectedStatuses.length > 0;
   const hasEvents = filteredEvents.length > 0;
 
   return (
@@ -106,10 +131,14 @@ export const EnhancedCalendar: React.FC<EnhancedCalendarProps> = ({
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-            {t('calendar:title')}
+            {t("calendar:title")}
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
-            {lastRefresh ? t('calendar:messages.last_updated', { time: lastRefresh.toLocaleTimeString('no-NO') }) : t('calendar:manage_bookings')}
+            {lastRefresh
+              ? t("calendar:messages.last_updated", {
+                  time: lastRefresh.toLocaleTimeString("no-NO"),
+                })
+              : t("calendar:manage_bookings")}
           </p>
         </div>
 
@@ -120,10 +149,13 @@ export const EnhancedCalendar: React.FC<EnhancedCalendarProps> = ({
             onClick={() => void refreshCalendar()}
             disabled={isLoading}
           >
-            <RefreshCw className={`w-4 h-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
-            {isLoading ? t('calendar:actions.refreshing') : t('calendar:actions.refresh')}
+            <RefreshCw
+              className={`w-4 h-4 mr-2 ${isLoading ? "animate-spin" : ""}`}
+            />
+            {isLoading
+              ? t("calendar:actions.refreshing")
+              : t("calendar:actions.refresh")}
           </Button>
-
         </div>
       </div>
 
@@ -146,13 +178,16 @@ export const EnhancedCalendar: React.FC<EnhancedCalendarProps> = ({
       {hasActiveFilters && (
         <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
           <span>
-            {t('calendar:filters.showing_results', { count: filteredEvents.length, total: events.length })}
+            {t("calendar:filters.showing_results", {
+              count: filteredEvents.length,
+              total: events.length,
+            })}
           </span>
           {filteredEvents.length === 0 && (
             <Alert className="flex-1">
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>
-                {t('calendar:filters.no_results_with_filters')}
+                {t("calendar:filters.no_results_with_filters")}
               </AlertDescription>
             </Alert>
           )}
@@ -188,12 +223,36 @@ export const EnhancedCalendar: React.FC<EnhancedCalendarProps> = ({
           event={contextMenuEvent}
           position={contextMenuPosition}
           onClose={handleContextMenuClose}
-          onEdit={onEventEdit ? (event) => handleContextMenuAction(onEventEdit, event) : undefined}
-          onDelete={onEventDelete ? (event) => handleContextMenuAction(onEventDelete, event) : undefined}
-          onCopy={onEventCopy ? (event) => handleContextMenuAction(onEventCopy, event) : undefined}
-          onShare={onEventShare ? (event) => handleContextMenuAction(onEventShare, event) : undefined}
-          onAddToCalendar={onEventAddToCalendar ? (event) => handleContextMenuAction(onEventAddToCalendar, event) : undefined}
-          onView={onEventClick ? (event) => handleContextMenuAction(onEventClick, event) : undefined}
+          onEdit={
+            onEventEdit
+              ? (event) => handleContextMenuAction(onEventEdit, event)
+              : undefined
+          }
+          onDelete={
+            onEventDelete
+              ? (event) => handleContextMenuAction(onEventDelete, event)
+              : undefined
+          }
+          onCopy={
+            onEventCopy
+              ? (event) => handleContextMenuAction(onEventCopy, event)
+              : undefined
+          }
+          onShare={
+            onEventShare
+              ? (event) => handleContextMenuAction(onEventShare, event)
+              : undefined
+          }
+          onAddToCalendar={
+            onEventAddToCalendar
+              ? (event) => handleContextMenuAction(onEventAddToCalendar, event)
+              : undefined
+          }
+          onView={
+            onEventClick
+              ? (event) => handleContextMenuAction(onEventClick, event)
+              : undefined
+          }
         />
       )}
 
@@ -207,13 +266,12 @@ export const EnhancedCalendar: React.FC<EnhancedCalendarProps> = ({
               </div>
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                  {t('calendar:event.no_bookings')}
+                  {t("calendar:event.no_bookings")}
                 </h3>
                 <p className="text-gray-600 dark:text-gray-400">
                   {hasActiveFilters
-                    ? t('calendar:event.adjust_filters')
-                    : t('calendar:event.create_first_booking')
-                  }
+                    ? t("calendar:event.adjust_filters")
+                    : t("calendar:event.create_first_booking")}
                 </p>
               </div>
             </div>

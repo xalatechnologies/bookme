@@ -24,21 +24,21 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Globe, Plus, Edit, Trash2, Save } from "lucide-react";
-import { useLocalizedDbValues } from "@/hooks/useLocalizedDbValues";
+import { useLocalizedDbValues } from "@/hooks/shared/useLocalizedDbValues";
 import { supabase } from "@/lib/supabase";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 const ENTITY_TYPES = [
-  { value: 'facility_type', label: 'Facility Types' },
-  { value: 'location', label: 'Locations' },
-  { value: 'amenity', label: 'Amenities' },
-  { value: 'accessibility', label: 'Accessibility Features' },
-  { value: 'capacity_range', label: 'Capacity Ranges' },
-  { value: 'booking_status', label: 'Booking Statuses' },
-  { value: 'ticket_status', label: 'Ticket Statuses' },
-  { value: 'ticket_priority', label: 'Ticket Priorities' },
-  { value: 'ticket_category', label: 'Ticket Categories' },
+  { value: "facility_type", label: "Facility Types" },
+  { value: "location", label: "Locations" },
+  { value: "amenity", label: "Amenities" },
+  { value: "accessibility", label: "Accessibility Features" },
+  { value: "capacity_range", label: "Capacity Ranges" },
+  { value: "booking_status", label: "Booking Statuses" },
+  { value: "ticket_status", label: "Ticket Statuses" },
+  { value: "ticket_priority", label: "Ticket Priorities" },
+  { value: "ticket_category", label: "Ticket Categories" },
 ] as const;
 
 interface LocalizedValueForm {
@@ -51,31 +51,37 @@ interface LocalizedValueForm {
 }
 
 const LocalizationManagementPage = (): JSX.Element => {
-  const { t, i18n } = useTranslation('admin');
+  const { t, i18n } = useTranslation("admin");
   const queryClient = useQueryClient();
-  const [selectedEntityType, setSelectedEntityType] = useState<string>('facility_type');
+  const [selectedEntityType, setSelectedEntityType] =
+    useState<string>("facility_type");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [editingValue, setEditingValue] = useState<{ entity_key: string; entity_type: string } | null>(null);
+  const [editingValue, setEditingValue] = useState<{
+    entity_key: string;
+    entity_type: string;
+  } | null>(null);
   const [formData, setFormData] = useState<LocalizedValueForm>({
-    entity_key: '',
-    label_en: '',
-    label_no: '',
-    description: '',
+    entity_key: "",
+    label_en: "",
+    label_no: "",
+    description: "",
     sort_order: 0,
     is_active: true,
   });
 
   const { data: values, isLoading } = useLocalizedDbValues(selectedEntityType);
 
-  const entityTypeLabel = ENTITY_TYPES.find(t => t.value === selectedEntityType)?.label || selectedEntityType;
+  const entityTypeLabel =
+    ENTITY_TYPES.find((t) => t.value === selectedEntityType)?.label ||
+    selectedEntityType;
 
   const handleOpenAddDialog = () => {
     setEditingValue(null);
     setFormData({
-      entity_key: '',
-      label_en: '',
-      label_no: '',
-      description: '',
+      entity_key: "",
+      label_en: "",
+      label_no: "",
+      description: "",
       sort_order: (values?.length || 0) + 1,
       is_active: true,
     });
@@ -83,33 +89,36 @@ const LocalizationManagementPage = (): JSX.Element => {
   };
 
   const handleOpenEditDialog = (entityKey: string) => {
-    const enValue = values?.find(v => v.entity_key === entityKey);
+    const enValue = values?.find((v) => v.entity_key === entityKey);
     const currentLang = i18n.language;
-    
+
     // Need to fetch both EN and NO versions
     Promise.all([
       supabase
-        .from('localized_db_values')
-        .select('*')
-        .eq('entity_type', selectedEntityType)
-        .eq('entity_key', entityKey)
-        .eq('language_code', 'en')
+        .from("localized_db_values")
+        .select("*")
+        .eq("entity_type", selectedEntityType)
+        .eq("entity_key", entityKey)
+        .eq("language_code", "en")
         .single(),
       supabase
-        .from('localized_db_values')
-        .select('*')
-        .eq('entity_type', selectedEntityType)
-        .eq('entity_key', entityKey)
-        .eq('language_code', 'no')
+        .from("localized_db_values")
+        .select("*")
+        .eq("entity_type", selectedEntityType)
+        .eq("entity_key", entityKey)
+        .eq("language_code", "no")
         .single(),
     ]).then(([enResult, noResult]) => {
       if (enResult.data && noResult.data) {
-        setEditingValue({ entity_key: entityKey, entity_type: selectedEntityType });
+        setEditingValue({
+          entity_key: entityKey,
+          entity_type: selectedEntityType,
+        });
         setFormData({
           entity_key: entityKey,
-          label_en: enResult.data.label || '',
-          label_no: noResult.data.label || '',
-          description: enResult.data.description || '',
+          label_en: enResult.data.label || "",
+          label_no: noResult.data.label || "",
+          description: enResult.data.description || "",
           sort_order: enResult.data.sort_order || 0,
           is_active: enResult.data.is_active ?? true,
         });
@@ -121,92 +130,111 @@ const LocalizationManagementPage = (): JSX.Element => {
   const handleSave = async () => {
     try {
       if (!formData.entity_key || !formData.label_en || !formData.label_no) {
-        toast.error('Please fill in all required fields');
+        toast.error("Please fill in all required fields");
         return;
       }
 
       // Insert/update English translation
       const { error: enError } = await supabase
-        .from('localized_db_values')
-        .upsert({
-          entity_type: selectedEntityType,
-          entity_key: formData.entity_key,
-          language_code: 'en',
-          label: formData.label_en,
-          description: formData.description || null,
-          sort_order: formData.sort_order,
-          is_active: formData.is_active,
-        }, {
-          onConflict: 'entity_type,entity_key,language_code',
-        });
+        .from("localized_db_values")
+        .upsert(
+          {
+            entity_type: selectedEntityType,
+            entity_key: formData.entity_key,
+            language_code: "en",
+            label: formData.label_en,
+            description: formData.description || null,
+            sort_order: formData.sort_order,
+            is_active: formData.is_active,
+          },
+          {
+            onConflict: "entity_type,entity_key,language_code",
+          }
+        );
 
       if (enError) throw enError;
 
       // Insert/update Norwegian translation
       const { error: noError } = await supabase
-        .from('localized_db_values')
-        .upsert({
-          entity_type: selectedEntityType,
-          entity_key: formData.entity_key,
-          language_code: 'no',
-          label: formData.label_no,
-          description: formData.description || null,
-          sort_order: formData.sort_order,
-          is_active: formData.is_active,
-        }, {
-          onConflict: 'entity_type,entity_key,language_code',
-        });
+        .from("localized_db_values")
+        .upsert(
+          {
+            entity_type: selectedEntityType,
+            entity_key: formData.entity_key,
+            language_code: "no",
+            label: formData.label_no,
+            description: formData.description || null,
+            sort_order: formData.sort_order,
+            is_active: formData.is_active,
+          },
+          {
+            onConflict: "entity_type,entity_key,language_code",
+          }
+        );
 
       if (noError) throw noError;
 
       // Invalidate cache to refresh data
-      queryClient.invalidateQueries({ queryKey: ['localized-db-values', selectedEntityType] });
-      
-      toast.success('Localized value saved successfully');
+      queryClient.invalidateQueries({
+        queryKey: ["localized-db-values", selectedEntityType],
+      });
+
+      toast.success("Localized value saved successfully");
       setIsDialogOpen(false);
     } catch (error) {
-      console.error('Error saving localized value:', error);
-      toast.error('Failed to save localized value');
+      console.error("Error saving localized value:", error);
+      toast.error("Failed to save localized value");
     }
   };
 
   const handleDelete = async (entityKey: string) => {
-    if (!confirm('Are you sure you want to delete this value? This will remove translations in all languages.')) {
+    if (
+      !confirm(
+        "Are you sure you want to delete this value? This will remove translations in all languages."
+      )
+    ) {
       return;
     }
 
     try {
       const { error } = await supabase
-        .from('localized_db_values')
+        .from("localized_db_values")
         .delete()
-        .eq('entity_type', selectedEntityType)
-        .eq('entity_key', entityKey);
+        .eq("entity_type", selectedEntityType)
+        .eq("entity_key", entityKey);
 
       if (error) throw error;
 
-      queryClient.invalidateQueries({ queryKey: ['localized-db-values', selectedEntityType] });
-      toast.success('Localized value deleted successfully');
+      queryClient.invalidateQueries({
+        queryKey: ["localized-db-values", selectedEntityType],
+      });
+      toast.success("Localized value deleted successfully");
     } catch (error) {
-      console.error('Error deleting localized value:', error);
-      toast.error('Failed to delete localized value');
+      console.error("Error deleting localized value:", error);
+      toast.error("Failed to delete localized value");
     }
   };
 
-  const handleToggleActive = async (entityKey: string, currentActive: boolean) => {
+  const handleToggleActive = async (
+    entityKey: string,
+    currentActive: boolean
+  ) => {
     try {
       const { error } = await supabase
-        .from('localized_db_values')
+        .from("localized_db_values")
         .update({ is_active: !currentActive })
-        .eq('entity_type', selectedEntityType)
-        .eq('entity_key', entityKey);
+        .eq("entity_type", selectedEntityType)
+        .eq("entity_key", entityKey);
 
       if (error) throw error;
 
-      queryClient.invalidateQueries({ queryKey: ['localized-db-values', selectedEntityType] });
-      toast.success('Value status updated');
+      queryClient.invalidateQueries({
+        queryKey: ["localized-db-values", selectedEntityType],
+      });
+      toast.success("Value status updated");
     } catch (error) {
-      console.error('Error updating value status:', error);
-      toast.error('Failed to update value status');
+      console.error("Error updating value status:", error);
+      toast.error("Failed to update value status");
     }
   };
 
@@ -219,7 +247,8 @@ const LocalizationManagementPage = (): JSX.Element => {
             Localization Management
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
-            Manage translated values for facility types, locations, and other dynamic content
+            Manage translated values for facility types, locations, and other
+            dynamic content
           </p>
         </header>
 
@@ -235,7 +264,10 @@ const LocalizationManagementPage = (): JSX.Element => {
             </div>
           </CardHeader>
           <CardContent>
-            <Select value={selectedEntityType} onValueChange={setSelectedEntityType}>
+            <Select
+              value={selectedEntityType}
+              onValueChange={setSelectedEntityType}
+            >
               <SelectTrigger className="w-full md:w-64">
                 <SelectValue />
               </SelectTrigger>
@@ -277,12 +309,16 @@ const LocalizationManagementPage = (): JSX.Element => {
                         </Badge>
                       </div>
                       {value.description && (
-                        <p className="text-sm text-gray-500 mt-1">{value.description}</p>
+                        <p className="text-sm text-gray-500 mt-1">
+                          {value.description}
+                        </p>
                       )}
                     </div>
                     <div className="flex items-center gap-2">
-                      <Badge variant={value.sort_order ? "default" : "secondary"}>
-                        Order: {value.sort_order || 'N/A'}
+                      <Badge
+                        variant={value.sort_order ? "default" : "secondary"}
+                      >
+                        Order: {value.sort_order || "N/A"}
                       </Badge>
                       <Button
                         variant="ghost"
@@ -311,7 +347,9 @@ const LocalizationManagementPage = (): JSX.Element => {
           <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>
-                {editingValue ? 'Edit Localized Value' : 'Add New Localized Value'}
+                {editingValue
+                  ? "Edit Localized Value"
+                  : "Add New Localized Value"}
               </DialogTitle>
               <DialogDescription>
                 Enter translations for both English and Norwegian
@@ -324,7 +362,9 @@ const LocalizationManagementPage = (): JSX.Element => {
                 <Input
                   id="entity_key"
                   value={formData.entity_key}
-                  onChange={(e) => setFormData({ ...formData, entity_key: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, entity_key: e.target.value })
+                  }
                   placeholder="e.g., basketball_court"
                   disabled={!!editingValue}
                 />
@@ -336,7 +376,9 @@ const LocalizationManagementPage = (): JSX.Element => {
                   <Input
                     id="label_en"
                     value={formData.label_en}
-                    onChange={(e) => setFormData({ ...formData, label_en: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, label_en: e.target.value })
+                    }
                     placeholder="Basketball Court"
                   />
                 </div>
@@ -346,7 +388,9 @@ const LocalizationManagementPage = (): JSX.Element => {
                   <Input
                     id="label_no"
                     value={formData.label_no}
-                    onChange={(e) => setFormData({ ...formData, label_no: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, label_no: e.target.value })
+                    }
                     placeholder="Basketballbane"
                   />
                 </div>
@@ -357,7 +401,9 @@ const LocalizationManagementPage = (): JSX.Element => {
                 <Input
                   id="description"
                   value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, description: e.target.value })
+                  }
                   placeholder="Optional description"
                 />
               </div>
@@ -368,7 +414,12 @@ const LocalizationManagementPage = (): JSX.Element => {
                   id="sort_order"
                   type="number"
                   value={formData.sort_order}
-                  onChange={(e) => setFormData({ ...formData, sort_order: parseInt(e.target.value) || 0 })}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      sort_order: parseInt(e.target.value) || 0,
+                    })
+                  }
                 />
               </div>
 
@@ -377,7 +428,9 @@ const LocalizationManagementPage = (): JSX.Element => {
                   type="checkbox"
                   id="is_active"
                   checked={formData.is_active}
-                  onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, is_active: e.target.checked })
+                  }
                   className="rounded"
                 />
                 <Label htmlFor="is_active">Active</Label>
@@ -401,4 +454,3 @@ const LocalizationManagementPage = (): JSX.Element => {
 };
 
 export default LocalizationManagementPage;
-

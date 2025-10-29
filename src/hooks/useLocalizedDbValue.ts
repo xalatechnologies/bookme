@@ -64,7 +64,8 @@ export const useLocalizedDbValue = (entityType: string) => {
       setError(null);
 
       const { data, error: fetchError } = await supabase
-        .from('localized_db_values')
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        .from('localized_db_values' as any)
         .select('entity_key, label, description, sort_order, metadata')
         .eq('entity_type', entityType)
         .eq('language_code', currentLang)
@@ -73,7 +74,8 @@ export const useLocalizedDbValue = (entityType: string) => {
 
       if (fetchError) throw fetchError;
 
-      const formattedOptions: LocalizedOption[] = (data || []).map(item => ({
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const formattedOptions: LocalizedOption[] = (data || []).map((item: any) => ({
         value: item.entity_key,
         label: item.label,
         description: item.description || undefined,

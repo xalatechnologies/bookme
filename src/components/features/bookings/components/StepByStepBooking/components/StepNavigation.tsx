@@ -30,7 +30,7 @@ export const StepNavigation = ({
   onNext,
   isLastStep = false
 }: IStepNavigationProps): JSX.Element => {
-  const { t } = useTranslation(['bookings', 'common']);
+  const { t } = useTranslation(['booking', 'common']);
 
   return (
     <div className="flex justify-between">

@@ -30,7 +30,7 @@ export const AvailabilityLegend: React.FC<IAvailabilityLegendProps> = ({
   showConflictInfo = true,
   showHolidayInfo = true,
 }) => {
-  const { t } = useTranslation('calendar');
+  const { t } = useTranslation('common');
   const legendItems = [
     {
       status: "available" as const,

@@ -50,9 +50,9 @@ interface IQuickActionsProps {
  * />
  * ```
  */
-const QuickActions = (props: IQuickActionsProps): JSX.Element => {
+export const QuickActions = (props: IQuickActionsProps): JSX.Element => {
   const { quickActions } = props;
-  const { t } = useTranslation('user');
+  const { t } = useTranslation("user");
   const navigate = useNavigate();
 
   return (
@@ -60,7 +60,7 @@ const QuickActions = (props: IQuickActionsProps): JSX.Element => {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Settings className="h-5 w-5" />
-          {t('dashboard.quickActions')}
+          {t("dashboard.quickActions")}
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -94,5 +94,3 @@ const QuickActions = (props: IQuickActionsProps): JSX.Element => {
     </Card>
   );
 };
-
-export default QuickActions;

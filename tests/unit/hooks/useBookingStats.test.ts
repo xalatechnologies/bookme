@@ -21,7 +21,7 @@ const mockBookings: BookingWithDetails[] = [
     approval_status: 'approved',
     approved_by: null,
     approved_at: null,
-  } as any,
+  },
   {
     id: 'booking-2',
     user_id: 'user-1',
@@ -38,7 +38,7 @@ const mockBookings: BookingWithDetails[] = [
     approval_status: 'pending',
     approved_by: null,
     approved_at: null,
-  } as any,
+  },
   {
     id: 'booking-3',
     user_id: 'user-1',
@@ -55,7 +55,7 @@ const mockBookings: BookingWithDetails[] = [
     approval_status: 'approved',
     approved_by: null,
     approved_at: null,
-  } as any,
+  },
   {
     id: 'booking-4',
     user_id: 'user-1',
@@ -72,7 +72,7 @@ const mockBookings: BookingWithDetails[] = [
     approval_status: 'rejected',
     approved_by: null,
     approved_at: null,
-  } as any,
+  },
   {
     id: 'booking-5',
     user_id: 'user-1',
@@ -89,7 +89,7 @@ const mockBookings: BookingWithDetails[] = [
     approval_status: 'approved',
     approved_by: null,
     approved_at: null,
-  } as any,
+  },
   {
     id: 'booking-6',
     user_id: 'user-1',
@@ -106,7 +106,7 @@ const mockBookings: BookingWithDetails[] = [
     approval_status: 'approved',
     approved_by: null,
     approved_at: null,
-  } as any,
+  },
   {
     id: 'booking-7',
     user_id: 'user-1',
@@ -123,7 +123,7 @@ const mockBookings: BookingWithDetails[] = [
     approval_status: 'approved',
     approved_by: null,
     approved_at: null,
-  } as any,
+  },
 ];
 
 describe('useBookingStats', () => {
@@ -292,17 +292,19 @@ describe('useBookingStats', () => {
   describe('Immutability', () => {
     it('should return new stats object when bookings change', () => {
       const { result, rerender } = renderHook(
-        ({ bookings }) => useBookingStats(bookings),
+        ({ bookings }: { readonly bookings: BookingWithDetails[] | undefined }) => useBookingStats(bookings),
         { initialProps: { bookings: mockBookings } }
       );
 
       const firstStats = result.current;
 
-      const newBookings = [...mockBookings, {
-        ...mockBookings[0],
+      const newBooking: BookingWithDetails = {
+        ...mockBookings[0]!,
         id: 'booking-8',
         status: 'paid',
-      } as any];
+      };
+
+      const newBookings = [...mockBookings, newBooking];
 
       rerender({ bookings: newBookings });
 
@@ -350,7 +352,7 @@ describe('useBookingStatusStats', () => {
 
   it('should return zero stats for status with no bookings', () => {
     const { result } = renderHook(() =>
-      useBookingStatusStats(mockBookings, 'pending' as any)
+      useBookingStatusStats(mockBookings, 'pending')
     );
 
     // There should be bookings with 'pending' status

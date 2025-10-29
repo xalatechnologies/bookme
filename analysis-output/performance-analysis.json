@@ -1,0 +1,2315 @@
+{
+  "summary": {
+    "filesWithIssues": 68,
+    "filesWithMemoization": 25,
+    "filesWithLoading": 16,
+    "filesWithLazyLoading": 0,
+    "commonIssues": [
+      {
+        "issue": "Inline arrow functions without useCallback",
+        "count": 63
+      },
+      {
+        "issue": "Potential missing key props in lists",
+        "count": 6
+      }
+    ]
+  },
+  "files": [
+    {
+      "path": "components/common/calendar/Calendar.tsx",
+      "memoization": {
+        "usesMemo": 2,
+        "usesCallback": 3,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": false,
+        "hasSkeletons": false,
+        "hasSpinners": false,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": []
+    },
+    {
+      "path": "components/features/auth/components/PermissionGuard.tsx",
+      "memoization": {
+        "usesMemo": 0,
+        "usesCallback": 0,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": true,
+        "hasSkeletons": false,
+        "hasSpinners": true,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": [
+        "Potential missing key props in lists"
+      ]
+    },
+    {
+      "path": "components/features/bookings/components/BookingCard/BookingDetailsPanel.tsx",
+      "memoization": {
+        "usesMemo": 0,
+        "usesCallback": 0,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": false,
+        "hasSkeletons": false,
+        "hasSpinners": false,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": [
+        "Inline arrow functions without useCallback"
+      ]
+    },
+    {
+      "path": "components/features/bookings/components/BookingFiltersBar.tsx",
+      "memoization": {
+        "usesMemo": 5,
+        "usesCallback": 0,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": false,
+        "hasSkeletons": false,
+        "hasSpinners": false,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": []
+    },
+    {
+      "path": "components/features/bookings/components/BookingForm/BookingTypeSelector.tsx",
+      "memoization": {
+        "usesMemo": 0,
+        "usesCallback": 0,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": false,
+        "hasSkeletons": false,
+        "hasSpinners": false,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": [
+        "Inline arrow functions without useCallback"
+      ]
+    },
+    {
+      "path": "components/features/bookings/components/BookingForm/PriceCalculation.tsx",
+      "memoization": {
+        "usesMemo": 2,
+        "usesCallback": 0,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": true,
+        "hasSkeletons": false,
+        "hasSpinners": true,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": []
+    },
+    {
+      "path": "components/features/bookings/components/RecurringBookingModal/RecurringBookingCard.tsx",
+      "memoization": {
+        "usesMemo": 0,
+        "usesCallback": 0,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": false,
+        "hasSkeletons": false,
+        "hasSpinners": false,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": [
+        "Inline arrow functions without useCallback"
+      ]
+    },
+    {
+      "path": "components/features/bookings/components/RecurringBookingModal/index.tsx",
+      "memoization": {
+        "usesMemo": 3,
+        "usesCallback": 0,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": false,
+        "hasSkeletons": false,
+        "hasSpinners": false,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": []
+    },
+    {
+      "path": "components/features/bookings/components/StepByStepBooking/components/StepProgressIndicator.tsx",
+      "memoization": {
+        "usesMemo": 0,
+        "usesCallback": 0,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": false,
+        "hasSkeletons": false,
+        "hasSpinners": false,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": [
+        "Inline arrow functions without useCallback"
+      ]
+    },
+    {
+      "path": "components/features/bookings/components/StepByStepBooking/components/TimeSlotPackageDisplay.tsx",
+      "memoization": {
+        "usesMemo": 2,
+        "usesCallback": 0,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": false,
+        "hasSkeletons": false,
+        "hasSpinners": false,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": []
+    },
+    {
+      "path": "components/features/bookings/components/StepByStepBooking/hooks/usePriceCalculation.ts",
+      "memoization": {
+        "usesMemo": 8,
+        "usesCallback": 0,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": false,
+        "hasSkeletons": false,
+        "hasSpinners": false,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": []
+    },
+    {
+      "path": "components/features/bookings/components/StepByStepBooking/hooks/useRecurringSlots.ts",
+      "memoization": {
+        "usesMemo": 0,
+        "usesCallback": 4,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": false,
+        "hasSkeletons": false,
+        "hasSpinners": false,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": [
+        "Potential missing key props in lists"
+      ]
+    },
+    {
+      "path": "components/features/bookings/components/StepByStepBooking/index.tsx",
+      "memoization": {
+        "usesMemo": 3,
+        "usesCallback": 15,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": true,
+        "hasSkeletons": false,
+        "hasSpinners": true,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": true,
+        "throttling": false
+      },
+      "issues": []
+    },
+    {
+      "path": "components/features/bookings/components/StepByStepBooking/steps/Step1Calendar.tsx",
+      "memoization": {
+        "usesMemo": 2,
+        "usesCallback": 6,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": true,
+        "hasSkeletons": false,
+        "hasSpinners": true,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": [
+        "Potential missing key props in lists"
+      ]
+    },
+    {
+      "path": "components/features/calendar/components/EnhancedCalendar/CalendarGrid.tsx",
+      "memoization": {
+        "usesMemo": 0,
+        "usesCallback": 0,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": false,
+        "hasSkeletons": false,
+        "hasSpinners": false,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": [
+        "Inline arrow functions without useCallback"
+      ]
+    },
+    {
+      "path": "components/features/calendar/components/EnhancedCalendar/TimeSlotGrid.tsx",
+      "memoization": {
+        "usesMemo": 2,
+        "usesCallback": 8,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": true,
+        "hasSkeletons": false,
+        "hasSpinners": true,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": []
+    },
+    {
+      "path": "components/features/calendar/components/FacilityCalendar/ReadOnlyCalendar.tsx",
+      "memoization": {
+        "usesMemo": 3,
+        "usesCallback": 0,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": false,
+        "hasSkeletons": false,
+        "hasSpinners": false,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": [
+        "Inline arrow functions without useCallback"
+      ]
+    },
+    {
+      "path": "components/features/calendar/components/FacilityCalendar/index.tsx",
+      "memoization": {
+        "usesMemo": 3,
+        "usesCallback": 15,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": true,
+        "hasSkeletons": false,
+        "hasSpinners": true,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": []
+    },
+    {
+      "path": "components/features/calendar/components/SimpleCalendar/index.tsx",
+      "memoization": {
+        "usesMemo": 2,
+        "usesCallback": 0,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": false,
+        "hasSkeletons": false,
+        "hasSpinners": false,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": [
+        "Inline arrow functions without useCallback"
+      ]
+    },
+    {
+      "path": "components/features/dashboard/admin/ApprovalQueue.tsx",
+      "memoization": {
+        "usesMemo": 0,
+        "usesCallback": 0,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": false,
+        "hasSkeletons": false,
+        "hasSpinners": false,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": [
+        "Inline arrow functions without useCallback"
+      ]
+    },
+    {
+      "path": "components/features/dashboard/admin/DailyTasks.tsx",
+      "memoization": {
+        "usesMemo": 0,
+        "usesCallback": 0,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": false,
+        "hasSkeletons": false,
+        "hasSpinners": false,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": [
+        "Inline arrow functions without useCallback"
+      ]
+    },
+    {
+      "path": "components/features/dashboard/user/BookingList.tsx",
+      "memoization": {
+        "usesMemo": 0,
+        "usesCallback": 0,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": false,
+        "hasSkeletons": false,
+        "hasSpinners": false,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": [
+        "Inline arrow functions without useCallback"
+      ]
+    },
+    {
+      "path": "components/features/dashboard/user/QuickActions.tsx",
+      "memoization": {
+        "usesMemo": 0,
+        "usesCallback": 0,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": false,
+        "hasSkeletons": false,
+        "hasSpinners": false,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": [
+        "Inline arrow functions without useCallback"
+      ]
+    },
+    {
+      "path": "components/features/dashboard/user/SystemMessages.tsx",
+      "memoization": {
+        "usesMemo": 0,
+        "usesCallback": 0,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": false,
+        "hasSkeletons": false,
+        "hasSpinners": false,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": [
+        "Inline arrow functions without useCallback"
+      ]
+    },
+    {
+      "path": "components/features/facilities/components/FacilityCard/FacilityListItem.tsx",
+      "memoization": {
+        "usesMemo": 0,
+        "usesCallback": 0,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": false,
+        "hasSkeletons": false,
+        "hasSpinners": false,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": [
+        "Inline arrow functions without useCallback"
+      ]
+    },
+    {
+      "path": "components/features/facilities/components/FacilityDetail/FacilityDetailBreadcrumb.tsx",
+      "memoization": {
+        "usesMemo": 0,
+        "usesCallback": 0,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": false,
+        "hasSkeletons": false,
+        "hasSpinners": false,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": [
+        "Inline arrow functions without useCallback"
+      ]
+    },
+    {
+      "path": "components/features/facilities/components/FacilityDetail/FacilityDetailHeader.tsx",
+      "memoization": {
+        "usesMemo": 0,
+        "usesCallback": 0,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": false,
+        "hasSkeletons": false,
+        "hasSpinners": false,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": [
+        "Inline arrow functions without useCallback"
+      ]
+    },
+    {
+      "path": "components/features/facilities/components/FacilityDetail/FacilityInfoTabs.tsx",
+      "memoization": {
+        "usesMemo": 0,
+        "usesCallback": 0,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": false,
+        "hasSkeletons": false,
+        "hasSpinners": false,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": [
+        "Inline arrow functions without useCallback"
+      ]
+    },
+    {
+      "path": "components/features/facilities/components/FacilityDetail/MobileBookingPanel.tsx",
+      "memoization": {
+        "usesMemo": 0,
+        "usesCallback": 0,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": false,
+        "hasSkeletons": false,
+        "hasSpinners": false,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": [
+        "Inline arrow functions without useCallback"
+      ]
+    },
+    {
+      "path": "components/features/facilities/components/FacilityEditForm/AdminFacilityCard.tsx",
+      "memoization": {
+        "usesMemo": 0,
+        "usesCallback": 0,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": false,
+        "hasSkeletons": false,
+        "hasSpinners": false,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": [
+        "Inline arrow functions without useCallback"
+      ]
+    },
+    {
+      "path": "components/features/facilities/components/FacilityEditForm/AdminFacilityListItem.tsx",
+      "memoization": {
+        "usesMemo": 0,
+        "usesCallback": 0,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": false,
+        "hasSkeletons": false,
+        "hasSpinners": false,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": [
+        "Inline arrow functions without useCallback"
+      ]
+    },
+    {
+      "path": "components/features/facilities/components/FacilityEditForm/FieldConfigModal.tsx",
+      "memoization": {
+        "usesMemo": 0,
+        "usesCallback": 0,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": false,
+        "hasSkeletons": false,
+        "hasSpinners": false,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": [
+        "Inline arrow functions without useCallback"
+      ]
+    },
+    {
+      "path": "components/features/facilities/components/FacilityEditForm/ViewToggle.tsx",
+      "memoization": {
+        "usesMemo": 0,
+        "usesCallback": 0,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": false,
+        "hasSkeletons": false,
+        "hasSpinners": false,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": [
+        "Inline arrow functions without useCallback"
+      ]
+    },
+    {
+      "path": "components/features/facilities/components/FacilityImageGallery/GalleryGrid.tsx",
+      "memoization": {
+        "usesMemo": 0,
+        "usesCallback": 0,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": false,
+        "hasSkeletons": false,
+        "hasSpinners": false,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": [
+        "Inline arrow functions without useCallback"
+      ]
+    },
+    {
+      "path": "components/features/facilities/components/FacilityImageGallery/GalleryModal.tsx",
+      "memoization": {
+        "usesMemo": 0,
+        "usesCallback": 0,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": false,
+        "hasSkeletons": false,
+        "hasSpinners": false,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": [
+        "Inline arrow functions without useCallback"
+      ]
+    },
+    {
+      "path": "components/features/facilities/components/FacilityMap/MapMarkers.tsx",
+      "memoization": {
+        "usesMemo": 0,
+        "usesCallback": 0,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": false,
+        "hasSkeletons": false,
+        "hasSpinners": false,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": [
+        "Potential missing key props in lists"
+      ]
+    },
+    {
+      "path": "components/features/facilities/components/FacilitySearch/FacilityGrid.tsx",
+      "memoization": {
+        "usesMemo": 1,
+        "usesCallback": 0,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": false,
+        "hasSkeletons": false,
+        "hasSpinners": false,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": []
+    },
+    {
+      "path": "components/features/facilities/components/FacilitySearch/FilterBar.tsx",
+      "memoization": {
+        "usesMemo": 0,
+        "usesCallback": 0,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": false,
+        "hasSkeletons": false,
+        "hasSpinners": false,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": [
+        "Inline arrow functions without useCallback"
+      ]
+    },
+    {
+      "path": "components/features/facilities/components/FacilitySearch/ViewToggle.tsx",
+      "memoization": {
+        "usesMemo": 0,
+        "usesCallback": 0,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": false,
+        "hasSkeletons": false,
+        "hasSpinners": false,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": [
+        "Inline arrow functions without useCallback"
+      ]
+    },
+    {
+      "path": "components/features/groups/components/GroupBookingFlow.tsx",
+      "memoization": {
+        "usesMemo": 0,
+        "usesCallback": 0,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": false,
+        "hasSkeletons": false,
+        "hasSpinners": false,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": [
+        "Inline arrow functions without useCallback"
+      ]
+    },
+    {
+      "path": "components/features/groups/components/GroupInvitationModal.tsx",
+      "memoization": {
+        "usesMemo": 0,
+        "usesCallback": 0,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": true,
+        "hasSkeletons": false,
+        "hasSpinners": true,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": [
+        "Inline arrow functions without useCallback"
+      ]
+    },
+    {
+      "path": "components/features/groups/components/GroupManagementCard.tsx",
+      "memoization": {
+        "usesMemo": 0,
+        "usesCallback": 0,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": false,
+        "hasSkeletons": false,
+        "hasSpinners": false,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": [
+        "Inline arrow functions without useCallback"
+      ]
+    },
+    {
+      "path": "components/features/messaging/components/CreateThreadModal.tsx",
+      "memoization": {
+        "usesMemo": 0,
+        "usesCallback": 0,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": true,
+        "hasSkeletons": false,
+        "hasSpinners": true,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": [
+        "Inline arrow functions without useCallback"
+      ]
+    },
+    {
+      "path": "components/features/messaging/components/MessageInbox.tsx",
+      "memoization": {
+        "usesMemo": 0,
+        "usesCallback": 0,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": false,
+        "hasSkeletons": false,
+        "hasSpinners": false,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": [
+        "Inline arrow functions without useCallback"
+      ]
+    },
+    {
+      "path": "components/features/messaging/components/MessageThread.tsx",
+      "memoization": {
+        "usesMemo": 0,
+        "usesCallback": 0,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": false,
+        "hasSkeletons": false,
+        "hasSpinners": false,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": [
+        "Inline arrow functions without useCallback"
+      ]
+    },
+    {
+      "path": "components/features/search/components/AdminSearchField.tsx",
+      "memoization": {
+        "usesMemo": 0,
+        "usesCallback": 0,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": false,
+        "hasSkeletons": false,
+        "hasSpinners": false,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": [
+        "Inline arrow functions without useCallback"
+      ]
+    },
+    {
+      "path": "components/features/search/components/GlobalSearch.tsx",
+      "memoization": {
+        "usesMemo": 0,
+        "usesCallback": 0,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": false,
+        "hasSkeletons": false,
+        "hasSpinners": false,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": [
+        "Inline arrow functions without useCallback"
+      ]
+    },
+    {
+      "path": "components/features/search/components/SearchFilter.tsx",
+      "memoization": {
+        "usesMemo": 4,
+        "usesCallback": 0,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": true,
+        "hasSkeletons": false,
+        "hasSpinners": true,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": [
+        "Inline arrow functions without useCallback"
+      ]
+    },
+    {
+      "path": "components/features/search/components/SearchFilters.tsx",
+      "memoization": {
+        "usesMemo": 0,
+        "usesCallback": 0,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": false,
+        "hasSkeletons": false,
+        "hasSpinners": false,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": [
+        "Inline arrow functions without useCallback"
+      ]
+    },
+    {
+      "path": "components/features/search/components/UserSearchField.tsx",
+      "memoization": {
+        "usesMemo": 0,
+        "usesCallback": 0,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": false,
+        "hasSkeletons": false,
+        "hasSpinners": false,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": [
+        "Inline arrow functions without useCallback"
+      ]
+    },
+    {
+      "path": "components/features/search/components/ViewModeToggle.tsx",
+      "memoization": {
+        "usesMemo": 0,
+        "usesCallback": 0,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": false,
+        "hasSkeletons": false,
+        "hasSpinners": false,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": [
+        "Inline arrow functions without useCallback"
+      ]
+    },
+    {
+      "path": "components/features/support/components/SupportTicketList.tsx",
+      "memoization": {
+        "usesMemo": 0,
+        "usesCallback": 0,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": false,
+        "hasSkeletons": false,
+        "hasSpinners": false,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": [
+        "Inline arrow functions without useCallback"
+      ]
+    },
+    {
+      "path": "components/layouts/AdminLayout/NotificationBell.tsx",
+      "memoization": {
+        "usesMemo": 0,
+        "usesCallback": 0,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": false,
+        "hasSkeletons": false,
+        "hasSpinners": false,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": [
+        "Inline arrow functions without useCallback"
+      ]
+    },
+    {
+      "path": "components/layouts/AdminLayout/ProfileDropdown.tsx",
+      "memoization": {
+        "usesMemo": 0,
+        "usesCallback": 0,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": false,
+        "hasSkeletons": false,
+        "hasSpinners": false,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": [
+        "Inline arrow functions without useCallback"
+      ]
+    },
+    {
+      "path": "components/layouts/PublicLayout/CartDropdown.tsx",
+      "memoization": {
+        "usesMemo": 0,
+        "usesCallback": 0,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": false,
+        "hasSkeletons": false,
+        "hasSpinners": false,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": [
+        "Inline arrow functions without useCallback"
+      ]
+    },
+    {
+      "path": "components/layouts/PublicLayout/GlobalHeader.tsx",
+      "memoization": {
+        "usesMemo": 0,
+        "usesCallback": 0,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": false,
+        "hasSkeletons": false,
+        "hasSpinners": false,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": [
+        "Inline arrow functions without useCallback"
+      ]
+    },
+    {
+      "path": "components/layouts/PublicLayout/ProfileMenu.tsx",
+      "memoization": {
+        "usesMemo": 0,
+        "usesCallback": 0,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": false,
+        "hasSkeletons": false,
+        "hasSpinners": false,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": [
+        "Inline arrow functions without useCallback"
+      ]
+    },
+    {
+      "path": "components/layouts/UserLayout/UserNotificationBell.tsx",
+      "memoization": {
+        "usesMemo": 0,
+        "usesCallback": 0,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": false,
+        "hasSkeletons": false,
+        "hasSpinners": false,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": [
+        "Inline arrow functions without useCallback"
+      ]
+    },
+    {
+      "path": "components/layouts/UserLayout/UserProfileDropdown.tsx",
+      "memoization": {
+        "usesMemo": 0,
+        "usesCallback": 0,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": false,
+        "hasSkeletons": false,
+        "hasSpinners": false,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": [
+        "Inline arrow functions without useCallback"
+      ]
+    },
+    {
+      "path": "pages/Checkout.tsx",
+      "memoization": {
+        "usesMemo": 2,
+        "usesCallback": 13,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": false,
+        "hasSkeletons": false,
+        "hasSpinners": false,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": []
+    },
+    {
+      "path": "pages/Index.tsx",
+      "memoization": {
+        "usesMemo": 0,
+        "usesCallback": 0,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": false,
+        "hasSkeletons": false,
+        "hasSpinners": false,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": [
+        "Potential missing key props in lists"
+      ]
+    },
+    {
+      "path": "pages/LoginSelection.tsx",
+      "memoization": {
+        "usesMemo": 0,
+        "usesCallback": 0,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": false,
+        "hasSkeletons": false,
+        "hasSpinners": false,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": [
+        "Inline arrow functions without useCallback"
+      ]
+    },
+    {
+      "path": "pages/admin/AuditLogPage.tsx",
+      "memoization": {
+        "usesMemo": 5,
+        "usesCallback": 0,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": false,
+        "hasSkeletons": false,
+        "hasSpinners": false,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": [
+        "Inline arrow functions without useCallback"
+      ]
+    },
+    {
+      "path": "pages/admin/BookingsPage.tsx",
+      "memoization": {
+        "usesMemo": 5,
+        "usesCallback": 6,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": false,
+        "hasSkeletons": false,
+        "hasSpinners": false,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": []
+    },
+    {
+      "path": "pages/admin/DeletionPlanPage.tsx",
+      "memoization": {
+        "usesMemo": 0,
+        "usesCallback": 0,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": false,
+        "hasSkeletons": false,
+        "hasSpinners": false,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": [
+        "Inline arrow functions without useCallback"
+      ]
+    },
+    {
+      "path": "pages/admin/FacilitiesPage.tsx",
+      "memoization": {
+        "usesMemo": 0,
+        "usesCallback": 0,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": false,
+        "hasSkeletons": false,
+        "hasSpinners": false,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": [
+        "Inline arrow functions without useCallback"
+      ]
+    },
+    {
+      "path": "pages/admin/FacilityEditPage.tsx",
+      "memoization": {
+        "usesMemo": 0,
+        "usesCallback": 0,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": true,
+        "hasSkeletons": false,
+        "hasSpinners": true,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": [
+        "Inline arrow functions without useCallback"
+      ]
+    },
+    {
+      "path": "pages/admin/IntegrationsPage.tsx",
+      "memoization": {
+        "usesMemo": 0,
+        "usesCallback": 0,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": false,
+        "hasSkeletons": false,
+        "hasSpinners": false,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": [
+        "Inline arrow functions without useCallback"
+      ]
+    },
+    {
+      "path": "pages/admin/LocalizationManagementPage.tsx",
+      "memoization": {
+        "usesMemo": 0,
+        "usesCallback": 0,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": true,
+        "hasSkeletons": false,
+        "hasSpinners": true,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": true,
+        "usesSWR": false,
+        "hasCache": true
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": [
+        "Inline arrow functions without useCallback"
+      ]
+    },
+    {
+      "path": "pages/admin/NotificationsPage.tsx",
+      "memoization": {
+        "usesMemo": 2,
+        "usesCallback": 0,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": false,
+        "hasSkeletons": false,
+        "hasSpinners": false,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": []
+    },
+    {
+      "path": "pages/admin/ReportsPage.tsx",
+      "memoization": {
+        "usesMemo": 2,
+        "usesCallback": 0,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": false,
+        "hasSkeletons": false,
+        "hasSpinners": false,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": []
+    },
+    {
+      "path": "pages/admin/SettingsPage.tsx",
+      "memoization": {
+        "usesMemo": 0,
+        "usesCallback": 0,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": false,
+        "hasSkeletons": false,
+        "hasSpinners": false,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": [
+        "Inline arrow functions without useCallback"
+      ]
+    },
+    {
+      "path": "pages/admin/UsersRolesPage.tsx",
+      "memoization": {
+        "usesMemo": 2,
+        "usesCallback": 0,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": false,
+        "hasSkeletons": false,
+        "hasSpinners": false,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": [
+        "Inline arrow functions without useCallback"
+      ]
+    },
+    {
+      "path": "pages/user/Bookings.tsx",
+      "memoization": {
+        "usesMemo": 2,
+        "usesCallback": 13,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": true,
+        "hasSkeletons": false,
+        "hasSpinners": true,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": []
+    },
+    {
+      "path": "pages/user/CalendarPage.tsx",
+      "memoization": {
+        "usesMemo": 4,
+        "usesCallback": 0,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": false,
+        "hasSkeletons": false,
+        "hasSpinners": false,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": [
+        "Inline arrow functions without useCallback",
+        "Potential missing key props in lists"
+      ]
+    },
+    {
+      "path": "pages/user/HistoryPage.tsx",
+      "memoization": {
+        "usesMemo": 5,
+        "usesCallback": 0,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": true,
+        "hasSkeletons": false,
+        "hasSpinners": true,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": [
+        "Inline arrow functions without useCallback"
+      ]
+    },
+    {
+      "path": "pages/user/UserDashboard.tsx",
+      "memoization": {
+        "usesMemo": 3,
+        "usesCallback": 0,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": true,
+        "hasSkeletons": false,
+        "hasSpinners": false,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": [
+        "Inline arrow functions without useCallback"
+      ]
+    },
+    {
+      "path": "pages/user/UserFacilities.tsx",
+      "memoization": {
+        "usesMemo": 0,
+        "usesCallback": 0,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": false,
+        "hasSkeletons": false,
+        "hasSpinners": false,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": [
+        "Inline arrow functions without useCallback"
+      ]
+    },
+    {
+      "path": "pages/user/UserFavorites.tsx",
+      "memoization": {
+        "usesMemo": 0,
+        "usesCallback": 0,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": false,
+        "hasSkeletons": false,
+        "hasSpinners": false,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": [
+        "Inline arrow functions without useCallback"
+      ]
+    },
+    {
+      "path": "pages/user/UserHelp.tsx",
+      "memoization": {
+        "usesMemo": 0,
+        "usesCallback": 0,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": false,
+        "hasSkeletons": false,
+        "hasSpinners": false,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": [
+        "Inline arrow functions without useCallback"
+      ]
+    },
+    {
+      "path": "pages/user/UserNotifications.tsx",
+      "memoization": {
+        "usesMemo": 0,
+        "usesCallback": 0,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": false,
+        "hasSkeletons": false,
+        "hasSpinners": false,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": [
+        "Inline arrow functions without useCallback"
+      ]
+    },
+    {
+      "path": "pages/user/UserProfile.tsx",
+      "memoization": {
+        "usesMemo": 0,
+        "usesCallback": 0,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": true,
+        "hasSkeletons": false,
+        "hasSpinners": true,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": [
+        "Inline arrow functions without useCallback"
+      ]
+    },
+    {
+      "path": "pages/user/UserReceipts.tsx",
+      "memoization": {
+        "usesMemo": 2,
+        "usesCallback": 0,
+        "usesMemoComponent": false
+      },
+      "loading": {
+        "hasLoadingStates": true,
+        "hasSkeletons": false,
+        "hasSpinners": false,
+        "hasSuspense": false
+      },
+      "dataFetching": {
+        "usesReactQuery": false,
+        "usesSWR": false,
+        "hasCache": false
+      },
+      "optimization": {
+        "lazyLoading": false,
+        "virtualScrolling": false,
+        "debouncing": false,
+        "throttling": false
+      },
+      "issues": [
+        "Inline arrow functions without useCallback"
+      ]
+    }
+  ]
+}

@@ -37,7 +37,7 @@ interface IFacilityListItemUserProps {
 }
 
 const FacilityListItemUser = (props: IFacilityListItemUserProps): JSX.Element => {
-  const { t } = useTranslation(['facilities']);
+  const { t } = useTranslation(['facility']);
   const navigate = useNavigate();
   const [isAnimating, setIsAnimating] = useState<boolean>(false);
 
@@ -87,7 +87,7 @@ const FacilityListItemUser = (props: IFacilityListItemUserProps): JSX.Element =>
     if (navigator.share) {
       navigator.share({
         title: name,
-        text: t('facilities:share.check_out', { name, type, capacity }),
+        text: t('facility:share.check_out', { name, type, capacity }),
         url: window.location.origin + `/facilities/${id}`
       });
     } else {
@@ -98,17 +98,17 @@ const FacilityListItemUser = (props: IFacilityListItemUserProps): JSX.Element =>
   const getAvailabilityBadge = (): JSX.Element => {
     const availabilityConfig = {
       available: {
-        label: t('facilities:availability.available_today'),
+        label: t('facility:availability.available_today'),
         className: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300",
         icon: CheckCircle
       },
       busy: {
-        label: t('facilities:availability.fully_booked_weekend'),
+        label: t('facility:availability.fully_booked_weekend'),
         className: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300",
         icon: Clock
       },
       full: {
-        label: t('facilities:availability.fully_booked'),
+        label: t('facility:availability.fully_booked'),
         className: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300",
         icon: XCircle
       }
@@ -201,7 +201,7 @@ const FacilityListItemUser = (props: IFacilityListItemUserProps): JSX.Element =>
               <div className="flex items-center space-x-1">
                 <Users className="h-4 w-4 text-gray-400" />
                 <span className="text-sm text-gray-600 dark:text-gray-400">
-                  {capacity} {t('facilities:card.people')}
+                  {capacity} {t('facility:card.people')}
                 </span>
               </div>
 
@@ -232,7 +232,7 @@ const FacilityListItemUser = (props: IFacilityListItemUserProps): JSX.Element =>
                 onClick={handleViewDetails}
               >
                 <Eye className="h-4 w-4 mr-1" />
-                {t('facilities:buttons.view_details')}
+                {t('facility:buttons.view_details')}
               </Button>
 
               <Button
@@ -241,7 +241,7 @@ const FacilityListItemUser = (props: IFacilityListItemUserProps): JSX.Element =>
                 onClick={handleBookNow}
               >
                 <Calendar className="h-4 w-4 mr-1" />
-                {t('facilities:buttons.book_now')}
+                {t('facility:buttons.book_now')}
               </Button>
             </div>
           </div>

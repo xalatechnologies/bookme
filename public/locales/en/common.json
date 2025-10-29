@@ -241,7 +241,20 @@
     "week": "week",
     "weeks": "weeks",
     "month": "month",
-    "months": "months",
+    "months": {
+      "january": "January",
+      "february": "February",
+      "march": "March",
+      "april": "April",
+      "may": "May",
+      "june": "June",
+      "july": "July",
+      "august": "August",
+      "september": "September",
+      "october": "October",
+      "november": "November",
+      "december": "December"
+    },
     "year": "year",
     "years": "years",
     "today": "Today",
@@ -272,20 +285,6 @@
       "friday": "Friday",
       "saturday": "Saturday",
       "sunday": "Sunday"
-    },
-    "months": {
-      "january": "January",
-      "february": "February",
-      "march": "March",
-      "april": "April",
-      "may": "May",
-      "june": "June",
-      "july": "July",
-      "august": "August",
-      "september": "September",
-      "october": "October",
-      "november": "November",
-      "december": "December"
     }
   },
   "messages": {
@@ -460,7 +459,12 @@
     "food_drinks": "Food & drinks",
     "booking_time": "Booking time",
     "cancellation": "Cancellation policy",
-    "parking": "Parking"
+    "parking": "Parking",
+    "food_drinks_answer": "Food and drinks are allowed in designated areas only. Please clean up after yourself.",
+    "booking_time_answer": "Bookings can be made up to 3 months in advance. Minimum booking duration is 1 hour.",
+    "cancellation_answer": "Free cancellation up to 48 hours before your booking. Late cancellations incur a 50% fee.",
+    "parking_available": "Free parking available on-site",
+    "parking_contact": "Please contact us for parking arrangements"
   },
   "loading": {
     "facility": "Loading facility...",
@@ -482,5 +486,7 @@
     "noise_after_hours_desc": "Please be quiet after opening hours",
     "cancellation": "Cancellation",
     "cancellation_desc": "Cancellation must be made 24 hours in advance"
-  }
+  },
+  "entire_facility": "Entire Facility",
+  "book_entire_facility": "Book Entire Facility"
 }

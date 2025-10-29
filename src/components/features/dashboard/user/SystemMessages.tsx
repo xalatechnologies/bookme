@@ -2,12 +2,7 @@
 
 import React from "react";
 import { Badge } from "@/components/ui/badge";
-import { 
-  Bell, 
-  AlertTriangle, 
-  Clock, 
-  CheckCircle 
-} from "lucide-react";
+import { Bell, AlertTriangle, Clock, CheckCircle } from "lucide-react";
 
 interface ISystemMessage {
   readonly id: string;
@@ -25,7 +20,7 @@ interface ISystemMessagesProps {
   readonly formatMessageDate: (dateString: string) => string;
 }
 
-const SystemMessages = (props: ISystemMessagesProps): JSX.Element => {
+export const SystemMessages = (props: ISystemMessagesProps): JSX.Element => {
   const { messages, onMarkAsRead, formatMessageDate } = props;
 
   const getMessageIcon = (type: ISystemMessage["type"]): JSX.Element => {
@@ -33,7 +28,7 @@ const SystemMessages = (props: ISystemMessagesProps): JSX.Element => {
       info: Bell,
       warning: AlertTriangle,
       maintenance: Clock,
-      success: CheckCircle
+      success: CheckCircle,
     };
     const Icon = icons[type];
     return <Icon className="h-4 w-4" />;
@@ -45,15 +40,15 @@ const SystemMessages = (props: ISystemMessagesProps): JSX.Element => {
         <div
           key={message.id}
           className={`flex items-start space-x-3 p-4 border rounded-lg transition-all duration-200 hover:shadow-md ${
-            message.isRead 
-              ? "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800" 
+            message.isRead
+              ? "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800"
               : "border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/20"
           }`}
           onClick={() => onMarkAsRead(message.id)}
           role="button"
           tabIndex={0}
           onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
+            if (e.key === "Enter" || e.key === " ") {
               e.preventDefault();
               onMarkAsRead(message.id);
             }
@@ -70,11 +65,13 @@ const SystemMessages = (props: ISystemMessagesProps): JSX.Element => {
           </div>
           <div className="flex-1">
             <div className="flex items-start justify-between">
-              <h4 className={`font-medium ${
-                message.isRead 
-                  ? "text-gray-900 dark:text-white" 
-                  : "text-gray-900 dark:text-white font-semibold"
-              }`}>
+              <h4
+                className={`font-medium ${
+                  message.isRead
+                    ? "text-gray-900 dark:text-white"
+                    : "text-gray-900 dark:text-white font-semibold"
+                }`}
+              >
                 {message.title}
               </h4>
               <div className="flex items-center gap-2">
@@ -97,5 +94,3 @@ const SystemMessages = (props: ISystemMessagesProps): JSX.Element => {
     </div>
   );
 };
-
-export default SystemMessages;

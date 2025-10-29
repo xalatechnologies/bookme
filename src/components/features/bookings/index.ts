@@ -1,7 +1,8 @@
 /**
- * Bookings Feature Components
+ * Bookings Feature - Complete Domain Export
  *
- * All booking-related components including forms, cards, and modals
+ * All booking-related components, hooks, types, and constants.
+ * This barrel export enables clean imports from the bookings domain.
  */
 
 // Booking Form Components
@@ -21,5 +22,11 @@ export { RecurringBookingGroup } from './components/BookingCard/RecurringBooking
 // Filters
 export { BookingFiltersBar } from './components/BookingFiltersBar';
 
+// Hooks
+export * from './hooks';
+
 // Types
 export * from './types';
+
+// Constants
+export * from './constants';

@@ -20,7 +20,7 @@ interface IFacilityCardBaseProps {
 }
 
 const FacilityCardBase = (props: IFacilityCardBaseProps): JSX.Element => {
-  const { t } = useTranslation(['facilities']);
+  const { t } = useTranslation(['facility']);
   const {
     id,
     name,
@@ -93,7 +93,7 @@ const FacilityCardBase = (props: IFacilityCardBaseProps): JSX.Element => {
           <div className="flex items-center space-x-2">
             <Users className="h-4 w-4 text-gray-400" />
             <span className="text-sm text-gray-600 dark:text-gray-400">
-              {capacity} {t('facilities:card.people')}
+              {capacity} {t('facility:card.people')}
             </span>
           </div>
           {price && (
@@ -112,7 +112,7 @@ const FacilityCardBase = (props: IFacilityCardBaseProps): JSX.Element => {
           ))}
           {amenities.length > 3 && (
             <Badge variant="outline" className="text-xs">
-              +{amenities.length - 3} {t('facilities:card.more')}
+              +{amenities.length - 3} {t('facility:card.more')}
             </Badge>
           )}
         </div>
