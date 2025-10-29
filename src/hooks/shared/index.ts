@@ -21,3 +21,16 @@ export { useFormValidation } from './useFormValidation';
 export { useLocalizedDbValue } from './useLocalizedDbValue';
 export { useLocalizedDbValues } from './useLocalizedDbValues';
 export { useAmenityTranslation } from './useAmenityTranslation';
+
+// Storage migration utilities
+export { useStorageMigration } from './useStorageMigration';
+export type { UseStorageMigrationReturn, MigrationHealth, MigrationResult } from './useStorageMigration';
+
+export { useBookings } from './useBookings';
+export type { UseBookingsReturn } from './useBookings';
+
+export { useUserPreferences } from './useUserPreferences';
+export type { UseUserPreferencesReturn, UserPreferences } from './useUserPreferences';
+
+export { useDraftBooking } from './useDraftBooking';
+export type { UseDraftBookingReturn } from './useDraftBooking';

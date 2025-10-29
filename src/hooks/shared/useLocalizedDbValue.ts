@@ -1,16 +1,16 @@
 /**
  * Hook: useLocalizedDbValue
- * 
+ *
  * Fetches localized database values based on entity type and current language.
  * Values are cached for performance.
- * 
+ *
  * @example
  * ```tsx
  * const { getValue, getOptions } = useLocalizedDbValue('facility_type');
- * 
+ *
  * // Get single value
  * const label = getValue('idrettshall'); // "Sports Hall" in EN, "Idrettshall" in NO
- * 
+ *
  * // Get all options for select
  * const options = getOptions(); // [{ value: 'idrettshall', label: 'Sports Hall' }, ...]
  * ```
@@ -34,6 +34,15 @@ interface LocalizedDbValueCache {
   };
 }
 
+// Database row type for localized_db_values table
+interface LocalizedDbValueRow {
+  entity_key: string;
+  label: string;
+  description: string | null;
+  sort_order: number | null;
+  metadata: Record<string, unknown> | null;
+}
+
 // Global cache to prevent unnecessary database calls
 const cache: LocalizedDbValueCache = {};
 
@@ -43,7 +52,7 @@ const cache: LocalizedDbValueCache = {};
 export const useLocalizedDbValue = (entityType: string) => {
   const { i18n } = useTranslation();
   const currentLang = i18n.language || 'no';
-  
+
   const [options, setOptions] = useState<LocalizedOption[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<Error | null>(null);
@@ -64,23 +73,22 @@ export const useLocalizedDbValue = (entityType: string) => {
       setError(null);
 
       const { data, error: fetchError } = await supabase
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .from('localized_db_values' as any)
+        .from('localized_db_values')
         .select('entity_key, label, description, sort_order, metadata')
         .eq('entity_type', entityType)
         .eq('language_code', currentLang)
         .eq('is_active', true)
-        .order('sort_order', { ascending: true, nullsFirst: false });
+        .order('sort_order', { ascending: true, nullsFirst: false })
+        .returns<LocalizedDbValueRow[]>();
 
       if (fetchError) throw fetchError;
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const formattedOptions: LocalizedOption[] = (data || []).map((item: any) => ({
+      const formattedOptions: LocalizedOption[] = (data ?? []).map((item) => ({
         value: item.entity_key,
         label: item.label,
-        description: item.description || undefined,
-        sort_order: item.sort_order || undefined,
-        metadata: item.metadata as Record<string, unknown> || undefined,
+        description: item.description ?? undefined,
+        sort_order: item.sort_order ?? undefined,
+        metadata: item.metadata ?? undefined,
       }));
 
       // Update cache

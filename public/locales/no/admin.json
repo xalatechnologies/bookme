@@ -794,6 +794,85 @@
         "edit": "Rediger",
         "deactivate": "Deaktiver"
       }
+    },
+
+    "bookings": {
+      "title": "Bookinger og godkjenninger",
+      "subtitle": "Administrer alle bookinger og godkjenningsprosesser i systemet",
+      "search_placeholder": "Søk etter bookinger...",
+      "recurring": "Gjentakende",
+      "period": "Periode",
+      "select_all": "Velg alle ({{count}})",
+      "selected_count": "{{count}} valgt",
+      "bulk_selected": "{{count}} booking(er) valgt",
+      "bulk_approve_all": "Godkjenn alle",
+      "bulk_reject_all": "Avvis alle",
+      "bulk_delete_all": "Slett alle",
+      "occurrences_count": "{{count}} forekomster",
+      "status_mixed_pending": "Delvis ventende",
+      "status_mixed_approved": "Delvis godkjent",
+      "kpi": {
+        "total_bookings": "Totalt antall bookinger",
+        "active_last_30": "Aktive siste 30 dager",
+        "pending_approvals": "Ventende godkjenninger",
+        "requires_action": "Krever handling",
+        "approved_today": "Godkjent i dag",
+        "processed_today": "Behandlet i dag",
+        "rejected_today": "Avvist i dag",
+        "rejected_today_sub": "Avvist i dag"
+      },
+      "tabs": {
+        "all": "Alle",
+        "pending": "Ventende",
+        "approved": "Godkjent",
+        "rejected": "Avvist"
+      },
+      "actions": {
+        "view_details": "Se detaljer",
+        "approve": "Godkjenn",
+        "reject": "Avvis"
+      },
+      "filters": {
+        "advanced_title": "Avanserte filtre",
+        "date_from": "Dato fra",
+        "date_to": "Dato til",
+        "facility_type": "Lokaletype",
+        "all_types": "Alle typer",
+        "sports_hall": "Idrettshall",
+        "culture_house": "Kulturhus",
+        "meeting_room": "Møterom",
+        "hall": "Sal",
+        "handler": "Saksbehandler",
+        "all_handlers": "Alle saksbehandlere",
+        "admin": "Admin",
+        "case_worker": "Saksbehandler",
+        "duration": "Varighet",
+        "all_durations": "Alle varigheter",
+        "one_hour": "1 time",
+        "two_hours": "2 timer",
+        "four_hours": "4 timer",
+        "eight_hours": "8 timer"
+      },
+      "empty": {
+        "no_bookings": "Ingen bookinger funnet",
+        "try_different_criteria": "Prøv å endre søkekriteriene",
+        "no_bookings_currently": "Det er ingen bookinger å vise for øyeblikket"
+      },
+      "workflows": {
+        "title": "Godkjenningsflyter",
+        "subtitle": "Administrer regler og flyter for bookinggodkjenninger",
+        "description": "Definer hvordan ulike typer bookinger behandles og hvem som må godkjenne dem.",
+        "create_new": "Opprett ny flyt",
+        "status_active": "Aktiv",
+        "examples": {
+          "schools_name": "Skolebookinger",
+          "schools_desc": "Automatisk godkjenning for skoler",
+          "sports_name": "Idrettsklubber",
+          "sports_desc": "Manuell godkjenning påkrevd",
+          "commercial_name": "Kommersiell utleie",
+          "commercial_desc": "Saksbehandlergodkjenning påkrevd"
+        }
+      }
     }
   }
 }

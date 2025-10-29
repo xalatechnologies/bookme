@@ -101,7 +101,7 @@ const UserDashboard = (): JSX.Element => {
           const bookingDate = new Date(booking.startDate);
           return bookingDate >= new Date() && booking.status === "approved";
         })
-         
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .sort(
           (a: any, b: any) =>
             new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
@@ -196,7 +196,7 @@ const UserDashboard = (): JSX.Element => {
 
       // Get recent bookings (last 3)
       const recentBookings = all
-         
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .sort(
           (a: any, b: any) =>
             new Date(b.startDate).getTime() - new Date(a.startDate).getTime()
