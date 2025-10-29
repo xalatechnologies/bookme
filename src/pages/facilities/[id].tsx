@@ -33,7 +33,8 @@ export const FacilityDetail = (): JSX.Element => {
 
   // Use hooks to fetch data
   const { facility, loading, error, notFound } = useFacility(id || "");
-  const { zones, loading: zonesLoading } = useZones(id || "");
+  // Use facility UUID for zones query (not the slug from URL)
+  const { zones, loading: zonesLoading } = useZones(facility?.id || "");
 
   // Handle share functionality
   const handleShare = async (): Promise<void> => {
@@ -100,8 +101,8 @@ export const FacilityDetail = (): JSX.Element => {
         <MobileBookingPanel
           facilityName={facility.name}
           facilityId={facility.id}
-          capacity={facility.capacity}
-          area={`${facility.capacity} ${t("details.people", {
+          capacity={facility.capacity || 0}
+          area={`${facility.capacity || 0} ${t("details.people", {
             ns: "facility",
           })}`}
           openingHours="08:00 - 22:00"

@@ -601,6 +601,7 @@ export type Database = {
           postal_code: string | null
           rating: number | null
           review_count: number
+          slug: string
           status: string
           updated_at: string
         }
@@ -623,6 +624,7 @@ export type Database = {
           postal_code?: string | null
           rating?: number | null
           review_count?: number
+          slug?: string
           status?: string
           updated_at?: string
         }
@@ -645,6 +647,7 @@ export type Database = {
           postal_code?: string | null
           rating?: number | null
           review_count?: number
+          slug?: string
           status?: string
           updated_at?: string
         }

@@ -1,13 +1,18 @@
 "use client";
 
 // External imports
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-// Internal imports
-import { useFacilityStore, type IFacility } from '@/stores/facilityStore';
+// Internal imports - Supabase services
+import { usePublishedFacilities } from '@/services/supabase/facilities.service';
 import { useFacilityZones } from '@/services/supabase/zones.service';
+import { useOrganizationId } from '@/hooks/useOrganizationId';
+import type { Database } from '@/types/database';
 import type { Zone } from '@/types/booking';
+
+// Type aliases
+type Facility = Database['public']['Tables']['facilities']['Row'];
 
 interface UseCalendarViewProps {
   readonly facilityType?: string;
@@ -17,7 +22,7 @@ interface UseCalendarViewProps {
 }
 
 interface FacilityWithZones {
-  readonly facility: IFacility;
+  readonly facility: Facility;
   readonly zones: readonly Zone[];
 }
 
@@ -38,15 +43,18 @@ export const useCalendarView = ({
   const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
 
-  const { getPublishedFacilities } = useFacilityStore();
-  const facilities = getPublishedFacilities();
+  // Get organization context
+  const orgId = useOrganizationId();
+
+  // Fetch published facilities from Supabase
+  const { data: facilities = [], isLoading, error: facilitiesError } = usePublishedFacilities(orgId);
 
   // Filter facilities based on criteria
   const filteredFacilities = useMemo(() => {
     let filtered = facilities;
 
     if (facilityType && facilityType !== "all") {
-      filtered = filtered.filter(f => f.type === facilityType);
+      filtered = filtered.filter(f => f.facility_type === facilityType);
     }
 
     if (location && location !== "all") {
@@ -55,13 +63,13 @@ export const useCalendarView = ({
 
     if (accessibility && accessibility !== "all") {
       filtered = filtered.filter(f =>
-        f.accessibilityFeatures && f.accessibilityFeatures.includes(accessibility)
+        f.accessibility_features && f.accessibility_features.includes(accessibility)
       );
     }
 
     if (capacity) {
       filtered = filtered.filter(f =>
-        f.capacity >= capacity[0] && f.capacity <= capacity[1]
+        f.capacity && f.capacity >= capacity[0] && f.capacity <= capacity[1]
       );
     }
 
@@ -70,7 +78,7 @@ export const useCalendarView = ({
 
   // Fetch zones for all filtered facilities
   // Note: This creates multiple queries, one per facility
-  // For better performance, consider batching or caching
+  // React Query will cache and optimize these queries
   const facilitiesWithZones = useMemo((): readonly FacilityWithZones[] => {
     const results: FacilityWithZones[] = [];
 
@@ -95,13 +103,10 @@ export const useCalendarView = ({
     return facilitiesWithZones.flatMap(item => item.zones);
   }, [facilitiesWithZones]);
 
-  // Determine loading state from facilities query
-  const isLoading = facilities.length === 0;
-
   return {
     facilitiesWithZones,
     isLoading,
-    error,
+    error: facilitiesError?.message || error,
     allZones,
     navigate
   };

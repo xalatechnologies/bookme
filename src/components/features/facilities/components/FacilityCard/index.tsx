@@ -46,13 +46,16 @@ export const FacilityCard = ({
   const fieldConfigs = getFieldConfigsForFacility(facility.id);
 
   const handleCardClick = (): void => {
-    navigate(`/facilities/${facility.id}`);
+    // Use slug for SEO-friendly URLs, fallback to id for backward compatibility
+    const facilityPath = (facility as any).slug || facility.id;
+    navigate(`/facilities/${facilityPath}`);
   };
 
   const handleShare = async (e: React.MouseEvent): Promise<void> => {
     e.stopPropagation();
     try {
-      const shareUrl = generateShareUrl(`/facilities/${facility.id}`);
+      const facilityPath = (facility as any).slug || facility.id;
+      const shareUrl = generateShareUrl(`/facilities/${facilityPath}`);
 
       if (navigator.share) {
         await navigator.share({
@@ -65,7 +68,8 @@ export const FacilityCard = ({
     } catch (error) {
       if (error instanceof Error && error.name !== "AbortError") {
         try {
-          const shareUrl = generateShareUrl(`/facilities/${facility.id}`);
+          const facilityPath = (facility as any).slug || facility.id;
+          const shareUrl = generateShareUrl(`/facilities/${facilityPath}`);
           await copyToClipboard(shareUrl);
         } catch (clipboardError) {
           console.error("Failed to share or copy:", clipboardError);

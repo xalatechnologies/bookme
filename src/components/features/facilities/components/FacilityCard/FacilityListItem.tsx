@@ -34,21 +34,24 @@ export const FacilityListItem: React.FC<FacilityListItemProps> = ({
   const handleShare = async (e: React.MouseEvent): Promise<void> => {
     e.stopPropagation();
     try {
+      // Use slug for SEO-friendly URLs, fallback to id
+      const facilityPath = (facility as any).slug || facility.id;
       if (navigator.share) {
         await navigator.share({
           title: facility.name,
-          url: `${window.location.origin}/facilities/${facility.id}`,
+          url: `${window.location.origin}/facilities/${facilityPath}`,
         });
       } else {
         await navigator.clipboard.writeText(
-          `${window.location.origin}/facilities/${facility.id}`
+          `${window.location.origin}/facilities/${facilityPath}`
         );
       }
     } catch (error) {
       // Handle share cancellation or other errors silently; fallback to clipboard
       if (error instanceof Error && error.name !== "AbortError") {
+        const facilityPath = (facility as any).slug || facility.id;
         await navigator.clipboard
-          .writeText(`${window.location.origin}/facilities/${facility.id}`)
+          .writeText(`${window.location.origin}/facilities/${facilityPath}`)
           .catch(() => undefined);
       }
     }
@@ -62,14 +65,18 @@ export const FacilityListItem: React.FC<FacilityListItemProps> = ({
   return (
     <Card
       className="group overflow-hidden hover:shadow-xl transition-all duration-500 hover:translate-y-[-2px] border border-slate-200/60 shadow-md bg-white cursor-pointer mb-3 focus:outline-none focus:ring-4 focus:ring-blue-500 focus:ring-opacity-50"
-      onClick={() => navigate(`/facilities/${facility.id}`)}
+      onClick={() => {
+        const facilityPath = (facility as any).slug || facility.id;
+        navigate(`/facilities/${facilityPath}`);
+      }}
       role="button"
       tabIndex={0}
       aria-label={`Se detaljer for ${facility.name} på ${facility.address}`}
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
-          navigate(`/facilities/${facility.id}`);
+          const facilityPath = (facility as any).slug || facility.id;
+          navigate(`/facilities/${facilityPath}`);
         }
       }}
     >

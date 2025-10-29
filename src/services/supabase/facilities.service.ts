@@ -181,6 +181,27 @@ export const facilitiesService = {
   },
 
   /**
+   * Get facility by slug (SEO-friendly URL)
+   * @param slug - Facility slug (e.g., 'drammen-idrettshall')
+   * @returns Facility or null
+   */
+  async getBySlug(slug: string): Promise<Facility | null> {
+    const { data, error } = await supabase
+      .from('facilities')
+      .select('*')
+      .eq('slug', slug)
+      .eq('status', 'published')
+      .maybeSingle(); // Use maybeSingle() to avoid 406 errors
+
+    if (error) {
+      console.error('Error fetching facility by slug:', error);
+      throw error;
+    }
+
+    return data;
+  },
+
+  /**
    * Search facilities by name or description
    * @param orgId - Organization ID
    * @param query - Search query
@@ -278,6 +299,38 @@ export const useFacility = (
     queryKey: facilityKeys.detail(id),
     queryFn: () => facilitiesService.getById(id),
     enabled: !!id && enabled,
+  });
+};
+
+/**
+ * Hook to fetch facility by slug (SEO-friendly URL)
+ *
+ * @param slug - Facility slug (e.g., 'drammen-idrettshall')
+ * @param enabled - Enable/disable query
+ * @returns React Query result with facility
+ *
+ * @example
+ * ```tsx
+ * function FacilityDetailPage() {
+ *   const { slug } = useParams();
+ *   const { data: facility, isLoading, error } = useFacilityBySlug(slug);
+ *
+ *   if (isLoading) return <LoadingSpinner />;
+ *   if (error || !facility) return <NotFound />;
+ *
+ *   return <FacilityDetail facility={facility} />;
+ * }
+ * ```
+ */
+export const useFacilityBySlug = (
+  slug: string,
+  enabled = true
+): UseQueryResult<Facility | null, Error> => {
+  return useQuery({
+    queryKey: [...facilityKeys.all, 'slug', slug],
+    queryFn: () => facilitiesService.getBySlug(slug),
+    enabled: !!slug && enabled,
+    staleTime: 5 * 60 * 1000, // 5 minutes - facilities don't change often
   });
 };
 

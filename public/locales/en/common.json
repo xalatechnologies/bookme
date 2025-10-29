@@ -48,6 +48,8 @@
     "pay": "Pay",
     "continue": "Continue",
     "finish": "Finish",
+    "go_back": "Go Back",
+    "go_home": "Go Home",
     "start": "Start",
     "stop": "Stop",
     "pause": "Pause",
@@ -313,6 +315,8 @@
     "unauthorized": "You don't have access to this resource.",
     "forbidden": "This action is not allowed.",
     "notFound": "Page not found.",
+    "facility_not_found": "Facility not found",
+    "facility_not_found_desc": "The facility you're looking for doesn't exist or is no longer available.",
     "comingSoon": "Coming Soon",
     "underConstruction": "Under Construction",
     "maintenanceMode": "Maintenance Mode",
@@ -488,5 +492,20 @@
     "cancellation_desc": "Cancellation must be made 24 hours in advance"
   },
   "entire_facility": "Entire Facility",
-  "book_entire_facility": "Book Entire Facility"
+  "book_entire_facility": "Book Entire Facility",
+  "availability_legend": {
+    "title": "Availability Legend",
+    "available_label": "Available",
+    "available_description": "Time slot is available for booking",
+    "busy_label": "Busy",
+    "busy_description": "Time slot is already booked",
+    "selected_label": "Selected",
+    "selected_description": "Time slot you have selected",
+    "unavailable_label": "Unavailable",
+    "unavailable_description": "Time slot is not available",
+    "conflict_label": "Conflict",
+    "conflict_description": "Time slot has a booking conflict",
+    "click_available": "Click on available time slots to select",
+    "drag_select": "Drag to select multiple time slots"
+  }
 }

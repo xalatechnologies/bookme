@@ -97,7 +97,7 @@ export const bookingsService = {
         facility:facilities!inner (*)
       `)
       .eq('facility.org_id', orgId)
-      .order('start_time', { ascending: false });
+      .order('starts_at', { ascending: false });
 
     if (error) throw error;
     return data as BookingWithDetails[];
@@ -118,13 +118,13 @@ export const bookingsService = {
       .in('status', ['pending', 'awaiting_payment', 'paid', 'completed']);
 
     if (startDate) {
-      query = query.gte('start_time', startDate);
+      query = query.gte('starts_at', startDate);
     }
     if (endDate) {
-      query = query.lte('end_time', endDate);
+      query = query.lte('ends_at', endDate);
     }
 
-    const { data, error } = await query.order('start_time', { ascending: true });
+    const { data, error } = await query.order('starts_at', { ascending: true });
 
     if (error) throw error;
     return data;
@@ -223,9 +223,9 @@ export const bookingsService = {
         zone:zones (*)
       `)
       .eq('user_id', userId)
-      .gte('start_time', now)
+      .gte('starts_at', now)
       .in('status', ['pending', 'awaiting_payment', 'paid'])
-      .order('start_time', { ascending: true })
+      .order('starts_at', { ascending: true })
       .limit(limit);
 
     if (error) throw error;
@@ -246,8 +246,8 @@ export const bookingsService = {
         zone:zones (*)
       `)
       .eq('user_id', userId)
-      .lt('end_time', now)
-      .order('start_time', { ascending: false })
+      .lt('ends_at', now)
+      .order('starts_at', { ascending: false })
       .limit(limit);
 
     if (error) throw error;

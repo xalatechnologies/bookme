@@ -3,12 +3,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Clock, Euro, Phone, Mail, Calendar } from "lucide-react";
-import type { IFacility } from "@/stores/facilityStore";
+import type { Database } from "@/types/database";
 import { useTranslation } from "react-i18next";
 import { useAmenityTranslation } from "@/hooks/shared";
 
+type Facility = Database['public']['Tables']['facilities']['Row'];
+
 interface FacilityContactInfoProps {
-  readonly facility: IFacility;
+  readonly facility: Facility;
 }
 
 export const FacilityContactInfo: React.FC<FacilityContactInfoProps> = ({
@@ -39,8 +41,9 @@ export const FacilityContactInfo: React.FC<FacilityContactInfoProps> = ({
 
   const handleBookNow = (): void => {
     try {
-      // Navigate to booking page
-      window.location.href = `/facilities/${facility.id}/book`;
+      // Navigate to booking page using slug if available
+      const facilityPath = facility.slug || facility.id;
+      window.location.href = `/facilities/${facilityPath}/book`;
     } catch (error) {
       console.error("Failed to navigate to booking:", error);
       alert(t("facilities:contact.booking_failed"));
@@ -52,13 +55,13 @@ export const FacilityContactInfo: React.FC<FacilityContactInfoProps> = ({
       // Create contact options
       const contactOptions = [
         `${t("facilities:contact.phone")}: ${
-          facility.emergencyContact || "+47 32 04 70 00"
+          facility.emergency_contact || "+47 32 04 70 00"
         }`,
         `${t("facilities:contact.email")}: ${
-          facility.contactEmail || "booking@drammen.kommune.no"
+          facility.contact_email || "booking@drammen.kommune.no"
         }`,
         `${t("facilities:contact.facility")}: ${facility.name}`,
-        `${t("facilities:contact.location")}: ${facility.location}`,
+        `${t("facilities:contact.location")}: ${facility.address || facility.area || ''}`,
       ].join("\n");
 
       // Show contact information
@@ -80,7 +83,7 @@ ${t("facilities:contact.open_email_client")}`
         });
 
         const mailtoLink = `mailto:${
-          facility.contactEmail || "booking@drammen.kommune.no"
+          facility.contact_email || "booking@drammen.kommune.no"
         }?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(
           body
         )}`;
@@ -95,6 +98,9 @@ ${t("facilities:contact.open_email_client")}`
       alert(t("facilities:contact.contact_error"));
     }
   };
+
+  // Calculate price from cents
+  const pricePerHour = facility.price_per_hour_cents ? (facility.price_per_hour_cents / 100) : 0;
 
   return (
     <div className="space-y-6">
@@ -112,7 +118,7 @@ ${t("facilities:contact.open_email_client")}`
               <p className="text-sm text-gray-500">
                 {t("fields.price_per_hour", { ns: "facilities" })}
               </p>
-              <p className="font-medium">{facility.pricePerHour ?? 0} kr</p>
+              <p className="font-medium">{pricePerHour} kr</p>
             </div>
           </div>
 
@@ -123,7 +129,7 @@ ${t("facilities:contact.open_email_client")}`
                 {t("fields.location", { ns: "facilities" })}
               </p>
               <p className="font-medium">
-                {facility.location || t("common:unknown")}
+                {facility.address || facility.area || t("common:unknown")}
               </p>
             </div>
           </div>
@@ -140,7 +146,7 @@ ${t("facilities:contact.open_email_client")}`
         <CardContent className="space-y-4">
           <div className="text-center">
             <div className="text-2xl font-bold text-green-600 mb-1">
-              {facility.pricePerHour ?? 0} kr
+              {pricePerHour} kr
             </div>
             <p className="text-sm text-gray-500">
               {t("details.per_hour", { ns: "facilities" })}
@@ -231,14 +237,14 @@ ${t("facilities:contact.open_email_client")}`
           <div className="flex items-center gap-3">
             <Phone className="h-4 w-4 text-gray-400" />
             <span className="text-sm">
-              {facility.emergencyContact || "+47 32 04 70 00"}
+              {facility.emergency_contact || "+47 32 04 70 00"}
             </span>
           </div>
 
           <div className="flex items-center gap-3">
             <Mail className="h-4 w-4 text-gray-400" />
             <span className="text-sm">
-              {facility.contactEmail || "booking@drammen.kommune.no"}
+              {facility.contact_email || "booking@drammen.kommune.no"}
             </span>
           </div>
         </CardContent>

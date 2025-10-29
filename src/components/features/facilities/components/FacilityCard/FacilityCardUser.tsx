@@ -59,15 +59,18 @@ const FacilityCardUser = (props: IFacilityCardUserProps): JSX.Element => {
     // Track usage and last visited when viewing details
     incrementUsage(id);
     updateLastVisited(id);
-    navigate(`/facilities/${id}`);
+    // Use slug if available (props might have it), fallback to id
+    const facilityPath = (props as any).slug || id;
+    navigate(`/facilities/${facilityPath}`);
   };
 
   const handleBookNow = (): void => {
     // Track usage when booking
     incrementUsage(id);
     updateLastVisited(id);
-    // TODO: Navigate to booking flow
-    navigate(`/facilities/${id}/book`);
+    // Use slug if available, fallback to id
+    const facilityPath = (props as any).slug || id;
+    navigate(`/facilities/${facilityPath}/book`);
   };
 
   /**
@@ -92,10 +95,12 @@ const FacilityCardUser = (props: IFacilityCardUserProps): JSX.Element => {
     e.stopPropagation();
 
     try {
+      // Use slug if available, fallback to id
+      const facilityPath = (props as any).slug || id;
       const shareData = {
         title: name,
         text: t('facility:share.check_out', { name, type, capacity }),
-        url: window.location.origin + `/facilities/${id}`
+        url: window.location.origin + `/facilities/${facilityPath}`
       };
 
       if (navigator.share) {
