@@ -43,11 +43,11 @@ const FilterBarUser = (props: IFilterBarUserProps): JSX.Element => {
 
   const facilityTypes = [
     { value: "all", label: t('facility:facility_types.all_types') },
-    { value: "Idrettshall", label: t('facility:facility_types.sports_hall') },
-    { value: "Kulturhus", label: t('facility:facility_types.cultural_center') },
-    { value: "Møterom", label: t('facility:facility_types.meeting_room') },
-    { value: "Treningssenter", label: t('facility:facility_types.fitness_center') },
-    { value: "Utendørs", label: t('facility:facility_types.outdoor') }
+    { value: "sports_hall", label: t('facility:facility_types.sports_hall') },
+    { value: "cultural_center", label: t('facility:facility_types.cultural_center') },
+    { value: "meeting_room", label: t('facility:facility_types.meeting_room') },
+    { value: "fitness_center", label: t('facility:facility_types.fitness_center') },
+    { value: "outdoor", label: t('facility:facility_types.outdoor') }
   ];
 
   const handleSortClick = (newSortBy: "price" | "popularity" | "name"): void => {

@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -99,21 +100,21 @@ const FacilityCardUser = (props: IFacilityCardUserProps): JSX.Element => {
 
       if (navigator.share) {
         navigator.share(shareData).then(() => {
-          alert(t('facility:share.facility_shared'));
+          toast.success(t('facility:share.facility_shared'));
         }).catch((error) => {
           console.error('Share failed:', error);
           // Fallback to clipboard
           navigator.clipboard.writeText(shareData.url);
-          alert(t('facility:share.link_copied'));
+          toast.success(t('facility:share.link_copied'));
         });
       } else {
         // Fallback: copy to clipboard
         navigator.clipboard.writeText(shareData.url);
-        alert(t('facility:share.link_copied'));
+        toast.success(t('facility:share.link_copied'));
       }
     } catch (error) {
       console.error('Share functionality failed:', error);
-      alert(t('facility:share.share_failed'));
+      toast.error(t('facility:share.share_failed'));
     }
   };
 

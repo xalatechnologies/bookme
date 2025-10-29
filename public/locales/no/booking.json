@@ -143,7 +143,13 @@
     "edit_series": "Rediger serie",
     "edit_single": "Rediger enkelt",
     "cancel_series": "Avbryt serie",
-    "cancel_single": "Avbryt enkelt"
+    "cancel_single": "Avbryt enkelt",
+    "next_label": "Neste:",
+    "no_upcoming": "Ingen kommende bookinger",
+    "upcoming_bookings_title": "Kommende bookinger",
+    "pause": "Pause",
+    "resume": "Gjenoppta",
+    "view_all_occurrences": "Vis alle forekomster"
   },
   "filters": {
     "all": "Alle",
@@ -200,7 +206,17 @@
   "pricing": {
     "base_price": "Grunnpris",
     "vat_25": "MVA (25%):",
-    "total_incl_vat": "Total inkl. MVA:"
+    "total_incl_vat": "Total inkl. MVA:",
+    "discount": "Rabatt",
+    "surcharge": "Tillegg",
+    "discount_lag_foreninger": "Rabatt - Lag/Foreninger (20%)",
+    "discount_paraply": "Rabatt - Paraplyorganisasjoner (30%)",
+    "discount_kommunale_enheter": "Rabatt - Kommunale enheter (50%)",
+    "surcharge_private_firma": "Tillegg - Privat firma (+20%)",
+    "subtotal": "Delsum",
+    "total": "Total",
+    "price_per_hour": "Pris per time",
+    "total_hours": "Totalt antall timer"
   },
   "labels": {
     "occurrences": "forekomster"
@@ -448,7 +464,19 @@
     "accept_terms_message": "Du må akseptere vilkår og betingelser for å fortsette",
     "processing": "Behandler forespørsel...",
     "select_weekdays": "Velg ukedager",
-    "select_time_slots": "Velg tidspunkter"
+    "select_time_slots": "Velg tidspunkter",
+    "purpose_required": "Formål er påkrevd",
+    "min_attendees": "Minimum 1 deltaker",
+    "activity_type_required": "Velg aktivitetstype",
+    "actor_type_required": "Velg aktørtype"
+  },
+  "conflicts": {
+    "existing_booking_title": "Eksisterende booking",
+    "existing_booking_desc": "Dette tidspunktet er allerede booket",
+    "maintenance_title": "Vedlikehold",
+    "maintenance_desc": "Tidspunkt utilgjengelig pga. vedlikehold",
+    "conflict_detected": "Bookingkonflikt oppdaget",
+    "unavailable_slot": "Valgt tidspunkt er ikke tilgjengelig"
   },
   "booking_types": {
     "one_time_label": "Enkelt booking",

@@ -141,7 +141,13 @@
     "edit_series": "Edit Series",
     "edit_single": "Edit Single",
     "cancel_series": "Cancel Series",
-    "cancel_single": "Cancel Single"
+    "cancel_single": "Cancel Single",
+    "next_label": "Next:",
+    "no_upcoming": "No upcoming bookings",
+    "upcoming_bookings_title": "Upcoming bookings",
+    "pause": "Pause",
+    "resume": "Resume",
+    "view_all_occurrences": "View all occurrences"
   },
   "filters": {
     "all": "All",
@@ -194,7 +200,17 @@
   "pricing": {
     "base_price": "Base price",
     "vat_25": "VAT (25%):",
-    "total_incl_vat": "Total incl. VAT:"
+    "total_incl_vat": "Total incl. VAT:",
+    "discount": "Discount",
+    "surcharge": "Surcharge",
+    "discount_lag_foreninger": "Discount - Clubs/Associations (20%)",
+    "discount_paraply": "Discount - Umbrella Organizations (30%)",
+    "discount_kommunale_enheter": "Discount - Municipal Units (50%)",
+    "surcharge_private_firma": "Surcharge - Private Company (+20%)",
+    "subtotal": "Subtotal",
+    "total": "Total",
+    "price_per_hour": "Price per hour",
+    "total_hours": "Total hours"
   },
   "labels": {
     "occurrences": "occurrences"
@@ -398,7 +414,19 @@
     "accept_terms_message": "You must accept the terms and conditions to continue",
     "processing": "Processing request...",
     "select_weekdays": "Select weekdays",
-    "select_time_slots": "Select time slots"
+    "select_time_slots": "Select time slots",
+    "purpose_required": "Purpose is required",
+    "min_attendees": "Minimum 1 participant",
+    "activity_type_required": "Select activity type",
+    "actor_type_required": "Select actor type"
+  },
+  "conflicts": {
+    "existing_booking_title": "Existing booking",
+    "existing_booking_desc": "This time slot is already booked",
+    "maintenance_title": "Maintenance",
+    "maintenance_desc": "Time slot unavailable due to maintenance",
+    "conflict_detected": "Booking conflict detected",
+    "unavailable_slot": "Selected time slot is not available"
   },
   "booking_types": {
     "one_time_label": "Single booking",

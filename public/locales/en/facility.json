@@ -76,6 +76,9 @@
   },
   "amenities": {
     "available_title": "Available Amenities",
+    "equipment_title": "Equipment",
+    "suitable_for": "Suitable for",
+    "no_amenities": "No amenities listed",
     "wifi": "WiFi",
     "projector": "Projector",
     "whiteboard": "Whiteboard",
@@ -140,7 +143,11 @@
     "compare": "Compare",
     "suggest_edit": "Suggest Edit",
     "toggle_map_view": "Toggle Map View",
-    "toggle_list_view": "Toggle List View"
+    "toggle_list_view": "Toggle List View",
+    "go_back": "Go Back",
+    "go_home": "Go Home",
+    "like": "Like",
+    "liked": "Liked"
   },
   "filters": {
     "all": "All",
@@ -193,14 +200,20 @@
       "added_to_favorites": "Added to favorites!",
       "removed_from_favorites": "Removed from favorites!",
       "review_submitted": "Review submitted!",
-      "report_submitted": "Report submitted!"
+      "report_submitted": "Report submitted!",
+      "facility_updated": "Facility updated!",
+      "images_uploaded": "Images uploaded!"
     },
     "error": {
       "load_failed": "Could not load facilities",
       "not_found": "Facility not found",
       "unavailable": "This facility is not available",
       "add_favorite_failed": "Could not add to favorites",
-      "review_failed": "Could not submit review"
+      "review_failed": "Could not submit review",
+      "facility_not_found": "Facility not found",
+      "facility_not_found_desc": "The facility you're looking for doesn't exist",
+      "load_facility_error": "Error loading facility",
+      "something_went_wrong": "Something went wrong"
     },
     "empty": {
       "no_facilities": "No facilities available",
@@ -311,5 +324,86 @@
     "title": "Rules and Guidelines",
     "noSmoking": "No Smoking",
     "cleanupRequired": "Cleanup Required"
+  },
+  "gallery": {
+    "close": "Close",
+    "previous": "Previous",
+    "next": "Next",
+    "image_count": "Image {{current}} of {{total}}"
+  },
+  "errors": {
+    "facility_not_found": "Facility not found",
+    "facility_not_found_desc": "The facility you're looking for doesn't exist or has been removed.",
+    "load_facility_error": "Error loading facility",
+    "something_went_wrong": "Something went wrong. Please try again."
+  },
+  "map": {
+    "unavailable": "Map not available",
+    "load_error_title": "Could not load map",
+    "loading_title": "Loading map...",
+    "loading_description": "Setting up map and fetching facilities",
+    "go_to_grid_view": "Go to grid view",
+    "no_coordinates": "No coordinates available"
+  },
+  "admin": {
+    "status": {
+      "published": "Published",
+      "draft": "Draft",
+      "archived": "Archived",
+      "unknown": "Unknown",
+      "unpublished": "Unpublished"
+    },
+    "fields": {
+      "owner": "Owner:",
+      "last_updated": "Last updated:",
+      "updated_by": "Updated by:",
+      "capacity_with_value": "Capacity: {{count}}"
+    },
+    "actions": {
+      "edit": "Edit",
+      "add_image": "Add image",
+      "save_changes": "Save changes"
+    },
+    "aria": {
+      "view_details_for": "View details for {{name}} at {{address}}",
+      "view_in_main_app": "View in main application",
+      "duplicate_facility": "Duplicate facility",
+      "delete_facility": "Delete facility"
+    },
+    "labels": {
+      "more_items": "+{{count}} more"
+    },
+    "dialogs": {
+      "delete_title": "Delete facility",
+      "delete_warning": "This action cannot be undone",
+      "delete_confirmation": "Are you sure you want to delete <strong>{{name}}</strong>? All associated data will be permanently deleted.",
+      "edit_title": "Edit facility",
+      "all_amenities_title": "All amenities",
+      "upload_images_title": "Upload images"
+    },
+    "upload": {
+      "click_to_select": "Click to select images",
+      "file_types_info": "PNG, JPG, GIF up to 10MB"
+    },
+    "messages": {
+      "updated_success": "Facility updated!",
+      "save_error": "Could not save changes. Please try again.",
+      "images_uploaded_success": "Images uploaded!",
+      "image_upload_error": "Could not upload images. Please try again."
+    },
+    "edit": "Edit facility",
+    "images": "Images",
+    "preview": "Preview",
+    "image_number": "Image {{number}}",
+    "remove_image": "Remove image {{number}}",
+    "no_images": "No images added",
+    "fetching_coordinates": "Fetching coordinates...",
+    "geocode_errors": {
+      "geocode_failed": "Could not find address in Mapbox",
+      "geocode_error": "Could not fetch coordinates"
+    },
+    "geocode_success": {
+      "coordinates_fetched": "Coordinates automatically fetched from address"
+    }
   }
 }

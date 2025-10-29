@@ -284,7 +284,20 @@
     "week": "uke",
     "weeks": "uker",
     "month": "måned",
-    "months": "måneder",
+    "months": {
+      "january": "Januar",
+      "february": "Februar",
+      "march": "Mars",
+      "april": "April",
+      "may": "Mai",
+      "june": "Juni",
+      "july": "Juli",
+      "august": "August",
+      "september": "September",
+      "october": "Oktober",
+      "november": "November",
+      "december": "Desember"
+    },
     "year": "år",
     "years": "år",
     "today": "I dag",
@@ -315,20 +328,6 @@
       "friday": "Fredag",
       "saturday": "Lørdag",
       "sunday": "Søndag"
-    },
-    "months": {
-      "january": "Januar",
-      "february": "Februar",
-      "march": "Mars",
-      "april": "April",
-      "may": "Mai",
-      "june": "Juni",
-      "july": "Juli",
-      "august": "August",
-      "september": "September",
-      "october": "Oktober",
-      "november": "November",
-      "december": "Desember"
     }
   },
   "messages": {
@@ -503,7 +502,12 @@
     "food_drinks": "Mat og drikke",
     "booking_time": "Bookingtid",
     "cancellation": "Avbestillingsregler",
-    "parking": "Parkering"
+    "parking": "Parkering",
+    "food_drinks_answer": "Mat og drikke er tillatt i utpekte områder kun. Vennligst rydd opp etter deg selv.",
+    "booking_time_answer": "Booking kan gjøres opptil 3 måneder i forveien. Minimum bookingvarighet er 1 time.",
+    "cancellation_answer": "Gratis avbestilling opptil 48 timer før din booking. Sene avbestillinger belastes med 50% gebyr.",
+    "parking_available": "Gratis parkering tilgjengelig på stedet",
+    "parking_contact": "Vennligst kontakt oss for parkeringsordninger"
   },
   "loading": {
     "facility": "Laster lokale...",
@@ -525,5 +529,7 @@
     "noise_after_hours_desc": "Vennligst vær stille etter åpningstid",
     "cancellation": "Avbestilling",
     "cancellation_desc": "Avbestilling må gjøres 24 timer i forveien"
-  }
+  },
+  "entire_facility": "Hele anlegget",
+  "book_entire_facility": "Book hele anlegget"
 }

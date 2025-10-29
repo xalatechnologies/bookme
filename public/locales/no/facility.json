@@ -76,6 +76,9 @@
   },
   "amenities": {
     "available_title": "Tilgjengelige fasiliteter",
+    "equipment_title": "Utstyr",
+    "suitable_for": "Egnet for",
+    "no_amenities": "Ingen fasiliteter oppført",
     "wifi": "WiFi",
     "projector": "Projektor",
     "whiteboard": "Tavle",
@@ -140,7 +143,11 @@
     "compare": "Sammenlign",
     "suggest_edit": "Foreslå endring",
     "toggle_map_view": "Veksle kartvisning",
-    "toggle_list_view": "Veksle listevisning"
+    "toggle_list_view": "Veksle listevisning",
+    "go_back": "Gå tilbake",
+    "go_home": "Gå hjem",
+    "like": "Lik",
+    "liked": "Likt"
   },
   "filters": {
     "all": "Alle",
@@ -193,14 +200,20 @@
       "added_to_favorites": "Lagt til favoritter!",
       "removed_from_favorites": "Fjernet fra favoritter!",
       "review_submitted": "Anmeldelse sendt inn!",
-      "report_submitted": "Rapport sendt inn!"
+      "report_submitted": "Rapport sendt inn!",
+      "facility_updated": "Fasilitet oppdatert!",
+      "images_uploaded": "Bilder lastet opp!"
     },
     "error": {
       "load_failed": "Kunne ikke laste fasiliteter",
       "not_found": "Fasilitet ikke funnet",
       "unavailable": "Denne fasiliteten er ikke tilgjengelig",
       "add_favorite_failed": "Kunne ikke legge til favoritter",
-      "review_failed": "Kunne ikke sende inn anmeldelse"
+      "review_failed": "Kunne ikke sende inn anmeldelse",
+      "facility_not_found": "Fasilitet ikke funnet",
+      "facility_not_found_desc": "Fasiliteten du leter etter finnes ikke",
+      "load_facility_error": "Feil ved lasting av fasilitet",
+      "something_went_wrong": "Noe gikk galt"
     },
     "empty": {
       "no_facilities": "Ingen fasiliteter tilgjengelig",
@@ -311,5 +324,86 @@
     "title": "Regler og retningslinjer",
     "noSmoking": "Røyking forbudt",
     "cleanupRequired": "Opprydding påkrevd"
+  },
+  "gallery": {
+    "close": "Lukk",
+    "previous": "Forrige",
+    "next": "Neste",
+    "image_count": "Bilde {{current}} av {{total}}"
+  },
+  "errors": {
+    "facility_not_found": "Fasilitet ikke funnet",
+    "facility_not_found_desc": "Fasiliteten du leter etter finnes ikke eller har blitt fjernet.",
+    "load_facility_error": "Feil ved lasting av fasilitet",
+    "something_went_wrong": "Noe gikk galt. Vennligst prøv igjen."
+  },
+  "map": {
+    "unavailable": "Kart ikke tilgjengelig",
+    "load_error_title": "Kunne ikke laste kart",
+    "loading_title": "Laster kart...",
+    "loading_description": "Setter opp kartet og henter fasiliteter",
+    "go_to_grid_view": "Gå til rutenettvisning",
+    "no_coordinates": "Ingen koordinater tilgjengelig"
+  },
+  "admin": {
+    "status": {
+      "published": "Publisert",
+      "draft": "Utkast",
+      "archived": "Arkivert",
+      "unknown": "Ukjent",
+      "unpublished": "Upublisert"
+    },
+    "fields": {
+      "owner": "Eier:",
+      "last_updated": "Sist oppdatert:",
+      "updated_by": "Oppdatert av:",
+      "capacity_with_value": "Kapasitet: {{count}}"
+    },
+    "actions": {
+      "edit": "Rediger",
+      "add_image": "Legg til bilde",
+      "save_changes": "Lagre endringer"
+    },
+    "aria": {
+      "view_details_for": "Se detaljer for {{name}} ved {{address}}",
+      "view_in_main_app": "Se i hovedapplikasjon",
+      "duplicate_facility": "Dupliser lokale",
+      "delete_facility": "Slett lokale"
+    },
+    "labels": {
+      "more_items": "+{{count}} flere"
+    },
+    "dialogs": {
+      "delete_title": "Slett lokale",
+      "delete_warning": "Denne handlingen kan ikke angres",
+      "delete_confirmation": "Er du sikker på at du vil slette <strong>{{name}}</strong>? Alle tilknyttede data vil bli permanent slettet.",
+      "edit_title": "Rediger lokale",
+      "all_amenities_title": "Alle fasiliteter",
+      "upload_images_title": "Last opp bilder"
+    },
+    "upload": {
+      "click_to_select": "Klikk for å velge bilder",
+      "file_types_info": "PNG, JPG, GIF opptil 10MB"
+    },
+    "messages": {
+      "updated_success": "Fasilitet oppdatert!",
+      "save_error": "Kunne ikke lagre endringer. Prøv igjen.",
+      "images_uploaded_success": "Bilder lastet opp!",
+      "image_upload_error": "Kunne ikke laste opp bilder. Prøv igjen."
+    },
+    "edit": "Rediger fasilitet",
+    "images": "Bilder",
+    "preview": "Forhåndsvisning",
+    "image_number": "Bilde {{number}}",
+    "remove_image": "Fjern bilde {{number}}",
+    "no_images": "Ingen bilder lagt til",
+    "fetching_coordinates": "Henter koordinater...",
+    "geocode_errors": {
+      "geocode_failed": "Kunne ikke finne adressen i Mapbox",
+      "geocode_error": "Kunne ikke hente koordinater"
+    },
+    "geocode_success": {
+      "coordinates_fetched": "Koordinater hentet automatisk fra adresse"
+    }
   }
 }
