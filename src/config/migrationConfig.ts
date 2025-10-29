@@ -123,7 +123,7 @@ export const isUserInRollout = (userId: string): boolean => {
  */
 export const logMigrationEvent = (
   event: string,
-  data?: Record<string, any>
+  data?: Record<string, unknown>
 ): void => {
   if (defaultMigrationConfig.enableLogging) {
     console.log(`[Migration] ${event}`, data || '');

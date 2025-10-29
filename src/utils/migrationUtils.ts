@@ -64,7 +64,7 @@ export async function migrateBookingsToSupabase(
         try {
           // Use SQL function for proper data transformation
           const { error } = await supabase.rpc('migrate_localstorage_booking', {
-            p_booking_data: booking as any,
+            p_booking_data: booking as unknown as Record<string, unknown>,
           });
 
           if (error) {

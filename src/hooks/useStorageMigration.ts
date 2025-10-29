@@ -156,12 +156,14 @@ export function useStorageMigration<T>({
           localStorage.setItem(localStorageKey, serializer(value));
 
           if (supabaseTable && supabaseColumn && userId) {
+            const payload: Record<string, unknown> = {
+              user_id: userId,
+              [supabaseColumn]: value,
+            };
+
             const { error: supabaseError } = await supabase
               .from(supabaseTable)
-              .upsert({
-                user_id: userId,
-                [supabaseColumn]: value,
-              } as any);
+              .upsert(payload);
 
             if (supabaseError) {
               logMigrationEvent('writeData:supabase:error', { error: supabaseError });
@@ -174,12 +176,14 @@ export function useStorageMigration<T>({
         case MIGRATION_PHASES.SUPABASE_ONLY: {
           // Phase 3: Only Supabase
           if (supabaseTable && supabaseColumn && userId) {
+            const payload: Record<string, unknown> = {
+              user_id: userId,
+              [supabaseColumn]: value,
+            };
+
             const { error: supabaseError } = await supabase
               .from(supabaseTable)
-              .upsert({
-                user_id: userId,
-                [supabaseColumn]: value,
-              } as any);
+              .upsert(payload);
 
             if (supabaseError) throw supabaseError;
 
@@ -241,12 +245,14 @@ export function useStorageMigration<T>({
 
       const localData = parser(stored);
 
+      const payload: Record<string, unknown> = {
+        user_id: userId,
+        [supabaseColumn]: localData,
+      };
+
       const { error: supabaseError } = await supabase
         .from(supabaseTable)
-        .upsert({
-          user_id: userId,
-          [supabaseColumn]: localData,
-        } as any);
+        .upsert(payload);
 
       if (supabaseError) throw supabaseError;
 

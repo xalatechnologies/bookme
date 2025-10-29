@@ -366,7 +366,7 @@ function mapDraftToSupabase(
   userId?: string,
   sessionId?: string,
   draftId?: string
-): any {
+): Record<string, unknown> {
   return {
     ...(draftId && { id: draftId }),
     user_id: userId || null,

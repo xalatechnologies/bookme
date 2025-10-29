@@ -47,7 +47,7 @@ export const StepProgressIndicator = ({
   isStepCompleted,
   onStepClick,
 }: IStepProgressIndicatorProps): JSX.Element => {
-  const { t } = useTranslation('booking');
+  const { t } = useTranslation("bookings");
 
   return (
     <Card>

@@ -203,7 +203,7 @@ export function useBookings(options: UseBookingsOptions = {}): UseBookingsReturn
       setError(error);
       throw error;
     }
-  }, [writeBooking]);
+  }, [writeBooking, refresh]);
 
   const updateBooking = useCallback(async (
     id: string,
@@ -224,7 +224,7 @@ export function useBookings(options: UseBookingsOptions = {}): UseBookingsReturn
       setError(error);
       throw error;
     }
-  }, [bookings, writeBooking]);
+  }, [bookings, writeBooking, refresh]);
 
   const deleteBooking = useCallback(async (id: string): Promise<void> => {
     try {
@@ -270,7 +270,7 @@ export function useBookings(options: UseBookingsOptions = {}): UseBookingsReturn
       setError(error);
       throw error;
     }
-  }, [phase, userId, status]);
+  }, [phase, userId, status, refresh]);
 
   const syncWithLocalStorage = useCallback(async (): Promise<void> => {
     if (!userId) {
@@ -349,7 +349,7 @@ export function useBookings(options: UseBookingsOptions = {}): UseBookingsReturn
 }
 
 // Mapping functions
-function mapSupabaseToStoredBooking(row: any): IStoredBooking {
+function mapSupabaseToStoredBooking(row: Record<string, unknown>): IStoredBooking {
   return {
     id: row.id,
     userId: row.user_id,
@@ -375,7 +375,7 @@ function mapSupabaseToStoredBooking(row: any): IStoredBooking {
   };
 }
 
-function mapStoredBookingToSupabase(booking: IStoredBooking, userId: string): any {
+function mapStoredBookingToSupabase(booking: IStoredBooking, userId: string): Record<string, unknown> {
   return {
     id: booking.id,
     user_id: userId,
