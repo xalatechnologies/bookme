@@ -451,8 +451,8 @@ export const Checkout = (): JSX.Element => {
                 time: slot.timeSlot,
                 duration:
                   hours === 1
-                    ? t("booking:time.hour", "1 hour")
-                    : `${hours} ${t("booking:time.hours", "hours")}`,
+                    ? t("bookings:time.hour", "1 hour")
+                    : `${hours} ${t("bookings:time.hours", "hours")}`,
                 status: "pending" as const,
                 location: "Drammen",
                 price: `${(
@@ -542,10 +542,10 @@ export const Checkout = (): JSX.Element => {
                         0
                       ) / 60;
                     return totalHours === 1
-                      ? t("booking:time.hour", "1 hour")
-                      : `${totalHours} ${t("booking:time.hours", "hours")}`;
+                      ? t("bookings:time.hour", "1 hour")
+                      : `${totalHours} ${t("bookings:time.hours", "hours")}`;
                   })()
-                : t("booking:time.hour", "1 hour"),
+                : t("bookings:time.hour", "1 hour"),
             status: "pending" as const,
             location: "Drammen", // This could be dynamic based on facility
             price: `${item.pricing.finalPrice.toLocaleString("nb-NO")} kr`,
@@ -1026,13 +1026,13 @@ export const Checkout = (): JSX.Element => {
                                           0
                                         ) / 60;
                                       return totalHours === 1
-                                        ? t("booking:time.hour", "1 time")
+                                        ? t("bookings:time.hour", "1 time")
                                         : `${totalHours} ${t(
-                                            "booking:time.hours",
+                                            "bookings:time.hours",
                                             "timer"
                                           )}`;
                                     })()
-                                  : `0 ${t("booking:time.hours", "timer")}`}
+                                  : `0 ${t("bookings:time.hours", "timer")}`}
                               </span>
                             </div>
                             <div className="flex items-center gap-2 text-sm text-gray-600">

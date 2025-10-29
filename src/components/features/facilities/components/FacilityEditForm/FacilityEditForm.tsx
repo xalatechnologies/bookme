@@ -60,7 +60,7 @@ export const FacilityEditForm: React.FC<IFacilityEditFormProps> = ({
   onClose,
   onUpdate,
 }): JSX.Element => {
-  const { t } = useTranslation(["facility", "admin", "validation", "common"]);
+  const { t } = useTranslation(["facilities", "admin", "validation", "common"]);
 
   const [formData, setFormData] = useState<Partial<IFacility>>({ ...facility });
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);

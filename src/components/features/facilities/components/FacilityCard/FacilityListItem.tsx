@@ -22,7 +22,7 @@ export const FacilityListItem: React.FC<FacilityListItemProps> = ({
   facility,
   onAddressClick,
 }): JSX.Element => {
-  const { t } = useTranslation(["facility"]);
+  const { t } = useTranslation(["facilities"]);
   const translateAmenity = useAmenityTranslation();
   const navigate = useNavigate();
   const [isFavorited, setIsFavorited] = useState(false);
@@ -135,7 +135,7 @@ export const FacilityListItem: React.FC<FacilityListItemProps> = ({
                       className="bg-gray-50 text-gray-600 border-gray-300 font-medium px-3 py-1 text-sm"
                     >
                       +{facility.amenities.length - 4}{" "}
-                      {t("facility:card.more")}
+                      {t("facilities:card.more")}
                     </Badge>
                   )}
                 </div>
@@ -161,8 +161,8 @@ export const FacilityListItem: React.FC<FacilityListItemProps> = ({
                         return facility.reviewCount || 0;
                       return typeof field.value === "boolean"
                         ? field.value
-                          ? t("facility:card.yes")
-                          : t("facility:card.no")
+                          ? t("facilities:card.yes")
+                          : t("facilities:card.no")
                         : field.value;
                     };
 
@@ -182,15 +182,15 @@ export const FacilityListItem: React.FC<FacilityListItemProps> = ({
 
                     const getUnit = (): string => {
                       if (field.key === "capacity")
-                        return t("facility:card.people");
+                        return t("facilities:card.people");
                       if (field.key === "area")
-                        return t("facility:card.squareMeters");
+                        return t("facilities:card.squareMeters");
                       if (field.key === "pricePerHour")
-                        return t("facility:card.pricePerHour");
+                        return t("facilities:card.pricePerHour");
                       if (field.key === "rating")
-                        return t("facility:card.outOf5");
+                        return t("facilities:card.outOf5");
                       if (field.key === "reviewCount")
-                        return t("facility:card.reviewCount");
+                        return t("facilities:card.reviewCount");
                       return "";
                     };
 
@@ -213,8 +213,8 @@ export const FacilityListItem: React.FC<FacilityListItemProps> = ({
                   className="h-9 w-9 p-0 hover:bg-gray-100 rounded-full focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 flex items-center justify-center"
                   aria-label={
                     isFavorited
-                      ? t("facility:card.removeFavorites")
-                      : t("facility:card.addToFavorites")
+                      ? t("facilities:card.removeFavorites")
+                      : t("facilities:card.addToFavorites")
                   }
                 >
                   <Heart
@@ -228,7 +228,7 @@ export const FacilityListItem: React.FC<FacilityListItemProps> = ({
                 <button
                   onClick={handleShare}
                   className="h-9 w-9 p-0 hover:bg-gray-100 rounded-full focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 flex items-center justify-center"
-                  aria-label={t("facility:card.shareFacility")}
+                  aria-label={t("facilities:card.shareFacility")}
                 >
                   <Share2 className="h-4 w-4 text-gray-400" />
                 </button>

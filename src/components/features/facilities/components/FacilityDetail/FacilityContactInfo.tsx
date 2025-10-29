@@ -14,7 +14,7 @@ interface FacilityContactInfoProps {
 export const FacilityContactInfo: React.FC<FacilityContactInfoProps> = ({
   facility,
 }) => {
-  const { t } = useTranslation(["facility", "common"]);
+  const { t } = useTranslation(["facilities", "common"]);
   const translateAmenity = useAmenityTranslation();
 
   // Defensive: handle initial loading state where facility may be undefined
@@ -43,7 +43,7 @@ export const FacilityContactInfo: React.FC<FacilityContactInfoProps> = ({
       window.location.href = `/facilities/${facility.id}/book`;
     } catch (error) {
       console.error("Failed to navigate to booking:", error);
-      alert(t("facility:contact.booking_failed"));
+      alert(t("facilities:contact.booking_failed"));
     }
   };
 
@@ -51,31 +51,31 @@ export const FacilityContactInfo: React.FC<FacilityContactInfoProps> = ({
     try {
       // Create contact options
       const contactOptions = [
-        `${t("facility:contact.phone")}: ${
+        `${t("facilities:contact.phone")}: ${
           facility.emergencyContact || "+47 32 04 70 00"
         }`,
-        `${t("facility:contact.email")}: ${
+        `${t("facilities:contact.email")}: ${
           facility.contactEmail || "booking@drammen.kommune.no"
         }`,
-        `${t("facility:contact.facility")}: ${facility.name}`,
-        `${t("facility:contact.location")}: ${facility.location}`,
+        `${t("facilities:contact.facility")}: ${facility.name}`,
+        `${t("facilities:contact.location")}: ${facility.location}`,
       ].join("\n");
 
       // Show contact information
       const contactChoice = window.confirm(
-        `${t("facility:contact.contact_info_for", { name: facility.name })}
+        `${t("facilities:contact.contact_info_for", { name: facility.name })}
 
 ${contactOptions}
 
-${t("facility:contact.open_email_client")}`
+${t("facilities:contact.open_email_client")}`
       );
 
       if (contactChoice) {
         // Open email client
-        const subject = t("facility:contact.inquiry_about", {
+        const subject = t("facilities:contact.inquiry_about", {
           name: facility.name,
         });
-        const body = t("facility:contact.email_template", {
+        const body = t("facilities:contact.email_template", {
           name: facility.name,
         });
 
@@ -88,11 +88,11 @@ ${t("facility:contact.open_email_client")}`
       } else {
         // Copy contact info to clipboard
         navigator.clipboard.writeText(contactOptions);
-        alert(t("facility:contact.contact_copied"));
+        alert(t("facilities:contact.contact_copied"));
       }
     } catch (error) {
       console.error("Failed to handle contact:", error);
-      alert(t("facility:contact.contact_error"));
+      alert(t("facilities:contact.contact_error"));
     }
   };
 
@@ -213,7 +213,7 @@ ${t("facility:contact.open_email_client")}`
             {(facility.amenities?.length ?? 0) > 6 && (
               <Badge variant="outline" className="text-xs">
                 +{(facility.amenities?.length ?? 0) - 6}{" "}
-                {t("facility:card.more")}
+                {t("facilities:card.more")}
               </Badge>
             )}
           </div>

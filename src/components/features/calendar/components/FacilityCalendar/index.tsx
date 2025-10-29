@@ -111,7 +111,7 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
   useStepByStepBooking = false,
 }) => {
   const navigate = useNavigate();
-  const { t } = useTranslation("common");
+  const { t } = useTranslation("calendar");
   const { addItem } = useCart();
 
   // State for current week
