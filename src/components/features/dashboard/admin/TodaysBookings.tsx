@@ -14,7 +14,7 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Clock, User, CheckCircle, XCircle, AlertCircle } from "lucide-react";
 import { ITodaysBooking } from "@/types/admin";
-import { getStatusIconType } from "@/utils/card-formatters";
+import { getStatusIconType } from "@/components/features/facilities/utils/formatters";
 
 interface ITodaysBookingsProps {
   readonly bookings: readonly ITodaysBooking[];

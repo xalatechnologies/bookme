@@ -60,7 +60,7 @@ interface IFacilityStore {
 // Initial data - same as coreFacilities but with admin fields
 const initialFacilities: readonly IFacility[] = [
   {
-    id: "1",
+    id: "11111111-1111-1111-1111-111111111001",
     name: "Drammen Idrettshall",
     description: "Moderne idrettshall med full utstyr for ballsport og trening. Perfekt for fotball, håndball, basketball og volleyball.",
     type: "Idrettshall",
@@ -96,7 +96,7 @@ const initialFacilities: readonly IFacility[] = [
     updatedAt: "2023-10-20"
   },
   {
-    id: "2",
+    id: "11111111-1111-1111-1111-111111111002",
     name: "Strømsø Kulturhus",
     description: "Fleksibelt kulturhus med scene og sal. Ideelt for konserter, teaterforestillinger, møter og kulturarrangementer.",
     type: "Kulturhus",
@@ -131,7 +131,7 @@ const initialFacilities: readonly IFacility[] = [
     updatedAt: "2023-10-18"
   },
   {
-    id: "3",
+    id: "11111111-1111-1111-1111-111111111003",
     name: "Bragernes Møterom",
     description: "Profesjonelt møterom i hjertet av Drammen. Utstyrt med moderne teknologi for bedriftsmøter og presentasjoner.",
     type: "Møterom",
@@ -165,7 +165,7 @@ const initialFacilities: readonly IFacility[] = [
     updatedAt: "2023-10-15"
   },
   {
-    id: "4",
+    id: "11111111-1111-1111-1111-111111111004",
     name: "Spiralen Fotballbane",
     description: "Utendørs fotballbane med kunstgress. Flombelyst bane som kan brukes hele året. Perfekt for fotballtrening og kamper.",
     type: "Fotballbane",
@@ -200,7 +200,7 @@ const initialFacilities: readonly IFacility[] = [
     updatedAt: "2023-10-22"
   },
   {
-    id: "5",
+    id: "11111111-1111-1111-1111-111111111005",
     name: "Konnerud Svømmehall",
     description: "Moderne svømmehall med 25-meter basseng. Ideell for svømmetrening, vanngymnastikk og fritidssvømming.",
     type: "Svømmehall",
@@ -236,7 +236,7 @@ const initialFacilities: readonly IFacility[] = [
     updatedAt: "2023-10-19"
   },
   {
-    id: "6",
+    id: "11111111-1111-1111-1111-111111111006",
     name: "Solberghallen",
     description: "Solberghallen (Solberg Sport- og Kultursenter AS) er en idrettshall for inneidretter, foreninger, skoler, SFO, og private videregående skoler i Drammen kommune.",
     type: "Idrettshall",
@@ -270,7 +270,7 @@ const initialFacilities: readonly IFacility[] = [
     updatedAt: "2023-10-20"
   },
   {
-    id: "7",
+    id: "11111111-1111-1111-1111-111111111007",
     name: "Åssiden Tennisbane",
     description: "Innendørs tennisbane med profesjonell underlag. Perfekt for tennisturneringer og trening året rundt.",
     type: "Tennisbane",

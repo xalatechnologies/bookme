@@ -1,69 +1,63 @@
 "use client";
 
 // External imports
-import { useState, useEffect } from 'react';
+import { useMemo } from 'react';
 
-// Internal imports
-import { useFacilityStore, type IFacility } from '@/stores/facilityStore';
+// Internal imports - Supabase services
+import {
+  useFacility as useSupabaseFacility,
+  useFacilityBySlug
+} from '@/services/supabase/facilities.service';
+import type { Database } from '@/types/database';
+
+type Facility = Database['public']['Tables']['facilities']['Row'];
 
 interface FacilityState {
-  readonly facility: IFacility | null;
+  readonly facility: Facility | null;
   readonly loading: boolean;
   readonly error: string | null;
   readonly notFound: boolean;
 }
 
-export const useFacility = (id: string | number): FacilityState => {
-  const [state, setState] = useState<FacilityState>({
-    facility: null,
-    loading: true,
-    error: null,
-    notFound: false
-  });
+/**
+ * Hook to fetch a facility by ID or slug
+ * Automatically detects whether the parameter is a UUID or slug
+ *
+ * @param idOrSlug - Facility ID (UUID) or slug
+ * @returns Facility state with loading and error states
+ */
+export const useFacility = (idOrSlug: string | number): FacilityState => {
+  const idOrSlugStr = typeof idOrSlug === 'number' ? idOrSlug.toString() : idOrSlug;
 
-  const { getFacilityById } = useFacilityStore();
+  // Detect if parameter is UUID or slug
+  // UUID format: 8-4-4-4-12 hex characters
+  const isUUID = useMemo(() => {
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    return uuidRegex.test(idOrSlugStr);
+  }, [idOrSlugStr]);
 
-  useEffect(() => {
-    const fetchFacility = async (): Promise<void> => {
-      try {
-        setState(prev => ({ ...prev, loading: true, error: null }));
+  // Use appropriate query based on parameter type
+  const {
+    data: facilityById,
+    isLoading: loadingById,
+    error: errorById
+  } = useSupabaseFacility(idOrSlugStr, isUUID);
 
-        // Simulate API delay
-        await new Promise(resolve => setTimeout(resolve, 100));
+  const {
+    data: facilityBySlug,
+    isLoading: loadingBySlug,
+    error: errorBySlug
+  } = useFacilityBySlug(idOrSlugStr, !isUUID);
 
-        const facilityId = typeof id === 'number' ? id.toString() : id;
-        const facility = getFacilityById(facilityId);
+  // Combine results based on which query is active
+  const facility = isUUID ? facilityById : facilityBySlug;
+  const loading = isUUID ? loadingById : loadingBySlug;
+  const error = isUUID ? errorById : errorBySlug;
 
-        if (!facility) {
-          setState({
-            facility: null,
-            loading: false,
-            error: null,
-            notFound: true
-          });
-          return;
-        }
-
-        setState({
-          facility,
-          loading: false,
-          error: null,
-          notFound: false
-        });
-      } catch (error) {
-        setState({
-          facility: null,
-          loading: false,
-          error: error instanceof Error ? error.message : 'Unknown error occurred',
-          notFound: false
-        });
-      }
-    };
-
-    if (id) {
-      fetchFacility();
-    }
-  }, [id, getFacilityById]);
-
-  return state;
+  return {
+    facility: facility || null,
+    loading,
+    error: error?.message || null,
+    notFound: !loading && !facility && !error
+  };
 };

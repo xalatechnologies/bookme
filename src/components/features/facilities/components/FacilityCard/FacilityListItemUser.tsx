@@ -63,35 +63,41 @@ const FacilityListItemUser = (props: IFacilityListItemUserProps): JSX.Element =>
     // Track usage and last visited when viewing details
     incrementUsage(id);
     updateLastVisited(id);
-    navigate(`/facilities/${id}`);
+    // Use slug if available, fallback to id
+    const facilityPath = (props as any).slug || id;
+    navigate(`/facilities/${facilityPath}`);
   };
 
   const handleBookNow = (): void => {
     // Track usage when booking
     incrementUsage(id);
     updateLastVisited(id);
-    navigate(`/facilities/${id}/book`);
+    // Use slug if available, fallback to id
+    const facilityPath = (props as any).slug || id;
+    navigate(`/facilities/${facilityPath}/book`);
   };
 
   const handleToggleFavorite = (e: React.MouseEvent): void => {
     e.stopPropagation();
     setIsAnimating(true);
     toggleFavorite(id);
-    
+
     // Reset animation after a short delay
     setTimeout(() => setIsAnimating(false), 300);
   };
 
   const handleShare = (e: React.MouseEvent): void => {
     e.stopPropagation();
+    // Use slug if available, fallback to id
+    const facilityPath = (props as any).slug || id;
     if (navigator.share) {
       navigator.share({
         title: name,
         text: t('facility:share.check_out', { name, type, capacity }),
-        url: window.location.origin + `/facilities/${id}`
+        url: window.location.origin + `/facilities/${facilityPath}`
       });
     } else {
-      navigator.clipboard.writeText(window.location.origin + `/facilities/${id}`);
+      navigator.clipboard.writeText(window.location.origin + `/facilities/${facilityPath}`);
     }
   };
 

@@ -180,7 +180,7 @@
     "time_slot": "Time Slot",
     "time_slots": "Time Slots",
     "selected_slots": "Selected Slots",
-    "pricing_breakdown": "Price calculation",
+    "pricing_breakdown": "Pricing Breakdown",
     "customer_info": "Customer Information",
     "payment_info": "Payment Information",
     "additional_info": "Additional Information",
@@ -290,7 +290,7 @@
     "warnings": {
       "cancellation_fee": "A cancellation fee may apply",
       "no_refund": "This booking is non-refundable",
-      "approval_required": "This booking requires approval",
+      "approval_required": "This booking requires administrator approval",
       "payment_due": "Payment is due",
       "upcoming": "Your booking is starting soon"
     }

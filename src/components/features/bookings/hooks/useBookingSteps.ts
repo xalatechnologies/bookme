@@ -1,7 +1,7 @@
 import { useState, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IBookingFormData, BookingType } from '@/components/features/bookings/types';
-import type { RecurrencePattern } from '@/utils/recurrenceEngine';
+import type { RecurrencePattern } from '@/components/features/bookings/utils/recurrence';
 
 /**
  * Booking step types

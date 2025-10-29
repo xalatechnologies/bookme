@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { IBookingFormData, BookingType } from '@/components/features/bookings/types';
-import type { RecurrencePattern } from '@/utils/recurrenceEngine';
+import type { RecurrencePattern } from '@/components/features/bookings/utils/recurrence';
 
 /**
  * Form validation errors

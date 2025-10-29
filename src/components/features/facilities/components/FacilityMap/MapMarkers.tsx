@@ -5,10 +5,10 @@ import React, { useEffect, useRef } from 'react';
 import mapboxgl from 'mapbox-gl';
 
 // Internal imports
-import type { IFacility } from '@/stores/facilityStore';
+import type { Database } from '@/types/database';
 
-// Alias for backward compatibility
-type Facility = IFacility;
+// Type from Supabase
+type Facility = Database['public']['Tables']['facilities']['Row'];
 
 interface FacilityLocation {
   readonly id: string;

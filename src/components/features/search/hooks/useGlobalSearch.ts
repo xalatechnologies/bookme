@@ -9,7 +9,8 @@
 
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useFacilityStore } from '@/stores/facilityStore';
+import { usePublishedFacilities } from '@/services/supabase/facilities.service';
+import { useOrganizationId } from '@/hooks/useOrganizationId';
 
 export interface SearchResult {
   readonly id: string;
@@ -43,8 +44,10 @@ export const useGlobalSearch = (
   const searchRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
-  const { getPublishedFacilities } = useFacilityStore();
-  const facilities = getPublishedFacilities();
+
+  // Get organization context and fetch published facilities from Supabase
+  const orgId = useOrganizationId();
+  const { data: facilities = [] } = usePublishedFacilities(orgId);
 
   // Create search results from facilities and other data
   const createSearchResults = useCallback(
@@ -59,9 +62,9 @@ export const useGlobalSearch = (
           const matchesDescription = facility.description
             ?.toLowerCase()
             .includes(searchLower);
-          const matchesType = facility.type.toLowerCase().includes(searchLower);
-          const matchesLocation = facility.location
-            .toLowerCase()
+          const matchesType = facility.facility_type?.toLowerCase().includes(searchLower);
+          const matchesLocation = facility.address
+            ?.toLowerCase()
             .includes(searchLower);
           const matchesAmenities = facility.amenities?.some((amenity) =>
             amenity.toLowerCase().includes(searchLower)
@@ -77,51 +80,53 @@ export const useGlobalSearch = (
         })
         .slice(0, 6) // Limit facility results
         .map((facility) => ({
-          id: facility.id.toString(),
+          id: facility.id,
           type: 'facility' as const,
           title: facility.name,
-          subtitle: `${facility.location} - Kapasitet: ${facility.capacity}`,
+          subtitle: `${facility.address || facility.area || ''} - Kapasitet: ${facility.capacity || 'N/A'}`,
           iconType: 'building' as const,
-          url: `/facilities/${facility.id}`,
-          image: facility.images[0],
+          url: `/facilities/${facility.slug || facility.id}`,
+          image: facility.images?.[0],
         }));
 
-      // Add location results (unique locations from facilities)
+      // Add location results (unique areas from facilities)
       const uniqueLocations = Array.from(
-        new Set(facilities.map((f) => f.location))
+        new Set(facilities.map((f) => f.area).filter(Boolean))
       )
-        .filter((location) => location.toLowerCase().includes(searchLower))
+        .filter((area) => area && area.toLowerCase().includes(searchLower))
         .slice(0, 3)
-        .map((location) => {
-          const count = facilities.filter((f) => f.location === location).length;
+        .map((area) => {
+          const count = facilities.filter((f) => f.area === area).length;
           return {
-            id: `location-${location}`,
+            id: `location-${area}`,
             type: 'location' as const,
-            title: location,
+            title: area!,
             subtitle: `${count} lokaler tilgjengelig`,
             iconType: 'location' as const,
             url: '/',
             searchParams: {
-              location: location.toLowerCase().replace(/\s+/g, '-'),
+              location: area!.toLowerCase().replace(/\s+/g, '-'),
             },
           };
         });
 
-      // Add category results (unique types from facilities)
-      const uniqueTypes = Array.from(new Set(facilities.map((f) => f.type)))
-        .filter((type) => type.toLowerCase().includes(searchLower))
+      // Add category results (unique facility types from facilities)
+      const uniqueTypes = Array.from(
+        new Set(facilities.map((f) => f.facility_type).filter(Boolean))
+      )
+        .filter((type) => type && type.toLowerCase().includes(searchLower))
         .slice(0, 3)
         .map((type) => {
-          const count = facilities.filter((f) => f.type === type).length;
+          const count = facilities.filter((f) => f.facility_type === type).length;
           return {
             id: `category-${type}`,
             type: 'category' as const,
-            title: type,
+            title: type!,
             subtitle: `${count} lokaler tilgjengelig`,
             iconType: 'users' as const,
             url: '/',
             searchParams: {
-              facilityType: type.toLowerCase().replace(/\s+/g, '-'),
+              facilityType: type!.toLowerCase().replace(/\s+/g, '-'),
             },
           };
         });

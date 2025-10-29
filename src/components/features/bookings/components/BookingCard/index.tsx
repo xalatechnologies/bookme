@@ -26,7 +26,7 @@ import {
   formatPrice,
   getStatusColor,
   getStatusBadgeColor,
-} from "@/utils/card-formatters";
+} from "@/components/features/facilities/utils/formatters";
 
 type BookingStatus = Database["public"]["Enums"]["booking_status"];
 

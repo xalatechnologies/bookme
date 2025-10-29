@@ -182,7 +182,7 @@
     "time_slot": "Tidsrom",
     "time_slots": "Tidsrom",
     "selected_slots": "Valgte tidsrom",
-    "pricing_breakdown": "Prisfordeling",
+    "pricing_breakdown": "Prisberegning",
     "customer_info": "Kundeinformasjon",
     "payment_info": "Betalingsinformasjon",
     "additional_info": "Tilleggsinformasjon",
@@ -295,7 +295,7 @@
     "warnings": {
       "cancellation_fee": "En avbestillingsgebyr kan påløpe",
       "no_refund": "Denne bookingen kan ikke refunderes",
-      "approval_required": "Denne bookingen krever godkjenning",
+      "approval_required": "Denne bookingen krever godkjenning fra administrator",
       "payment_due": "Betaling forfaller",
       "upcoming": "Din booking starter snart"
     }

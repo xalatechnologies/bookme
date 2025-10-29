@@ -2,11 +2,11 @@
 
 import React from "react";
 
-import type { IFacility } from "@/stores/facilityStore";
+import type { Database } from "@/types/database";
 import type { Zone } from "@/components/features/bookings/types";
 
-// Alias for backward compatibility
-type Facility = IFacility;
+// Use Supabase facility type
+type Facility = Database['public']['Tables']['facilities']['Row'];
 
 import { AirBnbStyleGallery } from "../FacilityImageGallery/AirBnbStyleGallery";
 import { FacilityHeader } from "./FacilityHeader";
@@ -40,13 +40,13 @@ export const FacilityDetailLayout = ({
 
       {/* Facility Header - Title, Tags, Address */}
       <div className="mb-8">
-        <FacilityHeader 
-          name={facility.name} 
-          address={facility.address} 
-          type={facility.type}
-          onShare={onShare} 
-          isFavorited={isFavorited} 
-          onToggleFavorite={onToggleFavorite} 
+        <FacilityHeader
+          name={facility.name}
+          address={facility.address || facility.area || ''}
+          type={facility.facility_type || ''}
+          onShare={onShare}
+          isFavorited={isFavorited}
+          onToggleFavorite={onToggleFavorite}
         />
       </div>
 
@@ -54,16 +54,16 @@ export const FacilityDetailLayout = ({
       <div className="grid grid-cols-1 lg:grid-cols-10 gap-8 mb-12">
         {/* Left Column - Tabs Content (70%) */}
         <div className="lg:col-span-7 space-y-6">
-          <FacilityInfoTabs 
-            description={facility.description} 
-            capacity={facility.capacity} 
-            equipment={[]} 
-            zones={zones} 
-            amenities={facility.amenities} 
-            address={facility.address} 
-            area={`${facility.capacity} personer`}
-            suitableFor={[]} 
-            facilityId={facility.id.toString()} 
+          <FacilityInfoTabs
+            description={facility.description || ''}
+            capacity={facility.capacity || 0}
+            equipment={[]}
+            zones={zones}
+            amenities={facility.amenities || []}
+            address={facility.address || facility.area || ''}
+            area={`${facility.capacity || 0} personer`}
+            suitableFor={[]}
+            facilityId={facility.id}
             facilityName={facility.name}
           />
         </div>

@@ -2,13 +2,15 @@
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { IFacility } from "@/stores/facilityStore";
+import type { Database } from "@/types/database";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FormField } from "@/components/common/forms/FormField";
 import { FormActions } from "@/components/common/forms/FormActions";
 import { useFormValidation } from "@/hooks/shared";
-import { useFacilityStore } from "@/stores/facilityStore";
+import { useUpdateFacility } from "@/services/supabase/facilities.service";
+
+type Facility = Database['public']['Tables']['facilities']['Row'];
 import {
   X,
   GripVertical,
@@ -23,7 +25,7 @@ import {
  * Facility edit form props
  */
 export interface IFacilityEditFormProps {
-  readonly facility: IFacility;
+  readonly facility: Facility;
   readonly onClose: () => void;
   readonly onUpdate: () => void;
 }
@@ -62,16 +64,17 @@ export const FacilityEditForm: React.FC<IFacilityEditFormProps> = ({
 }): JSX.Element => {
   const { t } = useTranslation(["facilities", "admin", "validation", "common"]);
 
-  const [formData, setFormData] = useState<Partial<IFacility>>({ ...facility });
+  const [formData, setFormData] = useState<Partial<Facility>>({ ...facility });
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [coordinateStatus, setCoordinateStatus] = useState<{
     type: "success" | "error" | null;
     message: string;
   }>({ type: null, message: "" });
   const [isFetching, setIsFetching] = useState<boolean>(false);
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { updateFacility } = useFacilityStore();
+
+  // Use Supabase mutation hook
+  const updateFacilityMutation = useUpdateFacility();
 
   // Validation rules
   const { errors, validateAll, clearError } = useFormValidation({
@@ -288,19 +291,19 @@ export const FacilityEditForm: React.FC<IFacilityEditFormProps> = ({
         return;
       }
 
-      setIsSubmitting(true);
-
       try {
-        await updateFacility(facility.id, formData);
+        // Use Supabase mutation to update facility
+        await updateFacilityMutation.mutateAsync({
+          id: facility.id,
+          data: formData as any
+        });
         onUpdate();
         onClose();
       } catch (error) {
         console.error("Failed to update facility:", error);
-      } finally {
-        setIsSubmitting(false);
       }
     },
-    [formData, validateAll, facility.id, updateFacility, onUpdate, onClose]
+    [formData, validateAll, facility.id, updateFacilityMutation, onUpdate, onClose]
   );
 
   return (
@@ -483,7 +486,7 @@ export const FacilityEditForm: React.FC<IFacilityEditFormProps> = ({
             onCancel={onClose}
             submitLabel={t("common:actions.save", "Lagre endringer")}
             cancelLabel={t("common:actions.cancel", "Avbryt")}
-            isSubmitting={isSubmitting}
+            isSubmitting={updateFacilityMutation.isPending}
             isValid={Object.keys(errors).length === 0}
           />
         </form>

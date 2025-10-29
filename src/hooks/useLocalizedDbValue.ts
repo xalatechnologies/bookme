@@ -18,7 +18,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/lib/clients/supabase';
 
 export interface LocalizedOption {
   value: string;

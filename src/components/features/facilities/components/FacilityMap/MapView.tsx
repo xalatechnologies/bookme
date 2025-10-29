@@ -1,14 +1,17 @@
 "use client";
 
 // External imports
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import mapboxgl from 'mapbox-gl';
 import { useNavigate } from 'react-router-dom';
 
 // Internal imports
-import { useFacilityStore } from '@/stores/facilityStore';
+import { usePublishedFacilities, useFacilities } from '@/services/supabase/facilities.service';
+import { useOrganizationId } from '@/hooks/useOrganizationId';
 import { FacilityFilters } from '@/types/facility';
-import type { IFacility } from '@/stores/facilityStore'; // Import the IFacility type
+import type { Database } from '@/types/database';
+
+type Facility = Database['public']['Tables']['facilities']['Row'];
 
 // Sibling imports
 import { Card } from '@/components/ui/card';
@@ -24,16 +27,16 @@ interface MapViewProps {
   readonly setViewMode: (mode: "grid" | "map" | "list") => void;
   readonly showAllFacilities?: boolean; // New prop to show all facilities in admin
   readonly showHeader?: boolean; // New prop to control header visibility
-  readonly onMarkerClick?: (facility: IFacility) => void; // New prop for handling marker clicks
+  readonly onMarkerClick?: (facility: Facility) => void; // New prop for handling marker clicks
 }
 
 // Mapbox public token provided by user
 const DEFAULT_MAPBOX_TOKEN = 'pk.eyJ1IjoiYW1pbjA3IiwiYSI6ImNtZzlqcjNnczBmMmsycXM2cm4xYzU0OGwifQ.1Vuiv_9pPIUY478LP3yccA';
 
-export const MapView: React.FC<MapViewProps> = ({ 
-  facilityType, 
-  location, 
-  viewMode, 
+export const MapView: React.FC<MapViewProps> = ({
+  facilityType,
+  location,
+  viewMode,
   setViewMode,
   showAllFacilities = false, // Default to false for backward compatibility
   showHeader = true, // Default to true for backward compatibility
@@ -41,13 +44,16 @@ export const MapView: React.FC<MapViewProps> = ({
 }): JSX.Element => {
   const navigate = useNavigate();
   const [map, setMap] = useState<mapboxgl.Map | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
   const [isInitialized, setIsInitialized] = useState<boolean>(false);
-  
-  const { getPublishedFacilities, getAdminFacilities } = useFacilityStore();
-  // Use getAdminFacilities if showAllFacilities is true, otherwise use getPublishedFacilities
-  const facilities = showAllFacilities ? getAdminFacilities() : getPublishedFacilities();
+
+  const orgId = useOrganizationId();
+  // Use all facilities if showAllFacilities is true, otherwise use published only
+  const { data: publishedFacilities = [], isLoading: loadingPublished } = usePublishedFacilities(orgId, !showAllFacilities);
+  const { data: allFacilities = [], isLoading: loadingAll } = useFacilities(orgId, showAllFacilities);
+
+  const facilities = showAllFacilities ? allFacilities : publishedFacilities;
+  const isLoading = showAllFacilities ? loadingAll : loadingPublished;
 
   // Create filters from props
   const filters: FacilityFilters = {
@@ -56,16 +62,19 @@ export const MapView: React.FC<MapViewProps> = ({
   };
 
   // Filter facilities based on current filters
-  let filteredFacilities = facilities;
-  if (filters.facilityType) {
-    filteredFacilities = filteredFacilities.filter(f => f.type === filters.facilityType);
-  }
-  if (filters.location) {
-    filteredFacilities = filteredFacilities.filter(f => f.area === filters.location);
-  }
+  const filteredFacilities = useMemo(() => {
+    let filtered = [...facilities];
+    if (filters.facilityType) {
+      filtered = filtered.filter(f => f.facility_type === filters.facilityType);
+    }
+    if (filters.location) {
+      filtered = filtered.filter(f => f.area === filters.location || f.address?.includes(filters.location));
+    }
+    return filtered;
+  }, [facilities, filters.facilityType, filters.location]);
 
   // Handle marker click - only call the custom handler if provided, don't navigate automatically
-  const handleMarkerClick = (facility: IFacility): void => {
+  const handleMarkerClick = (facility: Facility): void => {
     if (onMarkerClick) {
       onMarkerClick(facility);
     }

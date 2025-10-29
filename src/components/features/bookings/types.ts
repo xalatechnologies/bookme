@@ -5,7 +5,7 @@
  * for facility reservation and cart management.
  */
 
-import type { RecurrencePattern } from '@/utils/recurrenceEngine';
+import type { RecurrencePattern } from '@/components/features/bookings/utils/recurrence';
 import type { Zone } from '@/types/booking';
 
 /**

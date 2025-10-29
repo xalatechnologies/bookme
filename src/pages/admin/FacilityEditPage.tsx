@@ -3,7 +3,9 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Save, X, ArrowLeft, Eye, MapPin, Users, Clock, Phone, Mail, Plus, Trash2, Edit3, Check, X as XIcon, Settings } from "lucide-react";
-import { useFacilityStore, type IFacility } from "@/stores/facilityStore";
+import type { Database } from "@/types/database";
+import { useFacility as useSupabaseFacility, useUpdateFacility, useCreateFacility } from "@/services/supabase/facilities.service";
+import { useOrganizationId } from "@/hooks/useOrganizationId";
 import { useFieldConfigStore } from "@/stores/fieldConfigStore";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -15,6 +17,8 @@ import { FieldConfigModal } from "@/components/features/facilities/components/Fa
 import { ReadOnlyCalendar } from "@/components/features/calendar/components/FacilityCalendar/ReadOnlyCalendar";
 import { Zone } from "@/types/booking";
 import { useZoneStore } from "@/stores/zoneStore";
+
+type Facility = Database['public']['Tables']['facilities']['Row'];
 
 interface IFacilityEditPageProps {
   readonly children?: never;

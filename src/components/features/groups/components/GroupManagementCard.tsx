@@ -26,7 +26,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { BookingGroup, CreateGroupData } from "@/types/group";
 import { useGroupStore } from "@/stores/groupStore";
-import { getInitials } from "@/utils/card-formatters";
+import { getInitials } from "@/components/features/facilities/utils/formatters";
 
 /**
  * Props interfaces following Interface Segregation Principle
