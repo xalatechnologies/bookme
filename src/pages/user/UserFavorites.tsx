@@ -1,146 +1,57 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import React from "react";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { 
-  Heart, 
-  MapPin, 
-  Users, 
-  Calendar,
-  Star,
-  Eye,
-  Trash2,
+import {
+  Heart,
   Grid3X3,
   List,
   Search,
-  Filter,
-  Clock,
-  CheckCircle,
-  XCircle,
-  AlertCircle,
-  BookOpen,
-  TrendingUp,
-  Calendar as CalendarIcon,
   ChevronDown,
   SlidersHorizontal,
-  ArrowRight,
-  ExternalLink
+  BookOpen,
+  ArrowRight
 } from "lucide-react";
 import FacilityCardUser from "@/components/features/facilities/components/FacilityCard/FacilityCardUser";
 import FacilityListItemUser from "@/components/features/facilities/components/FacilityCard/FacilityListItemUser";
-import { usePublishedFacilities } from "@/services/supabase/facilities.service";
 import { useOrganizationId } from "@/hooks/useOrganizationId";
-import { useFavoritesStore } from "@/stores/favoritesStore";
+import { useUserFavoritesManagement } from "@/hooks/features/favorites";
 import { useTranslation } from "react-i18next";
 
-interface IFavoriteFacility {
-  readonly id: string;
-  readonly name: string;
-  readonly type: string;
-  readonly address: string;
-  readonly capacity: number;
-  readonly price: string;
-  readonly image: string;
-  readonly rating: number;
-  readonly addedAt: string;
-  readonly lastVisited?: string;
-  readonly usageCount?: number;
-  readonly amenities: readonly string[];
-  readonly description: string;
-  readonly availability: "available" | "busy" | "full";
-  readonly location: string;
-  readonly pricePerHour: number;
-  readonly isFavorite?: boolean;
-  readonly coordinates?: { lat: number; lng: number };
-}
+// ============================================================================
+// Filter Configuration
+// ============================================================================
 
 const UserFavorites = (): JSX.Element => {
   const { t } = useTranslation('user');
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-  const [searchTerm, setSearchTerm] = useState<string>("");
-  const [filterType, setFilterType] = useState<string>("all");
-  const [filterCapacity, setFilterCapacity] = useState<string>("all");
-  const [filterPrice, setFilterPrice] = useState<[number, number]>([0, 1000]);
-  const [filterLocation, setFilterLocation] = useState<string>("all");
-  const [filterAvailability, setFilterAvailability] = useState<string>("all");
-  const [sortBy, setSortBy] = useState<string>("recently-added");
-  const [showFilters, setShowFilters] = useState<boolean>(false);
-  const [removingFacility, setRemovingFacility] = useState<string | null>(null);
-
-  // Real-time availability check function
-  const getRealTimeAvailability = (facilityId: string): "available" | "busy" | "full" => {
-    // In a real app, this would call an API to check current availability
-    // For now, we'll simulate with some logic based on facility ID and time
-    const now = new Date();
-    const hour = now.getHours();
-    const dayOfWeek = now.getDay();
-    
-    // Simulate availability based on time and day
-    if (dayOfWeek === 0 || dayOfWeek === 6) { // Weekend
-      if (hour >= 8 && hour <= 22) {
-        return Math.random() > 0.3 ? "available" : "busy";
-      } else {
-        return "full";
-      }
-    } else { // Weekday
-      if (hour >= 6 && hour <= 23) {
-        return Math.random() > 0.2 ? "available" : "busy";
-      } else {
-        return "full";
-      }
-    }
-  };
-
-  // Load view mode from localStorage
-  useEffect(() => {
-    const savedViewMode = localStorage.getItem("favorites-view-mode");
-    if (savedViewMode === "grid" || savedViewMode === "list") {
-      setViewMode(savedViewMode);
-    }
-  }, []);
-
-  // Save view mode to localStorage
-  const handleViewModeChange = (mode: "grid" | "list"): void => {
-    setViewMode(mode);
-    localStorage.setItem("favorites-view-mode", mode);
-  };
-
-  // Get facilities from Supabase and favorites from store
   const orgId = useOrganizationId();
-  const { data: facilities = [], isLoading: facilitiesLoading } = usePublishedFacilities(orgId);
-  const { favorites: favoriteEntries, removeFavorite } = useFavoritesStore();
 
-  // Get only facilities that are actually favorited
-  const favorites: readonly IFavoriteFacility[] = useMemo(() => {
-    return facilities
-      .filter(facility => favoriteEntries.some(fav => fav.facilityId === facility.id))
-      .map(facility => {
-        const favoriteEntry = favoriteEntries.find(fav => fav.facilityId === facility.id)!;
-        return {
-          id: facility.id,
-          name: facility.name,
-          type: facility.facility_type || '',
-          address: facility.address || facility.area || '',
-          capacity: facility.capacity || 0,
-          price: `${(facility.price_per_hour_cents || 0) / 100} kr/time`,
-          pricePerHour: (facility.price_per_hour_cents || 0) / 100,
-          image: (facility.images as any)?.[0] || "/placeholder.svg",
-          rating: facility.rating || 0,
-          addedAt: favoriteEntry.addedAt,
-          lastVisited: favoriteEntry.lastVisited,
-          usageCount: favoriteEntry.usageCount,
-          amenities: facility.amenities || [],
-          description: facility.description || '',
-          availability: getRealTimeAvailability(facility.id) as const,
-          location: facility.area || facility.address || '',
-          isFavorite: true,
-          coordinates: facility.coordinates
-        };
-      });
-  }, [facilities, favoriteEntries]);
+  // Use the management hook for all business logic
+  const {
+    filteredAndSortedFavorites,
+    viewMode,
+    searchTerm,
+    filterConfig,
+    sortBy,
+    showFilters,
+    removingFacility,
+    setViewMode,
+    setSearchTerm,
+    setFilterType,
+    setFilterCapacity,
+    setFilterPrice,
+    setFilterLocation,
+    setFilterAvailability,
+    setSortBy,
+    setShowFilters,
+    formatDate
+  } = useUserFavoritesManagement(orgId);
+
+  // ============================================================================
+  // Filter Options Configuration
+  // ============================================================================
 
   const typeFilters = [
     { value: "all", label: t('pages.favorites.filters.all_types'), color: "gray" },
@@ -187,137 +98,15 @@ const UserFavorites = (): JSX.Element => {
     { value: "price-high", label: t('pages.favorites.sort_options.price_high') }
   ];
 
-  const filteredAndSortedFavorites = favorites
-    .filter(favorite => {
-      const matchesSearch = favorite.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           favorite.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           favorite.description.toLowerCase().includes(searchTerm.toLowerCase());
-      
-      const matchesType = filterType === "all" || favorite.type === filterType;
-      
-      const matchesCapacity = filterCapacity === "all" || 
-        (filterCapacity === "0-20" && favorite.capacity <= 20) ||
-        (filterCapacity === "20-100" && favorite.capacity > 20 && favorite.capacity <= 100) ||
-        (filterCapacity === "100+" && favorite.capacity > 100);
-      
-      const matchesPrice = favorite.pricePerHour >= filterPrice[0] && favorite.pricePerHour <= filterPrice[1];
-      
-      const matchesLocation = filterLocation === "all" || favorite.location === filterLocation;
-      
-      const matchesAvailability = filterAvailability === "all" || favorite.availability === filterAvailability;
-      
-      return matchesSearch && matchesType && matchesCapacity && matchesPrice && matchesLocation && matchesAvailability;
-    })
-    .sort((a, b) => {
-      switch (sortBy) {
-        case "recently-added":
-          return new Date(b.addedAt).getTime() - new Date(a.addedAt).getTime();
-        case "last-visited":
-          return new Date(b.lastVisited || b.addedAt).getTime() - new Date(a.lastVisited || a.addedAt).getTime();
-        case "most-used":
-          return (b.usageCount || 0) - (a.usageCount || 0);
-        case "highest-rated":
-          return b.rating - a.rating;
-        case "name":
-          return a.name.localeCompare(b.name);
-        case "price-low":
-          return a.pricePerHour - b.pricePerHour;
-        case "price-high":
-          return b.pricePerHour - a.pricePerHour;
-        default:
-          return 0;
-      }
-    });
-
-  const formatDate = (dateString: string): string => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffTime = Math.abs(now.getTime() - date.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-    if (diffDays === 1) return t('pages.favorites.date_formats.yesterday');
-    if (diffDays < 7) return t('pages.favorites.date_formats.days_ago', { count: diffDays });
-    if (diffDays < 30) return t('pages.favorites.date_formats.weeks_ago', { count: Math.ceil(diffDays / 7) });
-
-    return date.toLocaleDateString('nb-NO', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-  };
-
-
-  const handleRemoveFavorite = async (facilityId: string): Promise<void> => {
-    setRemovingFacility(facilityId);
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 500));
-    // Remove from favorites store
-    removeFavorite(facilityId);
-    setRemovingFacility(null);
-  };
-
-  const handleViewFacility = (facilityId: string): void => {
-    // Track usage and last visited when viewing details
-    const { incrementUsage, updateLastVisited } = useFavoritesStore.getState();
-    incrementUsage(facilityId);
-    updateLastVisited(facilityId);
-    // Navigate to facility detail page
-    window.location.href = `/facilities/${facilityId}`;
-  };
-
-  const handleBookNow = (facilityId: string): void => {
-    // Track usage when booking
-    const { incrementUsage, updateLastVisited } = useFavoritesStore.getState();
-    incrementUsage(facilityId);
-    updateLastVisited(facilityId);
-    // Navigate to booking page
-    window.location.href = `/facilities/${facilityId}/book`;
-  };
-
-  const handleQuickView = (facilityId: string): void => {
-    // Open quick view modal
-    const facility = favorites.find(f => f.id === facilityId);
-    if (facility) {
-      // Create a simple modal for quick view
-      const modal = document.createElement('div');
-      modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
-      modal.innerHTML = `
-        <div class="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full mx-4">
-          <div class="flex justify-between items-start mb-4">
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">${facility.name}</h3>
-            <button onclick="this.closest('.fixed').remove()" class="text-gray-400 hover:text-gray-600">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-              </svg>
-            </button>
-          </div>
-          <div class="space-y-2 text-sm text-gray-600 dark:text-gray-400">
-            <p><strong>Type:</strong> ${facility.type}</p>
-            <p><strong>Kapasitet:</strong> ${facility.capacity} personer</p>
-            <p><strong>Pris:</strong> ${facility.price}</p>
-            <p><strong>Adresse:</strong> ${facility.address}</p>
-            <p><strong>Tilgjengelighet:</strong> ${facility.availability === 'available' ? 'Ledig' : facility.availability === 'busy' ? 'Delvis opptatt' : 'Fullbooket'}</p>
-          </div>
-          <div class="mt-4 flex gap-2">
-            <button onclick="window.location.href='/facilities/${facilityId}'" class="flex-1 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-              Se detaljer
-            </button>
-            <button onclick="window.location.href='/facilities/${facilityId}/book'" class="flex-1 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
-              Book nå
-            </button>
-          </div>
-        </div>
-      `;
-      document.body.appendChild(modal);
-    }
-  };
-
+  // ============================================================================
+  // Render Functions
+  // ============================================================================
 
   const renderGridView = (): JSX.Element => (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {filteredAndSortedFavorites.map((facility) => (
-        <div 
-          key={facility.id} 
+        <div
+          key={facility.id}
           className={`transition-all duration-300 ease-in-out ${
             removingFacility === facility.id ? 'opacity-50 scale-95' : ''
           }`}
@@ -336,8 +125,7 @@ const UserFavorites = (): JSX.Element => {
             availability={facility.availability}
             isFavorite={facility.isFavorite}
           />
-          
-          {/* Additional info for favorites */}
+
           <div className="mt-2 text-xs text-gray-500 dark:text-gray-500 text-center">
             {t('pages.favorites.added_at', { date: formatDate(facility.addedAt) })}
             {facility.usageCount && facility.usageCount > 0 && (
@@ -352,8 +140,8 @@ const UserFavorites = (): JSX.Element => {
   const renderListView = (): JSX.Element => (
     <div className="space-y-4">
       {filteredAndSortedFavorites.map((facility) => (
-        <div 
-          key={facility.id} 
+        <div
+          key={facility.id}
           className={`transition-all duration-300 ease-in-out ${
             removingFacility === facility.id ? 'opacity-50' : ''
           }`}
@@ -373,8 +161,7 @@ const UserFavorites = (): JSX.Element => {
             isFavorite={facility.isFavorite}
             coordinates={facility.coordinates}
           />
-          
-          {/* Additional info for favorites */}
+
           <div className="mt-2 text-xs text-gray-500 dark:text-gray-500 text-center">
             {t('pages.favorites.added_at', { date: formatDate(facility.addedAt) })}
             {facility.usageCount && facility.usageCount > 0 && (
@@ -388,6 +175,16 @@ const UserFavorites = (): JSX.Element => {
       ))}
     </div>
   );
+
+  const hasActiveFilters = searchTerm !== "" ||
+                          filterConfig.type !== "all" ||
+                          filterConfig.capacity !== "all" ||
+                          filterConfig.location !== "all" ||
+                          filterConfig.availability !== "all";
+
+  // ============================================================================
+  // Main Render
+  // ============================================================================
 
   return (
     <div className="space-y-6">
@@ -429,7 +226,7 @@ const UserFavorites = (): JSX.Element => {
               </span>
               <select
                 value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
+                onChange={(e) => setSortBy(e.target.value as any)}
                 className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-800"
               >
                 {sortOptions.map((option) => (
@@ -457,14 +254,14 @@ const UserFavorites = (): JSX.Element => {
               <Button
                 size="sm"
                 variant={viewMode === "grid" ? "default" : "outline"}
-                onClick={() => handleViewModeChange("grid")}
+                onClick={() => setViewMode("grid")}
               >
                 <Grid3X3 className="h-4 w-4" />
               </Button>
               <Button
                 size="sm"
                 variant={viewMode === "list" ? "default" : "outline"}
-                onClick={() => handleViewModeChange("list")}
+                onClick={() => setViewMode("list")}
               >
                 <List className="h-4 w-4" />
               </Button>
@@ -477,9 +274,11 @@ const UserFavorites = (): JSX.Element => {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 {/* Type Filter */}
                 <div>
-                  <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('pages.favorites.filters.type')}</h4>
+                  <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    {t('pages.favorites.filters.type')}
+                  </h4>
                   <select
-                    value={filterType}
+                    value={filterConfig.type}
                     onChange={(e) => setFilterType(e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-800"
                   >
@@ -493,9 +292,11 @@ const UserFavorites = (): JSX.Element => {
 
                 {/* Capacity Filter */}
                 <div>
-                  <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('pages.favorites.filters.capacity')}</h4>
+                  <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    {t('pages.favorites.filters.capacity')}
+                  </h4>
                   <select
-                    value={filterCapacity}
+                    value={filterConfig.capacity}
                     onChange={(e) => setFilterCapacity(e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-800"
                   >
@@ -509,9 +310,11 @@ const UserFavorites = (): JSX.Element => {
 
                 {/* Location Filter */}
                 <div>
-                  <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('pages.favorites.filters.location')}</h4>
+                  <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    {t('pages.favorites.filters.location')}
+                  </h4>
                   <select
-                    value={filterLocation}
+                    value={filterConfig.location}
                     onChange={(e) => setFilterLocation(e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-800"
                   >
@@ -525,9 +328,11 @@ const UserFavorites = (): JSX.Element => {
 
                 {/* Availability Filter */}
                 <div>
-                  <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('pages.favorites.filters.availability')}</h4>
+                  <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    {t('pages.favorites.filters.availability')}
+                  </h4>
                   <select
-                    value={filterAvailability}
+                    value={filterConfig.availability}
                     onChange={(e) => setFilterAvailability(e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-800"
                   >
@@ -543,23 +348,26 @@ const UserFavorites = (): JSX.Element => {
               {/* Price Range */}
               <div className="mt-4">
                 <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  {t('pages.favorites.filters.price_range', { min: filterPrice[0], max: filterPrice[1] })}
+                  {t('pages.favorites.filters.price_range', {
+                    min: filterConfig.price[0],
+                    max: filterConfig.price[1]
+                  })}
                 </h4>
                 <div className="flex items-center space-x-4">
                   <input
                     type="range"
                     min="0"
                     max="1000"
-                    value={filterPrice[0]}
-                    onChange={(e) => setFilterPrice([parseInt(e.target.value), filterPrice[1]])}
+                    value={filterConfig.price[0]}
+                    onChange={(e) => setFilterPrice([parseInt(e.target.value), filterConfig.price[1]])}
                     className="flex-1"
                   />
                   <input
                     type="range"
                     min="0"
                     max="1000"
-                    value={filterPrice[1]}
-                    onChange={(e) => setFilterPrice([filterPrice[0], parseInt(e.target.value)])}
+                    value={filterConfig.price[1]}
+                    onChange={(e) => setFilterPrice([filterConfig.price[0], parseInt(e.target.value)])}
                     className="flex-1"
                   />
                 </div>
@@ -580,12 +388,12 @@ const UserFavorites = (): JSX.Element => {
               {t('pages.favorites.empty.title')}
             </h3>
             <p className="text-gray-600 dark:text-gray-400 mb-4">
-              {searchTerm || filterType !== "all" || filterCapacity !== "all" || filterLocation !== "all" || filterAvailability !== "all"
+              {hasActiveFilters
                 ? t('pages.favorites.empty.no_results')
                 : t('pages.favorites.empty.no_favorites')
               }
             </p>
-            {!searchTerm && filterType === "all" && filterCapacity === "all" && filterLocation === "all" && filterAvailability === "all" && (
+            {!hasActiveFilters && (
               <Button onClick={() => window.location.href = '/user/facilities'}>
                 <BookOpen className="h-4 w-4 mr-2" />
                 {t('pages.favorites.empty.explore_facilities')}

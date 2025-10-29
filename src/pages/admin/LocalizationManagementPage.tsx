@@ -1,455 +1,606 @@
 "use client";
 
-import React, { useState } from "react";
-import { useTranslation } from "react-i18next";
-import { RequireRole } from "@/components/features/auth/components/RequireRole";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import React, { useState, useCallback } from "react";
+import {
+  Languages,
+  Plus,
+  Search,
+  Download,
+  Upload,
+  Edit,
+  Trash2,
+  AlertTriangle,
+  Check,
+  X,
+  Filter,
+  Globe,
+  FileText,
+  RefreshCw,
+} from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Globe, Plus, Edit, Trash2, Save } from "lucide-react";
-import { useLocalizedDbValues } from "@/hooks/shared/useLocalizedDbValues";
-import { supabase } from "@/lib/clients/supabase";
-import { useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { useLocalizationManagement } from "@/hooks/features/localization/useLocalizationManagement";
+import type { ITranslationKey, IExportOptions } from "@/hooks/features/localization/useLocalizationManagement";
 
-const ENTITY_TYPES = [
-  { value: "facility_type", label: "Facility Types" },
-  { value: "location", label: "Locations" },
-  { value: "amenity", label: "Amenities" },
-  { value: "accessibility", label: "Accessibility Features" },
-  { value: "capacity_range", label: "Capacity Ranges" },
-  { value: "booking_status", label: "Booking Statuses" },
-  { value: "ticket_status", label: "Ticket Statuses" },
-  { value: "ticket_priority", label: "Ticket Priorities" },
-  { value: "ticket_category", label: "Ticket Categories" },
-] as const;
-
-interface LocalizedValueForm {
-  entity_key: string;
-  label_en: string;
-  label_no: string;
-  description: string;
-  sort_order: number;
-  is_active: boolean;
+interface ILocalizationManagementPageProps {
+  readonly children?: never;
 }
 
-const LocalizationManagementPage = (): JSX.Element => {
-  const { t, i18n } = useTranslation("admin");
-  const queryClient = useQueryClient();
-  const [selectedEntityType, setSelectedEntityType] =
-    useState<string>("facility_type");
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [editingValue, setEditingValue] = useState<{
-    entity_key: string;
-    entity_type: string;
-  } | null>(null);
-  const [formData, setFormData] = useState<LocalizedValueForm>({
-    entity_key: "",
-    label_en: "",
-    label_no: "",
+const LocalizationManagementPage = (_props: ILocalizationManagementPageProps): JSX.Element => {
+  const {
+    translationKeys,
+    languages,
+    namespaces,
+    selectedLanguage,
+    selectedNamespace,
+    filter,
+    isLoading,
+    stats,
+    isModalOpen,
+    editingKey,
+    setFilter,
+    setSelectedLanguage,
+    setSelectedNamespace,
+    openModal,
+    closeModal,
+    createTranslationKey,
+    updateTranslationKey,
+    deleteTranslationKey,
+    exportTranslations,
+    importTranslations,
+    refreshData,
+  } = useLocalizationManagement();
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const [showOnlyMissing, setShowOnlyMissing] = useState(false);
+  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+
+  // Form state for create/edit modal
+  const [formData, setFormData] = useState<Partial<ITranslationKey>>({
+    namespace: "common",
+    key: "",
+    translations: {},
     description: "",
-    sort_order: 0,
-    is_active: true,
   });
 
-  const { data: values, isLoading } = useLocalizedDbValues(selectedEntityType);
+  const handleSearch = useCallback(() => {
+    setFilter({
+      search: searchTerm,
+      namespace: selectedNamespace || undefined,
+      language: selectedLanguage,
+      onlyMissing: showOnlyMissing,
+    });
+  }, [searchTerm, selectedNamespace, selectedLanguage, showOnlyMissing, setFilter]);
 
-  const entityTypeLabel =
-    ENTITY_TYPES.find((t) => t.value === selectedEntityType)?.label ||
-    selectedEntityType;
-
-  const handleOpenAddDialog = () => {
-    setEditingValue(null);
+  const handleOpenCreateModal = useCallback(() => {
     setFormData({
-      entity_key: "",
-      label_en: "",
-      label_no: "",
+      namespace: selectedNamespace || "common",
+      key: "",
+      translations: {},
       description: "",
-      sort_order: (values?.length || 0) + 1,
-      is_active: true,
     });
-    setIsDialogOpen(true);
-  };
+    openModal();
+  }, [selectedNamespace, openModal]);
 
-  const handleOpenEditDialog = (entityKey: string) => {
-    const enValue = values?.find((v) => v.entity_key === entityKey);
-    const currentLang = i18n.language;
+  const handleOpenEditModal = useCallback(
+    (key: ITranslationKey) => {
+      setFormData(key);
+      openModal(key);
+    },
+    [openModal]
+  );
 
-    // Need to fetch both EN and NO versions
-    Promise.all([
-      supabase
-        .from("localized_db_values")
-        .select("*")
-        .eq("entity_type", selectedEntityType)
-        .eq("entity_key", entityKey)
-        .eq("language_code", "en")
-        .single(),
-      supabase
-        .from("localized_db_values")
-        .select("*")
-        .eq("entity_type", selectedEntityType)
-        .eq("entity_key", entityKey)
-        .eq("language_code", "no")
-        .single(),
-    ]).then(([enResult, noResult]) => {
-      if (enResult.data && noResult.data) {
-        setEditingValue({
-          entity_key: entityKey,
-          entity_type: selectedEntityType,
-        });
-        setFormData({
-          entity_key: entityKey,
-          label_en: enResult.data.label || "",
-          label_no: noResult.data.label || "",
-          description: enResult.data.description || "",
-          sort_order: enResult.data.sort_order || 0,
-          is_active: enResult.data.is_active ?? true,
-        });
-        setIsDialogOpen(true);
+  const handleSaveTranslation = useCallback(async () => {
+    try {
+      if (editingKey) {
+        await updateTranslationKey(editingKey.id, formData);
+      } else {
+        await createTranslationKey(formData);
       }
-    });
-  };
+      closeModal();
+    } catch (error) {
+      console.error("Failed to save translation:", error);
+    }
+  }, [editingKey, formData, createTranslationKey, updateTranslationKey, closeModal]);
 
-  const handleSave = async () => {
-    try {
-      if (!formData.entity_key || !formData.label_en || !formData.label_no) {
-        toast.error("Please fill in all required fields");
-        return;
+  const handleDeleteTranslation = useCallback(
+    async (id: string) => {
+      if (window.confirm("Are you sure you want to delete this translation key?")) {
+        try {
+          await deleteTranslationKey(id);
+        } catch (error) {
+          console.error("Failed to delete translation:", error);
+        }
       }
+    },
+    [deleteTranslationKey]
+  );
 
-      // Insert/update English translation
-      const { error: enError } = await supabase
-        .from("localized_db_values")
-        .upsert(
-          {
-            entity_type: selectedEntityType,
-            entity_key: formData.entity_key,
-            language_code: "en",
-            label: formData.label_en,
-            description: formData.description || null,
-            sort_order: formData.sort_order,
-            is_active: formData.is_active,
-          },
-          {
-            onConflict: "entity_type,entity_key,language_code",
-          }
+  const handleExport = useCallback(
+    async (options: IExportOptions) => {
+      try {
+        await exportTranslations(options);
+        setIsExportModalOpen(false);
+      } catch (error) {
+        console.error("Failed to export translations:", error);
+      }
+    },
+    [exportTranslations]
+  );
+
+  const handleImportFile = useCallback(
+    async (event: React.ChangeEvent<HTMLInputElement>) => {
+      const file = event.target.files?.[0];
+      if (!file) return;
+
+      try {
+        const result = await importTranslations(file);
+        alert(
+          `Import completed!\nSuccess: ${result.success}\nFailed: ${result.failed}\n${
+            result.errors.length > 0 ? "\nErrors:\n" + result.errors.join("\n") : ""
+          }`
         );
+      } catch (error) {
+        console.error("Failed to import translations:", error);
+      }
+    },
+    [importTranslations]
+  );
 
-      if (enError) throw enError;
+  const renderStatsCards = (): JSX.Element => {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Total Keys</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.totalKeys}</p>
+              </div>
+              <FileText className="h-8 w-8 text-blue-600" />
+            </div>
+          </CardContent>
+        </Card>
 
-      // Insert/update Norwegian translation
-      const { error: noError } = await supabase
-        .from("localized_db_values")
-        .upsert(
-          {
-            entity_type: selectedEntityType,
-            entity_key: formData.entity_key,
-            language_code: "no",
-            label: formData.label_no,
-            description: formData.description || null,
-            sort_order: formData.sort_order,
-            is_active: formData.is_active,
-          },
-          {
-            onConflict: "entity_type,entity_key,language_code",
-          }
-        );
-
-      if (noError) throw noError;
-
-      // Invalidate cache to refresh data
-      queryClient.invalidateQueries({
-        queryKey: ["localized-db-values", selectedEntityType],
-      });
-
-      toast.success("Localized value saved successfully");
-      setIsDialogOpen(false);
-    } catch (error) {
-      console.error("Error saving localized value:", error);
-      toast.error("Failed to save localized value");
-    }
+        {languages.slice(0, 3).map((lang) => (
+          <Card key={lang.code}>
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  <p className="text-sm text-gray-600 dark:text-gray-400">{lang.name}</p>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                    {stats.completionPercentage[lang.code]}%
+                  </p>
+                  <p className="text-xs text-gray-500 mt-1">
+                    {stats.translatedKeys[lang.code]}/{stats.totalKeys} translated
+                  </p>
+                </div>
+                <Globe className="h-8 w-8 text-green-600" />
+              </div>
+              <div className="mt-4">
+                <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-green-600 transition-all duration-300"
+                    style={{ width: `${stats.completionPercentage[lang.code]}%` }}
+                  />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    );
   };
 
-  const handleDelete = async (entityKey: string) => {
-    if (
-      !confirm(
-        "Are you sure you want to delete this value? This will remove translations in all languages."
-      )
-    ) {
-      return;
-    }
+  const renderFilters = (): JSX.Element => {
+    return (
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Filter className="h-5 w-5" />
+            Filters & Search
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="search">Search</Label>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
+                <Input
+                  id="search"
+                  placeholder="Search keys or translations..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onKeyPress={(e) => e.key === "Enter" && handleSearch()}
+                  className="pl-10"
+                  aria-label="Search translation keys"
+                />
+              </div>
+            </div>
 
-    try {
-      const { error } = await supabase
-        .from("localized_db_values")
-        .delete()
-        .eq("entity_type", selectedEntityType)
-        .eq("entity_key", entityKey);
+            <div className="space-y-2">
+              <Label htmlFor="namespace">Namespace</Label>
+              <Select
+                value={selectedNamespace || "all"}
+                onValueChange={(value) => setSelectedNamespace(value === "all" ? null : value)}
+              >
+                <SelectTrigger id="namespace" aria-label="Select namespace">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Namespaces</SelectItem>
+                  {namespaces.map((ns) => (
+                    <SelectItem key={ns} value={ns}>
+                      {ns}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-      if (error) throw error;
+            <div className="space-y-2">
+              <Label htmlFor="language">Language</Label>
+              <Select value={selectedLanguage} onValueChange={setSelectedLanguage}>
+                <SelectTrigger id="language" aria-label="Select language">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {languages.map((lang) => (
+                    <SelectItem key={lang.code} value={lang.code}>
+                      {lang.name} ({lang.native_name})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-      queryClient.invalidateQueries({
-        queryKey: ["localized-db-values", selectedEntityType],
-      });
-      toast.success("Localized value deleted successfully");
-    } catch (error) {
-      console.error("Error deleting localized value:", error);
-      toast.error("Failed to delete localized value");
-    }
+            <div className="space-y-2">
+              <Label>Options</Label>
+              <div className="flex items-center justify-between h-10 px-4 border border-gray-300 dark:border-gray-700 rounded-lg">
+                <span className="text-sm">Only Missing</span>
+                <Switch checked={showOnlyMissing} onCheckedChange={setShowOnlyMissing} />
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-4 flex items-center gap-3">
+            <Button onClick={handleSearch} className="flex items-center gap-2">
+              <Search className="h-4 w-4" />
+              Apply Filters
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setSearchTerm("");
+                setSelectedNamespace(null);
+                setShowOnlyMissing(false);
+                setFilter({});
+              }}
+            >
+              Clear Filters
+            </Button>
+            <Button variant="outline" onClick={refreshData} className="flex items-center gap-2">
+              <RefreshCw className="h-4 w-4" />
+              Refresh
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    );
   };
 
-  const handleToggleActive = async (
-    entityKey: string,
-    currentActive: boolean
-  ) => {
-    try {
-      const { error } = await supabase
-        .from("localized_db_values")
-        .update({ is_active: !currentActive })
-        .eq("entity_type", selectedEntityType)
-        .eq("entity_key", entityKey);
-
-      if (error) throw error;
-
-      queryClient.invalidateQueries({
-        queryKey: ["localized-db-values", selectedEntityType],
-      });
-      toast.success("Value status updated");
-    } catch (error) {
-      console.error("Error updating value status:", error);
-      toast.error("Failed to update value status");
+  const renderTranslationsList = (): JSX.Element => {
+    if (isLoading) {
+      return (
+        <div className="flex items-center justify-center h-64">
+          <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
+        </div>
+      );
     }
+
+    if (translationKeys.length === 0) {
+      return (
+        <Card>
+          <CardContent className="p-12 text-center">
+            <Languages className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+            <p className="text-lg font-medium text-gray-900 dark:text-white mb-2">No translations found</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
+              {filter.search || filter.namespace
+                ? "Try adjusting your filters"
+                : "Start by creating your first translation key"}
+            </p>
+            <Button onClick={handleOpenCreateModal} className="flex items-center gap-2 mx-auto">
+              <Plus className="h-4 w-4" />
+              Create Translation Key
+            </Button>
+          </CardContent>
+        </Card>
+      );
+    }
+
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Translation Keys ({translationKeys.length})</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {translationKeys.map((key) => (
+              <div
+                key={key.id}
+                className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:shadow-md transition-shadow"
+              >
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-2">
+                      <Badge variant="outline">{key.namespace}</Badge>
+                      <code className="text-sm font-mono text-gray-900 dark:text-white">{key.key}</code>
+                    </div>
+                    {key.description && (
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">{key.description}</p>
+                    )}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      {languages.map((lang) => (
+                        <div key={lang.code} className="flex items-start gap-2">
+                          <Badge className="flex-shrink-0">{lang.code.toUpperCase()}</Badge>
+                          <div className="flex-1 min-w-0">
+                            {key.translations[lang.code] ? (
+                              <p className="text-sm text-gray-700 dark:text-gray-300 truncate">
+                                {key.translations[lang.code]}
+                              </p>
+                            ) : (
+                              <div className="flex items-center gap-1 text-amber-600">
+                                <AlertTriangle className="h-3 w-3" />
+                                <span className="text-xs">Missing</span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 ml-4">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleOpenEditModal(key)}
+                      aria-label={`Edit ${key.key}`}
+                    >
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleDeleteTranslation(key.id)}
+                      aria-label={`Delete ${key.key}`}
+                    >
+                      <Trash2 className="h-4 w-4 text-red-600" />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    );
+  };
+
+  const renderCreateEditModal = (): JSX.Element => {
+    if (!isModalOpen) return <></>;
+
+    return (
+      <div
+        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
+        role="dialog"
+        aria-labelledby="modal-title"
+        aria-modal="true"
+      >
+        <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+          <CardHeader>
+            <CardTitle id="modal-title" className="flex items-center gap-2">
+              <Languages className="h-5 w-5" />
+              {editingKey ? "Edit Translation Key" : "Create Translation Key"}
+            </CardTitle>
+            <CardDescription>
+              {editingKey ? "Update the translation key and its values" : "Add a new translation key to the system"}
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="modal-namespace">Namespace</Label>
+                <Select
+                  value={formData.namespace || "common"}
+                  onValueChange={(value) => setFormData({ ...formData, namespace: value })}
+                >
+                  <SelectTrigger id="modal-namespace">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {namespaces.map((ns) => (
+                      <SelectItem key={ns} value={ns}>
+                        {ns}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="modal-key">Key</Label>
+                <Input
+                  id="modal-key"
+                  placeholder="e.g., button.save"
+                  value={formData.key || ""}
+                  onChange={(e) => setFormData({ ...formData, key: e.target.value })}
+                  aria-required="true"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="modal-description">Description (Optional)</Label>
+              <Input
+                id="modal-description"
+                placeholder="Describe where this translation is used"
+                value={formData.description || ""}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              />
+            </div>
+
+            <div className="space-y-4">
+              <Label>Translations</Label>
+              {languages.map((lang) => (
+                <div key={lang.code} className="space-y-2">
+                  <Label htmlFor={`modal-translation-${lang.code}`}>
+                    {lang.name} ({lang.native_name})
+                    {lang.is_default && <Badge className="ml-2">Default</Badge>}
+                  </Label>
+                  <Input
+                    id={`modal-translation-${lang.code}`}
+                    placeholder={`Enter ${lang.name} translation...`}
+                    value={(formData.translations?.[lang.code] as string) || ""}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        translations: {
+                          ...formData.translations,
+                          [lang.code]: e.target.value,
+                        },
+                      })
+                    }
+                  />
+                </div>
+              ))}
+            </div>
+
+            <div className="flex items-center gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+              <Button onClick={handleSaveTranslation} disabled={!formData.key} className="flex items-center gap-2">
+                <Check className="h-4 w-4" />
+                {editingKey ? "Update" : "Create"}
+              </Button>
+              <Button variant="outline" onClick={closeModal} className="flex items-center gap-2">
+                <X className="h-4 w-4" />
+                Cancel
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  };
+
+  const renderExportModal = (): JSX.Element => {
+    if (!isExportModalOpen) return <></>;
+
+    return (
+      <div
+        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
+        role="dialog"
+        aria-labelledby="export-modal-title"
+        aria-modal="true"
+      >
+        <Card className="w-full max-w-md">
+          <CardHeader>
+            <CardTitle id="export-modal-title" className="flex items-center gap-2">
+              <Download className="h-5 w-5" />
+              Export Translations
+            </CardTitle>
+            <CardDescription>Choose export format and options</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label>Format</Label>
+              <Select defaultValue="json">
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="json">JSON</SelectItem>
+                  <SelectItem value="csv">CSV</SelectItem>
+                  <SelectItem value="excel">Excel</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="flex items-center gap-3 pt-4">
+              <Button onClick={() => handleExport({ format: "json" })} className="flex items-center gap-2">
+                <Download className="h-4 w-4" />
+                Export
+              </Button>
+              <Button variant="outline" onClick={() => setIsExportModalOpen(false)}>
+                Cancel
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
   };
 
   return (
-    <RequireRole roles={["org-admin", "platform_admin"]}>
-      <div className="space-y-6">
-        {/* Header */}
-        <header className="space-y-1">
-          <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
+            <Languages className="h-8 w-8 text-blue-600" />
             Localization Management
           </h1>
-          <p className="text-gray-600 dark:text-gray-400">
-            Manage translated values for facility types, locations, and other
-            dynamic content
+          <p className="text-gray-600 dark:text-gray-400 mt-1">
+            Manage translation keys, add languages, and export/import translations
           </p>
-        </header>
-
-        {/* Entity Type Selector */}
-        <Card>
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle>Select Entity Type</CardTitle>
-              <Button onClick={handleOpenAddDialog} size="sm">
-                <Plus className="w-4 h-4 mr-2" />
-                Add New Value
-              </Button>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <Select
-              value={selectedEntityType}
-              onValueChange={setSelectedEntityType}
-            >
-              <SelectTrigger className="w-full md:w-64">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {ENTITY_TYPES.map((type) => (
-                  <SelectItem key={type.value} value={type.value}>
-                    {type.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </CardContent>
-        </Card>
-
-        {/* Values List */}
-        <Card>
-          <CardHeader>
-            <CardTitle>{entityTypeLabel}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {isLoading ? (
-              <div className="text-center py-8 text-gray-500">Loading...</div>
-            ) : !values || values.length === 0 ? (
-              <div className="text-center py-8 text-gray-500">
-                No values found. Click "Add New Value" to get started.
-              </div>
-            ) : (
-              <div className="space-y-2">
-                {values.map((value) => (
-                  <div
-                    key={value.entity_key}
-                    className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800"
-                  >
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <span className="font-medium">{value.label}</span>
-                        <Badge variant="outline" className="text-xs">
-                          {value.entity_key}
-                        </Badge>
-                      </div>
-                      {value.description && (
-                        <p className="text-sm text-gray-500 mt-1">
-                          {value.description}
-                        </p>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Badge
-                        variant={value.sort_order ? "default" : "secondary"}
-                      >
-                        Order: {value.sort_order || "N/A"}
-                      </Badge>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleOpenEditDialog(value.entity_key)}
-                      >
-                        <Edit className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleDelete(value.entity_key)}
-                      >
-                        <Trash2 className="w-4 h-4 text-red-500" />
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Add/Edit Dialog */}
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>
-                {editingValue
-                  ? "Edit Localized Value"
-                  : "Add New Localized Value"}
-              </DialogTitle>
-              <DialogDescription>
-                Enter translations for both English and Norwegian
-              </DialogDescription>
-            </DialogHeader>
-
-            <div className="space-y-4 py-4">
-              <div className="space-y-2">
-                <Label htmlFor="entity_key">Entity Key *</Label>
-                <Input
-                  id="entity_key"
-                  value={formData.entity_key}
-                  onChange={(e) =>
-                    setFormData({ ...formData, entity_key: e.target.value })
-                  }
-                  placeholder="e.g., basketball_court"
-                  disabled={!!editingValue}
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="label_en">English Label *</Label>
-                  <Input
-                    id="label_en"
-                    value={formData.label_en}
-                    onChange={(e) =>
-                      setFormData({ ...formData, label_en: e.target.value })
-                    }
-                    placeholder="Basketball Court"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="label_no">Norwegian Label *</Label>
-                  <Input
-                    id="label_no"
-                    value={formData.label_no}
-                    onChange={(e) =>
-                      setFormData({ ...formData, label_no: e.target.value })
-                    }
-                    placeholder="Basketballbane"
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="description">Description</Label>
-                <Input
-                  id="description"
-                  value={formData.description}
-                  onChange={(e) =>
-                    setFormData({ ...formData, description: e.target.value })
-                  }
-                  placeholder="Optional description"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="sort_order">Sort Order</Label>
-                <Input
-                  id="sort_order"
-                  type="number"
-                  value={formData.sort_order}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      sort_order: parseInt(e.target.value) || 0,
-                    })
-                  }
-                />
-              </div>
-
-              <div className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  id="is_active"
-                  checked={formData.is_active}
-                  onChange={(e) =>
-                    setFormData({ ...formData, is_active: e.target.checked })
-                  }
-                  className="rounded"
-                />
-                <Label htmlFor="is_active">Active</Label>
-              </div>
-            </div>
-
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
-                Cancel
-              </Button>
-              <Button onClick={handleSave}>
-                <Save className="w-4 h-4 mr-2" />
-                Save
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+        </div>
+        <div className="flex items-center gap-3">
+          <label htmlFor="import-file">
+            <Button variant="outline" className="flex items-center gap-2" asChild>
+              <span>
+                <Upload className="h-4 w-4" />
+                Import
+              </span>
+            </Button>
+            <input
+              id="import-file"
+              type="file"
+              accept=".json,.csv"
+              onChange={handleImportFile}
+              className="hidden"
+              aria-label="Import translations file"
+            />
+          </label>
+          <Button variant="outline" onClick={() => setIsExportModalOpen(true)} className="flex items-center gap-2">
+            <Download className="h-4 w-4" />
+            Export
+          </Button>
+          <Button onClick={handleOpenCreateModal} className="flex items-center gap-2">
+            <Plus className="h-4 w-4" />
+            New Translation
+          </Button>
+        </div>
       </div>
-    </RequireRole>
+
+      {/* Statistics */}
+      {renderStatsCards()}
+
+      {/* Filters */}
+      {renderFilters()}
+
+      {/* Translations List */}
+      {renderTranslationsList()}
+
+      {/* Create/Edit Modal */}
+      {renderCreateEditModal()}
+
+      {/* Export Modal */}
+      {renderExportModal()}
+    </div>
   );
 };
 

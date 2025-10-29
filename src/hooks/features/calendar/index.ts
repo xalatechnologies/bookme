@@ -6,3 +6,5 @@
 
 export { useCalendarManagement } from './useCalendarManagement';
 export type { IUseCalendarManagementReturn } from './useCalendarManagement';
+
+export { useCalendarPageManagement } from './useCalendarPageManagement';
