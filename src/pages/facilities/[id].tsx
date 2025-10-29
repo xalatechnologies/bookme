@@ -111,3 +111,5 @@ export const FacilityDetail = (): JSX.Element => {
     </CartProvider>
   );
 };
+
+export default FacilityDetail;

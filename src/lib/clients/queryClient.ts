@@ -136,25 +136,41 @@ export const queryClient = new QueryClient({
 
       // Show fresh data while fetching in background
       staleWhileRevalidate: true,
+
+      // Network mode - fail fast on offline
+      networkMode: 'online',
+
+      // Structural sharing for performance (default: true, explicitly set for clarity)
+      structuralSharing: true,
+
+      // Placeholder data - show previous data while refetching
+      placeholderData: (previousData) => previousData,
     },
 
     mutations: {
       // Retry mutations once on failure
       retry: 1,
 
-      // No automatic retry on error for mutations
-      retryDelay: 1000,
+      // Retry delay with exponential backoff
+      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+
+      // Network mode for mutations
+      networkMode: 'online',
     },
   },
 
   // Global query cache with error handling
   queryCache: new QueryCache({
     onError: onQueryError,
+    // Optional: onSuccess callback for all queries
+    // onSuccess: (data) => console.log('Query success:', data),
   }),
 
   // Global mutation cache with error handling
   mutationCache: new MutationCache({
     onError: onMutationError,
+    // Optional: onSuccess callback for all mutations
+    // onSuccess: (data) => console.log('Mutation success:', data),
   }),
 });
 

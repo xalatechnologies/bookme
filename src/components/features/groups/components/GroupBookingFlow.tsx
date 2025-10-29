@@ -89,7 +89,7 @@ const GroupSelector: React.FC<{
  * Member selection component for cost sharing
  */
 const MemberSelector: React.FC<{
-  readonly members: readonly BookingGroup['members'];
+  readonly members: BookingGroup['members'];
   readonly selectedMembers: readonly string[];
   readonly onMembersChange: (memberIds: readonly string[]) => void;
   readonly totalCost: number;

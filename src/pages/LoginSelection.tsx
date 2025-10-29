@@ -120,3 +120,5 @@ export const LoginSelection = (): JSX.Element => {
     </div>
   );
 };
+
+export default LoginSelection;
