@@ -1,17 +1,18 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { useUserProfile } from "@/contexts/UserProfileContext";
+import { useUserProfileManagement } from "@/hooks/features/profile/useUserProfileManagement";
 import { useTranslation } from "react-i18next";
-import { 
-  User, 
-  Mail, 
-  Phone, 
-  MapPin, 
+import {
+  User,
+  Mail,
+  Phone,
+  MapPin,
   Calendar,
   Edit,
   Save,
@@ -24,93 +25,51 @@ import {
   Shield,
   Eye,
   EyeOff,
-  Check,
   Clock,
-  Smartphone,
-  Monitor,
   Bell,
-  BellOff,
   Download,
   UserCog,
   Key,
   History,
   ShieldCheck,
   Settings,
-  LogOut,
-  Upload,
-  CheckCircle,
-  XCircle
+  Monitor,
+  CheckCircle
 } from "lucide-react";
 
 const UserProfile = (): JSX.Element => {
   const { t } = useTranslation('user');
-  const { profile, updateProfile, isLoading } = useUserProfile();
+  const { profile } = useUserProfile();
   const [activeTab, setActiveTab] = useState<string>("profile");
-  const [isEditing, setIsEditing] = useState<boolean>(false);
-  const [showPassword, setShowPassword] = useState<{ [key: string]: boolean }>({});
-  const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
-  const [deleteConfirmation, setDeleteConfirmation] = useState<string>("");
-  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
-  const [showToast, setShowToast] = useState<boolean>(false);
-  const [toastMessage, setToastMessage] = useState<string>("");
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const hasSyncedRef = useRef<boolean>(false);
-  
-  // Local editing state - only update context when saving
-  const [editingProfile, setEditingProfile] = useState({
-    firstName: profile.firstName,
-    lastName: profile.lastName,
-    email: profile.email,
-    phone: profile.phone,
-    address: profile.address,
-    dateOfBirth: profile.dateOfBirth
-  });
 
-  // Sync editingProfile with profile only once when profile is loaded
-  React.useEffect(() => {
-    if (!hasSyncedRef.current && profile.firstName) {
-      setEditingProfile({
-        firstName: profile.firstName,
-        lastName: profile.lastName,
-        email: profile.email,
-        phone: profile.phone,
-        address: profile.address,
-        dateOfBirth: profile.dateOfBirth
-      });
-      hasSyncedRef.current = true;
-    }
-  }, [profile.firstName]); // Only depend on profile.firstName to detect when profile is loaded
-
-  const [passwordForm, setPasswordForm] = useState({
-    currentPassword: "",
-    newPassword: "",
-    confirmPassword: ""
-  });
-
-  const [securitySettings, setSecuritySettings] = useState({
-    twoFactorEnabled: false,
-    loginNotifications: true,
-    sessionTimeout: "24"
-  });
-
-  const [preferences, setPreferences] = useState({
-    language: "nb",
-    theme: "system",
-    notifications: {
-      email: true,
-      sms: false,
-      push: true,
-      bookingReminders: true,
-      newBookings: true
-    },
-    dashboardView: "extended"
-  });
-
-  const [loginHistory] = useState([
-    { date: "2024-01-20T14:30:00Z", ip: "192.168.1.1", location: "Drammen, Norge", device: "Chrome på Windows" },
-    { date: "2024-01-19T09:15:00Z", ip: "192.168.1.1", location: "Drammen, Norge", device: "Safari på iPhone" },
-    { date: "2024-01-18T16:45:00Z", ip: "10.0.0.5", location: "Oslo, Norge", device: "Chrome på Mac" }
-  ]);
+  const {
+    editingProfile,
+    passwordForm,
+    securitySettings,
+    preferences,
+    loginHistory,
+    isEditing,
+    showPassword,
+    avatarPreview,
+    deleteConfirmation,
+    showDeleteModal,
+    toast,
+    fileInputRef,
+    setIsEditing,
+    setDeleteConfirmation,
+    setShowDeleteModal,
+    setSecuritySettings,
+    setPreferences,
+    handleInputChange,
+    handlePasswordChange,
+    handlePasswordSave,
+    handleAvatarUpload,
+    handleSave,
+    handleCancel,
+    handleDeleteAccount,
+    togglePasswordVisibility,
+    formatDate
+  } = useUserProfileManagement();
 
   const tabs = [
     { id: "profile", label: t('pages.profile.tabs.profile'), icon: User },
@@ -118,121 +77,6 @@ const UserProfile = (): JSX.Element => {
     { id: "preferences", label: t('pages.profile.tabs.preferences'), icon: Settings },
     { id: "privacy", label: t('pages.profile.tabs.privacy'), icon: Lock }
   ];
-
-  const showToastMessage = (message: string): void => {
-    setToastMessage(message);
-    setShowToast(true);
-    setTimeout(() => setShowToast(false), 3000);
-  };
-
-  const handleSave = (): void => {
-    // Update context with all changes
-    const updates: any = { ...editingProfile };
-    if (avatarPreview) {
-      updates.avatar = avatarPreview;
-      setAvatarPreview(null);
-    }
-    
-    updateProfile(updates);
-    setIsEditing(false);
-    showToastMessage(t('pages.profile.personal_info.changes_saved'));
-  };
-
-  const handleCancel = (): void => {
-    // Reset to original profile data
-    setEditingProfile({
-      firstName: profile.firstName,
-      lastName: profile.lastName,
-      email: profile.email,
-      phone: profile.phone,
-      address: profile.address,
-      dateOfBirth: profile.dateOfBirth
-    });
-    setIsEditing(false);
-    setAvatarPreview(null);
-    hasSyncedRef.current = false; // Allow sync again
-  };
-
-  const handleInputChange = (field: string, value: string): void => {
-    setEditingProfile(prev => {
-      const newProfile = { ...prev, [field]: value };
-      return newProfile;
-    });
-  };
-
-  const handlePasswordChange = (field: string, value: string): void => {
-    setPasswordForm(prev => ({ ...prev, [field]: value }));
-  };
-
-  const handlePasswordSave = (): void => {
-    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
-      showToastMessage(t('pages.profile.security.password.mismatch'));
-      return;
-    }
-    setPasswordForm({ currentPassword: "", newPassword: "", confirmPassword: "" });
-    showToastMessage(t('pages.profile.security.password.updated'));
-  };
-
-  const handleAvatarUpload = (event: React.ChangeEvent<HTMLInputElement>): void => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setAvatarPreview(e.target?.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleDeleteAccount = (): void => {
-    if (deleteConfirmation !== profile.email) {
-      showToastMessage(t('pages.profile.privacy.delete_account.email_mismatch'));
-      return;
-    }
-
-    // GDPR-compliant account deletion
-    if (window.confirm(t('pages.profile.privacy.delete_account.confirm_final'))) {
-      // In a real app, this would call an API to:
-      // 1. Anonymize all personal data
-      // 2. Delete all bookings and associated data
-      // 3. Remove user from all systems
-      // 4. Send confirmation email
-      // 5. Log the deletion for audit purposes
-      
-      
-      
-      // Simulate API call
-      setTimeout(() => {
-        showToastMessage(t('pages.profile.privacy.delete_account.success'));
-        setShowDeleteModal(false);
-        setDeleteConfirmation("");
-        
-        // In a real app, redirect to logout or landing page
-        // navigate('/logout');
-      }, 1000);
-    }
-  };
-
-  const togglePasswordVisibility = (field: string): void => {
-    setShowPassword(prev => ({ ...prev, [field]: !prev[field] }));
-  };
-
-  const formatDate = (dateString: string): string => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffTime = Math.abs(now.getTime() - date.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-    if (diffDays === 1) return t('pages.profile.time.yesterday');
-    if (diffDays < 7) return t('pages.profile.time.days_ago', { count: diffDays });
-    if (diffDays < 30) return t('pages.profile.time.weeks_ago', { count: Math.ceil(diffDays / 7) });
-    
-    return date.toLocaleDateString('nb-NO', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-  };
 
   const renderAccountOverview = (): JSX.Element => (
     <Card className="mb-6 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-blue-200 dark:border-blue-800">
@@ -281,11 +125,9 @@ const UserProfile = (): JSX.Element => {
         </Button>
       </div>
 
-      {/* Profile Card */}
       <Card className="bg-white shadow-sm rounded-2xl">
         <CardContent className="p-8">
           <div className="flex items-start space-x-6">
-            {/* Avatar */}
             <div className="relative">
               <img
                 src={avatarPreview || profile.avatar}
@@ -310,8 +152,7 @@ const UserProfile = (): JSX.Element => {
                 className="hidden"
               />
             </div>
-            
-            {/* Profile Info */}
+
             <div className="flex-1 space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-4">
@@ -335,7 +176,7 @@ const UserProfile = (): JSX.Element => {
                       <p className="text-gray-900 dark:text-white font-medium">{profile.firstName}</p>
                     )}
                   </div>
-                  
+
                   <div>
                     <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
                       <User className="h-4 w-4 inline mr-1" />
@@ -352,7 +193,7 @@ const UserProfile = (): JSX.Element => {
                       <p className="text-gray-900 dark:text-white font-medium">{profile.lastName}</p>
                     )}
                   </div>
-                  
+
                   <div>
                     <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
                       <Calendar className="h-4 w-4 inline mr-1" />
@@ -372,7 +213,7 @@ const UserProfile = (): JSX.Element => {
                     )}
                   </div>
                 </div>
-                
+
                 <div className="space-y-4">
                   <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
                     {t('pages.profile.personal_info.sections.contact_info')}
@@ -394,7 +235,7 @@ const UserProfile = (): JSX.Element => {
                       <p className="text-gray-900 dark:text-white font-medium">{profile.email}</p>
                     )}
                   </div>
-                  
+
                   <div>
                     <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
                       <Phone className="h-4 w-4 inline mr-1" />
@@ -411,7 +252,7 @@ const UserProfile = (): JSX.Element => {
                       <p className="text-gray-900 dark:text-white font-medium">{profile.phone}</p>
                     )}
                   </div>
-                  
+
                   <div>
                     <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
                       <MapPin className="h-4 w-4 inline mr-1" />
@@ -430,7 +271,7 @@ const UserProfile = (): JSX.Element => {
                   </div>
                 </div>
               </div>
-              
+
               {isEditing && (
                 <div className="flex space-x-3 pt-4 border-t border-gray-200 dark:border-gray-700">
                   <Button onClick={handleSave} className="flex items-center gap-2">
@@ -456,7 +297,6 @@ const UserProfile = (): JSX.Element => {
         {t('pages.profile.security.title')}
       </h2>
 
-      {/* Password Change */}
       <Card className="bg-white shadow-sm rounded-2xl">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -487,7 +327,7 @@ const UserProfile = (): JSX.Element => {
               </Button>
             </div>
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
               {t('pages.profile.security.password.new')}
@@ -510,7 +350,7 @@ const UserProfile = (): JSX.Element => {
               </Button>
             </div>
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
               {t('pages.profile.security.password.confirm')}
@@ -533,7 +373,7 @@ const UserProfile = (): JSX.Element => {
               </Button>
             </div>
           </div>
-          
+
           <Button onClick={handlePasswordSave} className="flex items-center gap-2">
             <Save className="h-4 w-4" />
             {t('pages.profile.security.password.update')}
@@ -541,7 +381,6 @@ const UserProfile = (): JSX.Element => {
         </CardContent>
       </Card>
 
-      {/* Two-Factor Authentication */}
       <Card className="bg-white shadow-sm rounded-2xl">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -567,7 +406,6 @@ const UserProfile = (): JSX.Element => {
         </CardContent>
       </Card>
 
-      {/* Login History */}
       <Card className="bg-white shadow-sm rounded-2xl">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -595,7 +433,6 @@ const UserProfile = (): JSX.Element => {
         </CardContent>
       </Card>
 
-      {/* Connected Accounts */}
       <Card className="bg-white shadow-sm rounded-2xl">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -617,7 +454,7 @@ const UserProfile = (): JSX.Element => {
               </div>
               <Button size="sm" variant="outline">Tilknytt</Button>
             </div>
-            
+
             <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
               <div className="flex items-center space-x-3">
                 <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
@@ -641,8 +478,7 @@ const UserProfile = (): JSX.Element => {
       <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
         Preferanser og tilpasning
       </h2>
-      
-      {/* Language and Theme */}
+
       <Card className="bg-white shadow-sm rounded-2xl">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -665,7 +501,7 @@ const UserProfile = (): JSX.Element => {
               <option value="en">English</option>
             </select>
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
               Tema
@@ -694,7 +530,6 @@ const UserProfile = (): JSX.Element => {
         </CardContent>
       </Card>
 
-      {/* Notifications */}
       <Card className="bg-white shadow-sm rounded-2xl">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -733,7 +568,6 @@ const UserProfile = (): JSX.Element => {
         </CardContent>
       </Card>
 
-      {/* Dashboard View */}
       <Card className="bg-white shadow-sm rounded-2xl">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -768,8 +602,7 @@ const UserProfile = (): JSX.Element => {
       <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
         Personvern og data
       </h2>
-      
-      {/* Data Download */}
+
       <Card className="bg-white shadow-sm rounded-2xl">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -788,7 +621,6 @@ const UserProfile = (): JSX.Element => {
         </CardContent>
       </Card>
 
-      {/* Temporary Deactivation */}
       <Card className="bg-white shadow-sm rounded-2xl">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -807,7 +639,6 @@ const UserProfile = (): JSX.Element => {
         </CardContent>
       </Card>
 
-      {/* Delete Account */}
       <Card className="border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/10">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-red-600 dark:text-red-400">
@@ -817,8 +648,8 @@ const UserProfile = (): JSX.Element => {
         </CardHeader>
         <CardContent>
           <p className="text-gray-600 dark:text-gray-400 mb-4">
-            Når du sletter kontoen din, vil all data bli permanent fjernet. 
-            Dette inkluderer alle dine bookinger, favoritter og personlige opplysninger. 
+            Når du sletter kontoen din, vil all data bli permanent fjernet.
+            Dette inkluderer alle dine bookinger, favoritter og personlige opplysninger.
             Denne handlingen kan ikke angres.
           </p>
           <Button
@@ -907,21 +738,19 @@ const UserProfile = (): JSX.Element => {
 
   return (
     <div className="space-y-6">
-      {/* Toast */}
-      {showToast && (
+      {toast.show && (
         <div className="fixed top-4 right-4 z-50">
           <Card className="bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800">
             <CardContent className="p-4">
               <div className="flex items-center gap-2">
                 <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400" />
-                <span className="text-green-800 dark:text-green-300">{toastMessage}</span>
+                <span className="text-green-800 dark:text-green-300">{toast.message}</span>
               </div>
             </CardContent>
           </Card>
         </div>
       )}
 
-      {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
           {t('pages.profile.title')}
@@ -931,10 +760,8 @@ const UserProfile = (): JSX.Element => {
         </p>
       </div>
 
-      {/* Account Overview */}
       {renderAccountOverview()}
 
-      {/* Tabs */}
       <div className="border-b border-gray-200 dark:border-gray-700">
         <nav className="-mb-px flex space-x-8">
           {tabs.map((tab) => {
@@ -957,7 +784,6 @@ const UserProfile = (): JSX.Element => {
         </nav>
       </div>
 
-      {/* Tab Content */}
       <Card className="bg-white shadow-sm rounded-2xl">
         <CardContent className="p-8">
           {activeTab === "profile" && renderProfileTab()}
@@ -967,10 +793,8 @@ const UserProfile = (): JSX.Element => {
         </CardContent>
       </Card>
 
-      {/* Account Summary */}
       {renderAccountSummary()}
 
-      {/* Delete Modal */}
       {showDeleteModal && renderDeleteModal()}
     </div>
   );
