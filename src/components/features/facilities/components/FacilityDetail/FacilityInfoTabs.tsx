@@ -1,9 +1,10 @@
 "use client";
 
 import React, { useState } from 'react';
-import { CheckCircle, XCircle, Users, MapPin, Wifi, Car, Camera, Volume2, Calendar, ChevronDown, ChevronRight } from 'lucide-react';
+import { CheckCircle, XCircle, Users, MapPin, Wifi, Car, Camera, Volume2, Calendar, ChevronDown, ChevronRight, Phone, Mail } from 'lucide-react';
 
-import type { Zone } from '@/components/features/bookings/types';
+import type { Zone } from '@/types/booking';
+import type { IFacility } from '@/stores/facilityStore';
 import { useTranslation } from '@/i18n';
 import { useFieldConfigStore } from '@/stores/fieldConfigStore';
 
@@ -20,6 +21,7 @@ interface FacilityInfoTabsProps {
   readonly suitableFor: readonly string[];
   readonly facilityId: string;
   readonly facilityName: string;
+  readonly contactInfo?: IFacility;
 }
 
 /**
@@ -52,9 +54,10 @@ export const FacilityInfoTabs: React.FC<FacilityInfoTabsProps> = ({
   area,
   suitableFor,
   facilityId,
-  facilityName
+  facilityName,
+  contactInfo
 }): JSX.Element => {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['common', 'facility']);
   const [expandedFAQ, setExpandedFAQ] = useState<string | null>(null);
 
   const toggleFAQ = (faqId: string): void => {
@@ -118,7 +121,7 @@ export const FacilityInfoTabs: React.FC<FacilityInfoTabsProps> = ({
                     <div key={field.id} className="flex items-center">
                       {getIcon()}
                       <div>
-                        <span className="font-medium">{t(field.label)}:</span>
+                        <span className="font-medium">{field.label}:</span>
                         <span className="ml-2 text-gray-600">
                           {getFieldValue()}
                           {getUnit() && ` ${getUnit()}`}
@@ -166,7 +169,7 @@ export const FacilityInfoTabs: React.FC<FacilityInfoTabsProps> = ({
                     <div key={field.id} className="flex items-center">
                       {getIcon()}
                       <div>
-                        <span className="font-medium">{t(field.label)}:</span>
+                        <span className="font-medium">{field.label}:</span>
                         <span className="ml-2 text-gray-600">
                           {getFieldValue()}
                           {getUnit() && ` ${getUnit()}`}
@@ -185,6 +188,34 @@ export const FacilityInfoTabs: React.FC<FacilityInfoTabsProps> = ({
               )}
             </div>
           </div>
+
+          {/* Contact Information Fields - Added at the bottom of the general tab */}
+          {contactInfo && (contactInfo.contactEmail || contactInfo.emergencyContact) && (
+            <div className="mt-8 pt-6 border-t border-gray-200">
+              <h4 className="text-lg font-semibold mb-4">{t('facility:details.contact_info')}</h4>
+              <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
+                {contactInfo.contactEmail && (
+                  <div className="flex items-center">
+                    <Mail className="h-5 w-5 text-gray-400 mr-3" />
+                    <div>
+                      <span className="font-medium">{t('facility:contact.email')}</span>
+                      <span className="ml-2 text-gray-600">{contactInfo.contactEmail}</span>
+                    </div>
+                  </div>
+                )}
+                
+                {contactInfo.emergencyContact && (
+                  <div className="flex items-center">
+                    <Phone className="h-5 w-5 text-gray-400 mr-3" />
+                    <div>
+                      <span className="font-medium">{t('facility:contact.phone')}</span>
+                      <span className="ml-2 text-gray-600">{contactInfo.emergencyContact}</span>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         </div>
       </TabsContent>
 

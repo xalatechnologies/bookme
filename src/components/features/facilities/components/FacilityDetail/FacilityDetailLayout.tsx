@@ -3,7 +3,7 @@
 import React from "react";
 
 import type { IFacility } from "@/stores/facilityStore";
-import type { Zone } from "@/components/features/bookings/types";
+import type { Zone } from "@/types/booking";
 
 // Alias for backward compatibility
 type Facility = IFacility;
@@ -50,30 +50,21 @@ export const FacilityDetailLayout = ({
         />
       </div>
 
-      {/* Main Content Layout - 70% / 30% */}
-      <div className="grid grid-cols-1 lg:grid-cols-10 gap-8 mb-12">
-        {/* Left Column - Tabs Content (70%) */}
-        <div className="lg:col-span-7 space-y-6">
-          <FacilityInfoTabs 
-            description={facility.description} 
-            capacity={facility.capacity} 
-            equipment={[]} 
-            zones={zones} 
-            amenities={facility.amenities} 
-            address={facility.address} 
-            area={`${facility.capacity} personer`}
-            suitableFor={[]} 
-            facilityId={facility.id.toString()} 
-            facilityName={facility.name}
-          />
-        </div>
-
-        {/* Right Column - Contact Info Sidebar (30%) */}
-        <div className="lg:col-span-3 hidden lg:block">
-          <div className="sticky top-20 h-[calc(100vh-8rem)] overflow-y-auto">
-            <FacilityContactInfo facility={facility} />
-          </div>
-        </div>
+      {/* Main Content Layout - Full Width */}
+      <div className="mb-12">
+        <FacilityInfoTabs 
+          description={facility.description} 
+          capacity={facility.capacity} 
+          equipment={[]} 
+          zones={zones} 
+          amenities={facility.amenities} 
+          address={facility.address} 
+          area={`${facility.capacity} personer`}
+          suitableFor={[]} 
+          facilityId={facility.id.toString()} 
+          facilityName={facility.name}
+          contactInfo={facility}
+        />
       </div>
 
       {/* Full Width Calendar Section */}

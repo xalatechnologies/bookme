@@ -48,4 +48,4 @@ const BookingFilters = (props: IBookingFiltersProps): JSX.Element => {
   );
 };
 
-export default BookingFilters;
+export { BookingFilters };

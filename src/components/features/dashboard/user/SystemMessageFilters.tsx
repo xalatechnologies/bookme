@@ -30,4 +30,4 @@ const SystemMessageFilters = (
   );
 };
 
-export default SystemMessageFilters;
+export { SystemMessageFilters };
