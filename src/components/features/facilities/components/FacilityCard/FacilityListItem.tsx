@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { MapPin, Users, Heart, Share2 } from "lucide-react";
 
-import type { IFacility } from "@/stores/facilityStore";
+import type { Database } from "@/types/database";
 import { useFieldConfigStore } from "@/stores/fieldConfigStore";
 
 import { Card, CardContent } from "@/components/ui/card";
@@ -13,9 +13,11 @@ import { Badge } from "@/components/ui/badge";
 import { FacilityMiniMap } from "@/components/features/facilities/components/FacilityMap/FacilityMiniMap";
 import { useAmenityTranslation } from "@/hooks/shared";
 
+type Facility = Database['public']['Tables']['facilities']['Row'];
+
 interface FacilityListItemProps {
-  readonly facility: IFacility;
-  readonly onAddressClick: (e: React.MouseEvent, facility: IFacility) => void;
+  readonly facility: Facility;
+  readonly onAddressClick: (e: React.MouseEvent, facility: Facility) => void;
 }
 
 export const FacilityListItem: React.FC<FacilityListItemProps> = ({

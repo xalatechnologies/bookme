@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -31,7 +31,8 @@ import {
 } from "lucide-react";
 import FacilityCardUser from "@/components/features/facilities/components/FacilityCard/FacilityCardUser";
 import FacilityListItemUser from "@/components/features/facilities/components/FacilityCard/FacilityListItemUser";
-import { useFacilityStore } from "@/stores/facilityStore";
+import { usePublishedFacilities } from "@/services/supabase/facilities.service";
+import { useOrganizationId } from "@/hooks/useOrganizationId";
 import { useFavoritesStore } from "@/stores/favoritesStore";
 import { useTranslation } from "react-i18next";
 
@@ -107,37 +108,39 @@ const UserFavorites = (): JSX.Element => {
     localStorage.setItem("favorites-view-mode", mode);
   };
 
-  // Get facilities and favorites from stores
-  const { getPublishedFacilities } = useFacilityStore();
+  // Get facilities from Supabase and favorites from store
+  const orgId = useOrganizationId();
+  const { data: facilities = [], isLoading: facilitiesLoading } = usePublishedFacilities(orgId);
   const { favorites: favoriteEntries, removeFavorite } = useFavoritesStore();
-  const storeFacilities = getPublishedFacilities();
 
   // Get only facilities that are actually favorited
-  const favorites: readonly IFavoriteFacility[] = storeFacilities
-    .filter(facility => favoriteEntries.some(fav => fav.facilityId === facility.id))
-    .map(facility => {
-      const favoriteEntry = favoriteEntries.find(fav => fav.facilityId === facility.id)!;
-      return {
-        id: facility.id,
-        name: facility.name,
-        type: facility.type,
-        address: facility.address,
-        capacity: facility.capacity,
-        price: `${facility.pricePerHour} kr/time`,
-        pricePerHour: facility.pricePerHour,
-        image: facility.images[0] || "/placeholder.svg",
-        rating: facility.rating,
-        addedAt: favoriteEntry.addedAt,
-        lastVisited: favoriteEntry.lastVisited,
-        usageCount: favoriteEntry.usageCount,
-        amenities: facility.amenities,
-        description: facility.description,
-        availability: getRealTimeAvailability(facility.id) as const,
-        location: facility.location,
-        isFavorite: true,
-        coordinates: facility.coordinates
-      };
-    });
+  const favorites: readonly IFavoriteFacility[] = useMemo(() => {
+    return facilities
+      .filter(facility => favoriteEntries.some(fav => fav.facilityId === facility.id))
+      .map(facility => {
+        const favoriteEntry = favoriteEntries.find(fav => fav.facilityId === facility.id)!;
+        return {
+          id: facility.id,
+          name: facility.name,
+          type: facility.facility_type || '',
+          address: facility.address || facility.area || '',
+          capacity: facility.capacity || 0,
+          price: `${(facility.price_per_hour_cents || 0) / 100} kr/time`,
+          pricePerHour: (facility.price_per_hour_cents || 0) / 100,
+          image: (facility.images as any)?.[0] || "/placeholder.svg",
+          rating: facility.rating || 0,
+          addedAt: favoriteEntry.addedAt,
+          lastVisited: favoriteEntry.lastVisited,
+          usageCount: favoriteEntry.usageCount,
+          amenities: facility.amenities || [],
+          description: facility.description || '',
+          availability: getRealTimeAvailability(facility.id) as const,
+          location: facility.area || facility.address || '',
+          isFavorite: true,
+          coordinates: facility.coordinates
+        };
+      });
+  }, [facilities, favoriteEntries]);
 
   const typeFilters = [
     { value: "all", label: t('pages.favorites.filters.all_types'), color: "gray" },

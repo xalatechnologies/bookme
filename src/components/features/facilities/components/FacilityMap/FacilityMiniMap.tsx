@@ -5,10 +5,12 @@ import React, { useState } from 'react';
 import { MapPin } from 'lucide-react';
 
 // Internal imports
-import type { IFacility } from '@/stores/facilityStore';
+import type { Database } from '@/types/database';
+
+type Facility = Database['public']['Tables']['facilities']['Row'];
 
 interface FacilityMiniMapProps {
-  readonly facility: IFacility;
+  readonly facility: Facility;
   readonly mapboxToken: string;
 }
 

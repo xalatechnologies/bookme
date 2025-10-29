@@ -7,7 +7,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { useFacilityStore } from "@/stores/facilityStore";
+import { usePublishedFacilities } from "@/services/supabase/facilities.service";
+import { useOrganizationId } from "@/hooks/useOrganizationId";
 import FacilityCardUser from "@/components/features/facilities/components/FacilityCard/FacilityCardUser";
 import {
   BookingFilters,
@@ -78,8 +79,9 @@ const UserDashboard = (): JSX.Element => {
   const [messageFilter, setMessageFilter] = useState<string>("all");
   const [weather, setWeather] = useState<IWeatherData | null>(null);
 
-  // Get facilities from store
-  const { getPublishedFacilities } = useFacilityStore();
+  // Get facilities from Supabase
+  const orgId = useOrganizationId();
+  const { data: facilities = [], isLoading: facilitiesLoading } = usePublishedFacilities(orgId);
 
   // Get user data from localStorage
   const user = useMemo(() => {
@@ -245,32 +247,34 @@ const UserDashboard = (): JSX.Element => {
    * This ensures consistency between the facilities page and dashboard recommendations.
    * The facilities are then rendered using FacilityCardUser component for unified functionality.
    */
-  const storeFacilities = getPublishedFacilities();
-  const recommendedFacilities: readonly IUserFacility[] = storeFacilities
-    .slice(0, 3)
-    .map((facility, index) => ({
-      id: facility.id,
-      name: facility.name,
-      description: facility.description,
-      type: facility.type,
-      location: facility.location,
-      address: facility.address,
-      capacity: facility.capacity,
-      amenities: facility.amenities,
-      image: facility.images[0] || "/placeholder.svg",
-      rating: facility.rating,
-      price: `${facility.pricePerHour} kr/time`,
-      availability: "available" as const,
-      recommendationReason:
-        index === 0
-          ? t("user:recommendations.frequent_bookings")
-          : index === 1
-          ? t("user:recommendations.preferred_times")
-          : t("user:recommendations.new_in_area"),
-      isFrequentlyBooked: index === 0,
-      matchesPreferredTimes: index === 1,
-      isNewInArea: index === 2,
-    }));
+  const recommendedFacilities: readonly IUserFacility[] = useMemo(() => {
+    return facilities
+      .slice(0, 3)
+      .map((facility, index) => ({
+        id: facility.id,
+        name: facility.name,
+        description: facility.description || '',
+        type: facility.facility_type || '',
+        location: facility.area || '',
+        address: facility.address || '',
+        capacity: facility.capacity || 0,
+        amenities: facility.amenities || [],
+        image: (facility.images as any)?.[0] || "/placeholder.svg",
+        rating: facility.rating || 0,
+        price: `${(facility.price_per_hour_cents || 0) / 100} kr/time`,
+        availability: "available" as const,
+        recommendationReason:
+          index === 0
+            ? t("user:recommendations.frequent_bookings")
+            : index === 1
+            ? t("user:recommendations.preferred_times")
+            : t("user:recommendations.new_in_area"),
+        isFrequentlyBooked: index === 0,
+        matchesPreferredTimes: index === 1,
+        isNewInArea: index === 2,
+        slug: facility.slug
+      }));
+  }, [facilities, t]);
 
   const systemMessages: ISystemMessage[] = [
     {

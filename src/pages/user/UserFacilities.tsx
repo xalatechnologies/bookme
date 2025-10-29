@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Map } from "lucide-react";
-import { useFacilityStore } from "@/stores/facilityStore";
+import { usePublishedFacilities } from "@/services/supabase/facilities.service";
+import { useOrganizationId } from "@/hooks/useOrganizationId";
 import { useFavoritesStore } from "@/stores/favoritesStore";
 import FacilityCardUser from "@/components/features/facilities/components/FacilityCard/FacilityCardUser";
 import FacilityListItemUser from "@/components/features/facilities/components/FacilityCard/FacilityListItemUser";
@@ -11,6 +12,9 @@ import ViewToggleUser from "@/components/features/facilities/components/Facility
 import FilterBarUser from "@/components/features/facilities/components/FacilitySearch/FilterBar";
 import { MapView } from "@/components/features/facilities/components/FacilityMap/MapView";
 import { useTranslation } from "react-i18next";
+import type { Database } from "@/types/database";
+
+type Facility = Database['public']['Tables']['facilities']['Row'];
 
 interface IUserFacility {
   readonly id: string;
@@ -26,6 +30,7 @@ interface IUserFacility {
   readonly availability: "available" | "busy" | "full";
   readonly isFavorite?: boolean;
   readonly coordinates?: { lat: number; lng: number };
+  readonly slug?: string;
 }
 
 const UserFacilities = (): JSX.Element => {
@@ -37,10 +42,10 @@ const UserFacilities = (): JSX.Element => {
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const [showAvailableOnly, setShowAvailableOnly] = useState<boolean>(false);
 
-  // Get facilities from store
-  const { getPublishedFacilities } = useFacilityStore();
+  // Get facilities from Supabase
+  const orgId = useOrganizationId();
+  const { data: facilities = [], isLoading } = usePublishedFacilities(orgId);
   const { isFavorite } = useFavoritesStore();
-  const storeFacilities = getPublishedFacilities();
 
   /**
    * Get real-time availability status for a facility
@@ -117,24 +122,27 @@ const UserFacilities = (): JSX.Element => {
     }
   };
 
-  // Convert store facilities to user format
-  const facilities: readonly IUserFacility[] = storeFacilities.map(facility => ({
-    id: facility.id,
-    name: facility.name,
-    type: facility.type,
-    address: facility.address,
-    capacity: facility.capacity,
-    amenities: facility.amenities,
-    image: facility.images[0] || "/placeholder.svg",
-    rating: facility.rating,
-    price: `${facility.pricePerHour} kr/time`,
-    description: facility.description,
-    availability: getRealTimeAvailability(facility.id, facility.type),
-    isFavorite: isFavorite(facility.id), // Use real favorite status from store
-    coordinates: facility.coordinates
-  }));
+  // Convert Supabase facilities to user format
+  const userFacilities: readonly IUserFacility[] = useMemo(() => {
+    return facilities.map(facility => ({
+      id: facility.id,
+      name: facility.name,
+      type: facility.facility_type || '',
+      address: facility.address || facility.area || '',
+      capacity: facility.capacity || 0,
+      amenities: facility.amenities || [],
+      image: (facility.images as any)?.[0] || "/placeholder.svg",
+      rating: facility.rating || 0,
+      price: `${(facility.price_per_hour_cents || 0) / 100} kr/time`,
+      description: facility.description || '',
+      availability: getRealTimeAvailability(facility.id, facility.facility_type || ''),
+      isFavorite: isFavorite(facility.id),
+      coordinates: facility.coordinates,
+      slug: facility.slug
+    }));
+  }, [facilities, isFavorite]);
 
-  const filteredAndSortedFacilities = facilities
+  const filteredAndSortedFacilities = userFacilities
     .filter(facility => {
       const matchesSearch = facility.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                            facility.address.toLowerCase().includes(searchQuery.toLowerCase()) ||

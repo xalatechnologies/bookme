@@ -5,7 +5,7 @@ import React from "react";
 
 // Internal libraries/utilities
 import type { SelectedTimeSlot, AvailabilityStatus } from '@/types/booking';
-import type { IFacility } from '@/stores/facilityStore';
+import type { Database } from '@/types/database';
 import { useFacilityZones } from '@/services/supabase/zones.service';
 import { useZoneStore } from '@/stores/zoneStore';
 import { AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -13,8 +13,8 @@ import { AccordionContent, AccordionItem, AccordionTrigger } from "@/components/
 // Sibling imports
 import { FacilityCalendar } from "./index";
 
-// Alias for backward compatibility
-type Facility = IFacility;
+// Type from Supabase
+type Facility = Database['public']['Tables']['facilities']['Row'];
 
 interface FacilityAccordionContentProps {
   readonly facility: Facility;

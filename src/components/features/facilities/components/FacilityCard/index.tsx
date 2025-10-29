@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { MapPin, Users, Heart, Share2 } from "lucide-react";
 
 import { useTranslation } from "react-i18next";
-import type { IFacility } from "@/stores/facilityStore";
+import type { Database } from "@/types/database";
 import { useFieldConfigStore } from "@/stores/fieldConfigStore";
 
 import { Card, CardContent } from "@/components/ui/card";
@@ -17,9 +17,11 @@ import {
 } from "@/components/features/facilities/utils/formatters";
 import { useAmenityTranslation } from "@/hooks/shared";
 
+type Facility = Database['public']['Tables']['facilities']['Row'];
+
 interface FacilityCardProps {
-  readonly facility: IFacility;
-  readonly onAddressClick: (e: React.MouseEvent, facility: IFacility) => void;
+  readonly facility: Facility;
+  readonly onAddressClick: (e: React.MouseEvent, facility: Facility) => void;
   readonly viewMode?: "grid" | "list";
 }
 

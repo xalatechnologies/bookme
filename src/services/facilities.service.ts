@@ -1,25 +1,27 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { httpClient } from './http';
-import type { IFacility } from '@/stores/facilityStore';
+import type { Database } from '@/types/database';
+
+type Facility = Database['public']['Tables']['facilities']['Row'];
 
 export const facilitiesService = {
-  getAll: (): Promise<readonly IFacility[]> => 
-    httpClient.get<readonly IFacility[]>('/facilities'),
-  
-  getById: (id: string): Promise<IFacility> => 
-    httpClient.get<IFacility>(`/facilities/${id}`),
-  
-  create: (facility: Omit<IFacility, 'id' | 'createdAt' | 'updatedAt'>): Promise<IFacility> => 
-    httpClient.post<IFacility>('/facilities', facility),
-  
-  update: (id: string, facility: Partial<IFacility>): Promise<IFacility> => 
-    httpClient.patch<IFacility>(`/facilities/${id}`, facility),
-  
-  delete: (id: string): Promise<void> => 
+  getAll: (): Promise<readonly Facility[]> =>
+    httpClient.get<readonly Facility[]>('/facilities'),
+
+  getById: (id: string): Promise<Facility> =>
+    httpClient.get<Facility>(`/facilities/${id}`),
+
+  create: (facility: Omit<Facility, 'id' | 'created_at' | 'updated_at'>): Promise<Facility> =>
+    httpClient.post<Facility>('/facilities', facility),
+
+  update: (id: string, facility: Partial<Facility>): Promise<Facility> =>
+    httpClient.patch<Facility>(`/facilities/${id}`, facility),
+
+  delete: (id: string): Promise<void> =>
     httpClient.delete(`/facilities/${id}`),
 };
 
-export const useFacilities = (): ReturnType<typeof useQuery<readonly IFacility[], Error>> => {
+export const useFacilities = (): ReturnType<typeof useQuery<readonly Facility[], Error>> => {
   return useQuery({
     queryKey: ['facilities'],
     queryFn: facilitiesService.getAll,
@@ -27,7 +29,7 @@ export const useFacilities = (): ReturnType<typeof useQuery<readonly IFacility[]
   });
 };
 
-export const useFacility = (id: string): ReturnType<typeof useQuery<IFacility, Error>> => {
+export const useFacility = (id: string): ReturnType<typeof useQuery<Facility, Error>> => {
   return useQuery({
     queryKey: ['facilities', id],
     queryFn: () => facilitiesService.getById(id),
@@ -35,9 +37,9 @@ export const useFacility = (id: string): ReturnType<typeof useQuery<IFacility, E
   });
 };
 
-export const useCreateFacility = (): ReturnType<typeof useMutation<IFacility, Error, Omit<IFacility, 'id' | 'createdAt' | 'updatedAt'>>> => {
+export const useCreateFacility = (): ReturnType<typeof useMutation<Facility, Error, Omit<Facility, 'id' | 'created_at' | 'updated_at'>>> => {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: facilitiesService.create,
     onSuccess: () => {
@@ -46,11 +48,11 @@ export const useCreateFacility = (): ReturnType<typeof useMutation<IFacility, Er
   });
 };
 
-export const useUpdateFacility = (): ReturnType<typeof useMutation<IFacility, Error, { id: string; facility: Partial<IFacility> }>> => {
+export const useUpdateFacility = (): ReturnType<typeof useMutation<Facility, Error, { id: string; facility: Partial<Facility> }>> => {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
-    mutationFn: ({ id, facility }: { id: string; facility: Partial<IFacility> }) =>
+    mutationFn: ({ id, facility }: { id: string; facility: Partial<Facility> }) =>
       facilitiesService.update(id, facility),
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: ['facilities'] });
