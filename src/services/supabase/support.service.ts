@@ -16,7 +16,7 @@
  */
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/lib/clients/supabase';
 import type { Database } from '@/types/database';
 
 type SupportTicket = Database['public']['Tables']['support_tickets']['Row'];

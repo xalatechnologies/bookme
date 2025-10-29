@@ -4,7 +4,7 @@
  * Comprehensive utility functions for role checking, permission validation,
  * and RBAC operations with strict type safety.
  *
- * @module utils/roleHelpers
+ * @module shared/utils/role
  */
 
 import {

@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 
 // Internal imports
 import { useFacilityStore, type IFacility } from '@/stores/facilityStore';
-import { dummyZones, getZonesForFacility } from '@/data/zones/dummyZones';
+import { useFacilityZones } from '@/services/supabase/zones.service';
 import type { Zone } from '@/types/booking';
 
 interface UseCalendarViewProps {
@@ -36,9 +36,8 @@ export const useCalendarView = ({
   capacity
 }: UseCalendarViewProps): UseCalendarViewReturn => {
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  
+
   const { getPublishedFacilities } = useFacilityStore();
   const facilities = getPublishedFacilities();
 
@@ -49,19 +48,19 @@ export const useCalendarView = ({
     if (facilityType && facilityType !== "all") {
       filtered = filtered.filter(f => f.type === facilityType);
     }
-    
+
     if (location && location !== "all") {
       filtered = filtered.filter(f => f.area === location);
     }
-    
+
     if (accessibility && accessibility !== "all") {
-      filtered = filtered.filter(f => 
+      filtered = filtered.filter(f =>
         f.accessibilityFeatures && f.accessibilityFeatures.includes(accessibility)
       );
     }
-    
+
     if (capacity) {
-      filtered = filtered.filter(f => 
+      filtered = filtered.filter(f =>
         f.capacity >= capacity[0] && f.capacity <= capacity[1]
       );
     }
@@ -69,12 +68,26 @@ export const useCalendarView = ({
     return filtered;
   }, [facilityType, location, accessibility, capacity, facilities]);
 
-  // Get facilities with their zones
+  // Fetch zones for all filtered facilities
+  // Note: This creates multiple queries, one per facility
+  // For better performance, consider batching or caching
   const facilitiesWithZones = useMemo((): readonly FacilityWithZones[] => {
-    return filteredFacilities.map(facility => ({
-      facility,
-      zones: getZonesForFacility(facility.id)
-    })).filter(item => item.zones.length > 0); // Only include facilities that have zones
+    const results: FacilityWithZones[] = [];
+
+    filteredFacilities.forEach(facility => {
+      // Use React Query hook for each facility
+      // This will be cached and optimized by React Query
+      const { data: zones } = useFacilityZones(facility.id);
+
+      if (zones && zones.length > 0) {
+        results.push({
+          facility,
+          zones: zones as readonly Zone[]
+        });
+      }
+    });
+
+    return results;
   }, [filteredFacilities]);
 
   // Get all zones from filtered facilities
@@ -82,11 +95,8 @@ export const useCalendarView = ({
     return facilitiesWithZones.flatMap(item => item.zones);
   }, [facilitiesWithZones]);
 
-  // Initialize loading state
-  useEffect(() => {
-    setIsLoading(false);
-    setError(null);
-  }, [facilityType, location, accessibility, capacity]);
+  // Determine loading state from facilities query
+  const isLoading = facilities.length === 0;
 
   return {
     facilitiesWithZones,

@@ -13,7 +13,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { RecurrencePattern } from "@/utils/recurrenceEngine";
+import { RecurrencePattern } from "@/components/features/bookings/utils/recurrence";
 import { CreateRecurringBookingData } from "@/types/recurringBooking";
 
 /**

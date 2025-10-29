@@ -56,8 +56,8 @@ import {
   BookingType,
   IBookingFormData,
 } from "../../types";
-import type { RecurrencePattern } from "@/utils/recurrenceEngine";
-import { RecurrenceEngine } from "@/utils/recurrenceEngine";
+import type { RecurrencePattern } from "@/components/features/bookings/utils/recurrence";
+import { RecurrenceEngine } from "@/components/features/bookings/utils/recurrence";
 import { useAvailabilityStatus } from "../../hooks";
 
 export interface IStepByStepBookingProps {

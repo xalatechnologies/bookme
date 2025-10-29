@@ -14,7 +14,7 @@ import {
   getFieldUnit,
   generateShareUrl,
   copyToClipboard,
-} from "@/utils/card-formatters";
+} from "@/components/features/facilities/utils/formatters";
 import { useAmenityTranslation } from "@/hooks/shared";
 
 interface FacilityCardProps {

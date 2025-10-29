@@ -31,7 +31,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Message } from "@/types/message";
 import { useMessageStore } from "@/stores/messageStore";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/cn";
 import { useUserProfile } from "@/contexts/UserProfileContext";
 
 interface MessageThreadProps {

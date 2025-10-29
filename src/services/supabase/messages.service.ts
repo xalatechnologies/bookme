@@ -12,7 +12,7 @@
  * - Real-time message updates
  */
 
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/lib/clients/supabase';
 import type { Database } from '@/types/database';
 import { useQuery, useMutation, useQueryClient, type UseQueryResult, type UseMutationResult } from '@tanstack/react-query';
 

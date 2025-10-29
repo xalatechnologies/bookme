@@ -60,7 +60,7 @@ import {
 } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils/cn';
 import { useLocalizedDbValueEnhanced } from '@/hooks/shared/useLocalizedDbValueEnhanced';
 import type {
   LocalizedEntityType,

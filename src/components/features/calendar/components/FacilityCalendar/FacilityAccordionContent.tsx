@@ -6,7 +6,7 @@ import React from "react";
 // Internal libraries/utilities
 import type { SelectedTimeSlot, AvailabilityStatus } from '@/types/booking';
 import type { IFacility } from '@/stores/facilityStore';
-import { getZonesForFacility } from '@/data/zones/dummyZones';
+import { useFacilityZones } from '@/services/supabase/zones.service';
 import { useZoneStore } from '@/stores/zoneStore';
 import { AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
@@ -38,10 +38,13 @@ export const FacilityAccordionContent: React.FC<FacilityAccordionContentProps> =
   onRemoveSlot
 }): JSX.Element => {
   const { getZonesForFacility: storeGetZonesForFacility } = useZoneStore();
-  
-  // Get zones from store first, then fallback to dummy data
+
+  // Fetch zones from Supabase
+  const { data: supabaseZones, isLoading: zonesLoading } = useFacilityZones(facility.id);
+
+  // Get zones from store first, then from Supabase
   const storeZones = storeGetZonesForFacility(facility.id);
-  const zones = storeZones.length > 0 ? storeZones : getZonesForFacility(facility.id);
+  const zones = storeZones.length > 0 ? storeZones : (supabaseZones || []);
   
   return (
     <AccordionItem 

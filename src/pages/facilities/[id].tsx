@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
 import { useTranslation } from "react-i18next";
-import type { RecurrencePattern } from "@/utils/recurrenceEngine";
+import type { RecurrencePattern } from "@/components/features/bookings/utils/recurrence";
 
 import { useFacility } from "@/components/features/facilities/hooks";
 import { useZones } from "@/components/features/facilities/hooks";

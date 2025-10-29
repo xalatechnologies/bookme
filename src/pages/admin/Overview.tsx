@@ -15,7 +15,7 @@ import {
 } from "@/components/features/dashboard/admin";
 import { useDashboardData } from "@/components/features/dashboard/hooks";
 import { useStatistics } from "@/hooks/useStatistics";
-import { trendCards } from "@/data/admin/trendData";
+import { trendCards } from "@/__mocks__/fixtures/trendData";
 import {
   IKPICard,
   IApprovalRequest,

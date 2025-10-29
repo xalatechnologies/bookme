@@ -7,7 +7,7 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/lib/clients/supabase';
 import type { IStoredBooking } from '@/utils/localStorageTypes';
 import {
   getMigrationPhase,
