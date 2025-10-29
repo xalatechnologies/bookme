@@ -49,7 +49,10 @@
     "approvals": {
       "title": "Godkjenningskø",
       "view_all": "Se alle godkjenninger",
+      "view_all_count": "Se alle ({{count}})",
       "no_pending": "Ingen ventende godkjenninger",
+      "all_updated": "Alt er oppdatert!",
+      "view_request": "Se godkjenning {{title}}",
       "approve": "Godkjenn",
       "reject": "Avvis",
       "priority_high": "Høy",
@@ -60,10 +63,19 @@
       "date": "Dato"
     },
 
+    "daily_tasks": {
+      "title": "Dine oppgaver i dag",
+      "pending_approvals": "Ventende godkjenninger",
+      "payment_errors": "Bookinger med feil i betaling",
+      "users_no_roles": "Brukere uten roller",
+      "view_task": "Se oppgave: {{task}}"
+    },
+
     "events": {
       "title": "Nylige hendelser",
       "view_all": "Se alle hendelser",
-      "no_recent": "Ingen nylige hendelser",
+      "no_recent": "Ingen hendelser registrert",
+      "event_item": "Hendelse: {{message}}",
       "types": {
         "booking": "Booking",
         "approval": "Godkjenning",
@@ -86,13 +98,14 @@
     "alerts": {
       "title": "Systemvarsler",
       "view_all": "Se alle varsler",
-      "no_alerts": "Ingen varsler",
+      "no_alerts": "Ingen aktive varsler",
+      "alert_item": "Varsel: {{title}}",
       "draft_facilities": "Utkast til lokaler",
       "facilities_waiting": "{{count}} lokaler venter på publisering",
       "cancelled_bookings": "Avbrutte bookinger",
       "bookings_cancelled": "{{count}} bookinger har blitt avbrutt",
       "system_status": "Systemstatus",
-      "all_systems_normal": "Alle systemer kjører normalt",
+      "all_systems_normal": "Systemet kjører som det skal!",
       "see_details": "Se detaljer",
       "types": {
         "info": "Info",

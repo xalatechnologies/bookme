@@ -45,3 +45,7 @@ export type {
   IDatePackage,
   IUseTimeSlotGroupingReturn,
 } from './useTimeSlotGrouping';
+
+export { useBookingFormValidation } from './useBookingFormValidation';
+
+export { useBookingSidebarDisplay } from './useBookingSidebarDisplay';

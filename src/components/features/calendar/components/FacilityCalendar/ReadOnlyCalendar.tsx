@@ -1,16 +1,17 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
-import { format, addDays, startOfWeek, addWeeks, subWeeks, isToday, isWeekend, isPast } from "date-fns";
+import React, { useState } from "react";
+import { format } from "date-fns";
 import { nb } from "date-fns/locale";
-import { ChevronLeft, ChevronRight, Calendar as CalendarIcon } from "lucide-react";
-
+import { useTranslation } from "react-i18next";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Zone } from "@/types/booking";
+import { useCalendarGrid } from "@/hooks/features/calendar/useCalendarGrid";
 
 interface ReadOnlyCalendarProps {
-  readonly facilityId: string;
+  readonly facilityId?: string;
   readonly facilityName: string;
   readonly zones: readonly Zone[];
   readonly openingHoursStart?: string;
@@ -18,58 +19,21 @@ interface ReadOnlyCalendarProps {
 }
 
 export const ReadOnlyCalendar: React.FC<ReadOnlyCalendarProps> = ({
-  facilityId,
   facilityName,
   zones,
   openingHoursStart = "08:00",
   openingHoursEnd = "22:00"
 }) => {
-  const [currentWeekStart, setCurrentWeekStart] = useState(() => 
-    startOfWeek(new Date(), { weekStartsOn: 1 })
-  );
+  const { t } = useTranslation();
   const [selectedZoneId, setSelectedZoneId] = useState<string>(zones[0]?.id || "");
 
-  // Generate time slots based on opening hours
-  const timeSlots = useMemo(() => {
-    const startHour = parseInt(openingHoursStart.split(':')[0]);
-    const endHour = parseInt(openingHoursEnd.split(':')[0]);
-    const totalHours = endHour - startHour;
-    
-    return Array.from({ length: totalHours }, (_, i) => {
-      const hour = startHour + i;
-      const nextHour = hour + 1;
-      return `${hour.toString().padStart(2, '0')}:00-${nextHour.toString().padStart(2, '0')}:00`;
-    });
-  }, [openingHoursStart, openingHoursEnd]);
+  const { state, actions } = useCalendarGrid({
+    openingHoursStart,
+    openingHoursEnd
+  });
 
-  // Generate calendar week data
-  const calendarWeek = useMemo(() => {
-    const days = Array.from({ length: 7 }, (_, i) => {
-      const date = addDays(currentWeekStart, i);
-      return {
-        date,
-        isToday: isToday(date),
-        isWeekend: isWeekend(date),
-        isPast: isPast(date),
-      };
-    });
-
-    return {
-      startDate: currentWeekStart,
-      endDate: addDays(currentWeekStart, 6),
-      days,
-    };
-  }, [currentWeekStart]);
-
-  const handlePreviousWeek = (): void => {
-    setCurrentWeekStart(prev => subWeeks(prev, 1));
-  };
-
-  const handleNextWeek = (): void => {
-    setCurrentWeekStart(prev => addWeeks(prev, 1));
-  };
-
-  const selectedZone = zones.find(zone => zone.id === selectedZoneId) || zones[0];
+  const { calendarWeek, timeSlots } = state;
+  const { handlePreviousWeek, handleNextWeek } = actions;
 
   if (!zones || zones.length === 0) {
     return (
@@ -148,7 +112,7 @@ export const ReadOnlyCalendar: React.FC<ReadOnlyCalendarProps> = ({
             </div>
 
             {/* Time Slots */}
-            {timeSlots.map((timeSlot, slotIndex) => {
+            {timeSlots.map((timeSlot) => {
               const hour = parseInt(timeSlot.split(':')[0]);
               return (
                 <div key={timeSlot} className="grid grid-cols-8 border-b border-gray-100 dark:border-gray-700 last:border-b-0">
@@ -158,8 +122,7 @@ export const ReadOnlyCalendar: React.FC<ReadOnlyCalendarProps> = ({
                   {calendarWeek.days.map((day, dayIndex) => {
                     const isWeekend = day.isWeekend;
                     const isPast = day.isPast;
-                    const isToday = day.isToday;
-                    
+
                     // Simple availability logic - you can customize this
                     const isAvailable = !isPast && (!isWeekend || hour >= 9);
                     

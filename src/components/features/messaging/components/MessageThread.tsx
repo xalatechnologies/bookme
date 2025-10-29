@@ -96,12 +96,16 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
     onDelete(message.id);
   }, [onDelete, message.id]);
 
-  const handleDownloadClick = useCallback(() => {
-    // Handle download
-    const link = document.createElement("a");
-    link.href = `data:${""};base64,${""}`;
-    link.download = "";
-    link.click();
+  const handleDownloadClick = useCallback((attachment: { readonly id: string; readonly name: string; readonly type: string; readonly size: number }) => {
+    // Create download link from attachment data
+    // In a real implementation, this would fetch the actual file data
+    console.log('Download attachment:', attachment);
+
+    // TODO: Implement actual download logic when backend is ready
+    // const link = document.createElement("a");
+    // link.href = `data:${attachment.type};base64,${attachment.base64Data}`;
+    // link.download = attachment.name;
+    // link.click();
   }, []);
 
   return (
@@ -177,7 +181,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
                     variant="ghost"
                     size="sm"
                     className="h-6 w-6 p-0"
-                    onClick={handleDownloadClick}
+                    onClick={() => handleDownloadClick(attachment)}
                   >
                     <Download className="h-3 w-3" />
                   </Button>
@@ -254,7 +258,7 @@ export const MessageThread: React.FC<MessageThreadProps> = ({
   currentUserType = "tenant",
   showHeader = true,
 }) => {
-  const { t } = useTranslation("common");
+  const { t } = useTranslation(['common', 'messaging']);
   const {
     getThreadById,
     getMessagesByThread,
@@ -385,21 +389,24 @@ export const MessageThread: React.FC<MessageThreadProps> = ({
   };
 
   const handleForward = (message: Message) => {
-    void message; // Intentionally unused - forwarding to be implemented
+    // TODO: Implement message forwarding functionality
+    console.log('Forward message:', message.id);
   };
 
   const handleStar = (messageId: string) => {
-    void messageId; // Intentionally unused - starring to be implemented
+    // TODO: Implement message starring functionality
+    console.log('Star message:', messageId);
   };
 
   const handleDelete = (messageId: string) => {
-    void messageId; // Intentionally unused - deleting to be implemented
+    // TODO: Implement message deletion functionality
+    console.log('Delete message:', messageId);
   };
 
   if (!thread) {
     return (
       <div className="flex items-center justify-center h-96">
-        <p className="text-muted-foreground">Tråd ikke funnet</p>
+        <p className="text-muted-foreground">{t('messaging:errors.thread_not_found', 'Tråd ikke funnet')}</p>
       </div>
     );
   }
@@ -422,7 +429,7 @@ export const MessageThread: React.FC<MessageThreadProps> = ({
               <div>
                 <h3 className="font-semibold">{thread.subject}</h3>
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <span>{thread.participants.length} deltakere</span>
+                  <span>{thread.participants.length} {t('messaging:labels.participants', 'deltakere')}</span>
                   {thread.facilityName && (
                     <>
                       <span>•</span>
@@ -441,10 +448,10 @@ export const MessageThread: React.FC<MessageThreadProps> = ({
                 variant={thread.status === "active" ? "default" : "secondary"}
               >
                 {thread.status === "active"
-                  ? "Aktiv"
+                  ? t('messaging:status.active', 'Aktiv')
                   : thread.status === "resolved"
-                  ? "Løst"
-                  : "Lukket"}
+                  ? t('messaging:status.resolved', 'Løst')
+                  : t('messaging:status.closed', 'Lukket')}
               </Badge>
 
               {/* Admin actions - only show for landlords */}
@@ -456,7 +463,7 @@ export const MessageThread: React.FC<MessageThreadProps> = ({
                   className="text-green-600 border-green-200 hover:bg-green-50"
                 >
                   <Check className="h-4 w-4 mr-2" />
-                  Marker som løst
+                  {t('messaging:actions.mark_resolved', 'Marker som løst')}
                 </Button>
               )}
 
@@ -473,13 +480,13 @@ export const MessageThread: React.FC<MessageThreadProps> = ({
                     }
                   >
                     <Check className="h-4 w-4 mr-2" />
-                    Marker som løst
+                    {t('messaging:actions.mark_resolved', 'Marker som løst')}
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() => updateThread(threadId, { status: "closed" })}
                   >
                     <EyeOff className="h-4 w-4 mr-2" />
-                    Lukk tråd
+                    {t('messaging:actions.close_thread', 'Lukk tråd')}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -522,7 +529,7 @@ export const MessageThread: React.FC<MessageThreadProps> = ({
             <div className="flex items-center gap-2">
               <Reply className="h-4 w-4 text-muted-foreground" />
               <span className="text-sm text-muted-foreground">
-                Svarer til {replyTo.senderName}
+                {t('messaging:labels.replying_to', 'Svarer til')} {replyTo.senderName}
               </span>
             </div>
             <Button variant="ghost" size="sm" onClick={() => setReplyTo(null)}>

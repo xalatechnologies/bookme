@@ -9,7 +9,7 @@
  */
 
 import { useMemo, useCallback } from 'react';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/contexts/AuthContext';
 import { getUserPermissions, type IUserPermissions } from '@/services/business/user.business.service';
 import {
   canAccessAdminRoute,

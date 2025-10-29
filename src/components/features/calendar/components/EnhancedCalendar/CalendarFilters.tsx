@@ -1,13 +1,12 @@
-import React, { useState, useCallback } from 'react';
+import React from 'react';
 import { Search, Filter, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Checkbox } from '@/components/ui/checkbox';
-import type { IBookingEvent } from '@/types/calendar';
+import { useCalendarFilterState } from '@/hooks/features/calendar/useCalendarFilterState';
 
 interface CalendarFiltersProps {
   readonly searchQuery: string;
@@ -31,31 +30,18 @@ export const CalendarFilters: React.FC<CalendarFiltersProps> = ({
   className = ''
 }): JSX.Element => {
   const { t } = useTranslation('common');
-  const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
 
-  const handleFacilityToggle = useCallback((facility: string): void => {
-    if (selectedFacilities.includes(facility)) {
-      onFacilitiesChange(selectedFacilities.filter(f => f !== facility));
-    } else {
-      onFacilitiesChange([...selectedFacilities, facility]);
-    }
-  }, [selectedFacilities, onFacilitiesChange]);
+  const { state, actions } = useCalendarFilterState({
+    initialSearchQuery: searchQuery,
+    initialSelectedFacilities: selectedFacilities,
+    initialSelectedStatuses: selectedStatuses,
+    onSearchChange,
+    onFacilitiesChange,
+    onStatusesChange
+  });
 
-  const handleStatusToggle = useCallback((status: string): void => {
-    if (selectedStatuses.includes(status)) {
-      onStatusesChange(selectedStatuses.filter(s => s !== status));
-    } else {
-      onStatusesChange([...selectedStatuses, status]);
-    }
-  }, [selectedStatuses, onStatusesChange]);
-
-  const clearAllFilters = useCallback((): void => {
-    onSearchChange('');
-    onFacilitiesChange([]);
-    onStatusesChange([]);
-  }, [onSearchChange, onFacilitiesChange, onStatusesChange]);
-
-  const hasActiveFilters = searchQuery !== '' || selectedFacilities.length > 0 || selectedStatuses.length > 0;
+  const { hasActiveFilters, isFilterOpen } = state;
+  const { handleFacilityToggle, handleStatusToggle, clearAllFilters, setIsFilterOpen } = actions;
 
   return (
     <div className={`space-y-4 ${className}`}>
@@ -65,8 +51,8 @@ export const CalendarFilters: React.FC<CalendarFiltersProps> = ({
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
           <Input
             placeholder={t('filters.search_placeholder')}
-            value={searchQuery}
-            onChange={(e) => onSearchChange(e.target.value)}
+            value={state.searchQuery}
+            onChange={(e) => actions.onSearchChange(e.target.value)}
             className="pl-10"
           />
         </div>
@@ -78,7 +64,7 @@ export const CalendarFilters: React.FC<CalendarFiltersProps> = ({
               {t('filters.filter_button')}
               {hasActiveFilters && (
                 <Badge variant="secondary" className="ml-2 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs">
-                  {selectedFacilities.length + selectedStatuses.length + (searchQuery ? 1 : 0)}
+                  {state.selectedFacilities.length + state.selectedStatuses.length + (state.searchQuery ? 1 : 0)}
                 </Badge>
               )}
             </Button>
@@ -108,7 +94,7 @@ export const CalendarFilters: React.FC<CalendarFiltersProps> = ({
                     <div key={facility} className="flex items-center space-x-2">
                       <Checkbox
                         id={`facility-${facility}`}
-                        checked={selectedFacilities.includes(facility)}
+                        checked={state.selectedFacilities.includes(facility)}
                         onCheckedChange={() => handleFacilityToggle(facility)}
                       />
                       <label
@@ -134,7 +120,7 @@ export const CalendarFilters: React.FC<CalendarFiltersProps> = ({
                     <div key={status.value} className="flex items-center space-x-2">
                       <Checkbox
                         id={`status-${status.value}`}
-                        checked={selectedStatuses.includes(status.value)}
+                        checked={state.selectedStatuses.includes(status.value)}
                         onCheckedChange={() => handleStatusToggle(status.value)}
                       />
                       <label
@@ -155,21 +141,21 @@ export const CalendarFilters: React.FC<CalendarFiltersProps> = ({
       {/* Active Filters Display */}
       {hasActiveFilters && (
         <div className="flex flex-wrap gap-2">
-          {searchQuery && (
+          {state.searchQuery && (
             <Badge variant="secondary" className="flex items-center gap-1">
-              {t('search.search_label')} "{searchQuery}"
+              {t('search.search_label')} "{state.searchQuery}"
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => onSearchChange('')}
+                onClick={() => actions.onSearchChange('')}
                 className="h-auto p-0 ml-1 hover:bg-transparent"
               >
                 <X className="w-3 h-3" />
               </Button>
             </Badge>
           )}
-          
-          {selectedFacilities.map((facility) => (
+
+          {state.selectedFacilities.map((facility) => (
             <Badge key={facility} variant="secondary" className="flex items-center gap-1">
               {facility}
               <Button
@@ -182,8 +168,8 @@ export const CalendarFilters: React.FC<CalendarFiltersProps> = ({
               </Button>
             </Badge>
           ))}
-          
-          {selectedStatuses.map((status) => (
+
+          {state.selectedStatuses.map((status) => (
             <Badge key={status} variant="secondary" className="flex items-center gap-1">
               {status === 'confirmed' ? t('status.confirmed') :
                status === 'pending' ? t('status.pending') : t('status.cancelled')}

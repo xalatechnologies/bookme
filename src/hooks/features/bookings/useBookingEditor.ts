@@ -14,7 +14,7 @@ import {
   useUpdateBooking,
 } from '@/services/supabase/bookings.service';
 import { useOrganizationId } from '@/hooks/useOrganizationId';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/contexts/AuthContext';
 import {
   validateBookingData,
   detectBookingConflicts,

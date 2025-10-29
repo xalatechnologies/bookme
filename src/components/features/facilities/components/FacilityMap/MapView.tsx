@@ -1,15 +1,14 @@
 "use client";
 
 // External imports
-import React, { useState, useMemo } from 'react';
-import mapboxgl from 'mapbox-gl';
-import { useNavigate } from 'react-router-dom';
+import React, { useMemo } from 'react';
+import type { Database } from '@/types/database';
 
 // Internal imports
 import { usePublishedFacilities, useFacilities } from '@/services/supabase/facilities.service';
 import { useOrganizationId } from '@/hooks/useOrganizationId';
+import { useMapOverlay } from '@/hooks/features/facilities';
 import { FacilityFilters } from '@/types/facility';
-import type { Database } from '@/types/database';
 
 type Facility = Database['public']['Tables']['facilities']['Row'];
 
@@ -42,10 +41,16 @@ export const MapView: React.FC<MapViewProps> = ({
   showHeader = true, // Default to true for backward compatibility
   onMarkerClick // New prop for handling marker clicks
 }): JSX.Element => {
-  const navigate = useNavigate();
-  const [map, setMap] = useState<mapboxgl.Map | null>(null);
-  const [error, setError] = useState<string>('');
-  const [isInitialized, setIsInitialized] = useState<boolean>(false);
+  // Use map overlay hook
+  const {
+    map,
+    error,
+    isInitialized,
+    handleMapLoad,
+    handleMapError,
+    handleRetry,
+    handleMarkerClick: handleMarkerClickInternal
+  } = useMapOverlay();
 
   const orgId = useOrganizationId();
   // Use all facilities if showAllFacilities is true, otherwise use published only
@@ -72,33 +77,6 @@ export const MapView: React.FC<MapViewProps> = ({
     }
     return filtered;
   }, [facilities, filters.facilityType, filters.location]);
-
-  // Handle marker click - only call the custom handler if provided, don't navigate automatically
-  const handleMarkerClick = (facility: Facility): void => {
-    if (onMarkerClick) {
-      onMarkerClick(facility);
-    }
-    // Don't automatically navigate - let the popup handle navigation
-  };
-
-  const handleMapLoad = (mapInstance: mapboxgl.Map): void => {
-    setMap(mapInstance);
-    setIsInitialized(true);
-  };
-
-  const handleMapError = (errorMessage: string): void => {
-    console.error('Map error:', errorMessage); // Log to console for debugging
-    setError(errorMessage);
-    setIsInitialized(false);
-  };
-
-  const handleRetry = (): void => {
-    setError('');
-    setIsInitialized(false);
-    window.location.reload();
-  };
-
-  // Show loading or error overlay inside the card instead of replacing entire component
 
   return (
     <div className="max-w-7xl mx-auto px-4 my-[12px]">
@@ -165,7 +143,7 @@ export const MapView: React.FC<MapViewProps> = ({
             <MapMarkers
               map={map}
               facilities={filteredFacilities}
-              onMarkerClick={handleMarkerClick}
+              onMarkerClick={(facility) => handleMarkerClickInternal(facility, onMarkerClick)}
             />
           )}
         </Card>

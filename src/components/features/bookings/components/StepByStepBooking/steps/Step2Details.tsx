@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { IBookingFormData, ActivityType, ActorType } from '@/components/features/bookings/types';
 import { IFormErrors } from '../hooks/useBookingForm';
+import { useBookingDetailsForm } from '../hooks';
 
 /**
  * Step 2 Details props
@@ -34,6 +35,7 @@ export const Step2Details = ({
   isLoading = false
 }: IStep2DetailsProps): JSX.Element => {
   const { t } = useTranslation(['booking', 'common']);
+  const { fields, activityTypeOptions, actorTypeOptions } = useBookingDetailsForm();
 
   return (
     <div className="space-y-6">
@@ -50,14 +52,14 @@ export const Step2Details = ({
         <CardContent className="p-6 space-y-4">
           {/* Purpose */}
           <div className="space-y-2">
-            <Label htmlFor="purpose" className="text-sm font-medium">
-              {t('booking:fields.purpose', 'Formål med bookingen')} <span className="text-red-500">*</span>
+            <Label htmlFor={fields.purpose.id} className="text-sm font-medium">
+              {fields.purpose.label} {fields.purpose.required && <span className="text-red-500">*</span>}
             </Label>
             <Input
-              id="purpose"
+              id={fields.purpose.id}
               value={formData.purpose}
               onChange={(e) => onUpdateField('purpose', e.target.value)}
-              placeholder={t('booking:placeholders.purpose', 'F.eks. fotballtrening, møte, arrangement')}
+              placeholder={fields.purpose.placeholder}
               disabled={isLoading}
               className="w-full"
               aria-invalid={!!errors.purpose}
@@ -72,13 +74,13 @@ export const Step2Details = ({
 
           {/* Attendees */}
           <div className="space-y-2">
-            <Label htmlFor="attendees" className="text-sm font-medium">
-              {t('booking:fields.attendees', 'Antall deltakere')} <span className="text-red-500">*</span>
+            <Label htmlFor={fields.attendees.id} className="text-sm font-medium">
+              {fields.attendees.label} {fields.attendees.required && <span className="text-red-500">*</span>}
             </Label>
             <Input
-              id="attendees"
+              id={fields.attendees.id}
               type="number"
-              min="1"
+              min={fields.attendees.min}
               value={formData.attendees}
               onChange={(e) => onUpdateField('attendees', parseInt(e.target.value) || 1)}
               disabled={isLoading}
@@ -95,8 +97,8 @@ export const Step2Details = ({
 
           {/* Activity Type */}
           <div className="space-y-2">
-            <Label htmlFor="activityType" className="text-sm font-medium">
-              {t('booking:fields.activity_type', 'Type aktivitet')} <span className="text-red-500">*</span>
+            <Label htmlFor={fields.activityType.id} className="text-sm font-medium">
+              {fields.activityType.label} {fields.activityType.required && <span className="text-red-500">*</span>}
             </Label>
             <Select
               value={formData.activityType}
@@ -104,15 +106,14 @@ export const Step2Details = ({
               disabled={isLoading}
             >
               <SelectTrigger className="w-full" aria-invalid={!!errors.activityType}>
-                <SelectValue placeholder={t('booking:placeholders.activity_type', 'Velg aktivitetstype')} />
+                <SelectValue placeholder={fields.activityType.placeholder} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="sport">{t('booking:activity_types.sport', 'Sport')}</SelectItem>
-                <SelectItem value="kultur">{t('booking:activity_types.culture', 'Kultur')}</SelectItem>
-                <SelectItem value="møte">{t('booking:activity_types.meeting', 'Møte')}</SelectItem>
-                <SelectItem value="arrangement">{t('booking:activity_types.event', 'Arrangement')}</SelectItem>
-                <SelectItem value="trening">{t('booking:activity_types.training', 'Trening')}</SelectItem>
-                <SelectItem value="annet">{t('common:other', 'Annet')}</SelectItem>
+                {activityTypeOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
             {errors.activityType && (
@@ -124,8 +125,8 @@ export const Step2Details = ({
 
           {/* Actor Type */}
           <div className="space-y-2">
-            <Label htmlFor="actorType" className="text-sm font-medium">
-              {t('booking:fields.actor_type', 'Aktør type')} <span className="text-red-500">*</span>
+            <Label htmlFor={fields.actorType.id} className="text-sm font-medium">
+              {fields.actorType.label} {fields.actorType.required && <span className="text-red-500">*</span>}
             </Label>
             <Select
               value={formData.actorType}
@@ -133,14 +134,14 @@ export const Step2Details = ({
               disabled={isLoading}
             >
               <SelectTrigger className="w-full" aria-invalid={!!errors.actorType}>
-                <SelectValue placeholder={t('booking:placeholders.actor_type', 'Velg aktør type')} />
+                <SelectValue placeholder={fields.actorType.placeholder} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="private-person">{t('booking:actor_types.private_person', 'Privatperson')}</SelectItem>
-                <SelectItem value="lag-foreninger">{t('booking:actor_types.lag_foreninger', 'Lag/Foreninger')}</SelectItem>
-                <SelectItem value="paraply">{t('booking:actor_types.paraply', 'Paraply')}</SelectItem>
-                <SelectItem value="private-firma">{t('booking:actor_types.private_firma', 'Privat firma')}</SelectItem>
-                <SelectItem value="kommunale-enheter">{t('booking:actor_types.kommunale_enheter', 'Kommunale enheter')}</SelectItem>
+                {actorTypeOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
             {errors.actorType && (
@@ -152,14 +153,14 @@ export const Step2Details = ({
 
           {/* Additional Info */}
           <div className="space-y-2">
-            <Label htmlFor="additionalInfo" className="text-sm font-medium">
-              {t('booking:fields.special_requests', 'Tilleggsinformasjon')}
+            <Label htmlFor={fields.additionalInfo.id} className="text-sm font-medium">
+              {fields.additionalInfo.label}
             </Label>
             <Textarea
-              id="additionalInfo"
+              id={fields.additionalInfo.id}
               value={formData.additionalInfo || ''}
               onChange={(e) => onUpdateField('additionalInfo', e.target.value)}
-              placeholder={t('booking:placeholders.additional_info', 'Eventuelle spesielle ønsker eller behov')}
+              placeholder={fields.additionalInfo.placeholder}
               disabled={isLoading}
               className="w-full min-h-24"
             />

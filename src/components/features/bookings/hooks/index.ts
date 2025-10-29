@@ -22,3 +22,6 @@ export { useSlotSelection } from './useSlotSelection';
 
 // Form management (already in feature domain)
 export { useBookingForm } from '../components/StepByStepBooking/hooks/useBookingForm';
+
+// Pricing utilities
+export { usePricingDisplay, getActorMultiplier, getActivityAdjustment } from './usePricingDisplay';

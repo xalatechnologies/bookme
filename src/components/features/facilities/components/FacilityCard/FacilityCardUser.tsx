@@ -1,9 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React from "react";
 import { useTranslation } from "react-i18next";
-import { toast } from "react-toastify";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -16,7 +14,7 @@ import {
   XCircle
 } from "lucide-react";
 import FacilityCardBase from "./FacilityCardBase";
-import { useFavoritesStore } from "@/stores/favoritesStore";
+import { useFacilityActions } from "@/hooks/features/facilities";
 
 interface IFacilityCardUserProps {
   readonly id: string;
@@ -31,15 +29,11 @@ interface IFacilityCardUserProps {
   readonly description?: string;
   readonly availability?: "available" | "busy" | "full";
   readonly isFavorite?: boolean;
+  readonly slug?: string;
 }
 
 const FacilityCardUser = (props: IFacilityCardUserProps): JSX.Element => {
   const { t } = useTranslation(['facility']);
-  const navigate = useNavigate();
-  const [isAnimating, setIsAnimating] = useState<boolean>(false);
-
-  // Use favorites store instead of local state
-  const { isFavorite, toggleFavorite, incrementUsage, updateLastVisited } = useFavoritesStore();
 
   const {
     id,
@@ -52,76 +46,25 @@ const FacilityCardUser = (props: IFacilityCardUserProps): JSX.Element => {
     rating,
     price,
     description,
-    availability = "available"
+    availability = "available",
+    slug
   } = props;
 
-  const handleViewDetails = (): void => {
-    // Track usage and last visited when viewing details
-    incrementUsage(id);
-    updateLastVisited(id);
-    // Use slug if available (props might have it), fallback to id
-    const facilityPath = (props as any).slug || id;
-    navigate(`/facilities/${facilityPath}`);
-  };
-
-  const handleBookNow = (): void => {
-    // Track usage when booking
-    incrementUsage(id);
-    updateLastVisited(id);
-    // Use slug if available, fallback to id
-    const facilityPath = (props as any).slug || id;
-    navigate(`/facilities/${facilityPath}/book`);
-  };
-
-  /**
-   * Handle favorite toggle with visual feedback
-   * 
-   * This function manages the favorite state toggle with proper event handling
-   * and visual feedback. It prevents event bubbling to avoid triggering
-   * parent click handlers and provides smooth animation feedback.
-   * 
-   * @param e - Mouse event from button click
-   */
-  const handleToggleFavorite = (e: React.MouseEvent): void => {
-    e.stopPropagation();
-    setIsAnimating(true);
-    toggleFavorite(id);
-    
-    // Reset animation after a short delay for smooth UX
-    setTimeout(() => setIsAnimating(false), 300);
-  };
-
-  const handleShare = (e: React.MouseEvent): void => {
-    e.stopPropagation();
-
-    try {
-      // Use slug if available, fallback to id
-      const facilityPath = (props as any).slug || id;
-      const shareData = {
-        title: name,
-        text: t('facility:share.check_out', { name, type, capacity }),
-        url: window.location.origin + `/facilities/${facilityPath}`
-      };
-
-      if (navigator.share) {
-        navigator.share(shareData).then(() => {
-          toast.success(t('facility:share.facility_shared'));
-        }).catch((error) => {
-          console.error('Share failed:', error);
-          // Fallback to clipboard
-          navigator.clipboard.writeText(shareData.url);
-          toast.success(t('facility:share.link_copied'));
-        });
-      } else {
-        // Fallback: copy to clipboard
-        navigator.clipboard.writeText(shareData.url);
-        toast.success(t('facility:share.link_copied'));
-      }
-    } catch (error) {
-      console.error('Share functionality failed:', error);
-      toast.error(t('facility:share.share_failed'));
-    }
-  };
+  // Use facility actions hook
+  const {
+    isAnimating,
+    isFacilityFavorite,
+    handleViewDetails,
+    handleBookNow,
+    handleToggleFavorite,
+    handleShare
+  } = useFacilityActions({
+    id,
+    name,
+    type,
+    capacity,
+    slug
+  });
 
   const getAvailabilityBadge = (): JSX.Element => {
     const availabilityConfig = {
@@ -176,12 +119,12 @@ const FacilityCardUser = (props: IFacilityCardUserProps): JSX.Element => {
           }`}
           onClick={handleToggleFavorite}
         >
-          <Heart 
+          <Heart
             className={`h-4 w-4 transition-colors ${
-              isFavorite(id)
-                ? "text-red-500 fill-current" 
+              isFacilityFavorite
+                ? "text-red-500 fill-current"
                 : "text-gray-600 hover:text-red-500"
-            }`} 
+            }`}
           />
         </Button>
         

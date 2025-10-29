@@ -1,13 +1,14 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { startOfWeek, addWeeks, subWeeks, addDays, format, isToday, isWeekend, isPast } from 'date-fns';
+import { format } from 'date-fns';
 import { nb } from 'date-fns/locale';
 
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { TimeSlotGrid } from '@/components/features/calendar/components/EnhancedCalendar/TimeSlotGrid';
 import { AvailabilityLegend } from '@/components/features/calendar/components/EnhancedCalendar/AvailabilityLegend';
+import { useWeekNavigation } from '../hooks';
 
 import { ISelectedTimeSlot } from '@/components/features/bookings/types';
 
@@ -58,48 +59,12 @@ export const Step1Calendar = ({
   const { t } = useTranslation(['booking', 'calendar', 'common']);
 
   /**
-   * Week navigation state
+   * Week navigation hook
    */
-  const [currentWeekStart, setCurrentWeekStart] = useState<Date>(() => {
-    const now = new Date();
-    return startOfWeek(now, { weekStartsOn: 1 }); // Start on Monday
+  const { currentWeek, goToPreviousWeek, goToNextWeek } = useWeekNavigation({
+    initialDate: new Date(),
+    weekStartsOn: 1 // Monday
   });
-
-  /**
-   * Week navigation handlers
-   */
-  const handlePreviousWeek = useCallback(() => {
-    setCurrentWeekStart(prev => subWeeks(prev, 1));
-  }, []);
-
-  const handleNextWeek = useCallback(() => {
-    setCurrentWeekStart(prev => addWeeks(prev, 1));
-  }, []);
-
-  /**
-   * Calculate current week range with days array
-   */
-  const currentWeek = useMemo(() => {
-    const start = currentWeekStart;
-    const end = addWeeks(start, 1);
-
-    const days = [];
-    for (let i = 0; i < 7; i++) {
-      const date = addDays(start, i);
-      days.push({
-        date,
-        isToday: isToday(date),
-        isWeekend: isWeekend(date),
-        isPast: isPast(date)
-      });
-    }
-
-    return {
-      startDate: start,
-      endDate: end,
-      days
-    };
-  }, [currentWeekStart]);
 
   /**
    * Check if slot is selected
@@ -176,7 +141,7 @@ export const Step1Calendar = ({
             <Button
               variant="outline"
               size="lg"
-              onClick={handlePreviousWeek}
+              onClick={goToPreviousWeek}
               aria-label={t('calendar:navigation.previous_week', 'Forrige uke')}
             >
               <ChevronLeft className="h-4 w-4 mr-2" />
@@ -192,7 +157,7 @@ export const Step1Calendar = ({
             <Button
               variant="outline"
               size="lg"
-              onClick={handleNextWeek}
+              onClick={goToNextWeek}
               aria-label={t('calendar:navigation.next_week', 'Neste uke')}
             >
               {t('calendar:navigation.next_week', 'Neste uke')}

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { useTranslation } from "react-i18next";
 import { Search, Filter, SortAsc, SortDesc } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import ViewToggleUser from "@/components/features/facilities/components/FacilitySearch/ViewToggle";
+import { useFilterState } from "@/hooks/features/facilities";
 
 interface IFilterBarUserProps {
   readonly searchQuery: string;
@@ -39,24 +40,20 @@ const FilterBarUser = (props: IFilterBarUserProps): JSX.Element => {
     onViewChange
   } = props;
 
-  const [showFilters, setShowFilters] = useState<boolean>(false);
-
-  const facilityTypes = [
-    { value: "all", label: t('facility:facility_types.all_types') },
-    { value: "sports_hall", label: t('facility:facility_types.sports_hall') },
-    { value: "cultural_center", label: t('facility:facility_types.cultural_center') },
-    { value: "meeting_room", label: t('facility:facility_types.meeting_room') },
-    { value: "fitness_center", label: t('facility:facility_types.fitness_center') },
-    { value: "outdoor", label: t('facility:facility_types.outdoor') }
-  ];
-
-  const handleSortClick = (newSortBy: "price" | "popularity" | "name"): void => {
-    if (sortBy === newSortBy) {
-      onSortChange(newSortBy, sortOrder === "asc" ? "desc" : "asc");
-    } else {
-      onSortChange(newSortBy, "asc");
-    }
-  };
+  // Use filter state hook
+  const {
+    showFilters,
+    facilityTypes,
+    toggleFilters,
+    handleSortClick,
+    getActiveFilterCount
+  } = useFilterState({
+    selectedType,
+    sortBy,
+    sortOrder,
+    onSortChange,
+    showAvailableOnly
+  });
 
   return (
     <div className="space-y-4">
@@ -77,16 +74,16 @@ const FilterBarUser = (props: IFilterBarUserProps): JSX.Element => {
         {/* Filter and Sort Controls */}
         <div className="flex items-center gap-2">
           <Button
-            onClick={() => setShowFilters(!showFilters)}
+            onClick={toggleFilters}
             variant="outline"
             size="sm"
             className="flex items-center gap-2"
           >
             <Filter className="w-4 h-4" />
             {t('facility:search.filter')}
-            {(selectedType !== "all" || showAvailableOnly) && (
+            {getActiveFilterCount() > 0 && (
               <Badge variant="secondary" className="ml-1">
-                {(selectedType !== "all" ? 1 : 0) + (showAvailableOnly ? 1 : 0)}
+                {getActiveFilterCount()}
               </Badge>
             )}
           </Button>

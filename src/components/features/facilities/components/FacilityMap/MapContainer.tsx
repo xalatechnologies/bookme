@@ -4,16 +4,13 @@
 import React, { useRef, useEffect } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
+import { useMapErrorHandling } from '@/hooks/features/facilities';
 
 interface MapContainerProps {
   readonly onMapLoad: (map: mapboxgl.Map) => void;
   readonly onMapError: (error: string) => void;
   readonly onLoadingChange: (loading: boolean) => void;
   readonly mapboxToken: string;
-}
-
-interface MapContainerReturn {
-  readonly mapContainer: React.RefObject<HTMLDivElement>;
 }
 
 export const MapContainer: React.FC<MapContainerProps> = ({
@@ -24,6 +21,9 @@ export const MapContainer: React.FC<MapContainerProps> = ({
 }): JSX.Element => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
+
+  // Use map error handling hook
+  const { parseMapError, validateToken } = useMapErrorHandling();
 
   const initializeMap = async (): Promise<void> => {
     
@@ -40,22 +40,18 @@ export const MapContainer: React.FC<MapContainerProps> = ({
     onMapError('');
 
     try {
-      
       // Set the access token
       mapboxgl.accessToken = mapboxToken;
-      
-      // Validate the access token format
-      if (!mapboxToken || mapboxToken.length < 10) {
-        throw new Error('Invalid Mapbox access token. Please check your token.');
-      }
-      
+
+      // Validate the access token format using hook
+      validateToken(mapboxToken);
+
       // Clear any existing map
       if (map.current) {
         map.current.remove();
         map.current = null;
       }
 
-      
       // Create new map with error handling
       map.current = new mapboxgl.Map({
         container: mapContainer.current,
@@ -76,18 +72,9 @@ export const MapContainer: React.FC<MapContainerProps> = ({
         onLoadingChange(false);
       });
 
-      // Handle map errors with more specific error messages
+      // Handle map errors using hook
       map.current.on('error', (e): void => {
-        let errorMessage = 'An error occurred while loading the map.';
-        
-        if (e.error?.message?.includes('401')) {
-          errorMessage = 'Invalid Mapbox access token. Please check your token.';
-        } else if (e.error?.message?.includes('network')) {
-          errorMessage = 'Network error. Please check your internet connection.';
-        } else if (e.error?.message) {
-          errorMessage = e.error.message;
-        }
-        
+        const errorMessage = parseMapError(e);
         onMapError(errorMessage);
         onLoadingChange(false);
       });

@@ -48,7 +48,20 @@
       "maintenance": "Vedlikehold planlagt",
       "maintenance_desc": "Vedlikehold av systemet planlagt søndag 08:00–10:00.",
       "booking_confirmed": "Booking bekreftet",
-      "booking_confirmed_desc": "Din booking for {{facility}} er bekreftet! 🎉"
+      "booking_confirmed_desc": "Din booking for {{facility}} er bekreftet! 🎉",
+      "mark_as_read": "Merk melding \"{{title}}\" som lest",
+      "unread_indicator": "Ulest melding indikator",
+      "categories": {
+        "system": "System",
+        "booking": "Booking",
+        "news": "Nyheter"
+      }
+    },
+
+    "hero": {
+      "subtitle": "Drammen Kommune",
+      "description": "Oppdag og reserver kommunale lokaler til møter, arrangementer og aktiviteter. Enkelt, raskt og oversiktlig.",
+      "image_alt": "Drammen by med elv og broer"
     },
 
     "days": {

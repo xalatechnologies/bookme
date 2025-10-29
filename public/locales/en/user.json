@@ -48,7 +48,20 @@
       "maintenance": "Maintenance Scheduled",
       "maintenance_desc": "System maintenance scheduled Sunday 08:00–10:00.",
       "booking_confirmed": "Booking Confirmed",
-      "booking_confirmed_desc": "Your booking for {{facility}} is confirmed! 🎉"
+      "booking_confirmed_desc": "Your booking for {{facility}} is confirmed! 🎉",
+      "mark_as_read": "Mark message \"{{title}}\" as read",
+      "unread_indicator": "Unread message indicator",
+      "categories": {
+        "system": "System",
+        "booking": "Booking",
+        "news": "News"
+      }
+    },
+
+    "hero": {
+      "subtitle": "Drammen Municipality",
+      "description": "Discover and book municipal facilities for meetings, events and activities. Simple, fast and clear.",
+      "image_alt": "Drammen city with river and bridges"
     },
 
     "days": {

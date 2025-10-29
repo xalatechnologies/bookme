@@ -1,16 +1,12 @@
 "use client";
 
-// External libraries
 import React, { useMemo } from "react";
 import { useTranslation } from 'react-i18next';
 import { Calculator, Info } from "lucide-react";
 
-// Internal libraries/utilities
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-
-// Types
-import { IPriceCalculationProps, ActorType, ActivityType } from "../../types";
+import { IPriceCalculationProps } from "../../types";
+import { usePricingDisplay } from "../../hooks";
 
 /**
  * Price breakdown item type
@@ -46,101 +42,12 @@ export const PriceCalculation: React.FC<IPriceCalculationProps> = ({
   bookingType = 'one-time',
 }): JSX.Element | null => {
   const { t } = useTranslation(['booking','common']);
-  /**
-   * Get actor type multiplier for pricing
-   *
-   * @param actorType - Type of actor
-   * @returns Multiplier for base price
-   */
-  const getActorMultiplier = (actorType: ActorType | ""): number => {
-    if (!actorType) return 1.0; // Default multiplier for empty string
-
-    switch (actorType) {
-      case "private-person":
-        return 1.0; // Full price
-      case "lag-foreninger":
-        return 0.8; // 20% discount
-      case "paraply":
-        return 0.7; // 30% discount
-      case "private-firma":
-        return 1.2; // 20% surcharge
-      case "kommunale-enheter":
-        return 0.5; // 50% discount
-      default:
-        return 1.0;
-    }
-  };
-
-  /**
-   * Get activity type adjustment
-   *
-   * @param activityType - Type of activity
-   * @returns Price adjustment amount
-   */
-  const getActivityAdjustment = (activityType: ActivityType | ""): number => {
-    if (!activityType) return 0; // Default adjustment for empty string
-
-    switch (activityType) {
-      case "sport":
-        return 0; // No adjustment
-      case "kultur":
-        return -50; // 50 kr discount
-      case "møte":
-        return 100; // 100 kr surcharge
-      case "arrangement":
-        return 200; // 200 kr surcharge
-      case "trening":
-        return 0; // No adjustment
-      case "annet":
-        return 0; // No adjustment
-      default:
-        return 0;
-    }
-  };
-
-  /**
-   * Get actor type description
-   *
-   * @param actorType - Type of actor
-   * @returns Description string
-   */
-  const getActorDescription = (actorType: ActorType | ""): string => {
-    if (!actorType) return t('booking:form.actor_type_placeholder', 'Velg aktør type');
-
-    switch (actorType) {
-      case "lag-foreninger":
-        return "Lag/foreninger (20% rabatt)";
-      case "paraply":
-        return "Paraplyorganisasjoner (30% rabatt)";
-      case "private-firma":
-        return "Private firma (20% tillegg)";
-      case "kommunale-enheter":
-        return "Kommunale enheter (50% rabatt)";
-      default:
-        return "Privatperson";
-    }
-  };
-
-  /**
-   * Get activity type description
-   *
-   * @param activityType - Type of activity
-   * @returns Description string
-   */
-  const getActivityDescription = (activityType: ActivityType | ""): string => {
-    if (!activityType) return t('booking:form.activity_type_placeholder', 'Velg aktivitetstype');
-
-    switch (activityType) {
-      case "kultur":
-        return "Kultur (50 kr rabatt)";
-      case "møte":
-        return "Møte (100 kr tillegg)";
-      case "arrangement":
-        return "Arrangement (200 kr tillegg)";
-      default:
-        return "Aktivitet";
-    }
-  };
+  const {
+    getActorMultiplier,
+    getActivityAdjustment,
+    getActorDescription,
+    getActivityDescription
+  } = usePricingDisplay();
 
   /**
    * Calculate pricing for selected slots

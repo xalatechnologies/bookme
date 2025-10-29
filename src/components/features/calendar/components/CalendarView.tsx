@@ -7,9 +7,9 @@ import { useTranslation } from "react-i18next";
 
 // Internal libraries/utilities
 import type { ISelectedTimeSlot } from "@/components/features/bookings/types";
-import type { AvailabilityStatus } from "@/types/booking";
 import { useCalendarView } from "../hooks";
 import { useSlotSelection } from "@/components/features/bookings/hooks";
+import { useAvailabilityCalculation } from "@/hooks/features/calendar/useAvailabilityCalculation";
 import { Card } from "@/components/ui/card";
 import { ViewHeader } from "@/components/features/search/components/ViewHeader";
 import { Accordion } from "@/components/ui/accordion";
@@ -60,48 +60,10 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
     isSlotSelected,
   } = useSlotSelection();
 
-  // Mock availability status function - in a real app this would fetch from API
-  const getAvailabilityStatus = useCallback(
-    (zoneId: string, date: Date, timeSlot: string): AvailabilityStatus => {
-      // Simple mock logic - make some slots busy for demonstration
-      // Use local date components to avoid timezone issues
-      const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, "0");
-      const day = String(date.getDate()).padStart(2, "0");
-      const dateStr = `${year}-${month}-${day}`;
-      const hash = `${zoneId}-${dateStr}-${timeSlot}`
-        .split("")
-        .reduce((a, b) => {
-          a = (a << 5) - a + b.charCodeAt(0);
-          return a & a;
-        }, 0);
-
-      // Make about 20% of slots busy
-      if (Math.abs(hash) % 5 === 0) {
-        return {
-          status: "busy",
-          conflict: {
-            id: `conflict-${hash}`,
-            type: "booking",
-            title: t("slot_selection.existing_booking"),
-            startTime: timeSlot.split("-")[0],
-            endTime: timeSlot.split("-")[1],
-            description: t("slot_selection.time_not_available"),
-          },
-        };
-      }
-
-      // Make weekend evenings unavailable
-      const dayOfWeek = date.getDay();
-      const hour = parseInt(timeSlot.split(":")[0]);
-      if ((dayOfWeek === 0 || dayOfWeek === 6) && hour >= 20) {
-        return { status: "unavailable" };
-      }
-
-      return { status: "available" };
-    },
-    []
-  );
+  // Use availability calculation hook for status and conflict detection
+  const { getAvailabilityStatus } = useAvailabilityCalculation({
+    selectedSlots,
+  });
 
   // Enhanced slot click handler that fills in missing data
   const handleEnhancedSlotClick = useCallback(

@@ -1,19 +1,12 @@
 "use client";
 
-// External libraries
 import React from "react";
-
-// Internal libraries/utilities
 import type { SelectedTimeSlot, AvailabilityStatus } from '@/types/booking';
 import type { Database } from '@/types/database';
-import { useFacilityZones } from '@/services/supabase/zones.service';
-import { useZoneStore } from '@/stores/zoneStore';
+import { useFacilityZoneData } from '@/hooks/features/facilities/useFacilityZoneData';
 import { AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-
-// Sibling imports
 import { FacilityCalendar } from "./index";
 
-// Type from Supabase
 type Facility = Database['public']['Tables']['facilities']['Row'];
 
 interface FacilityAccordionContentProps {
@@ -23,8 +16,8 @@ interface FacilityAccordionContentProps {
   readonly onBulkSlotSelection?: (slots: readonly SelectedTimeSlot[]) => void;
   readonly getAvailabilityStatus: (zoneId: string, date: Date, timeSlot: string) => AvailabilityStatus;
   readonly isSlotSelected: (zoneId: string, date: Date, timeSlot: string) => boolean;
-  readonly onClearSlots: () => void;
-  readonly onRemoveSlot: (zoneId: string, date: Date, timeSlot: string) => void;
+  readonly onClearSlots?: () => void;
+  readonly onRemoveSlot?: (zoneId: string, date: Date, timeSlot: string) => void;
 }
 
 export const FacilityAccordionContent: React.FC<FacilityAccordionContentProps> = ({
@@ -33,18 +26,9 @@ export const FacilityAccordionContent: React.FC<FacilityAccordionContentProps> =
   onSlotClick,
   onBulkSlotSelection,
   getAvailabilityStatus,
-  isSlotSelected,
-  onClearSlots,
-  onRemoveSlot
+  isSlotSelected
 }): JSX.Element => {
-  const { getZonesForFacility: storeGetZonesForFacility } = useZoneStore();
-
-  // Fetch zones from Supabase
-  const { data: supabaseZones, isLoading: zonesLoading } = useFacilityZones(facility.id);
-
-  // Get zones from store first, then from Supabase
-  const storeZones = storeGetZonesForFacility(facility.id);
-  const zones = storeZones.length > 0 ? storeZones : (supabaseZones || []);
+  const { zones } = useFacilityZoneData({ facilityId: facility.id });
   
   return (
     <AccordionItem 

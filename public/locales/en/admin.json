@@ -49,7 +49,10 @@
     "approvals": {
       "title": "Approval Queue",
       "view_all": "View All Approvals",
+      "view_all_count": "View All ({{count}})",
       "no_pending": "No pending approvals",
+      "all_updated": "Everything is up to date!",
+      "view_request": "View approval {{title}}",
       "approve": "Approve",
       "reject": "Reject",
       "priority_high": "High",
@@ -60,10 +63,19 @@
       "date": "Date"
     },
 
+    "daily_tasks": {
+      "title": "Your Tasks Today",
+      "pending_approvals": "Pending approvals",
+      "payment_errors": "Bookings with payment errors",
+      "users_no_roles": "Users without roles",
+      "view_task": "View task: {{task}}"
+    },
+
     "events": {
       "title": "Recent Events",
       "view_all": "View All Events",
-      "no_recent": "No recent events",
+      "no_recent": "No events recorded",
+      "event_item": "Event: {{message}}",
       "types": {
         "booking": "Booking",
         "approval": "Approval",
@@ -86,13 +98,14 @@
     "alerts": {
       "title": "System Alerts",
       "view_all": "View All Alerts",
-      "no_alerts": "No alerts",
+      "no_alerts": "No active alerts",
+      "alert_item": "Alert: {{title}}",
       "draft_facilities": "Draft Facilities",
       "facilities_waiting": "{{count}} facilities awaiting publication",
       "cancelled_bookings": "Cancelled Bookings",
       "bookings_cancelled": "{{count}} bookings have been cancelled",
       "system_status": "System Status",
-      "all_systems_normal": "All systems running normally",
+      "all_systems_normal": "System is running as expected!",
       "see_details": "See Details",
       "types": {
         "info": "Info",

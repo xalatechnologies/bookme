@@ -1,8 +1,10 @@
 "use client";
 
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Badge } from "@/components/ui/badge";
 import { Bell, AlertTriangle, Clock, CheckCircle } from "lucide-react";
+import { useSystemMessageHelpers } from "../hooks/useSystemMessageHelpers";
 
 interface ISystemMessage {
   readonly id: string;
@@ -22,17 +24,8 @@ interface ISystemMessagesProps {
 
 export const SystemMessages = (props: ISystemMessagesProps): JSX.Element => {
   const { messages, onMarkAsRead, formatMessageDate } = props;
-
-  const getMessageIcon = (type: ISystemMessage["type"]): JSX.Element => {
-    const icons = {
-      info: Bell,
-      warning: AlertTriangle,
-      maintenance: Clock,
-      success: CheckCircle,
-    };
-    const Icon = icons[type];
-    return <Icon className="h-4 w-4" />;
-  };
+  const { t } = useTranslation("user");
+  const { getMessageIcon, getCategoryLabel } = useSystemMessageHelpers();
 
   return (
     <div className="space-y-3">
@@ -53,13 +46,16 @@ export const SystemMessages = (props: ISystemMessagesProps): JSX.Element => {
               onMarkAsRead(message.id);
             }
           }}
-          aria-label={`Merk melding "${message.title}" som lest`}
+          aria-label={t("dashboard.system_messages.mark_as_read", { title: message.title })}
         >
           <div className="flex-shrink-0 mt-1">
             <div className="relative">
               {getMessageIcon(message.type)}
               {!message.isRead && (
-                <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></div>
+                <div
+                  className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"
+                  aria-label={t("dashboard.system_messages.unread_indicator")}
+                ></div>
               )}
             </div>
           </div>
@@ -77,7 +73,7 @@ export const SystemMessages = (props: ISystemMessagesProps): JSX.Element => {
               <div className="flex items-center gap-2">
                 {message.category && (
                   <Badge variant="outline" className="text-xs">
-                    {message.category}
+                    {getCategoryLabel(message.category)}
                   </Badge>
                 )}
                 <span className="text-xs text-gray-500 dark:text-gray-500">

@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { ISelectedTimeSlot, BookingType } from '@/components/features/bookings/types';
 import { TimeSlotPackageDisplay } from './TimeSlotPackageDisplay';
 import { IPriceCalculationResult } from '../hooks/usePriceCalculation';
+import { useBookingSidebarDisplay } from '@/hooks/features/bookings/useBookingSidebarDisplay';
 
 /**
  * Booking sidebar props
@@ -35,35 +36,33 @@ export const BookingSidebar = ({
   priceCalculation,
   onClearAll
 }: IBookingSidebarProps): JSX.Element => {
-  const { t, i18n } = useTranslation('booking');
-  const currentLocale = i18n.language === 'en' ? 'en-US' : 'nb-NO';
+  const { t } = useTranslation('booking');
 
-  const hasSlots = selectedSlots.length > 0 || recurringSlots.length > 0;
-  const isRecurring = bookingType === 'recurring';
-
-  /**
-   * Get appropriate title based on state
-   */
-  const getTitle = (): string => {
-    if (!hasSlots) {
-      return t('details.select_slots_pricing', 'Velg tidspunkter og få en prisberegning');
-    }
-
-    if (isRecurring) {
-      return recurringSlots.length > 0
-        ? t('details.recurring_slots_pricing', 'Gjentakende tidspunkter og prisberegning')
-        : t('details.select_pattern', 'Tidspunkter og prisberegning (velg gjentakelsesmønster)');
-    }
-
-    return t('details.selected_slots_pricing', 'Valgte tidspunkter og prisberegning');
-  };
+  const {
+    title,
+    hasSlots,
+    isRecurring,
+    currentLocale,
+    shouldShowTemplate,
+    shouldShowRecurringPreview,
+    visibleRecurringSlots,
+    remainingRecurringSlotsCount,
+    shouldShowClearButton,
+    formatSlotDate,
+    formatPrice,
+  } = useBookingSidebarDisplay({
+    selectedSlots,
+    recurringSlots,
+    bookingType,
+    priceCalculation,
+  });
 
   return (
     <div className="sticky top-20 h-[calc(100vh-8rem)] overflow-y-auto space-y-4">
       <Card className="w-full">
         <CardHeader className="pb-3">
           <CardTitle className="text-sm font-medium text-gray-700">
-            {getTitle()}
+            {title}
           </CardTitle>
         </CardHeader>
 
@@ -73,7 +72,7 @@ export const BookingSidebar = ({
               {/* Selected Slots Display */}
               <div className="space-y-2">
                 {/* Show template for recurring or selected slots for one-time */}
-                {isRecurring && recurringSlots.length > 0 ? (
+                {shouldShowTemplate ? (
                   <TimeSlotPackageDisplay
                     slots={selectedSlots}
                     variant="template"
@@ -86,7 +85,7 @@ export const BookingSidebar = ({
                 )}
 
                 {/* Show recurring slots preview */}
-                {isRecurring && recurringSlots.length > 0 && (
+                {shouldShowRecurringPreview && (
                   <div>
                     <div className="text-xs font-medium text-gray-600 mb-2">
                       {t('recurring.occurrences', 'Gjentakende forekomster')} ({recurringSlots.length} {t('common:total', 'totalt')}):
@@ -94,17 +93,13 @@ export const BookingSidebar = ({
 
                     {/* Show first 5 occurrences */}
                     <div className="space-y-3">
-                      {recurringSlots.slice(0, 5).map((slot, index) => (
+                      {visibleRecurringSlots.map((slot) => (
                         <div key={slot.id} className="flex items-center justify-between p-3 bg-blue-50 rounded-lg border border-blue-200">
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2">
                               <Calendar className="h-3 w-3 text-blue-600" />
                               <span className="text-sm font-medium text-blue-900">
-                                {slot.date instanceof Date
-                                  ? slot.date.toLocaleDateString(currentLocale)
-                                  : new Date(slot.date).toLocaleDateString(currentLocale)}
-                                {' - '}
-                                {slot.timeSlot}
+                                {formatSlotDate(slot.date)} - {slot.timeSlot}
                               </span>
                             </div>
                           </div>
@@ -114,9 +109,9 @@ export const BookingSidebar = ({
                         </div>
                       ))}
 
-                      {recurringSlots.length > 5 && (
+                      {remainingRecurringSlotsCount > 0 && (
                         <div className="text-xs text-gray-500 text-center py-1">
-                          ... {t('common:and', 'og')} {recurringSlots.length - 5} {t('common:more', 'til')}
+                          ... {t('common:and', 'og')} {remainingRecurringSlotsCount} {t('common:more', 'til')}
                         </div>
                       )}
                     </div>
@@ -124,7 +119,7 @@ export const BookingSidebar = ({
                 )}
 
                 {/* Clear All Button */}
-                {(selectedSlots.length > 1 || recurringSlots.length > 0) && (
+                {shouldShowClearButton && (
                   <div className="pt-2 border-t">
                     <Button
                       variant="ghost"
@@ -154,7 +149,7 @@ export const BookingSidebar = ({
                         {item.description}
                       </span>
                       <span className={item.type === 'discount' ? 'text-green-600 font-medium' : 'text-gray-900'}>
-                        {item.amount < 0 ? '-' : ''}kr {Math.abs(item.amount).toFixed(2)}
+                        {item.amount < 0 ? '-' : ''}{formatPrice(item.amount)}
                       </span>
                     </div>
                   ))}
@@ -166,7 +161,7 @@ export const BookingSidebar = ({
                     {t('cart.total', 'Totalt')}
                   </span>
                   <span className="text-lg font-bold text-blue-600">
-                    kr {priceCalculation.totalPrice.toFixed(2)}
+                    {formatPrice(priceCalculation.totalPrice)}
                   </span>
                 </div>
 

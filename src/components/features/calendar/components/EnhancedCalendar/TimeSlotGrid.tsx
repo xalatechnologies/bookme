@@ -9,6 +9,7 @@ import { useTranslation } from "react-i18next";
 // Internal libraries/utilities
 import { useDragSelection } from "../../hooks";
 import { useAvailabilityStatus } from "@/components/features/bookings/hooks";
+import { useDragSlotSelection } from "@/hooks/features/calendar";
 
 // Types
 import { ICalendarGridProps, TimeSlotStatus } from "../../types";
@@ -80,6 +81,33 @@ export const TimeSlotGrid: React.FC<ICalendarGridProps> = ({
   const getAvailabilityStatus =
     externalGetAvailabilityStatus || internalGetAvailabilityStatus;
   const isSlotSelected = externalIsSlotSelected || internalIsSlotSelected;
+
+  // Use drag slot selection hook for event handlers
+  const {
+    handleMouseDown,
+    handleMouseEnter,
+    handleMouseUp,
+    handleSlotClick,
+    handleTouchStart,
+    handleTouchMove,
+    handleTouchEnd,
+  } = useDragSlotSelection({
+    zoneId,
+    facilityId,
+    pricePerHour,
+    timeSlots,
+    weekDays: week.days,
+    dragState,
+    startDrag,
+    updateDrag,
+    endDrag,
+    cancelDrag,
+    isSlotInPreview,
+    getAvailabilityStatus,
+    isSlotSelected,
+    onSlotClick,
+    onBulkSelect,
+  });
 
   /**
    * Get status for a specific time slot using availability hook
@@ -164,114 +192,6 @@ export const TimeSlotGrid: React.FC<ICalendarGridProps> = ({
     []
   );
 
-  /**
-   * Handle mouse down for drag selection
-   *
-   * @param day - Calendar day
-   * @param timeSlot - Time slot string
-   * @param event - Mouse event
-   */
-  const handleMouseDown = useCallback(
-    (day: Date, timeSlot: string, event: React.MouseEvent): void => {
-      const { status } = getAvailabilityStatus(zoneId, day, timeSlot);
-
-      if ((status === "available" || status === "selected") && !!onBulkSelect) {
-        event.preventDefault();
-        startDrag(zoneId, day, timeSlot, event);
-      }
-    },
-    [zoneId, getAvailabilityStatus, onBulkSelect, startDrag]
-  );
-
-  /**
-   * Handle mouse enter for drag selection
-   *
-   * @param day - Calendar day
-   * @param timeSlot - Time slot string
-   */
-  const handleMouseEnter = useCallback(
-    (day: Date, timeSlot: string): void => {
-      if (dragState.isDragging && !!onBulkSelect) {
-        updateDrag(
-          zoneId,
-          day,
-          timeSlot,
-          timeSlots,
-          week.days,
-          getAvailabilityStatus,
-          facilityId,
-          pricePerHour
-        );
-      }
-    },
-    [
-      dragState.isDragging,
-      onBulkSelect,
-      updateDrag,
-      zoneId,
-      timeSlots,
-      week.days,
-      getAvailabilityStatus,
-      facilityId,
-      pricePerHour,
-    ]
-  );
-
-  /**
-   * Handle mouse up for drag selection
-   */
-  const handleMouseUp = useCallback(
-    (event: React.MouseEvent): void => {
-      if (dragState.isDragging && !!onBulkSelect) {
-        event.preventDefault();
-        event.stopPropagation();
-
-        const previewSlots = endDrag();
-
-        if (previewSlots.length > 0) {
-          // Pass the full slot objects, not just IDs
-          onBulkSelect(previewSlots);
-        }
-      }
-    },
-    [dragState.isDragging, onBulkSelect, endDrag]
-  );
-
-  /**
-   * Handle time slot click
-   *
-   * @param day - Calendar day
-   * @param timeSlot - Time slot string
-   * @param event - Mouse event
-   */
-  const handleSlotClick = useCallback(
-    (day: Date, timeSlot: string, event: React.MouseEvent): void => {
-      // Prevent click if we just finished dragging
-      if (dragState.isDragging) {
-        event.preventDefault();
-        event.stopPropagation();
-        return;
-      }
-
-      const { status } = getAvailabilityStatus(zoneId, day, timeSlot);
-
-      // Check if slot is already selected
-      const isSelected = isSlotSelected(zoneId, day, timeSlot);
-      const actualStatus = isSelected ? "selected" : (status as TimeSlotStatus);
-
-      if (status === "available" || isSelected) {
-        // Pass the actual Date object and parameters directly instead of a complex slotId
-        onSlotClick(zoneId, day, timeSlot, actualStatus);
-      }
-    },
-    [
-      dragState.isDragging,
-      getAvailabilityStatus,
-      zoneId,
-      isSlotSelected,
-      onSlotClick,
-    ]
-  );
 
   /**
    * Get day header classes
@@ -365,13 +285,15 @@ export const TimeSlotGrid: React.FC<ICalendarGridProps> = ({
                           : ""
                       }`}
                       disabled={status !== "available" && status !== "selected"}
-                      onMouseDown={(e) =>
-                        handleMouseDown(day.date, timeSlot, e)
-                      }
+                      onMouseDown={(e) => handleMouseDown(day.date, timeSlot, e)}
                       onMouseEnter={() => handleMouseEnter(day.date, timeSlot)}
                       onMouseUp={handleMouseUp}
                       onClick={(e) => handleSlotClick(day.date, timeSlot, e)}
+                      onTouchStart={(e) => handleTouchStart(day.date, timeSlot, e)}
+                      onTouchMove={handleTouchMove}
+                      onTouchEnd={handleTouchEnd}
                       title={getStatusLabel(status)}
+                      data-slot={JSON.stringify({ day: day.date.toISOString(), timeSlot })}
                       style={{ userSelect: "none" }}
                     >
                       <div className="flex items-center justify-center h-full">

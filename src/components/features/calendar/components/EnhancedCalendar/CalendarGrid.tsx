@@ -10,7 +10,7 @@ import type {
   SelectedTimeSlot,
   AvailabilityStatus,
 } from "@/types/booking";
-import { useDragSelection } from "../../hooks";
+import { useCalendarGridDragSelection } from "@/hooks/features/calendar/useCalendarGridDragSelection";
 
 // Sibling imports
 import { Card, CardContent } from "@/components/ui/card";
@@ -56,97 +56,24 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
   const weekDays = Array(7)
     .fill(0)
     .map((_, i) => addDays(currentWeekStart, i));
+
   const {
     dragState,
-    startDrag,
-    updateDrag,
-    endDrag,
+    handleMouseDown,
+    handleMouseEnter,
+    handleMouseUp,
+    handleClick,
     cancelDrag,
     isSlotInPreview,
-  } = useDragSelection();
-
-  const getStatusStyle = (
-    status: string,
-    isSelected: boolean,
-    isInPreview: boolean
-  ): string => {
-    if (isSelected) {
-      return "bg-blue-600 hover:bg-blue-700 text-white font-semibold border border-blue-700";
-    }
-
-    if (isInPreview) {
-      return "bg-blue-200 hover:bg-blue-300 border border-blue-400 text-blue-800 font-medium cursor-pointer";
-    }
-
-    switch (status) {
-      case "available":
-        return "bg-green-100 hover:bg-green-200 border border-green-300 text-gray-800 hover:shadow-sm cursor-pointer";
-      case "busy":
-        return "bg-red-50 border border-red-200 text-gray-500 line-through cursor-not-allowed";
-      case "unavailable":
-      default:
-        return "bg-gray-100 border border-gray-200 text-gray-400 line-through cursor-not-allowed";
-    }
-  };
-
-  const handleMouseDown = (
-    day: Date,
-    timeSlot: string,
-    event: React.MouseEvent
-  ): void => {
-    const { status } = getAvailabilityStatus(zone.id, day, timeSlot);
-
-    if (status === "available" && onBulkSlotSelection) {
-      event.preventDefault();
-      startDrag(zone.id, day, timeSlot, event);
-    }
-  };
-
-  const handleMouseEnter = (day: Date, timeSlot: string): void => {
-    if (dragState.isDragging && onBulkSlotSelection) {
-      updateDrag(
-        zone.id,
-        day,
-        timeSlot,
-        timeSlots,
-        weekDays,
-        getAvailabilityStatus
-      );
-    }
-  };
-
-  const handleMouseUp = (): void => {
-    if (dragState.isDragging && onBulkSlotSelection) {
-      const previewSlots = endDrag();
-
-      if (previewSlots.length > 0) {
-        // Fill in the missing data for the slots
-        const completeSlots = previewSlots.map((slot) => ({
-          ...slot,
-          facilityId: zone.facilityId,
-          facilityName: "", // This should be filled by the parent component
-          zoneName: zone.name,
-          pricePerHour: zone.pricePerHour,
-        }));
-
-        onBulkSlotSelection(completeSlots);
-      }
-    }
-  };
-
-  const handleClick = (day: Date, timeSlot: string): void => {
-    // Prevent click if we just finished dragging
-    if (dragState.isDragging) {
-      return;
-    }
-
-    const { status } = getAvailabilityStatus(zone.id, day, timeSlot);
-
-    // Only proceed with click if available
-    if (status === "available") {
-      onSlotClick(zone.id, day, timeSlot, status);
-    }
-  };
+    getStatusStyle,
+  } = useCalendarGridDragSelection({
+    zone,
+    timeSlots,
+    weekDays,
+    getAvailabilityStatus,
+    onBulkSlotSelection,
+    onSlotClick,
+  });
 
   const isNorwegianHoliday = (
     date: Date

@@ -55,7 +55,6 @@ export const BookingFiltersBar = ({
 }: BookingFiltersBarProps): JSX.Element => {
   const { t } = useTranslation('common');
 
-  // Date range options
   const dateRangeOptions = useMemo(() => [
     { value: 'all', label: t('dateRange.all', 'Alle') },
     { value: 'today', label: t('dateRange.today', 'I dag') },
@@ -65,7 +64,6 @@ export const BookingFiltersBar = ({
     { value: 'past', label: t('dateRange.past', 'Tidligere') }
   ], [t]);
 
-  // Sort options
   const sortOptions = useMemo(() => [
     { value: 'date-asc', label: t('sort.date_asc', 'Dato (kommende først)') },
     { value: 'date-desc', label: t('sort.date_desc', 'Dato (eldste først)') },
@@ -74,7 +72,6 @@ export const BookingFiltersBar = ({
     { value: 'created', label: t('sort.created_desc', 'Opprettet') }
   ], [t]);
 
-  // Count active filters
   const activeFiltersCount = useMemo(() => {
     let count = 0;
     if (filters.search) count++;
@@ -84,7 +81,6 @@ export const BookingFiltersBar = ({
     return count;
   }, [filters]);
 
-  // Active filter labels
   const activeFilterLabels = useMemo(() => {
     const labels: string[] = [];
     if (filters.search) labels.push(t('actions.search', 'Søk'));

@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next";
 // Internal libraries/utilities
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FormField } from "@/components/common/forms/FormField";
-import { useFormValidation } from "@/hooks/shared";
+import { useBookingFormValidation } from "@/hooks/features/bookings";
 
 // Sibling imports
 import { SelectedSlotsDisplay } from "./SelectedSlotsDisplay";
@@ -80,13 +80,15 @@ export const BookingForm: React.FC<IBookingFormProps> = ({
     bookingType: "one-time",
   });
 
-  // Validation rules
-  const { errors, validateAll, clearError } = useFormValidation({
-    purpose: [{ type: "required" }],
-    attendees: [{ type: "required" }, { type: "minValue", value: 1 }],
-    activityType: [{ type: "required" }],
-    actorType: [{ type: "required" }],
-  });
+  // Validation hook with comprehensive validation logic and form options
+  const {
+    errors,
+    validateAll,
+    clearError,
+    isFormValid: checkFormValid,
+    activityTypeOptions,
+    actorTypeOptions,
+  } = useBookingFormValidation();
 
   /**
    * Update form data
@@ -126,19 +128,13 @@ export const BookingForm: React.FC<IBookingFormProps> = ({
   }, [onSlotsChange]);
 
   /**
-   * Validate form data
+   * Check if form is valid using validation hook
    *
    * @returns True if form is valid
    */
   const isFormValid = useCallback((): boolean => {
-    return (
-      formData.purpose.trim().length > 0 &&
-      formData.attendees > 0 &&
-      formData.activityType.trim().length > 0 &&
-      formData.actorType.trim().length > 0 &&
-      selectedSlots.length > 0
-    );
-  }, [formData, selectedSlots.length]);
+    return checkFormValid(formData, selectedSlots);
+  }, [checkFormValid, formData, selectedSlots]);
 
   /**
    * Handle add to cart
@@ -157,46 +153,6 @@ export const BookingForm: React.FC<IBookingFormProps> = ({
       onCompleteBooking(formData);
     }
   }, [formData, validateAll, isFormValid, onCompleteBooking]);
-
-  // Activity type options
-  const activityTypeOptions = [
-    { value: "sport", label: t("bookings:activity_types.sport", "Sport") },
-    { value: "kultur", label: t("bookings:activity_types.culture", "Kultur") },
-    { value: "møte", label: t("bookings:activity_types.meeting", "Møte") },
-    {
-      value: "arrangement",
-      label: t("bookings:activity_types.event", "Arrangement"),
-    },
-    {
-      value: "trening",
-      label: t("bookings:activity_types.training", "Trening"),
-    },
-    { value: "annet", label: t("common:other", "Annet") },
-  ];
-
-  // Actor type options
-  const actorTypeOptions = [
-    {
-      value: "private-person",
-      label: t("bookings:actor_types.private_person", "Privatperson"),
-    },
-    {
-      value: "lag-foreninger",
-      label: t("bookings:actor_types.lag_foreninger", "Lag og foreninger"),
-    },
-    {
-      value: "paraply",
-      label: t("bookings:actor_types.paraply", "Paraplyorganisasjoner"),
-    },
-    {
-      value: "private-firma",
-      label: t("bookings:actor_types.private_firma", "Private firma"),
-    },
-    {
-      value: "kommunale-enheter",
-      label: t("bookings:actor_types.kommunale_enheter", "Kommunale enheter"),
-    },
-  ];
 
   return (
     <div className="space-y-6">
