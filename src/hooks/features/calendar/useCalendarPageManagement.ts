@@ -2,7 +2,9 @@
 
 import { useState, useMemo, useCallback } from 'react';
 import { startOfMonth, endOfMonth, startOfWeek, endOfWeek, startOfDay, endOfDay } from 'date-fns';
-import type { IBookingEventWithMeta, IRawBookingData } from '@/types/calendar';
+import type { IBookingEventWithMeta } from '@/types/calendar';
+import { useUserBookings, type BookingWithDetails } from '@/services/supabase/bookings.service';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface IDateRange {
   readonly from: string;
@@ -52,53 +54,40 @@ const calculateDateRange = (view: 'month' | 'week' | 'day', currentDate: Date): 
 };
 
 /**
- * Load and transform booking data from localStorage
+ * Transform Supabase booking data to calendar event format
  */
-const loadBookingData = (): readonly IBookingEventWithMeta[] => {
-  try {
-    const pending = JSON.parse(localStorage.getItem('pendingBookings') || '[]') as IRawBookingData[];
-    const processed = JSON.parse(localStorage.getItem('processedBookings') || '[]') as IRawBookingData[];
-    const all = [...pending, ...processed];
+const transformBookingToEvent = (booking: BookingWithDetails): IBookingEventWithMeta => {
+  // Normalize status to match calendar types
+  let mappedStatus: 'confirmed' | 'pending' | 'cancelled' = 'pending';
 
-    return all.map((booking: IRawBookingData): IBookingEventWithMeta => {
-      // Parse time range: 'HH:MM-HH:MM'
-      const timeRange = booking.time || '09:00-10:00';
-      const [startTime, endTime] = timeRange.split('-');
-      const [startH, startM] = startTime.split(':').map((n: string) => parseInt(n, 10));
-      const [endH, endM] = endTime.split(':').map((n: string) => parseInt(n, 10));
-
-      // Parse date: 'YYYY-MM-DD'
-      const dateStr = booking.date || '';
-      const [year, month, day] = dateStr.split('-').map((n: string) => parseInt(n, 10));
-
-      // Create start and end Date objects
-      const start = new Date(year, (month || 1) - 1, day || 1, startH, startM, 0, 0);
-      const end = new Date(year, (month || 1) - 1, day || 1, endH, endM, 0, 0);
-
-      // Normalize status to match calendar types
-      let mappedStatus = booking.status || 'pending';
-      if (mappedStatus === 'approved') {
-        mappedStatus = 'confirmed';
-      } else if (mappedStatus === 'rejected') {
-        mappedStatus = 'cancelled';
-      }
-
-      return {
-        id: booking.id,
-        facilityId: booking.facilityId || '',
-        facilityName: booking.facility || booking.facilityName || '',
-        title: booking.purpose || 'Booking',
-        start: start.toISOString(),
-        end: end.toISOString(),
-        status: mappedStatus as 'confirmed' | 'pending' | 'cancelled',
-        // Preserve original price text in meta for modal display
-        meta: { priceText: booking.price },
-      };
-    });
-  } catch (error) {
-    console.error('Error loading booking data:', error);
-    return [];
+  if (booking.status === 'paid' || booking.status === 'completed') {
+    mappedStatus = 'confirmed';
+  } else if (booking.status === 'cancelled' || booking.status === 'rejected') {
+    mappedStatus = 'cancelled';
+  } else if (booking.status === 'pending' || booking.status === 'awaiting_payment') {
+    mappedStatus = 'pending';
   }
+
+  // Format price text for meta
+  const priceText = booking.total_price
+    ? `${booking.total_price} NOK`
+    : booking.price_per_hour
+      ? `${booking.price_per_hour} NOK/hr`
+      : undefined;
+
+  return {
+    id: booking.id,
+    facilityId: booking.facility_id,
+    facilityName: booking.facility?.name || 'Unknown Facility',
+    title: booking.purpose || 'Booking',
+    start: booking.starts_at,
+    end: booking.ends_at,
+    status: mappedStatus,
+    price: booking.total_price || undefined,
+    meta: {
+      priceText,
+    },
+  };
 };
 
 /**
@@ -119,11 +108,18 @@ const filterEventsByRange = (
 
 /**
  * Hook for managing calendar page state and business logic
+ *
+ * Migrated from localStorage to Supabase backend integration.
+ * Fetches real-time booking data for the authenticated user.
  */
 export const useCalendarPageManagement = (): IUseCalendarPageManagementReturn => {
+  const { user } = useAuth();
   const [selectedEvent, setSelectedEvent] = useState<IBookingEventWithMeta | null>(null);
   const [view, setView] = useState<'month' | 'week' | 'day'>('month');
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
+
+  // Fetch bookings from Supabase
+  const { data: bookings = [], isLoading } = useUserBookings(user?.id || '', !!user?.id);
 
   // Calculate date range based on current view and date
   const dateRange = useMemo(
@@ -131,8 +127,15 @@ export const useCalendarPageManagement = (): IUseCalendarPageManagementReturn =>
     [view, currentDate]
   );
 
-  // Load all booking events from localStorage
-  const allEvents = useMemo(() => loadBookingData(), []);
+  // Transform Supabase bookings to calendar events
+  const allEvents = useMemo(() => {
+    try {
+      return bookings.map(transformBookingToEvent);
+    } catch (error) {
+      console.error('Error transforming booking data:', error);
+      return [];
+    }
+  }, [bookings]);
 
   // Filter events by current date range
   const filteredEvents = useMemo(
@@ -153,7 +156,7 @@ export const useCalendarPageManagement = (): IUseCalendarPageManagementReturn =>
 
   const handleEventDelete = useCallback((event: IBookingEventWithMeta): void => {
     setSelectedEvent(null);
-    // TODO: Implement delete functionality
+    // TODO: Implement delete functionality with useCancelBooking mutation
     console.log('Delete event:', event);
   }, []);
 
@@ -168,13 +171,13 @@ export const useCalendarPageManagement = (): IUseCalendarPageManagementReturn =>
   }, []);
 
   const handleEventAddToCalendar = useCallback((event: IBookingEventWithMeta): void => {
-    // TODO: Implement add to calendar functionality
+    // TODO: Implement add to calendar functionality (.ics export)
     console.log('Add to calendar:', event);
   }, []);
 
   return {
     events: filteredEvents,
-    isLoading: false,
+    isLoading,
     view,
     currentDate,
     selectedEvent,

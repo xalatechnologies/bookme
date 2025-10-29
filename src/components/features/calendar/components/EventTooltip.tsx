@@ -69,10 +69,10 @@ export const EventTooltip: React.FC<EventTooltipProps> = ({
               <span className="truncate">{event.facilityName}</span>
             </div>
 
-            {event.priceNok && event.priceNok > 0 && (
+            {event.price && event.price > 0 && (
               <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                 <DollarSign className="w-4 h-4 flex-shrink-0" />
-                <span>{event.priceNok} kr</span>
+                <span>{event.price} kr</span>
               </div>
             )}
           </div>

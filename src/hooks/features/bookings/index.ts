@@ -24,3 +24,24 @@ export type {
   IUseBookingCalendarOptions,
   IUseBookingCalendarReturn,
 } from './useBookingCalendar';
+
+export { useBookingSteps } from './useBookingSteps';
+export type {
+  BookingStep,
+  IStepDefinition,
+  IUseBookingStepsOptions,
+  IUseBookingStepsReturn,
+} from './useBookingSteps';
+
+export { useRecurringSlotGeneration } from './useRecurringSlotGeneration';
+export type {
+  IUseRecurringSlotGenerationOptions,
+  IUseRecurringSlotGenerationReturn,
+} from './useRecurringSlotGeneration';
+
+export { useTimeSlotGrouping } from './useTimeSlotGrouping';
+export type {
+  ITimeSlotGroup,
+  IDatePackage,
+  IUseTimeSlotGroupingReturn,
+} from './useTimeSlotGrouping';

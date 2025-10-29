@@ -1,12 +1,14 @@
 "use client";
 
 import { useState, useMemo, useCallback } from "react";
+import { useAuth } from "@/contexts/AuthContext";
+import { useUserBookings, type BookingWithDetails } from "@/services/supabase/bookings.service";
 import type { IBookingHistoryItem } from "@/types/history";
 import type { IBookingEvent } from "@/types/calendar";
 import { downloadICS } from "@/shared/export/ics";
 
 /**
- * Extended history item with additional fields for localStorage data
+ * Extended history item with additional fields for display
  */
 interface IExtendedHistoryItem extends IBookingHistoryItem {
   readonly startTime?: string;
@@ -63,10 +65,70 @@ export interface IUseHistoryManagementReturn {
 }
 
 /**
+ * Map Supabase booking status to history status
+ */
+const mapBookingStatus = (status: string): "completed" | "cancelled" => {
+  switch (status) {
+    case "paid":
+    case "completed":
+      return "completed";
+    case "cancelled":
+    case "rejected":
+      return "cancelled";
+    default:
+      return "completed"; // pending, awaiting_payment default to completed for display
+  }
+};
+
+/**
+ * Convert Supabase booking to history item format
+ */
+const convertBookingToHistoryItem = (booking: BookingWithDetails): IExtendedHistoryItem => {
+  const startDate = new Date(booking.starts_at);
+  const endDate = new Date(booking.ends_at);
+
+  // Calculate duration in hours
+  const durationMs = endDate.getTime() - startDate.getTime();
+  const durationHours = durationMs / (1000 * 60 * 60);
+
+  // Format times
+  const startTime = startDate.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
+  const endTime = endDate.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
+
+  // Convert price from cents to NOK
+  const totalPriceNok = booking.total_cents / 100;
+
+  return {
+    id: booking.id,
+    facilityId: booking.facility_id,
+    facilityName: booking.facility?.name || "Ukjent lokale",
+    title: booking.notes || "Booking",
+    start: booking.starts_at,
+    end: booking.ends_at,
+    startTime,
+    endTime,
+    duration: durationHours,
+    status: mapBookingStatus(booking.status),
+    totalPriceNok,
+    purpose: booking.notes || "Ikke spesifisert",
+    location: booking.facility?.name || "Ukjent lokale",
+    isRecurring: booking.is_recurring,
+    createdAt: booking.created_at,
+    originalDate: startDate.toISOString().split("T")[0],
+    originalTime: `${startTime}-${endTime}`,
+  };
+};
+
+/**
  * Hook for managing booking history data and operations
- * Extracts all business logic from HistoryPage component
+ * Migrated from localStorage to Supabase backend
  */
 export const useHistoryManagement = (): IUseHistoryManagementReturn => {
+  const { user } = useAuth();
+
+  // Fetch bookings from Supabase
+  const { data: bookings = [], isLoading } = useUserBookings(user?.id || "", !!user?.id);
+
   // Filter state
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedFacility, setSelectedFacility] = useState<string>("all");
@@ -77,170 +139,123 @@ export const useHistoryManagement = (): IUseHistoryManagementReturn => {
   const [expandedRow, setExpandedRow] = useState<string | null>(null);
 
   /**
-   * Load and group booking data from localStorage
+   * Convert and group booking data from Supabase
    */
   const rawData = useMemo(() => {
     try {
-      const pending = JSON.parse(localStorage.getItem('pendingBookings') || '[]');
-      const processed = JSON.parse(localStorage.getItem('processedBookings') || '[]');
-      const all = [...pending, ...processed];
+      if (!bookings || bookings.length === 0) {
+        return [];
+      }
 
-      // Group recurring bookings by parentBookingId or fallback key
-      const groupedRecurring = new Map<string, any[]>();
-      const singleBookings: any[] = [];
+      // Group recurring bookings by recurring_booking_id
+      const groupedRecurring = new Map<string, BookingWithDetails[]>();
+      const singleBookings: BookingWithDetails[] = [];
 
-      all.forEach((booking: any) => {
-        const parentKey = booking.parentBookingId ||
-          `${booking.facility || booking.facilityName}-${booking.purpose}-${booking.time || booking.startTime}`;
-
-        if (booking.isRecurring || booking.bookingType === 'recurring') {
-          if (!groupedRecurring.has(parentKey)) {
-            groupedRecurring.set(parentKey, []);
+      bookings.forEach((booking) => {
+        if (booking.is_recurring && booking.recurring_booking_id) {
+          const key = booking.recurring_booking_id;
+          if (!groupedRecurring.has(key)) {
+            groupedRecurring.set(key, []);
           }
-          groupedRecurring.get(parentKey)!.push(booking);
+          groupedRecurring.get(key)!.push(booking);
         } else {
           singleBookings.push(booking);
         }
       });
 
       // Convert single bookings to history format
-      const singleHistoryItems: IExtendedHistoryItem[] = singleBookings.map((booking: any) => {
-        // Handle different date/time formats
-        let startDate: string;
-        let endDate: string;
-
-        if (booking.startDate && booking.startTime) {
-          startDate = new Date(booking.startDate + 'T' + booking.startTime).toISOString();
-        } else if (booking.date && booking.time) {
-          const [startTime] = booking.time.split('-');
-          startDate = new Date(booking.date + 'T' + startTime).toISOString();
-        } else {
-          startDate = new Date().toISOString();
-        }
-
-        if (booking.endTime) {
-          endDate = new Date(booking.startDate + 'T' + booking.endTime).toISOString();
-        } else if (booking.time) {
-          const [, endTime] = booking.time.split('-');
-          endDate = new Date(booking.date + 'T' + endTime).toISOString();
-        } else {
-          endDate = new Date(startDate).toISOString();
-        }
-
-        // Calculate duration from booking data
-        let durationHours = 1; // Default to 1 hour
-        if (booking.duration) {
-          // If duration is in minutes, convert to hours
-          durationHours = typeof booking.duration === 'number' ? booking.duration / 60 : 1;
-        } else if (booking.time) {
-          // Calculate from time range if duration not available
-          const [startTime, endTime] = booking.time.split('-');
-          const [startH, startM] = startTime.split(':').map(Number);
-          const [endH, endM] = endTime.split(':').map(Number);
-          const startMinutes = startH * 60 + startM;
-          const endMinutes = endH * 60 + endM;
-          durationHours = (endMinutes - startMinutes) / 60;
-        }
-
-        const status = booking.status === 'approved' ? 'confirmed' :
-                      booking.status === 'rejected' ? 'rejected' :
-                      'pending';
-
-        return {
-          id: booking.id,
-          facilityId: booking.facilityId || booking.id,
-          facilityName: booking.facilityName || booking.facility || 'Ukjent lokale',
-          title: booking.purpose || 'Ikke spesifisert',
-          start: startDate,
-          end: endDate,
-          startTime: booking.startTime || booking.time?.split('-')[0] || '09:00',
-          endTime: booking.endTime || booking.time?.split('-')[1] || '10:00',
-          duration: durationHours,
-          status: status as "completed" | "cancelled",
-          totalPriceNok: parseFloat(booking.price?.replace(/[^\d,]/g, '').replace(',', '.') || '0'),
-          purpose: booking.purpose || 'Ikke spesifisert',
-          location: booking.facilityName || booking.facility || 'Ukjent lokale',
-          isRecurring: false,
-          createdAt: booking.createdAt || new Date().toISOString(),
-          originalDate: booking.startDate || booking.date,
-          originalTime: booking.time || `${booking.startTime || '09:00'}-${booking.endTime || '10:00'}`
-        };
-      });
+      const singleHistoryItems: IExtendedHistoryItem[] = singleBookings.map(convertBookingToHistoryItem);
 
       // Convert recurring booking groups to history format
-      const recurringHistoryItems: IExtendedHistoryItem[] = Array.from(groupedRecurring.entries()).map(([parentKey, bookings]) => {
-        const first = bookings[0];
-        const last = bookings[bookings.length - 1];
+      const recurringHistoryItems: IExtendedHistoryItem[] = Array.from(groupedRecurring.entries()).map(
+        ([recurringId, recurringBookings]) => {
+          const sortedBookings = [...recurringBookings].sort(
+            (a, b) => new Date(a.starts_at).getTime() - new Date(b.starts_at).getTime()
+          );
 
-        // Calculate total price for all occurrences
-        const totalPrice = bookings.reduce((sum, booking) => {
-          return sum + parseFloat(booking.price?.replace(/[^\d,]/g, '').replace(',', '.') || '0');
-        }, 0);
+          const first = sortedBookings[0];
+          const last = sortedBookings[sortedBookings.length - 1];
 
-        // Determine group status
-        const statuses = bookings.map(b => b.status);
-        const groupStatus = statuses.every(s => s === 'approved') ? 'confirmed' :
-                           statuses.every(s => s === 'rejected') ? 'rejected' : 'pending';
+          // Calculate total price for all occurrences
+          const totalPrice = recurringBookings.reduce((sum, booking) => sum + booking.total_cents / 100, 0);
 
-        // Calculate total duration for recurring bookings
-        const totalDuration = bookings.reduce((sum, booking) => {
-          let durationHours = 1;
-          if (booking.duration) {
-            durationHours = typeof booking.duration === 'number' ? booking.duration / 60 : 1;
-          } else if (booking.time) {
-            const [startTime, endTime] = booking.time.split('-');
-            const [startH, startM] = startTime.split(':').map(Number);
-            const [endH, endM] = endTime.split(':').map(Number);
-            const startMinutes = startH * 60 + startM;
-            const endMinutes = endH * 60 + endM;
-            durationHours = (endMinutes - startMinutes) / 60;
-          }
-          return sum + durationHours;
-        }, 0);
+          // Calculate total duration for recurring bookings
+          const totalDuration = recurringBookings.reduce((sum, booking) => {
+            const start = new Date(booking.starts_at);
+            const end = new Date(booking.ends_at);
+            const durationMs = end.getTime() - start.getTime();
+            return sum + durationMs / (1000 * 60 * 60);
+          }, 0);
 
-        return {
-          id: parentKey,
-          facilityId: first.facilityId || first.id,
-          facilityName: first.facilityName || first.facility || 'Ukjent lokale',
-          title: first.purpose || 'Ikke spesifisert',
-          start: new Date(first.startDate || first.date).toISOString(),
-          end: new Date(last.startDate || last.date).toISOString(),
-          startTime: first.startTime || first.time?.split('-')[0] || '09:00',
-          endTime: last.endTime || last.time?.split('-')[1] || '10:00',
-          duration: totalDuration,
-          status: groupStatus as "completed" | "cancelled",
-          totalPriceNok: totalPrice,
-          purpose: first.purpose || 'Ikke spesifisert',
-          location: first.facilityName || first.facility || 'Ukjent lokale',
-          isRecurring: true,
-          occurrenceCount: bookings.length,
-          createdAt: first.createdAt || new Date().toISOString(),
-          originalDate: first.startDate || first.date,
-          originalTime: first.time || `${first.startTime || '09:00'}-${first.endTime || '10:00'}`,
-          occurrences: bookings.map(booking => ({
-            id: booking.id,
-            date: booking.startDate || booking.date,
-            time: booking.startTime || booking.time,
-            status: booking.status
-          }))
-        };
-      });
+          // Determine group status (all must be same for group to have that status)
+          const statuses = recurringBookings.map((b) => b.status);
+          const allCompleted = statuses.every((s) => s === "paid" || s === "completed");
+          const allCancelled = statuses.every((s) => s === "cancelled" || s === "rejected");
+          const groupStatus: "completed" | "cancelled" = allCompleted
+            ? "completed"
+            : allCancelled
+            ? "cancelled"
+            : "completed"; // Mixed status defaults to completed
+
+          const firstStart = new Date(first.starts_at);
+          const firstStartTime = firstStart.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
+          const firstEnd = new Date(first.ends_at);
+          const firstEndTime = firstEnd.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
+
+          const lastEnd = new Date(last.ends_at);
+          const lastEndTime = lastEnd.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
+
+          return {
+            id: recurringId,
+            facilityId: first.facility_id,
+            facilityName: first.facility?.name || "Ukjent lokale",
+            title: first.notes || "Recurring Booking",
+            start: first.starts_at,
+            end: last.ends_at,
+            startTime: firstStartTime,
+            endTime: lastEndTime,
+            duration: totalDuration,
+            status: groupStatus,
+            totalPriceNok: totalPrice,
+            purpose: first.notes || "Ikke spesifisert",
+            location: first.facility?.name || "Ukjent lokale",
+            isRecurring: true,
+            occurrenceCount: recurringBookings.length,
+            createdAt: first.created_at,
+            originalDate: firstStart.toISOString().split("T")[0],
+            originalTime: `${firstStartTime}-${firstEndTime}`,
+            occurrences: sortedBookings.map((booking) => {
+              const bookingStart = new Date(booking.starts_at);
+              const bookingStartTime = bookingStart.toLocaleTimeString("en-GB", {
+                hour: "2-digit",
+                minute: "2-digit",
+              });
+              return {
+                id: booking.id,
+                date: bookingStart.toISOString().split("T")[0],
+                time: bookingStartTime,
+                status: booking.status,
+              };
+            }),
+          };
+        }
+      );
 
       // Combine single and recurring items
       const allHistoryItems = [...singleHistoryItems, ...recurringHistoryItems];
 
       return allHistoryItems;
     } catch (error) {
-      console.error('Error loading history data:', error);
+      console.error("Error processing booking data:", error);
       return [];
     }
-  }, []);
+  }, [bookings]);
 
   /**
    * Get unique facilities list from booking data
    */
   const facilities = useMemo(() => {
-    const uniqueFacilities = [...new Set(rawData.map(booking => booking.facilityName))];
+    const uniqueFacilities = [...new Set(rawData.map((booking) => booking.facilityName))];
     return uniqueFacilities.filter(Boolean);
   }, [rawData]);
 
@@ -253,23 +268,24 @@ export const useHistoryManagement = (): IUseHistoryManagementReturn => {
     // Apply search filter
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(item =>
-        item.facilityName.toLowerCase().includes(query) ||
-        item.title.toLowerCase().includes(query) ||
-        item.purpose?.toLowerCase().includes(query)
+      filtered = filtered.filter(
+        (item) =>
+          item.facilityName.toLowerCase().includes(query) ||
+          item.title.toLowerCase().includes(query) ||
+          item.purpose?.toLowerCase().includes(query)
       );
     }
 
     // Apply facility filter
     if (selectedFacility !== "all") {
-      filtered = filtered.filter(item => item.facilityName === selectedFacility);
+      filtered = filtered.filter((item) => item.facilityName === selectedFacility);
     }
 
     // Apply status filter
     if (selectedStatus !== "all") {
-      filtered = filtered.filter(item => {
-        if (selectedStatus === "completed") return item.status === "confirmed";
-        if (selectedStatus === "cancelled") return item.status === "rejected" || item.status === "cancelled";
+      filtered = filtered.filter((item) => {
+        if (selectedStatus === "completed") return item.status === "completed";
+        if (selectedStatus === "cancelled") return item.status === "cancelled";
         return true;
       });
     }
@@ -277,11 +293,11 @@ export const useHistoryManagement = (): IUseHistoryManagementReturn => {
     // Apply date range filter
     if (dateFrom) {
       const fromDate = new Date(dateFrom);
-      filtered = filtered.filter(item => new Date(item.start) >= fromDate);
+      filtered = filtered.filter((item) => new Date(item.start) >= fromDate);
     }
     if (dateTo) {
       const toDate = new Date(dateTo);
-      filtered = filtered.filter(item => new Date(item.start) <= toDate);
+      filtered = filtered.filter((item) => new Date(item.start) <= toDate);
     }
 
     // Apply sorting
@@ -301,9 +317,7 @@ export const useHistoryManagement = (): IUseHistoryManagementReturn => {
     const totalBookings = historyItems.length;
     const totalHours = historyItems.reduce((sum, item) => sum + (item.duration || 1), 0);
     const totalSpent = historyItems.reduce((sum, item) => sum + (item.totalPriceNok || 0), 0);
-    const cancellations = historyItems.filter(item =>
-      item.status === "rejected" || item.status === "cancelled"
-    ).length;
+    const cancellations = historyItems.filter((item) => item.status === "cancelled").length;
 
     return { totalBookings, totalHours, totalSpent, cancellations };
   }, [historyItems]);
@@ -315,16 +329,21 @@ export const useHistoryManagement = (): IUseHistoryManagementReturn => {
     try {
       const csvContent = [
         "Dato,Tid,Lokale,Aktivitet,Varighet,Status,Sum,Faktura",
-        ...historyItems.map(item => [
-          new Date(item.start).toLocaleDateString("nb-NO"),
-          `${new Date(item.start).toLocaleTimeString("nb-NO", { hour: "2-digit", minute: "2-digit" })}-${new Date(item.end).toLocaleTimeString("nb-NO", { hour: "2-digit", minute: "2-digit" })}`,
-          item.facilityName,
-          item.title,
-          `${item.duration?.toFixed(1) || '1.0'} t`,
-          item.status,
-          item.totalPriceNok ? `${item.totalPriceNok} kr` : "-",
-          item.invoiceId || "-"
-        ].join(","))
+        ...historyItems.map((item) =>
+          [
+            new Date(item.start).toLocaleDateString("nb-NO"),
+            `${new Date(item.start).toLocaleTimeString("nb-NO", {
+              hour: "2-digit",
+              minute: "2-digit",
+            })}-${new Date(item.end).toLocaleTimeString("nb-NO", { hour: "2-digit", minute: "2-digit" })}`,
+            item.facilityName,
+            item.title,
+            `${item.duration?.toFixed(1) || "1.0"} t`,
+            item.status,
+            item.totalPriceNok ? `${item.totalPriceNok} kr` : "-",
+            item.invoiceId || "-",
+          ].join(",")
+        ),
       ].join("\n");
 
       const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8" });
@@ -337,7 +356,7 @@ export const useHistoryManagement = (): IUseHistoryManagementReturn => {
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
     } catch (error) {
-      console.error('Error exporting CSV:', error);
+      console.error("Error exporting CSV:", error);
     }
   }, [historyItems]);
 
@@ -352,8 +371,7 @@ export const useHistoryManagement = (): IUseHistoryManagementReturn => {
       title: item.title,
       start: item.start,
       end: item.end,
-      status: item.status === "confirmed" ? "confirmed" :
-              item.status === "cancelled" ? "cancelled" : "pending"
+      status: item.status === "completed" ? "confirmed" : item.status === "cancelled" ? "cancelled" : "pending",
     };
     downloadICS(event);
   }, []);
@@ -362,14 +380,14 @@ export const useHistoryManagement = (): IUseHistoryManagementReturn => {
    * Toggle row expansion for detailed view
    */
   const toggleRowExpansion = useCallback((itemId: string): void => {
-    setExpandedRow(prev => prev === itemId ? null : itemId);
+    setExpandedRow((prev) => (prev === itemId ? null : itemId));
   }, []);
 
   return {
     historyItems,
     kpis,
     facilities,
-    isLoading: false, // No loading state needed for localStorage
+    isLoading,
     searchQuery,
     selectedFacility,
     selectedStatus,
@@ -385,6 +403,6 @@ export const useHistoryManagement = (): IUseHistoryManagementReturn => {
     setSortBy,
     toggleRowExpansion,
     handleExportCsv,
-    handleDownloadICS
+    handleDownloadICS,
   };
 };

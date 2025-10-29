@@ -2,7 +2,7 @@
  * Dashboard Management Hook
  *
  * Clean architecture hook that handles all dashboard business logic:
- * - User data loading from localStorage
+ * - User data loading from Supabase
  * - Booking statistics and filtering
  * - Recommended facilities mapping
  * - System messages management
@@ -29,6 +29,8 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { usePublishedFacilities } from "@/services/supabase/facilities.service";
+import { useUserBookings } from "@/services/supabase/bookings.service";
+import { useAuth } from "@/contexts/AuthContext";
 
 // ============================================================================
 // Types & Interfaces
@@ -110,6 +112,7 @@ export interface IUseDashboardManagementReturn {
   readonly filteredMessages: readonly ISystemMessage[];
   readonly unreadMessagesCount: number;
   readonly facilitiesLoading: boolean;
+  readonly bookingsLoading: boolean;
   readonly bookingFilter: string;
   readonly messageFilter: string;
   readonly expandedBookings: Set<string>;
@@ -133,6 +136,7 @@ export const useDashboardManagement = (
   orgId: string
 ): IUseDashboardManagementReturn => {
   const { t } = useTranslation(["common", "user", "booking"]);
+  const { user: authUser } = useAuth();
 
   // State management
   const [bookingFilter, setBookingFilter] = useState<string>("all");
@@ -142,64 +146,59 @@ export const useDashboardManagement = (
   );
   const [weather, setWeather] = useState<IWeatherData | null>(null);
 
-  // Fetch published facilities from Supabase
+  // Fetch data from Supabase
   const { data: facilities = [], isLoading: facilitiesLoading } =
     usePublishedFacilities(orgId);
+
+  const { data: bookingsData = [], isLoading: bookingsLoading } =
+    useUserBookings(authUser?.id || "", !!authUser?.id);
 
   // ============================================================================
   // User Data Loading
   // ============================================================================
 
   /**
-   * Load user data from localStorage
+   * Calculate user data from Supabase bookings
    * Includes total bookings count and next upcoming booking
    */
   const user: IUserData = useMemo(() => {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const pending: any[] = JSON.parse(
-        localStorage.getItem("pendingBookings") || "[]"
-      );
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const processed: any[] = JSON.parse(
-        localStorage.getItem("processedBookings") || "[]"
-      );
-      const all = [...pending, ...processed];
-
-      // Find next upcoming approved booking
-      const upcomingBookings = all
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .filter((booking: any) => {
-          const bookingDate = new Date(booking.startDate);
-          return bookingDate >= new Date() && booking.status === "approved";
+      // Find next upcoming paid/confirmed booking
+      const now = new Date();
+      const upcomingBookings = bookingsData
+        .filter((booking) => {
+          const bookingDate = new Date(booking.starts_at);
+          return bookingDate >= now &&
+                 (booking.status === "paid" || booking.status === "completed");
         })
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .sort(
-          (a: any, b: any) =>
-            new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
+        .sort((a, b) =>
+          new Date(a.starts_at).getTime() - new Date(b.starts_at).getTime()
         );
 
       const nextBooking = upcomingBookings[0];
 
       return {
         name: t("user:dashboard.default_username"),
-        totalBookings: all.length,
+        totalBookings: bookingsData.length,
         monthlyBookingLimit: 5,
         nextBooking: nextBooking
           ? {
               facility:
-                nextBooking.facilityName ||
+                nextBooking.facility?.name ||
                 t("user:dashboard.unknown_facility"),
-              date: new Date(nextBooking.startDate).toLocaleDateString(
+              date: new Date(nextBooking.starts_at).toLocaleDateString(
                 "nb-NO",
                 { day: "2-digit", month: "2-digit" }
               ),
-              time: nextBooking.startTime || "14:00",
+              time: new Date(nextBooking.starts_at).toLocaleTimeString(
+                "nb-NO",
+                { hour: "2-digit", minute: "2-digit" }
+              ),
             }
           : null,
       };
     } catch (error) {
-      console.error("Error loading user data:", error);
+      console.error("Error calculating user data:", error);
       return {
         name: t("user:dashboard.default_username"),
         totalBookings: 0,
@@ -207,68 +206,73 @@ export const useDashboardManagement = (
         nextBooking: null,
       };
     }
-  }, [t]);
+  }, [bookingsData, t]);
 
   // ============================================================================
   // Bookings Loading
   // ============================================================================
 
   /**
-   * Load recent bookings from localStorage
-   * Converts localStorage data to dashboard format
+   * Load recent bookings from Supabase
+   * Converts Supabase data to dashboard format
    */
   const userBookings: readonly IUserBooking[] = useMemo(() => {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const pending: any[] = JSON.parse(
-        localStorage.getItem("pendingBookings") || "[]"
-      );
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const processed: any[] = JSON.parse(
-        localStorage.getItem("processedBookings") || "[]"
-      );
-      const all = [...pending, ...processed];
-
       // Get recent bookings (last 3)
-      const recentBookings = all
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const recentBookings = [...bookingsData]
         .sort(
-          (a: any, b: any) =>
-            new Date(b.startDate).getTime() - new Date(a.startDate).getTime()
+          (a, b) =>
+            new Date(b.starts_at).getTime() - new Date(a.starts_at).getTime()
         )
         .slice(0, 3);
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      return recentBookings.map((booking: any) => ({
-        id: booking.id,
-        facility:
-          booking.facilityName || t("user:dashboard.unknown_facility"),
-        date: booking.startDate || new Date().toISOString().split("T")[0],
-        time: booking.startTime || "14:00",
-        duration: booking.duration || "1 time",
-        status:
-          booking.status === "approved"
-            ? ("confirmed" as const)
-            : booking.status === "rejected"
-            ? ("cancelled" as const)
-            : ("pending" as const),
-        location:
-          booking.facilityName || t("user:dashboard.unknown_facility"),
-        price: booking.price || "0 kr",
-        purpose: booking.purpose || t("user:bookings.not_specified"),
-        participants: [t("user:dashboard.default_username")],
-        qrCode: `QR${booking.id.slice(-6)}`,
-        cancellationPolicy: t("user:bookings.cancellation_policy"),
-        contactInfo: {
-          phone: "+47 123 45 678",
-          email: "admin@drammen.no",
-        },
-      }));
+      return recentBookings.map((booking) => {
+        // Calculate duration
+        const startTime = new Date(booking.starts_at);
+        const endTime = new Date(booking.ends_at);
+        const durationHours = Math.round(
+          (endTime.getTime() - startTime.getTime()) / (1000 * 60 * 60)
+        );
+
+        // Map Supabase status to dashboard status
+        let status: "confirmed" | "pending" | "cancelled";
+        if (booking.status === "paid" || booking.status === "completed") {
+          status = "confirmed";
+        } else if (booking.status === "cancelled" || booking.status === "expired" || booking.status === "refunded") {
+          status = "cancelled";
+        } else {
+          status = "pending";
+        }
+
+        return {
+          id: booking.id,
+          facility:
+            booking.facility?.name || t("user:dashboard.unknown_facility"),
+          date: booking.starts_at.split("T")[0],
+          time: startTime.toLocaleTimeString("nb-NO", {
+            hour: "2-digit",
+            minute: "2-digit",
+          }),
+          duration: `${durationHours} ${durationHours === 1 ? "time" : "timer"}`,
+          status,
+          location:
+            booking.facility?.name || t("user:dashboard.unknown_facility"),
+          price: `${(booking.total_cents || 0) / 100} ${booking.currency || "kr"}`,
+          purpose: booking.notes || t("user:bookings.not_specified"),
+          participants: [t("user:dashboard.default_username")],
+          qrCode: `QR${booking.id.slice(-6)}`,
+          cancellationPolicy: t("user:bookings.cancellation_policy"),
+          contactInfo: {
+            phone: "+47 123 45 678",
+            email: "admin@drammen.no",
+          },
+        };
+      });
     } catch (error) {
       console.error("Error loading recent bookings:", error);
       return [];
     }
-  }, [t]);
+  }, [bookingsData, t]);
 
   // ============================================================================
   // Recommended Facilities
@@ -453,6 +457,7 @@ export const useDashboardManagement = (
     filteredMessages,
     unreadMessagesCount,
     facilitiesLoading,
+    bookingsLoading,
     bookingFilter,
     messageFilter,
     expandedBookings,

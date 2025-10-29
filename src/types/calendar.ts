@@ -8,7 +8,7 @@ export interface IBookingEvent {
   readonly start: string;   // ISO
   readonly end: string;     // ISO
   readonly status: TBookingStatus;
-  readonly priceNok?: number;
+  readonly price?: number;
   readonly tags?: readonly string[];
 }
 

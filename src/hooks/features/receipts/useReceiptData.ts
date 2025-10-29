@@ -1,4 +1,7 @@
 import { useMemo } from "react";
+import { useUserBookings } from "@/services/supabase/bookings.service";
+import { useAuth } from "@/contexts/AuthContext";
+import type { BookingWithDetails } from "@/services/supabase/bookings.service";
 
 interface IReceipt {
   readonly id: string;
@@ -29,24 +32,6 @@ interface IReceipt {
   }>;
 }
 
-interface Booking {
-  readonly id: string;
-  readonly facility?: string;
-  readonly facilityName?: string;
-  readonly zoneName?: string;
-  readonly price?: string;
-  readonly startDate?: string;
-  readonly date?: string;
-  readonly status: string;
-  readonly duration?: string;
-  readonly purpose?: string;
-  readonly parentBookingId?: string;
-  readonly time?: string;
-  readonly startTime?: string;
-  readonly bookingType?: string;
-  readonly isRecurring?: boolean;
-}
-
 interface FilterOptions {
   readonly status: string;
   readonly year: string;
@@ -74,15 +59,16 @@ interface UseReceiptDataReturn {
     readonly cancelled: number;
     readonly refunded: number;
   };
+  readonly isLoading: boolean;
 }
 
-const parsePrice = (price?: string): number => {
+const parsePrice = (price?: number | null): number => {
   if (!price) return 0;
-  return parseFloat(price.replace(/[^\d,]/g, "").replace(",", "."));
+  return price;
 };
 
-const getFacilityName = (booking: Booking): string => {
-  return booking.facility || booking.facilityName || booking.zoneName || "Ukjent lokale";
+const getFacilityName = (booking: BookingWithDetails): string => {
+  return booking.facility?.name || booking.zone?.name || "Ukjent lokale";
 };
 
 const getCategory = (facilityName: string): string => {
@@ -92,25 +78,37 @@ const getCategory = (facilityName: string): string => {
 };
 
 const mapStatus = (status: string): IReceipt["status"] => {
-  if (status === "approved") return "paid";
-  if (status === "rejected") return "cancelled";
-  return "pending";
+  // Map Supabase booking statuses to receipt statuses
+  switch (status) {
+    case "paid":
+    case "completed":
+      return "paid";
+    case "cancelled":
+      return "cancelled";
+    case "refunded":
+      return "refunded";
+    case "pending":
+    case "awaiting_payment":
+    default:
+      return "pending";
+  }
 };
 
 const groupRecurringBookings = (
-  bookings: ReadonlyArray<Booking>
-): { grouped: Map<string, Booking[]>; single: Booking[] } => {
-  const grouped = new Map<string, Booking[]>();
-  const single: Booking[] = [];
+  bookings: ReadonlyArray<BookingWithDetails>
+): { grouped: Map<string, BookingWithDetails[]>; single: BookingWithDetails[] } => {
+  const grouped = new Map<string, BookingWithDetails[]>();
+  const single: BookingWithDetails[] = [];
 
   bookings.forEach((booking) => {
+    // Use parent_booking_id or create a grouping key
     const parentKey =
-      booking.parentBookingId ||
-      `${booking.facility || booking.facilityName}-${booking.purpose}-${
-        booking.time || booking.startTime
+      booking.parent_booking_id ||
+      `${booking.facility?.name || booking.zone?.name}-${booking.purpose}-${
+        booking.starts_at ? new Date(booking.starts_at).toTimeString().slice(0, 5) : ""
       }`;
 
-    if (booking.isRecurring || booking.bookingType === "recurring") {
+    if (booking.is_recurring || booking.parent_booking_id) {
       if (!grouped.has(parentKey)) {
         grouped.set(parentKey, []);
       }
@@ -123,26 +121,36 @@ const groupRecurringBookings = (
   return { grouped, single };
 };
 
-const createSingleReceipt = (booking: Booking, index: number): IReceipt => {
-  const amount = parsePrice(booking.price);
+const createSingleReceipt = (booking: BookingWithDetails, index: number): IReceipt => {
+  const amount = parsePrice(booking.total_price);
   const mvaAmount = amount * 0.25; // 25% VAT
   const facilityName = getFacilityName(booking);
   const status = mapStatus(booking.status);
 
+  // Calculate duration from starts_at and ends_at
+  const duration = (() => {
+    if (!booking.starts_at || !booking.ends_at) return "1 time";
+    const start = new Date(booking.starts_at);
+    const end = new Date(booking.ends_at);
+    const hours = Math.round((end.getTime() - start.getTime()) / (1000 * 60 * 60));
+    return `${hours} time${hours !== 1 ? "r" : ""}`;
+  })();
+
   return {
     id: booking.id,
     facility: facilityName,
-    date: booking.startDate || new Date().toISOString().split("T")[0],
+    date: booking.starts_at ? new Date(booking.starts_at).toISOString().split("T")[0] : new Date().toISOString().split("T")[0],
     amount,
     status,
     paymentMethod: "Visa •••• 1234",
     bookingId: booking.id,
     location: facilityName,
-    duration: booking.duration || "1 time",
+    duration,
     purpose: booking.purpose || "Ikke spesifisert",
     invoiceNumber: `INV-${new Date().getFullYear()}-${String(index + 1).padStart(3, "0")}`,
-    paidAt: status === "paid" ? new Date().toISOString() : undefined,
-    cancelledAt: status === "cancelled" ? new Date().toISOString() : undefined,
+    paidAt: status === "paid" && booking.updated_at ? booking.updated_at : undefined,
+    cancelledAt: status === "cancelled" && booking.updated_at ? booking.updated_at : undefined,
+    refundedAt: status === "refunded" && booking.updated_at ? booking.updated_at : undefined,
     category: getCategory(facilityName),
     mvaAmount,
     refundReason: status === "cancelled" ? "Avvist av administrator" : undefined,
@@ -152,28 +160,30 @@ const createSingleReceipt = (booking: Booking, index: number): IReceipt => {
 
 const createRecurringReceipt = (
   parentKey: string,
-  bookings: ReadonlyArray<Booking>,
+  bookings: ReadonlyArray<BookingWithDetails>,
   index: number
 ): IReceipt => {
   const first = bookings[0];
   const facilityName = getFacilityName(first);
 
   // Calculate total amount for all occurrences
-  const totalAmount = bookings.reduce((sum, booking) => sum + parsePrice(booking.price), 0);
+  const totalAmount = bookings.reduce((sum, booking) => sum + parsePrice(booking.total_price), 0);
   const mvaAmount = totalAmount * 0.25; // 25% VAT
 
   // Determine group status
   const statuses = bookings.map((b) => b.status);
-  const groupStatus: IReceipt["status"] = statuses.every((s) => s === "approved")
+  const groupStatus: IReceipt["status"] = statuses.every((s) => s === "paid" || s === "completed")
     ? "paid"
-    : statuses.every((s) => s === "rejected")
+    : statuses.every((s) => s === "cancelled")
     ? "cancelled"
+    : statuses.some((s) => s === "refunded")
+    ? "refunded"
     : "pending";
 
   return {
     id: parentKey,
     facility: facilityName,
-    date: first.startDate || first.date || new Date().toISOString().split("T")[0],
+    date: first.starts_at ? new Date(first.starts_at).toISOString().split("T")[0] : new Date().toISOString().split("T")[0],
     amount: totalAmount,
     status: groupStatus,
     paymentMethod: "Visa •••• 1234",
@@ -182,8 +192,9 @@ const createRecurringReceipt = (
     duration: `${bookings.length} occurrences`,
     purpose: first.purpose || "Ikke spesifisert",
     invoiceNumber: `INV-${new Date().getFullYear()}-${String(index + 1).padStart(3, "0")}`,
-    paidAt: groupStatus === "paid" ? new Date().toISOString() : undefined,
-    cancelledAt: groupStatus === "cancelled" ? new Date().toISOString() : undefined,
+    paidAt: groupStatus === "paid" ? first.updated_at || new Date().toISOString() : undefined,
+    cancelledAt: groupStatus === "cancelled" ? first.updated_at || new Date().toISOString() : undefined,
+    refundedAt: groupStatus === "refunded" ? first.updated_at || new Date().toISOString() : undefined,
     category: getCategory(facilityName),
     mvaAmount,
     refundReason: groupStatus === "cancelled" ? "Avvist av administrator" : undefined,
@@ -191,21 +202,19 @@ const createRecurringReceipt = (
     occurrenceCount: bookings.length,
     occurrences: bookings.map((booking) => ({
       id: booking.id,
-      date: booking.startDate || booking.date || "",
-      time: booking.startTime || booking.time || "",
+      date: booking.starts_at ? new Date(booking.starts_at).toISOString().split("T")[0] : "",
+      time: booking.starts_at ? new Date(booking.starts_at).toTimeString().slice(0, 5) : "",
       status: booking.status,
-      amount: parsePrice(booking.price),
+      amount: parsePrice(booking.total_price),
     })),
   };
 };
 
-const loadReceiptsFromStorage = (): ReadonlyArray<IReceipt> => {
+const transformBookingsToReceipts = (
+  bookings: ReadonlyArray<BookingWithDetails>
+): ReadonlyArray<IReceipt> => {
   try {
-    const pending = JSON.parse(localStorage.getItem("pendingBookings") || "[]");
-    const processed = JSON.parse(localStorage.getItem("processedBookings") || "[]");
-    const allBookings = [...pending, ...processed] as Booking[];
-
-    const { grouped, single } = groupRecurringBookings(allBookings);
+    const { grouped, single } = groupRecurringBookings(bookings);
 
     // Convert single bookings to receipts
     const singleReceipts = single.map((booking, index) => createSingleReceipt(booking, index));
@@ -218,7 +227,7 @@ const loadReceiptsFromStorage = (): ReadonlyArray<IReceipt> => {
     // Combine single and recurring receipts
     return [...singleReceipts, ...recurringReceipts];
   } catch (error) {
-    console.error("Error loading receipts data:", error);
+    console.error("Error transforming bookings to receipts:", error);
     return [];
   }
 };
@@ -300,7 +309,11 @@ const getStatusCounts = (receipts: ReadonlyArray<IReceipt>) => {
 };
 
 export const useReceiptData = (filters: FilterOptions): UseReceiptDataReturn => {
-  const receipts = useMemo(() => loadReceiptsFromStorage(), []);
+  const { user } = useAuth();
+  const { data: bookings = [], isLoading } = useUserBookings(user?.id || "", !!user?.id);
+
+  // Transform Supabase bookings to receipts
+  const receipts = useMemo(() => transformBookingsToReceipts(bookings), [bookings]);
 
   const filteredAndSortedReceipts = useMemo(() => {
     const filtered = filterReceipts(receipts, filters);
@@ -319,6 +332,7 @@ export const useReceiptData = (filters: FilterOptions): UseReceiptDataReturn => 
     filteredAndSortedReceipts,
     statistics,
     statusCounts,
+    isLoading,
   };
 };
 
