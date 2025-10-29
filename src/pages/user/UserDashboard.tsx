@@ -130,7 +130,7 @@ const formatMessageDate = (dateString: string): string => {
  */
 const UserDashboard = (): JSX.Element => {
   const navigate = useNavigate();
-  const { t } = useTranslation(["common", "user", "booking"]);
+  const { t } = useTranslation("user");
   const orgId = useOrganizationId();
 
   // Get all dashboard data and handlers from hook
@@ -144,32 +144,32 @@ const UserDashboard = (): JSX.Element => {
   const quickActions = [
     {
       id: "calendar",
-      title: t("user:quick_actions.calendar.title"),
-      description: t("user:quick_actions.calendar.description"),
+      title: t("quick_actions.calendar.title"),
+      description: t("quick_actions.calendar.description"),
       icon: CalendarDays,
       path: "/user/calendar",
       color: "bg-blue-500",
     },
     {
       id: "invoices",
-      title: t("user:quick_actions.invoices.title"),
-      description: t("user:quick_actions.invoices.description"),
+      title: t("quick_actions.invoices.title"),
+      description: t("quick_actions.invoices.description"),
       icon: CreditCard,
       path: "/user/receipts",
       color: "bg-green-500",
     },
     {
       id: "favorites",
-      title: t("user:quick_actions.favorites.title"),
-      description: t("user:quick_actions.favorites.description"),
+      title: t("quick_actions.favorites.title"),
+      description: t("quick_actions.favorites.description"),
       icon: Heart,
       path: "/user/favorites",
       color: "bg-red-500",
     },
     {
       id: "history",
-      title: t("user:quick_actions.history.title"),
-      description: t("user:quick_actions.history.description"),
+      title: t("quick_actions.history.title"),
+      description: t("quick_actions.history.description"),
       icon: History,
       path: "/user/history",
       color: "bg-purple-500",
@@ -193,8 +193,8 @@ const UserDashboard = (): JSX.Element => {
   };
 
   const handleCancelBooking = (): void => {
-    if (window.confirm(t("user:bookings.confirm_cancel"))) {
-      alert(t("user:bookings.booking_cancelled"));
+    if (window.confirm(t("bookings.confirm_cancel"))) {
+      alert(t("bookings.booking_cancelled"));
     }
   };
 
@@ -215,7 +215,7 @@ const UserDashboard = (): JSX.Element => {
             <div className="flex-1">
               <div className="flex items-center gap-3 mb-3">
                 <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-                  {t("user:dashboard.greeting", {
+                  {t("dashboard.greeting", {
                     dayOfWeek: getDayOfWeek(t),
                     name: dashboard.user.name,
                   })}{" "}
@@ -232,20 +232,20 @@ const UserDashboard = (): JSX.Element => {
               </div>
               <p className="text-gray-600 dark:text-gray-400 mb-3">
                 {dashboard.weather &&
-                  `${t("user:dashboard.weather_in_city", {
+                  `${t("dashboard.weather_in_city", {
                     description: dashboard.weather.description,
                   })} `}
-                {t("user:dashboard.perfect_day")}
+                {t("dashboard.perfect_day")}
               </p>
 
               {/* Progress Bar */}
               <div className="mb-4">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    {t("user:dashboard.monthly_bookings")}
+                    {t("dashboard.monthly_bookings")}
                   </span>
                   <span className="text-sm text-gray-500 dark:text-gray-400">
-                    {dashboard.user.totalBookings} {t("user:dashboard.of")}{" "}
+                    {dashboard.user.totalBookings} {t("dashboard.of")}{" "}
                     {dashboard.user.monthlyBookingLimit}
                   </span>
                 </div>
@@ -261,12 +261,12 @@ const UserDashboard = (): JSX.Element => {
 
               <p className="text-sm text-blue-600 dark:text-blue-400">
                 {dashboard.user.nextBooking
-                  ? t("user:dashboard.next_booking", {
+                  ? t("dashboard.next_booking", {
                       facility: dashboard.user.nextBooking.facility,
                       date: dashboard.user.nextBooking.date,
                       time: dashboard.user.nextBooking.time,
                     })
-                  : t("user:dashboard.no_upcoming_bookings")}
+                  : t("dashboard.no_upcoming_bookings")}
               </p>
             </div>
             <div className="ml-6">
@@ -276,7 +276,7 @@ const UserDashboard = (): JSX.Element => {
                 size="lg"
               >
                 <Plus className="h-5 w-5 mr-2" />
-                {t("user:dashboard.new_booking")}
+                {t("dashboard.new_booking")}
               </Button>
             </div>
           </div>
@@ -288,7 +288,7 @@ const UserDashboard = (): JSX.Element => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Settings className="h-5 w-5" />
-            {t("user:dashboard.quick_actions")}
+            {t("dashboard.quick_actions")}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -326,7 +326,7 @@ const UserDashboard = (): JSX.Element => {
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2">
               <Calendar className="h-5 w-5" />
-              {t("user:dashboard.my_bookings")}
+              {t("dashboard.my_bookings")}
             </CardTitle>
             <div className="flex items-center space-x-2">
               <BookingFilters
@@ -354,7 +354,7 @@ const UserDashboard = (): JSX.Element => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <MapPin className="h-5 w-5" />
-            {t("user:dashboard.recommended_facilities")}
+            {t("dashboard.recommended_facilities")}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -411,7 +411,7 @@ const UserDashboard = (): JSX.Element => {
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2">
               <Bell className="h-5 w-5" />
-              {t("user:dashboard.system_messages")}
+              {t("dashboard.system_messages_title")}
               {dashboard.unreadMessagesCount > 0 && (
                 <Badge className="bg-red-500 text-white">
                   {dashboard.unreadMessagesCount}

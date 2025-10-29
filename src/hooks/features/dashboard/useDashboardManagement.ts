@@ -318,8 +318,8 @@ export const useDashboardManagement = (
     () => [
       {
         id: "1",
-        title: t("user:dashboard.system_messages.booking_updated"),
-        message: t("user:dashboard.system_messages.booking_updated_desc", {
+        title: t("user:dashboard.system_messages_content.booking_updated"),
+        message: t("user:dashboard.system_messages_content.booking_updated_desc", {
           facility: "Solberghallen",
         }),
         type: "info" as const,
@@ -329,8 +329,8 @@ export const useDashboardManagement = (
       },
       {
         id: "2",
-        title: t("user:dashboard.system_messages.new_regulation"),
-        message: t("user:dashboard.system_messages.new_regulation_desc"),
+        title: t("user:dashboard.system_messages_content.new_regulation"),
+        message: t("user:dashboard.system_messages_content.new_regulation_desc"),
         type: "warning" as const,
         date: "2024-01-18T14:15:00Z",
         isRead: false,
@@ -338,8 +338,8 @@ export const useDashboardManagement = (
       },
       {
         id: "3",
-        title: t("user:dashboard.system_messages.maintenance"),
-        message: t("user:dashboard.system_messages.maintenance_desc"),
+        title: t("user:dashboard.system_messages_content.maintenance"),
+        message: t("user:dashboard.system_messages_content.maintenance_desc"),
         type: "maintenance" as const,
         date: "2024-01-17T16:45:00Z",
         isRead: true,
@@ -347,8 +347,8 @@ export const useDashboardManagement = (
       },
       {
         id: "4",
-        title: t("user:dashboard.system_messages.booking_confirmed"),
-        message: t("user:dashboard.system_messages.booking_confirmed_desc", {
+        title: t("user:dashboard.system_messages_content.booking_confirmed"),
+        message: t("user:dashboard.system_messages_content.booking_confirmed_desc", {
           facility: "Drammen Idrettshall",
         }),
         type: "success" as const,

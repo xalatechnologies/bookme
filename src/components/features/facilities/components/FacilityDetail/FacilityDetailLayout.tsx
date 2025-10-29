@@ -12,7 +12,6 @@ import { AirBnbStyleGallery } from "../FacilityImageGallery/AirBnbStyleGallery";
 import { FacilityHeader } from "./FacilityHeader";
 import { FacilityInfoTabs } from "./FacilityInfoTabs";
 import { FacilityContactInfo } from "./FacilityContactInfo";
-import { FacilityCalendar } from "@/components/features/calendar/components/FacilityCalendar";
 
 interface FacilityDetailLayoutProps {
   readonly facility: Facility;
@@ -66,20 +65,6 @@ export const FacilityDetailLayout = ({
           contactInfo={facility}
         />
       </div>
-
-      {/* Full Width Calendar Section */}
-      {zones.length > 0 && (
-        <FacilityCalendar
-          facilityId={facility.id.toString()}
-          facilityName={facility.name}
-          zones={zones}
-          isLoading={false}
-          error={undefined}
-          openingHoursStart={facility.openingHoursStart || "08:00"}
-          openingHoursEnd={facility.openingHoursEnd || "22:00"}
-          useStepByStepBooking={true}
-        />
-      )}
     </div>
   );
 };

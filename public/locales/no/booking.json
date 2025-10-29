@@ -285,6 +285,9 @@
       "no_past": "Ingen tidligere bookinger",
       "no_results": "Ingen resultater"
     },
+    "start_first_booking": "Start din første booking",
+    "no_bookings_yet": "Du har ingen bookinger ennå. Book et lokale for å komme i gang!",
+    "book_venue": "Book et lokale",
     "confirm": {
       "cancel": "Er du sikker på at du vil avbryte denne bookingen?",
       "cancel_series": "Avbryt alle bookinger i denne serien?",

@@ -76,7 +76,7 @@ export interface IUseFacilityManagementReturn {
 export const useFacilityManagement = (): IUseFacilityManagementReturn => {
   // Data layer
   const orgId = useOrganizationId();
-  const { facilities, loading: isLoading, error } = useFacilities(orgId);
+  const { data: facilities = [], isLoading, error } = useFacilities(orgId);
   const deleteFacilityMutation = useDeleteFacility();
   const updateFacilityMutation = useUpdateFacility();
 
@@ -131,7 +131,7 @@ export const useFacilityManagement = (): IUseFacilityManagementReturn => {
   // Business operations
   const deleteFacility = useCallback(
     async (id: string): Promise<void> => {
-      const facility = facilities.find((f) => f.id === id);
+      const facility = facilities.find((f: Facility) => f.id === id);
       if (!facility) {
         throw new Error('Facility not found');
       }
@@ -148,7 +148,7 @@ export const useFacilityManagement = (): IUseFacilityManagementReturn => {
 
   const batchDeleteFacilities = useCallback(
     async (ids: readonly string[]): Promise<void> => {
-      const facilitiesToDelete = facilities.filter((f) => ids.includes(f.id));
+      const facilitiesToDelete = facilities.filter((f: Facility) => ids.includes(f.id));
 
       const validation = canBatchDeleteFacilities(facilitiesToDelete);
       if (!validation.canDelete) {
@@ -163,9 +163,9 @@ export const useFacilityManagement = (): IUseFacilityManagementReturn => {
 
   const updateFacilityStatus = useCallback(
     async (id: string, status: string): Promise<void> => {
-      await updateFacilityMutation.mutateAsync({
-        id,
-        data: { status },
+      await updateFacilityMutation.mutateAsync({ 
+        id, 
+        updates: { status } 
       });
     },
     [updateFacilityMutation]
@@ -177,7 +177,7 @@ export const useFacilityManagement = (): IUseFacilityManagementReturn => {
         ids.map((id) =>
           updateFacilityMutation.mutateAsync({
             id,
-            data: { status },
+            updates: { status },
           })
         )
       );

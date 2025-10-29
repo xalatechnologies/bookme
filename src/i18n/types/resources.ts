@@ -17,6 +17,17 @@ import type bookingNo from '../../../public/locales/no/booking.json';
 import type facilityNo from '../../../public/locales/no/facility.json';
 import type calendarNo from '../../../public/locales/no/calendar.json';
 import type adminNo from '../../../public/locales/no/admin.json';
+import type userNo from '../../../public/locales/no/user.json';
+import type commonEN from '../../../public/locales/en/common.json';
+import type rbacEN from '../../../public/locales/en/rbac.json';
+import type formsEN from '../../../public/locales/en/forms.json';
+import type errorsEN from '../../../public/locales/en/errors.json';
+import type validationEN from '../../../public/locales/en/validation.json';
+import type bookingEN from '../../../public/locales/en/booking.json';
+import type facilityEN from '../../../public/locales/en/facility.json';
+import type calendarEN from '../../../public/locales/en/calendar.json';
+import type adminEN from '../../../public/locales/en/admin.json';
+import type userEN from '../../../public/locales/en/user.json';
 
 /**
  * Default namespace for translations
@@ -35,7 +46,8 @@ export type Namespaces =
   | 'booking'
   | 'facility'
   | 'calendar'
-  | 'admin';
+  | 'admin'
+  | 'user';
 
 /**
  * Resource type for each namespace
@@ -50,6 +62,7 @@ export interface NamespaceResources {
   facility: typeof facilityNo;
   calendar: typeof calendarNo;
   admin: typeof adminNo;
+  user: typeof userNo;
 }
 
 /**
@@ -65,6 +78,7 @@ export interface Resources {
   facility: typeof facilityNo;
   calendar: typeof calendarNo;
   admin: typeof adminNo;
+  user: typeof userNo;
 }
 
 /**
@@ -143,7 +157,7 @@ declare module 'i18next' {
  * Type guard to check if a string is a valid namespace
  */
 export const isNamespace = (value: string): value is Namespaces => {
-  return ['common', 'rbac', 'forms', 'errors', 'validation', 'booking', 'facility', 'calendar', 'admin'].includes(value);
+  return ['common', 'rbac', 'forms', 'errors', 'validation', 'booking', 'facility', 'calendar', 'admin', 'user'].includes(value);
 };
 
 /**

@@ -20,7 +20,7 @@
     "quick_actions": "Quick Actions",
     "my_bookings": "My Bookings",
     "recommended_facilities": "Recommended Facilities",
-    "system_messages": "System Messages",
+    "system_messages_title": "System Messages",
     "your_bookings": "Your bookings",
     "upcoming": "Upcoming",
     "past": "Past",
@@ -28,7 +28,6 @@
     "recommendations": "Recommendations",
     "no_activity": "No recent activity",
     "no_bookings": "You have no bookings",
-
     "default_username": "Default User",
     "unknown_facility": "Unknown Facility",
     "default_participant": "Default Participant",
@@ -40,7 +39,7 @@
       "snowy": "Snowy"
     },
 
-    "system_messages": {
+    "system_messages_content": {
       "booking_updated": "Booking Updated",
       "booking_updated_desc": "Booking for {{facility}} has been updated with new times.",
       "new_regulation": "New Regulations",

@@ -280,6 +280,9 @@
       "no_past": "No past bookings",
       "no_results": "No results"
     },
+    "start_first_booking": "Start your first booking",
+    "no_bookings_yet": "You don't have any bookings yet. Book a venue to get started!",
+    "book_venue": "Book a venue",
     "confirm": {
       "cancel": "Are you sure you want to cancel this booking?",
       "cancel_series": "Cancel all bookings in this series?",

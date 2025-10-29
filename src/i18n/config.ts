@@ -27,6 +27,8 @@ import bookingEN from '../../public/locales/en/booking.json';
 import bookingNO from '../../public/locales/no/booking.json';
 import facilityEN from '../../public/locales/en/facility.json';
 import facilityNO from '../../public/locales/no/facility.json';
+import userEN from '../../public/locales/en/user.json';
+import userNO from '../../public/locales/no/user.json';
 
 // Supported languages
 export const SUPPORTED_LANGUAGES = {
@@ -51,6 +53,7 @@ export const NAMESPACES = {
   AUTH: 'auth',
   NAVIGATION: 'navigation',
   ERRORS: 'errors',
+  USER: 'user',
 } as const;
 
 // Initialize i18next
@@ -76,7 +79,16 @@ i18n
     defaultNS: NAMESPACES.COMMON,
 
     // Available namespaces
-    ns: Object.values(NAMESPACES),
+    ns: [
+      NAMESPACES.ROLES,
+      NAMESPACES.COMMON,
+      NAMESPACES.FACILITY,
+      NAMESPACES.BOOKING,
+      NAMESPACES.AUTH,
+      NAMESPACES.NAVIGATION,
+      NAMESPACES.ERRORS,
+      NAMESPACES.USER,
+    ],
 
     // Debug mode (disabled in production)
     debug: import.meta.env.DEV,
@@ -133,6 +145,7 @@ i18n
         auth: authEN,
         booking: bookingEN,
         facility: facilityEN,
+        user: userEN,
       },
       no: {
         roles: rolesNO,
@@ -141,6 +154,7 @@ i18n
         auth: authNO,
         booking: bookingNO,
         facility: facilityNO,
+        user: userNO,
       },
     },
 

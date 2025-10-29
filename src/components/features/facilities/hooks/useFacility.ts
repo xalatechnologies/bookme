@@ -10,11 +10,12 @@ import {
 } from '@/services/supabase/facilities.service';
 import { useLocalFacility } from './useLocalFacility';
 import type { Database } from '@/types/database';
+import type { IFacility } from '@/stores/facilityStore';
 
-type Facility = Database['public']['Tables']['facilities']['Row'];
+type SupabaseFacility = Database['public']['Tables']['facilities']['Row'];
 
 interface FacilityState {
-  readonly facility: Facility | null;
+  readonly facility: SupabaseFacility | null;
   readonly loading: boolean;
   readonly error: string | null;
   readonly notFound: boolean;
@@ -59,10 +60,12 @@ export const useFacility = (idOrSlug: string | number): FacilityState => {
   const error = isUUID ? errorById : errorBySlug;
 
   // Use local facility as fallback if Supabase facility is not found
-  const facility = supabaseFacility || localFacility || null;
+  // Note: We're only using the local facility as a fallback, but returning it as SupabaseFacility type
+  // This is a temporary solution until we fully migrate to Supabase
+  const facility = supabaseFacility || (localFacility as unknown as SupabaseFacility) || null;
 
   return {
-    facility: facility || null,
+    facility,
     loading,
     error: error?.message || null,
     notFound: !loading && !facility && !error && localNotFound

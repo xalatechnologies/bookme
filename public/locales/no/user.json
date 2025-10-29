@@ -20,7 +20,7 @@
     "quick_actions": "Hurtigvalg",
     "my_bookings": "Mine bookinger",
     "recommended_facilities": "Anbefalte lokaler",
-    "system_messages": "Systemmeldinger",
+    "system_messages_title": "Systemmeldinger",
     "your_bookings": "Dine bookinger",
     "upcoming": "Kommende",
     "past": "Tidligere",
@@ -28,7 +28,6 @@
     "recommendations": "Anbefalinger",
     "no_activity": "Ingen nylig aktivitet",
     "no_bookings": "Du har ingen bookinger",
-
     "default_username": "Standard bruker",
     "unknown_facility": "Ukjent lokale",
     "default_participant": "Standard deltaker",
@@ -40,7 +39,7 @@
       "snowy": "Snøværlig"
     },
 
-    "system_messages": {
+    "system_messages_content": {
       "booking_updated": "Booking oppdatert",
       "booking_updated_desc": "Booking for {{facility}} er oppdatert med nye tider.",
       "new_regulation": "Nytt regelverk",

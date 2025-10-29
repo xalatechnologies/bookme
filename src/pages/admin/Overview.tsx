@@ -47,10 +47,10 @@ import { useRecurringBookingStore } from "@/stores/recurringBookingStore";
  */
 const Overview = (): JSX.Element => {
   const navigate = useNavigate();
-  const { t } = useTranslation("common");
+  const { t } = useTranslation(["common", "admin"]);
 
   const orgId = useOrganizationId();
-  const { facilities, loading: facilitiesLoading } = useFacilities(orgId);
+  const { data: facilities, isLoading: facilitiesLoading } = useFacilities(orgId);
   const { bookings } = useRecurringBookingStore();
 
   // Use custom hooks for data management (SOLID: Dependency Inversion)
@@ -141,22 +141,24 @@ const Overview = (): JSX.Element => {
 
     // Create real approval requests based on pending occurrences
     const realApprovalRequests: IApprovalRequest[] = [];
-    bookings.forEach((booking) => {
-      const pendingOccurrences = booking.occurrences.filter(
-        (occurrence) => occurrence.status === "pending"
-      );
+    if (bookings) {
+      bookings.forEach((booking) => {
+        const pendingOccurrences = booking.occurrences.filter(
+          (occurrence) => occurrence.status === "pending"
+        );
 
-      pendingOccurrences.slice(0, 3).forEach((occurrence, index) => {
-        realApprovalRequests.push({
-          id: `${booking.id}-${occurrence.id}`,
-          title: `Booking - ${booking.facilityName}`,
-          facility: booking.facilityName,
-          requester: `Bruker ${booking.userId.slice(0, 8)}`,
-          date: new Date(occurrence.date).toLocaleDateString("nb-NO"),
-          priority: index === 0 ? "high" : index === 1 ? "medium" : "low",
+        pendingOccurrences.slice(0, 3).forEach((occurrence, index) => {
+          realApprovalRequests.push({
+            id: `${booking.id}-${occurrence.id}`,
+            title: `Booking - ${booking.facilityName}`,
+            facility: booking.facilityName,
+            requester: `Bruker ${booking.userId.slice(0, 8)}`,
+            date: new Date(occurrence.date).toLocaleDateString("nb-NO"),
+            priority: index === 0 ? "high" : index === 1 ? "medium" : "low",
+          });
         });
       });
-    });
+    }
 
     setApprovalRequests(realApprovalRequests.slice(0, 3));
 
@@ -164,26 +166,30 @@ const Overview = (): JSX.Element => {
     const realRecentEvents: IRecentEvent[] = [];
 
     // Add booking events
-    bookings.slice(0, 3).forEach((booking) => {
-      realRecentEvents.push({
-        id: `booking-${booking.id}`,
-        type: "booking",
-        message: `Ny booking opprettet for ${booking.facilityName}`,
-        timestamp: new Date(booking.createdAt).toLocaleDateString("nb-NO"),
-        user: `Bruker ${booking.userId.slice(0, 8)}`,
+    if (bookings) {
+      bookings.slice(0, 3).forEach((booking) => {
+        realRecentEvents.push({
+          id: `booking-${booking.id}`,
+          type: "booking",
+          message: `Ny booking opprettet for ${booking.facilityName}`,
+          timestamp: new Date(booking.createdAt).toLocaleDateString("nb-NO"),
+          user: `Bruker ${booking.userId.slice(0, 8)}`,
+        });
       });
-    });
+    }
 
     // Add facility events
-    facilities.slice(0, 2).forEach((facility) => {
-      realRecentEvents.push({
-        id: `facility-${facility.id}`,
-        type: "system",
-        message: `Lokale "${facility.name}" oppdatert`,
-        timestamp: new Date(facility.updated_at).toLocaleDateString("nb-NO"),
-        user: "System",
+    if (facilities) {
+      facilities.slice(0, 2).forEach((facility) => {
+        realRecentEvents.push({
+          id: `facility-${facility.id}`,
+          type: "system",
+          message: `Lokale "${facility.name}" oppdatert`,
+          timestamp: new Date(facility.updated_at).toLocaleDateString("nb-NO"),
+          user: "System",
+        });
       });
-    });
+    }
 
     setRecentEvents(realRecentEvents.slice(0, 5));
 
@@ -191,29 +197,31 @@ const Overview = (): JSX.Element => {
     const today = new Date().toISOString().split("T")[0];
     const realTodaysBookings: ITodaysBooking[] = [];
 
-    bookings
-      .filter((booking) => booking.createdAt.includes(today))
-      .slice(0, 5)
-      .forEach((booking) => {
-        // Get the first occurrence for display
-        const firstOccurrence = booking.occurrences[0];
-        if (firstOccurrence) {
-          realTodaysBookings.push({
-            id: booking.id,
-            facility: booking.facilityName,
-            time: firstOccurrence.date.toLocaleTimeString("nb-NO", {
-              hour: "2-digit",
-              minute: "2-digit",
-            }),
-            duration: "1 time", // Simplified duration
-            user: `Bruker ${booking.userId.slice(0, 8)}`,
-            status: firstOccurrence.status as
-              | "confirmed"
-              | "pending"
-              | "cancelled",
-          });
-        }
-      });
+    if (bookings) {
+      bookings
+        .filter((booking) => booking.createdAt.includes(today))
+        .slice(0, 5)
+        .forEach((booking) => {
+          // Get the first occurrence for display
+          const firstOccurrence = booking.occurrences[0];
+          if (firstOccurrence) {
+            realTodaysBookings.push({
+              id: booking.id,
+              facility: booking.facilityName,
+              time: firstOccurrence.date.toLocaleTimeString("nb-NO", {
+                hour: "2-digit",
+                minute: "2-digit",
+              }),
+              duration: "1 time", // Simplified duration
+              user: `Bruker ${booking.userId.slice(0, 8)}`,
+              status: firstOccurrence.status as
+                | "confirmed"
+                | "pending"
+                | "cancelled",
+            });
+          }
+        });
+    }
 
     setTodaysBookings(realTodaysBookings);
 
@@ -335,7 +343,7 @@ const Overview = (): JSX.Element => {
       {/* Trend Cards */}
       <section className="space-y-4">
         <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-          {t("admin:dashboard.trends")}
+          {t("admin:dashboard.trends", "Trends and Development")}
         </h2>
         <div className="grid gap-6 lg:grid-cols-2">
           {trendCards.map((trendCard, index) => (
