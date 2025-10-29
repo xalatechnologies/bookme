@@ -29,6 +29,28 @@
     "no_activity": "No recent activity",
     "no_bookings": "You have no bookings",
 
+    "default_username": "Default User",
+    "unknown_facility": "Unknown Facility",
+    "default_participant": "Default Participant",
+
+    "weather": {
+      "cloudy": "Cloudy",
+      "sunny": "Sunny",
+      "rainy": "Rainy",
+      "snowy": "Snowy"
+    },
+
+    "system_messages": {
+      "booking_updated": "Booking Updated",
+      "booking_updated_desc": "Booking for {{facility}} has been updated with new times.",
+      "new_regulation": "New Regulations",
+      "new_regulation_desc": "New cancellation rules take effect from February 1st.",
+      "maintenance": "Maintenance Scheduled",
+      "maintenance_desc": "System maintenance scheduled Sunday 08:00–10:00.",
+      "booking_confirmed": "Booking Confirmed",
+      "booking_confirmed_desc": "Your booking for {{facility}} is confirmed! 🎉"
+    },
+
     "days": {
       "monday": "Monday",
       "tuesday": "Tuesday",
@@ -116,6 +138,60 @@
     "viewProfile": "View Profile",
     "settings": "Settings",
     "preferences": "Preferences"
+  },
+
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Manage your account settings and preferences",
+    "settings_saved": "Settings saved successfully!",
+    "settings_save_failed": "Failed to save settings. Please try again.",
+    "save_settings": "Save Settings",
+
+    "notifications": {
+      "title": "Notifications",
+      "email": "Email Notifications",
+      "email_desc": "Receive booking confirmations and updates via email",
+      "sms": "SMS Notifications",
+      "sms_desc": "Receive important updates via SMS",
+      "push": "Push Notifications",
+      "push_desc": "Receive notifications in your browser",
+      "booking_reminders": "Booking Reminders",
+      "booking_reminders_desc": "Remind me 24 hours before my booking",
+      "marketing": "Marketing Emails",
+      "marketing_desc": "Receive updates about new features and offers"
+    },
+
+    "privacy_security": {
+      "title": "Privacy & Security",
+      "show_profile": "Show Profile",
+      "show_profile_desc": "Make your profile visible to other users",
+      "two_factor": "Two-Factor Authentication",
+      "two_factor_desc": "Add an extra layer of security to your account",
+      "change_password": "Change Password"
+    },
+
+    "language_region": {
+      "title": "Language & Region",
+      "language": "Language",
+      "timezone": "Timezone",
+      "languages": {
+        "no": "Norwegian",
+        "en": "English"
+      },
+      "timezones": {
+        "oslo": "Oslo (UTC+1)",
+        "stockholm": "Stockholm (UTC+1)",
+        "copenhagen": "Copenhagen (UTC+1)",
+        "utc": "UTC"
+      }
+    },
+
+    "account_actions": {
+      "title": "Account Actions",
+      "change_email": "Change Email",
+      "change_phone": "Change Phone Number",
+      "delete_account": "Delete Account"
+    }
   },
 
   "actions": {

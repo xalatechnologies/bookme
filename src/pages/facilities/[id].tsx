@@ -102,7 +102,7 @@ export const FacilityDetail = (): JSX.Element => {
           facilityId={facility.id}
           capacity={facility.capacity}
           area={`${facility.capacity} ${t("details.people", {
-            ns: "facilities",
+            ns: "facility",
           })}`}
           openingHours="08:00 - 22:00"
         />

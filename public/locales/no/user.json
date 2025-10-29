@@ -29,6 +29,28 @@
     "no_activity": "Ingen nylig aktivitet",
     "no_bookings": "Du har ingen bookinger",
 
+    "default_username": "Standard bruker",
+    "unknown_facility": "Ukjent lokale",
+    "default_participant": "Standard deltaker",
+
+    "weather": {
+      "cloudy": "Overskyet",
+      "sunny": "Solrikt",
+      "rainy": "Regnværlig",
+      "snowy": "Snøværlig"
+    },
+
+    "system_messages": {
+      "booking_updated": "Booking oppdatert",
+      "booking_updated_desc": "Booking for {{facility}} er oppdatert med nye tider.",
+      "new_regulation": "Nytt regelverk",
+      "new_regulation_desc": "Nye regler for avbestillinger trer i kraft fra 1. februar.",
+      "maintenance": "Vedlikehold planlagt",
+      "maintenance_desc": "Vedlikehold av systemet planlagt søndag 08:00–10:00.",
+      "booking_confirmed": "Booking bekreftet",
+      "booking_confirmed_desc": "Din booking for {{facility}} er bekreftet! 🎉"
+    },
+
     "days": {
       "monday": "mandag",
       "tuesday": "tirsdag",
@@ -116,6 +138,60 @@
     "viewProfile": "Se profil",
     "settings": "Innstillinger",
     "preferences": "Preferanser"
+  },
+
+  "settings": {
+    "title": "Innstillinger",
+    "subtitle": "Administrer dine kontoinnstillinger og preferanser",
+    "settings_saved": "Innstillinger lagret!",
+    "settings_save_failed": "Kunne ikke lagre innstillinger. Vennligst prøv igjen.",
+    "save_settings": "Lagre innstillinger",
+
+    "notifications": {
+      "title": "Varsler",
+      "email": "E-postvarsler",
+      "email_desc": "Motta bookingbekreftelser og oppdateringer på e-post",
+      "sms": "SMS-varsler",
+      "sms_desc": "Motta viktige oppdateringer på SMS",
+      "push": "Push-varsler",
+      "push_desc": "Motta varsler i nettleseren",
+      "booking_reminders": "Bookingpåminnelser",
+      "booking_reminders_desc": "Minne meg på 24 timer før booking",
+      "marketing": "Markedsførings-e-poster",
+      "marketing_desc": "Motta oppdateringer om nye funksjoner og tilbud"
+    },
+
+    "privacy_security": {
+      "title": "Personvern og sikkerhet",
+      "show_profile": "Vis profil",
+      "show_profile_desc": "Gjør profilen din synlig for andre brukere",
+      "two_factor": "Tofaktorautentisering",
+      "two_factor_desc": "Legg til et ekstra sikkerhetslag på kontoen din",
+      "change_password": "Endre passord"
+    },
+
+    "language_region": {
+      "title": "Språk og region",
+      "language": "Språk",
+      "timezone": "Tidssone",
+      "languages": {
+        "no": "Norsk",
+        "en": "Engelsk"
+      },
+      "timezones": {
+        "oslo": "Oslo (UTC+1)",
+        "stockholm": "Stockholm (UTC+1)",
+        "copenhagen": "København (UTC+1)",
+        "utc": "UTC"
+      }
+    },
+
+    "account_actions": {
+      "title": "Kontohandlinger",
+      "change_email": "Endre e-post",
+      "change_phone": "Endre telefonnummer",
+      "delete_account": "Slett konto"
+    }
   },
 
   "actions": {
