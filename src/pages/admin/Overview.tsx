@@ -23,7 +23,8 @@ import {
   ITodaysBooking,
   ISystemAlert,
 } from "@/types/admin";
-import { useFacilityStore } from "@/stores/facilityStore";
+import { useFacilities } from "@/services/supabase/facilities.service";
+import { useOrganizationId } from "@/hooks/useOrganizationId";
 import { useRecurringBookingStore } from "@/stores/recurringBookingStore";
 
 /**
@@ -48,7 +49,8 @@ const Overview = (): JSX.Element => {
   const navigate = useNavigate();
   const { t } = useTranslation("common");
 
-  const { facilities } = useFacilityStore();
+  const orgId = useOrganizationId();
+  const { facilities, loading: facilitiesLoading } = useFacilities(orgId);
   const { bookings } = useRecurringBookingStore();
 
   // Use custom hooks for data management (SOLID: Dependency Inversion)
@@ -178,7 +180,7 @@ const Overview = (): JSX.Element => {
         id: `facility-${facility.id}`,
         type: "system",
         message: `Lokale "${facility.name}" oppdatert`,
-        timestamp: new Date(facility.updatedAt).toLocaleDateString("nb-NO"),
+        timestamp: new Date(facility.updated_at).toLocaleDateString("nb-NO"),
         user: "System",
       });
     });
@@ -264,7 +266,7 @@ const Overview = (): JSX.Element => {
   };
 
   // Loading state
-  if (loading) {
+  if (loading || facilitiesLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">

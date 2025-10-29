@@ -19,3 +19,27 @@ export interface ICalendarQuery {
   readonly statuses?: readonly TBookingStatus[];
   readonly text?: string;
 }
+
+/**
+ * Extended booking event with additional metadata
+ */
+export interface IBookingEventWithMeta extends IBookingEvent {
+  readonly meta?: {
+    readonly priceText?: string;
+  };
+}
+
+/**
+ * Raw booking data from localStorage
+ */
+export interface IRawBookingData {
+  readonly id: string;
+  readonly facilityId?: string;
+  readonly facility?: string;
+  readonly facilityName?: string;
+  readonly purpose?: string;
+  readonly date?: string;
+  readonly time?: string;
+  readonly price?: string;
+  readonly status?: string;
+}
