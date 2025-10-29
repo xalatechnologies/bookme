@@ -1,0 +1,1955 @@
+{
+  "summary": {
+    "filesWithAnimations": 103,
+    "filesWithTransitions": 88,
+    "filesWithFramerMotion": 0,
+    "commonTransitions": [
+      {
+        "transition": "transition-colors",
+        "count": 59
+      },
+      {
+        "transition": "transition-all",
+        "count": 33
+      },
+      {
+        "transition": "transition-transform",
+        "count": 13
+      },
+      {
+        "transition": "transition-opacity",
+        "count": 9
+      },
+      {
+        "transition": "transition-shadow",
+        "count": 8
+      }
+    ]
+  },
+  "files": [
+    {
+      "path": "components/common/LocalizedSelect.tsx",
+      "animations": {
+        "usesCSSTransitions": false,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [],
+      "animationClasses": [
+        "animate-spin"
+      ],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": false,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "components/common/forms/FormActions.tsx",
+      "animations": {
+        "usesCSSTransitions": false,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [],
+      "animationClasses": [
+        "animate-spin"
+      ],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": false,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "components/common/modals/BaseModal.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-colors"
+      ],
+      "animationClasses": [],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": false,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "components/features/auth/components/PermissionGuard.tsx",
+      "animations": {
+        "usesCSSTransitions": false,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [],
+      "animationClasses": [
+        "animate-spin"
+      ],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": false,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "components/features/auth/components/ProtectedRoute.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-colors"
+      ],
+      "animationClasses": [
+        "animate-spin"
+      ],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": false,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "components/features/auth/components/RequireRole.tsx",
+      "animations": {
+        "usesCSSTransitions": false,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [],
+      "animationClasses": [
+        "animate-spin"
+      ],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": false,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "components/features/auth/components/RoleGuard.tsx",
+      "animations": {
+        "usesCSSTransitions": false,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [],
+      "animationClasses": [
+        "animate-spin"
+      ],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": false,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "components/features/bookings/components/BookingCard/RecurringBookingGroup.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-shadow"
+      ],
+      "animationClasses": [],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": false,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "components/features/bookings/components/BookingCard/index.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-shadow"
+      ],
+      "animationClasses": [],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": true,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "components/features/bookings/components/BookingForm/BookingTypeSelector.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-all"
+      ],
+      "animationClasses": [],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": false,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "components/features/bookings/components/StepByStepBooking/components/StepProgressIndicator.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-colors"
+      ],
+      "animationClasses": [],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": false,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "components/features/bookings/components/StepByStepBooking/index.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-colors"
+      ],
+      "animationClasses": [],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": false,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "components/features/calendar/components/CalendarView.tsx",
+      "animations": {
+        "usesCSSTransitions": false,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [],
+      "animationClasses": [
+        "animate-spin"
+      ],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": false,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "components/features/calendar/components/EnhancedCalendar/CalendarGrid.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-all"
+      ],
+      "animationClasses": [],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": true,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "components/features/calendar/components/EnhancedCalendar/TimeSlotGrid.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-all"
+      ],
+      "animationClasses": [],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": true,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "components/features/calendar/components/EnhancedCalendar/index.tsx",
+      "animations": {
+        "usesCSSTransitions": false,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [],
+      "animationClasses": [
+        "animate-spin"
+      ],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": false,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "components/features/calendar/components/EventTooltip.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-colors"
+      ],
+      "animationClasses": [],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": false,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "components/features/calendar/components/SimpleCalendar/index.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-colors"
+      ],
+      "animationClasses": [],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": false,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "components/features/dashboard/admin/ApprovalQueue.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-colors"
+      ],
+      "animationClasses": [],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": false,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "components/features/dashboard/admin/DailyTasks.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-colors"
+      ],
+      "animationClasses": [],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": false,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "components/features/dashboard/admin/KPICard.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-all"
+      ],
+      "animationClasses": [],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": true,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "components/features/dashboard/admin/RecentEvents.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-colors"
+      ],
+      "animationClasses": [],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": false,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "components/features/dashboard/admin/TodaysBookings.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-colors"
+      ],
+      "animationClasses": [],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": true,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "components/features/dashboard/admin/TrendCard.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-opacity"
+      ],
+      "animationClasses": [],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": false,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "components/features/dashboard/user/ActivityFeed.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-colors"
+      ],
+      "animationClasses": [],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": false,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "components/features/dashboard/user/BookingList.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-all",
+        "transition-transform"
+      ],
+      "animationClasses": [],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": true,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "components/features/dashboard/user/QuickActions.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-shadow"
+      ],
+      "animationClasses": [],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": false,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "components/features/dashboard/user/SystemMessages.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-all"
+      ],
+      "animationClasses": [],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": false,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "components/features/facilities/components/FacilityCard/FacilityCardBase.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-shadow",
+        "transition-colors"
+      ],
+      "animationClasses": [],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": false,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "components/features/facilities/components/FacilityCard/FacilityCardUser.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-all",
+        "transition-colors"
+      ],
+      "animationClasses": [],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": true,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "components/features/facilities/components/FacilityCard/FacilityListItem.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-all",
+        "transition-transform",
+        "transition-colors"
+      ],
+      "animationClasses": [],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": true,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "components/features/facilities/components/FacilityCard/FacilityListItemUser.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-shadow",
+        "transition-all",
+        "transition-colors"
+      ],
+      "animationClasses": [],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": true,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "components/features/facilities/components/FacilityCard/index.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-all",
+        "transition-transform",
+        "transition-colors",
+        "transition-opacity"
+      ],
+      "animationClasses": [],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": true,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "components/features/facilities/components/FacilityDetail/FacilityDetailHeader.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-colors",
+        "transition-opacity"
+      ],
+      "animationClasses": [],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": true,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "components/features/facilities/components/FacilityDetail/FacilityDetailStates.tsx",
+      "animations": {
+        "usesCSSTransitions": false,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [],
+      "animationClasses": [
+        "animate-spin"
+      ],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": false,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "components/features/facilities/components/FacilityDetail/FacilityHeader.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-all"
+      ],
+      "animationClasses": [],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": true,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "components/features/facilities/components/FacilityDetail/FacilityInfoTabs.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-colors"
+      ],
+      "animationClasses": [],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": false,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "components/features/facilities/components/FacilityEditForm/AdminFacilityCard.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-all",
+        "transition-transform",
+        "transition-colors"
+      ],
+      "animationClasses": [],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": true,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "components/features/facilities/components/FacilityEditForm/AdminFacilityListItem.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-all",
+        "transition-transform",
+        "transition-colors"
+      ],
+      "animationClasses": [],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": true,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "components/features/facilities/components/FacilityEditForm/FacilityEditForm.tsx",
+      "animations": {
+        "usesCSSTransitions": false,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [],
+      "animationClasses": [
+        "animate-spin"
+      ],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": false,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "components/features/facilities/components/FacilityEditForm/ViewToggle.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-all"
+      ],
+      "animationClasses": [],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": false,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "components/features/facilities/components/FacilityImageGallery/GalleryGrid.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-transform",
+        "transition-opacity",
+        "transition-all"
+      ],
+      "animationClasses": [],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": true,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "components/features/facilities/components/FacilityImageGallery/GalleryModal.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-all"
+      ],
+      "animationClasses": [],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": true,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "components/features/facilities/components/FacilityImageGallery/MobileGallery.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-transform",
+        "transition-all"
+      ],
+      "animationClasses": [],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": true,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "components/features/facilities/components/FacilityMap/FacilityMiniMap.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-opacity"
+      ],
+      "animationClasses": [
+        "animate-spin"
+      ],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": false,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "components/features/facilities/components/FacilityMap/MapErrorState.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-colors"
+      ],
+      "animationClasses": [],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": false,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "components/features/facilities/components/FacilityMap/MapLoadingState.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-colors"
+      ],
+      "animationClasses": [
+        "animate-pulse",
+        "animate-spin"
+      ],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": false,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "components/features/facilities/components/FacilityMap/MapMarkers.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-colors"
+      ],
+      "animationClasses": [],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": false,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "components/features/facilities/components/FacilityMap/MapView.tsx",
+      "animations": {
+        "usesCSSTransitions": false,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [],
+      "animationClasses": [
+        "animate-spin"
+      ],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": false,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "components/features/facilities/components/FacilitySearch/ViewToggle.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-all"
+      ],
+      "animationClasses": [],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": false,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "components/features/groups/components/GroupBookingFlow.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-colors"
+      ],
+      "animationClasses": [],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": false,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "components/features/messaging/components/CreateThreadModal.tsx",
+      "animations": {
+        "usesCSSTransitions": false,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [],
+      "animationClasses": [
+        "animate-spin"
+      ],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": false,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "components/features/messaging/components/MessageInbox.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-colors"
+      ],
+      "animationClasses": [],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": false,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "components/features/messaging/components/MessageThread.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-opacity"
+      ],
+      "animationClasses": [],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": false,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "components/features/search/components/AdminSearchField.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-colors"
+      ],
+      "animationClasses": [],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": true,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "components/features/search/components/GlobalSearch.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-colors"
+      ],
+      "animationClasses": [],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": true,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "components/features/search/components/UserSearchField.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-colors"
+      ],
+      "animationClasses": [],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": true,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "components/features/search/components/ViewModeToggle.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-all"
+      ],
+      "animationClasses": [],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": false,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "components/features/support/components/SupportTicketForm.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-colors"
+      ],
+      "animationClasses": [
+        "animate-spin"
+      ],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": false,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "components/features/support/components/SupportTicketList.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-colors"
+      ],
+      "animationClasses": [],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": true,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "components/layouts/AdminLayout/AdminSidebar.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-all",
+        "transition-colors"
+      ],
+      "animationClasses": [],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": true,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "components/layouts/AdminLayout/NotificationBell.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-colors"
+      ],
+      "animationClasses": [],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": false,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "components/layouts/AdminLayout/ProfileDropdown.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-colors",
+        "transition-transform"
+      ],
+      "animationClasses": [
+        "animate-spin"
+      ],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": true,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "components/layouts/AdminLayout/index.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-all"
+      ],
+      "animationClasses": [],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": false,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "components/layouts/PublicLayout/GlobalHeader.tsx",
+      "animations": {
+        "usesCSSTransitions": false,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [],
+      "animationClasses": [
+        "animate-pulse"
+      ],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": false,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "components/layouts/UserLayout/UserNotificationBell.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-colors"
+      ],
+      "animationClasses": [],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": false,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "components/layouts/UserLayout/UserProfileDropdown.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-colors",
+        "transition-transform"
+      ],
+      "animationClasses": [
+        "animate-spin"
+      ],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": true,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "components/layouts/UserLayout/UserSidebar.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-all",
+        "transition-colors"
+      ],
+      "animationClasses": [],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": true,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "components/layouts/UserLayout/index.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-all"
+      ],
+      "animationClasses": [],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": false,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "components/ui/accordion.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-all",
+        "transition-transform"
+      ],
+      "animationClasses": [
+        "animate-accordion-up",
+        "animate-accordion-down"
+      ],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": true,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "components/ui/badge.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-colors"
+      ],
+      "animationClasses": [],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": false,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "components/ui/button.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-colors"
+      ],
+      "animationClasses": [],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": false,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "components/ui/dialog.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-opacity"
+      ],
+      "animationClasses": [
+        "animate-in",
+        "animate-out"
+      ],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": true,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "components/ui/dropdown-menu.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-colors"
+      ],
+      "animationClasses": [
+        "animate-in",
+        "animate-out"
+      ],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": false,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "components/ui/popover.tsx",
+      "animations": {
+        "usesCSSTransitions": false,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [],
+      "animationClasses": [
+        "animate-in",
+        "animate-out"
+      ],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": false,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "components/ui/progress.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-all"
+      ],
+      "animationClasses": [],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": true,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "components/ui/scroll-area.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-colors"
+      ],
+      "animationClasses": [],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": false,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "components/ui/select.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-colors"
+      ],
+      "animationClasses": [
+        "animate-in",
+        "animate-out"
+      ],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": true,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "components/ui/switch.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-colors",
+        "transition-transform"
+      ],
+      "animationClasses": [],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": true,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "components/ui/tabs.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-all"
+      ],
+      "animationClasses": [],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": false,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "components/ui/toggle.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-colors"
+      ],
+      "animationClasses": [],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": false,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "pages/AdminRoutes.tsx",
+      "animations": {
+        "usesCSSTransitions": false,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [],
+      "animationClasses": [
+        "animate-spin"
+      ],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": false,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "pages/Checkout.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-colors",
+        "transition-transform",
+        "transition-all"
+      ],
+      "animationClasses": [
+        "animate-spin"
+      ],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": true,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "pages/Login.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-colors"
+      ],
+      "animationClasses": [],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": true,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "pages/LoginSelection.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-all",
+        "transition-colors"
+      ],
+      "animationClasses": [],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": true,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "pages/admin/BookingsPage.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-all",
+        "transition-colors"
+      ],
+      "animationClasses": [],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": true,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "pages/admin/DeletionPlanPage.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-colors"
+      ],
+      "animationClasses": [],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": false,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "pages/admin/FacilitiesPage.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-colors"
+      ],
+      "animationClasses": [],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": true,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "pages/admin/FacilityEditPage.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-colors",
+        "transition-opacity"
+      ],
+      "animationClasses": [
+        "animate-spin"
+      ],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": true,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "pages/admin/IntegrationsPage.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-shadow"
+      ],
+      "animationClasses": [],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": false,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "pages/admin/NotificationsPage.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-colors"
+      ],
+      "animationClasses": [],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": false,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "pages/admin/Overview.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-colors"
+      ],
+      "animationClasses": [
+        "animate-spin"
+      ],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": false,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "pages/admin/SettingsPage.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-opacity",
+        "transition-colors"
+      ],
+      "animationClasses": [
+        "animate-spin"
+      ],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": false,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "pages/admin/UsersRolesPage.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-colors"
+      ],
+      "animationClasses": [],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": true,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "pages/user/Bookings.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-colors"
+      ],
+      "animationClasses": [
+        "animate-spin"
+      ],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": false,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "pages/user/CalendarPage.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-colors"
+      ],
+      "animationClasses": [],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": false,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "pages/user/HistoryPage.tsx",
+      "animations": {
+        "usesCSSTransitions": false,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [],
+      "animationClasses": [
+        "animate-spin"
+      ],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": true,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "pages/user/UserDashboard.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-shadow",
+        "transition-all"
+      ],
+      "animationClasses": [],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": false,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "pages/user/UserFavorites.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-all",
+        "transition-transform"
+      ],
+      "animationClasses": [],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": true,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "pages/user/UserHelp.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-shadow",
+        "transition-colors"
+      ],
+      "animationClasses": [],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": true,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "pages/user/UserNotifications.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-colors",
+        "transition-all"
+      ],
+      "animationClasses": [],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": false,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "pages/user/UserProfile.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-colors"
+      ],
+      "animationClasses": [],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": false,
+        "usesGPUAcceleration": false
+      }
+    },
+    {
+      "path": "pages/user/UserReceipts.tsx",
+      "animations": {
+        "usesCSSTransitions": true,
+        "usesFramerMotion": false,
+        "usesReactSpring": false,
+        "hasCustomAnimations": false
+      },
+      "transitions": [
+        "transition-all"
+      ],
+      "animationClasses": [],
+      "performance": {
+        "usesWillChange": false,
+        "usesTransform": true,
+        "usesGPUAcceleration": false
+      }
+    }
+  ]
+}

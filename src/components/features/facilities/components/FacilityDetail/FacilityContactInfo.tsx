@@ -5,14 +5,16 @@ import { Badge } from "@/components/ui/badge";
 import { MapPin, Clock, Euro, Phone, Mail, Calendar } from "lucide-react";
 import type { IFacility } from "@/stores/facilityStore";
 import { useTranslation } from "react-i18next";
-import { useAmenityTranslation } from '@/hooks/useAmenityTranslation';
+import { useAmenityTranslation } from "@/hooks/shared";
 
 interface FacilityContactInfoProps {
   readonly facility: IFacility;
 }
 
-export const FacilityContactInfo: React.FC<FacilityContactInfoProps> = ({ facility }) => {
-  const { t } = useTranslation(['facilities', 'common']);
+export const FacilityContactInfo: React.FC<FacilityContactInfoProps> = ({
+  facility,
+}) => {
+  const { t } = useTranslation(["facilities", "common"]);
   const translateAmenity = useAmenityTranslation();
 
   // Defensive: handle initial loading state where facility may be undefined
@@ -21,10 +23,14 @@ export const FacilityContactInfo: React.FC<FacilityContactInfoProps> = ({ facili
       <div className="space-y-6">
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">{t('loading.facility', { ns: 'common' })}</CardTitle>
+            <CardTitle className="text-lg">
+              {t("loading.facility", { ns: "common" })}
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-sm text-gray-500">{t('loading.please_wait', { ns: 'common' })}</div>
+            <div className="text-sm text-gray-500">
+              {t("loading.please_wait", { ns: "common" })}
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -36,8 +42,8 @@ export const FacilityContactInfo: React.FC<FacilityContactInfoProps> = ({ facili
       // Navigate to booking page
       window.location.href = `/facilities/${facility.id}/book`;
     } catch (error) {
-      console.error('Failed to navigate to booking:', error);
-      alert(t('facilities:contact.booking_failed'));
+      console.error("Failed to navigate to booking:", error);
+      alert(t("facilities:contact.booking_failed"));
     }
   };
 
@@ -45,32 +51,48 @@ export const FacilityContactInfo: React.FC<FacilityContactInfoProps> = ({ facili
     try {
       // Create contact options
       const contactOptions = [
-        `${t('facilities:contact.phone')}: ${facility.emergencyContact || "+47 32 04 70 00"}`,
-        `${t('facilities:contact.email')}: ${facility.contactEmail || "booking@drammen.kommune.no"}`,
-        `${t('facilities:contact.facility')}: ${facility.name}`,
-        `${t('facilities:contact.location')}: ${facility.location}`
-      ].join('\n');
+        `${t("facilities:contact.phone")}: ${
+          facility.emergencyContact || "+47 32 04 70 00"
+        }`,
+        `${t("facilities:contact.email")}: ${
+          facility.contactEmail || "booking@drammen.kommune.no"
+        }`,
+        `${t("facilities:contact.facility")}: ${facility.name}`,
+        `${t("facilities:contact.location")}: ${facility.location}`,
+      ].join("\n");
 
       // Show contact information
       const contactChoice = window.confirm(
-        `${t('facilities:contact.contact_info_for', { name: facility.name })}\n\n${contactOptions}\n\n${t('facilities:contact.open_email_client')}`
+        `${t("facilities:contact.contact_info_for", { name: facility.name })}
+
+${contactOptions}
+
+${t("facilities:contact.open_email_client")}`
       );
 
       if (contactChoice) {
         // Open email client
-        const subject = t('facilities:contact.inquiry_about', { name: facility.name });
-        const body = t('facilities:contact.email_template', { name: facility.name });
+        const subject = t("facilities:contact.inquiry_about", {
+          name: facility.name,
+        });
+        const body = t("facilities:contact.email_template", {
+          name: facility.name,
+        });
 
-        const mailtoLink = `mailto:${facility.contactEmail || "booking@drammen.kommune.no"}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        const mailtoLink = `mailto:${
+          facility.contactEmail || "booking@drammen.kommune.no"
+        }?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(
+          body
+        )}`;
         window.open(mailtoLink);
       } else {
         // Copy contact info to clipboard
         navigator.clipboard.writeText(contactOptions);
-        alert(t('facilities:contact.contact_copied'));
+        alert(t("facilities:contact.contact_copied"));
       }
     } catch (error) {
-      console.error('Failed to handle contact:', error);
-      alert(t('facilities:contact.contact_error'));
+      console.error("Failed to handle contact:", error);
+      alert(t("facilities:contact.contact_error"));
     }
   };
 
@@ -79,22 +101,30 @@ export const FacilityContactInfo: React.FC<FacilityContactInfoProps> = ({ facili
       {/* Quick Info Card */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">{t('details.quick_info', { ns: 'facilities' })}</CardTitle>
+          <CardTitle className="text-lg">
+            {t("details.quick_info", { ns: "facilities" })}
+          </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center gap-3">
             <Euro className="h-5 w-5 text-gray-400" />
             <div>
-              <p className="text-sm text-gray-500">{t('fields.price_per_hour', { ns: 'facilities' })}</p>
-              <p className="font-medium">{(facility.pricePerHour ?? 0)} kr</p>
+              <p className="text-sm text-gray-500">
+                {t("fields.price_per_hour", { ns: "facilities" })}
+              </p>
+              <p className="font-medium">{facility.pricePerHour ?? 0} kr</p>
             </div>
           </div>
 
           <div className="flex items-center gap-3">
             <MapPin className="h-5 w-5 text-gray-400" />
             <div>
-              <p className="text-sm text-gray-500">{t('fields.location', { ns: 'facilities' })}</p>
-              <p className="font-medium">{facility.location || t('common:unknown')}</p>
+              <p className="text-sm text-gray-500">
+                {t("fields.location", { ns: "facilities" })}
+              </p>
+              <p className="font-medium">
+                {facility.location || t("common:unknown")}
+              </p>
             </div>
           </div>
         </CardContent>
@@ -103,14 +133,18 @@ export const FacilityContactInfo: React.FC<FacilityContactInfoProps> = ({ facili
       {/* Booking Card */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">{t('details.book_facility', { ns: 'facilities' })}</CardTitle>
+          <CardTitle className="text-lg">
+            {t("details.book_facility", { ns: "facilities" })}
+          </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="text-center">
             <div className="text-2xl font-bold text-green-600 mb-1">
-              {(facility.pricePerHour ?? 0)} kr
+              {facility.pricePerHour ?? 0} kr
             </div>
-            <p className="text-sm text-gray-500">{t('details.per_hour', { ns: 'facilities' })}</p>
+            <p className="text-sm text-gray-500">
+              {t("details.per_hour", { ns: "facilities" })}
+            </p>
           </div>
 
           <Button
@@ -119,7 +153,7 @@ export const FacilityContactInfo: React.FC<FacilityContactInfoProps> = ({ facili
             size="lg"
           >
             <Calendar className="h-5 w-5 mr-2" />
-            {t('actions.book_now', { ns: 'common' })}
+            {t("actions.book_now", { ns: "common" })}
           </Button>
 
           <Button
@@ -129,7 +163,7 @@ export const FacilityContactInfo: React.FC<FacilityContactInfoProps> = ({ facili
             size="lg"
           >
             <Phone className="h-5 w-5 mr-2" />
-            {t('actions.contact_us', { ns: 'common' })}
+            {t("actions.contact_us", { ns: "common" })}
           </Button>
         </CardContent>
       </Card>
@@ -137,16 +171,22 @@ export const FacilityContactInfo: React.FC<FacilityContactInfoProps> = ({ facili
       {/* Opening Hours Card */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">{t('details.opening_hours_today', { ns: 'facilities' })}</CardTitle>
+          <CardTitle className="text-lg">
+            {t("details.opening_hours_today", { ns: "facilities" })}
+          </CardTitle>
         </CardHeader>
         <CardContent>
-          {facility.availability?.monday?.start && facility.availability?.monday?.end ? (
+          {facility.availability?.monday?.start &&
+          facility.availability?.monday?.end ? (
             <div className="flex items-center gap-3">
               <Clock className="h-5 w-5 text-gray-400" />
               <div>
-                <p className="font-medium text-green-600">{t('status.open_now', { ns: 'facilities' })}</p>
+                <p className="font-medium text-green-600">
+                  {t("status.open_now", { ns: "facilities" })}
+                </p>
                 <p className="text-sm text-gray-500">
-                  {facility.availability.monday.start} - {facility.availability.monday.end}
+                  {facility.availability.monday.start} -{" "}
+                  {facility.availability.monday.end}
                 </p>
               </div>
             </div>
@@ -159,22 +199,21 @@ export const FacilityContactInfo: React.FC<FacilityContactInfoProps> = ({ facili
       {/* Features Card */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">{t('details.facilities', { ns: 'facilities' })}</CardTitle>
+          <CardTitle className="text-lg">
+            {t("details.facilities", { ns: "facilities" })}
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap gap-2">
             {(facility.amenities ?? []).slice(0, 6).map((amenity, index) => (
-              <Badge
-                key={index}
-                variant="outline"
-                className="text-xs"
-              >
+              <Badge key={index} variant="outline" className="text-xs">
                 {translateAmenity(amenity)}
               </Badge>
             ))}
             {(facility.amenities?.length ?? 0) > 6 && (
               <Badge variant="outline" className="text-xs">
-                +{(facility.amenities?.length ?? 0) - 6} {t('facilities:card.more')}
+                +{(facility.amenities?.length ?? 0) - 6}{" "}
+                {t("facilities:card.more")}
               </Badge>
             )}
           </div>
@@ -184,17 +223,23 @@ export const FacilityContactInfo: React.FC<FacilityContactInfoProps> = ({ facili
       {/* Contact Card */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">{t('details.contact_info', { ns: 'facilities' })}</CardTitle>
+          <CardTitle className="text-lg">
+            {t("details.contact_info", { ns: "facilities" })}
+          </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           <div className="flex items-center gap-3">
             <Phone className="h-4 w-4 text-gray-400" />
-            <span className="text-sm">{facility.emergencyContact || "+47 32 04 70 00"}</span>
+            <span className="text-sm">
+              {facility.emergencyContact || "+47 32 04 70 00"}
+            </span>
           </div>
 
           <div className="flex items-center gap-3">
             <Mail className="h-4 w-4 text-gray-400" />
-            <span className="text-sm">{facility.contactEmail || "booking@drammen.kommune.no"}</span>
+            <span className="text-sm">
+              {facility.contactEmail || "booking@drammen.kommune.no"}
+            </span>
           </div>
         </CardContent>
       </Card>

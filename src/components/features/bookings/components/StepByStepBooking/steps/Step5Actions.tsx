@@ -29,7 +29,7 @@ export const Step5Actions = ({
   onAddToCart,
   onCompleteBooking
 }: IStep5ActionsProps): JSX.Element => {
-  const { t } = useTranslation('bookings');
+  const { t } = useTranslation('booking');
 
   return (
     <div className="space-y-6">

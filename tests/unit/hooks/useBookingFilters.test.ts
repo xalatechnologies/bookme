@@ -3,7 +3,48 @@ import { renderHook } from '@testing-library/react';
 import { useBookingFilters } from '@/hooks/bookings/useBookingFilters';
 import type { BookingWithDetails } from '@/services/supabase/bookings.service';
 
+// Mock facility type for test data
+interface TestFacility {
+  readonly id: string;
+  readonly name: string;
+  readonly description: string;
+  readonly zone_id: string;
+  readonly capacity: number;
+  readonly hourly_rate: number;
+  readonly status: string;
+}
+
 // Mock booking data
+const mockFacility1: TestFacility = {
+  id: 'facility-1',
+  name: 'Drammen Idrettshall',
+  description: 'Sports hall',
+  zone_id: 'zone-1',
+  capacity: 100,
+  hourly_rate: 500,
+  status: 'available',
+};
+
+const mockFacility2: TestFacility = {
+  id: 'facility-2',
+  name: 'Drammen Kulturhus',
+  description: 'Cultural center',
+  zone_id: 'zone-1',
+  capacity: 200,
+  hourly_rate: 750,
+  status: 'available',
+};
+
+const mockFacility3: TestFacility = {
+  id: 'facility-3',
+  name: 'Drammen Svømmehall',
+  description: 'Swimming pool',
+  zone_id: 'zone-2',
+  capacity: 50,
+  hourly_rate: 300,
+  status: 'available',
+};
+
 const mockBookings: BookingWithDetails[] = [
   {
     id: 'booking-1',
@@ -21,15 +62,7 @@ const mockBookings: BookingWithDetails[] = [
     approval_status: 'approved',
     approved_by: null,
     approved_at: null,
-    facility: {
-      id: 'facility-1',
-      name: 'Drammen Idrettshall',
-      description: 'Sports hall',
-      zone_id: 'zone-1',
-      capacity: 100,
-      hourly_rate: 500,
-      status: 'available',
-    } as any,
+    facility: mockFacility1,
   },
   {
     id: 'booking-2',
@@ -47,15 +80,7 @@ const mockBookings: BookingWithDetails[] = [
     approval_status: 'pending',
     approved_by: null,
     approved_at: null,
-    facility: {
-      id: 'facility-2',
-      name: 'Drammen Kulturhus',
-      description: 'Cultural center',
-      zone_id: 'zone-1',
-      capacity: 200,
-      hourly_rate: 750,
-      status: 'available',
-    } as any,
+    facility: mockFacility2,
   },
   {
     id: 'booking-3',
@@ -73,15 +98,7 @@ const mockBookings: BookingWithDetails[] = [
     approval_status: 'approved',
     approved_by: null,
     approved_at: null,
-    facility: {
-      id: 'facility-1',
-      name: 'Drammen Idrettshall',
-      description: 'Sports hall',
-      zone_id: 'zone-1',
-      capacity: 100,
-      hourly_rate: 500,
-      status: 'available',
-    } as any,
+    facility: mockFacility1,
   },
   {
     id: 'booking-4',
@@ -99,15 +116,7 @@ const mockBookings: BookingWithDetails[] = [
     approval_status: 'rejected',
     approved_by: null,
     approved_at: null,
-    facility: {
-      id: 'facility-3',
-      name: 'Drammen Svømmehall',
-      description: 'Swimming pool',
-      zone_id: 'zone-2',
-      capacity: 50,
-      hourly_rate: 300,
-      status: 'available',
-    } as any,
+    facility: mockFacility3,
   },
 ];
 
@@ -135,7 +144,7 @@ describe('useBookingFilters', () => {
       );
 
       expect(result.current).toHaveLength(1);
-      expect(result.current[0].status).toBe('paid');
+      expect(result.current[0]?.status).toBe('paid');
     });
 
     it('should filter by pending status', () => {
@@ -144,7 +153,7 @@ describe('useBookingFilters', () => {
       );
 
       expect(result.current).toHaveLength(1);
-      expect(result.current[0].status).toBe('pending');
+      expect(result.current[0]?.status).toBe('pending');
     });
 
     it('should filter by completed status', () => {
@@ -153,7 +162,7 @@ describe('useBookingFilters', () => {
       );
 
       expect(result.current).toHaveLength(1);
-      expect(result.current[0].status).toBe('completed');
+      expect(result.current[0]?.status).toBe('completed');
     });
 
     it('should return all when status is "all"', () => {
@@ -236,7 +245,7 @@ describe('useBookingFilters', () => {
       );
 
       expect(result.current).toHaveLength(1);
-      expect(result.current[0].id).toBe('booking-1');
+      expect(result.current[0]?.id).toBe('booking-1');
     });
 
     it('should be case insensitive', () => {
@@ -319,8 +328,8 @@ describe('useBookingFilters', () => {
       );
 
       expect(result.current).toHaveLength(1);
-      expect(result.current[0].status).toBe('paid');
-      expect(result.current[0].facility_id).toBe('facility-1');
+      expect(result.current[0]?.status).toBe('paid');
+      expect(result.current[0]?.facility_id).toBe('facility-1');
     });
 
     it('should filter and sort correctly', () => {

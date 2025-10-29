@@ -24,7 +24,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useLocalizedDbValue } from "@/hooks/useLocalizedDbValue";
+import { useLocalizedDbValue } from "@/hooks/shared/useLocalizedDbValue";
 import { Loader2 } from "lucide-react";
 
 export interface LocalizedSelectProps {

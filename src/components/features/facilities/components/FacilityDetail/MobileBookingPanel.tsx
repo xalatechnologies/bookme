@@ -21,7 +21,7 @@ export const MobileBookingPanel: React.FC<MobileBookingPanelProps> = ({
   area,
   openingHours
 }): JSX.Element => {
-  const { t } = useTranslation(['facilities']);
+  const { t } = useTranslation(['facility']);
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (
@@ -35,7 +35,7 @@ export const MobileBookingPanel: React.FC<MobileBookingPanelProps> = ({
         >
           <div>
             <h3 className="font-semibold text-gray-900">{facilityName}</h3>
-            <p className="text-sm text-gray-600">{t('facilities:mobile_panel.see_booking_options')}</p>
+            <p className="text-sm text-gray-600">{t('facility:mobile_panel.see_booking_options')}</p>
           </div>
           {isExpanded ? (
             <ChevronDown className="h-5 w-5 text-gray-500" />
@@ -52,12 +52,12 @@ export const MobileBookingPanel: React.FC<MobileBookingPanelProps> = ({
             {/* Placeholder for PersistentBookingSidebar - will be implemented later */}
             <div className="space-y-4">
               <div className="text-center text-gray-600">
-                <p>{t('facilities:mobile_panel.booking_coming_soon')}</p>
-                <p className="text-sm mt-2">{t('facilities:mobile_panel.capacity_area', { capacity, area })}</p>
-                <p className="text-sm">{t('facilities:mobile_panel.opening_hours_label', { hours: openingHours })}</p>
+                <p>{t('facility:mobile_panel.booking_coming_soon')}</p>
+                <p className="text-sm mt-2">{t('facility:mobile_panel.capacity_area', { capacity, area })}</p>
+                <p className="text-sm">{t('facility:mobile_panel.opening_hours_label', { hours: openingHours })}</p>
               </div>
               <Button className="w-full" disabled>
-                {t('facilities:mobile_panel.book_now_coming_soon')}
+                {t('facility:mobile_panel.book_now_coming_soon')}
               </Button>
             </div>
           </div>

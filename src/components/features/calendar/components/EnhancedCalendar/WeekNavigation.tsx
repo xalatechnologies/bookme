@@ -35,7 +35,7 @@ export const WeekNavigation: React.FC<IWeekNavigationProps> = ({
   onCurrentWeek,
   isLoading = false,
 }) => {
-  const { t } = useTranslation('calendar');
+  const { t } = useTranslation('common');
   const formatWeekRange = (startDate: Date, endDate: Date): string => {
     const start = format(startDate, "dd. MMM", { locale: nb });
     const end = format(endDate, "dd. MMM yyyy", { locale: nb });

@@ -1,9 +1,15 @@
 /**
- * Groups Feature Components
+ * Groups Feature - Complete Domain Export
  *
- * All group management and group booking components
+ * All group-related components, hooks, types, and constants.
  */
 
 export { GroupManagementCard } from './components/GroupManagementCard';
 export { GroupInvitationModal } from './components/GroupInvitationModal';
 export { GroupBookingFlow } from './components/GroupBookingFlow';
+
+// Types
+export * from './types';
+
+// Constants
+export * from './constants';

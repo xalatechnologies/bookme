@@ -1,3 +1,4 @@
+import React from 'react';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -8,6 +9,36 @@ import {
   useIsFavorite,
 } from '@/services/supabase/favorites.service';
 import { supabase } from '@/lib/supabase';
+
+// Type for mock Supabase response
+interface MockSupabaseResponse<T> {
+  readonly data: T[] | T | null;
+  readonly error: { readonly message: string } | null;
+}
+
+// Type for mock favorite with facility data
+interface MockFavoriteWithFacility {
+  readonly id: string;
+  readonly user_id: string;
+  readonly facility_id: string;
+  readonly created_at: string;
+  readonly facility: MockFacility;
+}
+
+// Type for mock facility
+interface MockFacility {
+  readonly id: string;
+  readonly name: string;
+  readonly description: string;
+}
+
+// Type for basic favorite
+interface MockFavorite {
+  readonly id: string;
+  readonly user_id: string;
+  readonly facility_id: string;
+  readonly created_at: string;
+}
 
 vi.mock('@/lib/supabase', () => ({
   supabase: {
@@ -22,7 +53,7 @@ const createWrapper = () => {
       mutations: { retry: false },
     },
   });
-  return ({ children }: { children: React.ReactNode }) => (
+  return ({ children }: { readonly children: React.ReactNode }) => (
     <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   );
 };
@@ -34,7 +65,7 @@ describe('Favorites Service', () => {
 
   describe('favoritesService.getUserFavorites', () => {
     it('should fetch user favorites with facility data', async () => {
-      const mockFavorites = [
+      const mockFavorites: MockFavoriteWithFacility[] = [
         {
           id: 'fav-1',
           user_id: 'user-1',
@@ -48,10 +79,10 @@ describe('Favorites Service', () => {
         },
       ];
 
-      (supabase.from as any).mockReturnValue({
+      (supabase.from as jest.Mock).mockReturnValue({
         select: vi.fn().mockReturnThis(),
         eq: vi.fn().mockReturnThis(),
-        order: vi.fn().mockResolvedValue({ data: mockFavorites, error: null }),
+        order: vi.fn().mockResolvedValue({ data: mockFavorites, error: null } as MockSupabaseResponse<MockFavoriteWithFacility>),
       });
 
       const result = await favoritesService.getUserFavorites('user-1');
@@ -61,13 +92,13 @@ describe('Favorites Service', () => {
     });
 
     it('should throw error on fetch failure', async () => {
-      (supabase.from as any).mockReturnValue({
+      (supabase.from as jest.Mock).mockReturnValue({
         select: vi.fn().mockReturnThis(),
         eq: vi.fn().mockReturnThis(),
         order: vi.fn().mockResolvedValue({
           data: null,
           error: { message: 'Fetch error' },
-        }),
+        } as MockSupabaseResponse<MockFavoriteWithFacility>),
       });
 
       await expect(favoritesService.getUserFavorites('user-1')).rejects.toThrow('Fetch error');
@@ -76,7 +107,7 @@ describe('Favorites Service', () => {
 
   describe('favoritesService.isFavorite', () => {
     it('should return true when facility is favorited', async () => {
-      (supabase.from as any).mockReturnValue({
+      (supabase.from as jest.Mock).mockReturnValue({
         select: vi.fn().mockReturnThis(),
         eq: vi.fn().mockReturnThis(),
         maybeSingle: vi.fn().mockResolvedValue({
@@ -91,7 +122,7 @@ describe('Favorites Service', () => {
     });
 
     it('should return false when facility is not favorited', async () => {
-      (supabase.from as any).mockReturnValue({
+      (supabase.from as jest.Mock).mockReturnValue({
         select: vi.fn().mockReturnThis(),
         eq: vi.fn().mockReturnThis(),
         maybeSingle: vi.fn().mockResolvedValue({
@@ -108,14 +139,14 @@ describe('Favorites Service', () => {
 
   describe('favoritesService.addFavorite', () => {
     it('should add a favorite', async () => {
-      const newFavorite = {
+      const newFavorite: MockFavorite = {
         id: 'fav-1',
         user_id: 'user-1',
         facility_id: 'facility-1',
         created_at: '2024-01-01T00:00:00Z',
       };
 
-      (supabase.from as any).mockReturnValue({
+      (supabase.from as jest.Mock).mockReturnValue({
         insert: vi.fn().mockReturnThis(),
         select: vi.fn().mockReturnThis(),
         single: vi.fn().mockResolvedValue({ data: newFavorite, error: null }),
@@ -127,7 +158,7 @@ describe('Favorites Service', () => {
     });
 
     it('should handle duplicate favorites', async () => {
-      (supabase.from as any).mockReturnValue({
+      (supabase.from as jest.Mock).mockReturnValue({
         insert: vi.fn().mockReturnThis(),
         select: vi.fn().mockReturnThis(),
         single: vi.fn().mockResolvedValue({
@@ -144,10 +175,10 @@ describe('Favorites Service', () => {
 
   describe('favoritesService.removeFavorite', () => {
     it('should remove a favorite', async () => {
-      (supabase.from as any).mockReturnValue({
+      (supabase.from as jest.Mock).mockReturnValue({
         delete: vi.fn().mockReturnThis(),
         eq: vi.fn().mockReturnThis(),
-        select: vi.fn().mockResolvedValue({ data: [], error: null }),
+        select: vi.fn().mockResolvedValue({ data: [], error: null } as MockSupabaseResponse<MockFavorite[]>),
       });
 
       await expect(
@@ -156,13 +187,13 @@ describe('Favorites Service', () => {
     });
 
     it('should throw error if favorite not found', async () => {
-      (supabase.from as any).mockReturnValue({
+      (supabase.from as jest.Mock).mockReturnValue({
         delete: vi.fn().mockReturnThis(),
         eq: vi.fn().mockReturnThis(),
         select: vi.fn().mockResolvedValue({
           data: null,
           error: { message: 'Not found' },
-        }),
+        } as MockSupabaseResponse<MockFavorite[]>),
       });
 
       await expect(
@@ -179,7 +210,15 @@ describe('Favorites Hooks', () => {
 
   describe('useUserFavorites', () => {
     it('should fetch user favorites', async () => {
-      const mockFavorites = [
+      interface FavoriteWithFacility {
+        readonly id: string;
+        readonly user_id: string;
+        readonly facility_id: string;
+        readonly created_at: string;
+        readonly facility: { readonly id: string; readonly name: string };
+      }
+
+      const mockFavorites: FavoriteWithFacility[] = [
         {
           id: 'fav-1',
           user_id: 'user-1',
@@ -189,10 +228,10 @@ describe('Favorites Hooks', () => {
         },
       ];
 
-      (supabase.from as any).mockReturnValue({
+      (supabase.from as jest.Mock).mockReturnValue({
         select: vi.fn().mockReturnThis(),
         eq: vi.fn().mockReturnThis(),
-        order: vi.fn().mockResolvedValue({ data: mockFavorites, error: null }),
+        order: vi.fn().mockResolvedValue({ data: mockFavorites, error: null } as MockSupabaseResponse<FavoriteWithFacility>),
       });
 
       const { result } = renderHook(() => useUserFavorites('user-1'), {
@@ -207,7 +246,7 @@ describe('Favorites Hooks', () => {
 
   describe('useIsFavorite', () => {
     it('should check if facility is favorited', async () => {
-      (supabase.from as any).mockReturnValue({
+      (supabase.from as jest.Mock).mockReturnValue({
         select: vi.fn().mockReturnThis(),
         eq: vi.fn().mockReturnThis(),
         maybeSingle: vi.fn().mockResolvedValue({
@@ -229,14 +268,14 @@ describe('Favorites Hooks', () => {
 
   describe('useToggleFavorite', () => {
     it('should add favorite when not favorited', async () => {
-      const newFavorite = {
+      const newFavorite: MockFavorite = {
         id: 'fav-1',
         user_id: 'user-1',
         facility_id: 'facility-1',
         created_at: '2024-01-01T00:00:00Z',
       };
 
-      (supabase.from as any).mockReturnValue({
+      (supabase.from as jest.Mock).mockReturnValue({
         insert: vi.fn().mockReturnThis(),
         select: vi.fn().mockReturnThis(),
         single: vi.fn().mockResolvedValue({ data: newFavorite, error: null }),
@@ -256,10 +295,10 @@ describe('Favorites Hooks', () => {
     });
 
     it('should remove favorite when favorited', async () => {
-      (supabase.from as any).mockReturnValue({
+      (supabase.from as jest.Mock).mockReturnValue({
         delete: vi.fn().mockReturnThis(),
         eq: vi.fn().mockReturnThis(),
-        select: vi.fn().mockResolvedValue({ data: [], error: null }),
+        select: vi.fn().mockResolvedValue({ data: [], error: null } as MockSupabaseResponse<MockFavorite[]>),
       });
 
       const { result } = renderHook(() => useToggleFavorite(), {

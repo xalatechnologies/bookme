@@ -35,7 +35,7 @@ export const BookingSidebar = ({
   priceCalculation,
   onClearAll
 }: IBookingSidebarProps): JSX.Element => {
-  const { t, i18n } = useTranslation('bookings');
+  const { t, i18n } = useTranslation('booking');
   const currentLocale = i18n.language === 'en' ? 'en-US' : 'nb-NO';
 
   const hasSlots = selectedSlots.length > 0 || recurringSlots.length > 0;

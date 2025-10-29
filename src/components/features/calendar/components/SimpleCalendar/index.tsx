@@ -30,7 +30,7 @@ export const SimpleCalendar: React.FC<SimpleCalendarProps> = ({
   currentDate: externalCurrentDate,
   onDateChange
 }) => {
-  const { t } = useTranslation('calendar');
+  const { t } = useTranslation('common');
   const [internalCurrentDate, setInternalCurrentDate] = useState(new Date());
   const currentDate = externalCurrentDate || internalCurrentDate;
   const setCurrentDate = onDateChange || setInternalCurrentDate;

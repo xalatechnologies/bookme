@@ -1,9 +1,7 @@
 /**
- * Authentication Components
+ * Auth Feature - Complete Domain Export
  *
- * Export all authentication-related components for easy importing.
- *
- * @module components/auth
+ * All authentication-related components, hooks, types, and constants.
  */
 
 // Protected Routes
@@ -30,3 +28,9 @@ export {
   CanDelete,
   CanManage,
 } from './components/PermissionGuard';
+
+// Types
+export * from './types';
+
+// Constants
+export * from './constants';

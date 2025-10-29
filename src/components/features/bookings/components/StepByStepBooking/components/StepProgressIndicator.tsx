@@ -1,9 +1,9 @@
-import React from 'react';
-import { useTranslation } from 'react-i18next';
-import { Card, CardContent } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
-import { BookingStep, IStepConfig } from '@/hooks/useBookingSteps';
-import { Calendar, FileText, Clock, Shield, CheckCircle } from 'lucide-react';
+import React from "react";
+import { useTranslation } from "react-i18next";
+import { Card, CardContent } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { BookingStep, IStepConfig } from "../../../hooks/useBookingSteps";
+import { Calendar, FileText, Clock, Shield, CheckCircle } from "lucide-react";
 
 /**
  * Step progress indicator props
@@ -45,9 +45,9 @@ export const StepProgressIndicator = ({
   progress,
   isStepAccessible,
   isStepCompleted,
-  onStepClick
+  onStepClick,
 }: IStepProgressIndicatorProps): JSX.Element => {
-  const { t } = useTranslation('bookings');
+  const { t } = useTranslation("bookings");
 
   return (
     <Card>
@@ -55,12 +55,12 @@ export const StepProgressIndicator = ({
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="font-semibold">
-              {t('steps.progress.title', 'Bookingprosess')}
+              {t("steps.progress.title", "Bookingprosess")}
             </h3>
             <span className="text-sm text-gray-500">
-              {t('steps.progress.current', 'Steg {{current}} av {{total}}', {
+              {t("steps.progress.current", "Steg {{current}} av {{total}}", {
                 current: currentStepIndex + 1,
-                total: steps.length
+                total: steps.length,
               })}
             </span>
           </div>
@@ -69,7 +69,8 @@ export const StepProgressIndicator = ({
 
           <div className="flex justify-between">
             {steps.map((step, index) => {
-              const IconComponent = STEP_ICON_MAP[step.icon as string] || Calendar;
+              const IconComponent =
+                STEP_ICON_MAP[step.icon as string] || Calendar;
               const isCompleted = isStepCompleted(index);
               const isCurrent = step.id === currentStep;
               const isAccessible = isStepAccessible(index);
@@ -79,15 +80,21 @@ export const StepProgressIndicator = ({
                   key={step.id}
                   onClick={() => onStepClick(step.id)}
                   disabled={!isAccessible}
-                  aria-label={`${step.title} - ${isCurrent ? t('steps.progress.current_step', 'Gjeldende steg') : isCompleted ? t('steps.progress.completed', 'Fullført') : t('steps.progress.upcoming', 'Kommende')}`}
+                  aria-label={`${step.title} - ${
+                    isCurrent
+                      ? t("steps.progress.current_step", "Gjeldende steg")
+                      : isCompleted
+                      ? t("steps.progress.completed", "Fullført")
+                      : t("steps.progress.upcoming", "Kommende")
+                  }`}
                   className={`flex flex-col items-center space-y-2 p-2 rounded-lg transition-colors ${
                     isCurrent
-                      ? 'bg-blue-100 text-blue-700'
+                      ? "bg-blue-100 text-blue-700"
                       : isCompleted
-                      ? 'bg-green-100 text-green-700'
+                      ? "bg-green-100 text-green-700"
                       : isAccessible
-                      ? 'hover:bg-gray-100 text-gray-600'
-                      : 'text-gray-400 cursor-not-allowed'
+                      ? "hover:bg-gray-100 text-gray-600"
+                      : "text-gray-400 cursor-not-allowed"
                   }`}
                 >
                   <IconComponent className="h-5 w-5" />

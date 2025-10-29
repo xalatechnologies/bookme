@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import type { IDashboardData } from "./useDashboardData";
+import type { IDashboardData } from "@/components/features/dashboard/hooks/useDashboardData";
 
 export interface IStatistics {
   readonly totalBookings: number;

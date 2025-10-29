@@ -8,13 +8,15 @@
  */
 
 // Import translation JSON files for type inference
-import type commonNo from '../locales/no/common.json';
-import type rbacNo from '../locales/no/rbac.json';
-import type formsNo from '../locales/no/forms.json';
-import type errorsNo from '../locales/no/errors.json';
-import type validationNo from '../locales/no/validation.json';
-import type bookingNo from '../locales/no/booking.json';
-import type facilityNo from '../locales/no/facility.json';
+import type commonNo from '../../../public/locales/no/common.json';
+import type rbacNo from '../../../public/locales/no/rbac.json';
+import type formsNo from '../../../public/locales/no/forms.json';
+import type errorsNo from '../../../public/locales/no/errors.json';
+import type validationNo from '../../../public/locales/no/validation.json';
+import type bookingNo from '../../../public/locales/no/booking.json';
+import type facilityNo from '../../../public/locales/no/facility.json';
+import type calendarNo from '../../../public/locales/no/calendar.json';
+import type adminNo from '../../../public/locales/no/admin.json';
 
 /**
  * Default namespace for translations
@@ -31,7 +33,9 @@ export type Namespaces =
   | 'errors'
   | 'validation'
   | 'booking'
-  | 'facility';
+  | 'facility'
+  | 'calendar'
+  | 'admin';
 
 /**
  * Resource type for each namespace
@@ -44,6 +48,8 @@ export interface NamespaceResources {
   validation: typeof validationNo;
   booking: typeof bookingNo;
   facility: typeof facilityNo;
+  calendar: typeof calendarNo;
+  admin: typeof adminNo;
 }
 
 /**
@@ -57,6 +63,8 @@ export interface Resources {
   validation: typeof validationNo;
   booking: typeof bookingNo;
   facility: typeof facilityNo;
+  calendar: typeof calendarNo;
+  admin: typeof adminNo;
 }
 
 /**
@@ -135,7 +143,7 @@ declare module 'i18next' {
  * Type guard to check if a string is a valid namespace
  */
 export const isNamespace = (value: string): value is Namespaces => {
-  return ['common', 'rbac', 'forms', 'errors', 'validation', 'booking', 'facility'].includes(value);
+  return ['common', 'rbac', 'forms', 'errors', 'validation', 'booking', 'facility', 'calendar', 'admin'].includes(value);
 };
 
 /**

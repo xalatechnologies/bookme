@@ -17,7 +17,7 @@ interface IBookingFiltersProps {
   readonly onFilterChange: (value: string) => void;
 }
 
-const BookingFilters = (props: IBookingFiltersProps): JSX.Element => {
+export const BookingFilters = (props: IBookingFiltersProps): JSX.Element => {
   const { bookingFilter, onFilterChange } = props;
   const { t } = useTranslation("common");
 
@@ -54,5 +54,3 @@ const BookingFilters = (props: IBookingFiltersProps): JSX.Element => {
     </div>
   );
 };
-
-export default BookingFilters;

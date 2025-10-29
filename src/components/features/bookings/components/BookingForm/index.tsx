@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next";
 // Internal libraries/utilities
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FormField } from "@/components/common/forms/FormField";
-import { useFormValidation } from "@/hooks/useFormValidation";
+import { useFormValidation } from "@/hooks/shared";
 
 // Sibling imports
 import { SelectedSlotsDisplay } from "./SelectedSlotsDisplay";
@@ -15,7 +15,12 @@ import { PriceCalculation } from "./PriceCalculation";
 import { BookingActionButtons } from "./BookingActionButtons";
 
 // Types
-import { IBookingFormData, ActorType, ActivityType, ISelectedTimeSlot } from "../../types";
+import {
+  IBookingFormData,
+  ActorType,
+  ActivityType,
+  ISelectedTimeSlot,
+} from "../../types";
 
 /**
  * Booking form component
@@ -63,7 +68,7 @@ export const BookingForm: React.FC<IBookingFormProps> = ({
   isLoading = false,
   error,
 }): JSX.Element => {
-  const { t } = useTranslation(['bookings', 'validation', 'common']);
+  const { t } = useTranslation(["bookings", "validation", "common"]);
 
   const [formData, setFormData] = useState<IBookingFormData>({
     purpose: "",
@@ -77,10 +82,10 @@ export const BookingForm: React.FC<IBookingFormProps> = ({
 
   // Validation rules
   const { errors, validateAll, clearError } = useFormValidation({
-    purpose: [{ type: 'required' }],
-    attendees: [{ type: 'required' }, { type: 'minValue', value: 1 }],
-    activityType: [{ type: 'required' }],
-    actorType: [{ type: 'required' }],
+    purpose: [{ type: "required" }],
+    attendees: [{ type: "required" }, { type: "minValue", value: 1 }],
+    activityType: [{ type: "required" }],
+    actorType: [{ type: "required" }],
   });
 
   /**
@@ -88,22 +93,30 @@ export const BookingForm: React.FC<IBookingFormProps> = ({
    *
    * @param updates - Partial form data updates
    */
-  const updateFormData = useCallback((updates: Partial<IBookingFormData>): void => {
-    setFormData(prev => ({ ...prev, ...updates }));
+  const updateFormData = useCallback(
+    (updates: Partial<IBookingFormData>): void => {
+      setFormData((prev) => ({ ...prev, ...updates }));
 
-    // Clear errors for updated fields
-    Object.keys(updates).forEach(key => clearError(key));
-  }, [clearError]);
+      // Clear errors for updated fields
+      Object.keys(updates).forEach((key) => clearError(key));
+    },
+    [clearError]
+  );
 
   /**
    * Remove a selected slot
    *
    * @param slotId - ID of slot to remove
    */
-  const handleRemoveSlot = useCallback((slotId: string): void => {
-    const newSlots = Array.from(selectedSlots).filter(slot => slot.id !== slotId);
-    onSlotsChange(newSlots);
-  }, [selectedSlots, onSlotsChange]);
+  const handleRemoveSlot = useCallback(
+    (slotId: string): void => {
+      const newSlots = Array.from(selectedSlots).filter(
+        (slot) => slot.id !== slotId
+      );
+      onSlotsChange(newSlots);
+    },
+    [selectedSlots, onSlotsChange]
+  );
 
   /**
    * Clear all selected slots
@@ -147,21 +160,42 @@ export const BookingForm: React.FC<IBookingFormProps> = ({
 
   // Activity type options
   const activityTypeOptions = [
-    { value: "sport", label: t('bookings:activity_types.sport', 'Sport') },
-    { value: "kultur", label: t('bookings:activity_types.culture', 'Kultur') },
-    { value: "møte", label: t('bookings:activity_types.meeting', 'Møte') },
-    { value: "arrangement", label: t('bookings:activity_types.event', 'Arrangement') },
-    { value: "trening", label: t('bookings:activity_types.training', 'Trening') },
-    { value: "annet", label: t('common:other', 'Annet') },
+    { value: "sport", label: t("bookings:activity_types.sport", "Sport") },
+    { value: "kultur", label: t("bookings:activity_types.culture", "Kultur") },
+    { value: "møte", label: t("bookings:activity_types.meeting", "Møte") },
+    {
+      value: "arrangement",
+      label: t("bookings:activity_types.event", "Arrangement"),
+    },
+    {
+      value: "trening",
+      label: t("bookings:activity_types.training", "Trening"),
+    },
+    { value: "annet", label: t("common:other", "Annet") },
   ];
 
   // Actor type options
   const actorTypeOptions = [
-    { value: "private-person", label: t('bookings:actor_types.private_person', 'Privatperson') },
-    { value: "lag-foreninger", label: t('bookings:actor_types.lag_foreninger', 'Lag og foreninger') },
-    { value: "paraply", label: t('bookings:actor_types.paraply', 'Paraplyorganisasjoner') },
-    { value: "private-firma", label: t('bookings:actor_types.private_firma', 'Private firma') },
-    { value: "kommunale-enheter", label: t('bookings:actor_types.kommunale_enheter', 'Kommunale enheter') },
+    {
+      value: "private-person",
+      label: t("bookings:actor_types.private_person", "Privatperson"),
+    },
+    {
+      value: "lag-foreninger",
+      label: t("bookings:actor_types.lag_foreninger", "Lag og foreninger"),
+    },
+    {
+      value: "paraply",
+      label: t("bookings:actor_types.paraply", "Paraplyorganisasjoner"),
+    },
+    {
+      value: "private-firma",
+      label: t("bookings:actor_types.private_firma", "Private firma"),
+    },
+    {
+      value: "kommunale-enheter",
+      label: t("bookings:actor_types.kommunale_enheter", "Kommunale enheter"),
+    },
   ];
 
   return (
@@ -170,7 +204,7 @@ export const BookingForm: React.FC<IBookingFormProps> = ({
       <Card className="w-full">
         <CardHeader className="pb-3">
           <CardTitle className="text-sm font-medium text-gray-700">
-            {t('bookings:details.booking_details', 'Booking detaljer')}
+            {t("bookings:details.booking_details", "Booking detaljer")}
           </CardTitle>
         </CardHeader>
         <CardContent className="pt-0 space-y-4">
@@ -178,11 +212,14 @@ export const BookingForm: React.FC<IBookingFormProps> = ({
           <FormField
             id="purpose"
             name="purpose"
-            label={t('bookings:fields.purpose', 'Formål med bookingen')}
+            label={t("bookings:fields.purpose", "Formål med bookingen")}
             type="text"
             value={formData.purpose}
             onChange={(value) => updateFormData({ purpose: String(value) })}
-            placeholder={t('bookings:placeholders.purpose', 'F.eks. fotballtrening, møte, arrangement')}
+            placeholder={t(
+              "bookings:placeholders.purpose",
+              "F.eks. fotballtrening, møte, arrangement"
+            )}
             required
             disabled={isLoading}
             error={errors.purpose}
@@ -192,10 +229,12 @@ export const BookingForm: React.FC<IBookingFormProps> = ({
           <FormField
             id="attendees"
             name="attendees"
-            label={t('bookings:fields.participants', 'Antall deltakere')}
+            label={t("bookings:fields.participants", "Antall deltakere")}
             type="number"
             value={formData.attendees}
-            onChange={(value) => updateFormData({ attendees: Number(value) || 1 })}
+            onChange={(value) =>
+              updateFormData({ attendees: Number(value) || 1 })
+            }
             min={1}
             required
             disabled={isLoading}
@@ -206,11 +245,16 @@ export const BookingForm: React.FC<IBookingFormProps> = ({
           <FormField
             id="activityType"
             name="activityType"
-            label={t('bookings:fields.activity_type', 'Type aktivitet')}
+            label={t("bookings:fields.activity_type", "Type aktivitet")}
             type="select"
             value={formData.activityType}
-            onChange={(value) => updateFormData({ activityType: String(value) as ActivityType })}
-            placeholder={t('bookings:placeholders.activity_type', 'Velg aktivitetstype')}
+            onChange={(value) =>
+              updateFormData({ activityType: String(value) as ActivityType })
+            }
+            placeholder={t(
+              "bookings:placeholders.activity_type",
+              "Velg aktivitetstype"
+            )}
             options={activityTypeOptions}
             required
             disabled={isLoading}
@@ -221,11 +265,16 @@ export const BookingForm: React.FC<IBookingFormProps> = ({
           <FormField
             id="actorType"
             name="actorType"
-            label={t('bookings:fields.actor_type', 'Aktør type')}
+            label={t("bookings:fields.actor_type", "Aktør type")}
             type="select"
             value={formData.actorType}
-            onChange={(value) => updateFormData({ actorType: String(value) as ActorType })}
-            placeholder={t('bookings:placeholders.actor_type', 'Velg aktør type')}
+            onChange={(value) =>
+              updateFormData({ actorType: String(value) as ActorType })
+            }
+            placeholder={t(
+              "bookings:placeholders.actor_type",
+              "Velg aktør type"
+            )}
             options={actorTypeOptions}
             required
             disabled={isLoading}
@@ -236,11 +285,16 @@ export const BookingForm: React.FC<IBookingFormProps> = ({
           <FormField
             id="additionalInfo"
             name="additionalInfo"
-            label={t('bookings:fields.special_requests', 'Tilleggsinformasjon')}
+            label={t("bookings:fields.special_requests", "Tilleggsinformasjon")}
             type="textarea"
             value={formData.additionalInfo}
-            onChange={(value) => updateFormData({ additionalInfo: String(value) })}
-            placeholder={t('bookings:placeholders.additional_info', 'Eventuelle spesielle ønsker eller behov')}
+            onChange={(value) =>
+              updateFormData({ additionalInfo: String(value) })
+            }
+            placeholder={t(
+              "bookings:placeholders.additional_info",
+              "Eventuelle spesielle ønsker eller behov"
+            )}
             disabled={isLoading}
             rows={3}
           />
@@ -261,9 +315,14 @@ export const BookingForm: React.FC<IBookingFormProps> = ({
         <CardHeader className="pb-3">
           <CardTitle className="text-sm font-medium text-gray-700">
             {selectedSlots.length > 0
-              ? t('bookings:details.selected_slots_pricing', 'Valgte tidspunkter og prisberegning')
-              : t('bookings:details.select_slots_pricing', 'Velg tidspunkter og få en prisberegning')
-            }
+              ? t(
+                  "bookings:details.selected_slots_pricing",
+                  "Valgte tidspunkter og prisberegning"
+                )
+              : t(
+                  "bookings:details.select_slots_pricing",
+                  "Velg tidspunkter og få en prisberegning"
+                )}
           </CardTitle>
         </CardHeader>
         <CardContent className="pt-0 space-y-4">
@@ -288,7 +347,9 @@ export const BookingForm: React.FC<IBookingFormProps> = ({
       {/* Error Display */}
       {error && (
         <div className="text-sm text-red-600 bg-red-50 p-3 rounded-lg border border-red-200">
-          <p className="font-medium">{t('common:messages.error.generic', 'Feil oppstod')}</p>
+          <p className="font-medium">
+            {t("common:messages.error.generic", "Feil oppstod")}
+          </p>
           <p className="text-xs mt-1">{error}</p>
         </div>
       )}

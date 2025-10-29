@@ -31,7 +31,7 @@ type BookingStatus = Database['public']['Enums']['booking_status'];
 const Bookings = (): JSX.Element => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { t } = useTranslation(['bookings', 'common']);
+  const { t } = useTranslation(['booking', 'common']);
   const cancelBookingMutation = useCancelBooking();
 
   // Use our custom hook for all booking logic
@@ -64,7 +64,7 @@ const Bookings = (): JSX.Element => {
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
     if (searchParams.get('success') === 'true') {
-      toast.success(t('bookings:toast.booking_submitted'));
+      toast.success(t('booking:toast.booking_submitted'));
       setStatusFilter('pending');
       navigate("/user/bookings", { replace: true });
     }
@@ -72,11 +72,11 @@ const Bookings = (): JSX.Element => {
 
   // Status options with counts from stats
   const statusOptions = [
-    { value: "all" as const, label: t('bookings:page.all_status'), count: stats.total, color: "gray" },
-    { value: "paid" as const, label: t('bookings:status.paid'), count: stats.paid, color: "green" },
-    { value: "pending" as const, label: t('bookings:status.pending'), count: stats.pending, color: "yellow" },
-    { value: "cancelled" as const, label: t('bookings:status.cancelled'), count: stats.cancelled, color: "red" },
-    { value: "completed" as const, label: t('bookings:status.completed'), count: stats.completed, color: "blue" },
+    { value: "all" as const, label: t('booking:page.all_status'), count: stats.total, color: "gray" },
+    { value: "paid" as const, label: t('booking:status.paid'), count: stats.paid, color: "green" },
+    { value: "pending" as const, label: t('booking:status.pending'), count: stats.pending, color: "yellow" },
+    { value: "cancelled" as const, label: t('booking:status.cancelled'), count: stats.cancelled, color: "red" },
+    { value: "completed" as const, label: t('booking:status.completed'), count: stats.completed, color: "blue" },
   ];
 
   // Get unique facilities from bookings
@@ -132,12 +132,12 @@ const Bookings = (): JSX.Element => {
       setBookingsToDelete([]);
 
       const message = bookingsToDelete.length === 1
-        ? t('bookings:delete_confirm.success_single')
-        : t('bookings:delete_confirm.success_multiple', { count: bookingsToDelete.length });
+        ? t('booking:delete_confirm.success_single')
+        : t('booking:delete_confirm.success_multiple', { count: bookingsToDelete.length });
       toast.success(message);
       refetch();
     } catch (error) {
-      toast.error(t('bookings:messages.error.cancel_failed'));
+      toast.error(t('booking:messages.error.cancel_failed'));
     }
   }, [bookingsToDelete, cancelBookingMutation, refetch, t]);
 
@@ -159,11 +159,11 @@ const Bookings = (): JSX.Element => {
   const handleCancelBooking = useCallback(async (booking: BookingWithDetails) => {
     try {
       await cancelBookingMutation.mutateAsync(booking.id);
-      toast.success(t('bookings:delete_confirm.success_single'));
+      toast.success(t('booking:delete_confirm.success_single'));
       handleCloseDetails();
       refetch();
     } catch (error) {
-      toast.error(t('bookings:messages.error.cancel_failed'));
+      toast.error(t('booking:messages.error.cancel_failed'));
     }
   }, [cancelBookingMutation, handleCloseDetails, refetch, t]);
 
@@ -177,11 +177,11 @@ const Bookings = (): JSX.Element => {
         url: window.location.href
       }).catch(() => {
         navigator.clipboard.writeText(shareText);
-        toast.success(t('bookings:toast.info_copied'));
+        toast.success(t('booking:toast.info_copied'));
       });
     } else {
       navigator.clipboard.writeText(shareText);
-      toast.success(t('bookings:toast.info_copied'));
+      toast.success(t('booking:toast.info_copied'));
     }
   }, [t]);
 
@@ -210,7 +210,7 @@ END:VCALENDAR`;
     link.download = `booking-${booking.id}.ics`;
     link.click();
 
-    toast.success(t('bookings:toast.calendar_added'));
+    toast.success(t('booking:toast.calendar_added'));
   }, [t]);
 
   if (isLoading) {
@@ -218,7 +218,7 @@ END:VCALENDAR`;
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">{t('bookings:page.loading')}</p>
+          <p className="text-gray-600">{t('booking:page.loading')}</p>
         </div>
       </div>
     );
@@ -231,13 +231,13 @@ END:VCALENDAR`;
           <CardContent className="p-8 text-center">
             <AlertTriangle className="w-12 h-12 text-red-500 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">
-              {t('bookings:page.error_loading')}
+              {t('booking:page.error_loading')}
             </h3>
             <p className="text-gray-600 mb-4">
-              {t('bookings:page.error_message')}
+              {t('booking:page.error_message')}
             </p>
             <Button onClick={() => refetch()}>
-              {t('bookings:page.try_again')}
+              {t('booking:page.try_again')}
             </Button>
           </CardContent>
         </Card>
@@ -251,10 +251,10 @@ END:VCALENDAR`;
       <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="space-y-1">
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-            {t('bookings:page.user_title')}
+            {t('booking:page.user_title')}
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
-            {t('bookings:page.user_subtitle')}
+            {t('booking:page.user_subtitle')}
           </p>
         </div>
         <div className="flex flex-col sm:flex-row gap-2">
@@ -263,7 +263,7 @@ END:VCALENDAR`;
             className="flex items-center gap-2 h-12"
           >
             <Plus className="w-4 h-4" />
-            {t('bookings:button_labels.new_booking')}
+            {t('booking:button_labels.new_booking')}
           </Button>
         </div>
       </header>
@@ -311,17 +311,17 @@ END:VCALENDAR`;
             <Checkbox
               checked={selectedBookings.length === filteredBookings.length && filteredBookings.length > 0}
               onCheckedChange={handleSelectAll}
-              aria-label={t('bookings:page.select_all', { count: filteredBookings.length })}
+              aria-label={t('booking:page.select_all', { count: filteredBookings.length })}
             />
             <span className="text-sm text-gray-600">
-              {t('bookings:page.select_all', { count: filteredBookings.length })}
+              {t('booking:page.select_all', { count: filteredBookings.length })}
             </span>
           </div>
 
           {selectedBookings.length > 0 && (
             <div className="flex items-center gap-2">
               <span className="text-sm text-gray-600">
-                {t('bookings:page.selected_count', { count: selectedBookings.length })}
+                {t('booking:page.selected_count', { count: selectedBookings.length })}
               </span>
               <Button
                 variant="destructive"
@@ -330,14 +330,14 @@ END:VCALENDAR`;
                 className="flex items-center gap-2"
               >
                 <Trash2 className="h-4 w-4" />
-                {t('bookings:button_labels.cancel_selected')}
+                {t('booking:button_labels.cancel_selected')}
               </Button>
             </div>
           )}
         </div>
 
         <div className="text-sm text-gray-600">
-          {t('bookings:page.showing_count', { count: filteredBookings.length, total: stats.total })}
+          {t('booking:page.showing_count', { count: filteredBookings.length, total: stats.total })}
         </div>
       </div>
 
@@ -348,13 +348,13 @@ END:VCALENDAR`;
             <CardContent className="p-8 text-center">
               <Calendar className="w-12 h-12 text-gray-400 mx-auto mb-4" />
               <h3 className="text-lg font-medium text-gray-900 mb-2">
-                {t('bookings:page.no_match')}
+                {t('booking:page.no_match')}
               </h3>
               <p className="text-gray-600 mb-4">
-                {t('bookings:page.no_match_message')}
+                {t('booking:page.no_match_message')}
               </p>
               <Button onClick={() => navigate('/user/facilities')}>
-                {t('bookings:page.explore_facilities')}
+                {t('booking:page.explore_facilities')}
               </Button>
             </CardContent>
           </Card>
@@ -367,7 +367,7 @@ END:VCALENDAR`;
                 group={group}
                 onViewDetails={(groupId) => {
                   // TODO: Implement recurring group details view
-                  toast.info(t('bookings:toast.recurring_coming_soon'));
+                  toast.info(t('booking:toast.recurring_coming_soon'));
                 }}
               />
             ))}
@@ -399,13 +399,13 @@ END:VCALENDAR`;
               <div>
                 <h3 className="text-lg font-semibold text-gray-900">
                   {bookingsToDelete.length === 1
-                    ? t('bookings:delete_confirm.title_single')
-                    : t('bookings:delete_confirm.title_multiple')}
+                    ? t('booking:delete_confirm.title_single')
+                    : t('booking:delete_confirm.title_multiple')}
                 </h3>
                 <p className="text-sm text-gray-600">
                   {bookingsToDelete.length === 1
-                    ? t('bookings:delete_confirm.message_single')
-                    : t('bookings:delete_confirm.message_multiple', { count: bookingsToDelete.length })}
+                    ? t('booking:delete_confirm.message_single')
+                    : t('booking:delete_confirm.message_multiple', { count: bookingsToDelete.length })}
                 </p>
               </div>
             </div>
@@ -414,8 +414,8 @@ END:VCALENDAR`;
               <div className="flex items-start gap-2">
                 <AlertTriangle className="w-4 h-4 text-yellow-600 mt-0.5 flex-shrink-0" />
                 <div className="text-sm text-yellow-800">
-                  <p className="font-medium">{t('bookings:terms.warning_title')}</p>
-                  <p>{t('bookings:terms.warning_text')}</p>
+                  <p className="font-medium">{t('booking:terms.warning_title')}</p>
+                  <p>{t('booking:terms.warning_text')}</p>
                 </div>
               </div>
             </div>
@@ -427,7 +427,7 @@ END:VCALENDAR`;
                 className="flex items-center gap-2"
               >
                 <X className="w-4 h-4" />
-                {t('bookings:button_labels.cancel')}
+                {t('booking:button_labels.cancel')}
               </Button>
               <Button
                 variant="destructive"
@@ -437,10 +437,10 @@ END:VCALENDAR`;
               >
                 <Trash2 className="w-4 h-4" />
                 {cancelBookingMutation.isPending
-                  ? t('bookings:delete_confirm.canceling')
+                  ? t('booking:delete_confirm.canceling')
                   : (bookingsToDelete.length > 1
-                    ? t('bookings:delete_confirm.cancel_all')
-                    : t('bookings:button_labels.cancel_booking'))}
+                    ? t('booking:delete_confirm.cancel_all')
+                    : t('booking:button_labels.cancel_booking'))}
               </Button>
             </div>
           </div>

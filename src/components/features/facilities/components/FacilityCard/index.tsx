@@ -1,17 +1,21 @@
 "use client";
 
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { MapPin, Users, Heart, Share2 } from 'lucide-react';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { MapPin, Users, Heart, Share2 } from "lucide-react";
 
-import { useTranslation } from 'react-i18next';
-import type { IFacility } from '@/stores/facilityStore';
-import { useFieldConfigStore } from '@/stores/fieldConfigStore';
+import { useTranslation } from "react-i18next";
+import type { IFacility } from "@/stores/facilityStore";
+import { useFieldConfigStore } from "@/stores/fieldConfigStore";
 
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { getFieldUnit, generateShareUrl, copyToClipboard } from '@/utils/card-formatters';
-import { useAmenityTranslation } from '@/hooks/useAmenityTranslation';
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import {
+  getFieldUnit,
+  generateShareUrl,
+  copyToClipboard,
+} from "@/utils/card-formatters";
+import { useAmenityTranslation } from "@/hooks/shared";
 
 interface FacilityCardProps {
   readonly facility: IFacility;
@@ -30,9 +34,9 @@ interface FacilityCardProps {
 export const FacilityCard = ({
   facility,
   onAddressClick,
-  viewMode = "grid"
+  viewMode = "grid",
 }: FacilityCardProps): JSX.Element => {
-  const { t } = useTranslation(['facility', 'common']);
+  const { t } = useTranslation(["facility", "common"]);
   const translateAmenity = useAmenityTranslation();
   const navigate = useNavigate();
   const [isFavorited, setIsFavorited] = useState(false);
@@ -59,12 +63,12 @@ export const FacilityCard = ({
         await copyToClipboard(shareUrl);
       }
     } catch (error) {
-      if (error instanceof Error && error.name !== 'AbortError') {
+      if (error instanceof Error && error.name !== "AbortError") {
         try {
           const shareUrl = generateShareUrl(`/facilities/${facility.id}`);
           await copyToClipboard(shareUrl);
         } catch (clipboardError) {
-          console.error('Failed to share or copy:', clipboardError);
+          console.error("Failed to share or copy:", clipboardError);
         }
       }
     }
@@ -78,12 +82,12 @@ export const FacilityCard = ({
   const getFieldValue = (fieldKey: string): string | number => {
     const valueMap: Record<string, string | number> = {
       capacity: facility.capacity || 0,
-      area: facility.area || '',
+      area: facility.area || "",
       pricePerHour: facility.pricePerHour || 0,
       rating: facility.rating || 0,
-      reviewCount: facility.reviewCount || 0
+      reviewCount: facility.reviewCount || 0,
     };
-    return valueMap[fieldKey] || '';
+    return valueMap[fieldKey] || "";
   };
 
   const getFieldIcon = (fieldKey: string): JSX.Element => {
@@ -92,19 +96,19 @@ export const FacilityCard = ({
       area: <MapPin className="h-5 w-5" />,
       pricePerHour: <span className="text-gray-400">💰</span>,
       rating: <span className="text-yellow-500">★</span>,
-      reviewCount: <span className="text-gray-400">📝</span>
+      reviewCount: <span className="text-gray-400">📝</span>,
     };
     return iconMap[fieldKey] || <span className="text-gray-400">📋</span>;
   };
 
   const translationKeys = {
-    people: t('facilities:card.people'),
-    squareMeters: t('facilities:card.squareMeters'),
-    pricePerHour: t('facilities:card.pricePerHour'),
-    outOf5: t('facilities:card.outOf5'),
-    reviewCount: t('facilities:card.reviewCount'),
-    yes: t('facilities:card.yes'),
-    no: t('facilities:card.no')
+    people: t("facilities:card.people"),
+    squareMeters: t("facilities:card.squareMeters"),
+    pricePerHour: t("facilities:card.pricePerHour"),
+    outOf5: t("facilities:card.outOf5"),
+    reviewCount: t("facilities:card.reviewCount"),
+    yes: t("facilities:card.yes"),
+    no: t("facilities:card.no"),
   };
 
   return (
@@ -115,9 +119,12 @@ export const FacilityCard = ({
       onMouseLeave={() => setIsHovered(false)}
       role="button"
       tabIndex={0}
-      aria-label={t('facilities:card.viewDetailsFor', { name: facility.name, address: facility.address })}
+      aria-label={t("facilities:card.viewDetailsFor", {
+        name: facility.name,
+        address: facility.address,
+      })}
       onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
+        if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
           handleCardClick();
         }
@@ -126,7 +133,7 @@ export const FacilityCard = ({
       {/* Image Section */}
       <div className="relative h-48 sm:h-56 md:h-64 overflow-hidden">
         <img
-          src={facility.images[0] || '/placeholder.svg'}
+          src={facility.images[0] || "/placeholder.svg"}
           alt={facility.name}
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
         />
@@ -136,14 +143,18 @@ export const FacilityCard = ({
           <button
             onClick={handleFavorite}
             className="p-1.5 sm:p-2 rounded-full bg-white/90 backdrop-blur-sm shadow-lg hover:bg-white transition-colors"
-            aria-label={t('facilities:card.addToFavorites')}
+            aria-label={t("facilities:card.addToFavorites")}
           >
-            <Heart className={`h-3 w-3 sm:h-4 sm:w-4 ${isFavorited ? 'fill-red-500 text-red-500' : 'text-gray-600'}`} />
+            <Heart
+              className={`h-3 w-3 sm:h-4 sm:w-4 ${
+                isFavorited ? "fill-red-500 text-red-500" : "text-gray-600"
+              }`}
+            />
           </button>
           <button
             onClick={handleShare}
             className="p-1.5 sm:p-2 rounded-full bg-white/90 backdrop-blur-sm shadow-lg hover:bg-white transition-colors"
-            aria-label={t('facilities:card.shareFacility')}
+            aria-label={t("facilities:card.shareFacility")}
           >
             <Share2 className="h-3 w-3 sm:h-4 sm:w-4 text-gray-600" />
           </button>
@@ -169,7 +180,7 @@ export const FacilityCard = ({
           <MapPin className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400 group-hover/location:text-blue-500 flex-shrink-0" />
           <span
             className="text-sm sm:text-base font-medium line-clamp-1 cursor-pointer"
-            onClick={e => onAddressClick(e, facility)}
+            onClick={(e) => onAddressClick(e, facility)}
           >
             {facility.address}
           </span>
@@ -196,7 +207,8 @@ export const FacilityCard = ({
                 variant="outline"
                 className="bg-gray-50 text-gray-600 border-gray-300 font-medium px-2 py-1 text-xs sm:text-sm"
               >
-                +{facility.amenities.length - 3} {t('facilities:card.moreAmenities')}
+                +{facility.amenities.length - 3}{" "}
+                {t("facilities:card.moreAmenities")}
               </Badge>
             )}
           </div>
@@ -205,16 +217,22 @@ export const FacilityCard = ({
         {/* Dynamic fields based on configuration */}
         <div className="space-y-2 mt-auto">
           {fieldConfigs
-            .filter(field => field.visible)
-            .map(field => {
+            .filter((field) => field.visible)
+            .map((field) => {
               const value = getFieldValue(field.key);
               const unit = getFieldUnit(field.key, translationKeys);
-              const booleanValue = typeof field.value === 'boolean'
-                ? (field.value ? translationKeys.yes : translationKeys.no)
-                : '';
+              const booleanValue =
+                typeof field.value === "boolean"
+                  ? field.value
+                    ? translationKeys.yes
+                    : translationKeys.no
+                  : "";
 
               return (
-                <div key={field.id} className="flex items-center gap-2 sm:gap-3 text-gray-600">
+                <div
+                  key={field.id}
+                  className="flex items-center gap-2 sm:gap-3 text-gray-600"
+                >
                   {getFieldIcon(field.key)}
                   <span className="text-sm sm:text-base font-medium">
                     {t(field.label)}: {value || booleanValue}
@@ -227,7 +245,11 @@ export const FacilityCard = ({
       </div>
 
       {/* Hover Effect Border */}
-      <div className={`absolute inset-0 rounded-xl border-2 border-blue-400 transition-opacity duration-300 pointer-events-none ${isHovered ? 'opacity-100' : 'opacity-0'}`} />
+      <div
+        className={`absolute inset-0 rounded-xl border-2 border-blue-400 transition-opacity duration-300 pointer-events-none ${
+          isHovered ? "opacity-100" : "opacity-0"
+        }`}
+      />
     </Card>
   );
 };

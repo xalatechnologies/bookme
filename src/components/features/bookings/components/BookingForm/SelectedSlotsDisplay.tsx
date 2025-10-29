@@ -36,7 +36,7 @@ export const SelectedSlotsDisplay: React.FC<ISelectedSlotsDisplayProps> = ({
   onClearAll,
   isLoading = false,
 }): JSX.Element => {
-  const { t, i18n } = useTranslation(['bookings','common']);
+  const { t, i18n } = useTranslation(['booking','common']);
   /**
    * Format time slot for display
    *

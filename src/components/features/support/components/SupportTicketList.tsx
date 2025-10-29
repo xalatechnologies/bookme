@@ -2,14 +2,35 @@
 
 import React, { useState, useEffect } from "react";
 import { format } from "date-fns";
-import { Search, Plus, MoreHorizontal, Eye, Edit, Trash2, Archive, CheckCircle, Clock, AlertTriangle, XCircle } from "lucide-react";
+import {
+  Search,
+  Plus,
+  MoreHorizontal,
+  Eye,
+  Edit,
+  Trash2,
+  Archive,
+  AlertTriangle,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { StatusBadge } from "@/components/common/status/StatusBadge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { SupportTicket, SupportTicketSearchCriteria } from "@/types/support";
 import { useSupportStore } from "@/stores/supportStore";
 import { useTranslation } from "@/i18n";
@@ -35,63 +56,35 @@ interface TicketCardProps {
   readonly onArchive: (ticketId: string) => void;
 }
 
-const TicketCard: React.FC<TicketCardProps> = ({ ticket, onSelect, onEdit, onDelete, onArchive }) => {
+const TicketCard: React.FC<TicketCardProps> = ({
+  ticket,
+  onSelect,
+  onEdit,
+  onDelete,
+  onArchive,
+}) => {
   const { t } = useTranslation();
   const [showActions, setShowActions] = useState<boolean>(false);
 
-  const getStatusIcon = (status: SupportTicket['status']): JSX.Element => {
-    switch (status) {
-      case 'open':
-        return <Clock className="h-4 w-4 text-blue-600" />;
-      case 'in-progress':
-        return <AlertTriangle className="h-4 w-4 text-yellow-600" />;
-      case 'waiting-user':
-        return <Clock className="h-4 w-4 text-orange-600" />;
-      case 'resolved':
-        return <CheckCircle className="h-4 w-4 text-green-600" />;
-      case 'closed':
-        return <XCircle className="h-4 w-4 text-gray-600" />;
-      default:
-        return <Clock className="h-4 w-4 text-gray-600" />;
-    }
-  };
-
-  const getStatusColor = (status: SupportTicket['status']): string => {
-    switch (status) {
-      case 'open':
-        return 'bg-blue-100 text-blue-800';
-      case 'in-progress':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'waiting-user':
-        return 'bg-orange-100 text-orange-800';
-      case 'resolved':
-        return 'bg-green-100 text-green-800';
-      case 'closed':
-        return 'bg-gray-100 text-gray-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
-    }
-  };
-
-  const getPriorityColor = (priority: SupportTicket['priority']): string => {
+  const getPriorityColor = (priority: SupportTicket["priority"]): string => {
     switch (priority) {
-      case 'urgent':
-        return 'bg-red-100 text-red-800';
-      case 'high':
-        return 'bg-orange-100 text-orange-800';
-      case 'medium':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'low':
-        return 'bg-green-100 text-green-800';
+      case "urgent":
+        return "bg-red-100 text-red-800";
+      case "high":
+        return "bg-orange-100 text-orange-800";
+      case "medium":
+        return "bg-yellow-100 text-yellow-800";
+      case "low":
+        return "bg-green-100 text-green-800";
       default:
-        return 'bg-gray-100 text-gray-800';
+        return "bg-gray-100 text-gray-800";
     }
   };
 
   return (
     <Card
       className={`cursor-pointer transition-colors hover:bg-muted/50 ${
-        ticket.status === 'open' ? 'border-l-4 border-l-blue-500' : ''
+        ticket.status === "open" ? "border-l-4 border-l-blue-500" : ""
       }`}
       onClick={() => onSelect(ticket.id)}
       onMouseEnter={() => setShowActions(true)}
@@ -101,12 +94,20 @@ const TicketCard: React.FC<TicketCardProps> = ({ ticket, onSelect, onEdit, onDel
         <div className="flex items-start justify-between">
           <div className="flex-1 space-y-2">
             <div className="flex items-center space-x-2">
-              {getStatusIcon(ticket.status)}
+              <StatusBadge
+                status={ticket.status}
+                translationKey={`support:tickets.status.${ticket.status.replace(
+                  "-",
+                  "_"
+                )}`}
+                showIcon={true}
+                size="sm"
+              />
               <h3 className="font-semibold text-sm">{ticket.subject}</h3>
-              <Badge variant="outline" className={`text-xs ${getStatusColor(ticket.status)}`}>
-                {t(`support:tickets.status.${ticket.status.replace('-', '_')}`)}
-              </Badge>
-              <Badge variant="outline" className={`text-xs ${getPriorityColor(ticket.priority)}`}>
+              <Badge
+                variant="outline"
+                className={`text-xs ${getPriorityColor(ticket.priority)}`}
+              >
                 {t(`support:tickets.priority.${ticket.priority}`)}
               </Badge>
             </div>
@@ -116,14 +117,28 @@ const TicketCard: React.FC<TicketCardProps> = ({ ticket, onSelect, onEdit, onDel
             </p>
 
             <div className="flex items-center space-x-4 text-xs text-muted-foreground">
-              <span>{t('support:tickets.ticket_id', { id: ticket.id.split('_')[1] })}</span>
+              <span>
+                {t("support:tickets.ticket_id", {
+                  id: ticket.id.split("_")[1],
+                })}
+              </span>
               <span>{t(`support:tickets.category.${ticket.category}`)}</span>
-              <span>{format(new Date(ticket.createdAt), "dd.MM.yyyy HH:mm")}</span>
+              <span>
+                {format(new Date(ticket.createdAt), "dd.MM.yyyy HH:mm")}
+              </span>
               {ticket.assignedTo && (
-                <span>{t('support:tickets.details.assigned', { name: ticket.assignedToName })}</span>
+                <span>
+                  {t("support:tickets.details.assigned", {
+                    name: ticket.assignedToName,
+                  })}
+                </span>
               )}
               {ticket.attachments && ticket.attachments.length > 0 && (
-                <span>{t('support:tickets.details.attachments', { count: ticket.attachments.length })}</span>
+                <span>
+                  {t("support:tickets.details.attachments", {
+                    count: ticket.attachments.length,
+                  })}
+                </span>
               )}
             </div>
 
@@ -147,7 +162,7 @@ const TicketCard: React.FC<TicketCardProps> = ({ ticket, onSelect, onEdit, onDel
                   e.stopPropagation();
                   onSelect(ticket.id);
                 }}
-                title={t('support:tickets.actions.view')}
+                title={t("support:tickets.actions.view")}
               >
                 <Eye className="h-4 w-4" />
               </Button>
@@ -158,7 +173,7 @@ const TicketCard: React.FC<TicketCardProps> = ({ ticket, onSelect, onEdit, onDel
                   e.stopPropagation();
                   onEdit(ticket.id);
                 }}
-                title={t('support:tickets.actions.edit')}
+                title={t("support:tickets.actions.edit")}
               >
                 <Edit className="h-4 w-4" />
               </Button>
@@ -175,14 +190,14 @@ const TicketCard: React.FC<TicketCardProps> = ({ ticket, onSelect, onEdit, onDel
                 <DropdownMenuContent align="end">
                   <DropdownMenuItem onClick={() => onArchive(ticket.id)}>
                     <Archive className="h-4 w-4 mr-2" />
-                    {t('support:tickets.actions.archive')}
+                    {t("support:tickets.actions.archive")}
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() => onDelete(ticket.id)}
                     className="text-red-600 focus:text-red-600"
                   >
                     <Trash2 className="h-4 w-4 mr-2" />
-                    {t('support:tickets.actions.delete')}
+                    {t("support:tickets.actions.delete")}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -203,17 +218,17 @@ export const SupportTicketList: React.FC<SupportTicketListProps> = ({
   userId,
   isAdmin = false,
   onTicketSelect,
-  onCreateTicket
+  onCreateTicket,
 }) => {
   const { t } = useTranslation();
   const {
     getUserTickets,
     getAdminTickets,
     searchTickets,
-    getTicketStatistics
+    getTicketStatistics,
   } = useSupportStore();
 
-  const [tickets, setTickets] = useState<readonly SupportTicket[]>([]);
+  // const [tickets, setTickets] = useState<readonly SupportTicket[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [priorityFilter, setPriorityFilter] = useState<string>("all");
@@ -221,40 +236,60 @@ export const SupportTicketList: React.FC<SupportTicketListProps> = ({
   const [activeTab, setActiveTab] = useState<string>("all");
 
   useEffect(() => {
-    const userTickets = userId ? getUserTickets(userId) : getAdminTickets();
-    setTickets(userTickets);
+    // Trigger data fetch from store when userId changes
+    if (userId) {
+      getUserTickets(userId);
+    } else {
+      getAdminTickets();
+    }
   }, [userId, getUserTickets, getAdminTickets]);
 
   const searchCriteria: SupportTicketSearchCriteria = {
     query: searchQuery || undefined,
     filter: {
-      status: statusFilter !== "all" ? statusFilter as SupportTicket['status'] : undefined,
-      priority: priorityFilter !== "all" ? priorityFilter as SupportTicket['priority'] : undefined,
-      category: categoryFilter !== "all" ? categoryFilter as SupportTicket['category'] : undefined,
-      userId: userId
+      status:
+        statusFilter !== "all"
+          ? (statusFilter as SupportTicket["status"])
+          : undefined,
+      priority:
+        priorityFilter !== "all"
+          ? (priorityFilter as SupportTicket["priority"])
+          : undefined,
+      category:
+        categoryFilter !== "all"
+          ? (categoryFilter as SupportTicket["category"])
+          : undefined,
+      userId: userId,
     },
-    sortBy: 'createdAt',
-    sortOrder: 'desc'
+    sortBy: "createdAt",
+    sortOrder: "desc",
   };
 
   const filteredTickets = searchTickets(searchCriteria);
   const statistics = getTicketStatistics(userId);
 
-  const openTickets = filteredTickets.filter(t => t.status === 'open');
-  const inProgressTickets = filteredTickets.filter(t => t.status === 'in-progress');
-  const resolvedTickets = filteredTickets.filter(t => t.status === 'resolved');
-  const closedTickets = filteredTickets.filter(t => t.status === 'closed');
+  const openTickets = filteredTickets.filter((t) => t.status === "open");
+  const inProgressTickets = filteredTickets.filter(
+    (t) => t.status === "in-progress"
+  );
+  const resolvedTickets = filteredTickets.filter(
+    (t) => t.status === "resolved"
+  );
+  const closedTickets = filteredTickets.filter((t) => t.status === "closed");
 
   const handleEdit = (ticketId: string): void => {
-    // Implementation would open edit dialog
+    // TODO: Implementation would open edit dialog
+    console.log("Edit ticket:", ticketId);
   };
 
   const handleDelete = (ticketId: string): void => {
-    // Implementation would delete ticket
+    // TODO: Implementation would delete ticket
+    console.log("Delete ticket:", ticketId);
   };
 
   const handleArchive = (ticketId: string): void => {
-    // Implementation would archive ticket
+    // TODO: Implementation would archive ticket
+    console.log("Archive ticket:", ticketId);
   };
 
   return (
@@ -262,14 +297,18 @@ export const SupportTicketList: React.FC<SupportTicketListProps> = ({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold">{t('support:tickets.list_title')}</h2>
+          <h2 className="text-2xl font-bold">
+            {t("support:tickets.list_title")}
+          </h2>
           <p className="text-muted-foreground">
-            {isAdmin ? t('support:tickets.manage_all') : t('support:tickets.your_tickets')}
+            {isAdmin
+              ? t("support:tickets.manage_all")
+              : t("support:tickets.your_tickets")}
           </p>
         </div>
         <Button onClick={onCreateTicket}>
           <Plus className="h-4 w-4 mr-2" />
-          {t('support:tickets.new_ticket')}
+          {t("support:tickets.new_ticket")}
         </Button>
       </div>
 
@@ -277,26 +316,42 @@ export const SupportTicketList: React.FC<SupportTicketListProps> = ({
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Card>
           <CardContent className="p-4">
-            <div className="text-2xl font-bold text-blue-600">{statistics.openTickets}</div>
-            <p className="text-xs text-muted-foreground">{t('support:tickets.statistics.open_tickets')}</p>
+            <div className="text-2xl font-bold text-blue-600">
+              {statistics.openTickets}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              {t("support:tickets.statistics.open_tickets")}
+            </p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4">
-            <div className="text-2xl font-bold text-yellow-600">{statistics.inProgressTickets}</div>
-            <p className="text-xs text-muted-foreground">{t('support:tickets.statistics.in_progress')}</p>
+            <div className="text-2xl font-bold text-yellow-600">
+              {statistics.inProgressTickets}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              {t("support:tickets.statistics.in_progress")}
+            </p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4">
-            <div className="text-2xl font-bold text-green-600">{statistics.resolvedTickets}</div>
-            <p className="text-xs text-muted-foreground">{t('support:tickets.statistics.resolved')}</p>
+            <div className="text-2xl font-bold text-green-600">
+              {statistics.resolvedTickets}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              {t("support:tickets.statistics.resolved")}
+            </p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4">
-            <div className="text-2xl font-bold text-gray-600">{statistics.closedTickets}</div>
-            <p className="text-xs text-muted-foreground">{t('support:tickets.statistics.closed')}</p>
+            <div className="text-2xl font-bold text-gray-600">
+              {statistics.closedTickets}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              {t("support:tickets.statistics.closed")}
+            </p>
           </CardContent>
         </Card>
       </div>
@@ -307,7 +362,7 @@ export const SupportTicketList: React.FC<SupportTicketListProps> = ({
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder={t('support:tickets.search_placeholder')}
+              placeholder={t("support:tickets.search_placeholder")}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10"
@@ -317,40 +372,78 @@ export const SupportTicketList: React.FC<SupportTicketListProps> = ({
         <div className="flex gap-2">
           <Select value={statusFilter} onValueChange={setStatusFilter}>
             <SelectTrigger className="w-32">
-              <SelectValue placeholder={t('support:tickets.filters.status')} />
+              <SelectValue placeholder={t("support:tickets.filters.status")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">{t('support:tickets.filters.all_statuses')}</SelectItem>
-              <SelectItem value="open">{t('support:tickets.status.open')}</SelectItem>
-              <SelectItem value="in-progress">{t('support:tickets.status.in_progress')}</SelectItem>
-              <SelectItem value="waiting-user">{t('support:tickets.status.waiting_user')}</SelectItem>
-              <SelectItem value="resolved">{t('support:tickets.status.resolved')}</SelectItem>
-              <SelectItem value="closed">{t('support:tickets.status.closed')}</SelectItem>
+              <SelectItem value="all">
+                {t("support:tickets.filters.all_statuses")}
+              </SelectItem>
+              <SelectItem value="open">
+                {t("support:tickets.status.open")}
+              </SelectItem>
+              <SelectItem value="in-progress">
+                {t("support:tickets.status.in_progress")}
+              </SelectItem>
+              <SelectItem value="waiting-user">
+                {t("support:tickets.status.waiting_user")}
+              </SelectItem>
+              <SelectItem value="resolved">
+                {t("support:tickets.status.resolved")}
+              </SelectItem>
+              <SelectItem value="closed">
+                {t("support:tickets.status.closed")}
+              </SelectItem>
             </SelectContent>
           </Select>
           <Select value={priorityFilter} onValueChange={setPriorityFilter}>
             <SelectTrigger className="w-32">
-              <SelectValue placeholder={t('support:tickets.filters.priority')} />
+              <SelectValue
+                placeholder={t("support:tickets.filters.priority")}
+              />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">{t('support:tickets.filters.all_priorities')}</SelectItem>
-              <SelectItem value="urgent">{t('support:tickets.priority.urgent')}</SelectItem>
-              <SelectItem value="high">{t('support:tickets.priority.high')}</SelectItem>
-              <SelectItem value="medium">{t('support:tickets.priority.medium')}</SelectItem>
-              <SelectItem value="low">{t('support:tickets.priority.low')}</SelectItem>
+              <SelectItem value="all">
+                {t("support:tickets.filters.all_priorities")}
+              </SelectItem>
+              <SelectItem value="urgent">
+                {t("support:tickets.priority.urgent")}
+              </SelectItem>
+              <SelectItem value="high">
+                {t("support:tickets.priority.high")}
+              </SelectItem>
+              <SelectItem value="medium">
+                {t("support:tickets.priority.medium")}
+              </SelectItem>
+              <SelectItem value="low">
+                {t("support:tickets.priority.low")}
+              </SelectItem>
             </SelectContent>
           </Select>
           <Select value={categoryFilter} onValueChange={setCategoryFilter}>
             <SelectTrigger className="w-32">
-              <SelectValue placeholder={t('support:tickets.filters.category')} />
+              <SelectValue
+                placeholder={t("support:tickets.filters.category")}
+              />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">{t('support:tickets.filters.all_categories')}</SelectItem>
-              <SelectItem value="booking">{t('support:tickets.category.booking')}</SelectItem>
-              <SelectItem value="technical">{t('support:tickets.category.technical')}</SelectItem>
-              <SelectItem value="billing">{t('support:tickets.category.billing')}</SelectItem>
-              <SelectItem value="feedback">{t('support:tickets.category.feedback')}</SelectItem>
-              <SelectItem value="other">{t('support:tickets.category.other')}</SelectItem>
+              <SelectItem value="all">
+                {t("support:tickets.filters.all_categories")}
+              </SelectItem>
+              <SelectItem value="booking">
+                {t("support:tickets.category.booking")}
+              </SelectItem>
+              <SelectItem value="technical">
+                {t("support:tickets.category.technical")}
+              </SelectItem>
+              <SelectItem value="billing">
+                {t("support:tickets.category.billing")}
+              </SelectItem>
+              <SelectItem value="feedback">
+                {t("support:tickets.category.feedback")}
+              </SelectItem>
+              <SelectItem value="other">
+                {t("support:tickets.category.other")}
+              </SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -360,19 +453,23 @@ export const SupportTicketList: React.FC<SupportTicketListProps> = ({
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList>
           <TabsTrigger value="all">
-            {t('support:tickets.tabs.all', { count: filteredTickets.length })}
+            {t("support:tickets.tabs.all", { count: filteredTickets.length })}
           </TabsTrigger>
           <TabsTrigger value="open">
-            {t('support:tickets.tabs.open', { count: openTickets.length })}
+            {t("support:tickets.tabs.open", { count: openTickets.length })}
           </TabsTrigger>
           <TabsTrigger value="in-progress">
-            {t('support:tickets.tabs.in_progress', { count: inProgressTickets.length })}
+            {t("support:tickets.tabs.in_progress", {
+              count: inProgressTickets.length,
+            })}
           </TabsTrigger>
           <TabsTrigger value="resolved">
-            {t('support:tickets.tabs.resolved', { count: resolvedTickets.length })}
+            {t("support:tickets.tabs.resolved", {
+              count: resolvedTickets.length,
+            })}
           </TabsTrigger>
           <TabsTrigger value="closed">
-            {t('support:tickets.tabs.closed', { count: closedTickets.length })}
+            {t("support:tickets.tabs.closed", { count: closedTickets.length })}
           </TabsTrigger>
         </TabsList>
 
@@ -381,13 +478,17 @@ export const SupportTicketList: React.FC<SupportTicketListProps> = ({
             <Card>
               <CardContent className="flex flex-col items-center justify-center py-12">
                 <AlertTriangle className="h-12 w-12 text-muted-foreground mb-4" />
-                <h3 className="text-lg font-semibold mb-2">{t('support:tickets.no_tickets')}</h3>
+                <h3 className="text-lg font-semibold mb-2">
+                  {t("support:tickets.no_tickets")}
+                </h3>
                 <p className="text-muted-foreground text-center mb-4">
-                  {searchQuery ? t('support:tickets.no_tickets_search') : t('support:tickets.no_tickets_yet')}
+                  {searchQuery
+                    ? t("support:tickets.no_tickets_search")
+                    : t("support:tickets.no_tickets_yet")}
                 </p>
                 <Button onClick={onCreateTicket}>
                   <Plus className="h-4 w-4 mr-2" />
-                  {t('support:tickets.create_ticket')}
+                  {t("support:tickets.create_ticket")}
                 </Button>
               </CardContent>
             </Card>

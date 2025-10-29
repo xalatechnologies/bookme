@@ -1,37 +1,35 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { format, formatDistanceToNow } from "date-fns";
-import { 
-  Send, 
-  Paperclip, 
-  Smile, 
-  MoreVertical, 
-  Reply, 
-  Forward, 
-  Star, 
+import { format } from "date-fns";
+import {
+  Send,
+  Paperclip,
+  Smile,
+  MoreVertical,
+  Reply,
+  Forward,
+  Star,
   StarOff,
   Download,
-  Eye,
   EyeOff,
   Trash2,
-  Edit,
-  Copy,
   Building,
   Check,
   CheckCheck,
-  ChevronDown
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Message, MessageThread as MessageThreadType } from "@/types/message";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Message } from "@/types/message";
 import { useMessageStore } from "@/stores/messageStore";
 import { cn } from "@/lib/utils";
 import { useUserProfile } from "@/contexts/UserProfileContext";
@@ -40,7 +38,7 @@ interface MessageThreadProps {
   readonly threadId: string;
   readonly currentUserId: string;
   readonly onClose: () => void;
-  readonly currentUserType?: 'tenant' | 'landlord';
+  readonly currentUserType?: "tenant" | "landlord";
   readonly showHeader?: boolean;
 }
 
@@ -63,28 +61,48 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
   onForward,
   onStar,
   onDelete,
-  getUserAvatar
+  getUserAvatar,
 }) => {
   const [isStarred, setIsStarred] = useState<boolean>(false);
   const [showActions, setShowActions] = useState<boolean>(false);
 
-  const getStatusIcon = (status: Message['status']) => {
+  const getStatusIcon = (status: Message["status"]) => {
     switch (status) {
-      case 'sent':
+      case "sent":
         return <Check className="h-3 w-3 text-muted-foreground" />;
-      case 'delivered':
+      case "delivered":
         return <CheckCheck className="h-3 w-3 text-muted-foreground" />;
-      case 'read':
+      case "read":
         return <CheckCheck className="h-3 w-3 text-blue-500" />;
       default:
         return null;
     }
   };
 
-  const handleStar = () => {
+  const handleStar = useCallback(() => {
     setIsStarred(!isStarred);
     onStar(message.id);
-  };
+  }, [isStarred, onStar, message.id]);
+
+  const handleReplyClick = useCallback(() => {
+    onReply(message);
+  }, [onReply, message]);
+
+  const handleForwardClick = useCallback(() => {
+    onForward(message);
+  }, [onForward, message]);
+
+  const handleDeleteClick = useCallback(() => {
+    onDelete(message.id);
+  }, [onDelete, message.id]);
+
+  const handleDownloadClick = useCallback(() => {
+    // Handle download
+    const link = document.createElement("a");
+    link.href = `data:${""};base64,${""}`;
+    link.download = "";
+    link.click();
+  }, []);
 
   return (
     <div
@@ -97,25 +115,31 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
     >
       {showAvatar && (
         <Avatar className="h-8 w-8 flex-shrink-0">
-          <AvatarImage 
+          <AvatarImage
             src={getUserAvatar(message.senderName, message.senderId)}
             alt={message.senderName}
             className="object-cover"
           />
           <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white font-semibold">
-            {message.senderName.split(' ').map(n => n[0]).join('').toUpperCase()}
+            {message.senderName
+              .split(" ")
+              .map((n) => n[0])
+              .join("")
+              .toUpperCase()}
           </AvatarFallback>
         </Avatar>
       )}
-      
+
       {!showAvatar && (
         <div className="w-8" /> // Spacer for alignment
       )}
 
-      <div className={cn(
-        "flex flex-col max-w-[70%]",
-        isOwn ? "items-end" : "items-start"
-      )}>
+      <div
+        className={cn(
+          "flex flex-col max-w-[70%]",
+          isOwn ? "items-end" : "items-start"
+        )}
+      >
         {!isOwn && (
           <div className="flex items-center gap-2 mb-1">
             <span className="text-xs font-medium text-muted-foreground">
@@ -127,12 +151,14 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
           </div>
         )}
 
-        <div className={cn(
-          "relative px-4 py-2 rounded-2xl",
-          isOwn 
-            ? "bg-primary text-primary-foreground rounded-br-md" 
-            : "bg-muted text-foreground rounded-bl-md"
-        )}>
+        <div
+          className={cn(
+            "relative px-4 py-2 rounded-2xl",
+            isOwn
+              ? "bg-primary text-primary-foreground rounded-br-md"
+              : "bg-muted text-foreground rounded-bl-md"
+          )}
+        >
           <p className="text-sm whitespace-pre-wrap break-words">
             {message.content}
           </p>
@@ -151,13 +177,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
                     variant="ghost"
                     size="sm"
                     className="h-6 w-6 p-0"
-                    onClick={() => {
-                      // Handle download
-                      const link = document.createElement('a');
-                      link.href = `data:${attachment.type};base64,${attachment.base64Data}`;
-                      link.download = attachment.name;
-                      link.click();
-                    }}
+                    onClick={handleDownloadClick}
                   >
                     <Download className="h-3 w-3" />
                   </Button>
@@ -168,15 +188,17 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
 
           {/* Message actions */}
           {showActions && (
-            <div className={cn(
-              "absolute -top-8 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity",
-              isOwn ? "right-0" : "left-0"
-            )}>
+            <div
+              className={cn(
+                "absolute -top-8 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity",
+                isOwn ? "right-0" : "left-0"
+              )}
+            >
               <Button
                 variant="ghost"
                 size="sm"
                 className="h-6 w-6 p-0"
-                onClick={() => onReply(message)}
+                onClick={handleReplyClick}
               >
                 <Reply className="h-3 w-3" />
               </Button>
@@ -184,7 +206,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
                 variant="ghost"
                 size="sm"
                 className="h-6 w-6 p-0"
-                onClick={() => onForward(message)}
+                onClick={handleForwardClick}
               >
                 <Forward className="h-3 w-3" />
               </Button>
@@ -204,7 +226,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
                 variant="ghost"
                 size="sm"
                 className="h-6 w-6 p-0"
-                onClick={() => onDelete(message.id)}
+                onClick={handleDeleteClick}
               >
                 <Trash2 className="h-3 w-3" />
               </Button>
@@ -229,41 +251,41 @@ export const MessageThread: React.FC<MessageThreadProps> = ({
   threadId,
   currentUserId,
   onClose,
-  currentUserType = 'tenant',
-  showHeader = true
+  currentUserType = "tenant",
+  showHeader = true,
 }) => {
-  const { t } = useTranslation('common');
-  const { 
-    getThreadById, 
-    getMessagesByThread, 
-    sendMessage, 
+  const { t } = useTranslation("common");
+  const {
+    getThreadById,
+    getMessagesByThread,
+    sendMessage,
     markAllMessagesAsRead,
-    updateThread 
+    updateThread,
   } = useMessageStore();
-  
+
   const { profile } = useUserProfile();
-  
+
   // Simple avatar logic - use profile avatar for current user, placeholder for others
   const getUserAvatar = (senderName: string, senderId: string): string => {
     // If it's the current user, use their profile avatar
     if (senderId === currentUserId) {
       return profile.avatar;
     }
-    
+
     // For Hamid Rahmani (tenant), use profile avatar since we have it
-    if (senderName.includes('Hamid')) {
+    if (senderName.includes("Hamid")) {
       return profile.avatar;
     }
-    
+
     // For other users, use placeholder (can be extended later)
-    return '/placeholder.svg';
+    return "/placeholder.svg";
   };
-  
+
   const [newMessage, setNewMessage] = useState<string>("");
   const [isTyping, setIsTyping] = useState<boolean>(false);
   const [replyTo, setReplyTo] = useState<Message | null>(null);
   const [attachments, setAttachments] = useState<File[]>([]);
-  
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -282,9 +304,9 @@ export const MessageThread: React.FC<MessageThreadProps> = ({
     messagesEndRef.current?.scrollIntoView({ behavior: "auto", block: "end" });
   }, [messages.length]);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
+  // const scrollToBottom = () => {
+  //   messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  // };
 
   const handleSendMessage = async () => {
     if (!newMessage.trim() && attachments.length === 0) return;
@@ -293,38 +315,43 @@ export const MessageThread: React.FC<MessageThreadProps> = ({
       // Convert attachments to base64
       const attachmentData = await Promise.all(
         attachments.map(async (file) => ({
-          id: `attachment_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+          id: `attachment_${Date.now()}_${Math.random()
+            .toString(36)
+            .substr(2, 9)}`,
           name: file.name,
           type: file.type,
           base64Data: await fileToBase64(file),
-          size: file.size
+          size: file.size,
         }))
       );
 
       // Find recipient (not current user)
-      const recipient = thread?.participants.find(p => p.id !== currentUserId);
+      const recipient = thread?.participants.find(
+        (p) => p.id !== currentUserId
+      );
       if (!recipient) return;
 
       sendMessage({
         threadId,
         senderId: currentUserId,
-        senderName: currentUserType === 'tenant' ? 'Hamid Rahmani' : 'Amin Ismail',
+        senderName:
+          currentUserType === "tenant" ? "Hamid Rahmani" : "Amin Ismail",
         senderAvatar: getUserAvatar(
-          currentUserType === 'tenant' ? 'Hamid Rahmani' : 'Amin Ismail',
+          currentUserType === "tenant" ? "Hamid Rahmani" : "Amin Ismail",
           currentUserId
         ),
         senderType: currentUserType,
         recipientId: recipient.id,
         recipientType: recipient.type,
         content: newMessage.trim(),
-        attachments: attachmentData
+        attachments: attachmentData,
       });
 
       setNewMessage("");
       setAttachments([]);
       setReplyTo(null);
     } catch (error) {
-      // Handle error silently
+      void error; // Intentionally unused - error handled silently
     }
   };
 
@@ -334,15 +361,15 @@ export const MessageThread: React.FC<MessageThreadProps> = ({
       reader.readAsDataURL(file);
       reader.onload = () => {
         const result = reader.result as string;
-        resolve(result.split(',')[1]); // Remove data:type;base64, prefix
+        resolve(result.split(",")[1]); // Remove data:type;base64, prefix
       };
-      reader.onerror = error => reject(error);
+      reader.onerror = (error) => reject(error);
     });
   };
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
-    setAttachments(prev => [...prev, ...files]);
+    setAttachments((prev) => [...prev, ...files]);
   };
 
   const handleKeyPress = (event: React.KeyboardEvent) => {
@@ -358,15 +385,15 @@ export const MessageThread: React.FC<MessageThreadProps> = ({
   };
 
   const handleForward = (message: Message) => {
-    // Implementation for forwarding
+    void message; // Intentionally unused - forwarding to be implemented
   };
 
   const handleStar = (messageId: string) => {
-    // Implementation for starring
+    void messageId; // Intentionally unused - starring to be implemented
   };
 
   const handleDelete = (messageId: string) => {
-    // Implementation for deleting
+    void messageId; // Intentionally unused - deleting to be implemented
   };
 
   if (!thread) {
@@ -408,26 +435,31 @@ export const MessageThread: React.FC<MessageThreadProps> = ({
                 </div>
               </div>
             </div>
-            
+
             <div className="flex items-center gap-2">
-              <Badge variant={thread.status === 'active' ? 'default' : 'secondary'}>
-                {thread.status === 'active' ? 'Aktiv' : 
-                 thread.status === 'resolved' ? 'Løst' : 'Lukket'}
+              <Badge
+                variant={thread.status === "active" ? "default" : "secondary"}
+              >
+                {thread.status === "active"
+                  ? "Aktiv"
+                  : thread.status === "resolved"
+                  ? "Løst"
+                  : "Lukket"}
               </Badge>
-              
+
               {/* Admin actions - only show for landlords */}
-              {currentUserType === 'landlord' && thread.status === 'active' && (
+              {currentUserType === "landlord" && thread.status === "active" && (
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => updateThread(threadId, { status: 'resolved' })}
+                  onClick={() => updateThread(threadId, { status: "resolved" })}
                   className="text-green-600 border-green-200 hover:bg-green-50"
                 >
                   <Check className="h-4 w-4 mr-2" />
                   Marker som løst
                 </Button>
               )}
-              
+
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="sm">
@@ -435,11 +467,17 @@ export const MessageThread: React.FC<MessageThreadProps> = ({
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
-                  <DropdownMenuItem onClick={() => updateThread(threadId, { status: 'resolved' })}>
+                  <DropdownMenuItem
+                    onClick={() =>
+                      updateThread(threadId, { status: "resolved" })
+                    }
+                  >
                     <Check className="h-4 w-4 mr-2" />
                     Marker som løst
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => updateThread(threadId, { status: 'closed' })}>
+                  <DropdownMenuItem
+                    onClick={() => updateThread(threadId, { status: "closed" })}
+                  >
                     <EyeOff className="h-4 w-4 mr-2" />
                     Lukk tråd
                   </DropdownMenuItem>
@@ -451,12 +489,15 @@ export const MessageThread: React.FC<MessageThreadProps> = ({
       )}
 
       {/* MessagesScroller - meldingslisten er den ENESTE scrolleflaten i høyre kolonne */}
-      <div id="messages-scroller" className="flex-1 min-h-0 overflow-y-auto px-6 py-4 space-y-3 pb-20">
-        {messages.map((message, index) => {
+      <div
+        id="messages-scroller"
+        className="flex-1 min-h-0 overflow-y-auto px-6 py-4 space-y-3 pb-20"
+      >
+        {messages.map((message) => {
           const isOwn = message.senderId === currentUserId;
-          const prevMessage = messages[index - 1];
+          // const prevMessage = messages[index - 1];
           const showAvatar = true; // Always show avatars
-          
+
           return (
             <MessageBubble
               key={message.id}
@@ -484,11 +525,7 @@ export const MessageThread: React.FC<MessageThreadProps> = ({
                 Svarer til {replyTo.senderName}
               </span>
             </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setReplyTo(null)}
-            >
+            <Button variant="ghost" size="sm" onClick={() => setReplyTo(null)}>
               ×
             </Button>
           </div>
@@ -504,12 +541,12 @@ export const MessageThread: React.FC<MessageThreadProps> = ({
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
               onKeyPress={handleKeyPress}
-              placeholder={t('common:placeholders.message')}
+              placeholder={t("common:placeholders.message")}
               className="min-h-[32px] max-h-24 resize-none text-sm"
               rows={1}
             />
           </div>
-          
+
           <div className="flex items-center gap-1">
             <input
               ref={fileInputRef}
@@ -559,7 +596,9 @@ export const MessageThread: React.FC<MessageThreadProps> = ({
                   variant="ghost"
                   size="sm"
                   className="h-4 w-4 p-0"
-                  onClick={() => setAttachments(prev => prev.filter((_, i) => i !== index))}
+                  onClick={() =>
+                    setAttachments((prev) => prev.filter((_, i) => i !== index))
+                  }
                 >
                   ×
                 </Button>

@@ -2,6 +2,8 @@
 
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
 import { MapPin, Trash2, Eye, Plus, User, Clock, Users, AlertTriangle, CheckCircle, XCircle, Copy, Edit, Save, X } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -22,6 +24,7 @@ interface IAdminFacilityCardProps {
 
 const AdminFacilityCard = ({ facility, onDelete, onToggleStatus, onDuplicate }: IAdminFacilityCardProps): JSX.Element => {
   const navigate = useNavigate();
+  const { t } = useTranslation(['facility']);
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [editValue, setEditValue] = useState<string>("");
   const [editField, setEditField] = useState<string>("");
@@ -132,12 +135,12 @@ const AdminFacilityCard = ({ facility, onDelete, onToggleStatus, onDuplicate }: 
       localStorage.setItem('adminFacilities', JSON.stringify(updatedFacilities));
       
       // Show success message
-      alert('Fasilitet oppdatert!');
+      toast.success(t('facility:admin.messages.updated_success'));
       setIsEditing(false);
       setEditField("");
     } catch (error) {
       console.error('Failed to save facility:', error);
-      alert('Kunne ikke lagre endringer. Prøv igjen.');
+      toast.error(t('facility:admin.messages.save_error'));
     }
   };
 
@@ -170,12 +173,12 @@ const AdminFacilityCard = ({ facility, onDelete, onToggleStatus, onDuplicate }: 
         f.id === facility.id ? updatedFacility : f
       );
       localStorage.setItem('adminFacilities', JSON.stringify(updatedFacilities));
-      
-      alert('Fasilitet oppdatert!');
+
+      toast.success(t('facility:admin.messages.updated_success'));
       setShowEditModal(false);
     } catch (error) {
       console.error('Failed to save facility:', error);
-      alert('Kunne ikke lagre endringer. Prøv igjen.');
+      toast.error(t('facility:admin.messages.save_error'));
     }
   };
 
@@ -201,12 +204,12 @@ const AdminFacilityCard = ({ facility, onDelete, onToggleStatus, onDuplicate }: 
         f.id === facility.id ? updatedFacility : f
       );
       localStorage.setItem('adminFacilities', JSON.stringify(updatedFacilities));
-      
-      alert('Bilder lastet opp!');
+
+      toast.success(t('facility:admin.messages.images_uploaded_success'));
       setShowImageModal(false);
     } catch (error) {
       console.error('Failed to upload images:', error);
-      alert('Kunne ikke laste opp bilder. Prøv igjen.');
+      toast.error(t('facility:admin.messages.image_upload_error'));
     }
   };
 

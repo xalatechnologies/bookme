@@ -1,0 +1,795 @@
+{
+  "summary": {
+    "totalFilesWithAuth": 60,
+    "filesWithInlineLogic": 2,
+    "uniqueRoles": [
+      "admin",
+      "staff",
+      "owner",
+      "Admin",
+      "customer",
+      "Owner",
+      "Customer"
+    ],
+    "uniquePermissions": [
+      "facilities.delete",
+      "bookings.approve"
+    ]
+  },
+  "files": [
+    {
+      "path": "App.tsx",
+      "hasAuthGuard": false,
+      "usesAuthContext": true,
+      "usesRoleHook": false,
+      "usesPermissions": false,
+      "checksFunctions": [],
+      "roles": [],
+      "permissions": [],
+      "hasInlineAuthLogic": false
+    },
+    {
+      "path": "components/features/auth/components/PermissionGuard.tsx",
+      "hasAuthGuard": true,
+      "usesAuthContext": true,
+      "usesRoleHook": false,
+      "usesPermissions": true,
+      "checksFunctions": [
+        "if (hasPermission"
+      ],
+      "roles": [],
+      "permissions": [],
+      "hasInlineAuthLogic": false
+    },
+    {
+      "path": "components/features/auth/components/ProtectedRoute.tsx",
+      "hasAuthGuard": true,
+      "usesAuthContext": true,
+      "usesRoleHook": true,
+      "usesPermissions": true,
+      "checksFunctions": [
+        "if (!hasPermission"
+      ],
+      "roles": [
+        "admin",
+        "staff"
+      ],
+      "permissions": [],
+      "hasInlineAuthLogic": false
+    },
+    {
+      "path": "components/features/auth/components/RequireRole.tsx",
+      "hasAuthGuard": true,
+      "usesAuthContext": false,
+      "usesRoleHook": true,
+      "usesPermissions": false,
+      "checksFunctions": [],
+      "roles": [
+        "staff",
+        "admin",
+        "owner"
+      ],
+      "permissions": [],
+      "hasInlineAuthLogic": false
+    },
+    {
+      "path": "components/features/auth/components/RoleGuard.tsx",
+      "hasAuthGuard": true,
+      "usesAuthContext": false,
+      "usesRoleHook": true,
+      "usesPermissions": true,
+      "checksFunctions": [
+        "if (hasPermission"
+      ],
+      "roles": [
+        "admin",
+        "staff",
+        "owner"
+      ],
+      "permissions": [],
+      "hasInlineAuthLogic": false
+    },
+    {
+      "path": "components/features/auth/index.ts",
+      "hasAuthGuard": true,
+      "usesAuthContext": false,
+      "usesRoleHook": false,
+      "usesPermissions": false,
+      "checksFunctions": [],
+      "roles": [],
+      "permissions": [],
+      "hasInlineAuthLogic": false
+    },
+    {
+      "path": "components/features/dashboard/admin/KPICard.tsx",
+      "hasAuthGuard": false,
+      "usesAuthContext": false,
+      "usesRoleHook": false,
+      "usesPermissions": false,
+      "checksFunctions": [],
+      "roles": [
+        "admin"
+      ],
+      "permissions": [],
+      "hasInlineAuthLogic": false
+    },
+    {
+      "path": "components/features/dashboard/admin/TrendCard.tsx",
+      "hasAuthGuard": false,
+      "usesAuthContext": false,
+      "usesRoleHook": false,
+      "usesPermissions": false,
+      "checksFunctions": [],
+      "roles": [
+        "admin"
+      ],
+      "permissions": [],
+      "hasInlineAuthLogic": false
+    },
+    {
+      "path": "components/features/facilities/components/FacilityEditForm/FacilityEditForm.tsx",
+      "hasAuthGuard": false,
+      "usesAuthContext": false,
+      "usesRoleHook": false,
+      "usesPermissions": false,
+      "checksFunctions": [],
+      "roles": [
+        "admin"
+      ],
+      "permissions": [],
+      "hasInlineAuthLogic": false
+    },
+    {
+      "path": "components/features/groups/components/GroupBookingFlow.tsx",
+      "hasAuthGuard": false,
+      "usesAuthContext": false,
+      "usesRoleHook": false,
+      "usesPermissions": false,
+      "checksFunctions": [],
+      "roles": [
+        "owner",
+        "admin",
+        "Admin"
+      ],
+      "permissions": [],
+      "hasInlineAuthLogic": false
+    },
+    {
+      "path": "components/features/groups/components/GroupManagementCard.tsx",
+      "hasAuthGuard": false,
+      "usesAuthContext": false,
+      "usesRoleHook": false,
+      "usesPermissions": false,
+      "checksFunctions": [],
+      "roles": [
+        "owner"
+      ],
+      "permissions": [],
+      "hasInlineAuthLogic": false
+    },
+    {
+      "path": "components/layouts/AdminLayout/ProfileDropdown.tsx",
+      "hasAuthGuard": false,
+      "usesAuthContext": true,
+      "usesRoleHook": false,
+      "usesPermissions": false,
+      "checksFunctions": [],
+      "roles": [
+        "Admin"
+      ],
+      "permissions": [],
+      "hasInlineAuthLogic": false
+    },
+    {
+      "path": "components/layouts/PublicLayout/GlobalHeader.tsx",
+      "hasAuthGuard": false,
+      "usesAuthContext": false,
+      "usesRoleHook": false,
+      "usesPermissions": false,
+      "checksFunctions": [],
+      "roles": [
+        "admin"
+      ],
+      "permissions": [],
+      "hasInlineAuthLogic": false
+    },
+    {
+      "path": "components/layouts/UserLayout/UserProfileDropdown.tsx",
+      "hasAuthGuard": false,
+      "usesAuthContext": true,
+      "usesRoleHook": false,
+      "usesPermissions": false,
+      "checksFunctions": [],
+      "roles": [],
+      "permissions": [],
+      "hasInlineAuthLogic": false
+    },
+    {
+      "path": "constants/roles.ts",
+      "hasAuthGuard": false,
+      "usesAuthContext": false,
+      "usesRoleHook": false,
+      "usesPermissions": false,
+      "checksFunctions": [],
+      "roles": [
+        "owner",
+        "admin",
+        "customer",
+        "staff",
+        "Owner",
+        "Customer"
+      ],
+      "permissions": [],
+      "hasInlineAuthLogic": false
+    },
+    {
+      "path": "contexts/AuthContext.tsx",
+      "hasAuthGuard": false,
+      "usesAuthContext": true,
+      "usesRoleHook": false,
+      "usesPermissions": false,
+      "checksFunctions": [],
+      "roles": [],
+      "permissions": [],
+      "hasInlineAuthLogic": false
+    },
+    {
+      "path": "contexts/UserProfileContext.tsx",
+      "hasAuthGuard": false,
+      "usesAuthContext": true,
+      "usesRoleHook": false,
+      "usesPermissions": false,
+      "checksFunctions": [],
+      "roles": [],
+      "permissions": [],
+      "hasInlineAuthLogic": false
+    },
+    {
+      "path": "contexts/index.ts",
+      "hasAuthGuard": false,
+      "usesAuthContext": true,
+      "usesRoleHook": false,
+      "usesPermissions": false,
+      "checksFunctions": [],
+      "roles": [],
+      "permissions": [],
+      "hasInlineAuthLogic": false
+    },
+    {
+      "path": "data/additionalServices/dummyServices.ts",
+      "hasAuthGuard": false,
+      "usesAuthContext": false,
+      "usesRoleHook": false,
+      "usesPermissions": false,
+      "checksFunctions": [],
+      "roles": [
+        "staff"
+      ],
+      "permissions": [],
+      "hasInlineAuthLogic": false
+    },
+    {
+      "path": "hooks/auth/usePermissions.ts",
+      "hasAuthGuard": false,
+      "usesAuthContext": true,
+      "usesRoleHook": false,
+      "usesPermissions": true,
+      "checksFunctions": [],
+      "roles": [
+        "admin",
+        "staff"
+      ],
+      "permissions": [],
+      "hasInlineAuthLogic": true
+    },
+    {
+      "path": "hooks/auth/useRole.ts",
+      "hasAuthGuard": false,
+      "usesAuthContext": true,
+      "usesRoleHook": true,
+      "usesPermissions": false,
+      "checksFunctions": [],
+      "roles": [
+        "staff",
+        "customer",
+        "owner",
+        "admin"
+      ],
+      "permissions": [],
+      "hasInlineAuthLogic": true
+    },
+    {
+      "path": "hooks/bookings/useBookingListPage.ts",
+      "hasAuthGuard": false,
+      "usesAuthContext": true,
+      "usesRoleHook": false,
+      "usesPermissions": false,
+      "checksFunctions": [],
+      "roles": [],
+      "permissions": [],
+      "hasInlineAuthLogic": false
+    },
+    {
+      "path": "hooks/useDashboardData.ts",
+      "hasAuthGuard": false,
+      "usesAuthContext": false,
+      "usesRoleHook": false,
+      "usesPermissions": false,
+      "checksFunctions": [],
+      "roles": [
+        "admin"
+      ],
+      "permissions": [],
+      "hasInlineAuthLogic": false
+    },
+    {
+      "path": "hooks/useMessaging.ts",
+      "hasAuthGuard": false,
+      "usesAuthContext": false,
+      "usesRoleHook": false,
+      "usesPermissions": false,
+      "checksFunctions": [],
+      "roles": [
+        "Admin"
+      ],
+      "permissions": [],
+      "hasInlineAuthLogic": false
+    },
+    {
+      "path": "hooks/useRealtimeBookings.ts",
+      "hasAuthGuard": false,
+      "usesAuthContext": true,
+      "usesRoleHook": false,
+      "usesPermissions": false,
+      "checksFunctions": [],
+      "roles": [],
+      "permissions": [],
+      "hasInlineAuthLogic": false
+    },
+    {
+      "path": "hooks/useRealtimeMessages.ts",
+      "hasAuthGuard": false,
+      "usesAuthContext": true,
+      "usesRoleHook": false,
+      "usesPermissions": false,
+      "checksFunctions": [],
+      "roles": [],
+      "permissions": [],
+      "hasInlineAuthLogic": false
+    },
+    {
+      "path": "hooks/useRealtimeNotifications.ts",
+      "hasAuthGuard": false,
+      "usesAuthContext": true,
+      "usesRoleHook": false,
+      "usesPermissions": false,
+      "checksFunctions": [],
+      "roles": [],
+      "permissions": [],
+      "hasInlineAuthLogic": false
+    },
+    {
+      "path": "pages/Login.tsx",
+      "hasAuthGuard": false,
+      "usesAuthContext": true,
+      "usesRoleHook": false,
+      "usesPermissions": false,
+      "checksFunctions": [],
+      "roles": [
+        "admin"
+      ],
+      "permissions": [],
+      "hasInlineAuthLogic": false
+    },
+    {
+      "path": "pages/LoginSelection.tsx",
+      "hasAuthGuard": false,
+      "usesAuthContext": false,
+      "usesRoleHook": false,
+      "usesPermissions": false,
+      "checksFunctions": [],
+      "roles": [
+        "admin"
+      ],
+      "permissions": [],
+      "hasInlineAuthLogic": false
+    },
+    {
+      "path": "pages/UserRoutes.tsx",
+      "hasAuthGuard": true,
+      "usesAuthContext": false,
+      "usesRoleHook": false,
+      "usesPermissions": false,
+      "checksFunctions": [],
+      "roles": [],
+      "permissions": [],
+      "hasInlineAuthLogic": false
+    },
+    {
+      "path": "pages/admin/ApprovalsPage.tsx",
+      "hasAuthGuard": true,
+      "usesAuthContext": false,
+      "usesRoleHook": false,
+      "usesPermissions": false,
+      "checksFunctions": [],
+      "roles": [],
+      "permissions": [],
+      "hasInlineAuthLogic": false
+    },
+    {
+      "path": "pages/admin/AuditLogPage.tsx",
+      "hasAuthGuard": true,
+      "usesAuthContext": false,
+      "usesRoleHook": false,
+      "usesPermissions": false,
+      "checksFunctions": [],
+      "roles": [],
+      "permissions": [],
+      "hasInlineAuthLogic": false
+    },
+    {
+      "path": "pages/admin/BookingsPage.tsx",
+      "hasAuthGuard": true,
+      "usesAuthContext": false,
+      "usesRoleHook": false,
+      "usesPermissions": false,
+      "checksFunctions": [],
+      "roles": [
+        "admin",
+        "Admin"
+      ],
+      "permissions": [],
+      "hasInlineAuthLogic": false
+    },
+    {
+      "path": "pages/admin/DeletionPlanPage.tsx",
+      "hasAuthGuard": true,
+      "usesAuthContext": false,
+      "usesRoleHook": false,
+      "usesPermissions": false,
+      "checksFunctions": [],
+      "roles": [],
+      "permissions": [],
+      "hasInlineAuthLogic": false
+    },
+    {
+      "path": "pages/admin/FacilitiesPage.tsx",
+      "hasAuthGuard": true,
+      "usesAuthContext": false,
+      "usesRoleHook": false,
+      "usesPermissions": false,
+      "checksFunctions": [],
+      "roles": [
+        "admin"
+      ],
+      "permissions": [],
+      "hasInlineAuthLogic": false
+    },
+    {
+      "path": "pages/admin/FacilityEditPage.tsx",
+      "hasAuthGuard": false,
+      "usesAuthContext": false,
+      "usesRoleHook": false,
+      "usesPermissions": false,
+      "checksFunctions": [],
+      "roles": [
+        "owner"
+      ],
+      "permissions": [],
+      "hasInlineAuthLogic": false
+    },
+    {
+      "path": "pages/admin/IntegrationsPage.tsx",
+      "hasAuthGuard": true,
+      "usesAuthContext": false,
+      "usesRoleHook": false,
+      "usesPermissions": false,
+      "checksFunctions": [],
+      "roles": [],
+      "permissions": [],
+      "hasInlineAuthLogic": false
+    },
+    {
+      "path": "pages/admin/LocalizationManagementPage.tsx",
+      "hasAuthGuard": true,
+      "usesAuthContext": false,
+      "usesRoleHook": false,
+      "usesPermissions": false,
+      "checksFunctions": [],
+      "roles": [
+        "admin"
+      ],
+      "permissions": [],
+      "hasInlineAuthLogic": false
+    },
+    {
+      "path": "pages/admin/NotificationsPage.tsx",
+      "hasAuthGuard": true,
+      "usesAuthContext": false,
+      "usesRoleHook": false,
+      "usesPermissions": false,
+      "checksFunctions": [],
+      "roles": [],
+      "permissions": [],
+      "hasInlineAuthLogic": false
+    },
+    {
+      "path": "pages/admin/Overview.tsx",
+      "hasAuthGuard": false,
+      "usesAuthContext": false,
+      "usesRoleHook": false,
+      "usesPermissions": false,
+      "checksFunctions": [],
+      "roles": [
+        "admin"
+      ],
+      "permissions": [],
+      "hasInlineAuthLogic": false
+    },
+    {
+      "path": "pages/admin/ReportsPage.tsx",
+      "hasAuthGuard": true,
+      "usesAuthContext": false,
+      "usesRoleHook": false,
+      "usesPermissions": false,
+      "checksFunctions": [],
+      "roles": [
+        "admin"
+      ],
+      "permissions": [],
+      "hasInlineAuthLogic": false
+    },
+    {
+      "path": "pages/admin/SettingsPage.tsx",
+      "hasAuthGuard": false,
+      "usesAuthContext": true,
+      "usesRoleHook": false,
+      "usesPermissions": false,
+      "checksFunctions": [],
+      "roles": [],
+      "permissions": [],
+      "hasInlineAuthLogic": false
+    },
+    {
+      "path": "pages/admin/UsersRolesPage.tsx",
+      "hasAuthGuard": true,
+      "usesAuthContext": false,
+      "usesRoleHook": false,
+      "usesPermissions": false,
+      "checksFunctions": [],
+      "roles": [
+        "admin",
+        "Admin"
+      ],
+      "permissions": [
+        "facilities.delete",
+        "bookings.approve"
+      ],
+      "hasInlineAuthLogic": false
+    },
+    {
+      "path": "services/supabase/bookings.service.ts",
+      "hasAuthGuard": false,
+      "usesAuthContext": true,
+      "usesRoleHook": false,
+      "usesPermissions": false,
+      "checksFunctions": [],
+      "roles": [],
+      "permissions": [],
+      "hasInlineAuthLogic": false
+    },
+    {
+      "path": "services/supabase/favorites.service.ts",
+      "hasAuthGuard": false,
+      "usesAuthContext": true,
+      "usesRoleHook": false,
+      "usesPermissions": false,
+      "checksFunctions": [],
+      "roles": [],
+      "permissions": [],
+      "hasInlineAuthLogic": false
+    },
+    {
+      "path": "services/supabase/groups.service.ts",
+      "hasAuthGuard": false,
+      "usesAuthContext": true,
+      "usesRoleHook": false,
+      "usesPermissions": false,
+      "checksFunctions": [],
+      "roles": [
+        "owner",
+        "admin"
+      ],
+      "permissions": [],
+      "hasInlineAuthLogic": false
+    },
+    {
+      "path": "services/supabase/messages.service.ts",
+      "hasAuthGuard": false,
+      "usesAuthContext": true,
+      "usesRoleHook": false,
+      "usesPermissions": false,
+      "checksFunctions": [],
+      "roles": [],
+      "permissions": [],
+      "hasInlineAuthLogic": false
+    },
+    {
+      "path": "services/supabase/notifications.service.ts",
+      "hasAuthGuard": false,
+      "usesAuthContext": true,
+      "usesRoleHook": false,
+      "usesPermissions": false,
+      "checksFunctions": [],
+      "roles": [],
+      "permissions": [],
+      "hasInlineAuthLogic": false
+    },
+    {
+      "path": "services/supabase/organizations.service.ts",
+      "hasAuthGuard": false,
+      "usesAuthContext": false,
+      "usesRoleHook": false,
+      "usesPermissions": false,
+      "checksFunctions": [],
+      "roles": [
+        "admin"
+      ],
+      "permissions": [],
+      "hasInlineAuthLogic": false
+    },
+    {
+      "path": "services/supabase/rbac.service.ts",
+      "hasAuthGuard": false,
+      "usesAuthContext": false,
+      "usesRoleHook": false,
+      "usesPermissions": true,
+      "checksFunctions": [],
+      "roles": [
+        "owner",
+        "admin",
+        "staff",
+        "customer"
+      ],
+      "permissions": [],
+      "hasInlineAuthLogic": false
+    },
+    {
+      "path": "services/supabase/recurring.service.ts",
+      "hasAuthGuard": false,
+      "usesAuthContext": true,
+      "usesRoleHook": false,
+      "usesPermissions": false,
+      "checksFunctions": [],
+      "roles": [],
+      "permissions": [],
+      "hasInlineAuthLogic": false
+    },
+    {
+      "path": "services/supabase/support.service.ts",
+      "hasAuthGuard": false,
+      "usesAuthContext": true,
+      "usesRoleHook": false,
+      "usesPermissions": false,
+      "checksFunctions": [],
+      "roles": [],
+      "permissions": [],
+      "hasInlineAuthLogic": false
+    },
+    {
+      "path": "stores/groupStore.ts",
+      "hasAuthGuard": false,
+      "usesAuthContext": false,
+      "usesRoleHook": false,
+      "usesPermissions": false,
+      "checksFunctions": [],
+      "roles": [
+        "admin",
+        "owner"
+      ],
+      "permissions": [],
+      "hasInlineAuthLogic": false
+    },
+    {
+      "path": "stores/supportStore.ts",
+      "hasAuthGuard": false,
+      "usesAuthContext": false,
+      "usesRoleHook": false,
+      "usesPermissions": false,
+      "checksFunctions": [],
+      "roles": [
+        "admin"
+      ],
+      "permissions": [],
+      "hasInlineAuthLogic": false
+    },
+    {
+      "path": "types/database.ts",
+      "hasAuthGuard": false,
+      "usesAuthContext": false,
+      "usesRoleHook": false,
+      "usesPermissions": false,
+      "checksFunctions": [],
+      "roles": [
+        "owner",
+        "admin",
+        "staff",
+        "customer"
+      ],
+      "permissions": [],
+      "hasInlineAuthLogic": false
+    },
+    {
+      "path": "types/group.ts",
+      "hasAuthGuard": false,
+      "usesAuthContext": false,
+      "usesRoleHook": false,
+      "usesPermissions": false,
+      "checksFunctions": [],
+      "roles": [
+        "owner",
+        "admin"
+      ],
+      "permissions": [],
+      "hasInlineAuthLogic": false
+    },
+    {
+      "path": "types/message.ts",
+      "hasAuthGuard": false,
+      "usesAuthContext": false,
+      "usesRoleHook": false,
+      "usesPermissions": false,
+      "checksFunctions": [],
+      "roles": [
+        "admin"
+      ],
+      "permissions": [],
+      "hasInlineAuthLogic": false
+    },
+    {
+      "path": "types/rbac.ts",
+      "hasAuthGuard": false,
+      "usesAuthContext": false,
+      "usesRoleHook": false,
+      "usesPermissions": false,
+      "checksFunctions": [],
+      "roles": [
+        "owner",
+        "admin",
+        "staff",
+        "customer"
+      ],
+      "permissions": [],
+      "hasInlineAuthLogic": false
+    },
+    {
+      "path": "types/support.ts",
+      "hasAuthGuard": false,
+      "usesAuthContext": false,
+      "usesRoleHook": false,
+      "usesPermissions": false,
+      "checksFunctions": [],
+      "roles": [
+        "admin"
+      ],
+      "permissions": [],
+      "hasInlineAuthLogic": false
+    },
+    {
+      "path": "utils/roleHelpers.ts",
+      "hasAuthGuard": false,
+      "usesAuthContext": false,
+      "usesRoleHook": false,
+      "usesPermissions": false,
+      "checksFunctions": [],
+      "roles": [
+        "owner",
+        "admin",
+        "staff",
+        "customer"
+      ],
+      "permissions": [],
+      "hasInlineAuthLogic": false
+    }
+  ]
+}

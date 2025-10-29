@@ -7,6 +7,17 @@ import {
 } from '@/hooks/bookings/useRecurringBookingGroups';
 import type { BookingWithDetails } from '@/services/supabase/bookings.service';
 
+// Mock facility and zone types for test data
+interface TestFacility {
+  readonly id: string;
+  readonly name: string;
+}
+
+interface TestZone {
+  readonly id: string;
+  readonly name: string;
+}
+
 // Mock booking data with recurring groups
 const mockBookings: BookingWithDetails[] = [
   // Standalone booking (no recurring ID)
@@ -29,12 +40,12 @@ const mockBookings: BookingWithDetails[] = [
     facility: {
       id: 'facility-1',
       name: 'Drammen Idrettshall',
-    } as any,
+    } as TestFacility,
     zone: {
       id: 'zone-1',
       name: 'Sentrum',
-    } as any,
-  } as any,
+    } as TestZone,
+  },
 
   // Weekly recurring group 1 - Week 1
   {
@@ -56,12 +67,12 @@ const mockBookings: BookingWithDetails[] = [
     facility: {
       id: 'facility-2',
       name: 'Drammen Kulturhus',
-    } as any,
+    } as TestFacility,
     zone: {
       id: 'zone-1',
       name: 'Sentrum',
-    } as any,
-  } as any,
+    } as TestZone,
+  },
 
   // Weekly recurring group 1 - Week 2
   {
@@ -83,12 +94,12 @@ const mockBookings: BookingWithDetails[] = [
     facility: {
       id: 'facility-2',
       name: 'Drammen Kulturhus',
-    } as any,
+    } as TestFacility,
     zone: {
       id: 'zone-1',
       name: 'Sentrum',
-    } as any,
-  } as any,
+    } as TestZone,
+  },
 
   // Weekly recurring group 1 - Week 3
   {
@@ -110,12 +121,12 @@ const mockBookings: BookingWithDetails[] = [
     facility: {
       id: 'facility-2',
       name: 'Drammen Kulturhus',
-    } as any,
+    } as TestFacility,
     zone: {
       id: 'zone-1',
       name: 'Sentrum',
-    } as any,
-  } as any,
+    } as TestZone,
+  },
 
   // Monthly recurring group 2 - Month 1
   {
@@ -137,12 +148,12 @@ const mockBookings: BookingWithDetails[] = [
     facility: {
       id: 'facility-3',
       name: 'Drammen Svømmehall',
-    } as any,
+    } as TestFacility,
     zone: {
       id: 'zone-2',
       name: 'Øst',
-    } as any,
-  } as any,
+    } as TestZone,
+  },
 
   // Monthly recurring group 2 - Month 2
   {
@@ -164,12 +175,12 @@ const mockBookings: BookingWithDetails[] = [
     facility: {
       id: 'facility-3',
       name: 'Drammen Svømmehall',
-    } as any,
+    } as TestFacility,
     zone: {
       id: 'zone-2',
       name: 'Øst',
-    } as any,
-  } as any,
+    } as TestZone,
+  },
 
   // Monthly recurring group 2 - Month 3
   {
@@ -191,12 +202,12 @@ const mockBookings: BookingWithDetails[] = [
     facility: {
       id: 'facility-3',
       name: 'Drammen Svømmehall',
-    } as any,
+    } as TestFacility,
     zone: {
       id: 'zone-2',
       name: 'Øst',
-    } as any,
-  } as any,
+    } as TestZone,
+  },
 ];
 
 describe('useRecurringBookingGroups', () => {
@@ -339,7 +350,7 @@ describe('useRecurringBookingGroups', () => {
     it('should return unknown for insufficient data', () => {
       const singleRecurringBooking: BookingWithDetails[] = [
         {
-          ...mockBookings[1],
+          ...mockBookings[1]!,
           id: 'single-recurring',
           recurring_booking_id: 'single-group',
         },
@@ -409,8 +420,8 @@ describe('useRecurringBookingGroups', () => {
 
       if (groupsWithUpcoming.length > 1) {
         for (let i = 1; i < groupsWithUpcoming.length; i++) {
-          const prev = new Date(groupsWithUpcoming[i - 1].nextBooking!.starts_at);
-          const curr = new Date(groupsWithUpcoming[i].nextBooking!.starts_at);
+          const prev = new Date(groupsWithUpcoming[i - 1]?.nextBooking!.starts_at ?? 0);
+          const curr = new Date(groupsWithUpcoming[i]?.nextBooking!.starts_at ?? 0);
           expect(curr >= prev).toBe(true);
         }
       }
@@ -487,7 +498,7 @@ describe('useStandaloneBookings', () => {
     );
 
     expect(result.current).toHaveLength(1);
-    expect(result.current[0].id).toBe('booking-standalone');
+    expect(result.current[0]?.id).toBe('booking-standalone');
   });
 
   it('should return all bookings when none are recurring', () => {

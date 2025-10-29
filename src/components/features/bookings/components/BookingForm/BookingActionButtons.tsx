@@ -33,7 +33,7 @@ export const BookingActionButtons: React.FC<IBookingActionButtonsProps> = ({
   onClearSlots,
 }) => {
   const navigate = useNavigate();
-  const { t } = useTranslation(['bookings', 'common']);
+  const { t } = useTranslation(['booking', 'common']);
   const [termsAccepted, setTermsAccepted] = React.useState<boolean>(false);
 
   /**
@@ -94,25 +94,25 @@ export const BookingActionButtons: React.FC<IBookingActionButtonsProps> = ({
         />
         <div className="text-sm leading-relaxed">
           <label htmlFor="terms" className="cursor-pointer">
-            {t('bookings:terms.accept_label')}{" "}
+            {t('booking:terms.accept_label')}{" "}
             <a
               href="/vilkar"
               target="_blank"
               rel="noopener noreferrer"
               className="text-blue-600 hover:text-blue-800 underline font-medium"
             >
-              {t('bookings:terms.accept_terms_and_privacy')}
+              {t('booking:terms.accept_terms_and_privacy')}
             </a>
-            {" "}{t('bookings:terms.and')}{" "}
+            {" "}{t('booking:terms.and')}{" "}
             <a
               href="/privacy"
               target="_blank"
               rel="noopener noreferrer"
               className="text-blue-600 hover:text-blue-800 underline font-medium"
             >
-              {t('bookings:terms.privacy_policy')}
+              {t('booking:terms.privacy_policy')}
             </a>
-            {" "}{t('bookings:terms.for_use')}{" "}
+            {" "}{t('booking:terms.for_use')}{" "}
             <span className="text-red-500">*</span>
           </label>
         </div>
@@ -129,7 +129,7 @@ export const BookingActionButtons: React.FC<IBookingActionButtonsProps> = ({
           size="lg"
         >
           <ShoppingCart className="h-5 w-5 mr-2" />
-          {t('bookings:button_labels.add_to_cart')}
+          {t('booking:button_labels.add_to_cart')}
         </Button>
 
         {/* Complete Booking Button */}
@@ -140,7 +140,7 @@ export const BookingActionButtons: React.FC<IBookingActionButtonsProps> = ({
           size="lg"
         >
           <CreditCard className="h-5 w-5 mr-2" />
-          {t('bookings:button_labels.complete_booking')}
+          {t('booking:button_labels.complete_booking')}
         </Button>
 
         {/* Clear All Button */}
@@ -152,25 +152,25 @@ export const BookingActionButtons: React.FC<IBookingActionButtonsProps> = ({
           size="sm"
         >
           <Trash2 className="h-4 w-4 mr-2" />
-          {t('bookings:sidebar.clear_all_slots')}
+          {t('booking:sidebar.clear_all_slots')}
         </Button>
       </div>
 
       {/* Validation Messages */}
       {!isFormValid && (
         <div className="text-sm text-red-600 bg-red-50 p-3 rounded-lg border border-red-200">
-          <p className="font-medium">{t('bookings:validation.form_incomplete')}</p>
+          <p className="font-medium">{t('booking:validation.form_incomplete')}</p>
           <p className="text-xs mt-1">
-            {t('bookings:validation.fill_required_fields')}
+            {t('booking:validation.fill_required_fields')}
           </p>
         </div>
       )}
 
       {!termsAccepted && isFormValid && (
         <div className="text-sm text-amber-600 bg-amber-50 p-3 rounded-lg border border-amber-200">
-          <p className="font-medium">{t('bookings:validation.terms_required')}</p>
+          <p className="font-medium">{t('booking:validation.terms_required')}</p>
           <p className="text-xs mt-1">
-            {t('bookings:validation.accept_terms_message')}
+            {t('booking:validation.accept_terms_message')}
           </p>
         </div>
       )}
@@ -178,7 +178,7 @@ export const BookingActionButtons: React.FC<IBookingActionButtonsProps> = ({
       {/* Loading State */}
       {isLoading && (
         <div className="text-center py-4">
-          <div className="text-sm text-gray-500">{t('bookings:validation.processing')}</div>
+          <div className="text-sm text-gray-500">{t('booking:validation.processing')}</div>
         </div>
       )}
     </div>
