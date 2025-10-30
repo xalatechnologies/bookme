@@ -85,5 +85,13 @@
     "quotaExceeded": "Kvote overskredet.",
     "featureNotEnabled": "Funksjonen er ikke aktivert.",
     "maintenanceMode": "System under vedlikehold."
+  },
+  "boundary": {
+    "title": "Noe gikk galt",
+    "message": "En uventet feil oppstod. Vi beklager uleiligheten. Du kan prøve å laste siden på nytt eller gå tilbake til forsiden.",
+    "devModeTitle": "Feildetaljer (utviklermodus):",
+    "componentStack": "Komponentstack",
+    "tryAgain": "Prøv igjen",
+    "goHome": "Gå til forsiden"
   }
 }

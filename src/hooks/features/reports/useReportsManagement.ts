@@ -10,7 +10,7 @@ import { useMemo, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/clients/supabase';
 import { useOrganizationId } from '@/hooks/useOrganizationId';
-import { useReportUIStore } from '@/stores/reportUIStore';
+import { useAppUIStore } from '@/stores/appUIStore';
 import {
   generateRevenueReport,
   generateBookingReport,
@@ -223,7 +223,8 @@ export const useReportsManagement = (): IUseReportsManagementReturn => {
   const isLoading = isLoadingBookings || isLoadingFacilities;
   const error = bookingsError || facilitiesError;
 
-  // UI state layer - Zustand store for UI-specific state
+  // UI state layer - appUIStore reports section
+  const appUIStore = useAppUIStore();
   const {
     reportType,
     dateRange,
@@ -231,19 +232,21 @@ export const useReportsManagement = (): IUseReportsManagementReturn => {
     view,
     showFilters,
     filters,
-    setReportType,
-    setDateRange,
-    setGroupBy,
-    setView,
-    toggleFilters,
-    clearFilters,
-    setToday,
-    setThisWeek,
-    setThisMonth,
-    setThisYear,
-    setLast30Days,
-    setLast90Days,
-  } = useReportUIStore();
+  } = appUIStore.reports;
+
+  // Actions from appUIStore with report prefix
+  const setReportType = appUIStore.setReportType;
+  const setDateRange = appUIStore.setReportDateRange;
+  const setGroupBy = appUIStore.setReportGroupBy;
+  const setView = appUIStore.setReportView;
+  const toggleFilters = appUIStore.toggleReportFilters;
+  const clearFilters = appUIStore.clearReportFilters;
+  const setToday = appUIStore.setReportToday;
+  const setThisWeek = appUIStore.setReportThisWeek;
+  const setThisMonth = appUIStore.setReportThisMonth;
+  const setThisYear = appUIStore.setReportThisYear;
+  const setLast30Days = appUIStore.setReportLast30Days;
+  const setLast90Days = appUIStore.setReportLast90Days;
 
   // Apply filters to bookings
   const filteredBookings = useMemo(() => {

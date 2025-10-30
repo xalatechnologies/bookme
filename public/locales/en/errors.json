@@ -85,5 +85,13 @@
     "quotaExceeded": "Quota exceeded.",
     "featureNotEnabled": "Feature is not enabled.",
     "maintenanceMode": "System under maintenance."
+  },
+  "boundary": {
+    "title": "Something went wrong",
+    "message": "An unexpected error occurred. We apologize for the inconvenience. You can try reloading the page or return to the home page.",
+    "devModeTitle": "Error Details (Dev Mode):",
+    "componentStack": "Component Stack",
+    "tryAgain": "Try again",
+    "goHome": "Go to home page"
   }
 }

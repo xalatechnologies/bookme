@@ -26,7 +26,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { useSettingsManagement } from "@/hooks/features/settings/useSettingsManagement";
-import type { TSettingsTab } from "@/stores/settingsUIStore";
+
+// Settings tab type (moved from settingsUIStore)
+type TSettingsTab = 'general' | 'email' | 'payment' | 'notifications' | 'security';
 
 interface ISettingsPageProps {
   readonly children?: never;

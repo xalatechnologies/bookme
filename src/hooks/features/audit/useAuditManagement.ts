@@ -11,7 +11,7 @@ import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 import { supabase } from '@/lib/clients/supabase';
 import type { Database } from '@/types/database';
 import { useOrganizationId } from '@/hooks/useOrganizationId';
-import { useAuditUIStore } from '@/stores/auditUIStore';
+import { useAppUIStore } from '@/stores/appUIStore';
 import {
   filterAuditLogs,
   sortAuditLogs,
@@ -189,7 +189,8 @@ export const useAuditManagement = (): IUseAuditManagementReturn => {
     staleTime: 30000, // 30 seconds
   });
 
-  // UI state layer - Zustand store for UI-specific state
+  // UI state layer - appUIStore audit section
+  const appUIStore = useAppUIStore();
   const {
     view,
     showFilters,
@@ -204,38 +205,42 @@ export const useAuditManagement = (): IUseAuditManagementReturn => {
     isExporting,
     currentPage,
     itemsPerPage,
-    setView,
-    toggleFilters,
-    setSearchTerm,
-    toggleUserFilter,
-    toggleActionFilter,
-    toggleEntityFilter,
-    toggleSeverityFilter,
-    clearFilters,
-    setDateRange,
-    clearDateRange,
-    setToday,
-    setYesterday,
-    setLast7Days,
-    setLast30Days,
-    setThisWeek,
-    setThisMonth,
-    toggleSort,
-    toggleLogSelection,
-    selectAllLogs: selectAll,
-    clearSelection,
-    openDetails,
-    closeDetails,
-    resetFilters,
-    setCurrentPage,
-    setItemsPerPage,
-    nextPage,
-    previousPage,
-    goToFirstPage,
-    goToLastPage: goToLast,
-    startExport,
-    finishExport,
-  } = useAuditUIStore();
+  } = appUIStore.audit;
+
+  // Actions from appUIStore with audit prefix
+  const setView = appUIStore.setAuditView;
+  const toggleFilters = appUIStore.toggleAuditFilters;
+  const setSearchTerm = appUIStore.setAuditSearchTerm;
+  const toggleUserFilter = appUIStore.toggleAuditUserFilter;
+  const toggleActionFilter = appUIStore.toggleAuditActionFilter;
+  const toggleEntityFilter = appUIStore.toggleAuditEntityFilter;
+  const toggleSeverityFilter = appUIStore.toggleAuditSeverityFilter;
+  const clearFilters = appUIStore.clearAuditFilters;
+  const setDateRange = appUIStore.setAuditDateRange;
+  const clearDateRange = appUIStore.clearAuditDateRange;
+  const setToday = appUIStore.setAuditToday;
+  const setYesterday = appUIStore.setAuditYesterday;
+  const setLast7Days = appUIStore.setAuditLast7Days;
+  const setLast30Days = appUIStore.setAuditLast30Days;
+  const setThisWeek = appUIStore.setAuditThisWeek;
+  const setThisMonth = appUIStore.setAuditThisMonth;
+  const toggleSort = appUIStore.toggleAuditSort;
+  const toggleLogSelection = appUIStore.toggleAuditLogSelection;
+  const selectAll = (ids: readonly string[]) => appUIStore.selectAllAuditLogs(ids);
+  const clearSelection = appUIStore.clearAuditSelection;
+  const openDetails = appUIStore.openAuditDetails;
+  const closeDetails = appUIStore.closeAuditDetails;
+  const resetFilters = appUIStore.resetAuditFilters;
+  const setCurrentPage = appUIStore.setAuditPage;
+  const setItemsPerPage = appUIStore.setAuditItemsPerPage;
+  const startExport = () => appUIStore.setAuditIsExporting(true);
+  const finishExport = () => appUIStore.setAuditIsExporting(false);
+
+  // Pagination actions (derived from current page state)
+  const nextPage = () => setCurrentPage(currentPage + 1);
+  const previousPage = () => setCurrentPage(Math.max(1, currentPage - 1));
+  const goToFirstPage = () => setCurrentPage(1);
+  const goToLast = (totalPages: number) => setCurrentPage(totalPages);
 
   // Business logic layer - filtering and sorting
   const filteredAndSorted = useMemo(() => {

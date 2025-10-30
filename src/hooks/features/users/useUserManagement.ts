@@ -11,7 +11,7 @@
 import { useMemo, useCallback } from 'react';
 import { useOrganizationId } from '@/hooks/useOrganizationId';
 import { useAuth } from '@/contexts/AuthContext';
-import { useUserUIStore } from '@/stores/userUIStore';
+import { useAppUIStore } from '@/stores/appUIStore';
 import {
   filterUsers,
   sortUsers,
@@ -163,27 +163,36 @@ export const useUserManagement = (): IUseUserManagementReturn => {
     },
   };
 
-  // UI state layer
+  // UI state layer - appUIStore users section
+  const appUIStore = useAppUIStore();
   const {
     view,
     showFilters,
     searchTerm,
     roleFilter,
     statusFilter,
+    organizationFilter,
     sortBy,
     sortOrder,
     selectedUserIds,
-    setView,
-    toggleFilters,
-    setSearchTerm,
-    toggleRoleFilter,
-    toggleStatusFilter,
-    toggleSort,
-    toggleUserSelection,
-    selectAllUsers: selectAll,
-    clearSelection,
-    resetFilters,
-  } = useUserUIStore();
+    showUserEditor,
+    editingUserId,
+  } = appUIStore.users;
+
+  // Actions from appUIStore with users prefix
+  const setView = appUIStore.setUsersView;
+  const toggleFilters = appUIStore.toggleUsersFilters;
+  const setSearchTerm = appUIStore.setUsersSearchTerm;
+  const toggleRoleFilter = appUIStore.toggleUsersRoleFilter;
+  const toggleStatusFilter = appUIStore.toggleUsersStatusFilter;
+  const setOrganizationFilter = appUIStore.setUsersOrganizationFilter;
+  const toggleSort = appUIStore.toggleUsersSort;
+  const toggleUserSelection = appUIStore.toggleUsersSelection;
+  const selectAll = (ids: readonly string[]) => appUIStore.selectAllUsers(ids);
+  const clearSelection = appUIStore.clearUsersSelection;
+  const openEditor = appUIStore.openUsersEditor;
+  const closeEditor = appUIStore.closeUsersEditor;
+  const resetFilters = appUIStore.resetUsersFilters;
 
   // Business logic layer - filtering and sorting
   const filteredUsers = useMemo(() => {

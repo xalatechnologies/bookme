@@ -7,7 +7,7 @@
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useOrganizationId } from '@/hooks/useOrganizationId';
-import { useSettingsUIStore } from '@/stores/settingsUIStore';
+import { useAppUIStore } from '@/stores/appUIStore';
 import { organizationsService, type OrganizationSettings as OrgSettings } from '@/services/supabase/organizations.service';
 import {
   validateSettingsData,
@@ -78,24 +78,27 @@ export const useSettingsManagement = (): IUseSettingsManagementReturn => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
-  // UI state layer
+  // UI state layer - use appUIStore settings section
+  const appUIStore = useAppUIStore();
   const {
-    activeTab,
+    activeSection: activeTab,
     unsavedChanges,
     isSaving,
     saveSuccess,
     saveError,
     validationErrors,
-    setActiveTab,
-    setUnsavedChanges,
-    setIsSaving,
-    setSaveSuccess,
-    setSaveError,
-    setValidationErrors,
-    clearValidationErrors,
-    openModal,
-    closeModal,
-  } = useSettingsUIStore();
+  } = appUIStore.settings;
+
+  // Actions from appUIStore with settings prefix
+  const setActiveTab = appUIStore.setSettingsSection;
+  const setUnsavedChanges = appUIStore.setSettingsUnsavedChanges;
+  const setIsSaving = appUIStore.setSettingsIsSaving;
+  const setSaveSuccess = appUIStore.setSettingsSaveSuccess;
+  const setSaveError = appUIStore.setSettingsSaveError;
+  const setValidationErrors = appUIStore.setSettingsValidationErrors;
+  const clearValidationErrors = appUIStore.clearSettingsValidationErrors;
+  const openModal = appUIStore.openSettingsModal;
+  const closeModal = appUIStore.closeSettingsModal;
 
   // Available options
   const availableTimezones = useMemo(() => getAvailableTimezones(), []);

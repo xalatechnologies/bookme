@@ -125,13 +125,150 @@
 - [ ] Add migration notes
 - [ ] Document best practices
 
+## Integration with Feature Hooks
+
+### Current Feature Hooks Architecture
+
+The application already has **5 feature hooks** following clean architecture patterns (see `FEATURE_HOOKS_SUMMARY.md`):
+
+1. **useCalendarManagement** → `calendarUIStore` + `calendar.business.service.ts`
+2. **useZoneManagement** → `zoneUIStore` + `zone.business.service.ts`
+3. **useGroupManagement** → `groupUIStore` + `group.business.service.ts`
+4. **useMessageManagement** → `messageUIStore` + `message.business.service.ts`
+5. **useCartManagement** → `cartUIStore` + `cart.business.service.ts`
+
+### How Feature Hooks Support Store Consolidation
+
+**Three-Layer Architecture:**
+```
+┌─────────────────────────────────────┐
+│  Components (Presentation)          │
+└────────────┬────────────────────────┘
+             │ use feature hooks
+┌────────────▼────────────────────────┐
+│  Feature Hooks (Integration)        │
+│  - useCalendarManagement()          │
+│  - useZoneManagement()              │
+│  - useGroupManagement()             │
+└────┬───────────────────┬────────────┘
+     │                   │
+     ▼                   ▼
+┌─────────────┐   ┌──────────────────┐
+│ UI Stores   │   │ Business Logic   │
+│ (Zustand)   │   │ (Pure Functions) │
+└─────────────┘   └──────────────────┘
+```
+
+### Benefits for Store Reduction
+
+1. **UI Stores Become Leaner**
+   - Feature hooks handle integration logic
+   - Stores only manage UI state (filters, modals, selections)
+   - Business logic moves to pure service functions
+
+2. **Ready for React Query Migration**
+   - Feature hooks abstract data source
+   - Currently: `useZoneManagement(zones)`
+   - Future: `useZoneManagement()` fetches internally with React Query
+   - Components don't need to change!
+
+3. **Easier Consolidation**
+   - Multiple UI stores can share one feature hook
+   - Example: `facilityUIStore` + `zoneUIStore` → single `useFacilityManagement()`
+
+### Recommended Implementation Path
+
+**Phase 1: Leverage Existing Feature Hooks (Quick Wins)**
+- ✅ 5 feature hooks already created
+- Migrate components to use hooks instead of direct store access
+- This prepares ground for store consolidation
+
+**Phase 2: Create Additional Feature Hooks**
+- `useFacilityManagement()` - combine facility + zone stores
+- `useBookingManagement()` - combine booking + slot selection stores
+- `useSupportManagement()` - for support tickets
+
+**Phase 3: Consolidate Stores**
+- Merge UI stores that are now abstracted behind feature hooks
+- Move data stores to React Query (server state)
+- Keep only client-side state in Zustand
+
+**Phase 4: Final Cleanup**
+- Remove unused stores
+- Document final architecture
+- Add migration guide
+
+### Example Migration
+
+**Before (Direct Store Access):**
+```typescript
+function ZoneList() {
+  const zones = useZoneStore(state => state.zones);
+  const searchTerm = useZoneUIStore(state => state.searchTerm);
+
+  // Business logic in component
+  const filtered = zones.filter(z =>
+    z.name.includes(searchTerm)
+  );
+
+  return <div>{/* render */}</div>;
+}
+```
+
+**After (Feature Hook):**
+```typescript
+function ZoneList() {
+  const {
+    filteredZones,
+    searchTerm,
+    setSearchTerm,
+    validateZoneData,
+  } = useZoneManagement(zones);
+
+  return <div>{/* render */}</div>;
+}
+```
+
+**Future (With React Query):**
+```typescript
+function ZoneList() {
+  // Hook fetches data internally, no props needed
+  const {
+    filteredZones,
+    isLoading,
+    error,
+    searchTerm,
+    setSearchTerm,
+    validateZoneData,
+  } = useZoneManagement();
+
+  if (isLoading) return <LoadingSpinner />;
+  if (error) return <ErrorMessage />;
+
+  return <div>{/* render */}</div>;
+}
+```
+
 ## Next Steps
 
-1. Run usage analysis to find unused stores
-2. Identify candidates for migration to React Query
-3. Create consolidated store prototypes
-4. Gradually migrate components
+### Immediate Actions
+1. ✅ Feature hooks already created (5/5 complete)
+2. Audit component usage of direct store access
+3. Identify components that can migrate to feature hooks
+4. Create migration plan for remaining features
+
+### Medium Term
+5. Create additional feature hooks for remaining stores
+6. Begin migrating components to use hooks
+7. Plan React Query integration strategy
+8. Document API patterns for new features
+
+### Long Term
+9. Migrate server state to React Query
+10. Consolidate UI stores (23 → 8-10)
+11. Remove deprecated stores
+12. Finalize architectural documentation
 
 ---
 
-**Note:** This is a comprehensive audit. Implementation should be gradual to avoid breaking changes.
+**Note:** This is a comprehensive audit. Implementation should be gradual to avoid breaking changes. The existing feature hooks provide an excellent foundation for store consolidation and React Query migration.

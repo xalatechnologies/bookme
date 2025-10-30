@@ -5,10 +5,19 @@
  * Provides a clean interface for group management operations including
  * member management, cost splitting, invitation handling, and permissions.
  * Follows clean architecture principles with clear separation of concerns.
+ *
+ * **Phase 6 Update:** Now fetches data internally using React Query services.
+ * Components no longer need to pass data as props.
  */
 
 import { useMemo, useCallback } from 'react';
 import { useGroupUIStore, type TGroupView, type TGroupSortBy } from '@/stores/groupUIStore';
+import {
+  useUserGroups,
+  useGroupBookings,
+  type GroupWithMembers,
+} from '@/services/supabase/groups.service';
+import { useAuth } from '@/contexts/AuthContext';
 import {
   filterGroups,
   sortGroups,
@@ -91,29 +100,36 @@ export interface IUseGroupManagementReturn {
 /**
  * Hook for managing groups with business logic separation
  *
- * Provides comprehensive group management functionality including:
- * - Data fetching and caching (would use React Query in real implementation)
- * - UI state management via Zustand store
- * - Business logic validation and operations
- * - Filtering by name, members, bookings
- * - Sorting by multiple criteria
- * - Member management and permissions
- * - Cost splitting calculations
- * - Invitation handling
+ * **Phase 6 Complete:** Now fetches data internally using React Query.
  *
- * @returns Complete group management interface
+ * Provides comprehensive group management functionality including:
+ * - ✅ Data fetching with React Query (automatic caching, refetching)
+ * - ✅ UI state management via Zustand store
+ * - ✅ Business logic validation and operations
+ * - ✅ Filtering by name, members, bookings
+ * - ✅ Sorting by multiple criteria
+ * - ✅ Member management and permissions
+ * - ✅ Cost splitting calculations
+ * - ✅ Invitation handling
+ *
+ * @returns Complete group management interface with loading/error states
  *
  * @example
  * ```tsx
  * function GroupManagementPage() {
  *   const {
  *     filteredGroups,
+ *     isLoading,
+ *     error,
  *     searchTerm,
  *     setSearchTerm,
  *     canInviteMember,
  *     splitCostBetweenMembers,
  *     openModal,
  *   } = useGroupManagement();
+ *
+ *   if (isLoading) return <LoadingSpinner />;
+ *   if (error) return <ErrorMessage error={error} />;
  *
  *   const handleInvite = (group: BookingGroup, userId: string) => {
  *     const validation = canInviteMember(group, userId);
@@ -122,11 +138,6 @@ export interface IUseGroupManagementReturn {
  *       return;
  *     }
  *     openModal('invite', group.id);
- *   };
- *
- *   const handleSplitCost = (totalCost: number, memberIds: string[]) => {
- *     const shares = splitCostBetweenMembers(totalCost, memberIds);
- *     console.log('Cost per member:', shares);
  *   };
  *
  *   return (
@@ -138,14 +149,27 @@ export interface IUseGroupManagementReturn {
  * }
  * ```
  */
-export const useGroupManagement = (
-  groups: readonly BookingGroup[] = [],
-  groupBookings: readonly GroupBooking[] = []
-): IUseGroupManagementReturn => {
-  // In a real implementation, data would be fetched here
-  // const { data: groups = [], isLoading, error } = useGroups(orgId);
-  const isLoading = false;
-  const error = null;
+export const useGroupManagement = (): IUseGroupManagementReturn => {
+  // Authentication - get current user
+  const { user } = useAuth();
+
+  // Data layer - React Query fetches data automatically
+  const {
+    data: groups = [],
+    isLoading: groupsLoading,
+    error: groupsError,
+  } = useUserGroups(user?.id || '', !!user);
+
+  // Fetch bookings for active group (if one is selected)
+  const { activeGroupId } = useGroupUIStore();
+  const {
+    data: groupBookingsData = [],
+    isLoading: bookingsLoading,
+  } = useGroupBookings(activeGroupId || '', !!activeGroupId);
+
+  // Combine loading states
+  const isLoading = groupsLoading || (!!activeGroupId && bookingsLoading);
+  const error = groupsError as Error | null;
 
   // UI state layer - Zustand store for UI-specific state
   const {
@@ -202,10 +226,12 @@ export const useGroupManagement = (
 
   // Business operations - wrapped with useCallback for stability
   const calculateGroupStatsCallback = useCallback(
-    (group: BookingGroup, bookings: readonly GroupBooking[]): IGroupStats => {
-      return calculateGroupStats(group, bookings);
+    (group: BookingGroup, bookings?: readonly GroupBooking[]): IGroupStats => {
+      // Use provided bookings or fetched bookings from active group
+      const bookingsToUse = bookings || groupBookingsData;
+      return calculateGroupStats(group, bookingsToUse);
     },
-    []
+    [groupBookingsData]
   );
 
   const splitCostBetweenMembersCallback = useCallback(

@@ -68,7 +68,7 @@ const Overview = (): JSX.Element => {
   const [systemAlerts, setSystemAlerts] = useState<readonly ISystemAlert[]>([]);
 
   useEffect(() => {
-    if (!dashboardData) return;
+    if (!dashboardData || !facilities || !bookings) return;
 
     // Create KPI cards with real data and internationalized labels
     const updatedKpiCards: IKPICard[] = [
