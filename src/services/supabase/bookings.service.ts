@@ -65,8 +65,6 @@ export const bookingsService = {
    * Fetch bookings for a specific user
    */
   async getUserBookings(userId: string): Promise<BookingWithDetails[]> {
-    console.log('🔍 Fetching bookings for user:', userId);
-
     const { data, error } = await supabase
       .from('bookings')
       .select(`
@@ -82,7 +80,6 @@ export const bookingsService = {
       throw error;
     }
 
-    console.log('✅ Fetched bookings:', data?.length || 0, 'bookings');
     return data as BookingWithDetails[];
   },
 

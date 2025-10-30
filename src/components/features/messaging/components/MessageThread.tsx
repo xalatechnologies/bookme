@@ -99,7 +99,6 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
   const handleDownloadClick = useCallback((attachment: { readonly id: string; readonly name: string; readonly type: string; readonly size: number }) => {
     // Create download link from attachment data
     // In a real implementation, this would fetch the actual file data
-    console.log('Download attachment:', attachment);
 
     // TODO: Implement actual download logic when backend is ready
     // const link = document.createElement("a");
@@ -390,17 +389,14 @@ export const MessageThread: React.FC<MessageThreadProps> = ({
 
   const handleForward = (message: Message) => {
     // TODO: Implement message forwarding functionality
-    console.log('Forward message:', message.id);
   };
 
   const handleStar = (messageId: string) => {
     // TODO: Implement message starring functionality
-    console.log('Star message:', messageId);
   };
 
   const handleDelete = (messageId: string) => {
     // TODO: Implement message deletion functionality
-    console.log('Delete message:', messageId);
   };
 
   if (!thread) {

@@ -152,7 +152,6 @@ export const useAdminSearch = (): UseAdminSearchReturn => {
     if (searchTerm.trim() === '') return;
 
     // In a real app, this would navigate to a search results page
-    console.log('Searching for:', searchTerm);
 
     // For now, just show an alert with the number of results
     alert(`Fant ${results.length} resultater for "${searchTerm}"`);
@@ -163,7 +162,6 @@ export const useAdminSearch = (): UseAdminSearchReturn => {
   // Handle result click
   const handleResultClick = useCallback((result: AdminSearchResult): void => {
     // In a real app, this would navigate to the result page
-    console.log('Navigating to:', result.url);
 
     setIsOpen(false);
     setSearchTerm('');

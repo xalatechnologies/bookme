@@ -32,14 +32,11 @@ const UserProfileDropdown = (_props: IUserProfileDropdownProps): JSX.Element => 
 
     if (isLoggingOut) return; // Prevent double-click
 
-    console.log('🔴 Logout button clicked');
     setIsLoggingOut(true);
     setIsOpen(false); // Close dropdown immediately
 
     try {
-      console.log('🔄 Calling signOut...');
       await signOut();
-      console.log('✅ SignOut successful');
       toast.success(t('common:messages.logout_success'));
       navigate("/login-selection");
     } catch (error) {

@@ -24,14 +24,11 @@ const ProfileDropdown = (_props: IProfileDropdownProps): JSX.Element => {
 
     if (isLoggingOut) return; // Prevent double-click
 
-    console.log('🔴 Admin logout button clicked');
     setIsLoggingOut(true);
     setIsOpen(false); // Close dropdown immediately
 
     try {
-      console.log('🔄 Calling signOut...');
       await signOut();
-      console.log('✅ SignOut successful');
       toast.success(t('messages.success.logout', 'Du er nå logget ut!'));
       navigate("/login-selection");
     } catch (error) {

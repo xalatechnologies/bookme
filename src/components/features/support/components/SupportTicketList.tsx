@@ -279,17 +279,14 @@ export const SupportTicketList: React.FC<SupportTicketListProps> = ({
 
   const handleEdit = (ticketId: string): void => {
     // TODO: Implementation would open edit dialog
-    console.log("Edit ticket:", ticketId);
   };
 
   const handleDelete = (ticketId: string): void => {
     // TODO: Implementation would delete ticket
-    console.log("Delete ticket:", ticketId);
   };
 
   const handleArchive = (ticketId: string): void => {
     // TODO: Implementation would archive ticket
-    console.log("Archive ticket:", ticketId);
   };
 
   return (
