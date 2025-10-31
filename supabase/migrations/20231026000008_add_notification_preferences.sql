@@ -74,7 +74,7 @@ comment on column notifications.clicked_at is 'When user clicked notification ac
 
 -- Notification delivery log
 create table notification_delivery_log (
-  id uuid primary key default uuid_generate_v4(),
+  id uuid primary key default gen_random_uuid(),
   notification_id uuid not null references notifications(id) on delete cascade,
   channel text not null check (channel in ('email', 'sms', 'browser', 'none')),
   status text not null check (status in ('pending', 'sent', 'delivered', 'failed', 'bounced')),

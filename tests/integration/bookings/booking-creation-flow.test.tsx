@@ -5,6 +5,48 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { bookingsService } from '@/services/supabase/bookings.service';
 import { facilitiesService } from '@/services/supabase/facilities.service';
 
+// Mock type for bookings service
+interface MockBookingData {
+  readonly id: string;
+  readonly user_id: string;
+  readonly facility_id: string;
+  readonly starts_at: string;
+  readonly ends_at: string;
+  readonly status: 'pending' | 'confirmed' | 'cancelled';
+  readonly total_cents: number;
+  readonly notes: string | null;
+  readonly created_at: string;
+  readonly updated_at: string;
+  readonly cancelled_at: string | null;
+  readonly recurring_booking_id: string | null;
+  readonly approval_status: string;
+  readonly approved_by: string | null;
+  readonly approved_at: string | null;
+}
+
+// Mock type for facilities
+interface MockFacilityData {
+  readonly id: string;
+  readonly name: string;
+  readonly description: string;
+  readonly zone_id: string;
+  readonly capacity: number;
+  readonly hourly_rate: number;
+  readonly status: string;
+  readonly features: string[];
+  readonly images: string[];
+  readonly address: string;
+  readonly latitude: number;
+  readonly longitude: number;
+  readonly opening_hours: Record<string, unknown>;
+  readonly created_at: string;
+  readonly updated_at: string;
+  readonly requires_approval: boolean;
+  readonly minimum_booking_duration: number;
+  readonly maximum_booking_duration: number;
+  readonly cancellation_policy: string;
+}
+
 // Mock the services
 vi.mock('@/services/supabase/bookings.service', () => ({
   bookingsService: {
@@ -69,20 +111,20 @@ describe('Booking Creation Flow', () => {
         minimum_booking_duration: 60,
         maximum_booking_duration: 480,
         cancellation_policy: 'Standard',
-      },
+      } as MockFacilityData,
     ]);
 
     vi.mocked(bookingsService.checkAvailability).mockResolvedValue(true);
   });
 
   it('should create a booking successfully', async () => {
-    const mockBooking = {
+    const mockBooking: MockBookingData = {
       id: 'new-booking-1',
       user_id: 'user-1',
       facility_id: 'facility-1',
       starts_at: '2025-03-01T10:00:00Z',
       ends_at: '2025-03-01T12:00:00Z',
-      status: 'pending' as const,
+      status: 'pending',
       total_cents: 100000,
       notes: 'Test booking',
       created_at: new Date().toISOString(),
@@ -94,7 +136,7 @@ describe('Booking Creation Flow', () => {
       approved_at: null,
     };
 
-    vi.mocked(bookingsService.create).mockResolvedValue(mockBooking as any);
+    vi.mocked(bookingsService.create).mockResolvedValue(mockBooking);
 
     const result = await bookingsService.create({
       facility_id: 'facility-1',
@@ -103,7 +145,7 @@ describe('Booking Creation Flow', () => {
       ends_at: '2025-03-01T12:00:00Z',
       total_cents: 100000,
       notes: 'Test booking',
-    });
+    } as never);
 
     expect(result).toEqual(mockBooking);
     expect(bookingsService.create).toHaveBeenCalledWith({
@@ -153,7 +195,7 @@ describe('Booking Creation Flow', () => {
         starts_at: '2025-03-01T10:00:00Z',
         ends_at: '2025-03-01T12:00:00Z',
         total_cents: 100000,
-      });
+      } as never);
     }).rejects.toThrow('Time slot not available');
   });
 
@@ -163,13 +205,13 @@ describe('Booking Creation Flow', () => {
     const durationHours = 2;
     const expectedPrice = hourlyRate * durationHours * 100; // Convert to cents
 
-    const mockBooking = {
+    const mockBooking: MockBookingData = {
       id: 'new-booking-1',
       user_id: 'user-1',
       facility_id: 'facility-1',
       starts_at: '2025-03-01T10:00:00Z',
       ends_at: '2025-03-01T12:00:00Z',
-      status: 'pending' as const,
+      status: 'pending',
       total_cents: expectedPrice,
       notes: null,
       created_at: new Date().toISOString(),
@@ -181,7 +223,7 @@ describe('Booking Creation Flow', () => {
       approved_at: null,
     };
 
-    vi.mocked(bookingsService.create).mockResolvedValue(mockBooking as any);
+    vi.mocked(bookingsService.create).mockResolvedValue(mockBooking);
 
     const result = await bookingsService.create({
       facility_id: 'facility-1',
@@ -189,7 +231,7 @@ describe('Booking Creation Flow', () => {
       starts_at: '2025-03-01T10:00:00Z',
       ends_at: '2025-03-01T12:00:00Z',
       total_cents: expectedPrice,
-    });
+    } as never);
 
     expect(result.total_cents).toBe(expectedPrice);
   });
@@ -206,7 +248,7 @@ describe('Booking Creation Flow', () => {
         starts_at: '2025-03-01T10:00:00Z',
         ends_at: '2025-03-01T12:00:00Z',
         total_cents: 100000,
-      })
+      } as never)
     ).rejects.toThrow('Database error');
   });
 
@@ -230,19 +272,19 @@ describe('Booking Creation Flow', () => {
           starts_at: startTime.toISOString(),
           ends_at: endTime.toISOString(),
           total_cents: 25000,
-        })
+        } as never)
       ).rejects.toThrow();
     }
   });
 
   it('should support optional notes field', async () => {
-    const mockBooking = {
+    const mockBooking: MockBookingData = {
       id: 'new-booking-1',
       user_id: 'user-1',
       facility_id: 'facility-1',
       starts_at: '2025-03-01T10:00:00Z',
       ends_at: '2025-03-01T12:00:00Z',
-      status: 'pending' as const,
+      status: 'pending',
       total_cents: 100000,
       notes: 'Special requirements: Projector needed',
       created_at: new Date().toISOString(),
@@ -254,7 +296,7 @@ describe('Booking Creation Flow', () => {
       approved_at: null,
     };
 
-    vi.mocked(bookingsService.create).mockResolvedValue(mockBooking as any);
+    vi.mocked(bookingsService.create).mockResolvedValue(mockBooking);
 
     const result = await bookingsService.create({
       facility_id: 'facility-1',
@@ -263,7 +305,7 @@ describe('Booking Creation Flow', () => {
       ends_at: '2025-03-01T12:00:00Z',
       total_cents: 100000,
       notes: 'Special requirements: Projector needed',
-    });
+    } as never);
 
     expect(result.notes).toBe('Special requirements: Projector needed');
   });

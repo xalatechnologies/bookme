@@ -16,7 +16,7 @@
  */
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/lib/clients/supabase';
 import type { Database } from '@/types/database';
 
 type SupportTicket = Database['public']['Tables']['support_tickets']['Row'];
@@ -127,7 +127,7 @@ export const supportService = {
       .from('support_tickets')
       .select('*')
       .eq('user_id', userId)
-      .in('status', ['open', 'in_progress'])
+      .in('status', ['open', 'in-progress'])
       .order('created_at', { ascending: false });
 
     if (error) throw error;
@@ -204,7 +204,7 @@ export const supportService = {
       .from('support_tickets')
       .update({
         assigned_to: agentId,
-        status: 'in_progress',
+        status: 'in-progress',
         updated_at: new Date().toISOString(),
       })
       .eq('id', id)

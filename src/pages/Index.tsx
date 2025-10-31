@@ -5,10 +5,10 @@ import { useSearchParams } from "react-router-dom";
 
 import { FacilityFilters } from "@/types/facility";
 
-import { GlobalHeader } from "@/components/GlobalHeader";
-import SearchFilter from "@/components/SearchFilter";
-import { FacilityList } from "@/components/FacilityList";
-import { MapView } from "@/components/MapView";
+import { GlobalHeader } from "@/components/layouts/PublicLayout/GlobalHeader";
+import SearchFilter from "@/components/features/search/components/SearchFilter";
+import { FacilityList } from "@/components/features/facilities/components/FacilitySearch/FacilityList";
+import { MapView } from "@/components/features/facilities/components/FacilityMap/MapView";
 
 export const Index = (): JSX.Element => {
   const [searchParams, setSearchParams] = useSearchParams();

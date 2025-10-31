@@ -601,6 +601,7 @@ export type Database = {
           postal_code: string | null
           rating: number | null
           review_count: number
+          slug: string
           status: string
           updated_at: string
         }
@@ -623,6 +624,7 @@ export type Database = {
           postal_code?: string | null
           rating?: number | null
           review_count?: number
+          slug?: string
           status?: string
           updated_at?: string
         }
@@ -645,6 +647,7 @@ export type Database = {
           postal_code?: string | null
           rating?: number | null
           review_count?: number
+          slug?: string
           status?: string
           updated_at?: string
         }
@@ -3323,7 +3326,7 @@ export type Database = {
         | "refunded"
       group_role: "owner" | "admin" | "member"
       notification_channel: "email" | "sms" | "none"
-      org_role: "owner" | "admin" | "staff" | "customer"
+      org_role: "owner" | "admin" | "staff" | "customer" | "case_handler" | "editor" | "read_only"
       platform_role: "platform_admin" | "user"
       recurrence_frequency:
         | "daily"
@@ -3502,7 +3505,7 @@ export const Constants = {
       ],
       group_role: ["owner", "admin", "member"],
       notification_channel: ["email", "sms", "none"],
-      org_role: ["owner", "admin", "staff", "customer"],
+      org_role: ["owner", "admin", "staff", "customer", "case_handler", "editor", "read_only"],
       platform_role: ["platform_admin", "user"],
       recurrence_frequency: [
         "daily",

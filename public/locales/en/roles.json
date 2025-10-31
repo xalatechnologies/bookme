@@ -1,0 +1,24 @@
+{
+  "roles": {
+    "platform_admin": "Platform Administrator",
+    "user": "User",
+    "owner": "Owner",
+    "admin": "Administrator",
+    "case_handler": "Case Handler",
+    "editor": "Editor",
+    "read_only": "Read Only",
+    "customer": "Customer",
+    "staff_deprecated": "Staff (deprecated)"
+  },
+  "descriptions": {
+    "platform_admin": "Full system access across all organizations. Can manage platform settings, users, and all organizational data.",
+    "user": "Standard platform user with organization-specific permissions.",
+    "owner": "Full control over the organization. Can manage all settings, members, facilities, bookings, and billing.",
+    "admin": "Administrative access to the organization. Can manage members, facilities, bookings, and most settings.",
+    "case_handler": "Main operational role for handling bookings, customer requests, and operational tasks. Can approve/reject bookings and manage availability.",
+    "editor": "Content management role. Can edit facility descriptions, upload images, manage tags and categories. Cannot handle bookings or manage users.",
+    "read_only": "View-only access to facilities, bookings, and reports. Cannot make any modifications.",
+    "customer": "Standard customer access. Can view facilities, create bookings, and manage own profile.",
+    "staff_deprecated": "DEPRECATED - This role has been replaced by case_handler. Existing staff users will be migrated automatically."
+  }
+}

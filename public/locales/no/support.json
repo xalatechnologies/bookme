@@ -1,0 +1,125 @@
+{
+  "title": "Support",
+  "subtitle": "Få hjelp med spørsmål og problemer",
+  "tickets": {
+    "create": "Opprett support-ticket",
+    "view": "Vis ticket",
+    "list": "Support-tickets",
+    "my_tickets": "Mine tickets",
+    "all_tickets": "Alle tickets"
+  },
+  "fields": {
+    "category": "Kategori",
+    "subject": "Emne",
+    "description": "Beskrivelse",
+    "priority": "Prioritet",
+    "tags": "Tagger",
+    "attachments": "Vedlegg",
+    "status": "Status",
+    "assigned_to": "Tildelt",
+    "created_at": "Opprettet",
+    "updated_at": "Oppdatert",
+    "resolved_at": "Løst"
+  },
+  "categories": {
+    "booking": "Booking",
+    "technical": "Teknisk",
+    "billing": "Fakturering",
+    "feedback": "Tilbakemelding",
+    "other": "Annet"
+  },
+  "category_descriptions": {
+    "booking": "Spørsmål eller problemer med bookinger",
+    "technical": "Tekniske problemer eller feil",
+    "billing": "Spørsmål om fakturering eller betaling",
+    "feedback": "Tilbakemelding eller forslag",
+    "other": "Andre spørsmål eller problemer"
+  },
+  "priorities": {
+    "low": "Lav",
+    "medium": "Medium",
+    "high": "Høy",
+    "urgent": "Urgent"
+  },
+  "priority_descriptions": {
+    "low": "Ikke kritisk, kan vente",
+    "medium": "Viktig, men ikke akutt",
+    "high": "Kritisk, trenger rask hjelp",
+    "urgent": "Meget kritisk, trenger umiddelbar hjelp"
+  },
+  "status": {
+    "open": "Åpen",
+    "in_progress": "Under behandling",
+    "pending": "Venter",
+    "resolved": "Løst",
+    "closed": "Lukket"
+  },
+  "actions": {
+    "create_ticket": "Opprett ticket",
+    "submit": "Opprett ticket",
+    "cancel": "Avbryt",
+    "close": "Lukk ticket",
+    "reopen": "Gjenåpne",
+    "assign": "Tildel",
+    "resolve": "Marker som løst",
+    "add_comment": "Legg til kommentar",
+    "attach_file": "Legg ved fil"
+  },
+  "placeholders": {
+    "subject": "Beskriv problemet kort...",
+    "description": "Beskriv problemet så detaljert som mulig...",
+    "tags": "f.eks. booking, betaling, mobil"
+  },
+  "helper_text": {
+    "subject": "En kort beskrivelse av problemet",
+    "description": "Inkluder steg for å reprodusere problemet, feilmeldinger, og hva du forventet å skje",
+    "tags": "Separer tagger med komma for bedre kategorisering"
+  },
+  "attachments": {
+    "title": "Vedlegg (valgfritt)",
+    "drag_drop": "Dra og slipp filer her, eller klikk for å velge",
+    "select_files": "Velg filer",
+    "selected_files": "Valgte filer",
+    "remove": "Fjern",
+    "file_too_large": "Filen er for stor",
+    "max_size": "Maks {{size}}"
+  },
+  "related": {
+    "booking": "Relatert til booking",
+    "booking_id": "Denne ticketten er knyttet til booking #{{id}}"
+  },
+  "contact_info": {
+    "title": "Kontaktinformasjon",
+    "name": "Navn: {{name}}",
+    "email": "E-post: {{email}}"
+  },
+  "messages": {
+    "success": {
+      "created": "Support-ticket opprettet!",
+      "updated": "Ticket oppdatert!",
+      "closed": "Ticket lukket!",
+      "resolved": "Ticket markert som løst!",
+      "comment_added": "Kommentar lagt til!"
+    },
+    "error": {
+      "create_failed": "Kunne ikke opprette ticket",
+      "update_failed": "Kunne ikke oppdatere ticket",
+      "not_found": "Ticket ikke funnet",
+      "generic": "Kunne ikke opprette ticket. Prøv igjen."
+    },
+    "validation": {
+      "subject_required": "Vennligst fyll ut emne",
+      "description_required": "Vennligst fyll ut beskrivelse"
+    },
+    "empty": {
+      "no_tickets": "Ingen tickets funnet",
+      "no_comments": "Ingen kommentarer ennå"
+    }
+  },
+  "dialogs": {
+    "create": {
+      "title": "Opprett support-ticket",
+      "description": "Beskriv problemet ditt så detaljert som mulig for rask hjelp"
+    }
+  }
+}

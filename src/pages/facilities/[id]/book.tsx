@@ -5,23 +5,26 @@ import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
 // Internal libraries/utilities
-import { useTranslation } from "@/i18n";
-import type { RecurrencePattern } from "@/utils/recurrenceEngine";
-import { useFacility } from "@/hooks/useFacility";
-import { useZones } from "@/hooks/useZones";
+import { useTranslation } from "react-i18next";
+import type { RecurrencePattern } from "@/components/features/bookings/utils/recurrence";
+import { useFacility } from "@/components/features/facilities/hooks";
+import { useZones } from "@/components/features/facilities/hooks";
 import { CartProvider } from "@/contexts/CartContext";
-import { GlobalHeader } from "@/components/GlobalHeader";
-import { FacilityDetailLayout } from "@/components/facility/detail/FacilityDetailLayout";
-import { FacilityDetailBreadcrumb } from "@/components/facility/detail/FacilityDetailBreadcrumb";
-import { LoadingState, ErrorState } from "@/components/facility/detail/FacilityDetailStates";
+import { GlobalHeader } from "@/components/layouts/PublicLayout/GlobalHeader";
+import { FacilityDetailLayout } from "@/components/features/facilities/components/FacilityDetail/FacilityDetailLayout";
+import { FacilityDetailBreadcrumb } from "@/components/features/facilities/components/FacilityDetail/FacilityDetailBreadcrumb";
+import {
+  LoadingState,
+  ErrorState,
+} from "@/components/features/facilities/components/FacilityDetail/FacilityDetailStates";
 
 /**
  * Facility booking page
- * 
+ *
  * This page allows users to book a specific facility. It displays
  * the facility details and provides a booking interface similar
  * to the facility detail page but focused on booking.
- * 
+ *
  * Features:
  * - Facility information display
  * - Booking calendar interface
@@ -29,7 +32,7 @@ import { LoadingState, ErrorState } from "@/components/facility/detail/FacilityD
  * - Booking form
  * - Price calculation
  * - Cart integration
- * 
+ *
  * @returns JSX.Element
  */
 export const FacilityBooking = (): JSX.Element => {
@@ -37,20 +40,20 @@ export const FacilityBooking = (): JSX.Element => {
   const navigate = useNavigate();
   const [isFavorited, setIsFavorited] = useState(false);
   const [currentPattern, setCurrentPattern] = useState<RecurrencePattern>({
-    type: 'weekly',
+    type: "weekly",
     weekdays: [],
     timeSlots: [],
-    interval: 1
+    interval: 1,
   });
-  const { t } = useTranslation();
+  const { t } = useTranslation("common");
 
   // Use hooks to fetch data
-  const { facility, loading, error, notFound } = useFacility(id || '');
-  const { zones, loading: zonesLoading } = useZones(id || '');
+  const { facility, loading, error, notFound } = useFacility(id || "");
+  const { zones, loading: zonesLoading } = useZones(id || "");
 
   /**
    * Handle share functionality
-   * 
+   *
    * Shares the facility booking page using native share API
    * or falls back to clipboard copy.
    */
@@ -58,25 +61,24 @@ export const FacilityBooking = (): JSX.Element => {
     try {
       if (navigator.share) {
         await navigator.share({
-          title: facility?.name || 'BookMe Facility',
+          title: facility?.name || "BookMe Facility",
           url: window.location.href,
         });
       } else {
         await navigator.clipboard.writeText(window.location.href);
       }
     } catch (error) {
-      if (error instanceof Error && error.name !== 'AbortError') {
+      if (error instanceof Error && error.name !== "AbortError") {
         try {
           await navigator.clipboard.writeText(window.location.href);
-        } catch (clipboardError) {
-        }
+        } catch (clipboardError) {}
       }
     }
   };
 
   /**
    * Handle pattern changes for recurring bookings
-   * 
+   *
    * @param pattern - New recurrence pattern
    */
   const handlePatternApply = (pattern: RecurrencePattern): void => {
@@ -90,7 +92,9 @@ export const FacilityBooking = (): JSX.Element => {
 
   // Handle error states
   if (error || notFound || !facility) {
-    return <ErrorState error={error || undefined} notFound={notFound || !facility} />;
+    return (
+      <ErrorState error={error || undefined} notFound={notFound || !facility} />
+    );
   }
 
   return (
@@ -99,14 +103,14 @@ export const FacilityBooking = (): JSX.Element => {
         <GlobalHeader />
 
         {/* Breadcrumb Navigation */}
-        <FacilityDetailBreadcrumb 
+        <FacilityDetailBreadcrumb
           facilityName={facility.name}
           showBookingPage={true}
         />
 
         {/* Main Content */}
         <div className="flex-grow pb-20 lg:pb-0">
-          <FacilityDetailLayout 
+          <FacilityDetailLayout
             facility={facility}
             zones={zones}
             onShare={handleShare}

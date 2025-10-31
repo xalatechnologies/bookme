@@ -1,0 +1,409 @@
+{
+  "title": "Facilities",
+  "subtitle": "Explore and book available facilities",
+  "fields": {
+    "name": "Name",
+    "description": "Description",
+    "type": "Type",
+    "category": "Category",
+    "capacity": "Capacity",
+    "area": "Area",
+    "location": "Location",
+    "address": "Address",
+    "building": "Building",
+    "floor": "Floor",
+    "room": "Room",
+    "zone": "Zone",
+    "price": "Price",
+    "price_per_hour": "Price per hour",
+    "pricePerHour": "Price per Hour",
+    "price_range": "Price range",
+    "min_price": "Min. price",
+    "max_price": "Max. price",
+    "amenities": "Amenities",
+    "equipment": "Equipment",
+    "accessibility": "Accessibility",
+    "parking": "Parking",
+    "wifi": "WiFi",
+    "projector": "Projector",
+    "whiteboard": "Whiteboard",
+    "soundSystem": "Sound System",
+    "airConditioning": "Air Conditioning",
+    "heating": "Heating",
+    "naturalLight": "Natural Light",
+    "windows": "Windows",
+    "doors": "Doors",
+    "ceilingHeight": "Ceiling Height",
+    "floorType": "Floor Type",
+    "wallColor": "Wall Color",
+    "opening_hours": "Opening hours",
+    "available_from": "Available from",
+    "available_until": "Available until",
+    "image": "Image",
+    "images": "Images",
+    "thumbnail": "Thumbnail",
+    "contact_person": "Contact person",
+    "contact_email": "Contact email",
+    "contact_phone": "Contact phone",
+    "rules": "Rules",
+    "policies": "Policies",
+    "cancellation_policy": "Cancellation policy",
+    "min_booking_duration": "Min. booking duration",
+    "max_booking_duration": "Max. booking duration",
+    "advance_booking_days": "Advance booking (days)",
+    "popular": "Popular",
+    "featured": "Featured",
+    "rating": "Rating",
+    "reviewCount": "Reviews",
+    "reviews": "Reviews"
+  },
+  "types": {
+    "sports_hall": "Sports Hall",
+    "gym": "Gym",
+    "conference_room": "Conference Room",
+    "auditorium": "Auditorium",
+    "classroom": "Classroom",
+    "sports_field": "Sports Field",
+    "tennis_court": "Tennis Court",
+    "swimming_pool": "Swimming Pool",
+    "parking": "Parking",
+    "library": "Library",
+    "studio": "Studio",
+    "kitchen": "Kitchen",
+    "outdoor_area": "Outdoor Area",
+    "workshop": "Workshop",
+    "other": "Other"
+  },
+  "amenities": {
+    "available_title": "Available Amenities",
+    "equipment_title": "Equipment",
+    "suitable_for": "Suitable for",
+    "no_amenities": "No amenities listed",
+    "wifi": "WiFi",
+    "projector": "Projector",
+    "whiteboard": "Whiteboard",
+    "sound_system": "Sound System",
+    "microphone": "Microphone",
+    "air_conditioning": "Air Conditioning",
+    "heating": "Heating",
+    "kitchen_access": "Kitchen Access",
+    "parking": "Parking",
+    "wheelchair_accessible": "Wheelchair Accessible",
+    "changing_rooms": "Changing Rooms",
+    "showers": "Showers",
+    "lockers": "Lockers",
+    "reception": "Reception",
+    "security": "Security",
+    "catering": "Catering",
+    "video_conference": "Video Conference",
+    "tv_screen": "TV Screen",
+    "natural_light": "Natural Light",
+    "outdoor_access": "Outdoor Access"
+  },
+  "accessibility": {
+    "wheelchair": "Wheelchair",
+    "elevator": "Elevator",
+    "automatic_doors": "Automatic Doors",
+    "disabled_parking": "Disabled Parking",
+    "braille_signage": "Braille Signage",
+    "hearing_loop": "Hearing Loop",
+    "accessible_restroom": "Accessible Restroom",
+    "ramp": "Ramp",
+    "wide_doorways": "Wide Doorways",
+    "accessible_counter": "Accessible Counter"
+  },
+  "status": {
+    "available": "Available",
+    "unavailable": "Unavailable",
+    "occupied": "Occupied",
+    "maintenance": "Maintenance",
+    "closed": "Closed",
+    "coming_soon": "Coming Soon",
+    "fully_booked": "Fully Booked",
+    "limited_availability": "Limited Availability",
+    "available_now": "Available Now",
+    "available_soon": "Available Soon",
+    "open_now": "Open now"
+  },
+  "actions": {
+    "book": "Book",
+    "book_now": "Book Now",
+    "view_details": "View Details",
+    "view_availability": "View Availability",
+    "check_availability": "Check Availability",
+    "add_to_favorites": "Add to Favorites",
+    "remove_from_favorites": "Remove from Favorites",
+    "share": "Share",
+    "report": "Report",
+    "contact": "Contact",
+    "get_directions": "Get Directions",
+    "view_on_map": "View on Map",
+    "view_photos": "View Photos",
+    "write_review": "Write Review",
+    "compare": "Compare",
+    "suggest_edit": "Suggest Edit",
+    "toggle_map_view": "Toggle Map View",
+    "toggle_list_view": "Toggle List View",
+    "go_back": "Go Back",
+    "go_home": "Go Home",
+    "like": "Like",
+    "liked": "Liked"
+  },
+  "filters": {
+    "all": "All",
+    "search": "Search facilities...",
+    "by_type": "By type",
+    "by_location": "By location",
+    "by_capacity": "By capacity",
+    "by_price": "By price",
+    "by_amenities": "By amenities",
+    "by_availability": "By availability",
+    "available_only": "Available only",
+    "with_wifi": "With WiFi",
+    "wheelchair_accessible": "Wheelchair Accessible",
+    "sort_by": "Sort by",
+    "sort_by_name": "Name",
+    "sort_by_price": "Price",
+    "sort_by_capacity": "Capacity",
+    "sort_by_rating": "Rating",
+    "sort_by_popularity": "Popularity",
+    "sort_ascending": "Ascending",
+    "sort_descending": "Descending"
+  },
+  "details": {
+    "overview": "Overview",
+    "specifications": "Specifications",
+    "amenities_equipment": "Amenities & Equipment",
+    "availability": "Availability",
+    "pricing": "Pricing",
+    "reviews": "Reviews",
+    "location": "Location",
+    "policies": "Policies",
+    "contact_info": "Contact Information",
+    "similar_facilities": "Similar Facilities",
+    "capacity_info": "{{count}} person",
+    "capacity_info_plural": "{{count}} people",
+    "area_info": "{{area}} m²",
+    "hourly_rate": "{{price}} kr/hour",
+    "rating_info": "{{rating}} out of 5",
+    "reviews_count": "{{count}} review",
+    "reviews_count_plural": "{{count}} reviews",
+    "quick_info": "Quick info",
+    "opening_hours_today": "Opening hours today",
+    "facilities": "Facilities",
+    "book_facility": "Book this facility",
+    "per_hour": "per hour",
+    "people": "people"
+  },
+  "messages": {
+    "success": {
+      "added_to_favorites": "Added to favorites!",
+      "removed_from_favorites": "Removed from favorites!",
+      "review_submitted": "Review submitted!",
+      "report_submitted": "Report submitted!",
+      "facility_updated": "Facility updated!",
+      "images_uploaded": "Images uploaded!"
+    },
+    "error": {
+      "load_failed": "Could not load facilities",
+      "not_found": "Facility not found",
+      "unavailable": "This facility is not available",
+      "add_favorite_failed": "Could not add to favorites",
+      "review_failed": "Could not submit review",
+      "facility_not_found": "Facility not found",
+      "facility_not_found_desc": "The facility you're looking for doesn't exist",
+      "load_facility_error": "Error loading facility",
+      "something_went_wrong": "Something went wrong"
+    },
+    "empty": {
+      "no_facilities": "No facilities available",
+      "no_results": "No facilities found",
+      "no_favorites": "No favorites yet",
+      "try_different_filters": "Try different filters"
+    },
+    "confirm": {
+      "remove_favorite": "Remove this facility from favorites?"
+    }
+  },
+  "zones": {
+    "title": "Zones",
+    "zone": "Zone",
+    "select_zone": "Select zone",
+    "available_zones": "Available zones",
+    "zone_details": "Zone details",
+    "zone_capacity": "Zone capacity",
+    "zone_price": "Zone price",
+    "zone_amenities": "Zone amenities",
+    "zone_availability": "Zone availability",
+    "no_zones": "No zones available"
+  },
+  "booking_info": {
+    "min_duration": "Minimum duration: {{duration}} hour(s)",
+    "max_duration": "Maximum duration: {{duration}} hour(s)",
+    "advance_notice": "Must be booked {{days}} days in advance",
+    "instant_booking": "Instant booking available",
+    "approval_required": "Approval required",
+    "cancellation_notice": "Cancellation must be made {{hours}} hours in advance"
+  },
+  "card": {
+    "people": "people",
+    "squareMeters": "m²",
+    "pricePerHour": "kr/hour",
+    "outOf5": "out of 5",
+    "reviewCount": "reviews",
+    "yes": "Yes",
+    "no": "No",
+    "viewDetailsFor": "View details for {{name}} at {{address}}",
+    "addToFavorites": "Add to favorites",
+    "removeFavorites": "Remove from favorites",
+    "shareFacility": "Share facility",
+    "moreAmenities": "more amenities",
+    "more": "more"
+  },
+  "availability": {
+    "available_today": "Available today",
+    "fully_booked_weekend": "Fully booked on weekend",
+    "fully_booked": "Fully booked"
+  },
+  "buttons": {
+    "view_details": "View details",
+    "book_now": "Book now"
+  },
+  "share": {
+    "check_out": "Check out {{name}} on BookMe - {{type}} with capacity for {{capacity}} people",
+    "facility_shared": "Facility shared!",
+    "link_copied": "Link copied to clipboard!",
+    "share_failed": "Could not share facility. Try again."
+  },
+  "search": {
+    "placeholder": "Search for facilities...",
+    "filter": "Filter",
+    "sort_name": "Name",
+    "sort_price": "Price",
+    "sort_popularity": "Popularity",
+    "type_label": "Type",
+    "availability_label": "Availability",
+    "available_now": "Available now"
+  },
+  "facility_types": {
+    "all_types": "All types",
+    "sports_hall": "Sports Hall",
+    "cultural_center": "Cultural Center",
+    "meeting_room": "Meeting Room",
+    "fitness_center": "Fitness Center",
+    "outdoor": "Outdoor"
+  },
+  "contact": {
+    "contact_info_for": "Contact information for {{name}}:",
+    "phone": "Phone",
+    "email": "Email",
+    "facility": "Facility",
+    "location": "Location",
+    "open_email_client": "Would you like to open email client?",
+    "contact_copied": "Contact information copied to clipboard!",
+    "contact_error": "Could not open contact functionality. Try again.",
+    "booking_failed": "Could not navigate to booking page. Try again.",
+    "inquiry_about": "Inquiry about {{name}}",
+    "email_template": "Hi,\n\nI am interested in booking {{name}}.\n\nCan you provide me with more information?\n\nBest regards"
+  },
+  "mobile_panel": {
+    "see_booking_options": "See booking options",
+    "booking_coming_soon": "Booking functionality coming soon...",
+    "capacity_area": "Capacity: {{capacity}} | Area: {{area}} m²",
+    "opening_hours_label": "Opening hours: {{hours}}",
+    "book_now_coming_soon": "Book now (coming soon)"
+  },
+  "header": {
+    "more_images": "more",
+    "capacity_label": "Capacity: {{capacity}} people",
+    "reviews": "reviews",
+    "add_to_favorites": "Add to favorites",
+    "remove_from_favorites": "Remove from favorites"
+  },
+  "rules": {
+    "title": "Rules and Guidelines",
+    "noSmoking": "No Smoking",
+    "cleanupRequired": "Cleanup Required"
+  },
+  "gallery": {
+    "close": "Close",
+    "previous": "Previous",
+    "next": "Next",
+    "image_count": "Image {{current}} of {{total}}"
+  },
+  "errors": {
+    "facility_not_found": "Facility not found",
+    "facility_not_found_desc": "The facility you're looking for doesn't exist or has been removed.",
+    "load_facility_error": "Error loading facility",
+    "something_went_wrong": "Something went wrong. Please try again."
+  },
+  "map": {
+    "unavailable": "Map not available",
+    "load_error_title": "Could not load map",
+    "loading_title": "Loading map...",
+    "loading_description": "Setting up map and fetching facilities",
+    "go_to_grid_view": "Go to grid view",
+    "no_coordinates": "No coordinates available"
+  },
+  "admin": {
+    "status": {
+      "published": "Published",
+      "draft": "Draft",
+      "archived": "Archived",
+      "unknown": "Unknown",
+      "unpublished": "Unpublished"
+    },
+    "fields": {
+      "owner": "Owner:",
+      "last_updated": "Last updated:",
+      "updated_by": "Updated by:",
+      "capacity_with_value": "Capacity: {{count}}"
+    },
+    "actions": {
+      "edit": "Edit",
+      "add_image": "Add image",
+      "save_changes": "Save changes"
+    },
+    "aria": {
+      "view_details_for": "View details for {{name}} at {{address}}",
+      "view_in_main_app": "View in main application",
+      "duplicate_facility": "Duplicate facility",
+      "delete_facility": "Delete facility"
+    },
+    "labels": {
+      "more_items": "+{{count}} more"
+    },
+    "dialogs": {
+      "delete_title": "Delete facility",
+      "delete_warning": "This action cannot be undone",
+      "delete_confirmation": "Are you sure you want to delete <strong>{{name}}</strong>? All associated data will be permanently deleted.",
+      "edit_title": "Edit facility",
+      "all_amenities_title": "All amenities",
+      "upload_images_title": "Upload images"
+    },
+    "upload": {
+      "click_to_select": "Click to select images",
+      "file_types_info": "PNG, JPG, GIF up to 10MB"
+    },
+    "messages": {
+      "updated_success": "Facility updated!",
+      "save_error": "Could not save changes. Please try again.",
+      "images_uploaded_success": "Images uploaded!",
+      "image_upload_error": "Could not upload images. Please try again."
+    },
+    "edit": "Edit facility",
+    "images": "Images",
+    "preview": "Preview",
+    "image_number": "Image {{number}}",
+    "remove_image": "Remove image {{number}}",
+    "no_images": "No images added",
+    "fetching_coordinates": "Fetching coordinates...",
+    "geocode_errors": {
+      "geocode_failed": "Could not find address in Mapbox",
+      "geocode_error": "Could not fetch coordinates"
+    },
+    "geocode_success": {
+      "coordinates_fetched": "Coordinates automatically fetched from address"
+    }
+  }
+}

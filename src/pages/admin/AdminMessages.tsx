@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { MessageInbox } from "@/components/messaging/MessageInbox";
+import { MessageInbox } from "@/components/features/messaging/components/MessageInbox";
 
 const AdminMessages: React.FC = () => {
   return (

@@ -1,60 +1,41 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
+import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { 
-  Bell, 
-  Globe, 
-  Shield, 
-  Eye, 
-  EyeOff,
+import {
+  Bell,
+  Globe,
+  Shield,
   Save,
   Key,
   Mail,
-  Smartphone
+  Smartphone,
+  CheckCircle,
+  AlertCircle,
 } from "lucide-react";
+import { useUserSettingsManagement } from "@/hooks/features/settings/useUserSettingsManagement";
 
 const UserSettings = (): JSX.Element => {
-  const [settings, setSettings] = useState({
-    emailNotifications: true,
-    smsNotifications: false,
-    pushNotifications: true,
-    bookingReminders: true,
-    marketingEmails: false,
-    language: "no",
-    timezone: "Europe/Oslo",
-    showProfile: true,
-    twoFactorAuth: false
-  });
+  const { t } = useTranslation(['user', 'common']);
+  const {
+    settings,
+    isSaving,
+    saveError,
+    saveSuccess,
+    updateSetting,
+    saveSettings,
+  } = useUserSettingsManagement();
 
-  const [showPassword, setShowPassword] = useState<boolean>(false);
-
-  const handleSettingChange = (key: string, value: boolean | string): void => {
-    setSettings(prev => ({ ...prev, [key]: value }));
-  };
-
-  const handleSaveSettings = (): void => {
-    // Save settings to localStorage (in a real app, this would call an API)
+  const handleSave = async (): Promise<void> => {
     try {
-      localStorage.setItem('userSettings', JSON.stringify(settings));
-      
-      // Show success message
-      alert('Innstillinger lagret!');
-      
-      // In a real app, you would also:
-      // 1. Call API to save to backend
-      // 2. Update user context/state
-      // 3. Show toast notification
-      // 4. Handle errors appropriately
-      
-      
+      await saveSettings();
     } catch (error) {
       console.error('Failed to save settings:', error);
-      alert('Kunne ikke lagre innstillinger. Prøv igjen.');
     }
   };
 
@@ -63,12 +44,31 @@ const UserSettings = (): JSX.Element => {
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-          Innstillinger
+          {t('user:settings.title')}
         </h1>
         <p className="text-gray-600 dark:text-gray-400">
-          Administrer dine kontoinnstillinger og preferanser
+          {t('user:settings.subtitle')}
         </p>
       </div>
+
+      {/* Status Messages */}
+      {saveSuccess && (
+        <div className="flex items-center gap-3 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+          <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400" />
+          <p className="text-sm text-green-800 dark:text-green-300">
+            {t('user:settings.settings_saved')}
+          </p>
+        </div>
+      )}
+
+      {saveError && (
+        <div className="flex items-center gap-3 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+          <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400" />
+          <p className="text-sm text-red-800 dark:text-red-300">
+            {saveError}
+          </p>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Notifications */}
@@ -76,84 +76,44 @@ const UserSettings = (): JSX.Element => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Bell className="h-5 w-5" />
-              Varsler
+              {t('user:settings.notifications.title')}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <Label className="text-sm font-medium text-gray-900 dark:text-white">
-                  E-post varsler
-                </Label>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Motta varsler på e-post
-                </p>
-              </div>
-              <Switch
-                checked={settings.emailNotifications}
-                onCheckedChange={(checked) => handleSettingChange("emailNotifications", checked)}
-              />
-            </div>
-            
-            <div className="flex items-center justify-between">
-              <div>
-                <Label className="text-sm font-medium text-gray-900 dark:text-white">
-                  SMS varsler
-                </Label>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Motta varsler på SMS
-                </p>
-              </div>
-              <Switch
-                checked={settings.smsNotifications}
-                onCheckedChange={(checked) => handleSettingChange("smsNotifications", checked)}
-              />
-            </div>
-            
-            <div className="flex items-center justify-between">
-              <div>
-                <Label className="text-sm font-medium text-gray-900 dark:text-white">
-                  Push varsler
-                </Label>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Motta push-varsler i nettleseren
-                </p>
-              </div>
-              <Switch
-                checked={settings.pushNotifications}
-                onCheckedChange={(checked) => handleSettingChange("pushNotifications", checked)}
-              />
-            </div>
-            
-            <div className="flex items-center justify-between">
-              <div>
-                <Label className="text-sm font-medium text-gray-900 dark:text-white">
-                  Booking påminnelser
-                </Label>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Få påminnelser før bookinger
-                </p>
-              </div>
-              <Switch
-                checked={settings.bookingReminders}
-                onCheckedChange={(checked) => handleSettingChange("bookingReminders", checked)}
-              />
-            </div>
-            
-            <div className="flex items-center justify-between">
-              <div>
-                <Label className="text-sm font-medium text-gray-900 dark:text-white">
-                  Markedsføring
-                </Label>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Motta markedsføring og tilbud
-                </p>
-              </div>
-              <Switch
-                checked={settings.marketingEmails}
-                onCheckedChange={(checked) => handleSettingChange("marketingEmails", checked)}
-              />
-            </div>
+            <SettingToggle
+              label={t('user:settings.notifications.email')}
+              description={t('user:settings.notifications.email_desc')}
+              checked={settings.emailNotifications}
+              onChange={(checked) => updateSetting('emailNotifications', checked)}
+            />
+
+            <SettingToggle
+              label={t('user:settings.notifications.sms')}
+              description={t('user:settings.notifications.sms_desc')}
+              checked={settings.smsNotifications}
+              onChange={(checked) => updateSetting('smsNotifications', checked)}
+            />
+
+            <SettingToggle
+              label={t('user:settings.notifications.push')}
+              description={t('user:settings.notifications.push_desc')}
+              checked={settings.pushNotifications}
+              onChange={(checked) => updateSetting('pushNotifications', checked)}
+            />
+
+            <SettingToggle
+              label={t('user:settings.notifications.booking_reminders')}
+              description={t('user:settings.notifications.booking_reminders_desc')}
+              checked={settings.bookingReminders}
+              onChange={(checked) => updateSetting('bookingReminders', checked)}
+            />
+
+            <SettingToggle
+              label={t('user:settings.notifications.marketing')}
+              description={t('user:settings.notifications.marketing_desc')}
+              checked={settings.marketingEmails}
+              onChange={(checked) => updateSetting('marketingEmails', checked)}
+            />
           </CardContent>
         </Card>
 
@@ -162,44 +122,28 @@ const UserSettings = (): JSX.Element => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Shield className="h-5 w-5" />
-              Personvern og sikkerhet
+              {t('user:settings.privacy_security.title')}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <Label className="text-sm font-medium text-gray-900 dark:text-white">
-                  Vis profil offentlig
-                </Label>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  La andre brukere se din profil
-                </p>
-              </div>
-              <Switch
-                checked={settings.showProfile}
-                onCheckedChange={(checked) => handleSettingChange("showProfile", checked)}
-              />
-            </div>
-            
-            <div className="flex items-center justify-between">
-              <div>
-                <Label className="text-sm font-medium text-gray-900 dark:text-white">
-                  To-faktor autentisering
-                </Label>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Ekstra sikkerhet for kontoen
-                </p>
-              </div>
-              <Switch
-                checked={settings.twoFactorAuth}
-                onCheckedChange={(checked) => handleSettingChange("twoFactorAuth", checked)}
-              />
-            </div>
-            
+            <SettingToggle
+              label={t('user:settings.privacy_security.show_profile')}
+              description={t('user:settings.privacy_security.show_profile_desc')}
+              checked={settings.showProfile}
+              onChange={(checked) => updateSetting('showProfile', checked)}
+            />
+
+            <SettingToggle
+              label={t('user:settings.privacy_security.two_factor')}
+              description={t('user:settings.privacy_security.two_factor_desc')}
+              checked={settings.twoFactorAuth}
+              onChange={(checked) => updateSetting('twoFactorAuth', checked)}
+            />
+
             <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
               <Button variant="outline" className="w-full flex items-center gap-2">
                 <Key className="h-4 w-4" />
-                Endre passord
+                {t('user:settings.privacy_security.change_password')}
               </Button>
             </div>
           </CardContent>
@@ -210,44 +154,44 @@ const UserSettings = (): JSX.Element => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Globe className="h-5 w-5" />
-              Språk og region
+              {t('user:settings.language_region.title')}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
             <div>
               <Label className="text-sm font-medium text-gray-900 dark:text-white">
-                Språk
+                {t('user:settings.language_region.language')}
               </Label>
               <Select
                 value={settings.language}
-                onValueChange={(value) => handleSettingChange("language", value)}
+                onValueChange={(value) => updateSetting('language', value)}
               >
                 <SelectTrigger className="mt-2">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="no">Norsk</SelectItem>
-                  <SelectItem value="en">English</SelectItem>
+                  <SelectItem value="no">{t('user:settings.language_region.languages.no')}</SelectItem>
+                  <SelectItem value="en">{t('user:settings.language_region.languages.en')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
-            
+
             <div>
               <Label className="text-sm font-medium text-gray-900 dark:text-white">
-                Tidssone
+                {t('user:settings.language_region.timezone')}
               </Label>
               <Select
                 value={settings.timezone}
-                onValueChange={(value) => handleSettingChange("timezone", value)}
+                onValueChange={(value) => updateSetting('timezone', value)}
               >
                 <SelectTrigger className="mt-2">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Europe/Oslo">Europe/Oslo (Norge)</SelectItem>
-                  <SelectItem value="Europe/Stockholm">Europe/Stockholm (Sverige)</SelectItem>
-                  <SelectItem value="Europe/Copenhagen">Europe/Copenhagen (Danmark)</SelectItem>
-                  <SelectItem value="UTC">UTC</SelectItem>
+                  <SelectItem value="Europe/Oslo">{t('user:settings.language_region.timezones.oslo')}</SelectItem>
+                  <SelectItem value="Europe/Stockholm">{t('user:settings.language_region.timezones.stockholm')}</SelectItem>
+                  <SelectItem value="Europe/Copenhagen">{t('user:settings.language_region.timezones.copenhagen')}</SelectItem>
+                  <SelectItem value="UTC">{t('user:settings.language_region.timezones.utc')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -257,22 +201,22 @@ const UserSettings = (): JSX.Element => {
         {/* Account Actions */}
         <Card>
           <CardHeader>
-            <CardTitle>Kontohandlinger</CardTitle>
+            <CardTitle>{t('user:settings.account_actions.title')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <Button variant="outline" className="w-full flex items-center gap-2">
               <Mail className="h-4 w-4" />
-              Endre e-postadresse
+              {t('user:settings.account_actions.change_email')}
             </Button>
-            
+
             <Button variant="outline" className="w-full flex items-center gap-2">
               <Smartphone className="h-4 w-4" />
-              Endre telefonnummer
+              {t('user:settings.account_actions.change_phone')}
             </Button>
-            
+
             <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
               <Button variant="destructive" className="w-full">
-                Slett konto
+                {t('user:settings.account_actions.delete_account')}
               </Button>
             </div>
           </CardContent>
@@ -281,11 +225,46 @@ const UserSettings = (): JSX.Element => {
 
       {/* Save Button */}
       <div className="flex justify-end">
-        <Button onClick={handleSaveSettings} className="flex items-center gap-2">
+        <Button
+          onClick={handleSave}
+          disabled={isSaving}
+          className="flex items-center gap-2"
+        >
           <Save className="h-4 w-4" />
-          Lagre innstillinger
+          {isSaving ? t('common:saving') : t('user:settings.save_settings')}
         </Button>
       </div>
+    </div>
+  );
+};
+
+interface SettingToggleProps {
+  readonly label: string;
+  readonly description: string;
+  readonly checked: boolean;
+  readonly onChange: (checked: boolean) => void;
+}
+
+/**
+ * Reusable toggle setting component for notification and privacy settings
+ */
+const SettingToggle = ({
+  label,
+  description,
+  checked,
+  onChange,
+}: SettingToggleProps): JSX.Element => {
+  return (
+    <div className="flex items-center justify-between">
+      <div>
+        <Label className="text-sm font-medium text-gray-900 dark:text-white">
+          {label}
+        </Label>
+        <p className="text-sm text-gray-600 dark:text-gray-400">
+          {description}
+        </p>
+      </div>
+      <Switch checked={checked} onCheckedChange={onChange} />
     </div>
   );
 };

@@ -2,6 +2,7 @@
 
 import React, { useState, useCallback, useEffect, useMemo } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -23,13 +24,14 @@ import {
   BookingDetailsPanel,
   BookingFiltersBar,
   RecurringBookingGroup,
-} from "@/components/bookings";
+} from "@/components/features/bookings";
 
 type BookingStatus = Database['public']['Enums']['booking_status'];
 
 const Bookings = (): JSX.Element => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useTranslation(['booking', 'common']);
   const cancelBookingMutation = useCancelBooking();
 
   // Use our custom hook for all booking logic
@@ -62,19 +64,19 @@ const Bookings = (): JSX.Element => {
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
     if (searchParams.get('success') === 'true') {
-      toast.success("Booking sendt! Du vil få bekreftelse på e-post når den er godkjent.");
+      toast.success(t('booking:toast.booking_submitted'));
       setStatusFilter('pending');
       navigate("/user/bookings", { replace: true });
     }
-  }, [location.search, navigate, setStatusFilter]);
+  }, [location.search, navigate, setStatusFilter, t]);
 
   // Status options with counts from stats
   const statusOptions = [
-    { value: "all" as const, label: "Alle", count: stats.total, color: "gray" },
-    { value: "paid" as const, label: "Bekreftet", count: stats.paid, color: "green" },
-    { value: "pending" as const, label: "Ventende", count: stats.pending, color: "yellow" },
-    { value: "cancelled" as const, label: "Avlyst", count: stats.cancelled, color: "red" },
-    { value: "completed" as const, label: "Fullført", count: stats.completed, color: "blue" },
+    { value: "all" as const, label: t('booking:page.all_status'), count: stats.total, color: "gray" },
+    { value: "paid" as const, label: t('booking:status.paid'), count: stats.paid, color: "green" },
+    { value: "pending" as const, label: t('booking:status.pending'), count: stats.pending, color: "yellow" },
+    { value: "cancelled" as const, label: t('booking:status.cancelled'), count: stats.cancelled, color: "red" },
+    { value: "completed" as const, label: t('booking:status.completed'), count: stats.completed, color: "blue" },
   ];
 
   // Get unique facilities from bookings
@@ -129,12 +131,15 @@ const Bookings = (): JSX.Element => {
       setShowDeleteConfirm(false);
       setBookingsToDelete([]);
 
-      toast.success(`${bookingsToDelete.length} booking${bookingsToDelete.length > 1 ? 'er' : ''} avlyst`);
+      const message = bookingsToDelete.length === 1
+        ? t('booking:delete_confirm.success_single')
+        : t('booking:delete_confirm.success_multiple', { count: bookingsToDelete.length });
+      toast.success(message);
       refetch();
     } catch (error) {
-      toast.error("Kunne ikke avlyse booking(er)");
+      toast.error(t('booking:messages.error.cancel_failed'));
     }
-  }, [bookingsToDelete, cancelBookingMutation, refetch]);
+  }, [bookingsToDelete, cancelBookingMutation, refetch, t]);
 
   const cancelDelete = useCallback(() => {
     setShowDeleteConfirm(false);
@@ -154,13 +159,13 @@ const Bookings = (): JSX.Element => {
   const handleCancelBooking = useCallback(async (booking: BookingWithDetails) => {
     try {
       await cancelBookingMutation.mutateAsync(booking.id);
-      toast.success("Booking avlyst");
+      toast.success(t('booking:delete_confirm.success_single'));
       handleCloseDetails();
       refetch();
     } catch (error) {
-      toast.error("Kunne ikke avlyse booking");
+      toast.error(t('booking:messages.error.cancel_failed'));
     }
-  }, [cancelBookingMutation, handleCloseDetails, refetch]);
+  }, [cancelBookingMutation, handleCloseDetails, refetch, t]);
 
   const handleShareBooking = useCallback((booking: BookingWithDetails) => {
     const shareText = `Booking: ${booking.facility?.name}\nDato: ${new Date(booking.starts_at).toLocaleDateString('nb-NO')}`;
@@ -172,13 +177,13 @@ const Bookings = (): JSX.Element => {
         url: window.location.href
       }).catch(() => {
         navigator.clipboard.writeText(shareText);
-        toast.success('Booking-info kopiert til utklippstavle!');
+        toast.success(t('booking:toast.info_copied'));
       });
     } else {
       navigator.clipboard.writeText(shareText);
-      toast.success('Booking-info kopiert til utklippstavle!');
+      toast.success(t('booking:toast.info_copied'));
     }
-  }, []);
+  }, [t]);
 
   const handleAddToCalendar = useCallback((booking: BookingWithDetails) => {
     // Create ICS file for calendar
@@ -205,15 +210,15 @@ END:VCALENDAR`;
     link.download = `booking-${booking.id}.ics`;
     link.click();
 
-    toast.success('Booking lagt til i kalender!');
-  }, []);
+    toast.success(t('booking:toast.calendar_added'));
+  }, [t]);
 
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">Laster bookinger...</p>
+          <p className="text-gray-600">{t('booking:page.loading')}</p>
         </div>
       </div>
     );
@@ -226,13 +231,13 @@ END:VCALENDAR`;
           <CardContent className="p-8 text-center">
             <AlertTriangle className="w-12 h-12 text-red-500 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">
-              Kunne ikke laste bookinger
+              {t('booking:page.error_loading')}
             </h3>
             <p className="text-gray-600 mb-4">
-              Det oppstod en feil ved lasting av dine bookinger.
+              {t('booking:page.error_message')}
             </p>
             <Button onClick={() => refetch()}>
-              Prøv igjen
+              {t('booking:page.try_again')}
             </Button>
           </CardContent>
         </Card>
@@ -246,10 +251,10 @@ END:VCALENDAR`;
       <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="space-y-1">
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-            Bookinger
+            {t('booking:page.user_title')}
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
-            Samlet oversikt over alle dine bookinger
+            {t('booking:page.user_subtitle')}
           </p>
         </div>
         <div className="flex flex-col sm:flex-row gap-2">
@@ -258,7 +263,7 @@ END:VCALENDAR`;
             className="flex items-center gap-2 h-12"
           >
             <Plus className="w-4 h-4" />
-            Ny booking
+            {t('booking:button_labels.new_booking')}
           </Button>
         </div>
       </header>
@@ -306,17 +311,17 @@ END:VCALENDAR`;
             <Checkbox
               checked={selectedBookings.length === filteredBookings.length && filteredBookings.length > 0}
               onCheckedChange={handleSelectAll}
-              aria-label="Velg alle bookinger"
+              aria-label={t('booking:page.select_all', { count: filteredBookings.length })}
             />
             <span className="text-sm text-gray-600">
-              Velg alle ({filteredBookings.length})
+              {t('booking:page.select_all', { count: filteredBookings.length })}
             </span>
           </div>
 
           {selectedBookings.length > 0 && (
             <div className="flex items-center gap-2">
               <span className="text-sm text-gray-600">
-                {selectedBookings.length} valgt
+                {t('booking:page.selected_count', { count: selectedBookings.length })}
               </span>
               <Button
                 variant="destructive"
@@ -325,14 +330,14 @@ END:VCALENDAR`;
                 className="flex items-center gap-2"
               >
                 <Trash2 className="h-4 w-4" />
-                Avlys valgte
+                {t('booking:button_labels.cancel_selected')}
               </Button>
             </div>
           )}
         </div>
 
         <div className="text-sm text-gray-600">
-          Viser {filteredBookings.length} av {stats.total} bookinger
+          {t('booking:page.showing_count', { count: filteredBookings.length, total: stats.total })}
         </div>
       </div>
 
@@ -343,13 +348,13 @@ END:VCALENDAR`;
             <CardContent className="p-8 text-center">
               <Calendar className="w-12 h-12 text-gray-400 mx-auto mb-4" />
               <h3 className="text-lg font-medium text-gray-900 mb-2">
-                Ingen bookinger matcher filteret
+                {t('booking:page.no_match')}
               </h3>
               <p className="text-gray-600 mb-4">
-                Prøv å justere søkekriteriene eller utforsk tilgjengelige lokaler.
+                {t('booking:page.no_match_message')}
               </p>
               <Button onClick={() => navigate('/user/facilities')}>
-                Utforsk lokaler
+                {t('booking:page.explore_facilities')}
               </Button>
             </CardContent>
           </Card>
@@ -362,7 +367,7 @@ END:VCALENDAR`;
                 group={group}
                 onViewDetails={(groupId) => {
                   // TODO: Implement recurring group details view
-                  toast.info('Visning av gjentakende booking kommer snart!');
+                  toast.info(t('booking:toast.recurring_coming_soon'));
                 }}
               />
             ))}
@@ -393,10 +398,14 @@ END:VCALENDAR`;
               </div>
               <div>
                 <h3 className="text-lg font-semibold text-gray-900">
-                  Avlys booking{bookingsToDelete.length > 1 ? 'er' : ''}
+                  {bookingsToDelete.length === 1
+                    ? t('booking:delete_confirm.title_single')
+                    : t('booking:delete_confirm.title_multiple')}
                 </h3>
                 <p className="text-sm text-gray-600">
-                  Er du sikker på at du vil avlyse {bookingsToDelete.length} booking{bookingsToDelete.length > 1 ? 'er' : ''}?
+                  {bookingsToDelete.length === 1
+                    ? t('booking:delete_confirm.message_single')
+                    : t('booking:delete_confirm.message_multiple', { count: bookingsToDelete.length })}
                 </p>
               </div>
             </div>
@@ -405,8 +414,8 @@ END:VCALENDAR`;
               <div className="flex items-start gap-2">
                 <AlertTriangle className="w-4 h-4 text-yellow-600 mt-0.5 flex-shrink-0" />
                 <div className="text-sm text-yellow-800">
-                  <p className="font-medium">Advarsel:</p>
-                  <p>Denne handlingen kan ikke angres.</p>
+                  <p className="font-medium">{t('booking:terms.warning_title')}</p>
+                  <p>{t('booking:terms.warning_text')}</p>
                 </div>
               </div>
             </div>
@@ -418,7 +427,7 @@ END:VCALENDAR`;
                 className="flex items-center gap-2"
               >
                 <X className="w-4 h-4" />
-                Avbryt
+                {t('booking:button_labels.cancel')}
               </Button>
               <Button
                 variant="destructive"
@@ -427,7 +436,11 @@ END:VCALENDAR`;
                 className="flex items-center gap-2"
               >
                 <Trash2 className="w-4 h-4" />
-                {cancelBookingMutation.isPending ? 'Avlyser...' : `Avlys ${bookingsToDelete.length > 1 ? 'alle' : 'booking'}`}
+                {cancelBookingMutation.isPending
+                  ? t('booking:delete_confirm.canceling')
+                  : (bookingsToDelete.length > 1
+                    ? t('booking:delete_confirm.cancel_all')
+                    : t('booking:button_labels.cancel_booking'))}
               </Button>
             </div>
           </div>

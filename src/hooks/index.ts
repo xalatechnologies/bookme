@@ -4,6 +4,9 @@
  * Centralized export point for all custom hooks
  */
 
+// Shared utility hooks
+export * from './shared';
+
 // Real-time subscriptions
 export {
   useRealtimeBookings,
@@ -12,18 +15,16 @@ export {
 } from './useRealtimeBookings';
 
 export {
-  useRealtimeMessages,
-  useRealtimeThreads,
-  useRealtimeUnreadCount,
-} from './useRealtimeMessages';
-
-export {
   useRealtimeNotifications,
   useRealtimeNotificationCount,
   useRealtimeUrgentNotifications,
   showBrowserNotification,
   requestNotificationPermission,
 } from './useRealtimeNotifications';
+
+// Reviews management
+export { useReviews } from './useReviews';
+export type { Review, ReviewFilter, ReviewSortBy } from './useReviews';
 
 // Re-export existing hooks if any
 // export * from './useAvailabilityStatus';

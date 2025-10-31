@@ -76,15 +76,15 @@ const convertBookingToEvent = (booking: {
   endDateTime.setHours(endHour, endMinute, 0, 0);
   
   // Extract price as number - handle both string and number types
-  let priceNok = 0;
+  let price = 0;
   if (typeof booking.price === 'string') {
-    priceNok = parseInt(booking.price.replace(/\D/g, '') || '0');
+    price = parseInt(booking.price.replace(/\D/g, '') || '0');
   } else if (typeof booking.price === 'number') {
-    priceNok = booking.price;
+    price = booking.price;
   } else {
-    priceNok = 0;
+    price = 0;
   }
-  
+
     const event = {
       id: booking.id,
       facilityId: booking.facilityId || booking.id,
@@ -92,10 +92,10 @@ const convertBookingToEvent = (booking: {
       title: booking.description || booking.purpose || 'Booking',
       start: startDateTime.toISOString(),
       end: endDateTime.toISOString(),
-      status: booking.status === 'confirmed' || booking.status === 'approved' ? 'confirmed' : 
-              booking.status === 'pending' ? 'pending' : 
+      status: booking.status === 'confirmed' || booking.status === 'approved' ? 'confirmed' :
+              booking.status === 'pending' ? 'pending' :
               booking.status === 'rejected' || booking.status === 'cancelled' ? 'cancelled' : 'cancelled',
-      priceNok: priceNok,
+      price: price,
       tags: [booking.facility?.toLowerCase() || 'booking']
     };
     
@@ -110,7 +110,7 @@ const convertBookingToEvent = (booking: {
       start: new Date().toISOString(),
       end: new Date().toISOString(),
       status: 'cancelled' as const,
-      priceNok: 0,
+      price: 0,
       tags: ['error']
     };
   }
@@ -138,10 +138,10 @@ const convertRecurringOccurrenceToEvent = (occurrence: any, parentBooking: any):
       title: parentBooking.description || parentBooking.purpose || 'Gjentakende booking',
       start: startDateTime.toISOString(),
       end: endDateTime.toISOString(),
-      status: parentBooking.status === 'confirmed' || parentBooking.status === 'approved' ? 'confirmed' : 
-              parentBooking.status === 'pending' ? 'pending' : 
+      status: parentBooking.status === 'confirmed' || parentBooking.status === 'approved' ? 'confirmed' :
+              parentBooking.status === 'pending' ? 'pending' :
               parentBooking.status === 'rejected' || parentBooking.status === 'cancelled' ? 'cancelled' : 'cancelled',
-      priceNok: parentBooking.pricePerHour || 0,
+      price: parentBooking.pricePerHour || 0,
       tags: ['recurring', parentBooking.facility?.toLowerCase() || 'booking']
     };
   } catch (error) {
@@ -154,7 +154,7 @@ const convertRecurringOccurrenceToEvent = (occurrence: any, parentBooking: any):
       start: new Date().toISOString(),
       end: new Date().toISOString(),
       status: 'cancelled' as const,
-      priceNok: 0,
+      price: 0,
       tags: ['error']
     };
   }

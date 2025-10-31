@@ -1,0 +1,1746 @@
+{
+  "en": {
+    "Skriv inn ny rolle for valgte brukere": {
+      "": "[TODO: Translate ]"
+    },
+    "common": {
+      "Alle notifikasjoner markert som lest!": "[TODO: Translate Alle notifikasjoner markert som lest!]",
+      "Audit-log eksportert til CSV!": "[TODO: Translate Audit-log eksportert til CSV!]",
+      "Bilder lastet opp!": "[TODO: Translate Bilder lastet opp!]",
+      "Bruker deaktivert!": "[TODO: Translate Bruker deaktivert!]",
+      "Bruker oppdatert!": "[TODO: Translate Bruker oppdatert!]",
+      "Bruker slettet!": "[TODO: Translate Bruker slettet!]",
+      "CSV-fil lastet ned!": "[TODO: Translate CSV-fil lastet ned!]",
+      "E-post klargjort!": "[TODO: Translate E-post klargjort!]",
+      "Fakturanummer kopiert til utklippstavle!": "[TODO: Translate Fakturanummer kopiert til utklippstavle!]",
+      "Fasilitet delt!": "[TODO: Translate Fasilitet delt!]",
+      "Fasilitet oppdatert!": "[TODO: Translate Fasilitet oppdatert!]",
+      "Handling ikke implementert": "[TODO: Translate Handling ikke implementert]",
+      "Invitasjon sendt på nytt!": "[TODO: Translate Invitasjon sendt på nytt!]",
+      "Invitasjon sendt til bruker!": "[TODO: Translate Invitasjon sendt til bruker!]",
+      "Kontaktinformasjon kopiert til utklippstavle!": "[TODO: Translate Kontaktinformasjon kopiert til utklippstavle!]",
+      "Kopiert til utklippstavle!": "[TODO: Translate Kopiert til utklippstavle!]",
+      "Kunne ikke deaktivere bruker": {
+        " Prøv igjen": {
+          "": "[TODO: Translate Kunne ikke deaktivere bruker. Prøv igjen.]"
+        }
+      },
+      "Kunne ikke dele fasilitet": {
+        " Prøv igjen": {
+          "": "[TODO: Translate Kunne ikke dele fasilitet. Prøv igjen.]"
+        }
+      },
+      "Kunne ikke eksportere CSV": {
+        " Prøv igjen": {
+          "": "[TODO: Translate Kunne ikke eksportere CSV. Prøv igjen.]"
+        }
+      },
+      "Kunne ikke eksportere PDF": {
+        " Prøv igjen": {
+          "": "[TODO: Translate Kunne ikke eksportere PDF. Prøv igjen.]"
+        }
+      },
+      "Kunne ikke endre rolle status": {
+        " Prøv igjen": {
+          "": "[TODO: Translate Kunne ikke endre rolle status. Prøv igjen.]"
+        }
+      },
+      "Kunne ikke endre språk": {
+        " Prøv igjen": {
+          "": "[TODO: Translate Kunne ikke endre språk. Prøv igjen.]"
+        }
+      },
+      "Kunne ikke endre systemhendelse": {
+        " Prøv igjen": {
+          "": "[TODO: Translate Kunne ikke endre systemhendelse. Prøv igjen.]"
+        }
+      },
+      "Kunne ikke endre varselpreferanse": {
+        " Prøv igjen": {
+          "": "[TODO: Translate Kunne ikke endre varselpreferanse. Prøv igjen.]"
+        }
+      },
+      "Kunne ikke kopiere til utklippstavle": {
+        " Prøv igjen": {
+          "": "[TODO: Translate Kunne ikke kopiere til utklippstavle. Prøv igjen.]"
+        }
+      },
+      "Kunne ikke lagre bruker": {
+        " Prøv igjen": {
+          "": "[TODO: Translate Kunne ikke lagre bruker. Prøv igjen.]"
+        }
+      },
+      "Kunne ikke lagre endringer": {
+        " Prøv igjen": {
+          "": "[TODO: Translate Kunne ikke lagre endringer. Prøv igjen.]"
+        }
+      },
+      "Kunne ikke lagre rolle": {
+        " Prøv igjen": {
+          "": "[TODO: Translate Kunne ikke lagre rolle. Prøv igjen.]"
+        }
+      },
+      "Kunne ikke laste opp bilder": {
+        " Prøv igjen": {
+          "": "[TODO: Translate Kunne ikke laste opp bilder. Prøv igjen.]"
+        }
+      },
+      "Kunne ikke markere alle notifikasjoner som lest": {
+        " Prøv igjen": {
+          "": "[TODO: Translate Kunne ikke markere alle notifikasjoner som lest. Prøv igjen.]"
+        }
+      },
+      "Kunne ikke markere notifikasjon som lest": {
+        " Prøv igjen": {
+          "": "[TODO: Translate Kunne ikke markere notifikasjon som lest. Prøv igjen.]"
+        }
+      },
+      "Kunne ikke navigere til bookingside": {
+        " Prøv igjen": {
+          "": "[TODO: Translate Kunne ikke navigere til bookingside. Prøv igjen.]"
+        }
+      },
+      "Kunne ikke sende invitasjon": {
+        " Prøv igjen": {
+          "": "[TODO: Translate Kunne ikke sende invitasjon. Prøv igjen.]"
+        }
+      },
+      "Kunne ikke slette bruker": {
+        " Prøv igjen": {
+          "": "[TODO: Translate Kunne ikke slette bruker. Prøv igjen.]"
+        }
+      },
+      "Kunne ikke utføre massehandling": {
+        " Prøv igjen": {
+          "": "[TODO: Translate Kunne ikke utføre massehandling. Prøv igjen.]"
+        }
+      },
+      "Kunne ikke utføre sletting": {
+        " Prøv igjen": {
+          "": "[TODO: Translate Kunne ikke utføre sletting. Prøv igjen.]"
+        }
+      },
+      "Kunne ikke åpne kontaktfunksjonalitet": {
+        " Prøv igjen": {
+          "": "[TODO: Translate Kunne ikke åpne kontaktfunksjonalitet. Prøv igjen.]"
+        }
+      },
+      "Kvittering lastet ned!": "[TODO: Translate Kvittering lastet ned!]",
+      "Lenke kopiert til utklippstavle!": "[TODO: Translate Lenke kopiert til utklippstavle!]",
+      "Notifikasjon markert som lest!": "[TODO: Translate Notifikasjon markert som lest!]",
+      "Rapport eksportert til CSV!": "[TODO: Translate Rapport eksportert til CSV!]",
+      "Rapport eksportert! (Simulert PDF som tekstfil)": "[TODO: Translate Rapport eksportert! (Simulert PDF som tekstfil)]",
+      "Rolle oppdatert!": "[TODO: Translate Rolle oppdatert!]",
+      "Rolle opprettet!": "[TODO: Translate Rolle opprettet!]",
+      "Rolle status endret!": "[TODO: Translate Rolle status endret!]",
+      "Skriv inn ny rolle for valgte brukere:": "[TODO: Translate Skriv inn ny rolle for valgte brukere:]",
+      "Ugyldig datatype valgt": "[TODO: Translate Ugyldig datatype valgt]",
+      "Vennligst fyll ut formål": "[TODO: Translate Vennligst fyll ut formål]",
+      "Vennligst velg en gruppe": "[TODO: Translate Vennligst velg en gruppe]",
+      "Vennligst velg et tidspunkt": "[TODO: Translate Vennligst velg et tidspunkt]",
+      "Vennligst velg minst ett medlem for kostnadsdeling": "[TODO: Translate Vennligst velg minst ett medlem for kostnadsdeling]",
+      "about": "[TODO: Translate about]",
+      "actions": {
+        "go_back": "[TODO: Translate actions.go_back]",
+        "go_home": "[TODO: Translate actions.go_home]",
+        "like": "[TODO: Translate actions.like]",
+        "liked": "[TODO: Translate actions.liked]",
+        "logout": "[TODO: Translate actions.logout]"
+      },
+      "admin:charts": {
+        "trend": "[TODO: Translate admin:charts.trend]"
+      },
+      "admin:dashboard": {
+        "alerts": {
+          "all_systems_normal": "[TODO: Translate admin:dashboard.alerts.all_systems_normal]",
+          "cancelled_bookings": "[TODO: Translate admin:dashboard.alerts.cancelled_bookings]",
+          "draft_facilities": "[TODO: Translate admin:dashboard.alerts.draft_facilities]",
+          "see_details": "[TODO: Translate admin:dashboard.alerts.see_details]",
+          "system_status": "[TODO: Translate admin:dashboard.alerts.system_status]"
+        },
+        "error_loading": "[TODO: Translate admin:dashboard.error_loading]",
+        "key_metrics": "[TODO: Translate admin:dashboard.key_metrics]",
+        "kpi": {
+          "active_facilities": "[TODO: Translate admin:dashboard.kpi.active_facilities]",
+          "active_percentage": "[TODO: Translate admin:dashboard.kpi.active_percentage]",
+          "active_users": "[TODO: Translate admin:dashboard.kpi.active_users]",
+          "bookings_received": "[TODO: Translate admin:dashboard.kpi.bookings_received]",
+          "pending_approvals": "[TODO: Translate admin:dashboard.kpi.pending_approvals]",
+          "requires_attention": "[TODO: Translate admin:dashboard.kpi.requires_attention]",
+          "today_bookings": "[TODO: Translate admin:dashboard.kpi.today_bookings]",
+          "total_facilities": "[TODO: Translate admin:dashboard.kpi.total_facilities]",
+          "unique_users": "[TODO: Translate admin:dashboard.kpi.unique_users]"
+        },
+        "loading_stats": "[TODO: Translate admin:dashboard.loading_stats]",
+        "new_facility": "[TODO: Translate admin:dashboard.new_facility]",
+        "overview": "[TODO: Translate admin:dashboard.overview]",
+        "trends": "[TODO: Translate admin:dashboard.trends]",
+        "welcome": "[TODO: Translate admin:dashboard.welcome]"
+      },
+      "attachments": {
+        "drag_drop": "[TODO: Translate attachments.drag_drop]",
+        "select_files": "[TODO: Translate attachments.select_files]",
+        "selected_files": "[TODO: Translate attachments.selected_files]",
+        "title": "[TODO: Translate attachments.title]"
+      },
+      "available_zones": "[TODO: Translate available_zones]",
+      "capacity": "[TODO: Translate capacity]",
+      "card": {
+        "autoApproval": "[TODO: Translate card.autoApproval]",
+        "bookings": "[TODO: Translate card.bookings]",
+        "cancelBooking": "[TODO: Translate card.cancelBooking]",
+        "createGroup": "[TODO: Translate card.createGroup]",
+        "deleteGroup": "[TODO: Translate card.deleteGroup]",
+        "editGroup": "[TODO: Translate card.editGroup]",
+        "hasNotes": "[TODO: Translate card.hasNotes]",
+        "hour": "[TODO: Translate card.hour]",
+        "hours": "[TODO: Translate card.hours]",
+        "invitations": "[TODO: Translate card.invitations]",
+        "inviteMember": "[TODO: Translate card.inviteMember]",
+        "manageGroups": "[TODO: Translate card.manageGroups]",
+        "memberBookings": "[TODO: Translate card.memberBookings]",
+        "members": "[TODO: Translate card.members]",
+        "myGroups": "[TODO: Translate card.myGroups]",
+        "noBookingsToday": "[TODO: Translate card.noBookingsToday]",
+        "noGroups": "[TODO: Translate card.noGroups]",
+        "noGroupsDescription": "[TODO: Translate card.noGroupsDescription]",
+        "openMenu": "[TODO: Translate card.openMenu]",
+        "owner": "[TODO: Translate card.owner]",
+        "ownerBookingsOnly": "[TODO: Translate card.ownerBookingsOnly]",
+        "quietDay": "[TODO: Translate card.quietDay]",
+        "requireApproval": "[TODO: Translate card.requireApproval]",
+        "settings": "[TODO: Translate card.settings]",
+        "todaysBookings": "[TODO: Translate card.todaysBookings]",
+        "unknownFacility": "[TODO: Translate card.unknownFacility]",
+        "viewAllBookings": "[TODO: Translate card.viewAllBookings]",
+        "viewBookings": "[TODO: Translate card.viewBookings]",
+        "viewDetails": "[TODO: Translate card.viewDetails]"
+      },
+      "collapse_sidebar": "[TODO: Translate collapse_sidebar]",
+      "common:about": "[TODO: Translate common:about]",
+      "common:actions": {
+        "cancel": "[TODO: Translate common:actions.cancel]"
+      },
+      "common:available_zones": "[TODO: Translate common:available_zones]",
+      "common:common": {
+        "total": "[TODO: Translate common:common.total]"
+      },
+      "common:entire_facility": "[TODO: Translate common:entire_facility]",
+      "common:faq": {
+        "booking_time": "[TODO: Translate common:faq.booking_time]",
+        "booking_time_answer": "[TODO: Translate common:faq.booking_time_answer]",
+        "cancellation": "[TODO: Translate common:faq.cancellation]",
+        "cancellation_answer": "[TODO: Translate common:faq.cancellation_answer]",
+        "food_drinks": "[TODO: Translate common:faq.food_drinks]",
+        "food_drinks_answer": "[TODO: Translate common:faq.food_drinks_answer]",
+        "parking": "[TODO: Translate common:faq.parking]",
+        "parking_available": "[TODO: Translate common:faq.parking_available]",
+        "parking_contact": "[TODO: Translate common:faq.parking_contact]",
+        "title": "[TODO: Translate common:faq.title]"
+      },
+      "common:messages": {
+        "noDescription": "[TODO: Translate common:messages.noDescription]"
+      },
+      "common:placeholders": {
+        "selectOption": "[TODO: Translate common:placeholders.selectOption]"
+      },
+      "common:rules": {
+        "cancellation": "[TODO: Translate common:rules.cancellation]",
+        "cancellation_desc": "[TODO: Translate common:rules.cancellation_desc]",
+        "cleanup_required_desc": "[TODO: Translate common:rules.cleanup_required_desc]",
+        "noise_after_hours": "[TODO: Translate common:rules.noise_after_hours]",
+        "noise_after_hours_desc": "[TODO: Translate common:rules.noise_after_hours_desc]",
+        "smoking_not_allowed": "[TODO: Translate common:rules.smoking_not_allowed]"
+      },
+      "common:tabs": {
+        "facilities": "[TODO: Translate common:tabs.facilities]",
+        "faq": "[TODO: Translate common:tabs.faq]",
+        "general": "[TODO: Translate common:tabs.general]",
+        "rules": "[TODO: Translate common:tabs.rules]",
+        "zones": "[TODO: Translate common:tabs.zones]"
+      },
+      "common:time": {
+        "day": "[TODO: Translate common:time.day]",
+        "days": "[TODO: Translate common:time.days]",
+        "hour": "[TODO: Translate common:time.hour]",
+        "hours": "[TODO: Translate common:time.hours]",
+        "minute": "[TODO: Translate common:time.minute]",
+        "minutes": "[TODO: Translate common:time.minutes]",
+        "seconds": "[TODO: Translate common:time.seconds]"
+      },
+      "dashboard": {
+        "quickActions": "[TODO: Translate dashboard.quickActions]"
+      },
+      "dialog": {
+        "allowMemberBookings": "[TODO: Translate dialog.allowMemberBookings]",
+        "allowMemberBookingsHelp": "[TODO: Translate dialog.allowMemberBookingsHelp]",
+        "cancel": "[TODO: Translate dialog.cancel]",
+        "create": "[TODO: Translate dialog.create]",
+        "createDescription": "[TODO: Translate dialog.createDescription]",
+        "createTitle": "[TODO: Translate dialog.createTitle]",
+        "delete": "[TODO: Translate dialog.delete]",
+        "deleteTitle": "[TODO: Translate dialog.deleteTitle]",
+        "description": "[TODO: Translate dialog.description]",
+        "descriptionPlaceholder": "[TODO: Translate dialog.descriptionPlaceholder]",
+        "fillGroupName": "[TODO: Translate dialog.fillGroupName]",
+        "groupName": "[TODO: Translate dialog.groupName]",
+        "groupNameHelp": "[TODO: Translate dialog.groupNameHelp]",
+        "groupNamePlaceholder": "[TODO: Translate dialog.groupNamePlaceholder]",
+        "groupSettings": "[TODO: Translate dialog.groupSettings]",
+        "maxBookingsPerMember": "[TODO: Translate dialog.maxBookingsPerMember]",
+        "notificationSettings": "[TODO: Translate dialog.notificationSettings]",
+        "notifyCancellations": "[TODO: Translate dialog.notifyCancellations]",
+        "notifyCancellationsHelp": "[TODO: Translate dialog.notifyCancellationsHelp]",
+        "notifyMemberChanges": "[TODO: Translate dialog.notifyMemberChanges]",
+        "notifyMemberChangesHelp": "[TODO: Translate dialog.notifyMemberChangesHelp]",
+        "notifyNewBookings": "[TODO: Translate dialog.notifyNewBookings]",
+        "notifyNewBookingsHelp": "[TODO: Translate dialog.notifyNewBookingsHelp]",
+        "requireApproval": "[TODO: Translate dialog.requireApproval]",
+        "requireApprovalHelp": "[TODO: Translate dialog.requireApprovalHelp]"
+      },
+      "div": "[TODO: Translate div]",
+      "entire_facility": "[TODO: Translate entire_facility]",
+      "errors": {
+        "facility_not_found": "[TODO: Translate errors.facility_not_found]",
+        "facility_not_found_desc": "[TODO: Translate errors.facility_not_found_desc]",
+        "load_facility_error": "[TODO: Translate errors.load_facility_error]",
+        "something_went_wrong": "[TODO: Translate errors.something_went_wrong]"
+      },
+      "expand_sidebar": "[TODO: Translate expand_sidebar]",
+      "facility": {
+        "facilityTypes": {
+          "all": "[TODO: Translate facility.facilityTypes.all]",
+          "fotballbane": "[TODO: Translate facility.facilityTypes.fotballbane]",
+          "idrettshall": "[TODO: Translate facility.facilityTypes.idrettshall]",
+          "kulturhus": "[TODO: Translate facility.facilityTypes.kulturhus]",
+          "møterom": "[TODO: Translate facility.facilityTypes.møterom]",
+          "svømmehall": "[TODO: Translate facility.facilityTypes.svømmehall]",
+          "tennisbane": "[TODO: Translate facility.facilityTypes.tennisbane]"
+        },
+        "noFacilitiesFound": "[TODO: Translate facility.noFacilitiesFound]",
+        "searchFacilities": "[TODO: Translate facility.searchFacilities]"
+      },
+      "facility:amenities": {
+        "available_title": "[TODO: Translate facility:amenities.available_title]",
+        "equipment_title": "[TODO: Translate facility:amenities.equipment_title]",
+        "no_amenities": "[TODO: Translate facility:amenities.no_amenities]",
+        "suitable_for": "[TODO: Translate facility:amenities.suitable_for]"
+      },
+      "facility:card": {
+        "addToFavorites": "[TODO: Translate facility:card.addToFavorites]",
+        "moreAmenities": "[TODO: Translate facility:card.moreAmenities]",
+        "no": "[TODO: Translate facility:card.no]",
+        "outOf5": "[TODO: Translate facility:card.outOf5]",
+        "people": "[TODO: Translate facility:card.people]",
+        "pricePerHour": "[TODO: Translate facility:card.pricePerHour]",
+        "reviewCount": "[TODO: Translate facility:card.reviewCount]",
+        "shareFacility": "[TODO: Translate facility:card.shareFacility]",
+        "squareMeters": "[TODO: Translate facility:card.squareMeters]",
+        "yes": "[TODO: Translate facility:card.yes]"
+      },
+      "facility:fields": {
+        "area": "[TODO: Translate facility:fields.area]",
+        "capacity": "[TODO: Translate facility:fields.capacity]",
+        "equipment": "[TODO: Translate facility:fields.equipment]",
+        "price": "[TODO: Translate facility:fields.price]"
+      },
+      "facility:rules": {
+        "cleanupRequired": "[TODO: Translate facility:rules.cleanupRequired]",
+        "noSmoking": "[TODO: Translate facility:rules.noSmoking]",
+        "title": "[TODO: Translate facility:rules.title]"
+      },
+      "facilityType": "[TODO: Translate facilityType]",
+      "faq": {
+        "booking_time": "[TODO: Translate faq.booking_time]",
+        "booking_time_answer": "[TODO: Translate faq.booking_time_answer]",
+        "cancellation": "[TODO: Translate faq.cancellation]",
+        "cancellation_answer": "[TODO: Translate faq.cancellation_answer]",
+        "food_drinks": "[TODO: Translate faq.food_drinks]",
+        "food_drinks_answer": "[TODO: Translate faq.food_drinks_answer]",
+        "parking": "[TODO: Translate faq.parking]",
+        "parking_available": "[TODO: Translate faq.parking_available]",
+        "parking_contact": "[TODO: Translate faq.parking_contact]",
+        "title": "[TODO: Translate faq.title]"
+      },
+      "fields": {
+        "activityType": "[TODO: Translate fields.activityType]",
+        "actorType": "[TODO: Translate fields.actorType]",
+        "attendees": "[TODO: Translate fields.attendees]"
+      },
+      "gallery": {
+        "close": "[TODO: Translate gallery.close]",
+        "next": "[TODO: Translate gallery.next]",
+        "previous": "[TODO: Translate gallery.previous]",
+        "share": "[TODO: Translate gallery.share]"
+      },
+      "id": "[TODO: Translate id]",
+      "id, user_id, facility_id, status": "[TODO: Translate id, user_id, facility_id, status]",
+      "input": "[TODO: Translate input]",
+      "invalid_email": "[TODO: Translate invalid_email]",
+      "invalid_format": "[TODO: Translate invalid_format]",
+      "invalid_phone": "[TODO: Translate invalid_phone]",
+      "invitation_modal": {
+        "description": "[TODO: Translate invitation_modal.description]",
+        "form": {
+          "email": "[TODO: Translate invitation_modal.form.email]",
+          "email_help": "[TODO: Translate invitation_modal.form.email_help]",
+          "email_placeholder": "[TODO: Translate invitation_modal.form.email_placeholder]",
+          "info_description": "[TODO: Translate invitation_modal.form.info_description]",
+          "info_title": "[TODO: Translate invitation_modal.form.info_title]",
+          "message": "[TODO: Translate invitation_modal.form.message]",
+          "message_placeholder": "[TODO: Translate invitation_modal.form.message_placeholder]",
+          "send_invitation": "[TODO: Translate invitation_modal.form.send_invitation]",
+          "sending": "[TODO: Translate invitation_modal.form.sending]"
+        },
+        "messages": {
+          "error": "[TODO: Translate invitation_modal.messages.error]"
+        },
+        "pending": {
+          "accept": "[TODO: Translate invitation_modal.pending.accept]",
+          "decline": "[TODO: Translate invitation_modal.pending.decline]",
+          "description": "[TODO: Translate invitation_modal.pending.description]",
+          "status": "[TODO: Translate invitation_modal.pending.status]",
+          "title": "[TODO: Translate invitation_modal.pending.title]"
+        },
+        "sent": {
+          "description": "[TODO: Translate invitation_modal.sent.description]",
+          "status_accepted": "[TODO: Translate invitation_modal.sent.status_accepted]",
+          "status_declined": "[TODO: Translate invitation_modal.sent.status_declined]",
+          "status_expired": "[TODO: Translate invitation_modal.sent.status_expired]",
+          "status_pending": "[TODO: Translate invitation_modal.sent.status_pending]",
+          "title": "[TODO: Translate invitation_modal.sent.title]"
+        },
+        "tabs": {
+          "pending": "[TODO: Translate invitation_modal.tabs.pending]",
+          "send": "[TODO: Translate invitation_modal.tabs.send]",
+          "sent": "[TODO: Translate invitation_modal.tabs.sent]"
+        },
+        "validation": {
+          "email_invalid": "[TODO: Translate invitation_modal.validation.email_invalid]",
+          "email_required": "[TODO: Translate invitation_modal.validation.email_required]"
+        }
+      },
+      "language": "[TODO: Translate language]",
+      "loading": {
+        "facility": "[TODO: Translate loading.facility]",
+        "please_wait": "[TODO: Translate loading.please_wait]"
+      },
+      "location": "[TODO: Translate location]",
+      "login": "[TODO: Translate login]",
+      "logout": "[TODO: Translate logout]",
+      "menu": "[TODO: Translate menu]",
+      "messages": {
+        "noDescription": "[TODO: Translate messages.noDescription]"
+      },
+      "my_bookings": "[TODO: Translate my_bookings]",
+      "my_profile": "[TODO: Translate my_profile]",
+      "navigation": {
+        "facilities": "[TODO: Translate navigation.facilities]",
+        "my_bookings": "[TODO: Translate navigation.my_bookings]",
+        "profile": "[TODO: Translate navigation.profile]"
+      },
+      "org_id": "[TODO: Translate org_id]",
+      "org_id, role": "[TODO: Translate org_id, role]",
+      "privacy": "[TODO: Translate privacy]",
+      "recurring": {
+        "biweekly": "[TODO: Translate recurring.biweekly]",
+        "custom": "[TODO: Translate recurring.custom]",
+        "endDate": "[TODO: Translate recurring.endDate]",
+        "monthly": "[TODO: Translate recurring.monthly]",
+        "weekly": "[TODO: Translate recurring.weekly]"
+      },
+      "recurring_modal": {
+        "activity_type_placeholder": "[TODO: Translate recurring_modal.activity_type_placeholder]",
+        "actor_types": {
+          "kommunale-enheter": "[TODO: Translate recurring_modal.actor_types.kommunale-enheter]",
+          "lag-foreninger": "[TODO: Translate recurring_modal.actor_types.lag-foreninger]",
+          "paraply": "[TODO: Translate recurring_modal.actor_types.paraply]",
+          "private-firma": "[TODO: Translate recurring_modal.actor_types.private-firma]",
+          "private-person": "[TODO: Translate recurring_modal.actor_types.private-person]"
+        },
+        "create_recurring": "[TODO: Translate recurring_modal.create_recurring]",
+        "discount_label": "[TODO: Translate recurring_modal.discount_label]",
+        "end_date_help": "[TODO: Translate recurring_modal.end_date_help]",
+        "has_end_date": "[TODO: Translate recurring_modal.has_end_date]",
+        "preview_empty": "[TODO: Translate recurring_modal.preview_empty]",
+        "preview_title": "[TODO: Translate recurring_modal.preview_title]",
+        "pricing_summary": "[TODO: Translate recurring_modal.pricing_summary]",
+        "purpose_help": "[TODO: Translate recurring_modal.purpose_help]",
+        "purpose_placeholder": "[TODO: Translate recurring_modal.purpose_placeholder]",
+        "purpose_required": "[TODO: Translate recurring_modal.purpose_required]",
+        "recurrence_type": "[TODO: Translate recurring_modal.recurrence_type]",
+        "recurrence_type_placeholder": "[TODO: Translate recurring_modal.recurrence_type_placeholder]",
+        "select_time_slots": "[TODO: Translate recurring_modal.select_time_slots]",
+        "select_weekdays": "[TODO: Translate recurring_modal.select_weekdays]",
+        "single": "[TODO: Translate recurring_modal.single]",
+        "start_date": "[TODO: Translate recurring_modal.start_date]",
+        "start_date_help": "[TODO: Translate recurring_modal.start_date_help]",
+        "title": "[TODO: Translate recurring_modal.title]",
+        "validation": {
+          "purpose_required": "[TODO: Translate recurring_modal.validation.purpose_required]",
+          "select_time_slot": "[TODO: Translate recurring_modal.validation.select_time_slot]"
+        },
+        "weekdays": {
+          "friday": "[TODO: Translate recurring_modal.weekdays.friday]",
+          "monday": "[TODO: Translate recurring_modal.weekdays.monday]",
+          "saturday": "[TODO: Translate recurring_modal.weekdays.saturday]",
+          "sunday": "[TODO: Translate recurring_modal.weekdays.sunday]",
+          "thursday": "[TODO: Translate recurring_modal.weekdays.thursday]",
+          "tuesday": "[TODO: Translate recurring_modal.weekdays.tuesday]",
+          "wednesday": "[TODO: Translate recurring_modal.weekdays.wednesday]"
+        }
+      },
+      "required": "[TODO: Translate required]",
+      "role": "[TODO: Translate role]",
+      "roles": {
+        "admin": "[TODO: Translate roles.admin]",
+        "member": "[TODO: Translate roles.member]",
+        "owner": "[TODO: Translate roles.owner]"
+      },
+      "rooms": "[TODO: Translate rooms]",
+      "rules": {
+        "cancellation": "[TODO: Translate rules.cancellation]",
+        "cancellation_desc": "[TODO: Translate rules.cancellation_desc]",
+        "cleanup_required_desc": "[TODO: Translate rules.cleanup_required_desc]",
+        "noise_after_hours": "[TODO: Translate rules.noise_after_hours]",
+        "noise_after_hours_desc": "[TODO: Translate rules.noise_after_hours_desc]",
+        "smoking_not_allowed": "[TODO: Translate rules.smoking_not_allowed]"
+      },
+      "searchTerm": "[TODO: Translate searchTerm]",
+      "select": "[TODO: Translate select]",
+      "skip_to_content": "[TODO: Translate skip_to_content]",
+      "status, total_price_cents": "[TODO: Translate status, total_price_cents]",
+      "status": {
+        "awaiting_payment": "[TODO: Translate status.awaiting_payment]",
+        "paid": "[TODO: Translate status.paid]",
+        "refunded": "[TODO: Translate status.refunded]"
+      },
+      "success": "[TODO: Translate success]",
+      "support:actions": {
+        "create_ticket": "[TODO: Translate support:actions.create_ticket]"
+      },
+      "support:categories": {
+        "billing": "[TODO: Translate support:categories.billing]",
+        "booking": "[TODO: Translate support:categories.booking]",
+        "feedback": "[TODO: Translate support:categories.feedback]",
+        "other": "[TODO: Translate support:categories.other]",
+        "technical": "[TODO: Translate support:categories.technical]"
+      },
+      "support:contact_info": {
+        "title": "[TODO: Translate support:contact_info.title]"
+      },
+      "support:dialogs": {
+        "create": {
+          "description": "[TODO: Translate support:dialogs.create.description]",
+          "title": "[TODO: Translate support:dialogs.create.title]"
+        }
+      },
+      "support:fields": {
+        "category": "[TODO: Translate support:fields.category]",
+        "description": "[TODO: Translate support:fields.description]",
+        "priority": "[TODO: Translate support:fields.priority]",
+        "subject": "[TODO: Translate support:fields.subject]",
+        "tags": "[TODO: Translate support:fields.tags]"
+      },
+      "support:helper_text": {
+        "description": "[TODO: Translate support:helper_text.description]",
+        "subject": "[TODO: Translate support:helper_text.subject]",
+        "tags": "[TODO: Translate support:helper_text.tags]"
+      },
+      "support:messages": {
+        "error": {
+          "generic": "[TODO: Translate support:messages.error.generic]"
+        },
+        "validation": {
+          "description_required": "[TODO: Translate support:messages.validation.description_required]",
+          "subject_required": "[TODO: Translate support:messages.validation.subject_required]"
+        }
+      },
+      "support:placeholders": {
+        "description": "[TODO: Translate support:placeholders.description]",
+        "subject": "[TODO: Translate support:placeholders.subject]",
+        "tags": "[TODO: Translate support:placeholders.tags]"
+      },
+      "support:priorities": {
+        "high": "[TODO: Translate support:priorities.high]",
+        "low": "[TODO: Translate support:priorities.low]",
+        "medium": "[TODO: Translate support:priorities.medium]",
+        "urgent": "[TODO: Translate support:priorities.urgent]"
+      },
+      "support:related": {
+        "booking": "[TODO: Translate support:related.booking]"
+      },
+      "support:tickets": {
+        "actions": {
+          "archive": "[TODO: Translate support:tickets.actions.archive]",
+          "delete": "[TODO: Translate support:tickets.actions.delete]",
+          "edit": "[TODO: Translate support:tickets.actions.edit]",
+          "view": "[TODO: Translate support:tickets.actions.view]"
+        },
+        "category": {
+          "billing": "[TODO: Translate support:tickets.category.billing]",
+          "booking": "[TODO: Translate support:tickets.category.booking]",
+          "feedback": "[TODO: Translate support:tickets.category.feedback]",
+          "other": "[TODO: Translate support:tickets.category.other]",
+          "technical": "[TODO: Translate support:tickets.category.technical]"
+        },
+        "create_ticket": "[TODO: Translate support:tickets.create_ticket]",
+        "filters": {
+          "all_categories": "[TODO: Translate support:tickets.filters.all_categories]",
+          "all_priorities": "[TODO: Translate support:tickets.filters.all_priorities]",
+          "all_statuses": "[TODO: Translate support:tickets.filters.all_statuses]",
+          "category": "[TODO: Translate support:tickets.filters.category]",
+          "priority": "[TODO: Translate support:tickets.filters.priority]",
+          "status": "[TODO: Translate support:tickets.filters.status]"
+        },
+        "list_title": "[TODO: Translate support:tickets.list_title]",
+        "manage_all": "[TODO: Translate support:tickets.manage_all]",
+        "new_ticket": "[TODO: Translate support:tickets.new_ticket]",
+        "no_tickets": "[TODO: Translate support:tickets.no_tickets]",
+        "no_tickets_search": "[TODO: Translate support:tickets.no_tickets_search]",
+        "no_tickets_yet": "[TODO: Translate support:tickets.no_tickets_yet]",
+        "priority": {
+          "high": "[TODO: Translate support:tickets.priority.high]",
+          "low": "[TODO: Translate support:tickets.priority.low]",
+          "medium": "[TODO: Translate support:tickets.priority.medium]",
+          "urgent": "[TODO: Translate support:tickets.priority.urgent]"
+        },
+        "search_placeholder": "[TODO: Translate support:tickets.search_placeholder]",
+        "statistics": {
+          "closed": "[TODO: Translate support:tickets.statistics.closed]",
+          "in_progress": "[TODO: Translate support:tickets.statistics.in_progress]",
+          "open_tickets": "[TODO: Translate support:tickets.statistics.open_tickets]",
+          "resolved": "[TODO: Translate support:tickets.statistics.resolved]"
+        },
+        "status": {
+          "closed": "[TODO: Translate support:tickets.status.closed]",
+          "in_progress": "[TODO: Translate support:tickets.status.in_progress]",
+          "open": "[TODO: Translate support:tickets.status.open]",
+          "resolved": "[TODO: Translate support:tickets.status.resolved]",
+          "waiting_user": "[TODO: Translate support:tickets.status.waiting_user]"
+        },
+        "your_tickets": "[TODO: Translate support:tickets.your_tickets]"
+      },
+      "tabs": {
+        "facilities": "[TODO: Translate tabs.facilities]",
+        "faq": "[TODO: Translate tabs.faq]",
+        "general": "[TODO: Translate tabs.general]",
+        "rules": "[TODO: Translate tabs.rules]",
+        "zones": "[TODO: Translate tabs.zones]"
+      },
+      "type": "[TODO: Translate type]",
+      "user:activity": {
+        "no_activity": "[TODO: Translate user:activity.no_activity]",
+        "title": "[TODO: Translate user:activity.title]"
+      },
+      "user:bookings": {
+        "booking_cancelled": "[TODO: Translate user:bookings.booking_cancelled]",
+        "cancellation_policy": "[TODO: Translate user:bookings.cancellation_policy]",
+        "confirm_cancel": "[TODO: Translate user:bookings.confirm_cancel]",
+        "not_specified": "[TODO: Translate user:bookings.not_specified]"
+      },
+      "user:dashboard": {
+        "monthly_bookings": "[TODO: Translate user:dashboard.monthly_bookings]",
+        "my_bookings": "[TODO: Translate user:dashboard.my_bookings]",
+        "new_booking": "[TODO: Translate user:dashboard.new_booking]",
+        "no_upcoming_bookings": "[TODO: Translate user:dashboard.no_upcoming_bookings]",
+        "of": "[TODO: Translate user:dashboard.of]",
+        "perfect_day": "[TODO: Translate user:dashboard.perfect_day]",
+        "quick_actions": "[TODO: Translate user:dashboard.quick_actions]",
+        "recommended_facilities": "[TODO: Translate user:dashboard.recommended_facilities]",
+        "system_messages": "[TODO: Translate user:dashboard.system_messages]"
+      },
+      "user:quick_actions": {
+        "calendar": {
+          "description": "[TODO: Translate user:quick_actions.calendar.description]",
+          "title": "[TODO: Translate user:quick_actions.calendar.title]"
+        },
+        "favorites": {
+          "description": "[TODO: Translate user:quick_actions.favorites.description]",
+          "title": "[TODO: Translate user:quick_actions.favorites.title]"
+        },
+        "history": {
+          "description": "[TODO: Translate user:quick_actions.history.description]",
+          "title": "[TODO: Translate user:quick_actions.history.title]"
+        },
+        "invoices": {
+          "description": "[TODO: Translate user:quick_actions.invoices.description]",
+          "title": "[TODO: Translate user:quick_actions.invoices.title]"
+        }
+      },
+      "user:recommendations": {
+        "frequent_bookings": "[TODO: Translate user:recommendations.frequent_bookings]",
+        "new_in_area": "[TODO: Translate user:recommendations.new_in_area]",
+        "preferred_times": "[TODO: Translate user:recommendations.preferred_times]"
+      },
+      "user:settings": {
+        "account_actions": {
+          "change_email": "[TODO: Translate user:settings.account_actions.change_email]",
+          "change_phone": "[TODO: Translate user:settings.account_actions.change_phone]",
+          "delete_account": "[TODO: Translate user:settings.account_actions.delete_account]",
+          "title": "[TODO: Translate user:settings.account_actions.title]"
+        },
+        "language_region": {
+          "language": "[TODO: Translate user:settings.language_region.language]",
+          "languages": {
+            "en": "[TODO: Translate user:settings.language_region.languages.en]",
+            "no": "[TODO: Translate user:settings.language_region.languages.no]"
+          },
+          "timezone": "[TODO: Translate user:settings.language_region.timezone]",
+          "timezones": {
+            "copenhagen": "[TODO: Translate user:settings.language_region.timezones.copenhagen]",
+            "oslo": "[TODO: Translate user:settings.language_region.timezones.oslo]",
+            "stockholm": "[TODO: Translate user:settings.language_region.timezones.stockholm]",
+            "utc": "[TODO: Translate user:settings.language_region.timezones.utc]"
+          },
+          "title": "[TODO: Translate user:settings.language_region.title]"
+        },
+        "notifications": {
+          "booking_reminders": "[TODO: Translate user:settings.notifications.booking_reminders]",
+          "booking_reminders_desc": "[TODO: Translate user:settings.notifications.booking_reminders_desc]",
+          "email": "[TODO: Translate user:settings.notifications.email]",
+          "email_desc": "[TODO: Translate user:settings.notifications.email_desc]",
+          "marketing": "[TODO: Translate user:settings.notifications.marketing]",
+          "marketing_desc": "[TODO: Translate user:settings.notifications.marketing_desc]",
+          "push": "[TODO: Translate user:settings.notifications.push]",
+          "push_desc": "[TODO: Translate user:settings.notifications.push_desc]",
+          "sms": "[TODO: Translate user:settings.notifications.sms]",
+          "sms_desc": "[TODO: Translate user:settings.notifications.sms_desc]",
+          "title": "[TODO: Translate user:settings.notifications.title]"
+        },
+        "privacy_security": {
+          "change_password": "[TODO: Translate user:settings.privacy_security.change_password]",
+          "show_profile": "[TODO: Translate user:settings.privacy_security.show_profile]",
+          "show_profile_desc": "[TODO: Translate user:settings.privacy_security.show_profile_desc]",
+          "title": "[TODO: Translate user:settings.privacy_security.title]",
+          "two_factor": "[TODO: Translate user:settings.privacy_security.two_factor]",
+          "two_factor_desc": "[TODO: Translate user:settings.privacy_security.two_factor_desc]"
+        },
+        "save_settings": "[TODO: Translate user:settings.save_settings]",
+        "settings_save_failed": "[TODO: Translate user:settings.settings_save_failed]",
+        "settings_saved": "[TODO: Translate user:settings.settings_saved]",
+        "subtitle": "[TODO: Translate user:settings.subtitle]",
+        "title": "[TODO: Translate user:settings.title]"
+      },
+      "validation_failed": "[TODO: Translate validation_failed]",
+      "viewMode": "[TODO: Translate viewMode]"
+    },
+    "facility": {
+      "amenities": {
+        "available_title": "[TODO: Translate amenities.available_title]",
+        "equipment_title": "[TODO: Translate amenities.equipment_title]",
+        "no_amenities": "[TODO: Translate amenities.no_amenities]",
+        "suitable_for": "[TODO: Translate amenities.suitable_for]"
+      },
+      "card": {
+        "addToFavorites": "[TODO: Translate card.addToFavorites]",
+        "moreAmenities": "[TODO: Translate card.moreAmenities]",
+        "no": "[TODO: Translate card.no]",
+        "outOf5": "[TODO: Translate card.outOf5]",
+        "people": "[TODO: Translate card.people]",
+        "pricePerHour": "[TODO: Translate card.pricePerHour]",
+        "reviewCount": "[TODO: Translate card.reviewCount]",
+        "shareFacility": "[TODO: Translate card.shareFacility]",
+        "squareMeters": "[TODO: Translate card.squareMeters]",
+        "yes": "[TODO: Translate card.yes]"
+      }
+    },
+    "support": {
+      "actions": {
+        "create_ticket": "[TODO: Translate actions.create_ticket]"
+      },
+      "categories": {
+        "billing": "[TODO: Translate categories.billing]",
+        "booking": "[TODO: Translate categories.booking]",
+        "feedback": "[TODO: Translate categories.feedback]",
+        "other": "[TODO: Translate categories.other]",
+        "technical": "[TODO: Translate categories.technical]"
+      },
+      "contact_info": {
+        "title": "[TODO: Translate contact_info.title]"
+      },
+      "dialogs": {
+        "create": {
+          "description": "[TODO: Translate dialogs.create.description]",
+          "title": "[TODO: Translate dialogs.create.title]"
+        }
+      },
+      "fields": {
+        "category": "[TODO: Translate fields.category]",
+        "description": "[TODO: Translate fields.description]",
+        "priority": "[TODO: Translate fields.priority]",
+        "subject": "[TODO: Translate fields.subject]",
+        "tags": "[TODO: Translate fields.tags]"
+      },
+      "helper_text": {
+        "description": "[TODO: Translate helper_text.description]",
+        "subject": "[TODO: Translate helper_text.subject]",
+        "tags": "[TODO: Translate helper_text.tags]"
+      },
+      "messages": {
+        "error": {
+          "generic": "[TODO: Translate messages.error.generic]"
+        },
+        "validation": {
+          "description_required": "[TODO: Translate messages.validation.description_required]",
+          "subject_required": "[TODO: Translate messages.validation.subject_required]"
+        }
+      },
+      "placeholders": {
+        "description": "[TODO: Translate placeholders.description]",
+        "subject": "[TODO: Translate placeholders.subject]",
+        "tags": "[TODO: Translate placeholders.tags]"
+      },
+      "priorities": {
+        "high": "[TODO: Translate priorities.high]",
+        "low": "[TODO: Translate priorities.low]",
+        "medium": "[TODO: Translate priorities.medium]",
+        "urgent": "[TODO: Translate priorities.urgent]"
+      },
+      "related": {
+        "booking": "[TODO: Translate related.booking]"
+      },
+      "tickets": {
+        "actions": {
+          "archive": "[TODO: Translate tickets.actions.archive]",
+          "delete": "[TODO: Translate tickets.actions.delete]",
+          "edit": "[TODO: Translate tickets.actions.edit]",
+          "view": "[TODO: Translate tickets.actions.view]"
+        },
+        "category": {
+          "billing": "[TODO: Translate tickets.category.billing]",
+          "booking": "[TODO: Translate tickets.category.booking]",
+          "feedback": "[TODO: Translate tickets.category.feedback]",
+          "other": "[TODO: Translate tickets.category.other]",
+          "technical": "[TODO: Translate tickets.category.technical]"
+        },
+        "create_ticket": "[TODO: Translate tickets.create_ticket]",
+        "filters": {
+          "all_categories": "[TODO: Translate tickets.filters.all_categories]",
+          "all_priorities": "[TODO: Translate tickets.filters.all_priorities]",
+          "all_statuses": "[TODO: Translate tickets.filters.all_statuses]",
+          "category": "[TODO: Translate tickets.filters.category]",
+          "priority": "[TODO: Translate tickets.filters.priority]",
+          "status": "[TODO: Translate tickets.filters.status]"
+        },
+        "list_title": "[TODO: Translate tickets.list_title]",
+        "manage_all": "[TODO: Translate tickets.manage_all]",
+        "new_ticket": "[TODO: Translate tickets.new_ticket]",
+        "no_tickets": "[TODO: Translate tickets.no_tickets]",
+        "no_tickets_search": "[TODO: Translate tickets.no_tickets_search]",
+        "no_tickets_yet": "[TODO: Translate tickets.no_tickets_yet]",
+        "priority": {
+          "high": "[TODO: Translate tickets.priority.high]",
+          "low": "[TODO: Translate tickets.priority.low]",
+          "medium": "[TODO: Translate tickets.priority.medium]",
+          "urgent": "[TODO: Translate tickets.priority.urgent]"
+        },
+        "search_placeholder": "[TODO: Translate tickets.search_placeholder]",
+        "statistics": {
+          "closed": "[TODO: Translate tickets.statistics.closed]",
+          "in_progress": "[TODO: Translate tickets.statistics.in_progress]",
+          "open_tickets": "[TODO: Translate tickets.statistics.open_tickets]",
+          "resolved": "[TODO: Translate tickets.statistics.resolved]"
+        },
+        "status": {
+          "closed": "[TODO: Translate tickets.status.closed]",
+          "in_progress": "[TODO: Translate tickets.status.in_progress]",
+          "open": "[TODO: Translate tickets.status.open]",
+          "resolved": "[TODO: Translate tickets.status.resolved]",
+          "waiting_user": "[TODO: Translate tickets.status.waiting_user]"
+        },
+        "your_tickets": "[TODO: Translate tickets.your_tickets]"
+      }
+    },
+    "user": {
+      "settings": {
+        "account_actions": {
+          "change_email": "[TODO: Translate settings.account_actions.change_email]",
+          "change_phone": "[TODO: Translate settings.account_actions.change_phone]",
+          "delete_account": "[TODO: Translate settings.account_actions.delete_account]",
+          "title": "[TODO: Translate settings.account_actions.title]"
+        },
+        "language_region": {
+          "language": "[TODO: Translate settings.language_region.language]",
+          "languages": {
+            "en": "[TODO: Translate settings.language_region.languages.en]",
+            "no": "[TODO: Translate settings.language_region.languages.no]"
+          },
+          "timezone": "[TODO: Translate settings.language_region.timezone]",
+          "timezones": {
+            "copenhagen": "[TODO: Translate settings.language_region.timezones.copenhagen]",
+            "oslo": "[TODO: Translate settings.language_region.timezones.oslo]",
+            "stockholm": "[TODO: Translate settings.language_region.timezones.stockholm]",
+            "utc": "[TODO: Translate settings.language_region.timezones.utc]"
+          },
+          "title": "[TODO: Translate settings.language_region.title]"
+        },
+        "notifications": {
+          "booking_reminders": "[TODO: Translate settings.notifications.booking_reminders]",
+          "booking_reminders_desc": "[TODO: Translate settings.notifications.booking_reminders_desc]",
+          "email": "[TODO: Translate settings.notifications.email]",
+          "email_desc": "[TODO: Translate settings.notifications.email_desc]",
+          "marketing": "[TODO: Translate settings.notifications.marketing]",
+          "marketing_desc": "[TODO: Translate settings.notifications.marketing_desc]",
+          "push": "[TODO: Translate settings.notifications.push]",
+          "push_desc": "[TODO: Translate settings.notifications.push_desc]",
+          "sms": "[TODO: Translate settings.notifications.sms]",
+          "sms_desc": "[TODO: Translate settings.notifications.sms_desc]",
+          "title": "[TODO: Translate settings.notifications.title]"
+        },
+        "privacy_security": {
+          "change_password": "[TODO: Translate settings.privacy_security.change_password]",
+          "show_profile": "[TODO: Translate settings.privacy_security.show_profile]",
+          "show_profile_desc": "[TODO: Translate settings.privacy_security.show_profile_desc]",
+          "title": "[TODO: Translate settings.privacy_security.title]",
+          "two_factor": "[TODO: Translate settings.privacy_security.two_factor]",
+          "two_factor_desc": "[TODO: Translate settings.privacy_security.two_factor_desc]"
+        },
+        "save_settings": "[TODO: Translate settings.save_settings]",
+        "settings_save_failed": "[TODO: Translate settings.settings_save_failed]",
+        "settings_saved": "[TODO: Translate settings.settings_saved]",
+        "subtitle": "[TODO: Translate settings.subtitle]",
+        "title": "[TODO: Translate settings.title]"
+      }
+    }
+  },
+  "no": {
+    "Skriv inn ny rolle for valgte brukere": {
+      "": "[TODO: Translate ]"
+    },
+    "common": {
+      "Alle notifikasjoner markert som lest!": "[TODO: Translate Alle notifikasjoner markert som lest!]",
+      "Audit-log eksportert til CSV!": "[TODO: Translate Audit-log eksportert til CSV!]",
+      "Bilder lastet opp!": "[TODO: Translate Bilder lastet opp!]",
+      "Bruker deaktivert!": "[TODO: Translate Bruker deaktivert!]",
+      "Bruker oppdatert!": "[TODO: Translate Bruker oppdatert!]",
+      "Bruker slettet!": "[TODO: Translate Bruker slettet!]",
+      "CSV-fil lastet ned!": "[TODO: Translate CSV-fil lastet ned!]",
+      "E-post klargjort!": "[TODO: Translate E-post klargjort!]",
+      "Fakturanummer kopiert til utklippstavle!": "[TODO: Translate Fakturanummer kopiert til utklippstavle!]",
+      "Fasilitet delt!": "[TODO: Translate Fasilitet delt!]",
+      "Fasilitet oppdatert!": "[TODO: Translate Fasilitet oppdatert!]",
+      "Handling ikke implementert": "[TODO: Translate Handling ikke implementert]",
+      "Invitasjon sendt på nytt!": "[TODO: Translate Invitasjon sendt på nytt!]",
+      "Invitasjon sendt til bruker!": "[TODO: Translate Invitasjon sendt til bruker!]",
+      "Kontaktinformasjon kopiert til utklippstavle!": "[TODO: Translate Kontaktinformasjon kopiert til utklippstavle!]",
+      "Kopiert til utklippstavle!": "[TODO: Translate Kopiert til utklippstavle!]",
+      "Kunne ikke deaktivere bruker": {
+        " Prøv igjen": {
+          "": "[TODO: Translate Kunne ikke deaktivere bruker. Prøv igjen.]"
+        }
+      },
+      "Kunne ikke dele fasilitet": {
+        " Prøv igjen": {
+          "": "[TODO: Translate Kunne ikke dele fasilitet. Prøv igjen.]"
+        }
+      },
+      "Kunne ikke eksportere CSV": {
+        " Prøv igjen": {
+          "": "[TODO: Translate Kunne ikke eksportere CSV. Prøv igjen.]"
+        }
+      },
+      "Kunne ikke eksportere PDF": {
+        " Prøv igjen": {
+          "": "[TODO: Translate Kunne ikke eksportere PDF. Prøv igjen.]"
+        }
+      },
+      "Kunne ikke endre rolle status": {
+        " Prøv igjen": {
+          "": "[TODO: Translate Kunne ikke endre rolle status. Prøv igjen.]"
+        }
+      },
+      "Kunne ikke endre språk": {
+        " Prøv igjen": {
+          "": "[TODO: Translate Kunne ikke endre språk. Prøv igjen.]"
+        }
+      },
+      "Kunne ikke endre systemhendelse": {
+        " Prøv igjen": {
+          "": "[TODO: Translate Kunne ikke endre systemhendelse. Prøv igjen.]"
+        }
+      },
+      "Kunne ikke endre varselpreferanse": {
+        " Prøv igjen": {
+          "": "[TODO: Translate Kunne ikke endre varselpreferanse. Prøv igjen.]"
+        }
+      },
+      "Kunne ikke kopiere til utklippstavle": {
+        " Prøv igjen": {
+          "": "[TODO: Translate Kunne ikke kopiere til utklippstavle. Prøv igjen.]"
+        }
+      },
+      "Kunne ikke lagre bruker": {
+        " Prøv igjen": {
+          "": "[TODO: Translate Kunne ikke lagre bruker. Prøv igjen.]"
+        }
+      },
+      "Kunne ikke lagre endringer": {
+        " Prøv igjen": {
+          "": "[TODO: Translate Kunne ikke lagre endringer. Prøv igjen.]"
+        }
+      },
+      "Kunne ikke lagre rolle": {
+        " Prøv igjen": {
+          "": "[TODO: Translate Kunne ikke lagre rolle. Prøv igjen.]"
+        }
+      },
+      "Kunne ikke laste opp bilder": {
+        " Prøv igjen": {
+          "": "[TODO: Translate Kunne ikke laste opp bilder. Prøv igjen.]"
+        }
+      },
+      "Kunne ikke markere alle notifikasjoner som lest": {
+        " Prøv igjen": {
+          "": "[TODO: Translate Kunne ikke markere alle notifikasjoner som lest. Prøv igjen.]"
+        }
+      },
+      "Kunne ikke markere notifikasjon som lest": {
+        " Prøv igjen": {
+          "": "[TODO: Translate Kunne ikke markere notifikasjon som lest. Prøv igjen.]"
+        }
+      },
+      "Kunne ikke navigere til bookingside": {
+        " Prøv igjen": {
+          "": "[TODO: Translate Kunne ikke navigere til bookingside. Prøv igjen.]"
+        }
+      },
+      "Kunne ikke sende invitasjon": {
+        " Prøv igjen": {
+          "": "[TODO: Translate Kunne ikke sende invitasjon. Prøv igjen.]"
+        }
+      },
+      "Kunne ikke slette bruker": {
+        " Prøv igjen": {
+          "": "[TODO: Translate Kunne ikke slette bruker. Prøv igjen.]"
+        }
+      },
+      "Kunne ikke utføre massehandling": {
+        " Prøv igjen": {
+          "": "[TODO: Translate Kunne ikke utføre massehandling. Prøv igjen.]"
+        }
+      },
+      "Kunne ikke utføre sletting": {
+        " Prøv igjen": {
+          "": "[TODO: Translate Kunne ikke utføre sletting. Prøv igjen.]"
+        }
+      },
+      "Kunne ikke åpne kontaktfunksjonalitet": {
+        " Prøv igjen": {
+          "": "[TODO: Translate Kunne ikke åpne kontaktfunksjonalitet. Prøv igjen.]"
+        }
+      },
+      "Kvittering lastet ned!": "[TODO: Translate Kvittering lastet ned!]",
+      "Lenke kopiert til utklippstavle!": "[TODO: Translate Lenke kopiert til utklippstavle!]",
+      "Notifikasjon markert som lest!": "[TODO: Translate Notifikasjon markert som lest!]",
+      "Rapport eksportert til CSV!": "[TODO: Translate Rapport eksportert til CSV!]",
+      "Rapport eksportert! (Simulert PDF som tekstfil)": "[TODO: Translate Rapport eksportert! (Simulert PDF som tekstfil)]",
+      "Rolle oppdatert!": "[TODO: Translate Rolle oppdatert!]",
+      "Rolle opprettet!": "[TODO: Translate Rolle opprettet!]",
+      "Rolle status endret!": "[TODO: Translate Rolle status endret!]",
+      "Skriv inn ny rolle for valgte brukere:": "[TODO: Translate Skriv inn ny rolle for valgte brukere:]",
+      "Ugyldig datatype valgt": "[TODO: Translate Ugyldig datatype valgt]",
+      "Vennligst fyll ut formål": "[TODO: Translate Vennligst fyll ut formål]",
+      "Vennligst velg en gruppe": "[TODO: Translate Vennligst velg en gruppe]",
+      "Vennligst velg et tidspunkt": "[TODO: Translate Vennligst velg et tidspunkt]",
+      "Vennligst velg minst ett medlem for kostnadsdeling": "[TODO: Translate Vennligst velg minst ett medlem for kostnadsdeling]",
+      "about": "[TODO: Translate about]",
+      "actions": {
+        "go_back": "[TODO: Translate actions.go_back]",
+        "go_home": "[TODO: Translate actions.go_home]",
+        "like": "[TODO: Translate actions.like]",
+        "liked": "[TODO: Translate actions.liked]",
+        "logout": "[TODO: Translate actions.logout]"
+      },
+      "admin:charts": {
+        "trend": "[TODO: Translate admin:charts.trend]"
+      },
+      "admin:dashboard": {
+        "alerts": {
+          "all_systems_normal": "[TODO: Translate admin:dashboard.alerts.all_systems_normal]",
+          "cancelled_bookings": "[TODO: Translate admin:dashboard.alerts.cancelled_bookings]",
+          "draft_facilities": "[TODO: Translate admin:dashboard.alerts.draft_facilities]",
+          "see_details": "[TODO: Translate admin:dashboard.alerts.see_details]",
+          "system_status": "[TODO: Translate admin:dashboard.alerts.system_status]"
+        },
+        "error_loading": "[TODO: Translate admin:dashboard.error_loading]",
+        "key_metrics": "[TODO: Translate admin:dashboard.key_metrics]",
+        "kpi": {
+          "active_facilities": "[TODO: Translate admin:dashboard.kpi.active_facilities]",
+          "active_percentage": "[TODO: Translate admin:dashboard.kpi.active_percentage]",
+          "active_users": "[TODO: Translate admin:dashboard.kpi.active_users]",
+          "bookings_received": "[TODO: Translate admin:dashboard.kpi.bookings_received]",
+          "pending_approvals": "[TODO: Translate admin:dashboard.kpi.pending_approvals]",
+          "requires_attention": "[TODO: Translate admin:dashboard.kpi.requires_attention]",
+          "today_bookings": "[TODO: Translate admin:dashboard.kpi.today_bookings]",
+          "total_facilities": "[TODO: Translate admin:dashboard.kpi.total_facilities]",
+          "unique_users": "[TODO: Translate admin:dashboard.kpi.unique_users]"
+        },
+        "loading_stats": "[TODO: Translate admin:dashboard.loading_stats]",
+        "new_facility": "[TODO: Translate admin:dashboard.new_facility]",
+        "overview": "[TODO: Translate admin:dashboard.overview]",
+        "trends": "[TODO: Translate admin:dashboard.trends]",
+        "welcome": "[TODO: Translate admin:dashboard.welcome]"
+      },
+      "attachments": {
+        "drag_drop": "[TODO: Translate attachments.drag_drop]",
+        "select_files": "[TODO: Translate attachments.select_files]",
+        "selected_files": "[TODO: Translate attachments.selected_files]",
+        "title": "[TODO: Translate attachments.title]"
+      },
+      "available_zones": "[TODO: Translate available_zones]",
+      "capacity": "[TODO: Translate capacity]",
+      "card": {
+        "autoApproval": "[TODO: Translate card.autoApproval]",
+        "bookings": "[TODO: Translate card.bookings]",
+        "cancelBooking": "[TODO: Translate card.cancelBooking]",
+        "createGroup": "[TODO: Translate card.createGroup]",
+        "deleteGroup": "[TODO: Translate card.deleteGroup]",
+        "editGroup": "[TODO: Translate card.editGroup]",
+        "hasNotes": "[TODO: Translate card.hasNotes]",
+        "hour": "[TODO: Translate card.hour]",
+        "hours": "[TODO: Translate card.hours]",
+        "invitations": "[TODO: Translate card.invitations]",
+        "inviteMember": "[TODO: Translate card.inviteMember]",
+        "manageGroups": "[TODO: Translate card.manageGroups]",
+        "memberBookings": "[TODO: Translate card.memberBookings]",
+        "members": "[TODO: Translate card.members]",
+        "myGroups": "[TODO: Translate card.myGroups]",
+        "noBookingsToday": "[TODO: Translate card.noBookingsToday]",
+        "noGroups": "[TODO: Translate card.noGroups]",
+        "noGroupsDescription": "[TODO: Translate card.noGroupsDescription]",
+        "openMenu": "[TODO: Translate card.openMenu]",
+        "owner": "[TODO: Translate card.owner]",
+        "ownerBookingsOnly": "[TODO: Translate card.ownerBookingsOnly]",
+        "quietDay": "[TODO: Translate card.quietDay]",
+        "requireApproval": "[TODO: Translate card.requireApproval]",
+        "settings": "[TODO: Translate card.settings]",
+        "todaysBookings": "[TODO: Translate card.todaysBookings]",
+        "unknownFacility": "[TODO: Translate card.unknownFacility]",
+        "viewAllBookings": "[TODO: Translate card.viewAllBookings]",
+        "viewBookings": "[TODO: Translate card.viewBookings]",
+        "viewDetails": "[TODO: Translate card.viewDetails]"
+      },
+      "collapse_sidebar": "[TODO: Translate collapse_sidebar]",
+      "common:about": "[TODO: Translate common:about]",
+      "common:actions": {
+        "cancel": "[TODO: Translate common:actions.cancel]"
+      },
+      "common:available_zones": "[TODO: Translate common:available_zones]",
+      "common:common": {
+        "total": "[TODO: Translate common:common.total]"
+      },
+      "common:entire_facility": "[TODO: Translate common:entire_facility]",
+      "common:faq": {
+        "booking_time": "[TODO: Translate common:faq.booking_time]",
+        "booking_time_answer": "[TODO: Translate common:faq.booking_time_answer]",
+        "cancellation": "[TODO: Translate common:faq.cancellation]",
+        "cancellation_answer": "[TODO: Translate common:faq.cancellation_answer]",
+        "food_drinks": "[TODO: Translate common:faq.food_drinks]",
+        "food_drinks_answer": "[TODO: Translate common:faq.food_drinks_answer]",
+        "parking": "[TODO: Translate common:faq.parking]",
+        "parking_available": "[TODO: Translate common:faq.parking_available]",
+        "parking_contact": "[TODO: Translate common:faq.parking_contact]",
+        "title": "[TODO: Translate common:faq.title]"
+      },
+      "common:messages": {
+        "noDescription": "[TODO: Translate common:messages.noDescription]"
+      },
+      "common:placeholders": {
+        "selectOption": "[TODO: Translate common:placeholders.selectOption]"
+      },
+      "common:rules": {
+        "cancellation": "[TODO: Translate common:rules.cancellation]",
+        "cancellation_desc": "[TODO: Translate common:rules.cancellation_desc]",
+        "cleanup_required_desc": "[TODO: Translate common:rules.cleanup_required_desc]",
+        "noise_after_hours": "[TODO: Translate common:rules.noise_after_hours]",
+        "noise_after_hours_desc": "[TODO: Translate common:rules.noise_after_hours_desc]",
+        "smoking_not_allowed": "[TODO: Translate common:rules.smoking_not_allowed]"
+      },
+      "common:tabs": {
+        "facilities": "[TODO: Translate common:tabs.facilities]",
+        "faq": "[TODO: Translate common:tabs.faq]",
+        "general": "[TODO: Translate common:tabs.general]",
+        "rules": "[TODO: Translate common:tabs.rules]",
+        "zones": "[TODO: Translate common:tabs.zones]"
+      },
+      "common:time": {
+        "day": "[TODO: Translate common:time.day]",
+        "days": "[TODO: Translate common:time.days]",
+        "hour": "[TODO: Translate common:time.hour]",
+        "hours": "[TODO: Translate common:time.hours]",
+        "minute": "[TODO: Translate common:time.minute]",
+        "minutes": "[TODO: Translate common:time.minutes]",
+        "seconds": "[TODO: Translate common:time.seconds]"
+      },
+      "dashboard": {
+        "quickActions": "[TODO: Translate dashboard.quickActions]"
+      },
+      "dialog": {
+        "allowMemberBookings": "[TODO: Translate dialog.allowMemberBookings]",
+        "allowMemberBookingsHelp": "[TODO: Translate dialog.allowMemberBookingsHelp]",
+        "cancel": "[TODO: Translate dialog.cancel]",
+        "create": "[TODO: Translate dialog.create]",
+        "createDescription": "[TODO: Translate dialog.createDescription]",
+        "createTitle": "[TODO: Translate dialog.createTitle]",
+        "delete": "[TODO: Translate dialog.delete]",
+        "deleteTitle": "[TODO: Translate dialog.deleteTitle]",
+        "description": "[TODO: Translate dialog.description]",
+        "descriptionPlaceholder": "[TODO: Translate dialog.descriptionPlaceholder]",
+        "fillGroupName": "[TODO: Translate dialog.fillGroupName]",
+        "groupName": "[TODO: Translate dialog.groupName]",
+        "groupNameHelp": "[TODO: Translate dialog.groupNameHelp]",
+        "groupNamePlaceholder": "[TODO: Translate dialog.groupNamePlaceholder]",
+        "groupSettings": "[TODO: Translate dialog.groupSettings]",
+        "maxBookingsPerMember": "[TODO: Translate dialog.maxBookingsPerMember]",
+        "notificationSettings": "[TODO: Translate dialog.notificationSettings]",
+        "notifyCancellations": "[TODO: Translate dialog.notifyCancellations]",
+        "notifyCancellationsHelp": "[TODO: Translate dialog.notifyCancellationsHelp]",
+        "notifyMemberChanges": "[TODO: Translate dialog.notifyMemberChanges]",
+        "notifyMemberChangesHelp": "[TODO: Translate dialog.notifyMemberChangesHelp]",
+        "notifyNewBookings": "[TODO: Translate dialog.notifyNewBookings]",
+        "notifyNewBookingsHelp": "[TODO: Translate dialog.notifyNewBookingsHelp]",
+        "requireApproval": "[TODO: Translate dialog.requireApproval]",
+        "requireApprovalHelp": "[TODO: Translate dialog.requireApprovalHelp]"
+      },
+      "div": "[TODO: Translate div]",
+      "entire_facility": "[TODO: Translate entire_facility]",
+      "errors": {
+        "facility_not_found": "[TODO: Translate errors.facility_not_found]",
+        "facility_not_found_desc": "[TODO: Translate errors.facility_not_found_desc]",
+        "load_facility_error": "[TODO: Translate errors.load_facility_error]",
+        "something_went_wrong": "[TODO: Translate errors.something_went_wrong]"
+      },
+      "expand_sidebar": "[TODO: Translate expand_sidebar]",
+      "facility": {
+        "facilityTypes": {
+          "all": "[TODO: Translate facility.facilityTypes.all]",
+          "fotballbane": "[TODO: Translate facility.facilityTypes.fotballbane]",
+          "idrettshall": "[TODO: Translate facility.facilityTypes.idrettshall]",
+          "kulturhus": "[TODO: Translate facility.facilityTypes.kulturhus]",
+          "møterom": "[TODO: Translate facility.facilityTypes.møterom]",
+          "svømmehall": "[TODO: Translate facility.facilityTypes.svømmehall]",
+          "tennisbane": "[TODO: Translate facility.facilityTypes.tennisbane]"
+        },
+        "noFacilitiesFound": "[TODO: Translate facility.noFacilitiesFound]",
+        "searchFacilities": "[TODO: Translate facility.searchFacilities]"
+      },
+      "facility:amenities": {
+        "available_title": "[TODO: Translate facility:amenities.available_title]",
+        "equipment_title": "[TODO: Translate facility:amenities.equipment_title]",
+        "no_amenities": "[TODO: Translate facility:amenities.no_amenities]",
+        "suitable_for": "[TODO: Translate facility:amenities.suitable_for]"
+      },
+      "facility:card": {
+        "addToFavorites": "[TODO: Translate facility:card.addToFavorites]",
+        "moreAmenities": "[TODO: Translate facility:card.moreAmenities]",
+        "no": "[TODO: Translate facility:card.no]",
+        "outOf5": "[TODO: Translate facility:card.outOf5]",
+        "people": "[TODO: Translate facility:card.people]",
+        "pricePerHour": "[TODO: Translate facility:card.pricePerHour]",
+        "reviewCount": "[TODO: Translate facility:card.reviewCount]",
+        "shareFacility": "[TODO: Translate facility:card.shareFacility]",
+        "squareMeters": "[TODO: Translate facility:card.squareMeters]",
+        "yes": "[TODO: Translate facility:card.yes]"
+      },
+      "facility:fields": {
+        "area": "[TODO: Translate facility:fields.area]",
+        "capacity": "[TODO: Translate facility:fields.capacity]",
+        "equipment": "[TODO: Translate facility:fields.equipment]",
+        "price": "[TODO: Translate facility:fields.price]"
+      },
+      "facility:rules": {
+        "cleanupRequired": "[TODO: Translate facility:rules.cleanupRequired]",
+        "noSmoking": "[TODO: Translate facility:rules.noSmoking]",
+        "title": "[TODO: Translate facility:rules.title]"
+      },
+      "facilityType": "[TODO: Translate facilityType]",
+      "faq": {
+        "booking_time": "[TODO: Translate faq.booking_time]",
+        "booking_time_answer": "[TODO: Translate faq.booking_time_answer]",
+        "cancellation": "[TODO: Translate faq.cancellation]",
+        "cancellation_answer": "[TODO: Translate faq.cancellation_answer]",
+        "food_drinks": "[TODO: Translate faq.food_drinks]",
+        "food_drinks_answer": "[TODO: Translate faq.food_drinks_answer]",
+        "parking": "[TODO: Translate faq.parking]",
+        "parking_available": "[TODO: Translate faq.parking_available]",
+        "parking_contact": "[TODO: Translate faq.parking_contact]",
+        "title": "[TODO: Translate faq.title]"
+      },
+      "fields": {
+        "activityType": "[TODO: Translate fields.activityType]",
+        "actorType": "[TODO: Translate fields.actorType]",
+        "attendees": "[TODO: Translate fields.attendees]"
+      },
+      "gallery": {
+        "close": "[TODO: Translate gallery.close]",
+        "next": "[TODO: Translate gallery.next]",
+        "previous": "[TODO: Translate gallery.previous]",
+        "share": "[TODO: Translate gallery.share]"
+      },
+      "id": "[TODO: Translate id]",
+      "id, user_id, facility_id, status": "[TODO: Translate id, user_id, facility_id, status]",
+      "input": "[TODO: Translate input]",
+      "invalid_email": "[TODO: Translate invalid_email]",
+      "invalid_format": "[TODO: Translate invalid_format]",
+      "invalid_phone": "[TODO: Translate invalid_phone]",
+      "invitation_modal": {
+        "description": "[TODO: Translate invitation_modal.description]",
+        "form": {
+          "email": "[TODO: Translate invitation_modal.form.email]",
+          "email_help": "[TODO: Translate invitation_modal.form.email_help]",
+          "email_placeholder": "[TODO: Translate invitation_modal.form.email_placeholder]",
+          "info_description": "[TODO: Translate invitation_modal.form.info_description]",
+          "info_title": "[TODO: Translate invitation_modal.form.info_title]",
+          "message": "[TODO: Translate invitation_modal.form.message]",
+          "message_placeholder": "[TODO: Translate invitation_modal.form.message_placeholder]",
+          "send_invitation": "[TODO: Translate invitation_modal.form.send_invitation]",
+          "sending": "[TODO: Translate invitation_modal.form.sending]"
+        },
+        "messages": {
+          "error": "[TODO: Translate invitation_modal.messages.error]"
+        },
+        "pending": {
+          "accept": "[TODO: Translate invitation_modal.pending.accept]",
+          "decline": "[TODO: Translate invitation_modal.pending.decline]",
+          "description": "[TODO: Translate invitation_modal.pending.description]",
+          "status": "[TODO: Translate invitation_modal.pending.status]",
+          "title": "[TODO: Translate invitation_modal.pending.title]"
+        },
+        "sent": {
+          "description": "[TODO: Translate invitation_modal.sent.description]",
+          "status_accepted": "[TODO: Translate invitation_modal.sent.status_accepted]",
+          "status_declined": "[TODO: Translate invitation_modal.sent.status_declined]",
+          "status_expired": "[TODO: Translate invitation_modal.sent.status_expired]",
+          "status_pending": "[TODO: Translate invitation_modal.sent.status_pending]",
+          "title": "[TODO: Translate invitation_modal.sent.title]"
+        },
+        "tabs": {
+          "pending": "[TODO: Translate invitation_modal.tabs.pending]",
+          "send": "[TODO: Translate invitation_modal.tabs.send]",
+          "sent": "[TODO: Translate invitation_modal.tabs.sent]"
+        },
+        "validation": {
+          "email_invalid": "[TODO: Translate invitation_modal.validation.email_invalid]",
+          "email_required": "[TODO: Translate invitation_modal.validation.email_required]"
+        }
+      },
+      "language": "[TODO: Translate language]",
+      "loading": {
+        "facility": "[TODO: Translate loading.facility]",
+        "please_wait": "[TODO: Translate loading.please_wait]"
+      },
+      "location": "[TODO: Translate location]",
+      "login": "[TODO: Translate login]",
+      "logout": "[TODO: Translate logout]",
+      "menu": "[TODO: Translate menu]",
+      "messages": {
+        "noDescription": "[TODO: Translate messages.noDescription]"
+      },
+      "my_bookings": "[TODO: Translate my_bookings]",
+      "my_profile": "[TODO: Translate my_profile]",
+      "navigation": {
+        "facilities": "[TODO: Translate navigation.facilities]",
+        "my_bookings": "[TODO: Translate navigation.my_bookings]",
+        "profile": "[TODO: Translate navigation.profile]"
+      },
+      "org_id": "[TODO: Translate org_id]",
+      "org_id, role": "[TODO: Translate org_id, role]",
+      "privacy": "[TODO: Translate privacy]",
+      "recurring": {
+        "biweekly": "[TODO: Translate recurring.biweekly]",
+        "custom": "[TODO: Translate recurring.custom]",
+        "endDate": "[TODO: Translate recurring.endDate]",
+        "monthly": "[TODO: Translate recurring.monthly]",
+        "weekly": "[TODO: Translate recurring.weekly]"
+      },
+      "recurring_modal": {
+        "activity_type_placeholder": "[TODO: Translate recurring_modal.activity_type_placeholder]",
+        "actor_types": {
+          "kommunale-enheter": "[TODO: Translate recurring_modal.actor_types.kommunale-enheter]",
+          "lag-foreninger": "[TODO: Translate recurring_modal.actor_types.lag-foreninger]",
+          "paraply": "[TODO: Translate recurring_modal.actor_types.paraply]",
+          "private-firma": "[TODO: Translate recurring_modal.actor_types.private-firma]",
+          "private-person": "[TODO: Translate recurring_modal.actor_types.private-person]"
+        },
+        "create_recurring": "[TODO: Translate recurring_modal.create_recurring]",
+        "discount_label": "[TODO: Translate recurring_modal.discount_label]",
+        "end_date_help": "[TODO: Translate recurring_modal.end_date_help]",
+        "has_end_date": "[TODO: Translate recurring_modal.has_end_date]",
+        "preview_empty": "[TODO: Translate recurring_modal.preview_empty]",
+        "preview_title": "[TODO: Translate recurring_modal.preview_title]",
+        "pricing_summary": "[TODO: Translate recurring_modal.pricing_summary]",
+        "purpose_help": "[TODO: Translate recurring_modal.purpose_help]",
+        "purpose_placeholder": "[TODO: Translate recurring_modal.purpose_placeholder]",
+        "purpose_required": "[TODO: Translate recurring_modal.purpose_required]",
+        "recurrence_type": "[TODO: Translate recurring_modal.recurrence_type]",
+        "recurrence_type_placeholder": "[TODO: Translate recurring_modal.recurrence_type_placeholder]",
+        "select_time_slots": "[TODO: Translate recurring_modal.select_time_slots]",
+        "select_weekdays": "[TODO: Translate recurring_modal.select_weekdays]",
+        "single": "[TODO: Translate recurring_modal.single]",
+        "start_date": "[TODO: Translate recurring_modal.start_date]",
+        "start_date_help": "[TODO: Translate recurring_modal.start_date_help]",
+        "title": "[TODO: Translate recurring_modal.title]",
+        "validation": {
+          "purpose_required": "[TODO: Translate recurring_modal.validation.purpose_required]",
+          "select_time_slot": "[TODO: Translate recurring_modal.validation.select_time_slot]"
+        },
+        "weekdays": {
+          "friday": "[TODO: Translate recurring_modal.weekdays.friday]",
+          "monday": "[TODO: Translate recurring_modal.weekdays.monday]",
+          "saturday": "[TODO: Translate recurring_modal.weekdays.saturday]",
+          "sunday": "[TODO: Translate recurring_modal.weekdays.sunday]",
+          "thursday": "[TODO: Translate recurring_modal.weekdays.thursday]",
+          "tuesday": "[TODO: Translate recurring_modal.weekdays.tuesday]",
+          "wednesday": "[TODO: Translate recurring_modal.weekdays.wednesday]"
+        }
+      },
+      "required": "[TODO: Translate required]",
+      "role": "[TODO: Translate role]",
+      "roles": {
+        "admin": "[TODO: Translate roles.admin]",
+        "member": "[TODO: Translate roles.member]",
+        "owner": "[TODO: Translate roles.owner]"
+      },
+      "rooms": "[TODO: Translate rooms]",
+      "rules": {
+        "cancellation": "[TODO: Translate rules.cancellation]",
+        "cancellation_desc": "[TODO: Translate rules.cancellation_desc]",
+        "cleanup_required_desc": "[TODO: Translate rules.cleanup_required_desc]",
+        "noise_after_hours": "[TODO: Translate rules.noise_after_hours]",
+        "noise_after_hours_desc": "[TODO: Translate rules.noise_after_hours_desc]",
+        "smoking_not_allowed": "[TODO: Translate rules.smoking_not_allowed]"
+      },
+      "searchTerm": "[TODO: Translate searchTerm]",
+      "select": "[TODO: Translate select]",
+      "skip_to_content": "[TODO: Translate skip_to_content]",
+      "status, total_price_cents": "[TODO: Translate status, total_price_cents]",
+      "status": {
+        "awaiting_payment": "[TODO: Translate status.awaiting_payment]",
+        "paid": "[TODO: Translate status.paid]",
+        "refunded": "[TODO: Translate status.refunded]"
+      },
+      "success": "[TODO: Translate success]",
+      "support:actions": {
+        "create_ticket": "[TODO: Translate support:actions.create_ticket]"
+      },
+      "support:categories": {
+        "billing": "[TODO: Translate support:categories.billing]",
+        "booking": "[TODO: Translate support:categories.booking]",
+        "feedback": "[TODO: Translate support:categories.feedback]",
+        "other": "[TODO: Translate support:categories.other]",
+        "technical": "[TODO: Translate support:categories.technical]"
+      },
+      "support:contact_info": {
+        "title": "[TODO: Translate support:contact_info.title]"
+      },
+      "support:dialogs": {
+        "create": {
+          "description": "[TODO: Translate support:dialogs.create.description]",
+          "title": "[TODO: Translate support:dialogs.create.title]"
+        }
+      },
+      "support:fields": {
+        "category": "[TODO: Translate support:fields.category]",
+        "description": "[TODO: Translate support:fields.description]",
+        "priority": "[TODO: Translate support:fields.priority]",
+        "subject": "[TODO: Translate support:fields.subject]",
+        "tags": "[TODO: Translate support:fields.tags]"
+      },
+      "support:helper_text": {
+        "description": "[TODO: Translate support:helper_text.description]",
+        "subject": "[TODO: Translate support:helper_text.subject]",
+        "tags": "[TODO: Translate support:helper_text.tags]"
+      },
+      "support:messages": {
+        "error": {
+          "generic": "[TODO: Translate support:messages.error.generic]"
+        },
+        "validation": {
+          "description_required": "[TODO: Translate support:messages.validation.description_required]",
+          "subject_required": "[TODO: Translate support:messages.validation.subject_required]"
+        }
+      },
+      "support:placeholders": {
+        "description": "[TODO: Translate support:placeholders.description]",
+        "subject": "[TODO: Translate support:placeholders.subject]",
+        "tags": "[TODO: Translate support:placeholders.tags]"
+      },
+      "support:priorities": {
+        "high": "[TODO: Translate support:priorities.high]",
+        "low": "[TODO: Translate support:priorities.low]",
+        "medium": "[TODO: Translate support:priorities.medium]",
+        "urgent": "[TODO: Translate support:priorities.urgent]"
+      },
+      "support:related": {
+        "booking": "[TODO: Translate support:related.booking]"
+      },
+      "support:tickets": {
+        "actions": {
+          "archive": "[TODO: Translate support:tickets.actions.archive]",
+          "delete": "[TODO: Translate support:tickets.actions.delete]",
+          "edit": "[TODO: Translate support:tickets.actions.edit]",
+          "view": "[TODO: Translate support:tickets.actions.view]"
+        },
+        "category": {
+          "billing": "[TODO: Translate support:tickets.category.billing]",
+          "booking": "[TODO: Translate support:tickets.category.booking]",
+          "feedback": "[TODO: Translate support:tickets.category.feedback]",
+          "other": "[TODO: Translate support:tickets.category.other]",
+          "technical": "[TODO: Translate support:tickets.category.technical]"
+        },
+        "create_ticket": "[TODO: Translate support:tickets.create_ticket]",
+        "filters": {
+          "all_categories": "[TODO: Translate support:tickets.filters.all_categories]",
+          "all_priorities": "[TODO: Translate support:tickets.filters.all_priorities]",
+          "all_statuses": "[TODO: Translate support:tickets.filters.all_statuses]",
+          "category": "[TODO: Translate support:tickets.filters.category]",
+          "priority": "[TODO: Translate support:tickets.filters.priority]",
+          "status": "[TODO: Translate support:tickets.filters.status]"
+        },
+        "list_title": "[TODO: Translate support:tickets.list_title]",
+        "manage_all": "[TODO: Translate support:tickets.manage_all]",
+        "new_ticket": "[TODO: Translate support:tickets.new_ticket]",
+        "no_tickets": "[TODO: Translate support:tickets.no_tickets]",
+        "no_tickets_search": "[TODO: Translate support:tickets.no_tickets_search]",
+        "no_tickets_yet": "[TODO: Translate support:tickets.no_tickets_yet]",
+        "priority": {
+          "high": "[TODO: Translate support:tickets.priority.high]",
+          "low": "[TODO: Translate support:tickets.priority.low]",
+          "medium": "[TODO: Translate support:tickets.priority.medium]",
+          "urgent": "[TODO: Translate support:tickets.priority.urgent]"
+        },
+        "search_placeholder": "[TODO: Translate support:tickets.search_placeholder]",
+        "statistics": {
+          "closed": "[TODO: Translate support:tickets.statistics.closed]",
+          "in_progress": "[TODO: Translate support:tickets.statistics.in_progress]",
+          "open_tickets": "[TODO: Translate support:tickets.statistics.open_tickets]",
+          "resolved": "[TODO: Translate support:tickets.statistics.resolved]"
+        },
+        "status": {
+          "closed": "[TODO: Translate support:tickets.status.closed]",
+          "in_progress": "[TODO: Translate support:tickets.status.in_progress]",
+          "open": "[TODO: Translate support:tickets.status.open]",
+          "resolved": "[TODO: Translate support:tickets.status.resolved]",
+          "waiting_user": "[TODO: Translate support:tickets.status.waiting_user]"
+        },
+        "your_tickets": "[TODO: Translate support:tickets.your_tickets]"
+      },
+      "tabs": {
+        "facilities": "[TODO: Translate tabs.facilities]",
+        "faq": "[TODO: Translate tabs.faq]",
+        "general": "[TODO: Translate tabs.general]",
+        "rules": "[TODO: Translate tabs.rules]",
+        "zones": "[TODO: Translate tabs.zones]"
+      },
+      "type": "[TODO: Translate type]",
+      "user:activity": {
+        "no_activity": "[TODO: Translate user:activity.no_activity]",
+        "title": "[TODO: Translate user:activity.title]"
+      },
+      "user:bookings": {
+        "booking_cancelled": "[TODO: Translate user:bookings.booking_cancelled]",
+        "cancellation_policy": "[TODO: Translate user:bookings.cancellation_policy]",
+        "confirm_cancel": "[TODO: Translate user:bookings.confirm_cancel]",
+        "not_specified": "[TODO: Translate user:bookings.not_specified]"
+      },
+      "user:dashboard": {
+        "monthly_bookings": "[TODO: Translate user:dashboard.monthly_bookings]",
+        "my_bookings": "[TODO: Translate user:dashboard.my_bookings]",
+        "new_booking": "[TODO: Translate user:dashboard.new_booking]",
+        "no_upcoming_bookings": "[TODO: Translate user:dashboard.no_upcoming_bookings]",
+        "of": "[TODO: Translate user:dashboard.of]",
+        "perfect_day": "[TODO: Translate user:dashboard.perfect_day]",
+        "quick_actions": "[TODO: Translate user:dashboard.quick_actions]",
+        "recommended_facilities": "[TODO: Translate user:dashboard.recommended_facilities]",
+        "system_messages": "[TODO: Translate user:dashboard.system_messages]"
+      },
+      "user:quick_actions": {
+        "calendar": {
+          "description": "[TODO: Translate user:quick_actions.calendar.description]",
+          "title": "[TODO: Translate user:quick_actions.calendar.title]"
+        },
+        "favorites": {
+          "description": "[TODO: Translate user:quick_actions.favorites.description]",
+          "title": "[TODO: Translate user:quick_actions.favorites.title]"
+        },
+        "history": {
+          "description": "[TODO: Translate user:quick_actions.history.description]",
+          "title": "[TODO: Translate user:quick_actions.history.title]"
+        },
+        "invoices": {
+          "description": "[TODO: Translate user:quick_actions.invoices.description]",
+          "title": "[TODO: Translate user:quick_actions.invoices.title]"
+        }
+      },
+      "user:recommendations": {
+        "frequent_bookings": "[TODO: Translate user:recommendations.frequent_bookings]",
+        "new_in_area": "[TODO: Translate user:recommendations.new_in_area]",
+        "preferred_times": "[TODO: Translate user:recommendations.preferred_times]"
+      },
+      "user:settings": {
+        "account_actions": {
+          "change_email": "[TODO: Translate user:settings.account_actions.change_email]",
+          "change_phone": "[TODO: Translate user:settings.account_actions.change_phone]",
+          "delete_account": "[TODO: Translate user:settings.account_actions.delete_account]",
+          "title": "[TODO: Translate user:settings.account_actions.title]"
+        },
+        "language_region": {
+          "language": "[TODO: Translate user:settings.language_region.language]",
+          "languages": {
+            "en": "[TODO: Translate user:settings.language_region.languages.en]",
+            "no": "[TODO: Translate user:settings.language_region.languages.no]"
+          },
+          "timezone": "[TODO: Translate user:settings.language_region.timezone]",
+          "timezones": {
+            "copenhagen": "[TODO: Translate user:settings.language_region.timezones.copenhagen]",
+            "oslo": "[TODO: Translate user:settings.language_region.timezones.oslo]",
+            "stockholm": "[TODO: Translate user:settings.language_region.timezones.stockholm]",
+            "utc": "[TODO: Translate user:settings.language_region.timezones.utc]"
+          },
+          "title": "[TODO: Translate user:settings.language_region.title]"
+        },
+        "notifications": {
+          "booking_reminders": "[TODO: Translate user:settings.notifications.booking_reminders]",
+          "booking_reminders_desc": "[TODO: Translate user:settings.notifications.booking_reminders_desc]",
+          "email": "[TODO: Translate user:settings.notifications.email]",
+          "email_desc": "[TODO: Translate user:settings.notifications.email_desc]",
+          "marketing": "[TODO: Translate user:settings.notifications.marketing]",
+          "marketing_desc": "[TODO: Translate user:settings.notifications.marketing_desc]",
+          "push": "[TODO: Translate user:settings.notifications.push]",
+          "push_desc": "[TODO: Translate user:settings.notifications.push_desc]",
+          "sms": "[TODO: Translate user:settings.notifications.sms]",
+          "sms_desc": "[TODO: Translate user:settings.notifications.sms_desc]",
+          "title": "[TODO: Translate user:settings.notifications.title]"
+        },
+        "privacy_security": {
+          "change_password": "[TODO: Translate user:settings.privacy_security.change_password]",
+          "show_profile": "[TODO: Translate user:settings.privacy_security.show_profile]",
+          "show_profile_desc": "[TODO: Translate user:settings.privacy_security.show_profile_desc]",
+          "title": "[TODO: Translate user:settings.privacy_security.title]",
+          "two_factor": "[TODO: Translate user:settings.privacy_security.two_factor]",
+          "two_factor_desc": "[TODO: Translate user:settings.privacy_security.two_factor_desc]"
+        },
+        "save_settings": "[TODO: Translate user:settings.save_settings]",
+        "settings_save_failed": "[TODO: Translate user:settings.settings_save_failed]",
+        "settings_saved": "[TODO: Translate user:settings.settings_saved]",
+        "subtitle": "[TODO: Translate user:settings.subtitle]",
+        "title": "[TODO: Translate user:settings.title]"
+      },
+      "validation_failed": "[TODO: Translate validation_failed]",
+      "viewMode": "[TODO: Translate viewMode]"
+    },
+    "facility": {
+      "amenities": {
+        "available_title": "[TODO: Translate amenities.available_title]",
+        "equipment_title": "[TODO: Translate amenities.equipment_title]",
+        "no_amenities": "[TODO: Translate amenities.no_amenities]",
+        "suitable_for": "[TODO: Translate amenities.suitable_for]"
+      }
+    },
+    "support": {
+      "tickets": {
+        "actions": {
+          "archive": "[TODO: Translate tickets.actions.archive]",
+          "delete": "[TODO: Translate tickets.actions.delete]",
+          "edit": "[TODO: Translate tickets.actions.edit]",
+          "view": "[TODO: Translate tickets.actions.view]"
+        },
+        "category": {
+          "billing": "[TODO: Translate tickets.category.billing]",
+          "booking": "[TODO: Translate tickets.category.booking]",
+          "feedback": "[TODO: Translate tickets.category.feedback]",
+          "other": "[TODO: Translate tickets.category.other]",
+          "technical": "[TODO: Translate tickets.category.technical]"
+        },
+        "create_ticket": "[TODO: Translate tickets.create_ticket]",
+        "filters": {
+          "all_categories": "[TODO: Translate tickets.filters.all_categories]",
+          "all_priorities": "[TODO: Translate tickets.filters.all_priorities]",
+          "all_statuses": "[TODO: Translate tickets.filters.all_statuses]",
+          "category": "[TODO: Translate tickets.filters.category]",
+          "priority": "[TODO: Translate tickets.filters.priority]",
+          "status": "[TODO: Translate tickets.filters.status]"
+        },
+        "list_title": "[TODO: Translate tickets.list_title]",
+        "manage_all": "[TODO: Translate tickets.manage_all]",
+        "new_ticket": "[TODO: Translate tickets.new_ticket]",
+        "no_tickets": "[TODO: Translate tickets.no_tickets]",
+        "no_tickets_search": "[TODO: Translate tickets.no_tickets_search]",
+        "no_tickets_yet": "[TODO: Translate tickets.no_tickets_yet]",
+        "priority": {
+          "high": "[TODO: Translate tickets.priority.high]",
+          "low": "[TODO: Translate tickets.priority.low]",
+          "medium": "[TODO: Translate tickets.priority.medium]",
+          "urgent": "[TODO: Translate tickets.priority.urgent]"
+        },
+        "search_placeholder": "[TODO: Translate tickets.search_placeholder]",
+        "statistics": {
+          "closed": "[TODO: Translate tickets.statistics.closed]",
+          "in_progress": "[TODO: Translate tickets.statistics.in_progress]",
+          "open_tickets": "[TODO: Translate tickets.statistics.open_tickets]",
+          "resolved": "[TODO: Translate tickets.statistics.resolved]"
+        },
+        "status": {
+          "closed": "[TODO: Translate tickets.status.closed]",
+          "in_progress": "[TODO: Translate tickets.status.in_progress]",
+          "open": "[TODO: Translate tickets.status.open]",
+          "resolved": "[TODO: Translate tickets.status.resolved]",
+          "waiting_user": "[TODO: Translate tickets.status.waiting_user]"
+        },
+        "your_tickets": "[TODO: Translate tickets.your_tickets]"
+      }
+    },
+    "user": {
+      "settings": {
+        "account_actions": {
+          "change_email": "[TODO: Translate settings.account_actions.change_email]",
+          "change_phone": "[TODO: Translate settings.account_actions.change_phone]",
+          "delete_account": "[TODO: Translate settings.account_actions.delete_account]",
+          "title": "[TODO: Translate settings.account_actions.title]"
+        },
+        "language_region": {
+          "language": "[TODO: Translate settings.language_region.language]",
+          "languages": {
+            "en": "[TODO: Translate settings.language_region.languages.en]",
+            "no": "[TODO: Translate settings.language_region.languages.no]"
+          },
+          "timezone": "[TODO: Translate settings.language_region.timezone]",
+          "timezones": {
+            "copenhagen": "[TODO: Translate settings.language_region.timezones.copenhagen]",
+            "oslo": "[TODO: Translate settings.language_region.timezones.oslo]",
+            "stockholm": "[TODO: Translate settings.language_region.timezones.stockholm]",
+            "utc": "[TODO: Translate settings.language_region.timezones.utc]"
+          },
+          "title": "[TODO: Translate settings.language_region.title]"
+        },
+        "notifications": {
+          "booking_reminders": "[TODO: Translate settings.notifications.booking_reminders]",
+          "booking_reminders_desc": "[TODO: Translate settings.notifications.booking_reminders_desc]",
+          "email": "[TODO: Translate settings.notifications.email]",
+          "email_desc": "[TODO: Translate settings.notifications.email_desc]",
+          "marketing": "[TODO: Translate settings.notifications.marketing]",
+          "marketing_desc": "[TODO: Translate settings.notifications.marketing_desc]",
+          "push": "[TODO: Translate settings.notifications.push]",
+          "push_desc": "[TODO: Translate settings.notifications.push_desc]",
+          "sms": "[TODO: Translate settings.notifications.sms]",
+          "sms_desc": "[TODO: Translate settings.notifications.sms_desc]",
+          "title": "[TODO: Translate settings.notifications.title]"
+        },
+        "privacy_security": {
+          "change_password": "[TODO: Translate settings.privacy_security.change_password]",
+          "show_profile": "[TODO: Translate settings.privacy_security.show_profile]",
+          "show_profile_desc": "[TODO: Translate settings.privacy_security.show_profile_desc]",
+          "title": "[TODO: Translate settings.privacy_security.title]",
+          "two_factor": "[TODO: Translate settings.privacy_security.two_factor]",
+          "two_factor_desc": "[TODO: Translate settings.privacy_security.two_factor_desc]"
+        },
+        "save_settings": "[TODO: Translate settings.save_settings]",
+        "settings_save_failed": "[TODO: Translate settings.settings_save_failed]",
+        "settings_saved": "[TODO: Translate settings.settings_saved]",
+        "subtitle": "[TODO: Translate settings.subtitle]",
+        "title": "[TODO: Translate settings.title]"
+      }
+    }
+  }
+}

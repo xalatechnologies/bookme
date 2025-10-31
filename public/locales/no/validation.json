@@ -1,0 +1,110 @@
+{
+  "required": "Dette feltet er påkrevd",
+  "email": "Vennligst oppgi en gyldig e-postadresse",
+  "url": "Vennligst oppgi en gyldig URL",
+  "date": "Vennligst oppgi en gyldig dato",
+  "time": "Vennligst oppgi et gyldig tidspunkt",
+  "number": "Vennligst oppgi et gyldig tall",
+  "integer": "Vennligst oppgi et heltall",
+  "positive": "Verdien må være positiv",
+  "negative": "Verdien må være negativ",
+  "decimal": "Vennligst oppgi et desimaltall",
+  "phone": "Vennligst oppgi et gyldig telefonnummer",
+  "postalCode": "Vennligst oppgi et gyldig postnummer",
+  "creditCard": "Vennligst oppgi et gyldig kortnummer",
+  "pattern": "Verdien samsvarer ikke med det påkrevde mønsteret",
+  "alphanumeric": "Kun bokstaver og tall er tillatt",
+  "letters": "Kun bokstaver er tillatt",
+  "digits": "Kun tall er tillatt",
+  "string": {
+    "min": "Må være minst {{min}} tegn",
+    "max": "Må være maksimalt {{max}} tegn",
+    "length": "Må være nøyaktig {{length}} tegn",
+    "between": "Må være mellom {{min}} og {{max}} tegn",
+    "email": "Ugyldig e-postformat",
+    "url": "Ugyldig URL-format",
+    "contains": "Må inneholde \"{{value}}\"",
+    "notContains": "Kan ikke inneholde \"{{value}}\"",
+    "startsWith": "Må starte med \"{{value}}\"",
+    "endsWith": "Må slutte med \"{{value}}\""
+  },
+  "number": {
+    "min": "Må være minst {{min}}",
+    "max": "Må være maksimalt {{max}}",
+    "between": "Må være mellom {{min}} og {{max}}",
+    "equal": "Må være lik {{value}}",
+    "notEqual": "Kan ikke være lik {{value}}",
+    "integer": "Må være et heltall",
+    "positive": "Må være et positivt tall",
+    "negative": "Må være et negativt tall",
+    "multipleOf": "Må være delelig med {{value}}"
+  },
+  "array": {
+    "min": "Må ha minst {{min}} elementer",
+    "max": "Må ha maksimalt {{max}} elementer",
+    "length": "Må ha nøyaktig {{length}} elementer",
+    "between": "Må ha mellom {{min}} og {{max}} elementer",
+    "unique": "Må inneholde unike verdier",
+    "contains": "Må inneholde {{value}}"
+  },
+  "date": {
+    "min": "Må være etter {{min, date}}",
+    "max": "Må være før {{max, date}}",
+    "between": "Må være mellom {{min, date}} og {{max, date}}",
+    "future": "Må være en fremtidig dato",
+    "past": "Må være en tidligere dato",
+    "today": "Må være dagens dato",
+    "weekday": "Må være en ukedag",
+    "weekend": "Må være en helgedag"
+  },
+  "file": {
+    "required": "Vennligst velg en fil",
+    "size": "Filen må være mindre enn {{size}}",
+    "minSize": "Filen må være minst {{size}}",
+    "maxSize": "Filen må være maksimalt {{size}}",
+    "type": "Filtypen må være {{types}}",
+    "extension": "Filendelsen må være {{extensions}}",
+    "maxFiles": "Maksimalt {{count}} filer tillatt",
+    "minFiles": "Minst {{count}} filer påkrevd"
+  },
+  "password": {
+    "min": "Passord må være minst {{min}} tegn",
+    "max": "Passord må være maksimalt {{max}} tegn",
+    "uppercase": "Passord må inneholde minst én stor bokstav",
+    "lowercase": "Passord må inneholde minst én liten bokstav",
+    "number": "Passord må inneholde minst ett tall",
+    "special": "Passord må inneholde minst ett spesialtegn",
+    "match": "Passordene må være like",
+    "weak": "Passordet er for svakt",
+    "medium": "Passordet har middels styrke",
+    "strong": "Passordet er sterkt",
+    "veryStrong": "Passordet er veldig sterkt"
+  },
+  "comparison": {
+    "equal": "Må være lik {{field}}",
+    "notEqual": "Må være forskjellig fra {{field}}",
+    "greaterThan": "Må være større enn {{field}}",
+    "greaterThanOrEqual": "Må være større enn eller lik {{field}}",
+    "lessThan": "Må være mindre enn {{field}}",
+    "lessThanOrEqual": "Må være mindre enn eller lik {{field}}"
+  },
+  "custom": {
+    "organizationName": "Organisasjonsnavn må være mellom 2 og 100 tegn",
+    "facilityName": "Fasilitetnavn må være mellom 2 og 100 tegn",
+    "bookingTime": "Bookingstid må være i fremtiden",
+    "availabilityConflict": "Tiden er ikke tilgjengelig",
+    "capacityExceeded": "Kapasiteten er overskredet",
+    "minimumDuration": "Minimumsvarighet er {{duration}} minutter",
+    "maximumDuration": "Maksimumsvarighet er {{duration}} timer",
+    "invalidTimeSlot": "Ugyldig tidsperiode",
+    "outsideBusinessHours": "Utenfor åpningstider",
+    "duplicateEntry": "Denne verdien eksisterer allerede",
+    "invalidRole": "Ugyldig rolle valgt",
+    "insufficientPermissions": "Utilstrekkelige rettigheter"
+  },
+  "generic": {
+    "invalid": "Ugyldig verdi",
+    "required": "Påkrevd",
+    "optional": "Valgfritt"
+  }
+}

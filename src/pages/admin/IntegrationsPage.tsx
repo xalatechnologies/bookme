@@ -1,343 +1,651 @@
 "use client";
 
-import React, { useState } from "react";
-import { RequireRole } from "@/components/admin/guards/RequireRole";
-import SystemPageLayout from "@/components/admin/layout/SystemPageLayout";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { 
-  Link, 
-  Plus, 
-  Settings, 
-  CheckCircle, 
-  XCircle, 
+import React, { useState, useCallback } from "react";
+import {
+  Plug,
+  Plus,
+  Settings,
+  CheckCircle,
+  XCircle,
   AlertTriangle,
   Eye,
   EyeOff,
-  Copy,
   TestTube,
-  Clock,
-  ExternalLink
+  Trash2,
+  Filter,
+  RefreshCw,
+  ExternalLink,
+  Loader2,
 } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { useIntegrationsManagement } from "@/hooks/features/integrations/useIntegrationsManagement";
+import type {
+  IIntegrationWithProvider,
+  IntegrationCategory,
+  IConfigField,
+} from "@/hooks/features/integrations/useIntegrationsManagement";
 
-interface IIntegration {
-  readonly id: string;
-  readonly name: string;
-  readonly description: string;
-  readonly status: "active" | "inactive" | "not_configured";
-  readonly logo?: string;
-  readonly apiKey?: string;
-  readonly webhookUrl?: string;
-  readonly lastTest?: string;
-  readonly recentEvents: readonly {
-    readonly id: string;
-    readonly timestamp: string;
-    readonly event: string;
-    readonly status: "success" | "error" | "warning";
-  }[];
+interface IIntegrationsPageProps {
+  readonly children?: never;
 }
 
-const IntegrationsPage = (): JSX.Element => {
-  const [selectedIntegration, setSelectedIntegration] = useState<IIntegration | null>(null);
-  const [showNewIntegrationModal, setShowNewIntegrationModal] = useState<boolean>(false);
-  const [showApiKey, setShowApiKey] = useState<boolean>(false);
+const IntegrationsPage = (_props: IIntegrationsPageProps): JSX.Element => {
+  const {
+    integrations,
+    availableProviders,
+    categories,
+    selectedCategory,
+    isLoading,
+    stats,
+    isModalOpen,
+    isTestingConnection,
+    selectedIntegration,
+    testResult,
+    setSelectedCategory,
+    openModal,
+    closeModal,
+    configureIntegration,
+    updateIntegration,
+    deleteIntegration,
+    toggleIntegration,
+    testConnection,
+    refreshData,
+  } = useIntegrationsManagement();
 
-  // Mock data
-  const integrations: readonly IIntegration[] = [
-    {
-      id: "1",
-      name: "Microsoft Outlook",
-      description: "Synkroniser bookinger med Outlook kalender",
-      status: "active",
-      apiKey: "outlook_1234567890abcdef",
-      webhookUrl: "https://api.bookme.no/webhooks/outlook",
-      lastTest: "2024-01-15T10:30:00Z",
-      recentEvents: [
-        { id: "1", timestamp: "2024-01-15T10:30:00Z", event: "Calendar sync", status: "success" },
-        { id: "2", timestamp: "2024-01-15T09:15:00Z", event: "Webhook received", status: "success" },
-        { id: "3", timestamp: "2024-01-14T16:45:00Z", event: "Authentication", status: "success" }
-      ]
-    },
-    {
-      id: "2",
-      name: "BankID / ID-porten",
-      description: "Autentisering og identitetsverifisering",
-      status: "active",
-      apiKey: "bankid_abcdef1234567890",
-      webhookUrl: "https://api.bookme.no/webhooks/bankid",
-      lastTest: "2024-01-14T14:20:00Z",
-      recentEvents: [
-        { id: "4", timestamp: "2024-01-14T14:20:00Z", event: "User login", status: "success" },
-        { id: "5", timestamp: "2024-01-14T11:30:00Z", event: "Token refresh", status: "success" }
-      ]
-    },
-    {
-      id: "3",
-      name: "Altinn",
-      description: "Integrasjon med Altinn for offentlige tjenester",
-      status: "not_configured",
-      recentEvents: []
-    },
-    {
-      id: "4",
-      name: "SMS-varsling",
-      description: "Send SMS-varsler til brukere",
-      status: "active",
-      apiKey: "sms_9876543210fedcba",
-      webhookUrl: "https://api.bookme.no/webhooks/sms",
-      lastTest: "2024-01-13T08:00:00Z",
-      recentEvents: [
-        { id: "6", timestamp: "2024-01-13T08:00:00Z", event: "SMS sent", status: "success" },
-        { id: "7", timestamp: "2024-01-12T15:30:00Z", event: "SMS failed", status: "error" }
-      ]
-    }
-  ];
+  const [showSecrets, setShowSecrets] = useState<Record<string, boolean>>({});
+  const [configFormData, setConfigFormData] = useState<Record<string, unknown>>({});
+  const [isConfigMode, setIsConfigMode] = useState(false);
+  const [selectedProvider, setSelectedProvider] = useState<string | null>(null);
 
-  const getStatusBadge = (status: IIntegration["status"]): JSX.Element => {
-    const statusConfig = {
-      active: { 
-        label: "Aktivert", 
-        className: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300",
-        icon: CheckCircle
-      },
-      inactive: { 
-        label: "Deaktivert", 
-        className: "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300",
-        icon: XCircle
-      },
-      not_configured: { 
-        label: "Ikke konfigurert", 
-        className: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300",
-        icon: AlertTriangle
+  const handleOpenConfigureModal = useCallback(
+    (integration?: IIntegrationWithProvider) => {
+      if (integration) {
+        setConfigFormData(integration.config);
+        setIsConfigMode(false);
+      } else {
+        setConfigFormData({});
+        setIsConfigMode(true);
+        setSelectedProvider(null);
       }
+      openModal(integration);
+    },
+    [openModal]
+  );
+
+  const handleSaveConfiguration = useCallback(async () => {
+    try {
+      if (isConfigMode && selectedProvider) {
+        await configureIntegration(selectedProvider, configFormData);
+      } else if (selectedIntegration) {
+        await updateIntegration(selectedIntegration.id, configFormData);
+      }
+      setConfigFormData({});
+      setSelectedProvider(null);
+      closeModal();
+    } catch (error) {
+      console.error("Failed to save integration:", error);
+    }
+  }, [
+    isConfigMode,
+    selectedProvider,
+    selectedIntegration,
+    configFormData,
+    configureIntegration,
+    updateIntegration,
+    closeModal,
+  ]);
+
+  const handleDeleteIntegration = useCallback(
+    async (id: string) => {
+      if (window.confirm("Are you sure you want to delete this integration?")) {
+        try {
+          await deleteIntegration(id);
+        } catch (error) {
+          console.error("Failed to delete integration:", error);
+        }
+      }
+    },
+    [deleteIntegration]
+  );
+
+  const handleTestConnection = useCallback(
+    async (id: string) => {
+      try {
+        await testConnection(id);
+      } catch (error) {
+        console.error("Connection test failed:", error);
+      }
+    },
+    [testConnection]
+  );
+
+  const toggleSecretVisibility = useCallback((key: string) => {
+    setShowSecrets((prev) => ({ ...prev, [key]: !prev[key] }));
+  }, []);
+
+  const getStatusBadge = (status: IIntegrationWithProvider["status"]): JSX.Element => {
+    const statusConfig = {
+      connected: {
+        icon: CheckCircle,
+        className: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300",
+        label: "Connected",
+      },
+      disconnected: {
+        icon: XCircle,
+        className: "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300",
+        label: "Disconnected",
+      },
+      error: {
+        icon: AlertTriangle,
+        className: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300",
+        label: "Error",
+      },
+      testing: {
+        icon: Loader2,
+        className: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300",
+        label: "Testing",
+      },
     };
-    
+
     const config = statusConfig[status];
     const Icon = config.icon;
-    
+
     return (
       <Badge className={config.className}>
-        <Icon className="h-3 w-3 mr-1" />
+        <Icon className={`h-3 w-3 mr-1 ${status === "testing" ? "animate-spin" : ""}`} />
         {config.label}
       </Badge>
     );
   };
 
-  const getEventStatusIcon = (status: "success" | "error" | "warning"): React.ComponentType<{ className?: string }> => {
-    const icons = {
-      success: CheckCircle,
-      error: XCircle,
-      warning: AlertTriangle
+  const getCategoryIcon = (category: IntegrationCategory): string => {
+    const icons: Record<IntegrationCategory, string> = {
+      payment: "💳",
+      email: "✉️",
+      sms: "📨",
+      analytics: "📊",
+      storage: "☁️",
+      authentication: "🔐",
     };
-    return icons[status];
+    return icons[category] || "🔌";
   };
 
-  const getEventStatusColor = (status: "success" | "error" | "warning"): string => {
-    const colors = {
-      success: "text-green-600 dark:text-green-400",
-      error: "text-red-600 dark:text-red-400",
-      warning: "text-yellow-600 dark:text-yellow-400"
-    };
-    return colors[status];
+  const renderStatsCards = (): JSX.Element => {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Total Integrations</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.total}</p>
+              </div>
+              <Plug className="h-8 w-8 text-blue-600" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Connected</p>
+                <p className="text-2xl font-bold text-green-600">{stats.connected}</p>
+              </div>
+              <CheckCircle className="h-8 w-8 text-green-600" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Disconnected</p>
+                <p className="text-2xl font-bold text-gray-600">{stats.disconnected}</p>
+              </div>
+              <XCircle className="h-8 w-8 text-gray-600" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Errors</p>
+                <p className="text-2xl font-bold text-red-600">{stats.errors}</p>
+              </div>
+              <AlertTriangle className="h-8 w-8 text-red-600" />
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
   };
 
-  const formatTimestamp = (timestamp: string): string => {
-    return new Date(timestamp).toLocaleString('nb-NO');
-  };
-
-  const copyToClipboard = (text: string): void => {
-    try {
-      navigator.clipboard.writeText(text);
-      alert('Kopiert til utklippstavle!');
-    } catch (error) {
-      console.error('Failed to copy to clipboard:', error);
-      alert('Kunne ikke kopiere til utklippstavle. Prøv igjen.');
-    }
-  };
-
-  return (
-    <RequireRole roles={["org-admin", "system-admin"]}>
-      <SystemPageLayout
-        title="Integrasjoner"
-        description="Koble BookMe mot eksterne systemer og tjenester"
-        primaryAction={{
-          label: "Legg til integrasjon",
-          icon: Plus,
-          onClick: () => setShowNewIntegrationModal(true)
-        }}
-      >
-        {/* Active Integrations Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {integrations.map((integration) => (
-            <Card 
-              key={integration.id}
-              className="hover:shadow-md transition-shadow cursor-pointer"
-              onClick={() => setSelectedIntegration(integration)}
+  const renderCategoryFilter = (): JSX.Element => {
+    return (
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Filter className="h-5 w-5" />
+            Filter by Category
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center gap-3 flex-wrap">
+            <Button
+              variant={selectedCategory === null ? "default" : "outline"}
+              onClick={() => setSelectedCategory(null)}
+              className="flex items-center gap-2"
             >
-              <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center">
-                      <Link className="h-5 w-5 text-gray-600 dark:text-gray-400" />
-                    </div>
-                    <div>
-                      <CardTitle className="text-lg">{integration.name}</CardTitle>
-                      {getStatusBadge(integration.status)}
-                    </div>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                  {integration.description}
-                </p>
-                {integration.lastTest && (
-                  <div className="text-xs text-gray-500 dark:text-gray-500">
-                    Sist testet: {formatTimestamp(integration.lastTest)}
-                  </div>
+              All Categories
+            </Button>
+            {categories.map((category) => (
+              <Button
+                key={category}
+                variant={selectedCategory === category ? "default" : "outline"}
+                onClick={() => setSelectedCategory(category)}
+                className="flex items-center gap-2"
+              >
+                <span>{getCategoryIcon(category)}</span>
+                <span className="capitalize">{category}</span>
+                {stats.byCategory[category] && (
+                  <Badge variant="secondary" className="ml-1">
+                    {stats.byCategory[category]}
+                  </Badge>
                 )}
-                <Button 
-                  size="sm" 
-                  variant="outline" 
-                  className="w-full mt-3"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setSelectedIntegration(integration);
-                  }}
-                >
-                  <Settings className="h-4 w-4 mr-2" />
-                  Administrer
-                </Button>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+              </Button>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    );
+  };
 
-        {/* Integration Detail Panel */}
-        {selectedIntegration && (
-          <Card>
+  const renderIntegrationsList = (): JSX.Element => {
+    if (isLoading) {
+      return (
+        <div className="flex items-center justify-center h-64">
+          <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
+        </div>
+      );
+    }
+
+    if (integrations.length === 0) {
+      return (
+        <Card>
+          <CardContent className="p-12 text-center">
+            <Plug className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+            <p className="text-lg font-medium text-gray-900 dark:text-white mb-2">No integrations found</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
+              {selectedCategory ? "No integrations in this category" : "Start by adding your first integration"}
+            </p>
+            <Button onClick={() => handleOpenConfigureModal()} className="flex items-center gap-2 mx-auto">
+              <Plus className="h-4 w-4" />
+              Add Integration
+            </Button>
+          </CardContent>
+        </Card>
+      );
+    }
+
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {integrations.map((integration) => (
+          <Card key={integration.id} className="hover:shadow-lg transition-shadow">
             <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle className="flex items-center gap-2">
-                    <Link className="h-5 w-5" />
-                    {selectedIntegration.name}
-                  </CardTitle>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                    {selectedIntegration.description}
-                  </p>
+              <div className="flex items-start justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="text-4xl">{integration.provider.icon}</div>
+                  <div>
+                    <CardTitle className="text-lg">{integration.provider.name}</CardTitle>
+                    <p className="text-xs text-gray-500 capitalize">{integration.provider.category}</p>
+                  </div>
                 </div>
-                <Button variant="outline" onClick={() => setSelectedIntegration(null)}>
-                  Lukk
-                </Button>
+                <div className="flex flex-col items-end gap-2">
+                  {getStatusBadge(integration.status)}
+                  <Switch
+                    checked={integration.is_enabled}
+                    onCheckedChange={(checked) => toggleIntegration(integration.id, checked)}
+                    aria-label={`Toggle ${integration.provider.name}`}
+                  />
+                </div>
               </div>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {/* Configuration */}
-                <div className="space-y-4">
-                  <h4 className="font-medium text-gray-900 dark:text-white">Konfigurasjon</h4>
-                  
-                  {selectedIntegration.apiKey && (
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        API-nøkkel
-                      </label>
-                      <div className="flex items-center space-x-2">
-                        <Input
-                          type={showApiKey ? "text" : "password"}
-                          value={selectedIntegration.apiKey}
-                          readOnly
-                          className="font-mono text-sm"
-                        />
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => setShowApiKey(!showApiKey)}
-                        >
-                          {showApiKey ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => copyToClipboard(selectedIntegration.apiKey!)}
-                        >
-                          <Copy className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  )}
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">{integration.provider.description}</p>
 
-                  {selectedIntegration.webhookUrl && (
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        Webhook-endepunkt
-                      </label>
-                      <div className="flex items-center space-x-2">
-                        <Input
-                          value={selectedIntegration.webhookUrl}
-                          readOnly
-                          className="font-mono text-sm"
-                        />
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => copyToClipboard(selectedIntegration.webhookUrl!)}
-                        >
-                          <Copy className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  )}
+              {integration.last_tested_at && (
+                <p className="text-xs text-gray-500 mb-4">
+                  Last tested: {new Date(integration.last_tested_at).toLocaleString()}
+                </p>
+              )}
 
-                  <Button className="w-full">
-                    <TestTube className="h-4 w-4 mr-2" />
-                    Test tilkobling
-                  </Button>
+              {integration.last_error && (
+                <div className="flex items-start gap-2 p-3 bg-red-50 dark:bg-red-900/20 rounded-lg mb-4">
+                  <AlertTriangle className="h-4 w-4 text-red-600 flex-shrink-0 mt-0.5" />
+                  <p className="text-xs text-red-600 dark:text-red-400">{integration.last_error}</p>
                 </div>
+              )}
 
-                {/* Recent Events */}
-                <div className="space-y-4">
-                  <h4 className="font-medium text-gray-900 dark:text-white">Siste hendelser</h4>
-                  {selectedIntegration.recentEvents.length > 0 ? (
-                    <div className="space-y-2">
-                      {selectedIntegration.recentEvents.map((event) => {
-                        const StatusIcon = getEventStatusIcon(event.status);
-                        return (
-                          <div
-                            key={event.id}
-                            className="flex items-center justify-between p-3 border border-gray-200 dark:border-gray-700 rounded-lg"
-                          >
-                            <div className="flex items-center space-x-3">
-                              <StatusIcon className={`h-4 w-4 ${getEventStatusColor(event.status)}`} />
-                              <div>
-                                <p className="text-sm font-medium text-gray-900 dark:text-white">
-                                  {event.event}
-                                </p>
-                                <p className="text-xs text-gray-500 dark:text-gray-500">
-                                  {formatTimestamp(event.timestamp)}
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  ) : (
-                    <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-                      <Clock className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                      <p>Ingen hendelser registrert</p>
-                    </div>
-                  )}
-                </div>
+              <div className="flex items-center gap-2">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => handleOpenConfigureModal(integration)}
+                  className="flex-1 flex items-center gap-2"
+                  aria-label={`Configure ${integration.provider.name}`}
+                >
+                  <Settings className="h-4 w-4" />
+                  Configure
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => handleTestConnection(integration.id)}
+                  disabled={isTestingConnection}
+                  aria-label={`Test ${integration.provider.name} connection`}
+                >
+                  <TestTube className="h-4 w-4" />
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => handleDeleteIntegration(integration.id)}
+                  aria-label={`Delete ${integration.provider.name}`}
+                >
+                  <Trash2 className="h-4 w-4 text-red-600" />
+                </Button>
               </div>
             </CardContent>
           </Card>
-        )}
-      </SystemPageLayout>
-    </RequireRole>
+        ))}
+      </div>
+    );
+  };
+
+  const renderConfigField = (field: IConfigField): JSX.Element => {
+    const value = (configFormData[field.key] as string) || "";
+
+    if (field.type === "select" && field.options) {
+      return (
+        <div key={field.key} className="space-y-2">
+          <Label htmlFor={`config-${field.key}`}>
+            {field.label}
+            {field.validation?.required && <span className="text-red-600 ml-1">*</span>}
+          </Label>
+          {field.description && <p className="text-xs text-gray-500">{field.description}</p>}
+          <Select
+            value={value}
+            onValueChange={(val) => setConfigFormData({ ...configFormData, [field.key]: val })}
+          >
+            <SelectTrigger id={`config-${field.key}`}>
+              <SelectValue placeholder={field.placeholder} />
+            </SelectTrigger>
+            <SelectContent>
+              {field.options.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      );
+    }
+
+    if (field.type === "boolean") {
+      return (
+        <div key={field.key} className="space-y-2">
+          <div className="flex items-center justify-between p-4 border border-gray-300 dark:border-gray-700 rounded-lg">
+            <div>
+              <Label htmlFor={`config-${field.key}`}>{field.label}</Label>
+              {field.description && <p className="text-xs text-gray-500 mt-1">{field.description}</p>}
+            </div>
+            <Switch
+              id={`config-${field.key}`}
+              checked={Boolean(configFormData[field.key])}
+              onCheckedChange={(checked) => setConfigFormData({ ...configFormData, [field.key]: checked })}
+            />
+          </div>
+        </div>
+      );
+    }
+
+    const isSecret = field.type === "password";
+
+    return (
+      <div key={field.key} className="space-y-2">
+        <Label htmlFor={`config-${field.key}`}>
+          {field.label}
+          {field.validation?.required && <span className="text-red-600 ml-1">*</span>}
+        </Label>
+        {field.description && <p className="text-xs text-gray-500">{field.description}</p>}
+        <div className="relative">
+          <Input
+            id={`config-${field.key}`}
+            type={isSecret && !showSecrets[field.key] ? "password" : "text"}
+            placeholder={field.placeholder}
+            value={value}
+            onChange={(e) => setConfigFormData({ ...configFormData, [field.key]: e.target.value })}
+            required={field.validation?.required}
+            aria-required={field.validation?.required}
+          />
+          {isSecret && (
+            <button
+              type="button"
+              onClick={() => toggleSecretVisibility(field.key)}
+              className="absolute right-3 top-1/2 -translate-y-1/2"
+              aria-label={showSecrets[field.key] ? "Hide value" : "Show value"}
+            >
+              {showSecrets[field.key] ? <EyeOff className="h-4 w-4 text-gray-500" /> : <Eye className="h-4 w-4 text-gray-500" />}
+            </button>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  const renderConfigModal = (): JSX.Element => {
+    if (!isModalOpen) return <></>;
+
+    const provider = isConfigMode && selectedProvider
+      ? availableProviders.find((p) => p.id === selectedProvider)
+      : selectedIntegration?.provider;
+
+    if (!provider) {
+      return (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
+          role="dialog"
+          aria-labelledby="provider-select-title"
+          aria-modal="true"
+        >
+          <Card className="w-full max-w-2xl">
+            <CardHeader>
+              <CardTitle id="provider-select-title">Select Integration Provider</CardTitle>
+              <CardDescription>Choose a provider to configure</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[60vh] overflow-y-auto">
+                {availableProviders.map((prov) => (
+                  <button
+                    key={prov.id}
+                    onClick={() => setSelectedProvider(prov.id)}
+                    className="p-4 border-2 border-gray-200 dark:border-gray-700 rounded-lg hover:border-blue-500 transition-colors text-left"
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className="text-3xl">{prov.icon}</div>
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-gray-900 dark:text-white">{prov.name}</h3>
+                        <p className="text-xs text-gray-500 capitalize mb-2">{prov.category}</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">{prov.description}</p>
+                        {prov.is_popular && (
+                          <Badge className="mt-2" variant="secondary">
+                            Popular
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+              <div className="mt-6">
+                <Button variant="outline" onClick={closeModal}>
+                  Cancel
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      );
+    }
+
+    return (
+      <div
+        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
+        role="dialog"
+        aria-labelledby="config-modal-title"
+        aria-modal="true"
+      >
+        <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="text-3xl">{provider.icon}</div>
+                <div>
+                  <CardTitle id="config-modal-title">{provider.name}</CardTitle>
+                  <p className="text-sm text-gray-500">{provider.description}</p>
+                </div>
+              </div>
+              <a
+                href={provider.documentation_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1 text-sm text-blue-600 hover:underline"
+              >
+                Docs
+                <ExternalLink className="h-3 w-3" />
+              </a>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {testResult && (
+              <div
+                className={`p-4 rounded-lg ${
+                  testResult.success
+                    ? "bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800"
+                    : "bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800"
+                }`}
+              >
+                <div className="flex items-start gap-2">
+                  {testResult.success ? (
+                    <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0" />
+                  ) : (
+                    <XCircle className="h-5 w-5 text-red-600 flex-shrink-0" />
+                  )}
+                  <div className="flex-1">
+                    <p className="font-medium text-sm">{testResult.message}</p>
+                    {testResult.details && (
+                      <pre className="text-xs mt-2 text-gray-600">{JSON.stringify(testResult.details, null, 2)}</pre>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div className="space-y-4">
+              <h3 className="font-semibold text-gray-900 dark:text-white">Required Configuration</h3>
+              {provider.required_fields.map(renderConfigField)}
+            </div>
+
+            {provider.optional_fields.length > 0 && (
+              <div className="space-y-4">
+                <h3 className="font-semibold text-gray-900 dark:text-white">Optional Configuration</h3>
+                {provider.optional_fields.map(renderConfigField)}
+              </div>
+            )}
+
+            <div className="flex items-center gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+              <Button onClick={handleSaveConfiguration} className="flex items-center gap-2">
+                <CheckCircle className="h-4 w-4" />
+                Save Configuration
+              </Button>
+              {!isConfigMode && selectedIntegration && (
+                <Button
+                  variant="outline"
+                  onClick={() => handleTestConnection(selectedIntegration.id)}
+                  disabled={isTestingConnection}
+                  className="flex items-center gap-2"
+                >
+                  {isTestingConnection ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Testing...
+                    </>
+                  ) : (
+                    <>
+                      <TestTube className="h-4 w-4" />
+                      Test Connection
+                    </>
+                  )}
+                </Button>
+              )}
+              <Button variant="outline" onClick={closeModal}>
+                Cancel
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
+            <Plug className="h-8 w-8 text-blue-600" />
+            Integrations Management
+          </h1>
+          <p className="text-gray-600 dark:text-gray-400 mt-1">
+            Connect external services and manage integration configurations
+          </p>
+        </div>
+        <div className="flex items-center gap-3">
+          <Button variant="outline" onClick={refreshData} className="flex items-center gap-2">
+            <RefreshCw className="h-4 w-4" />
+            Refresh
+          </Button>
+          <Button onClick={() => handleOpenConfigureModal()} className="flex items-center gap-2">
+            <Plus className="h-4 w-4" />
+            Add Integration
+          </Button>
+        </div>
+      </div>
+
+      {/* Statistics */}
+      {renderStatsCards()}
+
+      {/* Category Filter */}
+      {renderCategoryFilter()}
+
+      {/* Integrations List */}
+      {renderIntegrationsList()}
+
+      {/* Configuration Modal */}
+      {renderConfigModal()}
+    </div>
   );
 };
 

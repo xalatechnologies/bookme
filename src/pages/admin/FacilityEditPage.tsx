@@ -3,7 +3,9 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Save, X, ArrowLeft, Eye, MapPin, Users, Clock, Phone, Mail, Plus, Trash2, Edit3, Check, X as XIcon, Settings } from "lucide-react";
-import { useFacilityStore, type IFacility } from "@/stores/facilityStore";
+import type { Database } from "@/types/database";
+import { useFacility as useSupabaseFacility, useUpdateFacility, useCreateFacility } from "@/services/supabase/facilities.service";
+import { useOrganizationId } from "@/hooks/useOrganizationId";
 import { useFieldConfigStore } from "@/stores/fieldConfigStore";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -11,10 +13,12 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
-import { FieldConfigModal } from "@/components/admin/facilities/FieldConfigModal";
-import { ReadOnlyCalendar } from "@/components/calendar/ReadOnlyCalendar";
+import { FieldConfigModal } from "@/components/features/facilities/components/FacilityEditForm/FieldConfigModal";
+import { ReadOnlyCalendar } from "@/components/features/calendar/components/FacilityCalendar/ReadOnlyCalendar";
 import { Zone } from "@/types/booking";
 import { useZoneStore } from "@/stores/zoneStore";
+
+type Facility = Database['public']['Tables']['facilities']['Row'];
 
 interface IFacilityEditPageProps {
   readonly children?: never;
@@ -52,38 +56,40 @@ interface IBookingPolicies {
   readonly advanceBooking: number;
 }
 
-// Use the same interface as the store
-type IEditedFacility = IFacility;
+// Use Supabase facility type
+type IEditedFacility = Facility;
 
 const FacilityEditPage = (_props: IFacilityEditPageProps): JSX.Element => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const orgId = useOrganizationId();
   const [isEditing, setIsEditing] = useState<boolean>(true);
-  const [editedFacility, setEditedFacility] = useState<IEditedFacility | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [editedFacility, setEditedFacility] = useState<Partial<Facility> | null>(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState<boolean>(false);
   const [showSaveMessage, setShowSaveMessage] = useState<boolean>(false);
   const [showFieldConfigModal, setShowFieldConfigModal] = useState<boolean>(false);
   const [isGeocoding, setIsGeocoding] = useState<boolean>(false);
   const [showManualCoords, setShowManualCoords] = useState<boolean>(false);
-  
+
+  // Use Supabase hooks
+  const { facility: supabaseFacility, loading: isLoading, error } = useSupabaseFacility(id || "");
+  const updateFacilityMutation = useUpdateFacility();
+  const createFacilityMutation = useCreateFacility();
+
   // Use field config store
-  const { 
-    getFieldConfigsForFacility, 
-    updateFieldConfig, 
-    toggleFieldVisibility, 
+  const {
+    getFieldConfigsForFacility,
+    updateFieldConfig,
+    toggleFieldVisibility,
     updateFieldValue,
     addCustomField,
     removeField
   } = useFieldConfigStore();
-  
+
   const fieldConfigs = getFieldConfigsForFacility(id || "");
-  
+
   // Mock current admin user - in real app this would come from auth context
   const currentAdminUser = "Admin User";
-  
-  // Use the facility store
-  const { getFacilityById, updateFacility, addFacility } = useFacilityStore();
   
   // Helper function to generate timestamp
   const generateTimestamp = (): string => {
@@ -116,79 +122,50 @@ const FacilityEditPage = (_props: IFacilityEditPageProps): JSX.Element => {
     advanceBooking: 30
   });
 
-  // Find facility by ID from store or create new facility
+  // Load facility from Supabase or create new facility
   useEffect(() => {
     if (id === "new" || window.location.pathname.includes('/facilities/new')) {
       // Create new facility template
       const newFacility = createNewFacilityTemplate();
       setEditedFacility(newFacility);
-      setIsLoading(false);
-    } else {
-      const facility = getFacilityById(id || "");
-      if (facility) {
-        setEditedFacility(facility);
-        
-        // Load zones for this facility from store only
-        // No dummy data loading - zones should be created manually
-        
-        // Update field configs with facility values
-        fieldConfigs.forEach(field => {
-          let value = field.value;
-          if (field.key === 'capacity') value = facility.capacity || 0;
-          if (field.key === 'area') value = facility.area || '';
-          if (field.key === 'pricePerHour') value = facility.pricePerHour || 0;
-          if (field.key === 'rating') value = facility.rating || 0;
-          if (field.key === 'reviewCount') value = facility.reviewCount || 0;
-          
-          if (value !== field.value) {
-            updateFieldValue(id || "", field.id, value);
-          }
-        });
-        setIsLoading(false);
-      } else {
-        setIsLoading(false);
-      }
+    } else if (supabaseFacility) {
+      setEditedFacility(supabaseFacility);
+
+      // Update field configs with facility values
+      fieldConfigs.forEach(field => {
+        let value = field.value;
+        if (field.key === 'capacity') value = supabaseFacility.capacity || 0;
+        if (field.key === 'area') value = supabaseFacility.area || '';
+        if (field.key === 'rating') value = supabaseFacility.rating || 0;
+        if (field.key === 'reviewCount') value = supabaseFacility.review_count || 0;
+
+        if (value !== field.value) {
+          updateFieldValue(id || "", field.id, value);
+        }
+      });
     }
-  }, [id, getFacilityById, fieldConfigs, updateFieldValue, currentAdminUser]);
+  }, [id, supabaseFacility, fieldConfigs, updateFieldValue]);
 
   // Helper function to create new facility template
-  const createNewFacilityTemplate = (): IEditedFacility => ({
-    id: "new",
+  const createNewFacilityTemplate = (): Partial<Facility> => ({
     name: "",
     description: "",
-    type: "Møterom",
-    location: "",
+    facility_type: "conference",
     address: "",
+    city: "Drammen",
+    postal_code: "",
+    country: "NO",
     capacity: 0,
-    pricePerHour: 0,
     amenities: [],
     images: [],
-    availability: {
-      monday: { start: "08:00", end: "22:00" },
-      tuesday: { start: "08:00", end: "22:00" },
-      wednesday: { start: "08:00", end: "22:00" },
-      thursday: { start: "08:00", end: "22:00" },
-      friday: { start: "08:00", end: "22:00" },
-      saturday: { start: "09:00", end: "20:00" },
-      sunday: { start: "10:00", end: "18:00" }
-    },
-    coordinates: { lat: 59.744, lng: 10.204 },
+    location: { lat: 59.744, lng: 10.204 } as any,
     rating: 0,
-    reviewCount: 0,
-    area: "",
-    accessibilityFeatures: [],
+    review_count: 0,
+    area_description: "",
     status: "draft",
-    owner: currentAdminUser,
-    lastUpdated: generateTimestamp(),
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    updatedBy: currentAdminUser,
-    rules: "",
-    contactEmail: "",
-    openingHours: "",
-    openingHoursStart: "08:00",
-    openingHoursEnd: "22:00",
-    emergencyContact: ""
+    org_id: orgId,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
   });
 
 
@@ -233,86 +210,42 @@ const FacilityEditPage = (_props: IFacilityEditPageProps): JSX.Element => {
     );
   }
 
-  const handleSave = (): void => {
+  const handleSave = async (): Promise<void> => {
     if (!editedFacility) {
       return;
     }
-    
-    if (id === "new" || window.location.pathname.includes('/facilities/new')) {
-      // Create new facility
-      try {
-        addFacility({
-          name: editedFacility.name,
-          description: editedFacility.description,
-          type: editedFacility.type,
-          location: editedFacility.location,
-          address: editedFacility.address,
-          capacity: editedFacility.capacity,
-          pricePerHour: editedFacility.pricePerHour,
-          amenities: editedFacility.amenities,
-          images: editedFacility.images,
-          availability: editedFacility.availability,
-          coordinates: editedFacility.coordinates,
-          rating: editedFacility.rating,
-          reviewCount: editedFacility.reviewCount,
-          area: editedFacility.area,
-          accessibilityFeatures: editedFacility.accessibilityFeatures,
-          status: editedFacility.status,
-          owner: editedFacility.owner,
-          lastUpdated: generateTimestamp(),
-          updatedBy: currentAdminUser,
-          rules: editedFacility.rules,
-          contactEmail: editedFacility.contactEmail,
-          openingHours: editedFacility.openingHours,
-          openingHoursStart: editedFacility.openingHoursStart,
-          openingHoursEnd: editedFacility.openingHoursEnd,
-          emergencyContact: editedFacility.emergencyContact
+
+    try {
+      if (id === "new" || window.location.pathname.includes('/facilities/new')) {
+        // Create new facility with Supabase
+        const newFacility = await createFacilityMutation.mutateAsync(editedFacility as any);
+        setHasUnsavedChanges(false);
+        setShowSaveMessage(true);
+        setTimeout((): void => setShowSaveMessage(false), 3000);
+        // Navigate to the new facility's edit page with its ID
+        navigate(`/admin/facilities/${newFacility.id}`);
+      } else {
+        // Update existing facility with Supabase
+        await updateFacilityMutation.mutateAsync({
+          id: id!,
+          data: editedFacility as any
         });
-        
-        navigate('/admin/facilities');
-      } catch (error) {
-        // Handle error silently or show user-friendly message
-        return;
+        setHasUnsavedChanges(false);
+        setShowSaveMessage(true);
+        setTimeout((): void => setShowSaveMessage(false), 3000);
       }
-      
-      // Navigate to the new facility's edit page
-      navigate("/admin/facilities");
-    } else {
-      // Update existing facility
-      updateFacility(editedFacility.id, {
-        name: editedFacility.name,
-        description: editedFacility.description,
-        type: editedFacility.type,
-        address: editedFacility.address,
-        capacity: editedFacility.capacity,
-        amenities: editedFacility.amenities,
-        images: editedFacility.images,
-        coordinates: editedFacility.coordinates,
-        status: editedFacility.status,
-        owner: editedFacility.owner,
-        lastUpdated: generateTimestamp(),
-        updatedBy: currentAdminUser,
-        rules: editedFacility.rules,
-        contactEmail: editedFacility.contactEmail,
-        openingHours: editedFacility.openingHours,
-        openingHoursStart: editedFacility.openingHoursStart,
-        openingHoursEnd: editedFacility.openingHoursEnd,
-        emergencyContact: editedFacility.emergencyContact
-      });
+    } catch (error) {
+      console.error('Failed to save facility:', error);
+      // TODO: Show error message to user
     }
-    
-    setHasUnsavedChanges(false);
-    setShowSaveMessage(true);
-    setTimeout((): void => setShowSaveMessage(false), 3000);
   };
 
   const handleCancel = (): void => {
     if (hasUnsavedChanges) {
       if (window.confirm("Du har ulagrede endringer. Er du sikker på at du vil avbryte?")) {
-        // Reset to original data from store
-        const originalFacility = getFacilityById(id || "");
-        if (originalFacility) {
-          setEditedFacility(originalFacility);
+        // Reset to original data from Supabase
+        if (supabaseFacility) {
+          setEditedFacility(supabaseFacility);
         }
         setHasUnsavedChanges(false);
       }
@@ -344,7 +277,7 @@ const FacilityEditPage = (_props: IFacilityEditPageProps): JSX.Element => {
       if (field.key === 'area') return editedFacility?.area || '';
       if (field.key === 'pricePerHour') return editedFacility?.pricePerHour || 0;
       if (field.key === 'rating') return editedFacility?.rating || 0;
-      if (field.key === 'reviewCount') return editedFacility?.reviewCount || 0;
+      if (field.key === 'reviewCount') return editedFacility?.review_count || 0;
       return field.value;
     };
 
@@ -358,7 +291,7 @@ const FacilityEditPage = (_props: IFacilityEditPageProps): JSX.Element => {
       } else if (field.key === 'rating') {
         handleInputChange('rating', typeof value === 'number' ? value : parseFloat(String(value)) || 0);
       } else if (field.key === 'reviewCount') {
-        handleInputChange('reviewCount', typeof value === 'number' ? value : parseInt(String(value)) || 0);
+        handleInputChange('review_count', typeof value === 'number' ? value : parseInt(String(value)) || 0);
       } else {
         // For custom fields, update the field config in store
         updateFieldValue(id || "", field.id, value);
@@ -838,8 +771,8 @@ const FacilityEditPage = (_props: IFacilityEditPageProps): JSX.Element => {
           <div className="mb-4">
             <Badge className="bg-blue-600 text-white font-medium px-3 py-1">
               <Input
-                value={editedFacility.type}
-                onChange={(e) => handleInputChange("type", e.target.value)}
+                value={editedFacility.facility_type}
+                onChange={(e) => handleInputChange("facility_type", e.target.value)}
                 className="bg-transparent border-none text-white p-0 h-auto text-sm font-medium"
                 onClick={(e) => e.stopPropagation()}
               />
@@ -1347,31 +1280,22 @@ const FacilityEditPage = (_props: IFacilityEditPageProps): JSX.Element => {
                     </div>
                     
                     <div>
-                      <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Eier</label>
-                      <Input
-                        value={editedFacility.owner}
-                        onChange={(e) => handleInputChange("owner", e.target.value)}
-                        className="mt-1 text-sm"
-                      />
+                      <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Opprettet</label>
+                      <div className="mt-1 px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-sm text-gray-900 dark:text-white">
+                        {editedFacility.created_at ? new Date(editedFacility.created_at).toLocaleString('no-NO') : 'Ikke satt'}
+                      </div>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                        Når lokalet ble opprettet
+                      </p>
                     </div>
-                    
+
                     <div>
                       <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Sist oppdatert</label>
                       <div className="mt-1 px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-sm text-gray-900 dark:text-white">
-                        {editedFacility.lastUpdated}
+                        {editedFacility.updated_at ? new Date(editedFacility.updated_at).toLocaleString('no-NO') : 'Ikke oppdatert'}
                       </div>
                       <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                         Oppdateres automatisk ved endringer
-                      </p>
-                    </div>
-                    
-                    <div>
-                      <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Oppdatert av</label>
-                      <div className="mt-1 px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-sm text-gray-900 dark:text-white">
-                        {editedFacility.updatedBy || "Ikke oppdatert"}
-                      </div>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                        Sist endret av admin-bruker
                       </p>
                     </div>
                   </div>

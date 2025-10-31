@@ -1,0 +1,24 @@
+{
+  "roles": {
+    "platform_admin": "Plattformadministrator",
+    "user": "Bruker",
+    "owner": "Eier",
+    "admin": "Administrator",
+    "case_handler": "Saksbehandler",
+    "editor": "Redaktør",
+    "read_only": "Lesetilgang",
+    "customer": "Kunde",
+    "staff_deprecated": "Ansatt (utgått)"
+  },
+  "descriptions": {
+    "platform_admin": "Full systemtilgang på tvers av alle organisasjoner. Kan administrere plattforminnstillinger, brukere og all organisasjonsdata.",
+    "user": "Standard plattformbruker med organisasjonsspesifikke tillatelser.",
+    "owner": "Full kontroll over organisasjonen. Kan administrere alle innstillinger, medlemmer, fasiliteter, bookinger og fakturering.",
+    "admin": "Administrativ tilgang til organisasjonen. Kan administrere medlemmer, fasiliteter, bookinger og de fleste innstillinger.",
+    "case_handler": "Hovedrolle for drift og saksbehandling. Kan behandle bookinger, kundeforespørsler og operative oppgaver. Kan godkjenne/avvise bookinger og administrere tilgjengelighet.",
+    "editor": "Innholdsadministrasjonsrolle. Kan redigere fasilitetsbeskrivelser, laste opp bilder, administrere tags og kategorier. Kan ikke behandle bookinger eller administrere brukere.",
+    "read_only": "Kun lesetilgang til fasiliteter, bookinger og rapporter. Kan ikke gjøre endringer.",
+    "customer": "Standard kundetilgang. Kan se fasiliteter, opprette bookinger og administrere egen profil.",
+    "staff_deprecated": "UTGÅTT - Denne rollen er erstattet av saksbehandler. Eksisterende ansatte vil bli migrert automatisk."
+  }
+}

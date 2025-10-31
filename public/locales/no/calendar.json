@@ -1,0 +1,66 @@
+{
+  "navigation": {
+    "previous_week": "Forrige uke",
+    "next_week": "Neste uke",
+    "previous_month": "Forrige måned",
+    "next_month": "Neste måned",
+    "today": "I dag",
+    "go_to_date": "Gå til dato"
+  },
+  "availability": {
+    "available": "Tilgjengelig",
+    "booked": "Booket",
+    "selected": "Valgt",
+    "unavailable": "Ikke tilgjengelig",
+    "conflict": "Konflikt",
+    "pending": "Venter",
+    "legend": "Forklaring"
+  },
+  "time_slots": {
+    "select": "Velg tidspunkt",
+    "selected": "Valgte tidspunkter",
+    "no_slots": "Ingen ledige tider",
+    "loading": "Laster kalender..."
+  },
+  "slot_status": {
+    "available": "Ledig - klikk eller dra for å velge",
+    "busy": "Opptatt",
+    "unavailable": "Ikke tilgjengelig",
+    "selected": "Valgt - klikk for å fjerne",
+    "conflict": "Har konflikt"
+  },
+  "errors": {
+    "loading_calendar": "Feil ved lasting av kalender",
+    "save_failed": "En feil oppstod ved lagring",
+    "add_to_cart_failed": "Kunne ikke legge til i kurv",
+    "complete_booking_failed": "Kunne ikke fullføre booking"
+  },
+  "toast": {
+    "booking_added_to_cart": "Booking lagt til i kurven!",
+    "slot_selected": "Tidspunkt valgt",
+    "slot_removed": "Tidspunkt fjernet"
+  },
+  "loading": {
+    "calendar": "Laster kalender...",
+    "zones": "Laster soner..."
+  },
+  "messages": {
+    "no_zones_available": "Ingen soner tilgjengelig for denne fasiliteten.",
+    "error_prefix": "Feil"
+  },
+  "availability_legend": {
+    "title": "Forklaring",
+    "available_label": "Ledig",
+    "available_description": "Klikk for å velge",
+    "busy_label": "Opptatt",
+    "busy_description": "Allerede booket",
+    "selected_label": "Valgt",
+    "selected_description": "Ditt valg",
+    "unavailable_label": "Ikke tilgjengelig",
+    "unavailable_description": "Ikke tilgjengelig",
+    "conflict_label": "Konflikt",
+    "conflict_description": "Bookingkonflikt",
+    "click_available": "Klikk på ledige tidspunkter for å velge",
+    "drag_select": "Dra for å velge flere tidspunkter"
+  }
+}

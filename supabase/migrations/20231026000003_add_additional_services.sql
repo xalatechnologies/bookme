@@ -10,7 +10,7 @@ exception when duplicate_object then null; end $$;
 
 -- Additional services catalog
 create table additional_services (
-  id uuid primary key default uuid_generate_v4(),
+  id uuid primary key default gen_random_uuid(),
   org_id uuid not null references organizations(id) on delete cascade,
   name text not null,
   description text,
@@ -56,7 +56,7 @@ comment on column facility_additional_services.override_price_cents is 'Override
 
 -- Booking services (what was actually ordered with a booking)
 create table booking_additional_services (
-  id uuid primary key default uuid_generate_v4(),
+  id uuid primary key default gen_random_uuid(),
   booking_id uuid not null references bookings(id) on delete cascade,
   service_id uuid not null references additional_services(id) on delete restrict,
   quantity int not null default 1 check (quantity > 0),

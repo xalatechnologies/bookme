@@ -1,0 +1,156 @@
+{
+  "roles": {
+    "platform_admin": {
+      "label": "Plattformadministrator",
+      "description": "Full systemtilgang på tvers av alle organisasjoner. Kan administrere plattforminnstillinger, brukere og all organisasjonsdata.",
+      "shortLabel": "Plattform Admin"
+    },
+    "user": {
+      "label": "Bruker",
+      "description": "Standard plattformbruker med organisasjonsspesifikke tillatelser.",
+      "shortLabel": "Bruker"
+    },
+    "owner": {
+      "label": "Eier",
+      "description": "Full kontroll over organisasjonen. Kan administrere alle innstillinger, medlemmer, fasiliteter, bookinger og fakturering.",
+      "shortLabel": "Eier"
+    },
+    "admin": {
+      "label": "Administrator",
+      "description": "Administrativ tilgang til organisasjonen. Kan administrere medlemmer, fasiliteter, bookinger og de fleste innstillinger.",
+      "shortLabel": "Admin"
+    },
+    "saksbehandler": {
+      "label": "Saksbehandler",
+      "description": "Saksbehandler med tillatelser til å administrere bookinger, kundeforespørsler og operative oppgaver.",
+      "shortLabel": "Saksbehandler"
+    },
+    "redaktør": {
+      "label": "Redaktør",
+      "description": "Redaktør med tillatelser til å administrere innhold, fasiliteter og tilgjengelighet. Kan ikke få tilgang til sensitive data eller fakturering.",
+      "shortLabel": "Redaktør"
+    },
+    "staff": {
+      "label": "Ansatt",
+      "description": "Operativ tilgang til å administrere fasiliteter, bookinger og tilgjengelighet. Kan ikke endre organisasjonsinnstillinger eller fakturering.",
+      "shortLabel": "Ansatt"
+    },
+    "lesetilgang": {
+      "label": "Lesetilgang",
+      "description": "Lesetilgang til å se fasiliteter, bookinger og rapporter. Kan ikke gjøre endringer.",
+      "shortLabel": "Lesetilgang"
+    },
+    "customer": {
+      "label": "Kunde",
+      "description": "Standard kundetilgang. Kan se fasiliteter, opprette bookinger og administrere egen profil.",
+      "shortLabel": "Kunde"
+    }
+  },
+  "permissions": {
+    "resources": {
+      "facilities": "Fasiliteter",
+      "bookings": "Bookinger",
+      "availability_rules": "Tilgjengelighetsregler",
+      "blackouts": "Sperrede perioder",
+      "pricing_rules": "Prisregler",
+      "zones": "Soner",
+      "reviews": "Anmeldelser",
+      "memberships": "Medlemskap",
+      "organizations": "Organisasjoner",
+      "profiles": "Profiler",
+      "favorites": "Favoritter",
+      "notifications": "Varsler",
+      "analytics": "Analyser",
+      "billing": "Fakturering",
+      "settings": "Innstillinger",
+      "audit_logs": "Revisjonslogger",
+      "support_tickets": "Supportsaker",
+      "additional_services": "Tilleggstjenester",
+      "reports": "Rapporter"
+    },
+    "actions": {
+      "create": "Opprette",
+      "read": "Lese",
+      "update": "Oppdatere",
+      "delete": "Slette",
+      "manage": "Administrere",
+      "export": "Eksportere"
+    },
+    "label": "{{action}} {{resource}}",
+    "messages": {
+      "granted": "Tilgang innvilget",
+      "denied": "Tilgang nektet",
+      "insufficientRole": "Du har ikke tilstrekkelige rettigheter for denne handlingen",
+      "requiresApproval": "Denne handlingen krever godkjenning fra {{role}}",
+      "elevated": "Forhøyede rettigheter kreves",
+      "ownerOnly": "Kun eier har tilgang til denne funksjonen"
+    }
+  },
+  "features": {
+    "analytics": {
+      "name": "Analyser",
+      "description": "Se detaljerte rapporter og statistikk for organisasjonen",
+      "category": "analytics"
+    },
+    "billing": {
+      "name": "Fakturering",
+      "description": "Administrere fakturaer, betalinger og abonnementer",
+      "category": "billing"
+    },
+    "advancedBooking": {
+      "name": "Avansert booking",
+      "description": "Tilgang til avanserte bookingfunksjoner som gjentakende bookinger og bulkreservasjoner",
+      "category": "advanced"
+    },
+    "bulkOperations": {
+      "name": "Masseoperasjoner",
+      "description": "Utføre massehandlinger på flere elementer samtidig",
+      "category": "advanced"
+    },
+    "apiAccess": {
+      "name": "API-tilgang",
+      "description": "Tilgang til API for integrasjoner og automatisering",
+      "category": "advanced"
+    },
+    "customReports": {
+      "name": "Egendefinerte rapporter",
+      "description": "Opprette og eksportere egendefinerte rapporter",
+      "category": "analytics"
+    },
+    "auditLogs": {
+      "name": "Revisjonslogger",
+      "description": "Se detaljert logg over alle handlinger i systemet",
+      "category": "admin"
+    },
+    "userManagement": {
+      "name": "Brukeradministrasjon",
+      "description": "Administrere brukere, roller og tillatelser",
+      "category": "admin"
+    },
+    "facilityManagement": {
+      "name": "Fasilitetsadministrasjon",
+      "description": "Full kontroll over fasiliteter og deres innstillinger",
+      "category": "core"
+    },
+    "bookingManagement": {
+      "name": "Bookingadministrasjon",
+      "description": "Administrere alle bookinger og reservasjoner",
+      "category": "core"
+    }
+  },
+  "roleGroups": {
+    "platform": "Plattformroller",
+    "leadership": "Ledelse",
+    "staff": "Ansatte",
+    "limited": "Begrenset tilgang",
+    "customer": "Kunder"
+  },
+  "transitions": {
+    "promote": "Promoter til {{role}}",
+    "demote": "Degrader til {{role}}",
+    "changeRole": "Endre rolle til {{role}}",
+    "confirmChange": "Er du sikker på at du vil endre rollen til {{user}} fra {{fromRole}} til {{toRole}}?",
+    "success": "Rolle endret",
+    "failure": "Kunne ikke endre rolle"
+  }
+}

@@ -2,9 +2,9 @@
 
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
-import { ISelectedTimeSlot } from "@/components/booking/types";
-import { RecurringTimeSlot, RecurrencePattern } from "@/utils/recurrenceEngine";
-import { recurrenceEngine } from "@/utils/recurrenceEngine";
+import { ISelectedTimeSlot } from "@/components/features/bookings/types";
+import { RecurringTimeSlot, RecurrencePattern } from "@/components/features/bookings/utils/recurrence";
+import { recurrenceEngine } from "@/components/features/bookings/utils/recurrence";
 
 /**
  * Slot selection state interface

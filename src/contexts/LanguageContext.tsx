@@ -1,8 +1,10 @@
 "use client";
 
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import type { Language } from '@/i18n/types';
+import { changeLanguage as changeI18nLanguage, getCurrentLanguage } from '@/i18n/config';
 
 interface LanguageContextType {
   readonly language: Language;
@@ -17,25 +19,52 @@ interface LanguageProviderProps {
 }
 
 export const LanguageProvider = ({ children }: LanguageProviderProps): JSX.Element => {
-  const [language, setLanguageState] = useState<Language>('NO'); // Norsk som standard
+  const { i18n } = useTranslation();
 
-  const setLanguage = useCallback((newLanguage: Language): void => {
+  // Initialize with current i18n language (mapping: 'no' -> 'NO', 'en' -> 'EN')
+  const [language, setLanguageState] = useState<Language>(() => {
+    const currentLang = getCurrentLanguage();
+    return currentLang === 'no' ? 'NO' : 'EN';
+  });
+
+  const setLanguage = useCallback(async (newLanguage: Language): Promise<void> => {
     setLanguageState(newLanguage);
+
+    // Sync with i18n (mapping: 'NO' -> 'no', 'EN' -> 'en')
+    const i18nLang = newLanguage === 'NO' ? 'no' : 'en';
+    await changeI18nLanguage(i18nLang as 'no' | 'en');
+
+    // Store in localStorage (keeping existing key for compatibility)
     localStorage.setItem('bookme-language', newLanguage);
   }, []);
 
   const toggleLanguage = useCallback((): void => {
     const newLanguage = language === 'NO' ? 'EN' : 'NO';
-    setLanguage(newLanguage);
+    void setLanguage(newLanguage);
   }, [language, setLanguage]);
 
-  // Last inn språk fra localStorage ved oppstart
-  React.useEffect(() => {
+  // Sync with i18n language changes
+  useEffect(() => {
+    const handleLanguageChange = (lng: string): void => {
+      const newLang: Language = lng === 'no' ? 'NO' : 'EN';
+      if (newLang !== language) {
+        setLanguageState(newLang);
+      }
+    };
+
+    i18n.on('languageChanged', handleLanguageChange);
+    return () => {
+      i18n.off('languageChanged', handleLanguageChange);
+    };
+  }, [i18n, language]);
+
+  // Load language from localStorage on mount
+  useEffect(() => {
     const savedLanguage = localStorage.getItem('bookme-language') as Language;
     if (savedLanguage && (savedLanguage === 'NO' || savedLanguage === 'EN')) {
-      setLanguageState(savedLanguage);
+      void setLanguage(savedLanguage);
     }
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const value: LanguageContextType = {
     language,

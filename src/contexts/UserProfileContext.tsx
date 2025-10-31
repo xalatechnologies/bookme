@@ -49,7 +49,6 @@ export const UserProfileProvider = ({ children }: { readonly children: React.Rea
   const updateProfile = (updates: Partial<IUserProfile>): void => {
     // TODO: Implement profile update via Supabase
     setIsLoading(true);
-    console.log('Profile update requested:', updates);
 
     // Simulate API call
     setTimeout(() => {

@@ -2,7 +2,7 @@
 
 import React, { Suspense, lazy } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
-import AdminLayout from "@/components/admin/layout/AdminLayout";
+import AdminLayout from "@/components/layouts/AdminLayout";
 
 // Lazy load admin pages for better performance
 const Overview = lazy(() => import("@/pages/admin/Overview"));
@@ -18,6 +18,7 @@ const ReportsPage = lazy(() => import("@/pages/admin/ReportsPage"));
 const AuditLogPage = lazy(() => import("@/pages/admin/AuditLogPage"));
 const DeletionPlanPage = lazy(() => import("@/pages/admin/DeletionPlanPage"));
 const AdminMessages = lazy(() => import("@/pages/admin/AdminMessages"));
+const LocalizationManagementPage = lazy(() => import("@/pages/admin/LocalizationManagementPage"));
 
 // Loading component
 const AdminPageLoader = (): JSX.Element => (
@@ -49,6 +50,7 @@ const AdminRoutes = (_props: IAdminRoutesProps): JSX.Element => {
         <Route path="/data-retention" element={<AdminLayout><DeletionPlanPage /></AdminLayout>} />
         <Route path="/messages" element={<AdminLayout><AdminMessages /></AdminLayout>} />
         <Route path="/settings" element={<AdminLayout><SettingsPage /></AdminLayout>} />
+        <Route path="/localization" element={<AdminLayout><LocalizationManagementPage /></AdminLayout>} />
       </Routes>
     </Suspense>
   );

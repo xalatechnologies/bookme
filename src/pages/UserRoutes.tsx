@@ -2,8 +2,8 @@
 
 import React from "react";
 import { Routes, Route } from "react-router-dom";
-import { RequireAuth } from "@/components/auth/ProtectedRoute";
-import UserLayout from "@/components/user/layout/UserLayout";
+import { RequireAuth } from "@/components/features/auth/components/ProtectedRoute";
+import UserLayout from "@/components/layouts/UserLayout";
 import UserDashboard from "@/pages/user/UserDashboard";
 import UserFacilities from "@/pages/user/UserFacilities";
 import Bookings from "@/pages/user/Bookings";

@@ -1,0 +1,409 @@
+{
+  "title": "Fasiliteter",
+  "subtitle": "Utforsk og book tilgjengelige fasiliteter",
+  "fields": {
+    "name": "Navn",
+    "description": "Beskrivelse",
+    "type": "Type",
+    "category": "Kategori",
+    "capacity": "Kapasitet",
+    "area": "Areal",
+    "location": "Plassering",
+    "address": "Adresse",
+    "building": "Bygg",
+    "floor": "Etasje",
+    "room": "Rom",
+    "zone": "Sone",
+    "price": "Pris",
+    "price_per_hour": "Pris per time",
+    "pricePerHour": "Pris per time",
+    "price_range": "Prisområde",
+    "min_price": "Min. pris",
+    "max_price": "Maks. pris",
+    "amenities": "Fasiliteter",
+    "equipment": "Utstyr",
+    "accessibility": "Tilgjengelighet",
+    "parking": "Parkering",
+    "wifi": "WiFi",
+    "projector": "Projektor",
+    "whiteboard": "Whiteboard",
+    "soundSystem": "Lydanlegg",
+    "airConditioning": "Klimaanlegg",
+    "heating": "Oppvarming",
+    "naturalLight": "Dagslys",
+    "windows": "Vinduer",
+    "doors": "Dører",
+    "ceilingHeight": "Takhøyde",
+    "floorType": "Gulvtype",
+    "wallColor": "Veggfarve",
+    "opening_hours": "Åpningstider",
+    "available_from": "Tilgjengelig fra",
+    "available_until": "Tilgjengelig til",
+    "image": "Bilde",
+    "images": "Bilder",
+    "thumbnail": "Miniatyrbilde",
+    "contact_person": "Kontaktperson",
+    "contact_email": "Kontakt e-post",
+    "contact_phone": "Kontakt telefon",
+    "rules": "Regler",
+    "policies": "Retningslinjer",
+    "cancellation_policy": "Avbestillingsregler",
+    "min_booking_duration": "Min. bookinglength",
+    "max_booking_duration": "Maks. bookinglength",
+    "advance_booking_days": "Forhåndsbooking (dager)",
+    "popular": "Populær",
+    "featured": "Fremhevet",
+    "rating": "Vurdering",
+    "reviewCount": "Anmeldelser",
+    "reviews": "Anmeldelser"
+  },
+  "types": {
+    "sports_hall": "Idrettshall",
+    "gym": "Treningssenter",
+    "conference_room": "Møterom",
+    "auditorium": "Auditorium",
+    "classroom": "Klasserom",
+    "sports_field": "Idrettsbane",
+    "tennis_court": "Tennisbane",
+    "swimming_pool": "Svømmebasseng",
+    "parking": "Parkering",
+    "library": "Bibliotek",
+    "studio": "Studio",
+    "kitchen": "Kjøkken",
+    "outdoor_area": "Utendørsområde",
+    "workshop": "Verksted",
+    "other": "Annet"
+  },
+  "amenities": {
+    "available_title": "Tilgjengelige fasiliteter",
+    "equipment_title": "Utstyr",
+    "suitable_for": "Egnet for",
+    "no_amenities": "Ingen fasiliteter oppført",
+    "wifi": "WiFi",
+    "projector": "Projektor",
+    "whiteboard": "Tavle",
+    "sound_system": "Lydsystem",
+    "microphone": "Mikrofon",
+    "air_conditioning": "Klimaanlegg",
+    "heating": "Oppvarming",
+    "kitchen_access": "Kjøkkentilgang",
+    "parking": "Parkering",
+    "wheelchair_accessible": "Rullestoltilgjengelig",
+    "changing_rooms": "Garderober",
+    "showers": "Dusjer",
+    "lockers": "Skap",
+    "reception": "Resepsjon",
+    "security": "Sikkerhet",
+    "catering": "Catering",
+    "video_conference": "Videokonferanse",
+    "tv_screen": "TV-skjerm",
+    "natural_light": "Naturlig lys",
+    "outdoor_access": "Utendørstilgang"
+  },
+  "accessibility": {
+    "wheelchair": "Rullestol",
+    "elevator": "Heis",
+    "automatic_doors": "Automatiske dører",
+    "disabled_parking": "HC-parkering",
+    "braille_signage": "Punktskrift-skilting",
+    "hearing_loop": "Teleslynge",
+    "accessible_restroom": "Tilgjengelig toalett",
+    "ramp": "Rampe",
+    "wide_doorways": "Brede dørveier",
+    "accessible_counter": "Tilgjengelig disk"
+  },
+  "status": {
+    "available": "Tilgjengelig",
+    "unavailable": "Utilgjengelig",
+    "occupied": "Opptatt",
+    "maintenance": "Vedlikehold",
+    "closed": "Stengt",
+    "coming_soon": "Kommer snart",
+    "fully_booked": "Fullt booket",
+    "limited_availability": "Begrenset tilgjengelighet",
+    "available_now": "Tilgjengelig nå",
+    "available_soon": "Snart tilgjengelig",
+    "open_now": "Åpent nå"
+  },
+  "actions": {
+    "book": "Book",
+    "book_now": "Book nå",
+    "view_details": "Vis detaljer",
+    "view_availability": "Vis tilgjengelighet",
+    "check_availability": "Sjekk tilgjengelighet",
+    "add_to_favorites": "Legg til favoritter",
+    "remove_from_favorites": "Fjern fra favoritter",
+    "share": "Del",
+    "report": "Rapporter",
+    "contact": "Kontakt",
+    "get_directions": "Få veibeskrivelse",
+    "view_on_map": "Vis på kart",
+    "view_photos": "Vis bilder",
+    "write_review": "Skriv anmeldelse",
+    "compare": "Sammenlign",
+    "suggest_edit": "Foreslå endring",
+    "toggle_map_view": "Veksle kartvisning",
+    "toggle_list_view": "Veksle listevisning",
+    "go_back": "Gå tilbake",
+    "go_home": "Gå hjem",
+    "like": "Lik",
+    "liked": "Likt"
+  },
+  "filters": {
+    "all": "Alle",
+    "search": "Søk fasiliteter...",
+    "by_type": "Etter type",
+    "by_location": "Etter plassering",
+    "by_capacity": "Etter kapasitet",
+    "by_price": "Etter pris",
+    "by_amenities": "Etter fasiliteter",
+    "by_availability": "Etter tilgjengelighet",
+    "available_only": "Kun tilgjengelige",
+    "with_wifi": "Med WiFi",
+    "wheelchair_accessible": "Rullestoltilgjengelig",
+    "sort_by": "Sorter etter",
+    "sort_by_name": "Navn",
+    "sort_by_price": "Pris",
+    "sort_by_capacity": "Kapasitet",
+    "sort_by_rating": "Vurdering",
+    "sort_by_popularity": "Popularitet",
+    "sort_ascending": "Stigende",
+    "sort_descending": "Synkende"
+  },
+  "details": {
+    "overview": "Oversikt",
+    "specifications": "Spesifikasjoner",
+    "amenities_equipment": "Fasiliteter & Utstyr",
+    "availability": "Tilgjengelighet",
+    "pricing": "Priser",
+    "reviews": "Anmeldelser",
+    "location": "Plassering",
+    "policies": "Retningslinjer",
+    "contact_info": "Kontaktinformasjon",
+    "similar_facilities": "Lignende fasiliteter",
+    "capacity_info": "{{count}} person",
+    "capacity_info_plural": "{{count}} personer",
+    "area_info": "{{area}} m²",
+    "hourly_rate": "{{price}} kr/time",
+    "rating_info": "{{rating}} av 5",
+    "reviews_count": "{{count}} anmeldelse",
+    "reviews_count_plural": "{{count}} anmeldelser",
+    "quick_info": "Rask info",
+    "opening_hours_today": "Åpningstider i dag",
+    "facilities": "Fasiliteter",
+    "book_facility": "Book denne fasiliteten",
+    "per_hour": "per time",
+    "people": "personer"
+  },
+  "messages": {
+    "success": {
+      "added_to_favorites": "Lagt til favoritter!",
+      "removed_from_favorites": "Fjernet fra favoritter!",
+      "review_submitted": "Anmeldelse sendt inn!",
+      "report_submitted": "Rapport sendt inn!",
+      "facility_updated": "Fasilitet oppdatert!",
+      "images_uploaded": "Bilder lastet opp!"
+    },
+    "error": {
+      "load_failed": "Kunne ikke laste fasiliteter",
+      "not_found": "Fasilitet ikke funnet",
+      "unavailable": "Denne fasiliteten er ikke tilgjengelig",
+      "add_favorite_failed": "Kunne ikke legge til favoritter",
+      "review_failed": "Kunne ikke sende inn anmeldelse",
+      "facility_not_found": "Fasilitet ikke funnet",
+      "facility_not_found_desc": "Fasiliteten du leter etter finnes ikke",
+      "load_facility_error": "Feil ved lasting av fasilitet",
+      "something_went_wrong": "Noe gikk galt"
+    },
+    "empty": {
+      "no_facilities": "Ingen fasiliteter tilgjengelig",
+      "no_results": "Ingen fasiliteter funnet",
+      "no_favorites": "Ingen favoritter ennå",
+      "try_different_filters": "Prøv andre filtre"
+    },
+    "confirm": {
+      "remove_favorite": "Fjern denne fasiliteten fra favoritter?"
+    }
+  },
+  "zones": {
+    "title": "Soner",
+    "zone": "Sone",
+    "select_zone": "Velg sone",
+    "available_zones": "Tilgjengelige soner",
+    "zone_details": "Sonedetaljer",
+    "zone_capacity": "Sonekapasitet",
+    "zone_price": "Sonepris",
+    "zone_amenities": "Sonefasiliteter",
+    "zone_availability": "Sonetilgjengelighet",
+    "no_zones": "Ingen soner tilgjengelig"
+  },
+  "booking_info": {
+    "min_duration": "Minimum varighet: {{duration}} time(r)",
+    "max_duration": "Maksimum varighet: {{duration}} time(r)",
+    "advance_notice": "Må bookes {{days}} dager i forveien",
+    "instant_booking": "Øyeblikkelig booking tilgjengelig",
+    "approval_required": "Krever godkjenning",
+    "cancellation_notice": "Avbestilling må gjøres {{hours}} timer i forveien"
+  },
+  "card": {
+    "people": "personer",
+    "squareMeters": "m²",
+    "pricePerHour": "kr/time",
+    "outOf5": "av 5",
+    "reviewCount": "anmeldelser",
+    "yes": "Ja",
+    "no": "Nei",
+    "viewDetailsFor": "Vis detaljer for {{name}} ved {{address}}",
+    "addToFavorites": "Legg til favoritter",
+    "removeFavorites": "Fjern fra favoritter",
+    "shareFacility": "Del fasilitet",
+    "moreAmenities": "flere fasiliteter",
+    "more": "flere"
+  },
+  "availability": {
+    "available_today": "Ledig i dag",
+    "fully_booked_weekend": "Fullbooket i helgen",
+    "fully_booked": "Fullbooket"
+  },
+  "buttons": {
+    "view_details": "Se detaljer",
+    "book_now": "Book nå"
+  },
+  "share": {
+    "check_out": "Sjekk ut {{name}} på BookMe - {{type}} med kapasitet for {{capacity}} personer",
+    "facility_shared": "Fasilitet delt!",
+    "link_copied": "Lenke kopiert til utklippstavle!",
+    "share_failed": "Kunne ikke dele fasilitet. Prøv igjen."
+  },
+  "search": {
+    "placeholder": "Søk etter lokaler...",
+    "filter": "Filter",
+    "sort_name": "Navn",
+    "sort_price": "Pris",
+    "sort_popularity": "Popularitet",
+    "type_label": "Type",
+    "availability_label": "Tilgjengelighet",
+    "available_now": "Ledig nå"
+  },
+  "facility_types": {
+    "all_types": "Alle typer",
+    "sports_hall": "Idrettshall",
+    "cultural_center": "Kulturhus",
+    "meeting_room": "Møterom",
+    "fitness_center": "Treningssenter",
+    "outdoor": "Utendørs"
+  },
+  "contact": {
+    "contact_info_for": "Kontaktinformasjon for {{name}}:",
+    "phone": "Telefon",
+    "email": "E-post",
+    "facility": "Fasilitet",
+    "location": "Lokasjon",
+    "open_email_client": "Vil du åpne e-post klient?",
+    "contact_copied": "Kontaktinformasjon kopiert til utklippstavle!",
+    "contact_error": "Kunne ikke åpne kontaktfunksjonalitet. Prøv igjen.",
+    "booking_failed": "Kunne ikke navigere til bookingside. Prøv igjen.",
+    "inquiry_about": "Forespørsel om {{name}}",
+    "email_template": "Hei,\n\nJeg er interessert i å booke {{name}}.\n\nKan dere gi meg mer informasjon?\n\nMvh"
+  },
+  "mobile_panel": {
+    "see_booking_options": "Se booking alternativer",
+    "booking_coming_soon": "Booking funksjonalitet kommer snart...",
+    "capacity_area": "Kapasitet: {{capacity}} | Areal: {{area}} m²",
+    "opening_hours_label": "Åpningstider: {{hours}}",
+    "book_now_coming_soon": "Book nå (kommer snart)"
+  },
+  "header": {
+    "more_images": "flere",
+    "capacity_label": "Kapasitet: {{capacity}} personer",
+    "reviews": "anmeldelser",
+    "add_to_favorites": "Legg til favoritter",
+    "remove_from_favorites": "Fjern fra favoritter"
+  },
+  "rules": {
+    "title": "Regler og retningslinjer",
+    "noSmoking": "Røyking forbudt",
+    "cleanupRequired": "Opprydding påkrevd"
+  },
+  "gallery": {
+    "close": "Lukk",
+    "previous": "Forrige",
+    "next": "Neste",
+    "image_count": "Bilde {{current}} av {{total}}"
+  },
+  "errors": {
+    "facility_not_found": "Fasilitet ikke funnet",
+    "facility_not_found_desc": "Fasiliteten du leter etter finnes ikke eller har blitt fjernet.",
+    "load_facility_error": "Feil ved lasting av fasilitet",
+    "something_went_wrong": "Noe gikk galt. Vennligst prøv igjen."
+  },
+  "map": {
+    "unavailable": "Kart ikke tilgjengelig",
+    "load_error_title": "Kunne ikke laste kart",
+    "loading_title": "Laster kart...",
+    "loading_description": "Setter opp kartet og henter fasiliteter",
+    "go_to_grid_view": "Gå til rutenettvisning",
+    "no_coordinates": "Ingen koordinater tilgjengelig"
+  },
+  "admin": {
+    "status": {
+      "published": "Publisert",
+      "draft": "Utkast",
+      "archived": "Arkivert",
+      "unknown": "Ukjent",
+      "unpublished": "Upublisert"
+    },
+    "fields": {
+      "owner": "Eier:",
+      "last_updated": "Sist oppdatert:",
+      "updated_by": "Oppdatert av:",
+      "capacity_with_value": "Kapasitet: {{count}}"
+    },
+    "actions": {
+      "edit": "Rediger",
+      "add_image": "Legg til bilde",
+      "save_changes": "Lagre endringer"
+    },
+    "aria": {
+      "view_details_for": "Se detaljer for {{name}} ved {{address}}",
+      "view_in_main_app": "Se i hovedapplikasjon",
+      "duplicate_facility": "Dupliser lokale",
+      "delete_facility": "Slett lokale"
+    },
+    "labels": {
+      "more_items": "+{{count}} flere"
+    },
+    "dialogs": {
+      "delete_title": "Slett lokale",
+      "delete_warning": "Denne handlingen kan ikke angres",
+      "delete_confirmation": "Er du sikker på at du vil slette <strong>{{name}}</strong>? Alle tilknyttede data vil bli permanent slettet.",
+      "edit_title": "Rediger lokale",
+      "all_amenities_title": "Alle fasiliteter",
+      "upload_images_title": "Last opp bilder"
+    },
+    "upload": {
+      "click_to_select": "Klikk for å velge bilder",
+      "file_types_info": "PNG, JPG, GIF opptil 10MB"
+    },
+    "messages": {
+      "updated_success": "Fasilitet oppdatert!",
+      "save_error": "Kunne ikke lagre endringer. Prøv igjen.",
+      "images_uploaded_success": "Bilder lastet opp!",
+      "image_upload_error": "Kunne ikke laste opp bilder. Prøv igjen."
+    },
+    "edit": "Rediger fasilitet",
+    "images": "Bilder",
+    "preview": "Forhåndsvisning",
+    "image_number": "Bilde {{number}}",
+    "remove_image": "Fjern bilde {{number}}",
+    "no_images": "Ingen bilder lagt til",
+    "fetching_coordinates": "Henter koordinater...",
+    "geocode_errors": {
+      "geocode_failed": "Kunne ikke finne adressen i Mapbox",
+      "geocode_error": "Kunne ikke hente koordinater"
+    },
+    "geocode_success": {
+      "coordinates_fetched": "Koordinater hentet automatisk fra adresse"
+    }
+  }
+}

@@ -1,0 +1,156 @@
+{
+  "roles": {
+    "platform_admin": {
+      "label": "Platform Administrator",
+      "description": "Full system access across all organizations. Can manage platform settings, users, and all organizational data.",
+      "shortLabel": "Platform Admin"
+    },
+    "user": {
+      "label": "User",
+      "description": "Standard platform user with organization-specific permissions.",
+      "shortLabel": "User"
+    },
+    "owner": {
+      "label": "Owner",
+      "description": "Full control over the organization. Can manage all settings, members, facilities, bookings, and billing.",
+      "shortLabel": "Owner"
+    },
+    "admin": {
+      "label": "Administrator",
+      "description": "Administrative access to the organization. Can manage members, facilities, bookings, and most settings.",
+      "shortLabel": "Admin"
+    },
+    "saksbehandler": {
+      "label": "Case Handler",
+      "description": "Case handler with permissions to manage bookings, customer requests, and operational tasks.",
+      "shortLabel": "Case Handler"
+    },
+    "redaktør": {
+      "label": "Editor",
+      "description": "Editor with permissions to manage content, facilities, and availability. Cannot access sensitive data or billing.",
+      "shortLabel": "Editor"
+    },
+    "staff": {
+      "label": "Staff Member",
+      "description": "Operational access to manage facilities, bookings, and availability. Cannot modify organization settings or billing.",
+      "shortLabel": "Staff"
+    },
+    "lesetilgang": {
+      "label": "Read-Only Access",
+      "description": "Read-only access to view facilities, bookings, and reports. Cannot make modifications.",
+      "shortLabel": "Read-Only"
+    },
+    "customer": {
+      "label": "Customer",
+      "description": "Standard customer access. Can view facilities, create bookings, and manage own profile.",
+      "shortLabel": "Customer"
+    }
+  },
+  "permissions": {
+    "resources": {
+      "facilities": "Facilities",
+      "bookings": "Bookings",
+      "availability_rules": "Availability Rules",
+      "blackouts": "Blackout Periods",
+      "pricing_rules": "Pricing Rules",
+      "zones": "Zones",
+      "reviews": "Reviews",
+      "memberships": "Memberships",
+      "organizations": "Organizations",
+      "profiles": "Profiles",
+      "favorites": "Favorites",
+      "notifications": "Notifications",
+      "analytics": "Analytics",
+      "billing": "Billing",
+      "settings": "Settings",
+      "audit_logs": "Audit Logs",
+      "support_tickets": "Support Tickets",
+      "additional_services": "Additional Services",
+      "reports": "Reports"
+    },
+    "actions": {
+      "create": "Create",
+      "read": "Read",
+      "update": "Update",
+      "delete": "Delete",
+      "manage": "Manage",
+      "export": "Export"
+    },
+    "label": "{{action}} {{resource}}",
+    "messages": {
+      "granted": "Access granted",
+      "denied": "Access denied",
+      "insufficientRole": "You don't have sufficient permissions for this action",
+      "requiresApproval": "This action requires approval from {{role}}",
+      "elevated": "Elevated permissions required",
+      "ownerOnly": "Only the owner has access to this feature"
+    }
+  },
+  "features": {
+    "analytics": {
+      "name": "Analytics",
+      "description": "View detailed reports and statistics for the organization",
+      "category": "analytics"
+    },
+    "billing": {
+      "name": "Billing",
+      "description": "Manage invoices, payments, and subscriptions",
+      "category": "billing"
+    },
+    "advancedBooking": {
+      "name": "Advanced Booking",
+      "description": "Access to advanced booking features like recurring bookings and bulk reservations",
+      "category": "advanced"
+    },
+    "bulkOperations": {
+      "name": "Bulk Operations",
+      "description": "Perform bulk actions on multiple items at once",
+      "category": "advanced"
+    },
+    "apiAccess": {
+      "name": "API Access",
+      "description": "Access to API for integrations and automation",
+      "category": "advanced"
+    },
+    "customReports": {
+      "name": "Custom Reports",
+      "description": "Create and export custom reports",
+      "category": "analytics"
+    },
+    "auditLogs": {
+      "name": "Audit Logs",
+      "description": "View detailed log of all actions in the system",
+      "category": "admin"
+    },
+    "userManagement": {
+      "name": "User Management",
+      "description": "Manage users, roles, and permissions",
+      "category": "admin"
+    },
+    "facilityManagement": {
+      "name": "Facility Management",
+      "description": "Full control over facilities and their settings",
+      "category": "core"
+    },
+    "bookingManagement": {
+      "name": "Booking Management",
+      "description": "Manage all bookings and reservations",
+      "category": "core"
+    }
+  },
+  "roleGroups": {
+    "platform": "Platform Roles",
+    "leadership": "Leadership",
+    "staff": "Staff",
+    "limited": "Limited Access",
+    "customer": "Customers"
+  },
+  "transitions": {
+    "promote": "Promote to {{role}}",
+    "demote": "Demote to {{role}}",
+    "changeRole": "Change role to {{role}}",
+    "confirmChange": "Are you sure you want to change {{user}}'s role from {{fromRole}} to {{toRole}}?",
+    "success": "Role changed successfully",
+    "failure": "Failed to change role"
+  }
+}
