@@ -1,7 +1,7 @@
 "use client";
 
 // External imports
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import type { Database } from '@/types/database';
 
 // Internal imports
@@ -54,11 +54,14 @@ export const MapView: React.FC<MapViewProps> = ({
 
   const orgId = useOrganizationId();
   // Use all facilities if showAllFacilities is true, otherwise use published only
-  const { data: publishedFacilities = [], isLoading: loadingPublished } = usePublishedFacilities(orgId, !showAllFacilities);
+  const { data: publishedFacilities = [], isLoading: loadingPublished } = usePublishedFacilities(orgId);
   const { data: allFacilities = [], isLoading: loadingAll } = useFacilities(orgId, showAllFacilities);
 
   const facilities = showAllFacilities ? allFacilities : publishedFacilities;
   const isLoading = showAllFacilities ? loadingAll : loadingPublished;
+
+  // Loading state for the map container
+  const [mapLoading, setMapLoading] = useState<boolean>(false);
 
   // Create filters from props
   const filters: FacilityFilters = {
@@ -73,7 +76,10 @@ export const MapView: React.FC<MapViewProps> = ({
       filtered = filtered.filter(f => f.facility_type === filters.facilityType);
     }
     if (filters.location) {
-      filtered = filtered.filter(f => f.area === filters.location || f.address?.includes(filters.location));
+      // Filter by address since there's no area field in the database
+      filtered = filtered.filter(f => 
+        f.address && f.address.toLowerCase().includes(filters.location!.toLowerCase())
+      );
     }
     return filtered;
   }, [facilities, filters.facilityType, filters.location]);
@@ -136,7 +142,7 @@ export const MapView: React.FC<MapViewProps> = ({
           <MapContainer
             onMapLoad={handleMapLoad}
             onMapError={handleMapError}
-            onLoadingChange={setIsLoading}
+            onLoadingChange={setMapLoading}
             mapboxToken={DEFAULT_MAPBOX_TOKEN}
           />
           {isInitialized && (

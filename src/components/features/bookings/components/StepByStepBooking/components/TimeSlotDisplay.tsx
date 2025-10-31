@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useTimeSlotGrouping } from "@/hooks/features/bookings";
 import type { ISelectedTimeSlot } from "@/components/features/bookings/types";
+import type { IDatePackage } from "@/hooks/features/bookings/useTimeSlotGrouping";
 
 export interface ITimeSlotDisplayProps {
   readonly slots: readonly ISelectedTimeSlot[];
@@ -43,7 +44,7 @@ export const TimeSlotDisplay: React.FC<ITimeSlotDisplayProps> = ({
   showClearButton = true,
   maxPreviewSlots = 5,
 }): JSX.Element => {
-  const { t } = useTranslation(["bookings"]);
+  const { t } = useTranslation("booking");
   const { groupedSlots } = useTimeSlotGrouping(slots);
   const { groupedSlots: groupedRecurringSlots } = useTimeSlotGrouping(recurringSlots);
 
@@ -91,11 +92,7 @@ export const TimeSlotDisplay: React.FC<ITimeSlotDisplayProps> = ({
    * Render date package
    */
   const renderDatePackage = (
-    datePackage: {
-      readonly date: string;
-      readonly dateFormatted: string;
-      readonly groups: readonly any[];
-    },
+    datePackage: IDatePackage,
     isRecurring: boolean = false
   ): JSX.Element => {
     return (
@@ -118,12 +115,12 @@ export const TimeSlotDisplay: React.FC<ITimeSlotDisplayProps> = ({
   return (
     <div className="space-y-4">
       {/* Template slots for recurring bookings */}
-      {bookingType === "recurring" && recurringSlots.length > 0 && (
+      {bookingType === "recurring" && slots.length > 0 && (
         <div className="space-y-2">
           <div className="text-xs text-blue-600 font-medium mb-2">
             Mal for gjentakelse
           </div>
-          {groupedSlots
+          {[...groupedSlots]
             .sort((a, b) => {
               const ad = new Date(a.date);
               const bd = new Date(b.date);
@@ -134,7 +131,7 @@ export const TimeSlotDisplay: React.FC<ITimeSlotDisplayProps> = ({
       )}
 
       {/* One-time booking slots */}
-      {bookingType === "one-time" && (
+      {bookingType === "one-time" && slots.length > 0 && (
         <div className="space-y-2">
           {groupedSlots.map((datePackage) =>
             renderDatePackage(datePackage, false)

@@ -10,6 +10,12 @@ import type { Database } from '@/types/database';
 // Type from Supabase
 type Facility = Database['public']['Tables']['facilities']['Row'];
 
+// Type for location coordinates
+interface LocationCoordinates {
+  lat: number;
+  lng: number;
+}
+
 interface FacilityLocation {
   readonly id: string;
   readonly name: string;
@@ -30,6 +36,18 @@ interface MapMarkersProps {
 interface MapMarkersReturn {
   readonly markers: readonly mapboxgl.Marker[];
 }
+
+// Type guard to check if location has coordinates
+const hasCoordinates = (location: unknown): location is LocationCoordinates => {
+  return (
+    location !== null &&
+    typeof location === 'object' &&
+    'lat' in location &&
+    'lng' in location &&
+    typeof (location as LocationCoordinates).lat === 'number' &&
+    typeof (location as LocationCoordinates).lng === 'number'
+  );
+};
 
 export const MapMarkers: React.FC<MapMarkersProps> = ({
   map,
@@ -66,8 +84,9 @@ export const MapMarkers: React.FC<MapMarkersProps> = ({
 
   const createPopupContent = (facility: Facility): string => {
     // Get the first image or use a placeholder
-    const imageUrl = facility.images && facility.images.length > 0 
-      ? facility.images[0] 
+    const images = facility.images as string[] | null;
+    const imageUrl = images && images.length > 0 
+      ? images[0] 
       : '/placeholder.svg';
       
     // Simplified popup content with only name and image, entire popup is clickable
@@ -91,17 +110,16 @@ export const MapMarkers: React.FC<MapMarkersProps> = ({
 
     // Filter facilities to only include those with valid coordinates
     const facilitiesWithCoordinates = facilities.filter(facility => 
-      facility.coordinates && 
-      typeof facility.coordinates.lat === 'number' && 
-      typeof facility.coordinates.lng === 'number' &&
-      !isNaN(facility.coordinates.lat) &&
-      !isNaN(facility.coordinates.lng)
+      hasCoordinates(facility.location)
     );
 
     // Create new markers
     const newMarkers = facilitiesWithCoordinates.map((facility): mapboxgl.Marker => {
       const markerElement = createMarkerElement(facility);
       const popupContent = createPopupContent(facility);
+      
+      // Extract coordinates safely
+      const location = facility.location as LocationCoordinates;
       
       const popup = new mapboxgl.Popup({
         offset: 25,
@@ -113,7 +131,7 @@ export const MapMarkers: React.FC<MapMarkersProps> = ({
         element: markerElement,
         anchor: 'bottom'
       })
-        .setLngLat([facility.coordinates.lng, facility.coordinates.lat])
+        .setLngLat([location.lng, location.lat])
         .setPopup(popup)
         .addTo(map);
 

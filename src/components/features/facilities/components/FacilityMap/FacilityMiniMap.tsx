@@ -14,6 +14,24 @@ interface FacilityMiniMapProps {
   readonly mapboxToken: string;
 }
 
+// Type for location coordinates
+interface LocationCoordinates {
+  lat: number;
+  lng: number;
+}
+
+// Type guard to check if location has coordinates
+const hasCoordinates = (location: unknown): location is LocationCoordinates => {
+  return (
+    location !== null &&
+    typeof location === 'object' &&
+    'lat' in location &&
+    'lng' in location &&
+    typeof (location as LocationCoordinates).lat === 'number' &&
+    typeof (location as LocationCoordinates).lng === 'number'
+  );
+};
+
 export const FacilityMiniMap: React.FC<FacilityMiniMapProps> = ({
   facility,
   mapboxToken
@@ -21,9 +39,14 @@ export const FacilityMiniMap: React.FC<FacilityMiniMapProps> = ({
   const [imageLoaded, setImageLoaded] = useState<boolean>(false);
   const [imageError, setImageError] = useState<boolean>(false);
 
+  // Check if facility has valid coordinates
+  const isValidLocation = hasCoordinates(facility.location);
+  const lat = isValidLocation ? (facility.location as LocationCoordinates).lat : 59.7464; // Default to Drammen
+  const lng = isValidLocation ? (facility.location as LocationCoordinates).lng : 10.2045; // Default to Drammen
+
   // Generate static map URL using Mapbox Static Images API
   // Use a larger size to ensure good quality at different heights
-  const staticMapUrl = `https://api.mapbox.com/styles/v1/mapbox/streets-v12/static/pin-s+000000(${facility.coordinates.lng},${facility.coordinates.lat})/${facility.coordinates.lng},${facility.coordinates.lat},14,0/400x400@2x?access_token=${mapboxToken}`;
+  const staticMapUrl = `https://api.mapbox.com/styles/v1/mapbox/streets-v12/static/pin-s+000000(${lng},${lat})/${lng},${lat},14,0/400x400@2x?access_token=${mapboxToken}`;
 
   const handleImageLoad = (): void => {
     setImageLoaded(true);
