@@ -11,7 +11,7 @@ import type { Zone, SelectedTimeSlot, AvailabilityStatus } from '@/types/booking
 // Sibling imports
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { CalendarGrid } from "@/components/calendar/CalendarGrid";
+import { CalendarGrid } from "@/features/calendar/CalendarGrid";
 
 interface CalendarProps {
   readonly zones: readonly Zone[];

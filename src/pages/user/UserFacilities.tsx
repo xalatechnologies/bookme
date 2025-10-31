@@ -5,11 +5,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Map } from "lucide-react";
 import { useFacilityStore } from "@/stores/facilityStore";
 import { useFavoritesStore } from "@/stores/favoritesStore";
-import FacilityCardUser from "@/components/facility/FacilityCardUser";
-import FacilityListItemUser from "@/components/facility/FacilityListItemUser";
-import ViewToggleUser from "@/components/facility/ViewToggleUser";
-import FilterBarUser from "@/components/facility/FilterBarUser";
-import { MapView } from "@/components/MapView";
+import FacilityCardUser from "@/features/facilities/FacilityCardUser";
+import FacilityListItemUser from "@/features/facilities/FacilityListItemUser";
+import ViewToggleUser from "@/features/facilities/ViewToggleUser";
+import FilterBarUser from "@/features/facilities/FilterBarUser";
+import { MapView } from "@/components/maps/MapView";
 
 interface IUserFacility {
   readonly id: string;

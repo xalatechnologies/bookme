@@ -4,61 +4,29 @@
 import { useState, useEffect } from 'react';
 
 // Internal imports
+import { useQuery } from '@tanstack/react-query';
+import { zonesService } from '@/services/supabase/zones.service';
 import type { Zone } from '@/types/booking';
-import { getZonesForFacility } from '@/data/zones/dummyZones';
-import { useZoneStore } from '@/stores/zoneStore';
 
-interface ZonesState {
-  readonly zones: readonly Zone[];
-  readonly loading: boolean;
-  readonly error: string | null;
-}
-
-export const useZones = (facilityId: string | number): ZonesState => {
-  const [state, setState] = useState<ZonesState>({
-    zones: [],
-    loading: true,
-    error: null
+export const useZones = () => {
+  return useQuery({
+    queryKey: ['zones'],
+    queryFn: () => zonesService.getAll(),
   });
+};
 
-  const { getZonesForFacility: storeGetZonesForFacility } = useZoneStore();
+export const useZonesByFacility = (facilityId: string) => {
+  return useQuery({
+    queryKey: ['zones', facilityId],
+    queryFn: () => zonesService.getByFacilityId(facilityId),
+    enabled: !!facilityId,
+  });
+};
 
-  useEffect(() => {
-    const fetchZones = async (): Promise<void> => {
-      try {
-        setState(prev => ({ ...prev, loading: true, error: null }));
-
-        // Simulate API delay
-        await new Promise(resolve => setTimeout(resolve, 100));
-
-        // Get zones for the facility from store first, then fallback to dummy data
-        const facilityIdStr = typeof facilityId === 'number' ? facilityId.toString() : facilityId;
-        let zones = storeGetZonesForFacility(facilityIdStr);
-        
-        // If no zones in store, use dummy data
-        if (zones.length === 0) {
-          const dummyZones = getZonesForFacility(facilityIdStr);
-          zones = dummyZones;
-        }
-
-        setState({
-          zones,
-          loading: false,
-          error: null
-        });
-      } catch (error) {
-        setState({
-          zones: [],
-          loading: false,
-          error: error instanceof Error ? error.message : 'Unknown error occurred'
-        });
-      }
-    };
-
-    if (facilityId) {
-      fetchZones();
-    }
-  }, [facilityId, storeGetZonesForFacility]);
-
-  return state;
+export const useZone = (id: string) => {
+  return useQuery({
+    queryKey: ['zones', id],
+    queryFn: () => zonesService.getById(id),
+    enabled: !!id,
+  });
 };

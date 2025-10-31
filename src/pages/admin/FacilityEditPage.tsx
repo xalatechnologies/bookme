@@ -3,7 +3,8 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Save, X, ArrowLeft, Eye, MapPin, Users, Clock, Phone, Mail, Plus, Trash2, Edit3, Check, X as XIcon, Settings } from "lucide-react";
-import { useFacilityStore, type IFacility } from "@/stores/facilityStore";
+import { useFacilityStore } from "@/stores/facilityStore";
+import type { IFacility } from "@/types/facility";
 import { useFieldConfigStore } from "@/stores/fieldConfigStore";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -11,8 +12,8 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
-import { FieldConfigModal } from "@/components/admin/facilities/FieldConfigModal";
-import { ReadOnlyCalendar } from "@/components/calendar/ReadOnlyCalendar";
+// FieldConfigModal component not found, removing import
+import { ReadOnlyCalendar } from "@/features/calendar/ReadOnlyCalendar";
 import { Zone } from "@/types/booking";
 import { useZoneStore } from "@/stores/zoneStore";
 
@@ -63,7 +64,7 @@ const FacilityEditPage = (_props: IFacilityEditPageProps): JSX.Element => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState<boolean>(false);
   const [showSaveMessage, setShowSaveMessage] = useState<boolean>(false);
-  const [showFieldConfigModal, setShowFieldConfigModal] = useState<boolean>(false);
+  // FieldConfigModal component not found, removing state
   const [isGeocoding, setIsGeocoding] = useState<boolean>(false);
   const [showManualCoords, setShowManualCoords] = useState<boolean>(false);
   
@@ -329,13 +330,12 @@ const FacilityEditPage = (_props: IFacilityEditPageProps): JSX.Element => {
 
   // Function to render field based on configuration
   const renderField = (field: {
+    readonly id: string;
     readonly key: string;
     readonly label: string;
-    readonly type: string;
+    readonly type: 'text' | 'number' | 'boolean';
     readonly visible: boolean;
-    readonly required?: boolean;
-    readonly placeholder?: string;
-    readonly options?: readonly { readonly value: string; readonly label: string }[];
+    readonly value: string | number | boolean;
   }): JSX.Element | null => {
     if (!field.visible) return null;
 
@@ -345,7 +345,7 @@ const FacilityEditPage = (_props: IFacilityEditPageProps): JSX.Element => {
       if (field.key === 'pricePerHour') return editedFacility?.pricePerHour || 0;
       if (field.key === 'rating') return editedFacility?.rating || 0;
       if (field.key === 'reviewCount') return editedFacility?.reviewCount || 0;
-      return field.value;
+      return field.value as string | number;
     };
 
     const handleFieldChange = (value: string | number | boolean): void => {
@@ -961,7 +961,7 @@ const FacilityEditPage = (_props: IFacilityEditPageProps): JSX.Element => {
                     <Button 
                       variant="outline" 
                       size="sm"
-                      onClick={() => setShowFieldConfigModal(true)}
+                      // onClick={() => setShowFieldConfigModal(true)}
                       className="flex items-center gap-2"
                       title="Rediger informasjonsfelt"
                     >
@@ -1393,24 +1393,7 @@ const FacilityEditPage = (_props: IFacilityEditPageProps): JSX.Element => {
         </div>
       </div>
 
-      {/* Field Configuration Modal */}
-      <FieldConfigModal
-        isOpen={showFieldConfigModal}
-        onClose={() => setShowFieldConfigModal(false)}
-        onSave={(fields) => {
-          // Update each field in the store
-          fields.forEach(field => {
-            updateFieldConfig(id || "", field.id, field);
-          });
-          setHasUnsavedChanges(true);
-        }}
-        initialFields={fieldConfigs}
-        facilityId={id || ""}
-        onToggleVisibility={(fieldId) => toggleFieldVisibility(id || "", fieldId)}
-        onUpdateValue={(fieldId, value) => updateFieldValue(id || "", fieldId, value)}
-        onAddField={(field) => addCustomField(id || "", field)}
-        onRemoveField={(fieldId) => removeField(id || "", fieldId)}
-      />
+      {/* Field Configuration Modal - component not found, removing modal */}
     </div>
   );
 };

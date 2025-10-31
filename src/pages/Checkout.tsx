@@ -38,7 +38,7 @@ import {
 // Internal libraries/utilities
 import { useCart } from "@/contexts/CartContext";
 import { useUserProfile } from "@/contexts/UserProfileContext";
-import { GlobalHeader } from "@/components/GlobalHeader";
+import { GlobalHeader } from "@/components/layout/GlobalHeader";
 
 // UI components
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -53,7 +53,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 // Types
 import type { ICartItem } from "@/types/cart";
-import type { ISelectedTimeSlot } from "@/components/booking/types";
+import type { ISelectedTimeSlot } from "@/features/bookings/types";
 
 /**
  * Professional checkout page component

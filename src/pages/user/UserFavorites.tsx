@@ -29,8 +29,8 @@ import {
   ArrowRight,
   ExternalLink
 } from "lucide-react";
-import FacilityCardUser from "@/components/facility/FacilityCardUser";
-import FacilityListItemUser from "@/components/facility/FacilityListItemUser";
+import FacilityCardUser from "@/features/facilities/FacilityCardUser";
+import FacilityListItemUser from "@/features/facilities/FacilityListItemUser";
 import { useFacilityStore } from "@/stores/facilityStore";
 import { useFavoritesStore } from "@/stores/favoritesStore";
 
@@ -130,7 +130,7 @@ const UserFavorites = (): JSX.Element => {
         usageCount: favoriteEntry.usageCount,
         amenities: facility.amenities,
         description: facility.description,
-        availability: getRealTimeAvailability(facility.id) as const,
+        availability: getRealTimeAvailability(facility.id),
         location: facility.location,
         isFavorite: true,
         coordinates: facility.coordinates

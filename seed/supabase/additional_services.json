@@ -1,0 +1,92 @@
+[
+  {
+    "id": "service-1",
+    "name": "Fotballutstyr",
+    "description": "Komplett sett med fotballer, kjegler og mål",
+    "price": 150,
+    "category": "equipment",
+    "facility_types": ["Idrettshall", "Fotballbane"],
+    "available": true
+  },
+  {
+    "id": "service-2",
+    "name": "Lydanlegg",
+    "description": "Profesjonelt lydanlegg med mikrofoner og høyttalere",
+    "price": 300,
+    "category": "technical",
+    "facility_types": ["Kulturhus", "Idrettshall", "Møterom"],
+    "available": true
+  },
+  {
+    "id": "service-3",
+    "name": "Kaffe og kaker",
+    "description": "Servering av kaffe, te og assorterte kaker for inntil 25 personer",
+    "price": 450,
+    "category": "catering",
+    "facility_types": ["Møterom", "Kulturhus"],
+    "available": true
+  },
+  {
+    "id": "service-4",
+    "name": "Projektor og lerret",
+    "description": "HD-projektor med stort lerret for presentasjoner",
+    "price": 200,
+    "category": "technical",
+    "facility_types": ["Møterom", "Kulturhus"],
+    "available": true
+  },
+  {
+    "id": "service-5",
+    "name": "Ekstra rengjøring",
+    "description": "Grundig rengjøring etter arrangement",
+    "price": 500,
+    "category": "cleaning",
+    "facility_types": ["Idrettshall", "Kulturhus", "Møterom", "Fotballbane"],
+    "available": true
+  },
+  {
+    "id": "service-6",
+    "name": "Svømmeutstyr",
+    "description": "Kickboards, pull-buoys og andre svømmehjelpemidler",
+    "price": 100,
+    "category": "equipment",
+    "facility_types": ["Svømmehall"],
+    "available": true
+  },
+  {
+    "id": "service-7",
+    "name": "Tennisracketer",
+    "description": "Utleie av tennisracketer og baller",
+    "price": 80,
+    "category": "equipment",
+    "facility_types": ["Tennisbane"],
+    "available": true
+  },
+  {
+    "id": "service-8",
+    "name": "Vaktmester",
+    "description": "Vaktmester tilstede under arrangement",
+    "price": 400,
+    "category": "staff",
+    "facility_types": ["Idrettshall", "Kulturhus", "Svømmehall"],
+    "available": true
+  },
+  {
+    "id": "service-9",
+    "name": "Lunch-pakke",
+    "description": "Lunsjpakker for inntil 20 personer",
+    "price": 800,
+    "category": "catering",
+    "facility_types": ["Møterom", "Kulturhus"],
+    "available": true
+  },
+  {
+    "id": "service-10",
+    "name": "Belysningsrigger",
+    "description": "Profesjonell scenebelysning for kulturarrangementer",
+    "price": 600,
+    "category": "technical",
+    "facility_types": ["Kulturhus"],
+    "available": false
+  }
+]

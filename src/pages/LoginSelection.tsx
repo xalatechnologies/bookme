@@ -8,7 +8,7 @@ import { useTranslation } from "@/i18n";
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { GlobalHeader } from "@/components/GlobalHeader";
+import { GlobalHeader } from "@/components/layout/GlobalHeader";
 
 export const LoginSelection = (): JSX.Element => {
   const navigate = useNavigate();

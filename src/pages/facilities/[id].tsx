@@ -7,14 +7,14 @@ import { useTranslation } from "@/i18n";
 import type { RecurrencePattern } from "@/utils/recurrenceEngine";
 
 import { useFacility } from "@/hooks/useFacility";
-import { useZones } from "@/hooks/useZones";
+import { useZonesByFacility } from "@/hooks/useZones";
 import { CartProvider } from "@/contexts/CartContext";
-import { GlobalHeader } from "@/components/GlobalHeader";
-import { FacilityDetailLayout } from "@/components/facility/detail/FacilityDetailLayout";
-import { FacilityDetailBreadcrumb } from "@/components/facility/detail/FacilityDetailBreadcrumb";
-import { FacilityDetailCalendar } from "@/components/facility/detail/FacilityDetailCalendar";
-import { MobileBookingPanel } from "@/components/facility/detail/MobileBookingPanel";
-import { LoadingState, ErrorState } from "@/components/facility/detail/FacilityDetailStates";
+import { GlobalHeader } from "@/components/layout/GlobalHeader";
+import { FacilityDetailLayout } from "@/features/facilities/detail/FacilityDetailLayout";
+import { FacilityDetailBreadcrumb } from "@/features/facilities/detail/FacilityDetailBreadcrumb";
+import { FacilityDetailCalendar } from "@/features/facilities/detail/FacilityDetailCalendar";
+import { MobileBookingPanel } from "@/features/facilities/detail/MobileBookingPanel";
+import { LoadingState, ErrorState } from "@/features/facilities/detail/FacilityDetailStates";
 
 export const FacilityDetail = (): JSX.Element => {
   const { id } = useParams();
@@ -29,8 +29,9 @@ export const FacilityDetail = (): JSX.Element => {
   const { t } = useTranslation();
 
   // Use hooks to fetch data
-  const { facility, loading, error, notFound } = useFacility(id || '');
-  const { zones, loading: zonesLoading } = useZones(id || '');
+  const facilityState = useFacility(id || '');
+  const { facility, loading, error, notFound } = facilityState;
+  const { data: zones = [], isLoading: zonesLoading } = useZonesByFacility(id || '');
 
   // Handle share functionality
   const handleShare = async (): Promise<void> => {
@@ -104,4 +105,3 @@ export const FacilityDetail = (): JSX.Element => {
     </CartProvider>
   );
 };
-

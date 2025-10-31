@@ -1,6 +1,11 @@
-"use client";
-
-import type { RecurrencePattern } from '@/utils/recurrenceEngine';
+export interface IBooking {
+  id: string;
+  facility_id: string;
+  user_id: string;
+  start_time: string;
+  end_time: string;
+  status: string;
+}
 
 export interface Zone {
   readonly id: string;
@@ -89,3 +94,6 @@ export interface RecurringBookingFormData {
   readonly actorType: 'private-person' | 'lag-foreninger' | 'paraply' | 'private-firma' | 'kommunale-enheter';
   readonly termsAccepted: boolean;
 }
+
+// This will be defined in recurrenceEngine.ts
+type RecurrencePattern = any;

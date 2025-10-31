@@ -2,7 +2,6 @@
 
 import React, { Suspense, lazy } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
-import AdminLayout from "@/components/admin/layout/AdminLayout";
 
 // Lazy load admin pages for better performance
 const Overview = lazy(() => import("@/pages/admin/Overview"));
@@ -34,21 +33,21 @@ const AdminRoutes = (_props: IAdminRoutesProps): JSX.Element => {
   return (
     <Suspense fallback={<AdminPageLoader />}>
       <Routes>
-        <Route path="/" element={<AdminLayout><Navigate to="/admin/overview" replace /></AdminLayout>} />
-        <Route path="/overview" element={<AdminLayout><Overview /></AdminLayout>} />
-        <Route path="/facilities" element={<AdminLayout><FacilitiesPage /></AdminLayout>} />
-        <Route path="/facilities/new" element={<AdminLayout><FacilityEditPage /></AdminLayout>} />
-        <Route path="/facilities/:id/edit" element={<AdminLayout><FacilityEditPage /></AdminLayout>} />
-        <Route path="/bookings" element={<AdminLayout><BookingsPage /></AdminLayout>} />
-        <Route path="/approvals" element={<AdminLayout><ApprovalsPage /></AdminLayout>} />
-        <Route path="/users-roles" element={<AdminLayout><UsersRolesPage /></AdminLayout>} />
-        <Route path="/notifications" element={<AdminLayout><NotificationsPage /></AdminLayout>} />
-        <Route path="/integrations" element={<AdminLayout><IntegrationsPage /></AdminLayout>} />
-        <Route path="/reports" element={<AdminLayout><ReportsPage /></AdminLayout>} />
-        <Route path="/audit-logs" element={<AdminLayout><AuditLogPage /></AdminLayout>} />
-        <Route path="/data-retention" element={<AdminLayout><DeletionPlanPage /></AdminLayout>} />
-        <Route path="/messages" element={<AdminLayout><AdminMessages /></AdminLayout>} />
-        <Route path="/settings" element={<AdminLayout><SettingsPage /></AdminLayout>} />
+        <Route path="/" element={<Navigate to="/admin/overview" replace />} />
+        <Route path="/overview" element={<Overview />} />
+        <Route path="/facilities" element={<FacilitiesPage />} />
+        <Route path="/facilities/new" element={<FacilityEditPage />} />
+        <Route path="/facilities/:id/edit" element={<FacilityEditPage />} />
+        <Route path="/bookings" element={<BookingsPage />} />
+        <Route path="/approvals" element={<ApprovalsPage />} />
+        <Route path="/users-roles" element={<UsersRolesPage />} />
+        <Route path="/notifications" element={<NotificationsPage />} />
+        <Route path="/integrations" element={<IntegrationsPage />} />
+        <Route path="/reports" element={<ReportsPage />} />
+        <Route path="/audit-logs" element={<AuditLogPage />} />
+        <Route path="/data-retention" element={<DeletionPlanPage />} />
+        <Route path="/messages" element={<AdminMessages />} />
+        <Route path="/settings" element={<SettingsPage />} />
       </Routes>
     </Suspense>
   );

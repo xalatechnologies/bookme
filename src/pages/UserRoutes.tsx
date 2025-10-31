@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Routes, Route } from "react-router-dom";
-import UserLayout from "@/components/user/layout/UserLayout";
+import UserLayout from "@/components/layout/UserLayout";
 import UserDashboard from "@/pages/user/UserDashboard";
 import UserFacilities from "@/pages/user/UserFacilities";
 import Bookings from "@/pages/user/Bookings";

@@ -8,12 +8,12 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "@/i18n";
 import type { RecurrencePattern } from "@/utils/recurrenceEngine";
 import { useFacility } from "@/hooks/useFacility";
-import { useZones } from "@/hooks/useZones";
+import { useZonesByFacility } from "@/hooks/useZones";
 import { CartProvider } from "@/contexts/CartContext";
-import { GlobalHeader } from "@/components/GlobalHeader";
-import { FacilityDetailLayout } from "@/components/facility/detail/FacilityDetailLayout";
-import { FacilityDetailBreadcrumb } from "@/components/facility/detail/FacilityDetailBreadcrumb";
-import { LoadingState, ErrorState } from "@/components/facility/detail/FacilityDetailStates";
+import { GlobalHeader } from "@/components/layout/GlobalHeader";
+import { FacilityDetailLayout } from "@/features/facilities/detail/FacilityDetailLayout";
+import { FacilityDetailBreadcrumb } from "@/features/facilities/detail/FacilityDetailBreadcrumb";
+import { LoadingState, ErrorState } from "@/features/facilities/detail/FacilityDetailStates";
 
 /**
  * Facility booking page
@@ -46,7 +46,7 @@ export const FacilityBooking = (): JSX.Element => {
 
   // Use hooks to fetch data
   const { facility, loading, error, notFound } = useFacility(id || '');
-  const { zones, loading: zonesLoading } = useZones(id || '');
+  const { data: zones = [], isLoading: zonesLoading } = useZonesByFacility(id || '');
 
   /**
    * Handle share functionality

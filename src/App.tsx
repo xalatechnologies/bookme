@@ -7,7 +7,7 @@ import { LanguageProvider } from '@/contexts/LanguageContext';
 import { AdminAuthProvider } from '@/contexts/AdminAuthContext';
 import { CartProvider } from '@/contexts/CartContext';
 import { UserProfileProvider } from '@/contexts/UserProfileContext';
-import ScrollToTop from '@/components/ScrollToTop';
+import ScrollToTop from '@/components/feedback/ScrollToTop';
 
 import { Index } from '@/pages/Index';
 import { FacilityDetail } from '@/pages/facilities/[id]';
