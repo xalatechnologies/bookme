@@ -54,6 +54,7 @@ import type {
   IZone,
   BookingType,
   IBookingFormData,
+  ActivityType,
 } from "../../types";
 import type { RecurrencePattern } from "@/components/features/bookings/utils/recurrence";
 
@@ -117,7 +118,7 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
   getAvailabilityStatus,
   isSlotSelected,
 }) => {
-  const { t, i18n } = useTranslation(["bookings", "common"]);
+  const { t, i18n } = useTranslation(["booking", "common"]);
   const currentLocale = i18n.language === "en" ? enUS : nb;
 
   // Form data state
@@ -231,11 +232,14 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
     const end = addWeeks(start, 1);
     const days = [];
     for (let i = 0; i < 7; i++) {
+      const date = addDays(start, i);
       days.push({
-        date: addDays(start, i),
-        isToday: false,
-        isWeekend: false,
-        isPast: false,
+        date,
+        isToday: date.toDateString() === new Date().toDateString(),
+        isWeekend: date.getDay() === 0 || date.getDay() === 6,
+        isHoliday: false,
+        isPast: date < new Date(),
+        timeSlots: [],
       });
     }
     return { startDate: start, endDate: end, days };
@@ -414,10 +418,10 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
           <div className="space-y-6">
             <div>
               <h3 className="text-lg font-semibold mb-2">
-                {t("bookings:steps.details.title")}
+                {t("booking:steps.details.title" as any)}
               </h3>
               <p className="text-gray-600 text-sm">
-                {t("bookings:steps.details.description")}
+                {t("booking:steps.details.description" as any)}
               </p>
             </div>
 
@@ -425,7 +429,7 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
               <CardContent className="p-6 space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="purpose" className="text-sm font-medium">
-                    {t("bookings:form.purpose_label")}{" "}
+                    {t("booking:form.purpose_label")}{" "}
                     <span className="text-red-500">*</span>
                   </Label>
                   <Input
@@ -434,7 +438,7 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
                     onChange={(e) =>
                       handleFormDataUpdate({ purpose: e.target.value })
                     }
-                    placeholder={t("bookings:form.purpose_placeholder")}
+                    placeholder={t("booking:form.purpose_placeholder")}
                     disabled={isLoading}
                     className="w-full"
                   />
@@ -442,7 +446,7 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
 
                 <div className="space-y-2">
                   <Label htmlFor="attendees" className="text-sm font-medium">
-                    {t("bookings:form.attendees_label")}{" "}
+                    {t("booking:form.attendees_label")}{" "}
                     <span className="text-red-500">*</span>
                   </Label>
                   <Input
@@ -462,40 +466,40 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
 
                 <div className="space-y-2">
                   <Label htmlFor="activityType" className="text-sm font-medium">
-                    {t("bookings:form.activity_type_label")}{" "}
+                    {t("booking:form.activity_type_label")}{" "}
                     <span className="text-red-500">*</span>
                   </Label>
                   <Select
                     value={formData.activityType}
                     onValueChange={(value) =>
-                      handleFormDataUpdate({ activityType: value })
+                      handleFormDataUpdate({ activityType: value as ActivityType | "" })
                     }
                     disabled={isLoading}
                   >
                     <SelectTrigger className="w-full">
                       <SelectValue
                         placeholder={t(
-                          "bookings:form.activity_type_placeholder"
+                          "booking:form.activity_type_placeholder"
                         )}
                       />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="sport">
-                        {t("bookings:activity_types.sport")}
+                        {t("booking:activity_types.sport")}
                       </SelectItem>
                       <SelectItem value="kultur">
-                        {t("bookings:activity_types.culture")}
+                        {t("booking:activity_types.culture")}
                       </SelectItem>
                       <SelectItem value="møte">
-                        {t("bookings:activity_types.meeting")}
+                        {t("booking:activity_types.meeting")}
                       </SelectItem>
                       <SelectItem value="arrangement">
-                        {t("bookings:activity_types.event")}
+                        {t("booking:activity_types.event")}
                       </SelectItem>
                       <SelectItem value="trening">
-                        {t("bookings:activity_types.training")}
+                        {t("booking:activity_types.training")}
                       </SelectItem>
-                      <SelectItem value="annet">{t("common:other")}</SelectItem>
+                      <SelectItem value="annet">{t("common:common.other")}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -509,10 +513,10 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
           <div className="space-y-6">
             <div>
               <h3 className="text-lg font-semibold mb-2">
-                {t("bookings:steps.calendar.title")}
+                {t("booking:steps.calendar.title" as any)}
               </h3>
               <p className="text-gray-600 text-sm">
-                {t("bookings:steps.calendar.description")}
+                {t("booking:steps.calendar.description" as any)}
               </p>
             </div>
 
@@ -525,7 +529,7 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
                     onClick={handlePreviousWeek}
                   >
                     <ChevronLeft className="h-4 w-4 mr-2" />
-                    {t("calendar:navigation.previous_week")}
+                    {t("booking:navigation.previous_week")}
                   </Button>
                   <div className="text-center">
                     <h3 className="text-xl font-semibold">
@@ -539,7 +543,7 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
                     </h3>
                   </div>
                   <Button variant="outline" size="lg" onClick={handleNextWeek}>
-                    {t("calendar:navigation.next_week")}
+                    {t("booking:navigation.next_week")}
                     <ChevronRight className="h-4 w-4 ml-2" />
                   </Button>
                 </div>
@@ -613,35 +617,31 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
                 <div className="space-y-4">
                   <div className="space-y-3">
                     <h4 className="font-medium">
-                      {t("bookings:terms.rules_title", "Regler for bruk")}
+                      {t("booking:terms.rules_title")}
                     </h4>
                     <ul className="text-sm text-gray-600 space-y-2">
                       <li>
                         •{" "}
                         {t(
-                          "bookings:terms.rules.cleaning",
-                          "Renhold etter bruk er påkrevd"
+                          "booking:terms.rules.cleaning"
                         )}
                       </li>
                       <li>
                         •{" "}
                         {t(
-                          "bookings:terms.rules.key_pickup",
-                          "Nøkler hentes ved inngang 15 min før start"
+                          "booking:terms.rules.key_pickup"
                         )}
                       </li>
                       <li>
                         •{" "}
                         {t(
-                          "bookings:terms.rules.free_cancellation",
-                          "Avbestilling gratis til 48 timer før start"
+                          "booking:terms.rules.free_cancellation"
                         )}
                       </li>
                       <li>
                         •{" "}
                         {t(
-                          "bookings:terms.rules.no_show_fee",
-                          "Gebyr ved no-show: 50% av leiepris"
+                          "booking:terms.rules.no_show_fee"
                         )}
                       </li>
                     </ul>
@@ -771,11 +771,13 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <h3 className="font-semibold">
-                    {t("bookings:progress.title")}
+                    {t("booking:progress.title")}
                   </h3>
                   <span className="text-sm text-gray-500">
-                    Steg {steps.findIndex((s) => s.id === currentStep) + 1} av{" "}
-                    {steps.length}
+                    {t("booking:progress.step_of", {
+                      current: steps.findIndex((s) => s.id === currentStep) + 1,
+                      total: steps.length
+                    })}
                   </span>
                 </div>
 
@@ -856,10 +858,10 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
                   {selectedSlots.length > 0
                     ? formData.bookingType === "recurring"
                       ? recurringSlots.length > 0
-                        ? t("bookings:sidebar.recurring_slots_and_price")
-                        : t("bookings:sidebar.slots_and_price_select_pattern")
-                      : t("bookings:sidebar.selected_slots_and_price")
-                    : t("bookings:sidebar.select_slots_pricing")}
+                        ? t("booking:sidebar.recurring_slots_and_price")
+                        : t("booking:sidebar.slots_and_price_select_pattern")
+                      : t("booking:sidebar.selected_slots_and_price")
+                    : t("booking:sidebar.select_slots_pricing")}
                 </CardTitle>
               </CardHeader>
               <CardContent className="pt-0 space-y-4">
@@ -884,7 +886,7 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
                   <div className="text-center py-8">
                     <CalendarIcon className="h-16 w-16 text-gray-400 mx-auto mb-4" />
                     <p className="text-gray-500 text-sm">
-                      {t("bookings:sidebar.select_slots_pricing")}
+                      {t("booking:sidebar.select_slots_pricing")}
                     </p>
                   </div>
                 )}

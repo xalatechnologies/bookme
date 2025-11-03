@@ -227,23 +227,6 @@ export {
   type MessageWithDetails,
 } from './messages.service';
 
-// Groups
-export {
-  groupsService,
-  groupKeys,
-  useUserGroups,
-  useGroup,
-  useUserInvitations,
-  useGroupBookings,
-  useCreateGroup,
-  useUpdateGroup,
-  useDeleteGroup,
-  useInviteUser,
-  useAcceptInvitation,
-  useUpdateMemberRole,
-  useRemoveMember,
-} from './groups.service';
-
 // Recurring Bookings
 export {
   recurringService,

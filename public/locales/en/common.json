@@ -105,6 +105,7 @@
     "between": "Between",
     "and": "and",
     "or": "or",
+    "at": "at",
     "all": "All",
     "none": "None",
     "other": "Other",
@@ -507,5 +508,9 @@
     "conflict_description": "Time slot has a booking conflict",
     "click_available": "Click on available time slots to select",
     "drag_select": "Drag to select multiple time slots"
+  },
+  "permissions": {
+    "access_denied": "Access denied",
+    "insufficient_permissions": "Insufficient permissions to access {{domain}}.{{permission}}"
   }
 }

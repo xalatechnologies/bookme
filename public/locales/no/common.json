@@ -105,6 +105,7 @@
     "between": "Mellom",
     "and": "og",
     "or": "eller",
+    "at": "kl.",
     "all": "Alle",
     "none": "Ingen",
     "other": "Annet",
@@ -550,5 +551,9 @@
     "conflict_description": "Tidspunktet har en bookingkonflikt",
     "click_available": "Klikk på ledige tidspunkter for å velge",
     "drag_select": "Dra for å velge flere tidspunkter"
+  },
+  "permissions": {
+    "access_denied": "Ingen tilgang",
+    "insufficient_permissions": "Utilstrekkelige tillatelser for å få tilgang til {{domain}}.{{permission}}"
   }
 }

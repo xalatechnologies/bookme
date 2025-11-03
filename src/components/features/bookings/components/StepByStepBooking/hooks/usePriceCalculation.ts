@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ISelectedTimeSlot, ActorType, ActivityType, BookingType } from '@/components/features/bookings/types';
 
 /**
@@ -42,7 +43,9 @@ export const usePriceCalculation = (
   actorType: ActorType | "",
   activityType: ActivityType | "",
   bookingType: BookingType
-): IPriceCalculationResult => {
+) => {
+  const { t } = useTranslation('booking');
+
   /**
    * Calculate base price from slots
    */
@@ -116,23 +119,23 @@ export const usePriceCalculation = (
   const priceBreakdown = useMemo((): readonly IPriceBreakdown[] => {
     const breakdown: IPriceBreakdown[] = [
       {
-        description: 'Grunnpris',
+        description: t('pricing.base_price', 'Grunnpris'),
         amount: basePrice,
         type: 'base' as const,
       },
     ];
 
     if (discounts > 0) {
-      let discountLabel = 'Rabatt';
+      let discountLabel = t('pricing.discount', 'Rabatt');
       switch (actorType) {
         case 'lag-foreninger':
-          discountLabel = 'Rabatt - Lag/Foreninger (20%)';
+          discountLabel = t('pricing.discount_lag_foreninger', 'Rabatt - Lag/Foreninger (20%)');
           break;
         case 'paraply':
-          discountLabel = 'Rabatt - Paraply (30%)';
+          discountLabel = t('pricing.discount_paraply', 'Rabatt - Paraply (30%)');
           break;
         case 'kommunale-enheter':
-          discountLabel = 'Rabatt - Kommunale enheter (50%)';
+          discountLabel = t('pricing.discount_kommunale_enheter', 'Rabatt - Kommunale enheter (50%)');
           break;
       }
 
@@ -144,13 +147,13 @@ export const usePriceCalculation = (
     }
 
     breakdown.push({
-      description: 'MVA (25%)',
+      description: t('pricing.vat_25', 'MVA (25%)'),
       amount: vatAmount,
       type: 'vat' as const,
     });
 
     return breakdown;
-  }, [basePrice, discounts, vatAmount, actorType]);
+  }, [basePrice, discounts, vatAmount, actorType, t]);
 
   /**
    * Determine if approval is required

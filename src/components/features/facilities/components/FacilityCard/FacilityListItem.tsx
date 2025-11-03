@@ -12,6 +12,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { FacilityMiniMap } from "@/components/features/facilities/components/FacilityMap/FacilityMiniMap";
 import { useAmenityTranslation } from "@/hooks/shared";
+import { useFacilityTypeTranslation } from "@/hooks/shared/useFacilityTypeTranslation";
 
 type Facility = Database['public']['Tables']['facilities']['Row'];
 
@@ -24,8 +25,9 @@ export const FacilityListItem: React.FC<FacilityListItemProps> = ({
   facility,
   onAddressClick,
 }): JSX.Element => {
-  const { t } = useTranslation(["facilities"]);
+  const { t } = useTranslation(["facility"]);
   const translateAmenity = useAmenityTranslation();
+  const translateFacilityType = useFacilityTypeTranslation();
   const navigate = useNavigate();
   const [isFavorited, setIsFavorited] = useState(false);
 
@@ -88,7 +90,7 @@ export const FacilityListItem: React.FC<FacilityListItemProps> = ({
           <div className="col-span-3 relative">
             <div className="relative h-full overflow-hidden">
               <img
-                src={facility.images[0] || "/placeholder.svg"}
+                src={(facility.images && Array.isArray(facility.images) && facility.images.length > 0 ? facility.images[0] as string : "/placeholder.svg")}
                 alt={facility.name}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
               />
@@ -96,7 +98,7 @@ export const FacilityListItem: React.FC<FacilityListItemProps> = ({
               {/* Type badge */}
               <div className="absolute top-4 left-4">
                 <Badge className="bg-blue-600 text-white font-medium px-3 py-1">
-                  {facility.type}
+                  {translateFacilityType(facility.facility_type || '')}
                 </Badge>
               </div>
             </div>
@@ -128,14 +130,14 @@ export const FacilityListItem: React.FC<FacilityListItemProps> = ({
               </p>
 
               {/* Amenities Tags */}
-              {facility.amenities.length > 0 && (
+              {facility.amenities && Array.isArray(facility.amenities) && facility.amenities.length > 0 && (
                 <div className="flex flex-wrap gap-2 mb-4">
                   {facility.amenities.slice(0, 4).map((amenity, index) => (
                     <Badge
                       key={index}
                       className="bg-blue-50 text-blue-700 border-blue-200 font-medium px-3 py-1 text-sm hover:bg-blue-100 transition-colors"
                     >
-                      {translateAmenity(amenity)}
+                      {translateAmenity(amenity as string)}
                     </Badge>
                   ))}
                   {facility.amenities.length > 4 && (
@@ -144,7 +146,7 @@ export const FacilityListItem: React.FC<FacilityListItemProps> = ({
                       className="bg-gray-50 text-gray-600 border-gray-300 font-medium px-3 py-1 text-sm"
                     >
                       +{facility.amenities.length - 4}{" "}
-                      {t("facilities:card.more")}
+                      {t("facility:card.more")}
                     </Badge>
                   )}
                 </div>
@@ -162,16 +164,14 @@ export const FacilityListItem: React.FC<FacilityListItemProps> = ({
                     const getFieldValue = (): string | number => {
                       if (field.key === "capacity")
                         return facility.capacity || 0;
-                      if (field.key === "area") return facility.area || "";
-                      if (field.key === "pricePerHour")
-                        return facility.pricePerHour || 0;
+                      // Remove invalid properties that don't exist in the database schema
                       if (field.key === "rating") return facility.rating || 0;
                       if (field.key === "reviewCount")
-                        return facility.reviewCount || 0;
+                        return facility.review_count || 0;
                       return typeof field.value === "boolean"
                         ? field.value
-                          ? t("facilities:card.yes")
-                          : t("facilities:card.no")
+                          ? t("facility:card.yes")
+                          : t("facility:card.no")
                         : field.value;
                     };
 
@@ -191,15 +191,15 @@ export const FacilityListItem: React.FC<FacilityListItemProps> = ({
 
                     const getUnit = (): string => {
                       if (field.key === "capacity")
-                        return t("facilities:card.people");
+                        return t("facility:card.people");
                       if (field.key === "area")
-                        return t("facilities:card.squareMeters");
+                        return t("facility:card.squareMeters");
                       if (field.key === "pricePerHour")
-                        return t("facilities:card.pricePerHour");
+                        return t("facility:card.pricePerHour");
                       if (field.key === "rating")
-                        return t("facilities:card.outOf5");
+                        return t("facility:card.outOf5");
                       if (field.key === "reviewCount")
-                        return t("facilities:card.reviewCount");
+                        return t("facility:card.reviewCount");
                       return "";
                     };
 
@@ -222,8 +222,8 @@ export const FacilityListItem: React.FC<FacilityListItemProps> = ({
                   className="h-9 w-9 p-0 hover:bg-gray-100 rounded-full focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 flex items-center justify-center"
                   aria-label={
                     isFavorited
-                      ? t("facilities:card.removeFavorites")
-                      : t("facilities:card.addToFavorites")
+                      ? t("facility:card.removeFavorites")
+                      : t("facility:card.addToFavorites")
                   }
                 >
                   <Heart
@@ -237,7 +237,7 @@ export const FacilityListItem: React.FC<FacilityListItemProps> = ({
                 <button
                   onClick={handleShare}
                   className="h-9 w-9 p-0 hover:bg-gray-100 rounded-full focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 flex items-center justify-center"
-                  aria-label={t("facilities:card.shareFacility")}
+                  aria-label={t("facility:card.shareFacility")}
                 >
                   <Share2 className="h-4 w-4 text-gray-400" />
                 </button>

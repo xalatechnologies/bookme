@@ -19,6 +19,8 @@ import {
 } from "lucide-react";
 import { FacilityMiniMap } from "@/components/features/facilities/components/FacilityMap/FacilityMiniMap";
 import { useFavoritesStore } from "@/stores/favoritesStore";
+import { useFacilityTypeTranslation } from "@/hooks/shared/useFacilityTypeTranslation";
+import { useAmenityTranslation } from "@/hooks/shared/useAmenityTranslation";
 
 interface IFacilityListItemUserProps {
   readonly id: string;
@@ -38,6 +40,8 @@ interface IFacilityListItemUserProps {
 
 const FacilityListItemUser = (props: IFacilityListItemUserProps): JSX.Element => {
   const { t } = useTranslation(['facility']);
+  const translateFacilityType = useFacilityTypeTranslation();
+  const translateAmenity = useAmenityTranslation();
   const navigate = useNavigate();
   const [isAnimating, setIsAnimating] = useState<boolean>(false);
 
@@ -142,12 +146,14 @@ const FacilityListItemUser = (props: IFacilityListItemUserProps): JSX.Element =>
             className="w-full h-full object-cover"
           />
           
-          {/* Type Badge */}
-          <div className="absolute top-2 left-2">
-            <Badge className="bg-blue-600 text-white text-xs">
-              {type}
-            </Badge>
-          </div>
+          {/* Type Badge - only render if type is not empty */}
+          {type && (
+            <div className="absolute top-2 left-2">
+              <Badge className="bg-blue-600 text-white text-xs">
+                {translateFacilityType(type)}
+              </Badge>
+            </div>
+          )}
           
           {/* Favorite Button */}
           <Button
@@ -211,15 +217,16 @@ const FacilityListItemUser = (props: IFacilityListItemUserProps): JSX.Element =>
                 </span>
               </div>
 
+              {/* Amenities Tags */}
               <div className="flex flex-wrap gap-1">
-                {amenities.slice(0, 3).map((amenity, index) => (
+                {amenities && Array.isArray(amenities) && amenities.slice(0, 3).map((amenity, index) => (
                   <Badge key={index} variant="outline" className="text-xs">
-                    {amenity}
+                    {translateAmenity(amenity)}
                   </Badge>
                 ))}
-                {amenities.length > 3 && (
+                {amenities && Array.isArray(amenities) && amenities.length > 3 && (
                   <Badge variant="outline" className="text-xs">
-                    +{amenities.length - 3}
+                    +{amenities.length - 3} {t('facility:card.more')}
                   </Badge>
                 )}
               </div>
@@ -261,31 +268,25 @@ const FacilityListItemUser = (props: IFacilityListItemUserProps): JSX.Element =>
                 facility={{
                   id,
                   name,
-                  description: description || "",
-                  type,
-                  location: address,
                   address,
-                  capacity,
-                  pricePerHour: parseInt(price?.replace(/[^\d]/g, "") || "0") || 0,
-                  amenities,
-                  images: [image],
-                  availability: {
-                    monday: { start: "08:00", end: "22:00" },
-                    tuesday: { start: "08:00", end: "22:00" },
-                    wednesday: { start: "08:00", end: "22:00" },
-                    thursday: { start: "08:00", end: "22:00" },
-                    friday: { start: "08:00", end: "22:00" },
-                    saturday: { start: "08:00", end: "22:00" },
-                    sunday: { start: "08:00", end: "22:00" }
-                  },
-                  coordinates: { lat: coordinates.lat, lng: coordinates.lng },
-                  rating: rating || 0,
-                  reviewCount: 0,
-                  status: "published",
-                  owner: "",
-                  lastUpdated: "",
-                  createdAt: "",
-                  updatedAt: ""
+                  location: { lat: coordinates.lat, lng: coordinates.lng },
+                  amenities: [...amenities], // Convert readonly array to mutable array
+                  accessibility_features: null,
+                  area_description: null,
+                  capacity: 0,
+                  city: null,
+                  country: null,
+                  created_at: "",
+                  description: null,
+                  facility_type: "",
+                  images: null,
+                  org_id: "",
+                  postal_code: null,
+                  rating: 0,
+                  review_count: 0,
+                  slug: "",
+                  status: "",
+                  updated_at: "",
                 }}
                 mapboxToken="pk.eyJ1IjoiYW1pbjA3IiwiYSI6ImNtZzlqcjNnczBmMmsycXM2cm4xYzU0OGwifQ.1Vuiv_9pPIUY478LP3yccA"
               />

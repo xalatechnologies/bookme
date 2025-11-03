@@ -44,14 +44,14 @@ export function BookingTypeSelector({
   const types = [
     {
       id: "one-time" as BookingType,
-      label: t("bookings:booking_types.one_time_label"),
-      description: t("bookings:booking_types.one_time_description"),
+      label: t("booking:booking_types.one_time_label"),
+      description: t("booking:booking_types.one_time_description"),
       icon: Calendar,
     },
     {
       id: "recurring" as BookingType,
-      label: t("bookings:booking_types.recurring_label"),
-      description: t("bookings:booking_types.recurring_description"),
+      label: t("booking:booking_types.recurring_label"),
+      description: t("booking:booking_types.recurring_description"),
       icon: Repeat,
     },
   ];
@@ -74,7 +74,7 @@ export function BookingTypeSelector({
                 : "hover:bg-gray-50 border-gray-200"
             } ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
             aria-pressed={isSelected}
-            aria-label={t("bookings:booking_types.select_label", {
+            aria-label={t("booking:booking_types.select_label", {
               type: type.label,
             })}
           >

@@ -3,9 +3,11 @@
 import React, { useState } from 'react';
 import { CheckCircle, XCircle, ChevronDown, ChevronRight } from 'lucide-react';
 
-import type { Zone } from '@/components/features/bookings/types';
+import type { Zone } from '@/types/booking';
 import { useTranslation } from '@/i18n';
 import { useFieldConfigStore } from '@/stores/fieldConfigStore';
+
+import { FacilityCalendar } from '@/components/features/calendar/components/FacilityCalendar';
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
@@ -21,11 +23,11 @@ interface FacilityInfoTabsProps {
   readonly equipment: readonly string[];
   readonly zones: readonly Zone[];
   readonly amenities: readonly string[];
-  readonly address: string;
   readonly area: string;
   readonly suitableFor: readonly string[];
   readonly facilityId: string;
   readonly facilityName: string;
+  readonly showBookingInterface?: boolean;
 }
 
 export const FacilityInfoTabs: React.FC<FacilityInfoTabsProps> = ({
@@ -34,13 +36,13 @@ export const FacilityInfoTabs: React.FC<FacilityInfoTabsProps> = ({
   equipment,
   zones,
   amenities,
-  address,
   area,
   suitableFor,
   facilityId,
-  facilityName
+  facilityName,
+  showBookingInterface = false
 }): JSX.Element => {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['facility', 'common']);
   const [expandedFAQ, setExpandedFAQ] = useState<string | null>(null);
 
   const toggleFAQ = (faqId: string): void => {
@@ -54,14 +56,39 @@ export const FacilityInfoTabs: React.FC<FacilityInfoTabsProps> = ({
   const { firstColumn, secondColumn } = splitFieldsIntoColumns(visibleFields);
 
   return (
-    <Tabs defaultValue="general" className="w-full">
-      <TabsList className="grid w-full grid-cols-5">
-        <TabsTrigger value="general">{t('common:tabs.general')}</TabsTrigger>
-        <TabsTrigger value="zones">{t('common:tabs.zones')}</TabsTrigger>
-        <TabsTrigger value="facilities">{t('common:tabs.facilities')}</TabsTrigger>
-        <TabsTrigger value="rules">{t('common:tabs.rules')}</TabsTrigger>
-        <TabsTrigger value="faq">{t('common:tabs.faq')}</TabsTrigger>
+    <Tabs defaultValue="book" className="w-full">
+      <TabsList className="grid w-full grid-cols-6">
+        <TabsTrigger value="book">{t('facility:actions.book')}</TabsTrigger>
+        <TabsTrigger value="general">{t('facility:details.overview')}</TabsTrigger>
+        <TabsTrigger value="zones">{t('facility:zones.title')}</TabsTrigger>
+        <TabsTrigger value="facilities">{t('facility:details.facilities')}</TabsTrigger>
+        <TabsTrigger value="rules">{t('facility:details.policies')}</TabsTrigger>
+        <TabsTrigger value="faq">{t('common:faq.title')}</TabsTrigger>
       </TabsList>
+
+      <TabsContent value="book" className="space-y-6 mt-6">
+        <TabPanel>
+          <div>
+            {showBookingInterface && zones.length > 0 ? (
+              <FacilityCalendar
+                facilityId={facilityId}
+                facilityName={facilityName}
+                zones={zones}
+                isLoading={false}
+                error={undefined}
+                openingHoursStart="08:00"
+                openingHoursEnd="22:00"
+                useStepByStepBooking={true}
+              />
+            ) : (
+              <div className="text-center py-12">
+                <h3 className="text-xl font-semibold mb-4">{t('facility:details.book_facility')}</h3>
+                <p className="text-gray-600">{t('facility:mobile_panel.booking_coming_soon')}</p>
+              </div>
+            )}
+          </div>
+        </TabPanel>
+      </TabsContent>
 
       <TabsContent value="general" className="space-y-6 mt-6">
         <TabPanel>
@@ -93,7 +120,7 @@ export const FacilityInfoTabs: React.FC<FacilityInfoTabsProps> = ({
 
                 {equipment.length > 0 && (
                   <div>
-                    <span className="font-medium">{t('facility:fields.equipment')}:</span>
+                    <span className="font-medium">{t('fields.equipment')}:</span>
                     <span className="ml-2 text-gray-600">{equipment.slice(0, 2).join(', ')}</span>
                     {equipment.length > 2 && (
                       <span className="text-gray-500"> +{equipment.length - 2} {t('facility:card.moreAmenities')}</span>
@@ -109,7 +136,7 @@ export const FacilityInfoTabs: React.FC<FacilityInfoTabsProps> = ({
       <TabsContent value="zones" className="space-y-6 mt-6">
         <TabPanel>
           <div>
-            <h3 className="text-xl font-semibold mb-4">{t('common:available_zones')}</h3>
+            <h3 className="text-xl font-semibold mb-4">{t('facility:zones.available_zones')}</h3>
             {zones.length > 0 ? (
               <div className="space-y-4">
                 {zones.map((zone) => (

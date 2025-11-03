@@ -54,10 +54,6 @@ import {
   DASHBOARD_PERMISSIONS,
 } from "@/components/features/dashboard";
 import {
-  hasGroupPermission,
-  GROUPS_PERMISSIONS,
-} from "@/components/features/groups";
-import {
   hasSearchPermission,
   SEARCH_PERMISSIONS,
 } from "@/components/features/search";
@@ -77,7 +73,6 @@ export type PermissionDomain =
   | "cart"
   | "auth"
   | "dashboard"
-  | "groups"
   | "search"
   | "support";
 
@@ -123,7 +118,7 @@ const DefaultAccessDenied: React.FC<{ message?: string }> = ({ message }) => {
         </svg>
       </div>
       <p className="text-sm text-gray-600 dark:text-gray-400">
-        {message || t("permissions.access_denied")}
+        {message || t("permissions.access_denied", "Access denied")}
       </p>
     </div>
   );
@@ -200,15 +195,6 @@ export const PermissionGuard: React.FC<PermissionGuardProps> = ({
           permission as keyof typeof DASHBOARD_PERMISSIONS
         );
         break;
-      case "groups":
-        // Groups uses single role instead of array
-        hasPermission = userRoles.some((role: string) =>
-          hasGroupPermission(
-            role,
-            permission as keyof typeof GROUPS_PERMISSIONS
-          )
-        );
-        break;
       case "search":
         hasPermission = hasSearchPermission(
           userRoles,
@@ -250,6 +236,7 @@ export const PermissionGuard: React.FC<PermissionGuardProps> = ({
           message={t("permissions.insufficient_permissions", {
             domain,
             permission,
+            defaultValue: "Insufficient permissions to access {{domain}}.{{permission}}"
           })}
         />
       </div>

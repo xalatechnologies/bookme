@@ -16,6 +16,7 @@ import {
   copyToClipboard,
 } from "@/components/features/facilities/utils/formatters";
 import { useAmenityTranslation } from "@/hooks/shared";
+import { useFacilityTypeTranslation } from "@/hooks/shared/useFacilityTypeTranslation";
 
 type Facility = Database['public']['Tables']['facilities']['Row'];
 
@@ -40,6 +41,7 @@ export const FacilityCard = ({
 }: FacilityCardProps): JSX.Element => {
   const { t } = useTranslation(["facility", "common"]);
   const translateAmenity = useAmenityTranslation();
+  const translateFacilityType = useFacilityTypeTranslation();
   const navigate = useNavigate();
   const [isFavorited, setIsFavorited] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
@@ -88,10 +90,8 @@ export const FacilityCard = ({
   const getFieldValue = (fieldKey: string): string | number => {
     const valueMap: Record<string, string | number> = {
       capacity: facility.capacity || 0,
-      area: facility.area || "",
-      pricePerHour: facility.pricePerHour || 0,
       rating: facility.rating || 0,
-      reviewCount: facility.reviewCount || 0,
+      reviewCount: facility.review_count || 0,
     };
     return valueMap[fieldKey] || "";
   };
@@ -139,7 +139,7 @@ export const FacilityCard = ({
       {/* Image Section */}
       <div className="relative h-48 sm:h-56 md:h-64 overflow-hidden">
         <img
-          src={facility.images[0] || "/placeholder.svg"}
+          src={(facility.images && Array.isArray(facility.images) && facility.images.length > 0 ? facility.images[0] as string : "/placeholder.svg")}
           alt={facility.name}
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
         />
@@ -169,7 +169,7 @@ export const FacilityCard = ({
         {/* Type badge */}
         <div className="absolute top-2 sm:top-3 md:top-4 left-2 sm:left-3 md:left-4">
           <Badge className="bg-blue-600 text-white font-medium px-2 py-1 text-xs sm:text-sm">
-            {facility.type}
+            {translateFacilityType(facility.facility_type || '')}
           </Badge>
         </div>
       </div>
@@ -198,14 +198,14 @@ export const FacilityCard = ({
         </p>
 
         {/* Amenities Tags */}
-        {facility.amenities.length > 0 && (
+        {facility.amenities && Array.isArray(facility.amenities) && facility.amenities.length > 0 && (
           <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-4 sm:mb-5">
             {facility.amenities.slice(0, 3).map((amenity, index) => (
               <Badge
                 key={index}
                 className="bg-blue-50 text-blue-700 border-blue-200 font-medium px-2 py-1 text-xs sm:text-sm hover:bg-blue-100 transition-colors"
               >
-                {translateAmenity(amenity)}
+                {translateAmenity(amenity as string)}
               </Badge>
             ))}
             {facility.amenities.length > 3 && (
@@ -241,7 +241,7 @@ export const FacilityCard = ({
                 >
                   {getFieldIcon(field.key)}
                   <span className="text-sm sm:text-base font-medium">
-                    {t(field.label)}: {value || booleanValue}
+                    {t(field.label as any)}: {value || booleanValue}
                     {unit && ` ${unit}`}
                   </span>
                 </div>

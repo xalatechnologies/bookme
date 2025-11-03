@@ -33,9 +33,9 @@
       "@/layouts/*": ["./src/components/layouts/*"],
       "@/ui/*": ["./src/components/ui/*"],
       "@/common/*": ["./src/components/common/*"],
-      "@/shared/*": ["./src/src/shared/*"],
-      "@/assets/*": ["./src/src/assets/*"],
-      "@/stores/*": ["./src/src/stores/*"],
+      "@/shared/*": ["./src/shared/*"],
+      "@/assets/*": ["./src/assets/*"],
+      "@/stores/*": ["./src/stores/*"],
       "@/i18n/*": ["./src/i18n/*"]
     },
     "types": ["react", "react-dom", "node"],

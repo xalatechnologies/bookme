@@ -8,6 +8,7 @@
 import React from 'react';
 import { Wifi, Car, Camera, Volume2, CheckCircle } from 'lucide-react';
 import { getAmenityIconType, type AmenityIconType } from '@/utils/facility/amenityIconUtils';
+import { useAmenityTranslation } from '@/hooks/shared/useAmenityTranslation';
 
 interface AmenityGridProps {
   readonly items: readonly string[];
@@ -66,6 +67,8 @@ export const AmenityGrid: React.FC<AmenityGridProps> = ({
   variant = 'default',
   emptyMessage
 }): JSX.Element | null => {
+  const translateAmenity = useAmenityTranslation();
+  
   // If no items and no empty message, don't render anything
   if (items.length === 0 && !emptyMessage) {
     return null;
@@ -92,7 +95,7 @@ export const AmenityGrid: React.FC<AmenityGridProps> = ({
             <div className={`${classes.icon} mr-3`}>
               {getIconElement(iconType)}
             </div>
-            <span className="text-gray-700">{item}</span>
+            <span className="text-gray-700">{translateAmenity(item)}</span>
           </div>
         );
       })}

@@ -4,6 +4,7 @@ import React from "react";
 import { MapPin, Users, Star } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Badge } from "@/components/ui/badge";
+import { useFacilityTypeTranslation } from "@/hooks/shared/useFacilityTypeTranslation";
 
 interface IFacilityCardBaseProps {
   readonly id: string;
@@ -21,6 +22,7 @@ interface IFacilityCardBaseProps {
 
 const FacilityCardBase = (props: IFacilityCardBaseProps): JSX.Element => {
   const { t } = useTranslation(['facility']);
+  const translateFacilityType = useFacilityTypeTranslation();
   const {
     id,
     name,
@@ -45,12 +47,14 @@ const FacilityCardBase = (props: IFacilityCardBaseProps): JSX.Element => {
           className="w-full h-full object-cover"
         />
         
-        {/* Type Badge */}
-        <div className="absolute top-3 left-3">
-          <Badge className="bg-blue-600 text-white">
-            {type}
-          </Badge>
-        </div>
+        {/* Type Badge - only render if type is not empty */}
+        {type && (
+          <div className="absolute top-3 left-3">
+            <Badge className="bg-blue-600 text-white">
+              {translateFacilityType(type)}
+            </Badge>
+          </div>
+        )}
         
         {/* Children (favorite, share buttons, etc.) */}
         {children}

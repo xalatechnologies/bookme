@@ -174,6 +174,21 @@
     "sort_oldest": "Oldest First"
   },
   "details": {
+    "title": "Booking Details",
+    "unknownVenue": "Unknown venue",
+    "statusLabel": "Status:",
+    "dateLabel": "Date:",
+    "timeLabel": "Time:",
+    "durationLabel": "Duration:",
+    "totalPriceLabel": "Total Price:",
+    "notesLabel": "Notes:",
+    "bookingIdLabel": "Booking ID:",
+    "actionsLabel": "Actions:",
+    "editBooking": "Edit Booking",
+    "cancelBooking": "Cancel Booking",
+    "shareBooking": "Share Booking",
+    "addToCalendar": "Add to Calendar",
+    "close": "Close",
     "summary": "Summary",
     "booking_details": "Booking Details",
     "facility_info": "Facility Information",
@@ -195,7 +210,11 @@
     "total_cost": "Total Cost",
     "per_hour": "per hour",
     "includes_vat": "incl. VAT",
-    "excludes_vat": "excl. VAT"
+    "excludes_vat": "excl. VAT",
+    "select_slots_pricing": "Select time slots and get pricing",
+    "selected_slots_pricing": "Selected time slots and pricing",
+    "recurring_slots_pricing": "Recurring time slots and pricing",
+    "select_pattern": "Time slots and pricing (select recurrence pattern)"
   },
   "pricing": {
     "base_price": "Base price",
@@ -459,47 +478,32 @@
     "info_copied": "Booking info copied to clipboard!",
     "recurring_coming_soon": "Viewing recurring bookings coming soon!"
   },
-  "details": {
-    "title": "Booking Details",
-    "unknownVenue": "Unknown venue",
-    "statusLabel": "Status:",
-    "dateLabel": "Date:",
-    "timeLabel": "Time:",
-    "durationLabel": "Duration:",
-    "totalPriceLabel": "Total Price:",
-    "notesLabel": "Notes:",
-    "bookingIdLabel": "Booking ID:",
-    "actionsLabel": "Actions:",
-    "editBooking": "Edit",
-    "cancelBooking": "Cancel",
-    "shareBooking": "Share",
-    "addToCalendar": "Add to Calendar",
-    "close": "Close"
-  },
   "time": {
-    "hour": "hour",
+    "hour": "1 hour",
     "hours": "hours"
   },
   "steps": {
     "calendar": {
-      "title": "Select Time",
-      "description": "Click on available time slots to select them. You can select multiple time slots."
-    },
-    "recurrence": {
-      "title": "Recurrence",
-      "description": "Select recurrence pattern"
+      "title": "Select Time Slots",
+      "description": "Click on available time slots to select them. You can select multiple time slots at once."
     },
     "details": {
-      "title": "Booking Details",
-      "description": "Fill in booking information"
+      "title": "Fill in Booking Details",
+      "description": "Tell us about your event so we can help you with the right booking."
+    },
+    "recurrence": {
+      "title": "Select Recurrence Pattern",
+      "description": "Select how often the booking should repeat. This applies to all selected time slots."
     },
     "terms": {
       "title": "Terms and Conditions",
-      "description": "Read and accept the terms"
+      "description": "Read through the terms and accept them to continue."
     },
     "actions": {
       "title": "Complete Booking",
-      "description": "Add to cart or complete now"
+      "description": "Review the information and choose how to proceed.",
+      "ready": "Ready for booking!",
+      "all_filled": "All information is filled out and the terms are accepted."
     }
   },
   "progress": {
@@ -511,7 +515,10 @@
     "selected_slots_and_price": "Selected time slots and pricing",
     "recurring_slots_and_price": "Recurring time slots and pricing",
     "slots_and_price_select_pattern": "Time slots and pricing (select recurrence pattern)",
-    "clear_all_slots": "Remove all selected time slots"
+    "clear_all_slots": "Remove all selected time slots",
+    "template_for_recurrence": "Template for recurrence",
+    "recurring_instances": "Recurring instances ({{count}} total):",
+    "and_more": "... and {{count}} more"
   },
   "recurrence": {
     "title": "Recurrence pattern",
@@ -535,6 +542,7 @@
     "second": "Second",
     "third": "Third",
     "fourth": "Fourth",
-    "last": "Last"
+    "last": "Last",
+    "recurring": "Recurring"
   }
 }
