@@ -1,27 +1,25 @@
 "use client";
 
 import React from "react";
-import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import {
-  Bell,
-  Globe,
-  Shield,
+import { 
+  Bell, 
+  Globe, 
+  Shield, 
   Save,
   Key,
   Mail,
   Smartphone,
   CheckCircle,
-  AlertCircle,
+  AlertCircle
 } from "lucide-react";
 import { useUserSettingsManagement } from "@/hooks/features/settings/useUserSettingsManagement";
 
 const UserSettings = (): JSX.Element => {
-  const { t } = useTranslation(['user', 'common']);
   const {
     settings,
     isSaving,
@@ -44,10 +42,10 @@ const UserSettings = (): JSX.Element => {
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-          {t('user:settings.title')}
+          Innstillinger
         </h1>
         <p className="text-gray-600 dark:text-gray-400">
-          {t('user:settings.subtitle')}
+          Administrer dine kontoinnstillinger og preferanser
         </p>
       </div>
 
@@ -56,7 +54,7 @@ const UserSettings = (): JSX.Element => {
         <div className="flex items-center gap-3 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
           <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400" />
           <p className="text-sm text-green-800 dark:text-green-300">
-            {t('user:settings.settings_saved')}
+            Innstillinger lagret!
           </p>
         </div>
       )}
@@ -76,41 +74,41 @@ const UserSettings = (): JSX.Element => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Bell className="h-5 w-5" />
-              {t('user:settings.notifications.title')}
+              Varsler
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
             <SettingToggle
-              label={t('user:settings.notifications.email')}
-              description={t('user:settings.notifications.email_desc')}
+              label="E-post varsler"
+              description="Motta varsler på e-post"
               checked={settings.emailNotifications}
               onChange={(checked) => updateSetting('emailNotifications', checked)}
             />
 
             <SettingToggle
-              label={t('user:settings.notifications.sms')}
-              description={t('user:settings.notifications.sms_desc')}
+              label="SMS varsler"
+              description="Motta varsler på SMS"
               checked={settings.smsNotifications}
               onChange={(checked) => updateSetting('smsNotifications', checked)}
             />
 
             <SettingToggle
-              label={t('user:settings.notifications.push')}
-              description={t('user:settings.notifications.push_desc')}
+              label="Push varsler"
+              description="Motta push-varsler i nettleseren"
               checked={settings.pushNotifications}
               onChange={(checked) => updateSetting('pushNotifications', checked)}
             />
 
             <SettingToggle
-              label={t('user:settings.notifications.booking_reminders')}
-              description={t('user:settings.notifications.booking_reminders_desc')}
+              label="Booking påminnelser"
+              description="Få påminnelser før bookinger"
               checked={settings.bookingReminders}
               onChange={(checked) => updateSetting('bookingReminders', checked)}
             />
 
             <SettingToggle
-              label={t('user:settings.notifications.marketing')}
-              description={t('user:settings.notifications.marketing_desc')}
+              label="Markedsføring"
+              description="Motta markedsføring og tilbud"
               checked={settings.marketingEmails}
               onChange={(checked) => updateSetting('marketingEmails', checked)}
             />
@@ -122,20 +120,20 @@ const UserSettings = (): JSX.Element => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Shield className="h-5 w-5" />
-              {t('user:settings.privacy_security.title')}
+              Personvern og sikkerhet
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
             <SettingToggle
-              label={t('user:settings.privacy_security.show_profile')}
-              description={t('user:settings.privacy_security.show_profile_desc')}
+              label="Vis profil offentlig"
+              description="La andre brukere se din profil"
               checked={settings.showProfile}
               onChange={(checked) => updateSetting('showProfile', checked)}
             />
 
             <SettingToggle
-              label={t('user:settings.privacy_security.two_factor')}
-              description={t('user:settings.privacy_security.two_factor_desc')}
+              label="To-faktor autentisering"
+              description="Ekstra sikkerhet for kontoen"
               checked={settings.twoFactorAuth}
               onChange={(checked) => updateSetting('twoFactorAuth', checked)}
             />
@@ -143,7 +141,7 @@ const UserSettings = (): JSX.Element => {
             <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
               <Button variant="outline" className="w-full flex items-center gap-2">
                 <Key className="h-4 w-4" />
-                {t('user:settings.privacy_security.change_password')}
+                Endre passord
               </Button>
             </div>
           </CardContent>
@@ -154,13 +152,13 @@ const UserSettings = (): JSX.Element => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Globe className="h-5 w-5" />
-              {t('user:settings.language_region.title')}
+              Språk og region
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
             <div>
               <Label className="text-sm font-medium text-gray-900 dark:text-white">
-                {t('user:settings.language_region.language')}
+                Språk
               </Label>
               <Select
                 value={settings.language}
@@ -170,15 +168,15 @@ const UserSettings = (): JSX.Element => {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="no">{t('user:settings.language_region.languages.no')}</SelectItem>
-                  <SelectItem value="en">{t('user:settings.language_region.languages.en')}</SelectItem>
+                  <SelectItem value="no">Norsk</SelectItem>
+                  <SelectItem value="en">English</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div>
               <Label className="text-sm font-medium text-gray-900 dark:text-white">
-                {t('user:settings.language_region.timezone')}
+                Tidssone
               </Label>
               <Select
                 value={settings.timezone}
@@ -188,10 +186,10 @@ const UserSettings = (): JSX.Element => {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Europe/Oslo">{t('user:settings.language_region.timezones.oslo')}</SelectItem>
-                  <SelectItem value="Europe/Stockholm">{t('user:settings.language_region.timezones.stockholm')}</SelectItem>
-                  <SelectItem value="Europe/Copenhagen">{t('user:settings.language_region.timezones.copenhagen')}</SelectItem>
-                  <SelectItem value="UTC">{t('user:settings.language_region.timezones.utc')}</SelectItem>
+                  <SelectItem value="Europe/Oslo">Europe/Oslo (Norge)</SelectItem>
+                  <SelectItem value="Europe/Stockholm">Europe/Stockholm (Sverige)</SelectItem>
+                  <SelectItem value="Europe/Copenhagen">Europe/Copenhagen (Danmark)</SelectItem>
+                  <SelectItem value="UTC">UTC</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -201,22 +199,22 @@ const UserSettings = (): JSX.Element => {
         {/* Account Actions */}
         <Card>
           <CardHeader>
-            <CardTitle>{t('user:settings.account_actions.title')}</CardTitle>
+            <CardTitle>Kontohandlinger</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <Button variant="outline" className="w-full flex items-center gap-2">
               <Mail className="h-4 w-4" />
-              {t('user:settings.account_actions.change_email')}
+              Endre e-postadresse
             </Button>
 
             <Button variant="outline" className="w-full flex items-center gap-2">
               <Smartphone className="h-4 w-4" />
-              {t('user:settings.account_actions.change_phone')}
+              Endre telefonnummer
             </Button>
 
             <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
               <Button variant="destructive" className="w-full">
-                {t('user:settings.account_actions.delete_account')}
+                Slett konto
               </Button>
             </div>
           </CardContent>
@@ -231,7 +229,7 @@ const UserSettings = (): JSX.Element => {
           className="flex items-center gap-2"
         >
           <Save className="h-4 w-4" />
-          {isSaving ? t('common:saving') : t('user:settings.save_settings')}
+          {isSaving ? 'Lagrer...' : 'Lagre innstillinger'}
         </Button>
       </div>
     </div>
