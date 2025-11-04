@@ -382,11 +382,7 @@
     "slots_and_price_select_pattern": "Time slots and pricing (select recurrence pattern)",
     "selected_slots_and_price": "Selected time slots and pricing",
     "select_slots_get_price": "Select time slots and get pricing",
-    "select_slots_pricing": "Select time slots and get pricing",
-    "selected_slots_and_price": "Selected time slots and pricing",
-    "recurring_slots_and_price": "Recurring time slots and pricing",
-    "slots_and_price_select_pattern": "Time slots and pricing (select recurrence pattern)",
-    "clear_all_slots": "Remove all selected time slots"
+    "select_slots_pricing": "Select time slots and get pricing"
   },
   "time": {
     "hour": "hour",
@@ -411,19 +407,14 @@
     },
     "actions": {
       "title": "Complete Booking",
-      "description": "Add to cart or complete now"
+      "description": "Add to cart or complete now",
+      "ready": "Ready for booking!",
+      "all_filled": "All information is filled out and the terms are accepted."
     }
   },
   "progress": {
     "title": "Booking Process",
     "step_of": "Step {{current}} of {{total}}"
-  },
-  "sidebar": {
-    "select_slots_pricing": "Select time slots and get pricing",
-    "selected_slots_and_price": "Selected time slots and pricing",
-    "recurring_slots_and_price": "Recurring time slots and pricing",
-    "slots_and_price_select_pattern": "Time slots and pricing (select recurrence pattern)",
-    "clear_all_slots": "Remove all selected time slots"
   },
   "recurrence": {
     "title": "Recurrence pattern",

@@ -40,6 +40,7 @@ import {
 } from "@/components/ui/dialog";
 import { RecurringBooking } from "@/types/recurringBooking";
 import { recurrenceEngine } from "@/components/features/bookings/utils/recurrence";
+import { useTranslation } from 'react-i18next';
 
 /**
  * Props interface for RecurringBookingCard component
@@ -205,12 +206,14 @@ export const RecurringBookingCard: React.FC<RecurringBookingCardProps> = ({
   onCancelOccurrence,
   onConfirmOccurrence,
 }) => {
+  const { t } = useTranslation(['common', 'booking']);
   const [showCancelDialog, setShowCancelDialog] = useState<boolean>(false);
   const [showPauseDialog, setShowPauseDialog] = useState<boolean>(false);
   const [showResumeDialog, setShowResumeDialog] = useState<boolean>(false);
 
   const patternDescription = recurrenceEngine.getPatternDescription(
-    booking.recurrencePattern
+    booking.recurrencePattern,
+    t
   );
   const totalOccurrences = booking.occurrences.length;
   const confirmedOccurrences = booking.occurrences.filter(

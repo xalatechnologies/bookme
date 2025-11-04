@@ -25,8 +25,12 @@ import authEN from '../../public/locales/en/auth.json';
 import authNO from '../../public/locales/no/auth.json';
 import bookingEN from '../../public/locales/en/booking.json';
 import bookingNO from '../../public/locales/no/booking.json';
+import bookingsEN from '../../public/locales/en/bookings.json';
+import bookingsNO from '../../public/locales/no/bookings.json';
 import facilityEN from '../../public/locales/en/facility.json';
 import facilityNO from '../../public/locales/no/facility.json';
+import checkoutEN from '../../public/locales/en/checkout.json';
+import checkoutNO from '../../public/locales/no/checkout.json';
 
 // Supported languages
 export const SUPPORTED_LANGUAGES = {
@@ -48,9 +52,11 @@ export const NAMESPACES = {
   COMMON: 'common',
   FACILITY: 'facility',
   BOOKING: 'booking',
+  BOOKINGS: 'bookings',
   AUTH: 'auth',
   NAVIGATION: 'navigation',
   ERRORS: 'errors',
+  CHECKOUT: 'checkout',
 } as const;
 
 // Initialize i18next
@@ -132,7 +138,9 @@ i18n
         navigation: navigationEN,
         auth: authEN,
         booking: bookingEN,
+        bookings: bookingsEN,
         facility: facilityEN,
+        checkout: checkoutEN,
       },
       no: {
         roles: rolesNO,
@@ -140,7 +148,9 @@ i18n
         navigation: navigationNO,
         auth: authNO,
         booking: bookingNO,
+        bookings: bookingsNO,
         facility: facilityNO,
+        checkout: checkoutNO,
       },
     },
 
@@ -161,9 +171,6 @@ i18n
 
     // Return empty string for missing keys in production
     returnEmptyString: !import.meta.env.DEV,
-
-    // Reload on language change
-    reloadOnPrerender: import.meta.env.DEV,
   });
 
 // Export configured i18n instance

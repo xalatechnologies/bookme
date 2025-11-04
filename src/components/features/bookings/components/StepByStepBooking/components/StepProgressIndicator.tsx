@@ -55,10 +55,10 @@ export const StepProgressIndicator = ({
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="font-semibold">
-              {t("steps.progress.title", "Bookingprosess")}
+              {t("progress.title", "Booking Process")}
             </h3>
             <span className="text-sm text-gray-500">
-              {t("steps.progress.current", "Steg {{current}} av {{total}}", {
+              {t("progress.step_of", "Step {{current}} of {{total}}", {
                 current: currentStepIndex + 1,
                 total: steps.length,
               })}
@@ -82,10 +82,10 @@ export const StepProgressIndicator = ({
                   disabled={!isAccessible}
                   aria-label={`${step.title} - ${
                     isCurrent
-                      ? t("steps.progress.current_step", "Gjeldende steg")
+                      ? "Current step"
                       : isCompleted
-                      ? t("steps.progress.completed", "Fullført")
-                      : t("steps.progress.upcoming", "Kommende")
+                      ? "Completed"
+                      : "Upcoming"
                   }`}
                   className={`flex flex-col items-center space-y-2 p-2 rounded-lg transition-colors ${
                     isCurrent

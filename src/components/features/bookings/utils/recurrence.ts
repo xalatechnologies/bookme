@@ -276,26 +276,60 @@ export class RecurrenceEngine {
    * Get human-readable description of recurrence pattern
    * 
    * @param pattern - Recurrence pattern
+   * @param t - Translation function (optional)
    * @returns Human-readable description
    */
-  getPatternDescription(pattern: RecurrencePattern): string {
-    const weekdayNames = ['Søndag', 'Mandag', 'Tirsdag', 'Onsdag', 'Torsdag', 'Fredag', 'Lørdag'];
+  getPatternDescription(pattern: RecurrencePattern, t?: (key: string, fallback: string) => string): string {
+    // Use provided translation function or fallback to English defaults
+    const translate = t || ((key: string, fallback: string) => fallback);
+    
+    const weekdayNames = [
+      translate('common:time.weekdays.sunday', 'Sunday'),
+      translate('common:time.weekdays.monday', 'Monday'),
+      translate('common:time.weekdays.tuesday', 'Tuesday'),
+      translate('common:time.weekdays.wednesday', 'Wednesday'),
+      translate('common:time.weekdays.thursday', 'Thursday'),
+      translate('common:time.weekdays.friday', 'Friday'),
+      translate('common:time.weekdays.saturday', 'Saturday')
+    ];
+    
     const selectedDays = pattern.weekdays.map(day => weekdayNames[day]).join(', ');
 
     switch (pattern.type) {
       case 'single':
-        return 'Enkelt booking';
+        return translate('booking:recurrence.single', 'Single booking');
       case 'weekly':
-        return `Ukentlig på ${selectedDays}`;
+        return `${translate('booking:recurrence.weekly', 'Weekly')} ${translate('booking:recurrence.on', 'on')} ${selectedDays}`;
       case 'biweekly':
-        return `Annenhver uke på ${selectedDays}`;
+        return `${translate('booking:recurrence.biweekly', 'Every other week')} ${translate('booking:recurrence.on', 'on')} ${selectedDays}`;
       case 'monthly':
+        // Translate the monthly pattern value
+        let monthlyPatternText = '';
+        switch (pattern.monthlyPattern) {
+          case 'first':
+            monthlyPatternText = translate('booking:recurrence.first', 'First');
+            break;
+          case 'second':
+            monthlyPatternText = translate('booking:recurrence.second', 'Second');
+            break;
+          case 'third':
+            monthlyPatternText = translate('booking:recurrence.third', 'Third');
+            break;
+          case 'fourth':
+            monthlyPatternText = translate('booking:recurrence.fourth', 'Fourth');
+            break;
+          case 'last':
+            monthlyPatternText = translate('booking:recurrence.last', 'Last');
+            break;
+          default:
+            monthlyPatternText = pattern.monthlyPattern || '';
+        }
         const dayName = weekdayNames[pattern.monthlyWeekday || 0];
-        return `${pattern.monthlyPattern} ${dayName} hver måned`;
+        return `${monthlyPatternText} ${dayName} ${translate('booking:recurrence.every_month', 'every month')}`;
       case 'custom':
-        return `Egendefinert: hver ${pattern.interval}. dag på ${selectedDays}`;
+        return `${translate('booking:recurrence.custom', 'Custom')}: ${translate('booking:recurrence.every', 'every')} ${pattern.interval} ${translate('booking:recurrence.day_on', 'day on')} ${selectedDays}`;
       default:
-        return 'Ukjent mønster';
+        return translate('booking:recurrence.unknown_pattern', 'Unknown pattern');
     }
   }
 
@@ -303,36 +337,40 @@ export class RecurrenceEngine {
    * Validate recurrence pattern
    * 
    * @param pattern - Recurrence pattern to validate
+   * @param t - Translation function (optional)
    * @returns Validation result with errors if any
    */
-  validatePattern(pattern: RecurrencePattern): { isValid: boolean; errors: string[] } {
+  validatePattern(pattern: RecurrencePattern, t?: (key: string, fallback: string) => string): { isValid: boolean; errors: string[] } {
+    // Use provided translation function or fallback to English defaults
+    const translate = t || ((key: string, fallback: string) => fallback);
+    
     const errors: string[] = [];
 
     if (!pattern.type) {
-      errors.push('Recurrence type is required');
+      errors.push(translate('booking:validation.recurrence_type_required', 'Recurrence type is required'));
     }
 
     if (pattern.type === 'weekly' || pattern.type === 'biweekly' || pattern.type === 'custom') {
       if (!pattern.weekdays || pattern.weekdays.length === 0) {
-        errors.push('Weekdays must be specified for this recurrence type');
+        errors.push(translate('booking:validation.weekdays_required', 'Weekdays must be specified for this recurrence type'));
       }
     }
 
     if (pattern.type === 'monthly') {
       if (!pattern.monthlyPattern) {
-        errors.push('Monthly pattern must be specified');
+        errors.push(translate('booking:validation.monthly_pattern_required', 'Monthly pattern must be specified'));
       }
       if (pattern.monthlyWeekday === undefined) {
-        errors.push('Monthly weekday must be specified');
+        errors.push(translate('booking:validation.monthly_weekday_required', 'Monthly weekday must be specified'));
       }
     }
 
     if (pattern.type === 'custom' && (!pattern.interval || pattern.interval < 1)) {
-      errors.push('Custom interval must be at least 1');
+      errors.push(translate('booking:validation.custom_interval_required', 'Custom interval must be at least 1'));
     }
 
     if (pattern.endDate && pattern.startDate && pattern.endDate <= pattern.startDate) {
-      errors.push('End date must be after start date');
+      errors.push(translate('booking:validation.end_date_after_start', 'End date must be after start date'));
     }
 
     return {

@@ -25,6 +25,7 @@
     "address": "Address",
     "purpose": "Purpose",
     "attendees": "Number of attendees",
+    "attendees_unit": "attendees",
     "activity_type": "Activity type",
     "additional_info": "Additional information"
   },
@@ -88,7 +89,11 @@
     "ex_vat": "excl. VAT",
     "vat": "VAT",
     "subtotal_ex_vat": "Subtotal excl. VAT",
-    "total_incl_vat": "Total incl. VAT"
+    "total_incl_vat": "Total incl. VAT",
+    "discount_code_placeholder": "Discount code",
+    "apply_discount": "Apply",
+    "discount_applied": "Discount applied!",
+    "discount": "Discount"
   },
   "consents": {
     "accept_prefix": "I accept",

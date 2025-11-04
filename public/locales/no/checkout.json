@@ -25,6 +25,7 @@
     "address": "Adresse",
     "purpose": "Formål",
     "attendees": "Antall deltakere",
+    "attendees_unit": "deltakere",
     "activity_type": "Aktivitetstype",
     "additional_info": "Tilleggsinformasjon"
   },
@@ -88,7 +89,11 @@
     "ex_vat": "ekskl. MVA",
     "vat": "MVA",
     "subtotal_ex_vat": "Sum ekskl. MVA",
-    "total_incl_vat": "Totalt inkl. MVA"
+    "total_incl_vat": "Totalt inkl. MVA",
+    "discount_code_placeholder": "Rabattkode",
+    "apply_discount": "Bruk",
+    "discount_applied": "Rabatt påført!",
+    "discount": "Rabatt"
   },
   "consents": {
     "accept_prefix": "Jeg godtar",

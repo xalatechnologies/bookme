@@ -42,6 +42,9 @@ import { TimeSlotGrid } from "@/components/features/calendar/components/Enhanced
 import { AvailabilityLegend } from "@/components/features/calendar/components/EnhancedCalendar/AvailabilityLegend";
 import { PriceCalculation } from "../BookingForm/PriceCalculation";
 import { TimeSlotDisplay } from "./components/TimeSlotDisplay";
+import { Step5Actions } from "./steps/Step5Actions";
+
+import { RecurrencePattern } from "@/components/features/bookings/utils/recurrence";
 
 import {
   useBookingSteps,
@@ -56,7 +59,6 @@ import type {
   IBookingFormData,
   ActivityType,
 } from "../../types";
-import type { RecurrencePattern } from "@/components/features/bookings/utils/recurrence";
 
 export interface IStepByStepBookingProps {
   readonly facilityId: string;
@@ -418,10 +420,10 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
           <div className="space-y-6">
             <div>
               <h3 className="text-lg font-semibold mb-2">
-                {t("booking:steps.details.title" as any)}
+                {t("booking:steps.details.title")}
               </h3>
               <p className="text-gray-600 text-sm">
-                {t("booking:steps.details.description" as any)}
+                {t("booking:steps.details.description")}
               </p>
             </div>
 
@@ -513,10 +515,10 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
           <div className="space-y-6">
             <div>
               <h3 className="text-lg font-semibold mb-2">
-                {t("booking:steps.calendar.title" as any)}
+                {t("booking:steps.calendar.title")}
               </h3>
               <p className="text-gray-600 text-sm">
-                {t("booking:steps.calendar.description" as any)}
+                {t("booking:steps.calendar.description")}
               </p>
             </div>
 
@@ -581,11 +583,10 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
           <div className="space-y-6">
             <div>
               <h3 className="text-lg font-semibold mb-2">
-                Velg gjentakelsesmønster
+                {t("booking:steps.recurrence.title")}
               </h3>
               <p className="text-gray-600 text-sm">
-                Velg hvordan ofte bookingen skal gjentas. Dette gjelder for alle
-                valgte tidspunkter.
+                {t("booking:steps.recurrence.description")}
               </p>
             </div>
 
@@ -605,10 +606,10 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
           <div className="space-y-6">
             <div>
               <h3 className="text-lg font-semibold mb-2">
-                Vilkår og betingelser
+                {t("booking:steps.terms.title")}
               </h3>
               <p className="text-gray-600 text-sm">
-                Les gjennom vilkårene og godta dem for å fortsette.
+                {t("booking:steps.terms.description")}
               </p>
             </div>
 
@@ -660,7 +661,25 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
                       className="mt-1"
                     />
                     <label htmlFor="terms" className="text-sm cursor-pointer">
-                      Jeg godtar vilkår for leie og personvernerklæring
+                      {t("booking:terms.accept_label")}{" "}
+                      <a
+                        href="/terms"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:text-blue-800 underline font-medium"
+                      >
+                        {t("booking:terms.accept_terms_and_privacy")}
+                      </a>
+                      {" "}{t("booking:terms.and")}{" "}
+                      <a
+                        href="/privacy"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:text-blue-800 underline font-medium"
+                      >
+                        {t("booking:terms.privacy_policy")}
+                      </a>
+                      {" "}{t("booking:terms.for_use")}
                     </label>
                   </div>
                 </div>
@@ -671,56 +690,16 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
 
       case "actions":
         return (
-          <div className="space-y-6">
-            <div>
-              <h3 className="text-lg font-semibold mb-2">Fullfør booking</h3>
-              <p className="text-gray-600 text-sm">
-                Gjennomgå opplysningene og velg hvordan du vil fortsette.
-              </p>
-            </div>
-
-            <Card className="w-full">
-              <CardContent className="p-6">
-                <div className="space-y-4">
-                  <div className="text-center">
-                    <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
-                    <h4 className="text-lg font-semibold mb-2">
-                      Klar for booking!
-                    </h4>
-                    <p className="text-gray-600 text-sm">
-                      Alle opplysninger er fylt ut og vilkårene er godtatt.
-                    </p>
-                  </div>
-
-                  <div className="flex gap-3">
-                    <Button
-                      onClick={handleAddToCart}
-                      variant="outline"
-                      className="flex-1"
-                      disabled={
-                        !validateStep("details") ||
-                        !validateStep("calendar") ||
-                        !validateStep("terms")
-                      }
-                    >
-                      Legg i reservasjonskurv
-                    </Button>
-                    <Button
-                      onClick={handleCompleteBooking}
-                      className="flex-1"
-                      disabled={
-                        !validateStep("details") ||
-                        !validateStep("calendar") ||
-                        !validateStep("terms")
-                      }
-                    >
-                      Fullfør booking
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+          <Step5Actions
+            isValid={
+              validateStep("details") &&
+              validateStep("calendar") &&
+              validateStep("terms")
+            }
+            isLoading={isLoading}
+            onAddToCart={handleAddToCart}
+            onCompleteBooking={handleCompleteBooking}
+          />
         );
 
       default:

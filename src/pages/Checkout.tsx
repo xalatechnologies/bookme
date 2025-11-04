@@ -68,7 +68,7 @@ export const Checkout = (): JSX.Element => {
   const navigate = useNavigate();
   const { items, totalPrice, clearCart, removeItem } = useCart();
   const { profile } = useUserProfile();
-  const { t, i18n } = useTranslation("common");
+  const { t, i18n } = useTranslation(["common", "checkout", "bookings"]);
   const currentLocale = i18n.language === "en" ? "en-US" : "nb-NO";
 
   // State management
@@ -992,8 +992,8 @@ export const Checkout = (): JSX.Element => {
                             </div>
                             <Badge variant="outline">
                               {item.bookingType === "recurring"
-                                ? "Gjentakende"
-                                : "Enkelt"}
+                                ? t("checkout:labels.recurring", "Gjentakende")
+                                : t("checkout:labels.single", "Enkelt")}
                             </Badge>
                           </div>
 
@@ -1037,7 +1037,7 @@ export const Checkout = (): JSX.Element => {
                             </div>
                             <div className="flex items-center gap-2 text-sm text-gray-600">
                               <User className="h-4 w-4" />
-                              <span>{item.attendees || 0} deltakere</span>
+                              <span>{item.attendees || 0} {t("checkout:fields.attendees_unit", "deltakere")}</span>
                             </div>
                           </div>
 
@@ -1651,7 +1651,7 @@ export const Checkout = (): JSX.Element => {
                   <div className="space-y-3">
                     <div className="flex space-x-2">
                       <Input
-                        placeholder="Rabattkode"
+                        placeholder={t("checkout:pricing.discount_code_placeholder", "Rabattkode")}
                         value={discountCode}
                         onChange={(e) => setDiscountCode(e.target.value)}
                         className="flex-1 border-2 focus:border-blue-500"
@@ -1663,13 +1663,13 @@ export const Checkout = (): JSX.Element => {
                         disabled={!discountCode}
                         className="border-blue-500 text-blue-600 hover:bg-blue-50"
                       >
-                        Bruk
+                        {t("checkout:pricing.apply_discount", "Bruk")}
                       </Button>
                     </div>
                     {discountApplied && (
                       <div className="flex items-center text-green-600 text-sm bg-green-50 p-2 rounded-lg">
                         <Check className="h-4 w-4 mr-2" />
-                        <span className="font-medium">Rabatt påført!</span>
+                        <span className="font-medium">{t("checkout:pricing.discount_applied", "Rabatt påført!")}</span>
                       </div>
                     )}
                     {errors.discount && (
@@ -1682,7 +1682,7 @@ export const Checkout = (): JSX.Element => {
                   {/* Discount */}
                   {pricing.discountAmount > 0 && (
                     <div className="flex justify-between items-center py-2 bg-green-50 rounded-lg px-3">
-                      <span className="text-green-700 font-medium">Rabatt</span>
+                      <span className="text-green-700 font-medium">{t("checkout:pricing.discount", "Rabatt")}</span>
                       <span className="font-bold text-lg text-green-600">
                         -{pricing.discountAmount.toLocaleString("nb-NO")} kr
                       </span>
@@ -1693,7 +1693,7 @@ export const Checkout = (): JSX.Element => {
                   {selectedPaymentMethod === "invoice" && (
                     <div className="flex justify-between items-center py-2">
                       <span className="text-gray-700 font-medium">
-                        Fakturagebyr
+                        {t("checkout:pricing.invoice_fee", "Fakturagebyr")}
                       </span>
                       <span className="font-semibold">+50 kr</span>
                     </div>
