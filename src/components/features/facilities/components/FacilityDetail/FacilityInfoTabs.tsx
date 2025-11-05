@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
-import { CheckCircle, XCircle, ChevronDown, ChevronRight } from 'lucide-react';
+import { CheckCircle, XCircle, ChevronDown, ChevronRight, Users } from 'lucide-react';
 
 import type { Zone } from '@/types/booking';
 import { useTranslation } from '@/i18n';
@@ -11,11 +11,12 @@ import { FacilityCalendar } from '@/components/features/calendar/components/Faci
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
-import { FieldRenderer } from './components/FieldRenderer';
+
 import { AmenityGrid } from './components/AmenityGrid';
 import { TabPanel } from './components/TabPanel';
 import { getVisibleFields, splitFieldsIntoColumns } from '@/utils/facility/fieldMappingUtils';
 import { hasParkingAmenity } from '@/utils/facility/amenityIconUtils';
+import { extractContactInfo, formatContactInfo } from '@/utils/facility/contactUtils';
 
 interface FacilityInfoTabsProps {
   readonly description: string;
@@ -42,7 +43,7 @@ export const FacilityInfoTabs: React.FC<FacilityInfoTabsProps> = ({
   facilityName,
   showBookingInterface = false
 }): JSX.Element => {
-  const { t } = useTranslation(['facility', 'common']);
+  const { t, i18n } = useTranslation(['facility', 'common']);
   const [expandedFAQ, setExpandedFAQ] = useState<string | null>(null);
 
   const toggleFAQ = (faqId: string): void => {
@@ -93,40 +94,65 @@ export const FacilityInfoTabs: React.FC<FacilityInfoTabsProps> = ({
       <TabsContent value="general" className="space-y-6 mt-6">
         <TabPanel>
           <div>
-            <h3 className="text-xl font-semibold mb-4">{t('common:about')} {facilityName}</h3>
-            <p className="text-gray-700 leading-relaxed mb-6">{description}</p>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-4">
-                {firstColumn.map(field => (
-                  <FieldRenderer
-                    key={field.id}
-                    field={field}
-                    capacity={capacity}
-                    area={area}
-                  />
-                ))}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {/* Left column: Description and Capacity */}
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-xl font-semibold mb-3">{t('facility:fields.description')}</h3>
+                  <p className="text-gray-700 leading-relaxed">{description}</p>
+                </div>
+                
+                <div>
+                  <h3 className="text-xl font-semibold mb-3">{t('facility:fields.capacity')}</h3>
+                  <p className="text-gray-600">
+                    {t('facility:fields.max_allowed')}: {capacity} {t('facility:card.people')}
+                  </p>
+                </div>
               </div>
-
-              <div className="space-y-4">
-                {secondColumn.map(field => (
-                  <FieldRenderer
-                    key={field.id}
-                    field={field}
-                    capacity={capacity}
-                    area={area}
-                  />
-                ))}
-
-                {equipment.length > 0 && (
-                  <div>
-                    <span className="font-medium">{t('fields.equipment')}:</span>
-                    <span className="ml-2 text-gray-600">{equipment.slice(0, 2).join(', ')}</span>
-                    {equipment.length > 2 && (
-                      <span className="text-gray-500"> +{equipment.length - 2} {t('facility:card.moreAmenities')}</span>
-                    )}
+              
+              {/* Right column: Contact Information and Opening Hours */}
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-xl font-semibold mb-3">{t('facility:details.contact_info')}</h3>
+                  <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
+                    <div className="space-y-3">
+                      <div>
+                        <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                          {t('common:common.email', 'Email')}
+                        </p>
+                        <p className="text-gray-900 dark:text-white">
+                          {formatContactInfo(extractContactInfo(description)).email}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-500 dark:text-gray-400">{t('common:common.phone', 'Phone')}</p>
+                        <p className="text-gray-900 dark:text-white">
+                          {formatContactInfo(extractContactInfo(description)).phone}
+                        </p>
+                      </div>
+                    </div>
                   </div>
-                )}
+                </div>
+                
+                <div>
+                  <h3 className="text-xl font-semibold mb-3">{t('facility:fields.opening_hours')}</h3>
+                  <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
+                    <div className="space-y-3">
+                      <div className="flex justify-between">
+                        <span className="text-gray-600 dark:text-gray-300">{t('common:time.weekdays.monday')}-{t('common:time.weekdays.friday')}</span>
+                        <span className="font-medium">08:00 - 22:00</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600 dark:text-gray-300">{t('common:time.weekdays.saturday')}</span>
+                        <span className="font-medium">09:00 - 20:00</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600 dark:text-gray-300">{t('common:time.weekdays.sunday')}</span>
+                        <span className="font-medium">10:00 - 18:00</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

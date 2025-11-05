@@ -44,7 +44,7 @@ export const TimeSlotDisplay: React.FC<ITimeSlotDisplayProps> = ({
   showClearButton = true,
   maxPreviewSlots = 5,
 }): JSX.Element => {
-  const { t } = useTranslation("booking");
+  const { t } = useTranslation("bookings");
   const { groupedSlots } = useTimeSlotGrouping(slots);
   const { groupedSlots: groupedRecurringSlots } = useTimeSlotGrouping(recurringSlots);
 
@@ -63,7 +63,7 @@ export const TimeSlotDisplay: React.FC<ITimeSlotDisplayProps> = ({
   ): JSX.Element => {
     const durationHours = group.totalDuration / 60;
     const durationText =
-      durationHours === 1 ? t('time.hour', '1 time') : `${durationHours} ${t('time.hours', 'timer')}`;
+      durationHours === 1 ? `1 ${t('time.hour', 'time')}` : `${durationHours} ${t('time.hours', 'timer')}`;
 
     return (
       <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg border border-blue-200">

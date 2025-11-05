@@ -121,8 +121,16 @@ const FilterModal = ({
   filters,
   onApplyFilters,
 }: IFilterModalProps): JSX.Element => {
-  const { t } = useTranslation(["admin", "common"]);
-  const [localFilters, setLocalFilters] = useState(filters);
+  const { t } = useTranslation(["admin", "common", "bookings", "facility"]);
+  // Create local filters with default values for optional fields
+  const localFiltersWithDefaults = {
+    searchTerm: filters.searchTerm || "",
+    dateFrom: filters.dateFrom || "",
+    dateTo: filters.dateTo || "",
+    facilityType: filters.facilityType || "",
+  };
+  
+  const [localFilters, setLocalFilters] = useState(localFiltersWithDefaults);
 
   const handleApply = (): void => {
     onApplyFilters(localFilters);
@@ -148,7 +156,7 @@ const FilterModal = ({
         <div className="p-6">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-              {t("pages.approvals.filters.title")}
+              {t("bookings:title")}
             </h2>
             <Button variant="ghost" size="sm" onClick={onClose}>
               <X className="h-4 w-4" />
@@ -158,7 +166,7 @@ const FilterModal = ({
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                {t("pages.approvals.filters.search")}
+                {t("bookings:filters.search")}
               </label>
               <Input
                 type="text"
@@ -166,13 +174,13 @@ const FilterModal = ({
                 onChange={(e) =>
                   setLocalFilters({ ...localFilters, searchTerm: e.target.value })
                 }
-                placeholder={t("pages.approvals.filters.search_placeholder")}
+                placeholder={t("bookings:filters.search")}
               />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                {t("pages.approvals.filters.date_from")}
+                {t("bookings:filters.by_date")}
               </label>
               <Input
                 type="date"
@@ -185,7 +193,7 @@ const FilterModal = ({
 
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                {t("pages.approvals.filters.date_to")}
+                {t("bookings:filters.by_date")}
               </label>
               <Input
                 type="date"
@@ -198,7 +206,7 @@ const FilterModal = ({
 
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                {t("pages.approvals.filters.facility_type")}
+                {t("bookings:filters.by_facility")}
               </label>
               <select
                 value={localFilters.facilityType}
@@ -208,14 +216,14 @@ const FilterModal = ({
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
               >
                 <option value="">
-                  {t("pages.approvals.filters.all_facility_types")}
+                  {t("bookings:filters.all")}
                 </option>
                 <option value="sports_hall">
                   {t("facility:types.sports_hall")}
                 </option>
                 <option value="gym">{t("facility:types.gym")}</option>
                 <option value="meeting_room">
-                  {t("facility:types.meeting_room")}
+                  {t("facility:types.conference_room")}
                 </option>
               </select>
             </div>
@@ -229,7 +237,7 @@ const FilterModal = ({
               {t("common:actions.cancel")}
             </Button>
             <Button onClick={handleApply}>
-              {t("common:actions.apply")}
+              {t("common:actions.applyFilters")}
             </Button>
           </div>
         </div>
@@ -248,7 +256,7 @@ const ApprovalRow = ({
   canApprove,
   canReject,
 }: IApprovalRowProps): JSX.Element => {
-  const { t } = useTranslation(["admin", "common"]);
+  const { t } = useTranslation(["admin", "common", "bookings", "facility"]);
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
 
   const handleApprove = async (e: React.MouseEvent): Promise<void> => {
@@ -301,7 +309,7 @@ const ApprovalRow = ({
             <div className="flex-1">
               <div className="flex items-center justify-between mb-2">
                 <h4 className="font-medium text-gray-900 dark:text-white">
-                  {booking.facility?.name || t("common:labels.unknown_facility")}
+                  {booking.facility?.name || t("bookings:details.unknownVenue")}
                 </h4>
                 <Badge className="bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300">
                   {t("common:status.pending")}
@@ -329,8 +337,8 @@ const ApprovalRow = ({
                   <Clock className="h-4 w-4" />
                   <span>
                     {durationHours === 1
-                      ? t("common:time.hour_singular")
-                      : t("common:time.hours_plural", { count: durationHours })}
+                      ? t("common:time.hour")
+                      : `${durationHours} ${t("common:time.hours")}`}
                   </span>
                 </div>
 
@@ -359,7 +367,7 @@ const ApprovalRow = ({
                   onViewDetails(booking.id);
                 }}
                 className="flex items-center justify-center p-2"
-                title={t("pages.approvals.actions.view_details")}
+                title={t("bookings:actions.view_details")}
               >
                 <Eye className="w-4 h-4" />
               </Button>
@@ -371,7 +379,7 @@ const ApprovalRow = ({
                   onClick={handleApprove}
                   disabled={isProcessing}
                   className="flex items-center justify-center p-2 text-green-600 hover:text-green-700 hover:bg-green-50 disabled:opacity-50"
-                  title={t("pages.approvals.actions.approve")}
+                  title={t("bookings:actions.approve")}
                 >
                   <Check className="w-4 h-4" />
                 </Button>
@@ -384,7 +392,7 @@ const ApprovalRow = ({
                   onClick={handleReject}
                   disabled={isProcessing}
                   className="flex items-center justify-center p-2 text-red-600 hover:text-red-700 hover:bg-red-50 disabled:opacity-50"
-                  title={t("pages.approvals.actions.reject")}
+                  title={t("bookings:actions.reject")}
                 >
                   <X className="w-4 h-4" />
                 </Button>
@@ -406,7 +414,7 @@ const BookingDetailModal = ({
   canApprove,
   canReject,
 }: IBookingDetailModalProps): JSX.Element => {
-  const { t } = useTranslation(["admin", "common"]);
+  const { t } = useTranslation(["admin", "common", "bookings"]);
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
 
   if (!isOpen || !booking) return <></>;
@@ -452,7 +460,7 @@ const BookingDetailModal = ({
         <div className="p-6">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-              {t("pages.approvals.detail.title")}
+              {t("bookings:details.title")}
             </h2>
             <Button variant="ghost" size="sm" onClick={onClose}>
               <X className="h-4 w-4" />
@@ -463,11 +471,11 @@ const BookingDetailModal = ({
             {/* Facility Information */}
             <div>
               <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-3">
-                {t("pages.approvals.detail.facility_info")}
+                {t("bookings:details.facility_info")}
               </h3>
               <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 space-y-2">
                 <p className="font-medium text-gray-900 dark:text-white">
-                  {booking.facility?.name || t("common:labels.unknown_facility")}
+                  {booking.facility?.name || t("bookings:details.unknownVenue")}
                 </p>
                 <div className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
                   <div className="flex items-center space-x-2">
@@ -512,12 +520,12 @@ const BookingDetailModal = ({
             {/* Booking Details */}
             <div>
               <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-3">
-                {t("pages.approvals.detail.booking_details")}
+                {t("bookings:details.booking_details")}
               </h3>
               <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 space-y-2">
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-600 dark:text-gray-400">
-                    {t("pages.approvals.detail.price")}:
+                    {t("bookings:fields.price")}:
                   </span>
                   <span className="font-medium text-gray-900 dark:text-white">
                     {formatPrice(booking.total_cents, booking.currency)}
@@ -525,7 +533,7 @@ const BookingDetailModal = ({
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-600 dark:text-gray-400">
-                    {t("pages.approvals.detail.status")}:
+                    {t("common:status.pending")}:
                   </span>
                   <Badge className="bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300">
                     {t("common:status.pending")}
@@ -533,7 +541,7 @@ const BookingDetailModal = ({
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-600 dark:text-gray-400">
-                    {t("pages.approvals.detail.requested_at")}:
+                    {t("bookings:fields.created_at")}:
                   </span>
                   <span className="text-gray-900 dark:text-white">
                     {new Date(booking.created_at).toLocaleString("nb-NO")}
@@ -546,7 +554,7 @@ const BookingDetailModal = ({
             {booking.notes && (
               <div>
                 <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-3">
-                  {t("pages.approvals.detail.notes")}
+                  {t("bookings:details.notesLabel")}
                 </h3>
                 <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
                   <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -565,7 +573,7 @@ const BookingDetailModal = ({
                   className="bg-green-600 hover:bg-green-700 text-white"
                 >
                   <Check className="h-4 w-4 mr-2" />
-                  {t("pages.approvals.actions.approve")}
+                  {t("bookings:actions.approve")}
                 </Button>
               )}
               {canReject && (
@@ -575,7 +583,7 @@ const BookingDetailModal = ({
                   disabled={isProcessing}
                 >
                   <X className="h-4 w-4 mr-2" />
-                  {t("pages.approvals.actions.reject")}
+                  {t("bookings:actions.reject")}
                 </Button>
               )}
             </div>
@@ -587,7 +595,7 @@ const BookingDetailModal = ({
 };
 
 const ApprovalsPage = (_props: IApprovalsPageProps): JSX.Element => {
-  const { t } = useTranslation(["admin", "common"]);
+  const { t } = useTranslation(["admin", "common", "bookings"]);
 
   // Use the approvals management hook
   const {
@@ -720,17 +728,25 @@ const ApprovalsPage = (_props: IApprovalsPageProps): JSX.Element => {
     });
   }, [selectedBookingIds, filteredBookings]);
 
+  // Create a safe filter object with default values for optional fields
+  const safeFilters = {
+    searchTerm: filters.searchTerm || "",
+    dateFrom: filters.dateFrom || "",
+    dateTo: filters.dateTo || "",
+    facilityType: filters.facilityType || "",
+  };
+
   return (
-    <RequireRole roles={["org-admin", "approver"]}>
+    <RequireRole minRole="case_handler">
       <div className="space-y-12">
         {/* Header */}
         <header className="space-y-4">
           <div className="space-y-1">
             <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">
-              {t("pages.approvals.title")}
+              {t("admin:pages.bookings.title")}
             </h1>
             <p className="text-gray-600 dark:text-gray-400">
-              {t("pages.approvals.subtitle")}
+              {t("admin:pages.bookings.subtitle")}
             </p>
           </div>
         </header>
@@ -738,25 +754,25 @@ const ApprovalsPage = (_props: IApprovalsPageProps): JSX.Element => {
         {/* KPI Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <ApprovalKPICard
-            title={t("pages.approvals.kpi.pending")}
+            title={t("admin:pages.bookings.kpi.pending_approvals")}
             value={pendingCount}
             color="orange"
             icon={AlertCircle}
-            subtext={t("pages.approvals.kpi.pending_sub")}
+            subtext={t("admin:pages.bookings.kpi.requires_action")}
           />
           <ApprovalKPICard
-            title={t("pages.approvals.kpi.approved_today")}
+            title={t("admin:pages.bookings.kpi.approved_today")}
             value={approvedTodayCount}
             color="green"
             icon={CheckCircle}
-            subtext={t("pages.approvals.kpi.approved_sub")}
+            subtext={t("admin:pages.bookings.kpi.processed_today")}
           />
           <ApprovalKPICard
-            title={t("pages.approvals.kpi.rejected_today")}
+            title={t("admin:pages.bookings.kpi.rejected_today")}
             value={rejectedTodayCount}
             color="red"
             icon={XCircle}
-            subtext={t("pages.approvals.kpi.rejected_sub")}
+            subtext={t("admin:pages.bookings.kpi.rejected_today_sub")}
           />
         </div>
 
@@ -765,7 +781,7 @@ const ApprovalsPage = (_props: IApprovalsPageProps): JSX.Element => {
           <CardHeader>
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
               <CardTitle className="text-lg">
-                {t("pages.approvals.list_title")}
+                {t("bookings:page.admin_title")}
               </CardTitle>
 
               {/* Search and Filters */}
@@ -774,8 +790,8 @@ const ApprovalsPage = (_props: IApprovalsPageProps): JSX.Element => {
                   <div className="relative flex-1">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                     <Input
-                      placeholder={t("pages.approvals.search_placeholder")}
-                      value={filters.searchTerm}
+                      placeholder={t("admin:pages.bookings.search_placeholder")}
+                      value={filters.searchTerm || ""}
                       onChange={(e) => setSearchTerm(e.target.value)}
                       className="pl-10"
                     />
@@ -801,7 +817,7 @@ const ApprovalsPage = (_props: IApprovalsPageProps): JSX.Element => {
                 <div className="flex items-center gap-2">
                   <Checkbox checked={allSelected} onCheckedChange={handleSelectAll} />
                   <span className="text-sm text-gray-600 dark:text-gray-400">
-                    {t("pages.approvals.select_all", {
+                    {t("admin:pages.bookings.select_all", {
                       count: filteredBookings.length,
                     })}
                   </span>
@@ -810,7 +826,7 @@ const ApprovalsPage = (_props: IApprovalsPageProps): JSX.Element => {
                 {selectedBookingIds.size > 0 && (
                   <div className="flex items-center gap-2">
                     <span className="text-sm text-gray-600 dark:text-gray-400">
-                      {t("pages.approvals.selected_count", {
+                      {t("admin:pages.bookings.selected_count", {
                         count: selectedBookingIds.size,
                       })}
                     </span>
@@ -823,7 +839,7 @@ const ApprovalsPage = (_props: IApprovalsPageProps): JSX.Element => {
             {selectedBookingIds.size > 0 && hasPendingSelection && (
               <div className="flex items-center justify-between bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
                 <span className="text-sm text-blue-700 dark:text-blue-300">
-                  {t("pages.approvals.bulk_selected", {
+                  {t("admin:pages.bookings.bulk_selected", {
                     count: selectedBookingIds.size,
                   })}
                 </span>
@@ -834,7 +850,7 @@ const ApprovalsPage = (_props: IApprovalsPageProps): JSX.Element => {
                     className="bg-green-600 hover:bg-green-700 text-white"
                   >
                     <Check className="h-4 w-4 mr-1" />
-                    {t("pages.approvals.bulk_approve_all")}
+                    {t("admin:pages.bookings.bulk_approve_all")}
                   </Button>
                   <Button
                     size="sm"
@@ -842,7 +858,7 @@ const ApprovalsPage = (_props: IApprovalsPageProps): JSX.Element => {
                     onClick={handleBulkReject}
                   >
                     <X className="h-4 w-4 mr-1" />
-                    {t("pages.approvals.bulk_reject_all")}
+                    {t("admin:pages.bookings.bulk_reject_all")}
                   </Button>
                 </div>
               </div>
@@ -856,19 +872,19 @@ const ApprovalsPage = (_props: IApprovalsPageProps): JSX.Element => {
                 <div className="text-center py-12">
                   <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto" />
                   <p className="text-gray-600 dark:text-gray-400 mt-4">
-                    {t("common:loading")}
+                    {t("common:common.loading")}
                   </p>
                 </div>
               ) : filteredBookings.length === 0 ? (
                 <div className="text-center py-12">
                   <AlertCircle className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                   <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
-                    {t("pages.approvals.empty.no_approvals")}
+                    {t("admin:pages.bookings.empty.no_bookings")}
                   </h3>
                   <p className="text-gray-600 dark:text-gray-400">
                     {filters.searchTerm
-                      ? t("pages.approvals.empty.try_different_criteria")
-                      : t("pages.approvals.empty.no_approvals_currently")}
+                      ? t("admin:pages.bookings.empty.try_different_criteria")
+                      : t("admin:pages.bookings.empty.no_bookings_currently")}
                   </p>
                 </div>
               ) : (
@@ -908,7 +924,7 @@ const ApprovalsPage = (_props: IApprovalsPageProps): JSX.Element => {
         <FilterModal
           isOpen={isFilterModalOpen}
           onClose={() => setIsFilterModalOpen(false)}
-          filters={filters}
+          filters={safeFilters}
           onApplyFilters={handleApplyFilters}
         />
       </div>

@@ -36,7 +36,7 @@ export const SelectedSlotsDisplay: React.FC<ISelectedSlotsDisplayProps> = ({
   onClearAll,
   isLoading = false,
 }): JSX.Element => {
-  const { t, i18n } = useTranslation(['booking','common']);
+  const { t, i18n } = useTranslation(['bookings','common']);
   /**
    * Format time slot for display
    *
@@ -80,7 +80,7 @@ export const SelectedSlotsDisplay: React.FC<ISelectedSlotsDisplayProps> = ({
   const getDurationText = (duration: number): string => {
     // Convert minutes to hours
     const hours = duration / 60;
-    return hours === 1 ? t('time.hour', '1 hour') : `${hours} ${t('time.hours', 'hours')}`;
+    return hours === 1 ? `1 ${t('bookings:time.hour', 'hour')}` : `${hours} ${t('bookings:time.hours', 'hours')}`;
   };
 
   /**
@@ -242,7 +242,7 @@ export const SelectedSlotsDisplay: React.FC<ISelectedSlotsDisplayProps> = ({
           <span className="font-medium text-gray-900">
             {(() => {
               const totalHours = selectedSlots.reduce((total, slot) => total + slot.duration, 0) / 60;
-              return totalHours === 1 ? t('booking:time.hour', '1 hour') : `${totalHours} ${t('booking:time.hours', 'hours')}`;
+              return totalHours === 1 ? `1 ${t('bookings:time.hour', 'hour')}` : `${totalHours} ${t('bookings:time.hours', 'hours')}`;
             })()}
           </span>
         </div>

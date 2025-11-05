@@ -30,10 +30,6 @@ export const BookingFilters = (props: IBookingFiltersProps): JSX.Element => {
 
   return (
     <div className="flex items-center justify-between">
-      <CardTitle className="flex items-center gap-2">
-        <Calendar className="h-5 w-5" />
-        {t("dashboard.my_bookings", "Mine bookinger")}
-      </CardTitle>
       <div className="flex items-center space-x-2">
         <Select value={bookingFilter} onValueChange={onFilterChange}>
           <SelectTrigger

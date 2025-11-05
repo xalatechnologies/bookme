@@ -1026,7 +1026,7 @@ export const Checkout = (): JSX.Element => {
                                           0
                                         ) / 60;
                                       return totalHours === 1
-                                        ? t("bookings:time.hour", "1 time")
+                                        ? `1 ${t("bookings:time.hour", "time")}`
                                         : `${totalHours} ${t(
                                             "bookings:time.hours",
                                             "timer"

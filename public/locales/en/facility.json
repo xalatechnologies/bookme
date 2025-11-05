@@ -50,6 +50,7 @@
     "cancellation_policy": "Cancellation policy",
     "min_booking_duration": "Min. booking duration",
     "max_booking_duration": "Max. booking duration",
+    "max_allowed": "Max allowed",
     "advance_booking_days": "Advance booking (days)",
     "popular": "Popular",
     "featured": "Featured",

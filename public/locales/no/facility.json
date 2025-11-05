@@ -50,6 +50,7 @@
     "cancellation_policy": "Avbestillingsregler",
     "min_booking_duration": "Min. bookinglength",
     "max_booking_duration": "Maks. bookinglength",
+    "max_allowed": "Maks tillatt",
     "advance_booking_days": "Forhåndsbooking (dager)",
     "popular": "Populær",
     "featured": "Fremhevet",
