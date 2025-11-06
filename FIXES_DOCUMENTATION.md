@@ -1625,3 +1625,66 @@ I updated the weekday checkbox order in the recurrence pattern selector from Sun
    - This affects both the weekday selection for weekly/biweekly/custom patterns and the weekday selection in the monthly pattern configuration
 
 The change ensures that users see the weekdays in the more familiar Monday-Sunday order, which is the standard convention in most of Europe including Norway.
+
+
+## Issue 36: Facility Contact Information and Opening Hours Implementation (November 6, 2025)
+
+### Problem Description
+The facility editing functionality was missing several key features:
+1. Contact information was being embedded in the description field instead of stored in separate database fields
+2. Opening hours could not be edited or saved
+3. Opening hours displayed in the facility detail page were hardcoded instead of using actual data
+4. Booking calendar did not respect facility-specific opening hours
+5. Day mapping inconsistencies between edit form and calendar
+
+### Solution Implemented
+Comprehensive implementation of facility contact information and opening hours features:
+
+#### Contact Information Management
+- Added separate `contact_email` and `contact_phone` fields to the facilities table
+- Updated contact utilities to prioritize separate fields over embedded information
+- Modified FacilityEditPage to store contact info only in separate fields
+- Updated FacilityDetailPage to display contact info from separate fields
+
+#### Opening Hours Editing
+- Implemented full opening hours editing functionality in FacilityEditPage
+- Added service functions to fetch and update facility availability data
+- Created React Query hooks for seamless data integration
+- Fixed day mapping inconsistencies between components
+
+#### Calendar Integration
+- Updated booking calendar to respect facility-specific opening hours
+- Implemented day-specific availability checking
+- Fixed time slot generation to show full range of possible hours
+- Resolved off-by-one error in day mapping
+
+#### Display Fixes
+- Updated FacilityDetailPage to show actual opening hours instead of hardcoded values
+- Fixed time formatting to remove seconds from display
+- Ensured consistency between edit form and detail page
+
+### Files Modified
+1. Database migrations for adding contact fields and fixing constraints
+2. TypeScript database types
+3. Contact utilities (src/utils/facility/contactUtils.ts)
+4. FacilityEditPage (src/pages/admin/FacilityEditPage.tsx)
+5. FacilityDetailPage (src/components/features/facilities/components/FacilityDetail/FacilityInfoTabs.tsx)
+6. Service layer (src/services/supabase/facilities.service.ts)
+7. Availability calculation hook (src/hooks/features/calendar/useAvailabilityCalculation.ts)
+
+### Related Documentation
+All detailed documentation for these fixes has been moved to the docs/facility-editing-fixes/ folder:
+- [Contact Form Save Button Fix](docs/facility-editing-fixes/FIX_CONTACT_FORM_SAVE_BUTTON.md)
+- [Opening Hours Editing Implementation](docs/facility-editing-fixes/FIX_OPENING_HOURS_EDITING.md)
+- [Facility Opening Hours Display](docs/facility-editing-fixes/FIX_FACILITY_OPENING_HOURS_DISPLAY.md)
+- [Opening Hours Formatting](docs/facility-editing-fixes/FIX_OPENING_HOURS_FORMATTING.md)
+- [Day-Specific Opening Hours](docs/facility-editing-fixes/FIX_DAY_SPECIFIC_OPENING_HOURS.md)
+- [Opening Hours Day Mapping](docs/facility-editing-fixes/FIX_OPENING_HOURS_DAY_MAPPING.md)
+- [Facility Opening Hours in Calendar](docs/facility-editing-fixes/FIX_FACILITY_OPENING_HOURS_IN_CALENDAR.md)
+- [Contact Fields Implementation](docs/facility-editing-fixes/CONTACT_FIELDS_IMPLEMENTATION.md)
+- [Contact Fields Update Summary](docs/facility-editing-fixes/CONTACT_FIELDS_UPDATE_SUMMARY.md)
+- [Supabase Cloud Verification](docs/facility-editing-fixes/SUPABASE_CLOUD_VERIFICATION.md)
+- [Troubleshooting Save Issue](docs/facility-editing-fixes/TROUBLESHOOTING_SAVE_ISSUE.md)
+
+---
+*End of Document*

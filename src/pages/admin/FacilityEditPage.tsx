@@ -2,10 +2,10 @@
 
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Save, X, ArrowLeft, Eye, MapPin, Users, Clock, Phone, Mail, Plus, Trash2, Edit3, Check, X as XIcon, Settings } from "lucide-react";
+import { Save, X, ArrowLeft, Eye, MapPin, Users, Clock, Plus, Trash2, Check, X as XIcon, Settings } from "lucide-react";
 import type { Database } from "@/types/database";
 import type { Json } from "@/types/database";
-import { useFacility as useSupabaseFacility, useUpdateFacility, useCreateFacility } from "@/services/supabase/facilities.service";
+import { useFacility as useSupabaseFacility, useUpdateFacility, useCreateFacility, useFacilityAvailability, useUpdateFacilityAvailability } from "@/services/supabase/facilities.service";
 import { useOrganizationId } from "@/hooks/useOrganizationId";
 import { useFieldConfigStore } from "@/stores/fieldConfigStore";
 import { Card, CardContent } from "@/components/ui/card";
@@ -15,10 +15,9 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
 import { FieldConfigModal } from "@/components/features/facilities/components/FacilityEditForm/FieldConfigModal";
-import { ReadOnlyCalendar } from "@/components/features/calendar/components/FacilityCalendar/ReadOnlyCalendar";
 import { Zone } from "@/types/booking";
 import { useZoneStore } from "@/stores/zoneStore";
-import { extractContactInfo, updateDescriptionWithContact } from "@/utils/facility/contactUtils";
+import { extractContactInfo, cleanDescription, formatContactInfo } from "@/utils/facility/contactUtils";
 import { toast } from "react-toastify";
 
 type Facility = Database['public']['Tables']['facilities']['Row'];
@@ -78,8 +77,10 @@ const FacilityEditPage = (_props: IFacilityEditPageProps): JSX.Element => {
 
   // Use Supabase hooks
   const { data: supabaseFacility, isLoading, error } = useSupabaseFacility(id || "");
+  const { data: facilityAvailability } = useFacilityAvailability(id || "");
   const updateFacilityMutation = useUpdateFacility();
   const createFacilityMutation = useCreateFacility();
+  const updateAvailabilityMutation = useUpdateFacilityAvailability();
 
   // Use field config store
   const {
@@ -140,8 +141,12 @@ const FacilityEditPage = (_props: IFacilityEditPageProps): JSX.Element => {
     } else if (supabaseFacility) {
       setEditedFacility(supabaseFacility);
 
-      // Extract contact info from description
-      const { email, phone } = extractContactInfo(supabaseFacility.description || '');
+      // Extract contact info from separate fields if available, otherwise from description
+      const { email, phone } = extractContactInfo(
+        supabaseFacility.description || '',
+        supabaseFacility.contact_email,
+        supabaseFacility.contact_phone
+      );
       setContactInfo({ email, phone });
 
       // Update field configs with facility values
@@ -159,13 +164,60 @@ const FacilityEditPage = (_props: IFacilityEditPageProps): JSX.Element => {
         }
       });
     }
-  }, [id, supabaseFacility, fieldConfigs, updateFieldValue]);
+    
+    // Load availability data
+    if (facilityAvailability && facilityAvailability.length > 0) {
+      const dayMap: { [key: number]: keyof IOpeningHoursMap } = {
+        0: 'sunday',
+        1: 'monday',
+        2: 'tuesday',
+        3: 'wednesday',
+        4: 'thursday',
+        5: 'friday',
+        6: 'saturday'
+      };
+      
+      // Build a map of actual availability data
+      const availabilityMap: Record<keyof IOpeningHoursMap, IOpeningHours | undefined> = {
+        monday: undefined,
+        tuesday: undefined,
+        wednesday: undefined,
+        thursday: undefined,
+        friday: undefined,
+        saturday: undefined,
+        sunday: undefined
+      };
+      
+      facilityAvailability.forEach(item => {
+        const dayKey = dayMap[item.day_of_week];
+        if (dayKey) {
+          availabilityMap[dayKey] = {
+            start: item.starts_time.substring(0, 5), // Remove seconds
+            end: item.ends_time.substring(0, 5)     // Remove seconds
+          };
+        }
+      });
+      
+      // Create new opening hours object with actual data or defaults
+      const updatedOpeningHours: IOpeningHoursMap = {
+        monday: availabilityMap.monday || { start: "08:00", end: "22:00" },
+        tuesday: availabilityMap.tuesday || { start: "08:00", end: "22:00" },
+        wednesday: availabilityMap.wednesday || { start: "08:00", end: "22:00" },
+        thursday: availabilityMap.thursday || { start: "08:00", end: "22:00" },
+        friday: availabilityMap.friday || { start: "08:00", end: "22:00" },
+        saturday: availabilityMap.saturday || { start: "09:00", end: "20:00" },
+        sunday: availabilityMap.sunday || { start: "10:00", end: "18:00" }
+      };
+      
+      setOpeningHours(updatedOpeningHours);
+    }
+  }, [id, supabaseFacility, facilityAvailability, fieldConfigs, updateFieldValue]);
 
   // Helper function to create new facility template
   const createNewFacilityTemplate = (): Partial<Facility> => ({
     name: "",
     description: "",
-    facility_type: "conference",
+    facility_type: "møterom",
     address: "",
     city: "Drammen",
     postal_code: "",
@@ -173,7 +225,7 @@ const FacilityEditPage = (_props: IFacilityEditPageProps): JSX.Element => {
     capacity: 0,
     amenities: [],
     images: [],
-    location: { lat: 59.744, lng: 10.204 } as any,
+    location: null, // Set to null instead of object for PostGIS compatibility
     rating: 0,
     review_count: 0,
     area_description: "",
@@ -229,36 +281,154 @@ const FacilityEditPage = (_props: IFacilityEditPageProps): JSX.Element => {
     if (!editedFacility) return;
 
     try {
-      // Update description with contact information
-      const updatedDescription = updateDescriptionWithContact(
-        editedFacility.description || '',
-        contactInfo.email,
-        contactInfo.phone
-      );
+      // Format contact information before saving
+      const formattedContactInfo = formatContactInfo(contactInfo);
+      
+      // Clean description by removing any existing contact information
+      const cleanedDescription = cleanDescription(editedFacility.description || '');
 
-      const facilityData = {
+      // Prepare facility data, ensuring proper formatting
+      const facilityData: Partial<FacilityInsert> = {
         ...editedFacility,
-        description: updatedDescription,
+        org_id: editedFacility.org_id || orgId, // Ensure org_id is always present
+        facility_type: editedFacility.facility_type?.toLowerCase() || "møterom", // Ensure lowercase facility_type
+        description: cleanedDescription,
+        contact_email: formattedContactInfo.email || null,
+        contact_phone: formattedContactInfo.phone || null,
         updated_at: new Date().toISOString(),
       };
 
+      // Handle location field for PostGIS compatibility
+      // For now, we're setting it to null to avoid geometry parsing errors
+      // In a real implementation, you would convert coordinates to PostGIS format
+      facilityData.location = null;
+
+      // Remove any fields that shouldn't be sent to the database
+      // Remove id from updates as it's used in the URL
+      if ('id' in facilityData) {
+        delete facilityData.id;
+      }
+      
+      // Remove created_at from updates as it shouldn't be changed
+      if ('created_at' in facilityData) {
+        delete facilityData.created_at;
+      }
+
+      console.log("Saving facility data:", facilityData); // Debug log
+
+      // Prepare availability data
+      const dayMap: { [key in keyof IOpeningHoursMap]: number } = {
+        sunday: 0,
+        monday: 1,
+        tuesday: 2,
+        wednesday: 3,
+        thursday: 4,
+        friday: 5,
+        saturday: 6
+      };
+      
+      const availabilityData = Object.entries(openingHours).map(([day, hours]) => ({
+        day_of_week: dayMap[day as keyof IOpeningHoursMap],
+        starts_time: hours.start,
+        ends_time: hours.end
+      }));
+
+      console.log("Availability data:", availabilityData); // Debug log
+
       if (id === "new" || window.location.pathname.includes('/facilities/new')) {
         // Create new facility
-        await createFacilityMutation.mutateAsync(facilityData as FacilityInsert);
+        console.log("Creating new facility with data:", facilityData); // Debug log
+        
+        // Validate required fields before creating
+        if (!facilityData.name || facilityData.name.trim() === '') {
+          throw new Error("Navn på lokalet er påkrevd");
+        }
+        
+        if (!facilityData.facility_type || facilityData.facility_type.trim() === '') {
+          throw new Error("Type lokale er påkrevd");
+        }
+        
+        // Additional validation for facility_type to ensure it's a valid value
+        const validFacilityTypes = ["møterom", "idrettshall", "konferanserom", "workshop", "studio", "auditorium", "fotballbane"];
+        if (!validFacilityTypes.includes(facilityData.facility_type)) {
+          throw new Error(`Ugyldig type lokale: ${facilityData.facility_type}. Må være en av: ${validFacilityTypes.join(", ")}`);
+        }
+        
+        const createdFacility = await createFacilityMutation.mutateAsync(facilityData as FacilityInsert);
+        console.log("Created facility:", createdFacility); // Debug log
+        
+        // Save availability data for new facility
+        if (createdFacility.id) {
+          console.log("Updating availability for facility:", createdFacility.id); // Debug log
+          await updateAvailabilityMutation.mutateAsync({
+            facilityId: createdFacility.id,
+            availability: availabilityData.map(item => ({
+              ...item,
+              facility_id: createdFacility.id
+            })) as Database['public']['Tables']['facility_availability']['Row'][]
+          });
+        }
+        
         toast.success("Lokale opprettet!");
         navigate("/admin/facilities");
       } else {
         // Update existing facility
+        console.log("Updating existing facility:", id, "with data:", facilityData); // Debug log
+        
+        // Validate required fields before sending
+        if (!facilityData.name || facilityData.name.trim() === '') {
+          throw new Error("Navn på lokalet er påkrevd");
+        }
+        
+        if (!facilityData.facility_type || facilityData.facility_type.trim() === '') {
+          throw new Error("Type lokale er påkrevd");
+        }
+        
+        // Additional validation for facility_type to ensure it's a valid value
+        const validFacilityTypes = ["møterom", "idrettshall", "konferanserom", "workshop", "studio", "auditorium", "fotballbane"];
+        if (!validFacilityTypes.includes(facilityData.facility_type)) {
+          throw new Error(`Ugyldig type lokale: ${facilityData.facility_type}. Må være en av: ${validFacilityTypes.join(", ")}`);
+        }
+        
         await updateFacilityMutation.mutateAsync({
           id: id || "",
           updates: facilityData
         });
+        
+        // Update availability data
+        console.log("Updating availability for facility:", id); // Debug log
+        await updateAvailabilityMutation.mutateAsync({
+          facilityId: id || "",
+          availability: availabilityData.map(item => ({
+            ...item,
+            facility_id: id
+          })) as Database['public']['Tables']['facility_availability']['Row'][]
+        });
+        
         toast.success("Lokale lagret!");
         setHasUnsavedChanges(false);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error saving facility:", error);
-      toast.error("Feil ved lagring av lokale. Vennligst prøv igjen.");
+      console.error("Error details:", {
+        message: error.message,
+        code: error.code,
+        details: error.details,
+        hint: error.hint
+      });
+      
+      // Show more detailed error message to user
+      let errorMessage = "Feil ved lagring av lokale. Vennligst prøv igjen.";
+      if (error.message) {
+        errorMessage = `Feil ved lagring: ${error.message}`;
+      }
+      
+      // If it's a Supabase error with more details, include those
+      if (error.code && error.hint) {
+        errorMessage += ` (Feilkode: ${error.code}. Hint: ${error.hint})`;
+      }
+      
+      toast.error(errorMessage);
     }
   };
 
@@ -771,12 +941,19 @@ const FacilityEditPage = (_props: IFacilityEditPageProps): JSX.Element => {
           {/* Type badge - under image */}
           <div className="mb-4">
             <Badge className="bg-blue-600 text-white font-medium px-3 py-1">
-              <Input
-                value={editedFacility.facility_type}
+              <select
+                value={editedFacility.facility_type || "møterom"}
                 onChange={(e) => handleInputChange("facility_type", e.target.value)}
                 className="bg-transparent border-none text-white p-0 h-auto text-sm font-medium"
-                onClick={(e) => e.stopPropagation()}
-              />
+              >
+                <option value="møterom">Møterom</option>
+                <option value="idrettshall">Idrettshall</option>
+                <option value="konferanserom">Konferanserom</option>
+                <option value="workshop">Workshop</option>
+                <option value="studio">Studio</option>
+                <option value="auditorium">Auditorium</option>
+                <option value="fotballbane">Fotballbane</option>
+              </select>
             </Badge>
           </div>
 
@@ -796,7 +973,7 @@ const FacilityEditPage = (_props: IFacilityEditPageProps): JSX.Element => {
                     value={editedFacility.address || ''}
                     onChange={(e) => handleAddressChange(e.target.value)}
                     className="border-none p-0 h-auto text-lg pr-8"
-                    placeholder="Sett inn adresse..."
+                    placeholder="Sett inn adresseresse..."
                   />
                   {isGeocoding && (
                     <div className="absolute right-2 top-1/2 transform -translate-y-1/2">
@@ -873,10 +1050,9 @@ const FacilityEditPage = (_props: IFacilityEditPageProps): JSX.Element => {
           </div>
         </div>
 
-        {/* Main Content Layout - 70% / 30% - Matches frontend exactly */}
-        <div className="grid grid-cols-1 lg:grid-cols-10 gap-8 mb-12">
-          {/* Left Column - Tabs Content (70%) */}
-          <div className="lg:col-span-7 space-y-6">
+        {/* Full Width Tabs Layout */}
+        <div className="mb-12">
+          <div className="space-y-6">
             <Tabs defaultValue="general" className="w-full">
               <TabsList className="grid w-full grid-cols-5">
                 <TabsTrigger value="general">Generell info</TabsTrigger>
@@ -888,42 +1064,207 @@ const FacilityEditPage = (_props: IFacilityEditPageProps): JSX.Element => {
 
               <TabsContent value="general" className="space-y-6 mt-6">
                 <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-xl font-semibold">Om {editedFacility.name}</h3>
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => setShowFieldConfigModal(true)}
-                      className="flex items-center gap-2"
-                      title="Rediger informasjonsfelt"
-                    >
-                      <Settings className="w-4 h-4" />
-                      Rediger felt
-                    </Button>
-                  </div>
-                  
-                    <textarea
-                      value={editedFacility.description || ''}
-                      onChange={(e) => handleInputChange("description", e.target.value)}
-                      className="w-full min-h-[100px] px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-gray-700 leading-relaxed mb-6"
-                      placeholder="Sett inn beskrivelse av lokalet..."
-                    />
-                  
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="space-y-4">
-                          {/* Dynamic fields from configuration */}
-                      {fieldConfigs
-                        .filter(field => field.visible)
-                        .slice(0, Math.ceil(fieldConfigs.filter(field => field.visible).length / 2))
-                        .map(renderField)}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    {/* Left column: Description and Capacity */}
+                    <div className="space-y-6">
+                      <div>
+                        <h3 className="text-xl font-semibold mb-3">Beskrivelse</h3>
+                        <textarea
+                          value={editedFacility.description || ''}
+                          onChange={(e) => handleInputChange("description", e.target.value)}
+                          className="w-full min-h-[100px] px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-gray-700 leading-relaxed"
+                          placeholder="Sett inn beskrivelse av lokalet..."
+                        />
+                      </div>
+                      
+                      <div>
+                        <h3 className="text-xl font-semibold mb-3">Kapasitet</h3>
+                        <div className="flex items-center">
+                          <span className="text-gray-600 dark:text-gray-400 mr-2">Maks tillatt:</span>
+                          <Input
+                            type="number"
+                            value={editedFacility.capacity || 0}
+                            onChange={(e) => handleInputChange("capacity", parseInt(e.target.value) || 0)}
+                            className="w-24"
+                            placeholder="0"
+                          />
+                          <span className="ml-2 text-gray-600 dark:text-gray-400">personer</span>
+                        </div>
+                      </div>
                     </div>
                     
-                    <div className="space-y-4">
-                      {/* Dynamic fields from configuration - second column */}
-                      {fieldConfigs
-                        .filter(field => field.visible)
-                        .slice(Math.ceil(fieldConfigs.filter(field => field.visible).length / 2))
-                        .map(renderField)}
+                    {/* Right column: Contact Information and Opening Hours */}
+                    <div className="space-y-6">
+                      <div>
+                        <h3 className="text-xl font-semibold mb-3">Kontaktinformasjon</h3>
+                        <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 space-y-4">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                              E-post
+                            </label>
+                            <Input
+                              value={contactInfo.email}
+                              onChange={(e) => {
+                                setContactInfo({ ...contactInfo, email: e.target.value });
+                                setHasUnsavedChanges(true);
+                              }}
+                              className="w-full"
+                              placeholder="Sett inn e-post adresse..."
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                              Telefon
+                            </label>
+                            <Input
+                              value={contactInfo.phone}
+                              onChange={(e) => {
+                                setContactInfo({ ...contactInfo, phone: e.target.value });
+                                setHasUnsavedChanges(true);
+                              }}
+                              className="w-full"
+                              placeholder="Sett inn telefonnummer..."
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <h3 className="text-xl font-semibold mb-3">Åpningstider</h3>
+                        <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
+                          <div className="space-y-3">
+                            <div className="flex justify-between items-center">
+                              <span className="text-gray-600 dark:text-gray-300">Mandag-Fredag</span>
+                              <div className="flex items-center gap-2">
+                                <Input
+                                  type="time"
+                                  value={openingHours.monday.start}
+                                  onChange={(e) => {
+                                    setOpeningHours(prev => ({
+                                      ...prev,
+                                      monday: { ...prev.monday, start: e.target.value },
+                                      tuesday: { ...prev.tuesday, start: e.target.value },
+                                      wednesday: { ...prev.wednesday, start: e.target.value },
+                                      thursday: { ...prev.thursday, start: e.target.value },
+                                      friday: { ...prev.friday, start: e.target.value }
+                                    }));
+                                    setHasUnsavedChanges(true);
+                                  }}
+                                  className="w-24 text-sm"
+                                />
+                                <span className="text-gray-500">-</span>
+                                <Input
+                                  type="time"
+                                  value={openingHours.monday.end}
+                                  onChange={(e) => {
+                                    setOpeningHours(prev => ({
+                                      ...prev,
+                                      monday: { ...prev.monday, end: e.target.value },
+                                      tuesday: { ...prev.tuesday, end: e.target.value },
+                                      wednesday: { ...prev.wednesday, end: e.target.value },
+                                      thursday: { ...prev.thursday, end: e.target.value },
+                                      friday: { ...prev.friday, end: e.target.value }
+                                    }));
+                                    setHasUnsavedChanges(true);
+                                  }}
+                                  className="w-24 text-sm"
+                                />
+                              </div>
+                            </div>
+                            <div className="flex justify-between items-center">
+                              <span className="text-gray-600 dark:text-gray-300">Lørdag</span>
+                              <div className="flex items-center gap-2">
+                                <Input
+                                  type="time"
+                                  value={openingHours.saturday.start}
+                                  onChange={(e) => {
+                                    setOpeningHours(prev => ({
+                                      ...prev,
+                                      saturday: { ...prev.saturday, start: e.target.value }
+                                    }));
+                                    setHasUnsavedChanges(true);
+                                  }}
+                                  className="w-24 text-sm"
+                                />
+                                <span className="text-gray-500">-</span>
+                                <Input
+                                  type="time"
+                                  value={openingHours.saturday.end}
+                                  onChange={(e) => {
+                                    setOpeningHours(prev => ({
+                                      ...prev,
+                                      saturday: { ...prev.saturday, end: e.target.value }
+                                    }));
+                                    setHasUnsavedChanges(true);
+                                  }}
+                                  className="w-24 text-sm"
+                                />
+                              </div>
+                            </div>
+                            <div className="flex justify-between items-center">
+                              <span className="text-gray-600 dark:text-gray-300">Søndag</span>
+                              <div className="flex items-center gap-2">
+                                <Input
+                                  type="time"
+                                  value={openingHours.sunday.start}
+                                  onChange={(e) => {
+                                    setOpeningHours(prev => ({
+                                      ...prev,
+                                      sunday: { ...prev.sunday, start: e.target.value }
+                                    }));
+                                    setHasUnsavedChanges(true);
+                                  }}
+                                  className="w-24 text-sm"
+                                />
+                                <span className="text-gray-500">-</span>
+                                <Input
+                                  type="time"
+                                  value={openingHours.sunday.end}
+                                  onChange={(e) => {
+                                    setOpeningHours(prev => ({
+                                      ...prev,
+                                      sunday: { ...prev.sunday, end: e.target.value }
+                                    }));
+                                    setHasUnsavedChanges(true);
+                                  }}
+                                  className="w-24 text-sm"
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Show small map if facility has location coordinates */}
+                      {(() => {
+                        // Check if facility has valid coordinates
+                        if (editedFacility.location && 
+                            typeof editedFacility.location === 'object' && 
+                            editedFacility.location !== null && 
+                            'lat' in editedFacility.location && 
+                            'lng' in editedFacility.location) {
+                          const location = editedFacility.location as { lat: number; lng: number };
+                          return (
+                            <div>
+                              <h3 className="text-xl font-semibold mb-3">Lokasjon</h3>
+                              <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
+                                <div className="h-48 rounded-md overflow-hidden">
+                                  <img
+                                    src={`https://api.mapbox.com/styles/v1/mapbox/streets-v12/static/pin-s+000000(${location.lng},${location.lat})/${location.lng},${location.lat},14,0/400x300@2x?access_token=pk.eyJ1IjoiYW1pbjA3IiwiYSI6ImNtZzlqcjNnczBmMmsycXM2cm4xYzU0OGwifQ.1Vuiv_9pPIUY478LP3yccA`}
+                                    alt="Facility location"
+                                    className="w-full h-full object-cover"
+                                    onError={(e) => {
+                                      // Fallback to default image if map fails to load
+                                      e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAiIGhlaWdodD0iMzAwIiB2aWV3Qm94PSIwIDAgNDAwIDMwMCI+PHJlY3Qgd2lkdGg9IjQwMCIgaGVpZ2h0PSIzMDAiIGZpbGw9IiNlMGUwZTAiLz48dGV4dCB4PSIyMDAiIHk9IjE1MCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE2IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjNjY2Ij5GYWNpbGl0eSBsb2NhdGlvbjwvdGV4dD48L3N2Zz4=';
+                                    }}
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        }
+                        return null;
+                      })()}
                     </div>
                   </div>
                 </div>
@@ -1049,24 +1390,37 @@ const FacilityEditPage = (_props: IFacilityEditPageProps): JSX.Element => {
                     ) : null}
                     
                     <div className="flex gap-2">
-                      <Input
-                        placeholder="Legg til fasilitet..."
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter') {
-                            handleTagAdd(e.currentTarget.value);
-                            e.currentTarget.value = '';
+                      <select
+                        onChange={(e) => {
+                          if (e.target.value) {
+                            handleTagAdd(e.target.value);
+                            e.target.value = ''; // Reset selection
                           }
                         }}
-                      />
-                      <Button
-                        onClick={(e) => {
-                          const input = e.currentTarget.previousElementSibling as HTMLInputElement;
-                          handleTagAdd(input.value);
-                          input.value = '';
-                        }}
+                        className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
                       >
-                        Legg til
-                      </Button>
+                        <option value="">Velg en fasilitet...</option>
+                        <option value="garderober">Garderober</option>
+                        <option value="dusj">Dusj</option>
+                        <option value="parkering">Parkering</option>
+                        <option value="lyd-lys">Lyd/lys</option>
+                        <option value="tribuner">Tribuner</option>
+                        <option value="scene">Scene</option>
+                        <option value="projektor">Projektor</option>
+                        <option value="kjøkken">Kjøkken</option>
+                        <option value="kunstgress">Kunstgress</option>
+                        <option value="flombelysning">Flombelysning</option>
+                        <option value="25m-basseng">25m basseng</option>
+                        <option value="cafeteria">Cafeteria</option>
+                        <option value="innendørs">Innendørs</option>
+                        <option value="profesjonell-underlag">Profesjonell underlag</option>
+                        <option value="utstyr-utleie">Utstyr utleie</option>
+                        <option value="redningsutstyr">Redningsutstyr</option>
+                        <option value="wifi">WiFi</option>
+                        <option value="whiteboard">Whiteboard</option>
+                        <option value="fotball">Fotball</option>
+                        <option value="basketball">Basketball</option>
+                      </select>
                     </div>
                   </div>
                 </div>
@@ -1144,178 +1498,51 @@ const FacilityEditPage = (_props: IFacilityEditPageProps): JSX.Element => {
               </TabsContent>
             </Tabs>
           </div>
+        </div>
+      </div>
 
-          {/* Right Column - Contact Info Sidebar (30%) - Matches frontend exactly */}
-          <div className="lg:col-span-3 hidden lg:block">
-            <div className="sticky top-20 h-[calc(100vh-8rem)] overflow-y-auto space-y-6">
-              {/* Contact Information */}
-              <Card>
-                <CardContent className="p-6">
-                  <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                    <Phone className="w-5 h-5" />
-                    Kontaktinformasjon
-                  </h3>
-                  
-                  <div className="space-y-4">
-                    <div>
-                      <h4 className="font-medium text-gray-900 dark:text-white mb-2">Anleggsansvarlig</h4>
-                      <div className="flex items-center gap-2">
-                        <Mail className="w-4 h-4 text-gray-400" />
-                        <Input
-                          value={contactInfo.email}
-                          onChange={(e) => setContactInfo({ ...contactInfo, email: e.target.value })}
-                          className="text-sm border-none p-0 h-auto"
-                          placeholder="Sett inn e-post adresse..."
-                        />
-                      </div>
-                    </div>
-                    
-                    <div>
-                      <h4 className="font-medium text-gray-900 dark:text-white mb-2">Åpningstider</h4>
-                      <div className="space-y-3">
-                        <div className="flex items-center gap-2">
-                          <Clock className="w-4 h-4 text-gray-400" />
-                          <div className="flex items-center gap-2">
-                            <Input
-                              type="time"
-                              value={"08:00"}
-                              onChange={(e) => {}}
-                              className="text-sm border border-gray-300 rounded px-2 py-1 w-24"
-                            />
-                            <span className="text-gray-500">til</span>
-                            <Input
-                              type="time"
-                              value={"22:00"}
-                              onChange={(e) => {}}
-                              className="text-sm border border-gray-300 rounded px-2 py-1 w-24"
-                            />
-                          </div>
-                        </div>
-                        <p className="text-xs text-gray-500">
-                          Kalenderen vil kun vise tidsluker innenfor disse åpningstidene
-                        </p>
-                      </div>
-                    </div>
-                    
-                    <div>
-                      <h4 className="font-medium text-gray-900 dark:text-white mb-2">Nødkontakt</h4>
-                      <div className="flex items-center gap-2">
-                        <Phone className="w-4 h-4 text-gray-400" />
-                        <Input
-                          value={contactInfo.phone}
-                          onChange={(e) => setContactInfo({ ...contactInfo, phone: e.target.value })}
-                          className="text-sm border-none p-0 h-auto"
-                          placeholder="Sett inn nødkontakt..."
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+      {/* Admin Settings Card at the bottom */}
+      <div className="container mx-auto px-4 py-6 max-w-7xl mt-8">
+        <Card className="border-orange-200 dark:border-orange-800">
+          <CardContent className="p-6">
+            <h3 className="text-lg font-semibold mb-4 text-orange-700 dark:text-orange-300">Admin-innstillinger</h3>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Status</label>
+                <select
+                  value={editedFacility.status}
+                  onChange={(e) => handleInputChange("status", e.target.value)}
+                  className="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm"
+                >
+                  <option value="published">Publisert</option>
+                  <option value="draft">Utkast</option>
+                  <option value="archived">Arkivert</option>
+                </select>
+              </div>
+              
+              <div>
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Opprettet</label>
+                <div className="mt-1 px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-sm text-gray-900 dark:text-white">
+                  {editedFacility.created_at ? new Date(editedFacility.created_at).toLocaleString('no-NO') : 'Ikke satt'}
+                </div>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  Når lokalet ble opprettet
+                </p>
+              </div>
 
-              {/* Booking Policies */}
-              <Card>
-                <CardContent className="p-6">
-                  <h3 className="text-lg font-semibold mb-4">Bookingregler</h3>
-                  
-                  <div className="space-y-4">
-                    <div>
-                      <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Gratis avbestilling</label>
-                      <div className="flex items-center gap-2 mt-1">
-                        <Input
-                          type="number"
-                          value={bookingPolicies.freeCancellation}
-                          onChange={(e) => setBookingPolicies({...bookingPolicies, freeCancellation: parseInt(e.target.value)})}
-                          className="w-16 text-sm"
-                        />
-                        <span className="text-sm text-gray-600 dark:text-gray-400">timer før reservert tid</span>
-                      </div>
-                    </div>
-                    
-                    <div>
-                      <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Minimum booking</label>
-                      <div className="flex items-center gap-2 mt-1">
-                        <Input
-                          type="number"
-                          value={bookingPolicies.minBooking}
-                          onChange={(e) => setBookingPolicies({...bookingPolicies, minBooking: parseInt(e.target.value)})}
-                          className="w-16 text-sm"
-                        />
-                        <span className="text-sm text-gray-600 dark:text-gray-400">timer</span>
-                      </div>
-                    </div>
-                    
-                    <div>
-                      <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Maksimum booking</label>
-                      <div className="flex items-center gap-2 mt-1">
-                        <Input
-                          type="number"
-                          value={bookingPolicies.maxBooking}
-                          onChange={(e) => setBookingPolicies({...bookingPolicies, maxBooking: parseInt(e.target.value)})}
-                          className="w-16 text-sm"
-                        />
-                        <span className="text-sm text-gray-600 dark:text-gray-400">timer</span>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Admin Only Section */}
-              <Card className="border-orange-200 dark:border-orange-800">
-                <CardContent className="p-6">
-                  <h3 className="text-lg font-semibold mb-4 text-orange-700 dark:text-orange-300">Admin-innstillinger</h3>
-                  
-                  <div className="space-y-4">
-                    <div>
-                      <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Status</label>
-                      <select
-                        value={editedFacility.status}
-                        onChange={(e) => handleInputChange("status", e.target.value)}
-                        className="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm"
-                      >
-                        <option value="published">Publisert</option>
-                        <option value="draft">Utkast</option>
-                        <option value="archived">Arkivert</option>
-                      </select>
-                    </div>
-                    
-                    <div>
-                      <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Opprettet</label>
-                      <div className="mt-1 px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-sm text-gray-900 dark:text-white">
-                        {editedFacility.created_at ? new Date(editedFacility.created_at).toLocaleString('no-NO') : 'Ikke satt'}
-                      </div>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                        Når lokalet ble opprettet
-                      </p>
-                    </div>
-
-                    <div>
-                      <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Sist oppdatert</label>
-                      <div className="mt-1 px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-sm text-gray-900 dark:text-white">
-                        {editedFacility.updated_at ? new Date(editedFacility.updated_at).toLocaleString('no-NO') : 'Ikke oppdatert'}
-                      </div>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                        Oppdateres automatisk ved endringer
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+              <div>
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Sist oppdatert</label>
+                <div className="mt-1 px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-sm text-gray-900 dark:text-white">
+                  {editedFacility.updated_at ? new Date(editedFacility.updated_at).toLocaleString('no-NO') : 'Ikke oppdatert'}
+                </div>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  Oppdateres automatisk ved endringer
+                </p>
+              </div>
             </div>
-          </div>
-        </div>
-
-        {/* Calendar Section - Using ReadOnlyCalendar component */}
-        <div className="mt-12">
-          <ReadOnlyCalendar
-            facilityId={editedFacility.id || ''}
-            facilityName={editedFacility.name || ''}
-            zones={storeGetZonesForFacility(editedFacility.id || "")}
-            openingHoursStart={"08:00"}
-            openingHoursEnd={"22:00"}
-          />
-        </div>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Field Configuration Modal */}

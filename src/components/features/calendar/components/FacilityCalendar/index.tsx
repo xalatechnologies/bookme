@@ -29,6 +29,7 @@ import { BookingFormPanel } from "./components/BookingFormPanel";
 import {
   ISelectedTimeSlot,
   IZone,
+  IBookingFormData,
   BookingType,
 } from "@/components/features/bookings/types";
 import type { RecurrencePattern } from "@/components/features/bookings/utils/recurrence";
@@ -285,16 +286,7 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
    * Handle add to cart
    */
   const handleAddToCart = useCallback(
-    (bookingData: {
-      readonly purpose: string;
-      readonly attendees: number;
-      readonly activityType: string;
-      readonly additionalInfo: string;
-      readonly actorType: string;
-      readonly bookingType: BookingType;
-      readonly recurrencePattern?: RecurrencePattern | null;
-      readonly recurringSlots?: readonly ISelectedTimeSlot[];
-    }): void => {
+    (bookingData: IBookingFormData): void => {
       const slotsToUse =
         bookingData.recurringSlots && bookingData.recurringSlots.length > 0
           ? bookingData.recurringSlots
@@ -327,16 +319,7 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
    * Handle complete booking
    */
   const handleCompleteBooking = useCallback(
-    (bookingData: {
-      readonly purpose: string;
-      readonly attendees: number;
-      readonly activityType: string;
-      readonly additionalInfo: string;
-      readonly actorType: string;
-      readonly bookingType: BookingType;
-      readonly recurrencePattern?: RecurrencePattern | null;
-      readonly recurringSlots?: readonly ISelectedTimeSlot[];
-    }): void => {
+    (bookingData: IBookingFormData): void => {
       const slotsToUse =
         bookingData.recurringSlots && bookingData.recurringSlots.length > 0
           ? bookingData.recurringSlots
@@ -507,10 +490,10 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
                 currentWeekStart={currentWeekStart}
                 onPreviousWeek={handlePreviousWeek}
                 onNextWeek={handleNextWeek}
-                selectedSlots={allSelectedSlots}
+                selectedSlots={selectedSlots}
                 onSlotClick={handleSlotClickWithZone}
                 onBulkSelect={handleBulkSelectWithZone}
-                pricePerHour={selectedZone.pricePerHour}
+                pricePerHour={selectedZone?.pricePerHour || 0}
                 isLoading={isLoading}
                 error={error}
                 getAvailabilityStatus={externalGetAvailabilityStatus}

@@ -589,6 +589,8 @@ export type Database = {
           area_description: string | null
           capacity: number
           city: string | null
+          contact_email: string | null
+          contact_phone: string | null
           country: string | null
           created_at: string
           description: string | null
@@ -612,6 +614,8 @@ export type Database = {
           area_description?: string | null
           capacity: number
           city?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
           country?: string | null
           created_at?: string
           description?: string | null
@@ -635,6 +639,8 @@ export type Database = {
           area_description?: string | null
           capacity?: number
           city?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
           country?: string | null
           created_at?: string
           description?: string | null

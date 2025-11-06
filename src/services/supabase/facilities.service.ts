@@ -218,6 +218,50 @@ export const facilitiesService = {
     if (error) throw error;
     return data;
   },
+
+  /**
+   * Fetch facility availability
+   * @param facilityId - Facility ID
+   * @returns Array of availability records
+   */
+  async getAvailability(facilityId: string): Promise<Database['public']['Tables']['facility_availability']['Row'][]> {
+    const { data, error } = await supabase
+      .from('facility_availability')
+      .select('*')
+      .eq('facility_id', facilityId)
+      .order('day_of_week');
+
+    if (error) throw error;
+    return data;
+  },
+
+  /**
+   * Update facility availability
+   * @param facilityId - Facility ID
+   * @param availability - Array of availability records
+   */
+  async updateAvailability(facilityId: string, availability: Database['public']['Tables']['facility_availability']['Row'][]): Promise<void> {
+    // First delete existing availability for this facility
+    const { error: deleteError } = await supabase
+      .from('facility_availability')
+      .delete()
+      .eq('facility_id', facilityId);
+
+    if (deleteError) throw deleteError;
+
+    // Then insert new availability records
+    if (availability.length > 0) {
+      const { error: insertError } = await supabase
+        .from('facility_availability')
+        .insert(availability.map(item => ({
+          ...item,
+          facility_id: facilityId
+        })));
+
+      if (insertError) throw insertError;
+    }
+  },
+
 };
 
 // ============================================================================
@@ -366,6 +410,22 @@ export const useFacilityWithZones = (
 };
 
 /**
+ * Hook to fetch facility availability
+ *
+ * @param facilityId - Facility ID
+ * @returns React Query result with availability array
+ */
+export const useFacilityAvailability = (
+  facilityId: string
+): UseQueryResult<Database['public']['Tables']['facility_availability']['Row'][], Error> => {
+  return useQuery({
+    queryKey: [...facilityKeys.detail(facilityId), 'availability'],
+    queryFn: () => facilitiesService.getAvailability(facilityId),
+    enabled: !!facilityId,
+  });
+};
+
+/**
  * Hook to create a facility
  *
  * @returns Mutation object with mutate function
@@ -454,6 +514,30 @@ export const useUpdateFacility = (): UseMutationResult<
 
       // Invalidate zones if they might be affected
       queryClient.invalidateQueries({ queryKey: facilityKeys.withZones(id) });
+    },
+  });
+};
+
+/**
+ * Hook to update facility availability
+ *
+ * @returns Mutation object
+ */
+export const useUpdateFacilityAvailability = (): UseMutationResult<
+  void,
+  Error,
+  { facilityId: string; availability: Database['public']['Tables']['facility_availability']['Row'][] }
+> => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ facilityId, availability }) => 
+      facilitiesService.updateAvailability(facilityId, availability),
+    onSuccess: (_, { facilityId }) => {
+      // Invalidate availability cache
+      queryClient.invalidateQueries({ 
+        queryKey: [...facilityKeys.detail(facilityId), 'availability'] 
+      });
     },
   });
 };

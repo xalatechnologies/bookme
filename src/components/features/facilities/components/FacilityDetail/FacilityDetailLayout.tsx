@@ -80,6 +80,8 @@ export const FacilityDetailLayout = ({
             facilityId={facility.id}
             facilityName={facility.name}
             showBookingInterface={true}
+            contactEmail={facility.contact_email}
+            contactPhone={facility.contact_phone}
           />
         </div>
       </div>

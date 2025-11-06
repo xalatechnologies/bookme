@@ -10,21 +10,33 @@ interface ContactInfo {
 }
 
 /**
- * Extract contact information from facility description
- * 
- * Expected format in description:
- * "Facility description here. Contact: email@example.com, +47 123 45 678"
+ * Extract contact information from facility description or separate fields
  * 
  * @param description - The facility description that may contain contact info
+ * @param contactEmail - The contact email from separate field (optional)
+ * @param contactPhone - The contact phone from separate field (optional)
  * @returns ContactInfo object with email and phone
  */
-export const extractContactInfo = (description: string): ContactInfo => {
+export const extractContactInfo = (
+  description: string | null | undefined, 
+  contactEmail?: string | null, 
+  contactPhone?: string | null
+): ContactInfo => {
   // Default contact information
   const defaultContact: ContactInfo = {
     email: 'kontakt@bookme.no',
     phone: '+47 123 45 678'
   };
 
+  // If we have separate contact fields, use them
+  if (contactEmail || contactPhone) {
+    return {
+      email: contactEmail || defaultContact.email,
+      phone: contactPhone || defaultContact.phone
+    };
+  }
+
+  // Fallback to extracting from description
   if (!description) {
     return defaultContact;
   }
@@ -52,6 +64,11 @@ export const extractContactInfo = (description: string): ContactInfo => {
  * @returns Formatted contact information
  */
 export const formatContactInfo = (contactInfo: ContactInfo): ContactInfo => {
+  // If phone is empty, return as is
+  if (!contactInfo.phone) {
+    return contactInfo;
+  }
+
   // Ensure phone number is formatted consistently
   let formattedPhone = contactInfo.phone;
   
@@ -76,8 +93,37 @@ export const formatContactInfo = (contactInfo: ContactInfo): ContactInfo => {
 };
 
 /**
- * Update facility description with contact information
+ * Clean facility description by removing contact information
  * 
+ * @param description - The original facility description
+ * @returns Cleaned description without contact information
+ */
+export const cleanDescription = (description: string): string => {
+  // Remove any existing contact information from the description
+  let cleanDescription = description || '';
+  
+  // Remove email patterns
+  cleanDescription = cleanDescription.replace(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[A-Za-z]{2,}/g, '');
+  
+  // Remove phone patterns
+  cleanDescription = cleanDescription.replace(/(\+47\s?)?\d{2}\s?\d{2}\s?\d{2}\s?\d{2}/g, '');
+  
+  // Remove any "Contact:" text that might be left
+  cleanDescription = cleanDescription.replace(/Contact:\s*[,]*\s*/g, '');
+  
+  // Clean up extra whitespace
+  cleanDescription = cleanDescription.replace(/\s+/g, ' ').trim();
+  
+  // Remove trailing periods and commas
+  cleanDescription = cleanDescription.replace(/[.,\s]+$/, '');
+  
+  return cleanDescription;
+};
+
+/**
+ * Update facility description with contact information (deprecated)
+ * 
+ * @deprecated Use cleanDescription instead to keep contact info separate
  * @param description - The original facility description
  * @param email - The contact email
  * @param phone - The contact phone
@@ -88,20 +134,26 @@ export const updateDescriptionWithContact = (description: string, email: string,
   let cleanDescription = description || '';
   
   // Remove email patterns
-  cleanDescription = cleanDescription.replace(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g, '');
+  cleanDescription = cleanDescription.replace(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[A-Za-z]{2,}/g, '');
   
   // Remove phone patterns
   cleanDescription = cleanDescription.replace(/(\+47\s?)?\d{2}\s?\d{2}\s?\d{2}\s?\d{2}/g, '');
   
+  // Remove any "Contact:" text that might be left
+  cleanDescription = cleanDescription.replace(/Contact:\s*[,]*\s*/g, '');
+  
   // Clean up extra whitespace
   cleanDescription = cleanDescription.replace(/\s+/g, ' ').trim();
+  
+  // Remove trailing periods and commas
+  cleanDescription = cleanDescription.replace(/[.,\s]+$/, '');
   
   // Add contact information at the end
   if (email || phone) {
     if (cleanDescription) {
       cleanDescription += '. ';
     }
-    cleanDescription += `Contact: ${email}, ${phone}`;
+    cleanDescription += `Contact: ${email || 'N/A'}, ${phone || 'N/A'}`;
   }
   
   return cleanDescription;

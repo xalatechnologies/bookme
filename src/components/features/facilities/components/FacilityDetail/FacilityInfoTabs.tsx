@@ -6,6 +6,7 @@ import { CheckCircle, XCircle, ChevronDown, ChevronRight, Users } from 'lucide-r
 import type { Zone } from '@/types/booking';
 import { useTranslation } from '@/i18n';
 import { useFieldConfigStore } from '@/stores/fieldConfigStore';
+import { useFacilityAvailability } from '@/services/supabase/facilities.service';
 
 import { FacilityCalendar } from '@/components/features/calendar/components/FacilityCalendar';
 
@@ -17,6 +18,7 @@ import { TabPanel } from './components/TabPanel';
 import { getVisibleFields, splitFieldsIntoColumns } from '@/utils/facility/fieldMappingUtils';
 import { hasParkingAmenity } from '@/utils/facility/amenityIconUtils';
 import { extractContactInfo, formatContactInfo } from '@/utils/facility/contactUtils';
+import { useAvailabilityCalculation } from '@/hooks/features/calendar/useAvailabilityCalculation';
 
 interface FacilityInfoTabsProps {
   readonly description: string;
@@ -29,6 +31,9 @@ interface FacilityInfoTabsProps {
   readonly facilityId: string;
   readonly facilityName: string;
   readonly showBookingInterface?: boolean;
+  // Add contact fields
+  readonly contactEmail?: string | null;
+  readonly contactPhone?: string | null;
 }
 
 export const FacilityInfoTabs: React.FC<FacilityInfoTabsProps> = ({
@@ -41,10 +46,71 @@ export const FacilityInfoTabs: React.FC<FacilityInfoTabsProps> = ({
   suitableFor,
   facilityId,
   facilityName,
-  showBookingInterface = false
+  showBookingInterface = false,
+  contactEmail,
+  contactPhone
 }): JSX.Element => {
   const { t, i18n } = useTranslation(['facility', 'common']);
   const [expandedFAQ, setExpandedFAQ] = useState<string | null>(null);
+  const { data: facilityAvailability } = useFacilityAvailability(facilityId);
+
+  // Process availability data into a more usable format
+  const openingHours = React.useMemo(() => {
+    if (!facilityAvailability) return null;
+    
+    const dayMap: { [key: number]: string } = {
+      0: 'sunday',
+      1: 'monday',
+      2: 'tuesday',
+      3: 'wednesday',
+      4: 'thursday',
+      5: 'friday',
+      6: 'saturday'
+    };
+    
+    const hours: { [key: string]: { start: string; end: string } } = {};
+    
+    facilityAvailability.forEach(item => {
+      const dayKey = dayMap[item.day_of_week];
+      if (dayKey) {
+        hours[dayKey] = {
+          start: item.starts_time.substring(0, 5), // Remove seconds
+          end: item.ends_time.substring(0, 5)     // Remove seconds
+        };
+      }
+    });
+    
+    return hours;
+  }, [facilityAvailability]);
+
+  // Get the earliest opening hour across all days
+  const getEarliestOpeningHour = React.useCallback((hours: { [key: string]: { start: string; end: string } }): string => {
+    let earliestHour = 24;
+    Object.values(hours).forEach(day => {
+      const hour = parseInt(day.start.split(':')[0]);
+      if (hour < earliestHour) {
+        earliestHour = hour;
+      }
+    });
+    return `${earliestHour.toString().padStart(2, '0')}:00`;
+  }, []);
+
+  // Get the latest closing hour across all days
+  const getLatestClosingHour = React.useCallback((hours: { [key: string]: { start: string; end: string } }): string => {
+    let latestHour = 0;
+    Object.values(hours).forEach(day => {
+      const hour = parseInt(day.end.split(':')[0]);
+      if (hour > latestHour) {
+        latestHour = hour;
+      }
+    });
+    return `${latestHour.toString().padStart(2, '0')}:00`;
+  }, []);
+
+  // Use availability calculation hook with facility availability data
+  const { getAvailabilityStatus } = useAvailabilityCalculation({
+    facilityAvailability: openingHours
+  });
 
   const toggleFAQ = (faqId: string): void => {
     setExpandedFAQ(expandedFAQ === faqId ? null : faqId);
@@ -77,9 +143,18 @@ export const FacilityInfoTabs: React.FC<FacilityInfoTabsProps> = ({
                 zones={zones}
                 isLoading={false}
                 error={undefined}
-                openingHoursStart="08:00"
-                openingHoursEnd="22:00"
+                openingHoursStart={
+                  openingHours
+                    ? getEarliestOpeningHour(openingHours)
+                    : "08:00"
+                }
+                openingHoursEnd={
+                  openingHours
+                    ? getLatestClosingHour(openingHours)
+                    : "22:00"
+                }
                 useStepByStepBooking={true}
+                getAvailabilityStatus={getAvailabilityStatus}
               />
             ) : (
               <div className="text-center py-12">
@@ -121,13 +196,13 @@ export const FacilityInfoTabs: React.FC<FacilityInfoTabsProps> = ({
                           {t('common:common.email', 'Email')}
                         </p>
                         <p className="text-gray-900 dark:text-white">
-                          {formatContactInfo(extractContactInfo(description)).email}
+                          {formatContactInfo(extractContactInfo(description, contactEmail, contactPhone)).email}
                         </p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-gray-500 dark:text-gray-400">{t('common:common.phone', 'Phone')}</p>
                         <p className="text-gray-900 dark:text-white">
-                          {formatContactInfo(extractContactInfo(description)).phone}
+                          {formatContactInfo(extractContactInfo(description, contactEmail, contactPhone)).phone}
                         </p>
                       </div>
                     </div>
@@ -140,15 +215,27 @@ export const FacilityInfoTabs: React.FC<FacilityInfoTabsProps> = ({
                     <div className="space-y-3">
                       <div className="flex justify-between">
                         <span className="text-gray-600 dark:text-gray-300">{t('common:time.weekdays.monday')}-{t('common:time.weekdays.friday')}</span>
-                        <span className="font-medium">08:00 - 22:00</span>
+                        <span className="font-medium">
+                          {openingHours?.monday ? 
+                            `${openingHours.monday.start.substring(0, 5)} - ${openingHours.monday.end.substring(0, 5)}` : 
+                            '08:00 - 22:00'}
+                        </span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-600 dark:text-gray-300">{t('common:time.weekdays.saturday')}</span>
-                        <span className="font-medium">09:00 - 20:00</span>
+                        <span className="font-medium">
+                          {openingHours?.saturday ? 
+                            `${openingHours.saturday.start.substring(0, 5)} - ${openingHours.saturday.end.substring(0, 5)}` : 
+                            '09:00 - 20:00'}
+                        </span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-600 dark:text-gray-300">{t('common:time.weekdays.sunday')}</span>
-                        <span className="font-medium">10:00 - 18:00</span>
+                        <span className="font-medium">
+                          {openingHours?.sunday ? 
+                            `${openingHours.sunday.start.substring(0, 5)} - ${openingHours.sunday.end.substring(0, 5)}` : 
+                            '10:00 - 18:00'}
+                        </span>
                       </div>
                     </div>
                   </div>
