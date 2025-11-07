@@ -17,7 +17,7 @@ Valid facility_type values are:
 - fotballbane
 - svømmehall
 - tennisbane
-- hall
+// Hall is no longer a valid facility type and has been removed from the system
 
 ## Solution Implemented
 I made the following changes to fix the facility creation issue:
@@ -60,3 +60,5 @@ For future reference, when adding or modifying facility types:
 3. The facility_type field is used for localization and categorization of facilities
 
 The current solution uses "møterom" (meeting room) as the default facility type, which is appropriate for most general-purpose facilities.
+
+Note: The facility type "hall" has been deprecated and removed from the system. Any references to it should be updated to use a valid facility type.

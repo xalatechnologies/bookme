@@ -6,7 +6,7 @@
     "welcome": "Velkommen tilbake! Her er en oversikt over systemet ditt.",
     "daily_tasks": "Daglige oppgaver",
     "key_metrics": "Nøkkeltall",
-    "trends": "Trends og utvikling",
+    "trends_dashboard": "Trends og utvikling",
     "operations": "Operasjonelle seksjoner",
     "new_facility": "Nytt lokale",
 
@@ -63,7 +63,7 @@
       "date": "Dato"
     },
 
-    "daily_tasks": {
+    "daily_tasks_section": {
       "title": "Dine oppgaver i dag",
       "pending_approvals": "Ventende godkjenninger",
       "payment_errors": "Bookinger med feil i betaling",
@@ -95,7 +95,7 @@
       "status": "Status"
     },
 
-    "alerts": {
+    "alerts_section": {
       "title": "Systemvarsler",
       "view_all": "Se alle varsler",
       "no_alerts": "Ingen aktive varsler",
@@ -854,7 +854,6 @@
         "sports_hall": "Idrettshall",
         "culture_house": "Kulturhus",
         "meeting_room": "Møterom",
-        "hall": "Sal",
         "handler": "Saksbehandler",
         "all_handlers": "Alle saksbehandlere",
         "admin": "Admin",

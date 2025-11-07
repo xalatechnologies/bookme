@@ -15,7 +15,14 @@ import { Textarea } from "@/components/ui/textarea";
 
 import type { Database } from '@/types/database';
 
-type Facility = Database['public']['Tables']['facilities']['Row'];
+type Facility = Database['public']['Tables']['facilities']['Row'] & {
+  amenities: string[];
+  images: string[];
+  type: string;
+  owner?: string;
+  lastUpdated?: string;
+  updatedBy?: string;
+};
 
 interface IAdminFacilityCardProps {
   readonly facility: Facility;
@@ -43,12 +50,12 @@ const AdminFacilityCard = ({ facility, onDelete, onToggleStatus, onDuplicate }: 
     type: string;
     amenities: string[];
   }>({
-    name: facility.name,
-    address: facility.address,
-    description: facility.description,
+    name: facility.name || '',
+    address: facility.address || '',
+    description: facility.description || '',
     capacity: facility.capacity,
-    type: facility.type,
-    amenities: [...facility.amenities]
+    type: facility.facility_type,
+    amenities: facility.amenities ? [...(facility.amenities as string[])] : []
   });
 
   const getStatusColor = (status: string): string => {
@@ -118,7 +125,7 @@ const AdminFacilityCard = ({ facility, onDelete, onToggleStatus, onDuplicate }: 
     e.stopPropagation();
     setIsEditing(true);
     setEditField(field);
-    setEditValue(field === "name" ? facility.name : field === "address" ? facility.address : facility.description);
+    setEditValue(field === "name" ? (facility.name || '') : field === "address" ? (facility.address || '') : (facility.description || ''));
   };
 
   const handleSaveEdit = (): void => {
@@ -131,7 +138,7 @@ const AdminFacilityCard = ({ facility, onDelete, onToggleStatus, onDuplicate }: 
       
       // Save to localStorage (simulating backend)
       const facilities = JSON.parse(localStorage.getItem('adminFacilities') || '[]');
-      const updatedFacilities = facilities.map((f: IFacility) => 
+      const updatedFacilities = facilities.map((f: any) => 
         f.id === facility.id ? updatedFacility : f
       );
       localStorage.setItem('adminFacilities', JSON.stringify(updatedFacilities));
@@ -171,7 +178,7 @@ const AdminFacilityCard = ({ facility, onDelete, onToggleStatus, onDuplicate }: 
       
       // Save to localStorage (simulating backend)
       const facilities = JSON.parse(localStorage.getItem('adminFacilities') || '[]');
-      const updatedFacilities = facilities.map((f: IFacility) => 
+      const updatedFacilities = facilities.map((f: any) => 
         f.id === facility.id ? updatedFacility : f
       );
       localStorage.setItem('adminFacilities', JSON.stringify(updatedFacilities));
@@ -197,12 +204,12 @@ const AdminFacilityCard = ({ facility, onDelete, onToggleStatus, onDuplicate }: 
       const imageUrls = Array.from(files).map(file => URL.createObjectURL(file));
       const updatedFacility = {
         ...facility,
-        images: [...facility.images, ...imageUrls]
+        images: [...(facility.images as string[] || []), ...imageUrls]
       };
       
       // Save to localStorage (simulating backend)
       const facilities = JSON.parse(localStorage.getItem('adminFacilities') || '[]');
-      const updatedFacilities = facilities.map((f: IFacility) => 
+      const updatedFacilities = facilities.map((f: any) => 
         f.id === facility.id ? updatedFacility : f
       );
       localStorage.setItem('adminFacilities', JSON.stringify(updatedFacilities));
@@ -240,15 +247,15 @@ const AdminFacilityCard = ({ facility, onDelete, onToggleStatus, onDuplicate }: 
       {/* Image Section - Identical to frontend */}
             <div className="relative h-64 overflow-hidden">
               <img
-                src={facility.images[0] || '/placeholder.svg'}
-                alt={facility.name}
+                src={(facility.images && (facility.images as string[])[0]) || '/placeholder.svg'}
+                alt={facility.name || ''}
                 className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
               />
         
         {/* Type badge - Same as frontend */}
         <div className="absolute top-4 left-4">
           <span className="bg-blue-600 text-white font-medium px-3 py-1 rounded-full text-sm">
-            {facility.type}
+            {facility.facility_type}
           </span>
         </div>
 
@@ -284,7 +291,7 @@ const AdminFacilityCard = ({ facility, onDelete, onToggleStatus, onDuplicate }: 
         </div>
 
               {/* Add image button for missing images */}
-              {!facility.images[0] && (
+              {!(facility.images && (facility.images as string[])[0]) && (
           <div className="absolute inset-0 bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
             <button
               onClick={handleImageUpload}
@@ -321,7 +328,7 @@ const AdminFacilityCard = ({ facility, onDelete, onToggleStatus, onDuplicate }: 
               className="text-2xl font-bold text-gray-900 dark:text-white mb-4 hover:bg-gray-50 dark:hover:bg-gray-700 px-1 py-1 rounded cursor-pointer transition-colors"
               onClick={(e) => handleInlineEdit(e, "name")}
             >
-              {facility.name}
+              {facility.name || ''}
             </h3>
           )}
         </div>
@@ -333,7 +340,7 @@ const AdminFacilityCard = ({ facility, onDelete, onToggleStatus, onDuplicate }: 
             className="text-base font-medium cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 px-1 py-1 rounded transition-colors"
             onClick={(e) => handleInlineEdit(e, "address")}
           >
-            {facility.address}
+            {facility.address || ''}
           </span>
         </div>
 
@@ -342,13 +349,13 @@ const AdminFacilityCard = ({ facility, onDelete, onToggleStatus, onDuplicate }: 
           className="text-gray-700 dark:text-gray-300 text-base leading-relaxed mb-4 hover:bg-gray-50 dark:hover:bg-gray-700 px-1 py-1 rounded cursor-pointer transition-colors"
           onClick={(e) => handleInlineEdit(e, "description")}
         >
-          {facility.description}
+          {facility.description || ''}
         </p>
 
         {/* Amenities Tags - Clickable for facility editing */}
-        {facility.amenities.length > 0 && (
+        {facility.amenities && (facility.amenities as string[]).length > 0 && (
           <div className="flex flex-wrap gap-2 mb-5">
-            {facility.amenities.slice(0, 3).map((amenity, index) => (
+            {(facility.amenities as string[]).slice(0, 3).map((amenity, index) => (
               <button
                 key={index}
                 onClick={(e) => handleTagClick(amenity, e)}
@@ -357,12 +364,12 @@ const AdminFacilityCard = ({ facility, onDelete, onToggleStatus, onDuplicate }: 
                 {amenity}
               </button>
             ))}
-            {facility.amenities.length > 3 && (
+            {(facility.amenities as string[]).length > 3 && (
               <button
                 onClick={handleShowAllAmenities}
                 className="bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 border-gray-300 dark:border-gray-600 font-medium px-3 py-1 text-sm rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
               >
-                +{facility.amenities.length - 3} mer
+                +{(facility.amenities as string[]).length - 3} mer
               </button>
             )}
           </div>
@@ -418,7 +425,7 @@ const AdminFacilityCard = ({ facility, onDelete, onToggleStatus, onDuplicate }: 
           <div className="flex items-center gap-2">
             <User className="w-3 h-3 text-gray-400" />
             <span className="text-xs text-gray-500 dark:text-gray-400">
-              Eier: {facility.owner}
+              Eier: {facility.owner || ''}
             </span>
           </div>
           
@@ -426,7 +433,7 @@ const AdminFacilityCard = ({ facility, onDelete, onToggleStatus, onDuplicate }: 
           <div className="flex items-center gap-2">
             <Clock className="w-3 h-3 text-gray-400" />
             <span className="text-xs text-gray-500 dark:text-gray-400">
-              Sist oppdatert: {facility.lastUpdated}
+              Sist oppdatert: {facility.lastUpdated || ''}
             </span>
           </div>
 
@@ -435,7 +442,7 @@ const AdminFacilityCard = ({ facility, onDelete, onToggleStatus, onDuplicate }: 
             <div className="flex items-center gap-2">
               <AlertTriangle className="w-3 h-3 text-gray-400" />
               <span className="text-xs text-gray-500 dark:text-gray-400">
-                Oppdatert av: {facility.updatedBy}
+                Oppdatert av: {facility.updatedBy || ''}
               </span>
             </div>
           )}
@@ -468,7 +475,7 @@ const AdminFacilityCard = ({ facility, onDelete, onToggleStatus, onDuplicate }: 
           </div>
           
           <p className="text-gray-700 dark:text-gray-300 mb-6">
-            Er du sikker på at du vil slette <strong>{facility.name}</strong>? 
+            Er du sikker på at du vil slette <strong>{facility.name || ''}</strong>? 
             Alle tilknyttede data vil bli permanent slettet.
           </p>
           
@@ -622,7 +629,7 @@ const AdminFacilityCard = ({ facility, onDelete, onToggleStatus, onDuplicate }: 
         </DialogHeader>
         <div className="py-4">
           <div className="flex flex-wrap gap-2">
-            {facility.amenities.map((amenity, index) => (
+            {facility.amenities && (facility.amenities as string[]).map((amenity, index) => (
               <span
                 key={index}
                 className="bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800 font-medium px-3 py-1 text-sm rounded-md"

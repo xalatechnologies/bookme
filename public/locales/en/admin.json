@@ -6,7 +6,7 @@
     "welcome": "Welcome back! Here's an overview of your system.",
     "daily_tasks": "Daily Tasks",
     "key_metrics": "Key Metrics",
-    "trends": "Trends and Development",
+    "trends_dashboard": "Trends and Development",
     "operations": "Operational Sections",
     "new_facility": "New Facility",
 
@@ -63,7 +63,7 @@
       "date": "Date"
     },
 
-    "daily_tasks": {
+    "daily_tasks_section": {
       "title": "Your Tasks Today",
       "pending_approvals": "Pending approvals",
       "payment_errors": "Bookings with payment errors",
@@ -95,7 +95,7 @@
       "status": "Status"
     },
 
-    "alerts": {
+    "alerts_section": {
       "title": "System Alerts",
       "view_all": "View All Alerts",
       "no_alerts": "No active alerts",
@@ -527,7 +527,6 @@
         "sports_hall": "Sports Hall",
         "culture_house": "Culture House",
         "meeting_room": "Meeting Room",
-        "hall": "Hall",
         "handler": "Handler",
         "all_handlers": "All handlers",
         "admin": "Admin",

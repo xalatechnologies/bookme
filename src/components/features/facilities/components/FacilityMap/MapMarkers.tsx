@@ -6,6 +6,7 @@ import mapboxgl from 'mapbox-gl';
 
 // Internal imports
 import type { Database } from '@/types/database';
+import { parseWKBPoint } from '@/utils/parseWKB';
 
 // Type from Supabase
 type Facility = Database['public']['Tables']['facilities']['Row'];
@@ -39,14 +40,96 @@ interface MapMarkersReturn {
 
 // Type guard to check if location has coordinates
 const hasCoordinates = (location: unknown): location is LocationCoordinates => {
-  return (
+  // If it's already in the correct format with lat/lng properties
+  if (
     location !== null &&
     typeof location === 'object' &&
     'lat' in location &&
     'lng' in location &&
     typeof (location as LocationCoordinates).lat === 'number' &&
     typeof (location as LocationCoordinates).lng === 'number'
-  );
+  ) {
+    return true;
+  }
+  
+  // If it's a string in POINT format (POINT(lng lat))
+  if (typeof location === 'string' && location.startsWith('POINT(') && location.endsWith(')')) {
+    const coords = location.slice(6, -1).split(' ');
+    return coords.length === 2 && !isNaN(parseFloat(coords[0])) && !isNaN(parseFloat(coords[1]));
+  }
+  
+  // Handle the case where location might be a binary PostGIS object (WKB format)
+  if (typeof location === 'string' && location.startsWith('0101000020')) {
+    // This looks like WKB format, try to parse it
+    const parsed = parseWKBPoint(location);
+    return parsed !== null;
+  }
+  
+  // Handle the case where location might be a binary PostGIS object
+  if (location !== null && typeof location === 'object' && !Array.isArray(location)) {
+    // Check if it has the structure of a PostGIS point
+    const locObj = location as Record<string, unknown>;
+    if ('type' in locObj && locObj.type === 'Point' && 'coordinates' in locObj) {
+      const coords = locObj.coordinates as number[];
+      return Array.isArray(coords) && coords.length === 2 && 
+             typeof coords[0] === 'number' && typeof coords[1] === 'number';
+    }
+  }
+  
+  return false;
+};
+
+// Function to extract coordinates from different formats
+const extractCoordinates = (location: unknown): { lat: number; lng: number } | null => {
+  // Object format { lat, lng }
+  if (
+    location !== null &&
+    typeof location === 'object' &&
+    'lat' in location &&
+    'lng' in location &&
+    typeof (location as LocationCoordinates).lat === 'number' &&
+    typeof (location as LocationCoordinates).lng === 'number'
+  ) {
+    return {
+      lat: (location as LocationCoordinates).lat,
+      lng: (location as LocationCoordinates).lng
+    };
+  }
+  
+  // String format "POINT(lng lat)"
+  if (typeof location === 'string' && location.startsWith('POINT(') && location.endsWith(')')) {
+    try {
+      const coords = location.slice(6, -1).split(' ');
+      if (coords.length === 2) {
+        const lng = parseFloat(coords[0]);
+        const lat = parseFloat(coords[1]);
+        if (!isNaN(lng) && !isNaN(lat)) {
+          return { lat, lng };
+        }
+      }
+    } catch (error) {
+      console.warn('Error parsing POINT format:', error);
+    }
+  }
+  
+  // WKB format (binary PostGIS)
+  if (typeof location === 'string' && location.startsWith('0101000020')) {
+    return parseWKBPoint(location);
+  }
+  
+  // GeoJSON format { type: 'Point', coordinates: [lng, lat] }
+  if (location !== null && typeof location === 'object' && !Array.isArray(location)) {
+    const locObj = location as Record<string, unknown>;
+    if ('type' in locObj && locObj.type === 'Point' && 'coordinates' in locObj) {
+      const coords = locObj.coordinates as number[];
+      if (Array.isArray(coords) && coords.length === 2 && 
+          typeof coords[0] === 'number' && typeof coords[1] === 'number') {
+        return { lat: coords[1], lng: coords[0] }; // GeoJSON uses [lng, lat] order
+      }
+    }
+  }
+  
+  return null;
 };
 
 export const MapMarkers: React.FC<MapMarkersProps> = ({
@@ -109,17 +192,20 @@ export const MapMarkers: React.FC<MapMarkersProps> = ({
     });
 
     // Filter facilities to only include those with valid coordinates
-    const facilitiesWithCoordinates = facilities.filter(facility => 
-      hasCoordinates(facility.location)
-    );
+    const facilitiesWithCoordinates = facilities.filter(facility => {
+      const hasCoords = hasCoordinates(facility.location);
+      return hasCoords;
+    });
 
     // Create new markers
     const newMarkers = facilitiesWithCoordinates.map((facility): mapboxgl.Marker => {
+      const coords = extractCoordinates(facility.location);
+      if (!coords) {
+        throw new Error(`Failed to extract coordinates for facility ${facility.id}`);
+      }
+      
       const markerElement = createMarkerElement(facility);
       const popupContent = createPopupContent(facility);
-      
-      // Extract coordinates safely
-      const location = facility.location as LocationCoordinates;
       
       const popup = new mapboxgl.Popup({
         offset: 25,
@@ -131,7 +217,7 @@ export const MapMarkers: React.FC<MapMarkersProps> = ({
         element: markerElement,
         anchor: 'bottom'
       })
-        .setLngLat([location.lng, location.lat])
+        .setLngLat([coords.lng, coords.lat])
         .setPopup(popup)
         .addTo(map);
 

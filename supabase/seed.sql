@@ -136,6 +136,7 @@ VALUES
     ]'::jsonb,
     ST_SetSRID(ST_MakePoint(10.2123, 59.7467), 4326)::geography
   )
+
 ON CONFLICT (id) DO NOTHING;
 
 -- ============================================================================

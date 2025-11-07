@@ -149,7 +149,7 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
     facilityName,
     selectedZone,
     recurrencePattern,
-    t,
+    t: t as unknown as (key: string) => string,
   });
 
   // Use external props if available, otherwise use internal state
@@ -299,7 +299,16 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
       );
 
       coordinatedAddToCart(
-        bookingData,
+        {
+          purpose: bookingData.purpose,
+          attendees: bookingData.attendees,
+          activityType: bookingData.activityType,
+          additionalInfo: bookingData.additionalInfo || "",
+          actorType: bookingData.actorType,
+          bookingType: bookingData.bookingType,
+          recurrencePattern: bookingData.recurrencePattern,
+          recurringSlots: bookingData.recurringSlots,
+        },
         allSelectedSlots,
         pricing,
         clearSelection,
@@ -313,6 +322,28 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
       clearSelection,
       clearRecurringSlots,
     ]
+  );
+
+  /**
+   * Handle add to cart for BookingFormPanel (without termsAccepted)
+   */
+  const handleAddToCartForPanel = useCallback(
+    (bookingData: {
+      readonly purpose: string;
+      readonly attendees: number;
+      readonly activityType: string;
+      readonly additionalInfo: string;
+      readonly actorType: string;
+      readonly bookingType: BookingType;
+      readonly recurrencePattern?: RecurrencePattern | null;
+      readonly recurringSlots?: readonly ISelectedTimeSlot[];
+    }): void => {
+      handleAddToCart({
+        ...bookingData,
+        termsAccepted: false,
+      } as IBookingFormData);
+    },
+    [handleAddToCart]
   );
 
   /**
@@ -332,7 +363,16 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
       );
 
       coordinatedCompleteBooking(
-        bookingData,
+        {
+          purpose: bookingData.purpose,
+          attendees: bookingData.attendees,
+          activityType: bookingData.activityType,
+          additionalInfo: bookingData.additionalInfo || "",
+          actorType: bookingData.actorType,
+          bookingType: bookingData.bookingType,
+          recurrencePattern: bookingData.recurrencePattern,
+          recurringSlots: bookingData.recurringSlots,
+        },
         allSelectedSlots,
         pricing,
         clearSelection,
@@ -346,6 +386,28 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
       clearSelection,
       clearRecurringSlots,
     ]
+  );
+
+  /**
+   * Handle complete booking for BookingFormPanel (without termsAccepted)
+   */
+  const handleCompleteBookingForPanel = useCallback(
+    (bookingData: {
+      readonly purpose: string;
+      readonly attendees: number;
+      readonly activityType: string;
+      readonly additionalInfo: string;
+      readonly actorType: string;
+      readonly bookingType: BookingType;
+      readonly recurrencePattern?: RecurrencePattern | null;
+      readonly recurringSlots?: readonly ISelectedTimeSlot[];
+    }): void => {
+      handleCompleteBooking({
+        ...bookingData,
+        termsAccepted: false,
+      } as IBookingFormData);
+    },
+    [handleCompleteBooking]
   );
 
   /**
@@ -461,7 +523,10 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
             error={error}
             openingHoursStart={openingHoursStart}
             openingHoursEnd={openingHoursEnd}
-            calendarWeek={calendarWeek}
+            calendarWeek={{
+              start: calendarWeek.startDate,
+              end: calendarWeek.endDate
+            }}
             onSlotClick={handleSlotClickWithZone}
             onBulkSlotSelection={handleBulkSelectWithZone}
             getAvailabilityStatus={externalGetAvailabilityStatus}
@@ -511,8 +576,8 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
                 zoneId={selectedZone.id}
                 selectedSlots={allSelectedSlots}
                 onSlotsChange={handleSlotsChange}
-                onAddToCart={handleAddToCart}
-                onCompleteBooking={handleCompleteBooking}
+                onAddToCart={handleAddToCartForPanel}
+                onCompleteBooking={handleCompleteBookingForPanel}
                 isLoading={isLoading}
                 error={error}
                 bookingType="one-time"

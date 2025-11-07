@@ -39,7 +39,6 @@ function normalizeFacilityType(rawType: string): string {
     'Fotballbane': 'fotballbane',
     'Svømmehall': 'svømmehall',
     'Tennisbane': 'tennisbane',
-    'Hall': 'hall',
   };
 
   return typeMap[rawType] || rawType.toLowerCase().replace(/\s+/g, '-');

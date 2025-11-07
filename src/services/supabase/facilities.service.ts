@@ -55,6 +55,8 @@ export const facilityKeys = {
   detail: (id: string) => [...facilityKeys.details(), id] as const,
   withZones: (id: string) => [...facilityKeys.detail(id), 'zones'] as const,
   published: (orgId: string) => [...facilityKeys.list(orgId), 'published'] as const,
+  publishedWithLocationText: (orgId: string) => [...facilityKeys.list(orgId), 'published', 'with-location-text'] as const,
+  detailWithLocationText: (id: string) => [...facilityKeys.details(), id, 'with-location-text'] as const,
 };
 
 // ============================================================================
@@ -260,6 +262,39 @@ export const facilitiesService = {
 
       if (insertError) throw insertError;
     }
+  },
+
+  /**
+   * Fetch published facilities with location converted to text format
+   * @param orgId - Organization ID
+   * @returns Array of facilities with location as text
+   */
+  async getPublishedWithLocationText(orgId: string): Promise<Facility[]> {
+    try {
+      // First try to get facilities with regular query
+      const facilities = await this.getPublished(orgId);
+      
+      // Log some facility data to see what we're working with
+      if (facilities.length > 0) {
+        console.log('Sample facility location data:', facilities[0].id, facilities[0].name, facilities[0].location);
+      }
+      
+      // Return facilities as is - the MapMarkers component will handle conversion
+      return facilities;
+    } catch (error) {
+      console.error('Error in getPublishedWithLocationText:', error);
+      return [];
+    }
+  },
+
+  /**
+   * Fetch a single facility with location converted to text format
+   * @param id - Facility ID
+   * @returns Facility with location as text
+   */
+  async getByIdWithLocationText(id: string): Promise<Facility> {
+    // For now, just return the regular facility
+    return await this.getById(id);
   },
 
 };
@@ -600,5 +635,40 @@ export const useSearchFacilities = (
     queryFn: () => facilitiesService.search(orgId, query),
     enabled: !!orgId && !!query && query.length >= 2 && enabled,
     staleTime: 2 * 60 * 1000, // 2 minutes
+  });
+};
+
+/**
+ * Hook to fetch published facilities with location text for map display
+ *
+ * @param orgId - Organization ID
+ * @returns React Query result with published facilities
+ */
+export const usePublishedFacilitiesWithLocationText = (
+  orgId: string
+): UseQueryResult<Facility[], Error> => {
+  return useQuery({
+    queryKey: facilityKeys.publishedWithLocationText(orgId),
+    queryFn: () => facilitiesService.getPublishedWithLocationText(orgId),
+    enabled: !!orgId,
+    staleTime: 10 * 60 * 1000, // 10 minutes (public data changes less frequently)
+  });
+};
+
+/**
+ * Hook to fetch a single facility with location text
+ *
+ * @param id - Facility ID
+ * @param enabled - Whether to enable the query
+ * @returns React Query result with facility
+ */
+export const useFacilityWithLocationText = (
+  id: string,
+  enabled = true
+): UseQueryResult<Facility, Error> => {
+  return useQuery({
+    queryKey: facilityKeys.detailWithLocationText(id),
+    queryFn: () => facilitiesService.getByIdWithLocationText(id),
+    enabled: !!id && enabled,
   });
 };

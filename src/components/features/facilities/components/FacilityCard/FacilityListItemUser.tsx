@@ -275,6 +275,8 @@ const FacilityListItemUser = (props: IFacilityListItemUserProps): JSX.Element =>
                   area_description: null,
                   capacity: 0,
                   city: null,
+                  contact_email: null,
+                  contact_phone: null,
                   country: null,
                   created_at: "",
                   description: null,

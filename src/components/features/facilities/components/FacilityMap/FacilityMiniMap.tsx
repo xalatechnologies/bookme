@@ -6,6 +6,7 @@ import { MapPin } from 'lucide-react';
 
 // Internal imports
 import type { Database } from '@/types/database';
+import { parseWKBPoint } from '@/utils/parseWKB';
 
 type Facility = Database['public']['Tables']['facilities']['Row'];
 
@@ -22,14 +23,73 @@ interface LocationCoordinates {
 
 // Type guard to check if location has coordinates
 const hasCoordinates = (location: unknown): location is LocationCoordinates => {
-  return (
+  // If it's already in the correct format with lat/lng properties
+  if (
     location !== null &&
     typeof location === 'object' &&
     'lat' in location &&
     'lng' in location &&
     typeof (location as LocationCoordinates).lat === 'number' &&
     typeof (location as LocationCoordinates).lng === 'number'
-  );
+  ) {
+    return true;
+  }
+  
+  // If it's a string in POINT format (POINT(lng lat))
+  if (typeof location === 'string' && location.startsWith('POINT(') && location.endsWith(')')) {
+    const coords = location.slice(6, -1).split(' ');
+    return coords.length === 2 && !isNaN(parseFloat(coords[0])) && !isNaN(parseFloat(coords[1]));
+  }
+  
+  // Handle the case where location might be a binary PostGIS object (WKB format)
+  if (typeof location === 'string' && location.startsWith('0101000020')) {
+    // This looks like WKB format, try to parse it
+    const parsed = parseWKBPoint(location);
+    return parsed !== null;
+  }
+  
+  return false;
+};
+
+// Function to extract coordinates from different formats
+const extractCoordinates = (location: unknown): { lat: number; lng: number } | null => {
+  // Object format { lat, lng }
+  if (
+    location !== null &&
+    typeof location === 'object' &&
+    'lat' in location &&
+    'lng' in location &&
+    typeof (location as LocationCoordinates).lat === 'number' &&
+    typeof (location as LocationCoordinates).lng === 'number'
+  ) {
+    return {
+      lat: (location as LocationCoordinates).lat,
+      lng: (location as LocationCoordinates).lng
+    };
+  }
+  
+  // String format "POINT(lng lat)"
+  if (typeof location === 'string' && location.startsWith('POINT(') && location.endsWith(')')) {
+    try {
+      const coords = location.slice(6, -1).split(' ');
+      if (coords.length === 2) {
+        const lng = parseFloat(coords[0]);
+        const lat = parseFloat(coords[1]);
+        if (!isNaN(lng) && !isNaN(lat)) {
+          return { lat, lng };
+        }
+      }
+    } catch (error) {
+      console.warn('Error parsing POINT format:', error);
+    }
+  }
+  
+  // WKB format (binary PostGIS)
+  if (typeof location === 'string' && location.startsWith('0101000020')) {
+    return parseWKBPoint(location);
+  }
+  
+  return null;
 };
 
 export const FacilityMiniMap: React.FC<FacilityMiniMapProps> = ({
@@ -39,10 +99,11 @@ export const FacilityMiniMap: React.FC<FacilityMiniMapProps> = ({
   const [imageLoaded, setImageLoaded] = useState<boolean>(false);
   const [imageError, setImageError] = useState<boolean>(false);
 
-  // Check if facility has valid coordinates
-  const isValidLocation = hasCoordinates(facility.location);
-  const lat = isValidLocation ? (facility.location as LocationCoordinates).lat : 59.7464; // Default to Drammen
-  const lng = isValidLocation ? (facility.location as LocationCoordinates).lng : 10.2045; // Default to Drammen
+  // Check if facility has valid coordinates and extract them
+  const coords = extractCoordinates(facility.location);
+  
+  const lat = coords ? coords.lat : 59.7464; // Default to Drammen
+  const lng = coords ? coords.lng : 10.2045; // Default to Drammen
 
   // Generate static map URL using Mapbox Static Images API
   // Use a larger size to ensure good quality at different heights

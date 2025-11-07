@@ -139,6 +139,8 @@ export {
   useUpdateFacility,
   useDeleteFacility,
   useSearchFacilities,
+  usePublishedFacilitiesWithLocationText,
+  useFacilityWithLocationText,
 } from './facilities.service';
 
 // Bookings

@@ -349,7 +349,7 @@ const FacilityEditPage = (_props: IFacilityEditPageProps): JSX.Element => {
         }
         
         // Additional validation for facility_type to ensure it's a valid value
-        const validFacilityTypes = ["møterom", "idrettshall", "konferanserom", "workshop", "studio", "auditorium", "fotballbane"];
+        const validFacilityTypes = ["møterom", "idrettshall", "konferanserom", "workshop", "studio", "auditorium", "fotballbane", "svømmehall", "kulturhus", "tennisbane"];
         if (!validFacilityTypes.includes(facilityData.facility_type)) {
           throw new Error(`Ugyldig type lokale: ${facilityData.facility_type}. Må være en av: ${validFacilityTypes.join(", ")}`);
         }
@@ -385,7 +385,7 @@ const FacilityEditPage = (_props: IFacilityEditPageProps): JSX.Element => {
         }
         
         // Additional validation for facility_type to ensure it's a valid value
-        const validFacilityTypes = ["møterom", "idrettshall", "konferanserom", "workshop", "studio", "auditorium", "fotballbane"];
+        const validFacilityTypes = ["møterom", "idrettshall", "konferanserom", "workshop", "studio", "auditorium", "fotballbane", "svømmehall", "kulturhus", "tennisbane"];
         if (!validFacilityTypes.includes(facilityData.facility_type)) {
           throw new Error(`Ugyldig type lokale: ${facilityData.facility_type}. Må være en av: ${validFacilityTypes.join(", ")}`);
         }
@@ -953,6 +953,9 @@ const FacilityEditPage = (_props: IFacilityEditPageProps): JSX.Element => {
                 <option value="studio">Studio</option>
                 <option value="auditorium">Auditorium</option>
                 <option value="fotballbane">Fotballbane</option>
+                <option value="svømmehall">Svømmehall</option>
+                <option value="kulturhus">Kulturhus</option>
+                <option value="tennisbane">Tennisbane</option>
               </select>
             </Badge>
           </div>
@@ -1234,37 +1237,6 @@ const FacilityEditPage = (_props: IFacilityEditPageProps): JSX.Element => {
                           </div>
                         </div>
                       </div>
-
-                      {/* Show small map if facility has location coordinates */}
-                      {(() => {
-                        // Check if facility has valid coordinates
-                        if (editedFacility.location && 
-                            typeof editedFacility.location === 'object' && 
-                            editedFacility.location !== null && 
-                            'lat' in editedFacility.location && 
-                            'lng' in editedFacility.location) {
-                          const location = editedFacility.location as { lat: number; lng: number };
-                          return (
-                            <div>
-                              <h3 className="text-xl font-semibold mb-3">Lokasjon</h3>
-                              <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-                                <div className="h-48 rounded-md overflow-hidden">
-                                  <img
-                                    src={`https://api.mapbox.com/styles/v1/mapbox/streets-v12/static/pin-s+000000(${location.lng},${location.lat})/${location.lng},${location.lat},14,0/400x300@2x?access_token=pk.eyJ1IjoiYW1pbjA3IiwiYSI6ImNtZzlqcjNnczBmMmsycXM2cm4xYzU0OGwifQ.1Vuiv_9pPIUY478LP3yccA`}
-                                    alt="Facility location"
-                                    className="w-full h-full object-cover"
-                                    onError={(e) => {
-                                      // Fallback to default image if map fails to load
-                                      e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAiIGhlaWdodD0iMzAwIiB2aWV3Qm94PSIwIDAgNDAwIDMwMCI+PHJlY3Qgd2lkdGg9IjQwMCIgaGVpZ2h0PSIzMDAiIGZpbGw9IiNlMGUwZTAiLz48dGV4dCB4PSIyMDAiIHk9IjE1MCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE2IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjNjY2Ij5GYWNpbGl0eSBsb2NhdGlvbjwvdGV4dD48L3N2Zz4=';
-                                    }}
-                                  />
-                                </div>
-                              </div>
-                            </div>
-                          );
-                        }
-                        return null;
-                      })()}
                     </div>
                   </div>
                 </div>

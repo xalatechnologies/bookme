@@ -73,7 +73,7 @@ export const FacilityEditForm: React.FC<IFacilityEditFormProps> = ({
   onClose,
   onUpdate,
 }): JSX.Element => {
-  const { t } = useTranslation(["facilities", "admin", "validation", "common"]);
+  const { t } = useTranslation(["facility", "admin", "validation", "common"]);
 
   const [formData, setFormData] = useState<Partial<Facility>>({ ...facility });
 
@@ -93,7 +93,7 @@ export const FacilityEditForm: React.FC<IFacilityEditFormProps> = ({
     handleDrop,
     setImages,
   } = useImageHandling({
-    initialImages: facility.images || [],
+    initialImages: facility.images ? (facility.images as string[]) : [],
     maxFileSize: 5 * 1024 * 1024, // 5MB
     maxImages: 10,
   });
@@ -141,9 +141,10 @@ export const FacilityEditForm: React.FC<IFacilityEditFormProps> = ({
   // Initialize form data when facility changes
   useEffect(() => {
     setFormData({ ...facility });
-    setImages(facility.images || []);
-    if (facility.coordinates) {
-      setCoordinates(facility.coordinates);
+    setImages(facility.images ? (facility.images as string[]) : []);
+    // Note: We're using location instead of coordinates since that's what the database has
+    if (facility.location) {
+      setCoordinates(facility.location as any);
     }
   }, [facility, setImages, setCoordinates]);
 
@@ -193,12 +194,12 @@ export const FacilityEditForm: React.FC<IFacilityEditFormProps> = ({
         // Use Supabase mutation to update facility
         await updateFacilityMutation.mutateAsync({
           id: facility.id,
-          data: formData as Database['public']['Tables']['facilities']['Update'],
+          updates: formData as Database['public']['Tables']['facilities']['Update'],
         });
         onUpdate();
         onClose();
       } catch (error) {
-        console.error("Failed to update facility:", error);
+
       }
     },
     [formData, validateAll, facility.id, updateFacilityMutation, onUpdate, onClose]
@@ -223,7 +224,6 @@ export const FacilityEditForm: React.FC<IFacilityEditFormProps> = ({
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Name Field */}
           <FormField
-            id="name"
             name="name"
             label={t("common:name", "Navn")}
             type="text"
@@ -236,7 +236,6 @@ export const FacilityEditForm: React.FC<IFacilityEditFormProps> = ({
           {/* Address Field */}
           <div className="space-y-2">
             <FormField
-              id="address"
               name="address"
               label={t("common:address", "Adresse")}
               type="text"
@@ -380,7 +379,9 @@ export const FacilityEditForm: React.FC<IFacilityEditFormProps> = ({
 
           {/* Form Actions */}
           <FormActions
-            onSubmit={handleSubmit}
+            onSubmit={() => {
+              handleSubmit(new Event('submit') as unknown as React.FormEvent);
+            }}
             onCancel={onClose}
             submitLabel={t("common:actions.save", "Lagre endringer")}
             cancelLabel={t("common:actions.cancel", "Avbryt")}

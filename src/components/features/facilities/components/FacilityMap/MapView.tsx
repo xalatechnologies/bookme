@@ -5,7 +5,7 @@ import React, { useMemo, useState } from 'react';
 import type { Database } from '@/types/database';
 
 // Internal imports
-import { usePublishedFacilities, useFacilities } from '@/services/supabase/facilities.service';
+import { usePublishedFacilitiesWithLocationText, useFacilities } from '@/services/supabase/facilities.service';
 import { useOrganizationId } from '@/hooks/useOrganizationId';
 import { useMapOverlay } from '@/hooks/features/facilities';
 import { FacilityFilters } from '@/types/facility';
@@ -53,8 +53,8 @@ export const MapView: React.FC<MapViewProps> = ({
   } = useMapOverlay();
 
   const orgId = useOrganizationId();
-  // Use all facilities if showAllFacilities is true, otherwise use published only
-  const { data: publishedFacilities = [], isLoading: loadingPublished } = usePublishedFacilities(orgId);
+  // Use facilities with location text for map display
+  const { data: publishedFacilities = [], isLoading: loadingPublished } = usePublishedFacilitiesWithLocationText(orgId);
   const { data: allFacilities = [], isLoading: loadingAll } = useFacilities(orgId, showAllFacilities);
 
   const facilities = showAllFacilities ? allFacilities : publishedFacilities;
@@ -145,13 +145,14 @@ export const MapView: React.FC<MapViewProps> = ({
             onLoadingChange={setMapLoading}
             mapboxToken={DEFAULT_MAPBOX_TOKEN}
           />
-          {isInitialized && (
+          {isInitialized && map && (
             <MapMarkers
               map={map}
               facilities={filteredFacilities}
               onMarkerClick={(facility) => handleMarkerClickInternal(facility, onMarkerClick)}
             />
           )}
+
         </Card>
       )}
     </div>
