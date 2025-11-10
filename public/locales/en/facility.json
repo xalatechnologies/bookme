@@ -398,6 +398,7 @@
     "image_number": "Image {{number}}",
     "remove_image": "Remove image {{number}}",
     "no_images": "No images added",
+    "uploading": "Uploading...",
     "fetching_coordinates": "Fetching coordinates...",
     "geocode_errors": {
       "geocode_failed": "Could not find address in Mapbox",

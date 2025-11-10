@@ -8,8 +8,7 @@ import type { Zone } from "@/services/supabase/types";
 // Use Supabase facility type
 type Facility = Database['public']['Tables']['facilities']['Row'];
 
-import { AirBnbStyleGallery } from "../FacilityImageGallery/AirBnbStyleGallery";
-import { FacilityHeader } from "./FacilityHeader";
+import GalleryHeader from "./GalleryHeader";
 import { FacilityInfoTabs } from "./FacilityInfoTabs";
 
 interface FacilityDetailLayoutProps {
@@ -30,24 +29,17 @@ export const FacilityDetailLayout = ({
   showBookingInterface = false // eslint-disable-line @typescript-eslint/no-unused-vars
 }: FacilityDetailLayoutProps): JSX.Element => {
   return (
-    <div className="container mx-auto px-4 py-6 max-w-7xl">
-      {/* Full Width Gallery Section */}
-      <div className="w-full mb-8">
-        <AirBnbStyleGallery images={(facility.images as string[] | null) || []} facilityName={facility.name} />
-      </div>
-
-      {/* Facility Header - Title, Tags, Address */}
-      <div className="mb-8">
-        <FacilityHeader
-          name={facility.name}
-          address={facility.address || ''}
-          type={facility.facility_type || ''}
-          onShare={onShare}
-          isFavorited={isFavorited}
-          onToggleFavorite={onToggleFavorite}
-        />
-      </div>
-
+    <div className="container mx-auto px-4 md:px-6 max-w-7xl">
+      <GalleryHeader
+        title={facility.name}
+        venueType={facility.facility_type || ''}
+        address={facility.address || ''}
+        images={(facility.images as string[] | null) || []}
+        isFavorited={isFavorited}
+        onShare={onShare}
+        onToggleFavorite={onToggleFavorite}
+      />
+      
       {/* Main Content Layout - Full Width */}
       <div className="grid grid-cols-1 gap-8 mb-12">
         <div className="space-y-6">

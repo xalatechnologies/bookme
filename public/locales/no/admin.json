@@ -607,7 +607,8 @@
         "add_first": "Legg til første bilde",
         "no_images": "Ingen bilder lagt til",
         "main_image": "Hovedbilde",
-        "drag_reorder": "Dra for å endre rekkefølge"
+        "drag_reorder": "Dra for å endre rekkefølge",
+        "uploading": "Laster opp..."
       },
 
       "tabs": {

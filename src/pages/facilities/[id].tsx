@@ -83,10 +83,12 @@ export const FacilityDetail = (): JSX.Element => {
         <GlobalHeader />
 
         {/* Breadcrumb Navigation */}
-        <FacilityDetailBreadcrumb facilityName={facility.name} />
+        <div className="relative z-10">
+          <FacilityDetailBreadcrumb facilityName={facility.name} />
+        </div>
 
         {/* Main Content */}
-        <div className="flex-grow pb-20 lg:pb-0">
+        <div className="flex-grow pb-20 lg:pb-0 relative z-0">
           <FacilityDetailLayout
             facility={facility}
             zones={zones.map(zone => ({

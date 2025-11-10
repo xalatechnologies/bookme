@@ -248,8 +248,9 @@ export const FacilityListItem: React.FC<FacilityListItemProps> = ({
           {/* Map Section - 3 columns */}
           <div className="col-span-3 bg-gray-100 relative overflow-hidden">
             <FacilityMiniMap
-              facility={facility}
-              mapboxToken="pk.eyJ1IjoiYW1pbjA3IiwiYSI6ImNtZzlqcjNnczBmMmsycXM2cm4xYzU0OGwifQ.1Vuiv_9pPIUY478LP3yccA"
+              address={facility.address || undefined}
+              // Note: lat/lng are not directly available on the facility object
+              // The FacilityMiniMap component will handle geocoding if needed
             />
           </div>
         </div>

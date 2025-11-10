@@ -215,7 +215,7 @@ if [ $total_errors -eq 0 ]; then
     echo -e "  ${YELLOW}Next Steps:${NC}"
     echo -e "  1. Install dependencies:    ${BLUE}npm install${NC}"
     echo -e "  2. Install Playwright:      ${BLUE}npx playwright install${NC}"
-    echo -e "  3. Start Supabase:          ${BLUE}npx supabase start${NC}"
+    echo -e "  3. Configure Supabase Cloud: ${BLUE}Set up environment variables${NC}"
     echo -e "  4. Run tests:               ${BLUE}npm run test:all${NC}"
     echo ""
     echo -e "  ${YELLOW}Quick Commands:${NC}"

@@ -58,7 +58,7 @@ BookMe Portal er en omfattende **Supabase-powered React application** for fasili
 
 ### Prerequisites
 - Node.js (v18+)
-- Docker Desktop (for local Supabase)
+- Node.js 18+ with npm
 - npm
 
 ### Installation
@@ -67,7 +67,7 @@ BookMe Portal er en omfattende **Supabase-powered React application** for fasili
 # 1. Install dependencies
 npm install
 
-# 2. Start Supabase (Docker must be running)
+# 2. Configure Supabase Cloud connection
 npx supabase start
 
 # 3. Setup test users

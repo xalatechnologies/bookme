@@ -37,12 +37,17 @@ export const useMapErrorHandling = (): UseMapErrorHandlingReturn => {
   const parseMapError = useCallback((e: MapError): string => {
     let errorMessage = 'An error occurred while loading the map.';
 
-    if (e.error?.message?.includes('401')) {
-      errorMessage = 'Invalid Mapbox access token. Please check your token.';
-    } else if (e.error?.message?.includes('network')) {
-      errorMessage = 'Network error. Please check your internet connection.';
-    } else if (e.error?.message) {
-      errorMessage = e.error.message;
+    try {
+      if (e.error?.message?.includes('401')) {
+        errorMessage = 'Invalid Mapbox access token. Please check your token.';
+      } else if (e.error?.message?.includes('network')) {
+        errorMessage = 'Network error. Please check your internet connection.';
+      } else if (e.error?.message) {
+        errorMessage = e.error.message;
+      }
+    } catch (error) {
+      console.warn('Error parsing map error:', error);
+      errorMessage = 'An unexpected error occurred while loading the map.';
     }
 
     return errorMessage;
@@ -57,8 +62,24 @@ export const useMapErrorHandling = (): UseMapErrorHandlingReturn => {
    * @throws {Error} If token is invalid
    */
   const validateToken = useCallback((token: string): void => {
-    if (!token || token.length < 10) {
-      throw new Error('Invalid Mapbox access token. Please check your token.');
+    // Only validate if token is provided
+    if (token) {
+      // Check if token looks like a valid Mapbox token (starts with pk. or sk.)
+      const isValidFormat = token.startsWith('pk.') || token.startsWith('sk.');
+      
+      if (!isValidFormat) {
+        console.warn('Mapbox token format may be invalid:', token);
+        // Don't throw error, just warn - token might still work
+      }
+      
+      // Basic length check
+      if (token.length < 10) {
+        console.warn('Mapbox token seems too short:', token);
+        // Don't throw error, just warn - token might still work
+      }
+    } else {
+      console.warn('No Mapbox token provided');
+      // Don't throw error, just warn - token might be set elsewhere
     }
   }, []);
 

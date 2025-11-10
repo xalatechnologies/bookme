@@ -1057,10 +1057,9 @@ const FacilityEditPage = (_props: IFacilityEditPageProps): JSX.Element => {
         <div className="mb-12">
           <div className="space-y-6">
             <Tabs defaultValue="general" className="w-full">
-              <TabsList className="grid w-full grid-cols-5">
+              <TabsList className="grid w-full grid-cols-4">
                 <TabsTrigger value="general">Generell info</TabsTrigger>
                 <TabsTrigger value="zones">Soner</TabsTrigger>
-                <TabsTrigger value="facilities">Fasiliteter</TabsTrigger>
                 <TabsTrigger value="rules">Regler</TabsTrigger>
                 <TabsTrigger value="faq">FAQ</TabsTrigger>
               </TabsList>
@@ -1092,6 +1091,65 @@ const FacilityEditPage = (_props: IFacilityEditPageProps): JSX.Element => {
                             placeholder="0"
                           />
                           <span className="ml-2 text-gray-600 dark:text-gray-400">personer</span>
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <h3 className="text-xl font-semibold mb-3">Fasiliteter</h3>
+                        
+                        <div className="space-y-4">
+                          {editedFacility.amenities && Array.isArray(editedFacility.amenities) ? (
+                            <div className="flex flex-wrap gap-2">
+                              {editedFacility.amenities.map((amenity: Json, index: number) => (
+                                <Badge
+                                  key={index}
+                                  className="bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800"
+                                >
+                                  {typeof amenity === 'string' ? amenity : JSON.stringify(amenity)}
+                                  <button
+                                    onClick={() => typeof amenity === 'string' ? handleTagRemove(amenity) : null}
+                                    className="ml-2 text-blue-500 hover:text-blue-700"
+                                  >
+                                    <XIcon className="w-3 h-3" />
+                                  </button>
+                                </Badge>
+                              ))}
+                            </div>
+                          ) : null}
+                          
+                          <div className="flex gap-2">
+                            <select
+                              onChange={(e) => {
+                                if (e.target.value) {
+                                  handleTagAdd(e.target.value);
+                                  e.target.value = ''; // Reset selection
+                                }
+                              }}
+                              className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                            >
+                              <option value="">Velg en fasilitet...</option>
+                              <option value="garderober">Garderober</option>
+                              <option value="dusj">Dusj</option>
+                              <option value="parkering">Parkering</option>
+                              <option value="lyd-lys">Lyd/lys</option>
+                              <option value="tribuner">Tribuner</option>
+                              <option value="scene">Scene</option>
+                              <option value="projektor">Projektor</option>
+                              <option value="kjøkken">Kjøkken</option>
+                              <option value="kunstgress">Kunstgress</option>
+                              <option value="flombelysning">Flombelysning</option>
+                              <option value="25m-basseng">25m basseng</option>
+                              <option value="cafeteria">Cafeteria</option>
+                              <option value="innendørs">Innendørs</option>
+                              <option value="profesjonell-underlag">Profesjonell underlag</option>
+                              <option value="utstyr-utleie">Utstyr utleie</option>
+                              <option value="redningsutstyr">Redningsutstyr</option>
+                              <option value="wifi">WiFi</option>
+                              <option value="whiteboard">Whiteboard</option>
+                              <option value="fotball">Fotball</option>
+                              <option value="basketball">Basketball</option>
+                            </select>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -1337,66 +1395,7 @@ const FacilityEditPage = (_props: IFacilityEditPageProps): JSX.Element => {
                 </div>
               </TabsContent>
 
-              <TabsContent value="facilities" className="space-y-6 mt-6">
-                <div>
-                  <h3 className="text-xl font-semibold mb-4">Fasiliteter</h3>
-                  
-                  <div className="space-y-4">
-                    {editedFacility.amenities && Array.isArray(editedFacility.amenities) ? (
-                      <div className="flex flex-wrap gap-2">
-                        {editedFacility.amenities.map((amenity: Json, index: number) => (
-                          <Badge
-                            key={index}
-                            className="bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800"
-                          >
-                            {typeof amenity === 'string' ? amenity : JSON.stringify(amenity)}
-                            <button
-                              onClick={() => typeof amenity === 'string' ? handleTagRemove(amenity) : null}
-                              className="ml-2 text-blue-500 hover:text-blue-700"
-                            >
-                              <XIcon className="w-3 h-3" />
-                            </button>
-                          </Badge>
-                        ))}
-                      </div>
-                    ) : null}
-                    
-                    <div className="flex gap-2">
-                      <select
-                        onChange={(e) => {
-                          if (e.target.value) {
-                            handleTagAdd(e.target.value);
-                            e.target.value = ''; // Reset selection
-                          }
-                        }}
-                        className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-                      >
-                        <option value="">Velg en fasilitet...</option>
-                        <option value="garderober">Garderober</option>
-                        <option value="dusj">Dusj</option>
-                        <option value="parkering">Parkering</option>
-                        <option value="lyd-lys">Lyd/lys</option>
-                        <option value="tribuner">Tribuner</option>
-                        <option value="scene">Scene</option>
-                        <option value="projektor">Projektor</option>
-                        <option value="kjøkken">Kjøkken</option>
-                        <option value="kunstgress">Kunstgress</option>
-                        <option value="flombelysning">Flombelysning</option>
-                        <option value="25m-basseng">25m basseng</option>
-                        <option value="cafeteria">Cafeteria</option>
-                        <option value="innendørs">Innendørs</option>
-                        <option value="profesjonell-underlag">Profesjonell underlag</option>
-                        <option value="utstyr-utleie">Utstyr utleie</option>
-                        <option value="redningsutstyr">Redningsutstyr</option>
-                        <option value="wifi">WiFi</option>
-                        <option value="whiteboard">Whiteboard</option>
-                        <option value="fotball">Fotball</option>
-                        <option value="basketball">Basketball</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-              </TabsContent>
+              
 
               <TabsContent value="rules" className="space-y-6 mt-6">
                 <div>

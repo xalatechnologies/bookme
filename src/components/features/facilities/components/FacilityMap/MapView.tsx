@@ -1,14 +1,14 @@
 "use client";
 
 // External imports
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import type { Database } from '@/types/database';
+import type { FacilityWithCoords, FacilityFilters } from '@/types/facility';
 
 // Internal imports
-import { usePublishedFacilitiesWithLocationText, useFacilities } from '@/services/supabase/facilities.service';
+import { usePublishedFacilitiesWithCoords, useFacilitiesWithCoords } from '@/services/supabase/facilities.service';
 import { useOrganizationId } from '@/hooks/useOrganizationId';
 import { useMapOverlay } from '@/hooks/features/facilities';
-import { FacilityFilters } from '@/types/facility';
 
 type Facility = Database['public']['Tables']['facilities']['Row'];
 
@@ -26,7 +26,7 @@ interface MapViewProps {
   readonly setViewMode: (mode: "grid" | "map" | "list") => void;
   readonly showAllFacilities?: boolean; // New prop to show all facilities in admin
   readonly showHeader?: boolean; // New prop to control header visibility
-  readonly onMarkerClick?: (facility: Facility) => void; // New prop for handling marker clicks
+  readonly onMarkerClick?: (facility: FacilityWithCoords) => void; // New prop for handling marker clicks
 }
 
 // Mapbox public token provided by user
@@ -53,15 +53,12 @@ export const MapView: React.FC<MapViewProps> = ({
   } = useMapOverlay();
 
   const orgId = useOrganizationId();
-  // Use facilities with location text for map display
-  const { data: publishedFacilities = [], isLoading: loadingPublished } = usePublishedFacilitiesWithLocationText(orgId);
-  const { data: allFacilities = [], isLoading: loadingAll } = useFacilities(orgId, showAllFacilities);
+  // Use facilities with coordinates for map display
+  const { data: publishedFacilities = [], isLoading: loadingPublished } = usePublishedFacilitiesWithCoords(orgId);
+  const { data: allFacilities = [], isLoading: loadingAll } = useFacilitiesWithCoords(orgId, showAllFacilities);
 
   const facilities = showAllFacilities ? allFacilities : publishedFacilities;
   const isLoading = showAllFacilities ? loadingAll : loadingPublished;
-
-  // Loading state for the map container
-  const [mapLoading, setMapLoading] = useState<boolean>(false);
 
   // Create filters from props
   const filters: FacilityFilters = {
@@ -142,14 +139,14 @@ export const MapView: React.FC<MapViewProps> = ({
           <MapContainer
             onMapLoad={handleMapLoad}
             onMapError={handleMapError}
-            onLoadingChange={setMapLoading}
+            onLoadingChange={() => {}} // We're not using this in MapContainer
             mapboxToken={DEFAULT_MAPBOX_TOKEN}
           />
           {isInitialized && map && (
             <MapMarkers
               map={map}
               facilities={filteredFacilities}
-              onMarkerClick={(facility) => handleMarkerClickInternal(facility, onMarkerClick)}
+              onMarkerClick={(facility) => handleMarkerClickInternal(facility as any, onMarkerClick as any)}
             />
           )}
 

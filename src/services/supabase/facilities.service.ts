@@ -2,7 +2,6 @@
  * Facilities Service
  *
  * Handles all facility-related operations with Supabase backend.
- * Provides CRUD operations and React Query hooks for facilities.
  *
  * Features:
  * - Type-safe operations with generated database types
@@ -10,20 +9,6 @@
  * - Support for zones and availability
  * - Organization-scoped queries
  * - Optimistic updates
- *
- * Usage:
- * ```tsx
- * import { useFacilities, useCreateFacility } from '@/services/supabase/facilities.service';
- *
- * function FacilityList() {
- *   const { data: facilities, isLoading } = useFacilities(orgId);
- *   const createFacility = useCreateFacility();
- *
- *   if (isLoading) return <Loading />;
- *
- *   return <div>{facilities?.map(f => <FacilityCard key={f.id} facility={f} />)}</div>;
- * }
- * ```
  */
 
 import { supabase } from '@/lib/clients/supabase';
@@ -44,6 +29,44 @@ export interface FacilityWithZones extends Facility {
 }
 
 /**
+ * Facility with extracted coordinates
+ */
+export interface FacilityWithCoords extends Facility {
+  lat: number | null;
+  lng: number | null;
+}
+
+// Type for facilities with location text from RPC functions
+type FacilityWithLocationText = {
+  id: string;
+  name: string;
+  facility_type: string;
+  address: string | null;
+  capacity: number;
+  images: unknown;
+  location_text: string;
+  org_id: string | null;
+  lat: number;
+  lng: number;
+  location_geojson: unknown;
+  created_at: string;
+  updated_at: string | null;
+  description: string | null;
+  rating: number | null;
+  review_count: number;
+  status: string;
+  slug: string;
+  contact_email: string | null;
+  contact_phone: string | null;
+  accessibility_features: unknown;
+  area_description: string | null;
+  amenities: unknown;
+  postal_code: string | null;
+  city: string | null;
+  country: string | null;
+};
+
+/**
  * Query keys for React Query
  * Consistent key structure for caching and invalidation
  */
@@ -57,6 +80,72 @@ export const facilityKeys = {
   published: (orgId: string) => [...facilityKeys.list(orgId), 'published'] as const,
   publishedWithLocationText: (orgId: string) => [...facilityKeys.list(orgId), 'published', 'with-location-text'] as const,
   detailWithLocationText: (id: string) => [...facilityKeys.details(), id, 'with-location-text'] as const,
+  publishedWithCoords: (orgId: string) => [...facilityKeys.list(orgId), 'published', 'with-coords'] as const,
+};
+
+// Helper function to extract coordinates from location data
+const extractCoordinates = (location: unknown): { lat: number | null; lng: number | null } => {
+  let lat: number | null = null;
+  let lng: number | null = null;
+  
+  try {
+    // If location is an object with lat/lng properties
+    if (location && typeof location === 'object' && !Array.isArray(location)) {
+      const locObj = location as Record<string, unknown>;
+      if ('lat' in locObj && 'lng' in locObj) {
+        lat = typeof locObj.lat === 'number' ? locObj.lat : null;
+        lng = typeof locObj.lng === 'number' ? locObj.lng : null;
+      }
+    }
+    // If location is a string in POINT format (POINT(lng lat))
+    else if (typeof location === 'string' && location.startsWith('POINT(') && location.endsWith(')')) {
+      const coords = location.slice(6, -1).split(' ');
+      if (coords.length === 2) {
+        lng = parseFloat(coords[0]);
+        lat = parseFloat(coords[1]);
+      }
+    }
+    // If location is a binary PostGIS object, we can't parse it directly
+    // In this case, we need to rely on the database to convert it to text format
+    else if (location && typeof location === 'object' && Array.isArray(location)) {
+      // This might be a binary array, we can't parse it directly
+      console.warn('Cannot parse binary PostGIS location data directly');
+    }
+  } catch (error) {
+    console.warn('Error parsing location data:', error);
+  }
+  
+  return { lat, lng };
+};
+
+// Helper function to convert FacilityWithLocationText to FacilityWithCoords
+const convertToFacilityWithCoords = (facility: FacilityWithLocationText): FacilityWithCoords => {
+  // Create a base facility object with all properties from FacilityWithLocationText
+  const baseFacility: any = { ...facility };
+  
+  // Convert the specific properties that differ
+  baseFacility.location = facility.location_text;
+  
+  // Add lat/lng properties
+  const facilityWithCoords: FacilityWithCoords = {
+    ...baseFacility,
+    lat: facility.lat,
+    lng: facility.lng
+  };
+  
+  return facilityWithCoords;
+};
+
+// Helper function to add coordinates to facilities (fallback method)
+const addCoordinatesToFacilities = (facilities: Facility[]): FacilityWithCoords[] => {
+  return facilities.map(facility => {
+    const { lat, lng } = extractCoordinates(facility.location);
+    return {
+      ...facility,
+      lat,
+      lng
+    };
+  });
 };
 
 // ============================================================================
@@ -98,6 +187,80 @@ export const facilitiesService = {
 
     if (error) throw error;
     return data;
+  },
+
+  /**
+   * Fetch all facilities for an organization with coordinates extracted
+   * Uses RPC function to get coordinates directly from database
+   * @param orgId - Organization ID
+   * @returns Array of facilities with coordinates
+   */
+  async getAllWithCoords(orgId: string): Promise<FacilityWithCoords[]> {
+    try {
+      // Try to use the RPC function that extracts coordinates directly
+      // Using 'as any' to bypass TypeScript type checking for RPC functions
+      const { data, error } = await (supabase.rpc as any)('get_all_facilities_with_location_text', {
+        org_id: orgId
+      });
+
+      if (!error && data) {
+        // Convert the RPC result to FacilityWithCoords
+        return (data as FacilityWithLocationText[]).map(convertToFacilityWithCoords);
+      }
+    } catch (rpcError: any) {
+      // Log the error but don't fail - fall back to client-side extraction
+      console.warn('RPC function failed, falling back to client-side extraction:', rpcError.message || rpcError);
+    }
+
+    // Fallback to regular query with coordinate extraction
+    const facilities = await this.getAll(orgId);
+    return addCoordinatesToFacilities(facilities);
+  },
+
+  /**
+   * Fetch only published facilities (for public view) with coordinates extracted
+   * Uses RPC function to get coordinates directly from database
+   * @param orgId - Organization ID
+   * @returns Array of published facilities with coordinates
+   */
+  async getPublishedWithCoords(orgId: string): Promise<FacilityWithCoords[]> {
+    try {
+      // Try to use the RPC function that extracts coordinates directly
+      // Using 'as any' to bypass TypeScript type checking for RPC functions
+      const { data, error } = await (supabase.rpc as any)('get_published_facilities_with_location_text', {
+        org_id: orgId
+      });
+
+      if (!error && data) {
+        // Convert the RPC result to FacilityWithCoords
+        return (data as FacilityWithLocationText[]).map(convertToFacilityWithCoords);
+      }
+    } catch (rpcError: any) {
+      // Log the error but don't fail - fall back to client-side extraction
+      console.warn('RPC function failed, falling back to client-side extraction:', rpcError.message || rpcError);
+    }
+
+    // Fallback to regular query with coordinate extraction
+    const facilities = await this.getPublished(orgId);
+    return addCoordinatesToFacilities(facilities);
+  },
+
+  /**
+   * Save coordinates for a facility
+   * @param id - Facility ID
+   * @param lat - Latitude
+   * @param lng - Longitude
+   * @returns Promise with update result
+   */
+  async saveCoords(id: string, lat: number, lng: number): Promise<void> {
+    const { error } = await supabase
+      .from('facilities')
+      .update({
+        location: `SRID=4326;POINT(${lng} ${lat})`
+      })
+      .eq('id', id);
+
+    if (error) throw error;
   },
 
   /**
@@ -348,6 +511,60 @@ export const usePublishedFacilities = (
     queryFn: () => facilitiesService.getPublished(orgId),
     enabled: !!orgId,
     staleTime: 10 * 60 * 1000, // 10 minutes (public data changes less frequently)
+  });
+};
+
+/**
+ * Hook to fetch all facilities for an organization with coordinates
+ *
+ * @param orgId - Organization ID
+ * @param enabled - Whether to enable the query (default: true if orgId exists)
+ * @returns React Query result with facilities array including coordinates
+ */
+export const useFacilitiesWithCoords = (
+  orgId: string,
+  enabled = true
+): UseQueryResult<FacilityWithCoords[], Error> => {
+  return useQuery({
+    queryKey: facilityKeys.list(orgId),
+    queryFn: () => facilitiesService.getAllWithCoords(orgId),
+    enabled: !!orgId && enabled,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+};
+
+/**
+ * Hook to fetch published facilities with coordinates
+ *
+ * @param orgId - Organization ID
+ * @returns React Query result with published facilities including coordinates
+ */
+export const usePublishedFacilitiesWithCoords = (
+  orgId: string
+): UseQueryResult<FacilityWithCoords[], Error> => {
+  return useQuery({
+    queryKey: facilityKeys.publishedWithCoords(orgId),
+    queryFn: () => facilitiesService.getPublishedWithCoords(orgId),
+    enabled: !!orgId,
+    staleTime: 10 * 60 * 1000, // 10 minutes (public data changes less frequently)
+  });
+};
+
+/**
+ * Hook to save coordinates for a facility
+ *
+ * @returns Mutation object
+ */
+export const useSaveCoords = (): UseMutationResult<void, Error, { id: string; lat: number; lng: number }> => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, lat, lng }) => facilitiesService.saveCoords(id, lat, lng),
+    onSuccess: (_, { id }) => {
+      // Invalidate facility queries to refresh data
+      queryClient.invalidateQueries({ queryKey: facilityKeys.detail(id) });
+      queryClient.invalidateQueries({ queryKey: facilityKeys.lists() });
+    },
   });
 };
 
@@ -633,42 +850,7 @@ export const useSearchFacilities = (
   return useQuery({
     queryKey: [...facilityKeys.list(orgId), 'search', query],
     queryFn: () => facilitiesService.search(orgId, query),
-    enabled: !!orgId && !!query && query.length >= 2 && enabled,
+    enabled: !!orgId && !!query && enabled,
     staleTime: 2 * 60 * 1000, // 2 minutes
-  });
-};
-
-/**
- * Hook to fetch published facilities with location text for map display
- *
- * @param orgId - Organization ID
- * @returns React Query result with published facilities
- */
-export const usePublishedFacilitiesWithLocationText = (
-  orgId: string
-): UseQueryResult<Facility[], Error> => {
-  return useQuery({
-    queryKey: facilityKeys.publishedWithLocationText(orgId),
-    queryFn: () => facilitiesService.getPublishedWithLocationText(orgId),
-    enabled: !!orgId,
-    staleTime: 10 * 60 * 1000, // 10 minutes (public data changes less frequently)
-  });
-};
-
-/**
- * Hook to fetch a single facility with location text
- *
- * @param id - Facility ID
- * @param enabled - Whether to enable the query
- * @returns React Query result with facility
- */
-export const useFacilityWithLocationText = (
-  id: string,
-  enabled = true
-): UseQueryResult<Facility, Error> => {
-  return useQuery({
-    queryKey: facilityKeys.detailWithLocationText(id),
-    queryFn: () => facilitiesService.getByIdWithLocationText(id),
-    enabled: !!id && enabled,
   });
 };

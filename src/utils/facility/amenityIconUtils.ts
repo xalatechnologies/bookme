@@ -5,7 +5,42 @@
  * Provides consistent icon mapping across facility components.
  */
 
-export type AmenityIconType = 'wifi' | 'car' | 'camera' | 'volume' | 'check';
+export type AmenityIconType = 
+  // Technology & Media
+  | 'wifi' 
+  | 'projector'
+  | 'camera'
+  | 'sound'
+  | 'screen'
+  | 'whiteboard'
+  | 'video'
+  
+  // Facilities & Infrastructure
+  | 'car'
+  | 'toilet'
+  | 'kitchen'
+  | 'cafeteria'
+  | 'locker'
+  | 'shower'
+  | 'light'
+  
+  // Sports & Activities
+  | 'football'
+  | 'basketball'
+  | 'volleyball'
+  | 'pool'
+  | 'tribune'
+  | 'stage'
+  | 'grass'
+  | 'indoor'
+  
+  // Safety & Equipment
+  | 'equipment'
+  | 'safety'
+  | 'professional'
+  
+  // Default
+  | 'check';
 
 export interface AmenityWithIcon {
   readonly name: string;
@@ -23,35 +58,104 @@ export interface AmenityCategory {
 export const getAmenityIconType = (amenityName: string): AmenityIconType => {
   const nameLower = amenityName.toLowerCase();
 
-  // WiFi / Internet
+  // Technology & Media
   if (nameLower.includes('wifi') || nameLower.includes('internett') || nameLower.includes('internet')) {
     return 'wifi';
   }
-
-  // Parking
+  
+  if (nameLower.includes('projektor')) {
+    return 'projector';
+  }
+  
+  if (nameLower.includes('kamera') || nameLower.includes('camera') || nameLower.includes('photo') || nameLower.includes('foto')) {
+    return 'camera';
+  }
+  
+  if (nameLower.includes('lyd') || nameLower.includes('sound') || nameLower.includes('audio') || nameLower.includes('høyttaler') || nameLower.includes('speaker')) {
+    return 'sound';
+  }
+  
+  if (nameLower.includes('whiteboard') || nameLower.includes('tavle')) {
+    return 'whiteboard';
+  }
+  
+  if (nameLower.includes('video')) {
+    return 'video';
+  }
+  
+  // Facilities & Infrastructure
   if (nameLower.includes('parkering') || nameLower.includes('parking')) {
     return 'car';
   }
-
-  // Sound / Audio
-  if (
-    nameLower.includes('lyd') ||
-    nameLower.includes('sound') ||
-    nameLower.includes('audio') ||
-    nameLower.includes('høyttaler') ||
-    nameLower.includes('speaker')
-  ) {
-    return 'volume';
+  
+  if (nameLower.includes('toilet') || nameLower.includes('toalett')) {
+    return 'toilet';
   }
-
-  // Camera / Photo equipment
-  if (
-    nameLower.includes('kamera') ||
-    nameLower.includes('camera') ||
-    nameLower.includes('photo') ||
-    nameLower.includes('foto')
-  ) {
-    return 'camera';
+  
+  if (nameLower.includes('kjøkken') || nameLower.includes('kitchen')) {
+    return 'kitchen';
+  }
+  
+  if (nameLower.includes('cafeteria') || nameLower.includes('kafeteria')) {
+    return 'cafeteria';
+  }
+  
+  if (nameLower.includes('garderober') || nameLower.includes('locker')) {
+    return 'locker';
+  }
+  
+  if (nameLower.includes('dusj') || nameLower.includes('shower')) {
+    return 'shower';
+  }
+  
+  if (nameLower.includes('lys') || nameLower.includes('light') || nameLower.includes('belysning') || nameLower.includes('flom')) {
+    return 'light';
+  }
+  
+  // Sports & Activities
+  if (nameLower.includes('fotball') || nameLower.includes('football')) {
+    return 'football';
+  }
+  
+  if (nameLower.includes('basketball')) {
+    return 'basketball';
+  }
+  
+  if (nameLower.includes('volleyball')) {
+    return 'volleyball';
+  }
+  
+  if (nameLower.includes('basseng') || nameLower.includes('pool') || nameLower.includes('swim')) {
+    return 'pool';
+  }
+  
+  if (nameLower.includes('tribuner') || nameLower.includes('tribune')) {
+    return 'tribune';
+  }
+  
+  if (nameLower.includes('scene') || nameLower.includes('stage')) {
+    return 'stage';
+  }
+  
+  if (nameLower.includes('kunstgress') || nameLower.includes('grass')) {
+    return 'grass';
+  }
+  
+  if (nameLower.includes('innendørs') || nameLower.includes('indoor') || nameLower.includes('badstue') || nameLower.includes('sauna')) {
+    return 'indoor';
+  }
+  
+  // Safety & Equipment
+  if (nameLower.includes('utstyr') || nameLower.includes('equipment')) {
+    return 'equipment';
+  }
+  
+  if (nameLower.includes('rednings') || nameLower.includes('safety') || nameLower.includes('emergency')) {
+    return 'safety';
+  }
+  
+  if (nameLower.includes('profesjonell')) {
+    return 'professional';
   }
 
   // Default icon

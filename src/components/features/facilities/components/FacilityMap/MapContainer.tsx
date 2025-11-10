@@ -43,8 +43,13 @@ export const MapContainer: React.FC<MapContainerProps> = ({
       // Set the access token
       mapboxgl.accessToken = mapboxToken;
 
-      // Validate the access token format using hook
-      validateToken(mapboxToken);
+      // Validate the access token format using hook (with error handling)
+      try {
+        validateToken(mapboxToken);
+      } catch (validationError) {
+        console.warn('Token validation failed:', validationError);
+        // Continue anyway as the map might still work
+      }
 
       // Clear any existing map
       if (map.current) {
@@ -75,12 +80,14 @@ export const MapContainer: React.FC<MapContainerProps> = ({
       // Handle map errors using hook
       map.current.on('error', (e): void => {
         const errorMessage = parseMapError(e);
+        console.error('Mapbox error:', e);
         onMapError(errorMessage);
         onLoadingChange(false);
       });
 
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred while initializing map.';
+      console.error('Map initialization error:', error);
       onMapError(errorMessage);
       onLoadingChange(false);
     }

@@ -17,7 +17,7 @@ import {
   Clock,
   XCircle
 } from "lucide-react";
-import { FacilityMiniMap } from "@/components/features/facilities/components/FacilityMap/FacilityMiniMap";
+import FacilityMiniMap from "@/components/features/facilities/components/FacilityMap/FacilityMiniMap";
 import { useFavoritesStore } from "@/stores/favoritesStore";
 import { useFacilityTypeTranslation } from "@/hooks/shared/useFacilityTypeTranslation";
 import { useAmenityTranslation } from "@/hooks/shared/useAmenityTranslation";
@@ -36,6 +36,8 @@ interface IFacilityListItemUserProps {
   readonly availability?: "available" | "busy" | "full";
   readonly isFavorite?: boolean;
   readonly coordinates?: { lat: number; lng: number };
+  readonly lat?: number | null;
+  readonly lng?: number | null;
 }
 
 const FacilityListItemUser = (props: IFacilityListItemUserProps): JSX.Element => {
@@ -60,7 +62,9 @@ const FacilityListItemUser = (props: IFacilityListItemUserProps): JSX.Element =>
     price,
     description,
     availability = "available",
-    coordinates
+    coordinates,
+    lat,
+    lng
   } = props;
 
   const handleViewDetails = (): void => {
@@ -134,6 +138,10 @@ const FacilityListItemUser = (props: IFacilityListItemUserProps): JSX.Element =>
       </Badge>
     );
   };
+
+  // Check if we have valid coordinates or address using numeric checks
+  const hasCoords = Number.isFinite(lat) && Number.isFinite(lng);
+  const hasAddress = !!address;
 
   return (
     <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden hover:shadow-md transition-shadow">
@@ -261,38 +269,15 @@ const FacilityListItemUser = (props: IFacilityListItemUserProps): JSX.Element =>
         </div>
         
         {/* Map Section */}
-        {coordinates && coordinates.lat && coordinates.lng && (
+        {(hasCoords || hasAddress) && (
           <div className="w-32 min-h-[128px] flex-shrink-0 border-l border-gray-200 dark:border-gray-700 flex items-center justify-center">
-            <div className="w-full h-full">
-              <FacilityMiniMap
-                facility={{
-                  id,
-                  name,
-                  address,
-                  location: { lat: coordinates.lat, lng: coordinates.lng },
-                  amenities: [...amenities], // Convert readonly array to mutable array
-                  accessibility_features: null,
-                  area_description: null,
-                  capacity: 0,
-                  city: null,
-                  contact_email: null,
-                  contact_phone: null,
-                  country: null,
-                  created_at: "",
-                  description: null,
-                  facility_type: "",
-                  images: null,
-                  org_id: "",
-                  postal_code: null,
-                  rating: 0,
-                  review_count: 0,
-                  slug: "",
-                  status: "",
-                  updated_at: "",
-                }}
-                mapboxToken="pk.eyJ1IjoiYW1pbjA3IiwiYSI6ImNtZzlqcjNnczBmMmsycXM2cm4xYzU0OGwifQ.1Vuiv_9pPIUY478LP3yccA"
-              />
-            </div>
+            <FacilityMiniMap
+              address={address}
+              lat={lat ?? undefined}
+              lng={lng ?? undefined}
+              height={128}
+              width={128}
+            />
           </div>
         )}
       </div>

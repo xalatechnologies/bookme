@@ -373,9 +373,10 @@ const AdminFacilityListItem = ({ facility, onDelete, onToggleStatus, onDuplicate
         {/* Map Section */}
         <div className="w-32 min-h-[128px] flex-shrink-0 border-l border-gray-200 dark:border-gray-700 flex items-center justify-center">
           {facility.location ? (
-            <FacilityMiniMap 
-              facility={facility}
-              mapboxToken="pk.eyJ1IjoiYW1pbjA3IiwiYSI6ImNtZzlqcjNnczBmMmsycXM2cm4xYzU0OGwifQ.1Vuiv_9pPIUY478LP3yccA"
+            <FacilityMiniMap
+              address={facility.address || undefined}
+              // Note: lat/lng are not directly available on the facility object
+              // The FacilityMiniMap component will handle geocoding if needed
             />
           ) : (
             <div className="h-full flex items-center justify-center text-gray-500 dark:text-gray-400">

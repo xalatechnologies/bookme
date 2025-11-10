@@ -13,6 +13,7 @@ import {
   useGeocodingIntegration,
   useFacilityValidation,
 } from "@/hooks/features/facilities";
+import { useFacilityImageUpload } from "@/hooks/features/facilities/useFacilityImageUpload";
 import {
   X,
   GripVertical,
@@ -98,6 +99,15 @@ export const FacilityEditForm: React.FC<IFacilityEditFormProps> = ({
     maxImages: 10,
   });
 
+  // Custom hook: Facility image upload
+  const {
+    uploadImages,
+    isUploading: isImageUploading,
+    uploadProgress,
+    error: imageUploadError,
+    clearError: clearImageUploadError,
+  } = useFacilityImageUpload();
+
   // Custom hook: Form validation
   const { errors, validateAll, clearError, isValid } = useFacilityValidation({
     name: [
@@ -173,6 +183,36 @@ export const FacilityEditForm: React.FC<IFacilityEditFormProps> = ({
       }
     },
     [handleChange, clearStatus, geocodeAddress]
+  );
+
+  /**
+   * Handle file selection and upload to Supabase Storage
+   */
+  const handleFileUpload = useCallback(
+    async (e: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
+      const files = e.target.files;
+      if (!files || files.length === 0) return;
+
+      clearImageUploadError();
+
+      try {
+        // Upload files to Supabase Storage
+        const urls = await uploadImages(Array.from(files), facility.id);
+        
+        if (urls.length > 0) {
+          // Add uploaded image URLs to the images array
+          setImages((prev) => [...prev, ...urls]);
+        }
+      } catch (error) {
+        console.error('Error handling file upload:', error);
+      } finally {
+        // Reset file input
+        if (e.target) {
+          e.target.value = '';
+        }
+      }
+    },
+    [facility.id, uploadImages, setImages, clearImageUploadError]
   );
 
   /**
@@ -285,17 +325,44 @@ export const FacilityEditForm: React.FC<IFacilityEditFormProps> = ({
                 variant="outline"
                 size="sm"
                 onClick={handleAddImage}
+                disabled={isImageUploading}
               >
-                <Upload className="h-4 w-4 mr-2" />
-                {t("admin:facilities.add_image", "Legg til bilde")}
+                {isImageUploading ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    {t("admin:facilities.uploading", "Laster opp...")}
+                  </>
+                ) : (
+                  <>
+                    <Upload className="h-4 w-4 mr-2" />
+                    {t("admin:facilities.add_image", "Legg til bilde")}
+                  </>
+                )}
               </Button>
             </div>
+
+            {/* Upload progress indicator */}
+            {isImageUploading && (
+              <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+                <div
+                  className="bg-blue-600 h-2.5 rounded-full transition-all duration-300"
+                  style={{ width: `${uploadProgress}%` }}
+                ></div>
+              </div>
+            )}
+
+            {/* Upload error message */}
+            {imageUploadError && (
+              <div className="text-red-500 text-sm mt-2">
+                {imageUploadError}
+              </div>
+            )}
 
             {/* Hidden file input */}
             <input
               type="file"
               ref={fileInputRef}
-              onChange={handleFileChange}
+              onChange={handleFileUpload}
               accept="image/*"
               multiple
               className="hidden"

@@ -89,7 +89,7 @@ export const GlobalHeader = (): JSX.Element => {
   };
 
   return (
-    <header className="bg-white dark:bg-gray-900 py-3 shadow-md sticky top-0 z-10 border-b border-gray-200 dark:border-gray-700 w-full">
+    <header className="bg-white dark:bg-gray-900 py-3 shadow-md sticky top-0 z-50 border-b border-gray-200 dark:border-gray-700 w-full">
       <div className="container mx-auto px-4 max-w-7xl">
         <div className="flex justify-between items-center gap-4">
           {/* Logo (left) */}

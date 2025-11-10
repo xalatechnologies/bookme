@@ -124,11 +124,10 @@ export const FacilityInfoTabs: React.FC<FacilityInfoTabsProps> = ({
 
   return (
     <Tabs defaultValue="book" className="w-full">
-      <TabsList className="grid w-full grid-cols-6">
+      <TabsList className="grid w-full grid-cols-5">
         <TabsTrigger value="book">{t('facility:actions.book')}</TabsTrigger>
         <TabsTrigger value="general">{t('facility:details.overview')}</TabsTrigger>
         <TabsTrigger value="zones">{t('facility:zones.title')}</TabsTrigger>
-        <TabsTrigger value="facilities">{t('facility:details.facilities')}</TabsTrigger>
         <TabsTrigger value="rules">{t('facility:details.policies')}</TabsTrigger>
         <TabsTrigger value="faq">{t('common:faq.title')}</TabsTrigger>
       </TabsList>
@@ -183,6 +182,17 @@ export const FacilityInfoTabs: React.FC<FacilityInfoTabsProps> = ({
                     {t('facility:fields.max_allowed')}: {capacity} {t('facility:card.people')}
                   </p>
                 </div>
+                
+                {amenities.length > 0 && (
+                  <div>
+                    <h3 className="text-xl font-semibold mb-3">{t('facility:details.facilities')}</h3>
+                    <AmenityGrid
+                      items={amenities}
+                      variant="default"
+                      emptyMessage={t('facility:amenities.no_amenities')}
+                    />
+                  </div>
+                )}
               </div>
               
               {/* Right column: Contact Information and Opening Hours */}
@@ -301,32 +311,7 @@ export const FacilityInfoTabs: React.FC<FacilityInfoTabsProps> = ({
         </TabPanel>
       </TabsContent>
 
-      <TabsContent value="facilities" className="space-y-6 mt-6">
-        <TabPanel>
-          <div>
-            <h3 className="text-xl font-semibold mb-4">{t('facility:amenities.available_title')}</h3>
-            <AmenityGrid
-              items={amenities}
-              variant="default"
-              emptyMessage={t('facility:amenities.no_amenities')}
-            />
-
-            {equipment.length > 0 && (
-              <div className="mt-8">
-                <h4 className="text-lg font-semibold mb-4">{t('facility:amenities.equipment_title')}</h4>
-                <AmenityGrid items={equipment} variant="blue" />
-              </div>
-            )}
-
-            {suitableFor.length > 0 && (
-              <div className="mt-8">
-                <h4 className="text-lg font-semibold mb-4">{t('facility:amenities.suitable_for')}</h4>
-                <AmenityGrid items={suitableFor} variant="green" />
-              </div>
-            )}
-          </div>
-        </TabPanel>
-      </TabsContent>
+      
 
       <TabsContent value="rules" className="space-y-6 mt-6">
         <TabPanel>
