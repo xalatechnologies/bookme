@@ -36,8 +36,7 @@ export interface IFacilityEditFormProps {
 }
 
 // Mapbox public token
-const MAPBOX_TOKEN =
-  "pk.eyJ1IjoiYW1pbjA3IiwiYSI6ImNtZzlqcjNnczBmMmsycXM2cm4xYzU0OGwifQ.1Vuiv_9pPIUY478LP3yccA";
+import { MAPBOX_TOKEN } from '@/lib/clients/mapbox';
 
 /**
  * Facility Edit Form Component

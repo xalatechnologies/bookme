@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Menu, ShoppingCart } from "lucide-react";
@@ -8,6 +8,7 @@ import { Menu, ShoppingCart } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useCart } from "@/contexts/CartContext";
 import { useUserProfile } from "@/contexts/UserProfileContext";
+import { useAuth } from "@/contexts/AuthContext";
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -31,6 +32,9 @@ export const GlobalHeader = (): JSX.Element => {
   const [cartOpen, setCartOpen] = useState(false);
   const { language, toggleLanguage } = useLanguage();
 
+  // Get auth state from AuthContext
+  const { user, memberships, signOut } = useAuth();
+
   // Get cart data
   const { itemCount } = useCart();
   const { profile } = useUserProfile();
@@ -39,42 +43,45 @@ export const GlobalHeader = (): JSX.Element => {
   const isBookingPage = location.pathname.includes("/book");
   const isUserPage = location.pathname.startsWith("/user");
   const isCheckoutPage = location.pathname === "/checkout";
-  const isAuthenticated = isBookingPage || isUserPage || isCheckoutPage;
+  // Use actual auth state instead of route-based detection
+  const isAuthenticated = !!user;
+  
+  // Check if user has admin role in any organization
+  const isAdmin = memberships.some(membership => 
+    membership.role === 'admin' || membership.role === 'owner'
+  );
+
+  // Store the user's last portal when they navigate to admin or user areas
+  useEffect(() => {
+    if (isAuthenticated) {
+      if (location.pathname.startsWith("/admin")) {
+        localStorage.setItem("lastPortal", "admin");
+      } else if (location.pathname.startsWith("/user")) {
+        localStorage.setItem("lastPortal", "user");
+      }
+    }
+  }, [isAuthenticated, location.pathname]);
 
   const logout = (): void => {
     try {
-      // Clear all user data from localStorage
-      const keysToRemove = [];
-      for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        if (key && (key.startsWith("user") || key.startsWith("admin"))) {
-          keysToRemove.push(key);
-        }
-      }
-      keysToRemove.forEach((key) => localStorage.removeItem(key));
+      // Use the proper signOut function from AuthContext
+      signOut().catch((error) => {
+        console.error("❌ Admin logout failed:", error);
+      });
 
-      // Clear cart data
-      localStorage.removeItem("cart");
-      localStorage.removeItem("cartItems");
-
-      // Clear search results
-      localStorage.removeItem("searchResults");
-      localStorage.removeItem("adminSearchResults");
-
-      // Clear any other session data
-      localStorage.removeItem("sessionData");
-      localStorage.removeItem("authToken");
+      // Clear the last portal preference
+      localStorage.removeItem("lastPortal");
 
       // Show logout confirmation
       alert(t("messages.logout_success"));
 
-      // Navigate to home page
-      navigate("/");
+      // Navigate to home page with a special state to prevent redirection
+      navigate("/", { state: { justLoggedOut: true } });
     } catch (error) {
       console.error("Global logout failed:", error);
       alert(t("messages.logout_failed"));
       // Still navigate to home page even if logout fails
-      navigate("/");
+      navigate("/", { state: { justLoggedOut: true } });
     }
   };
 

@@ -19,6 +19,7 @@ import { Zone } from "@/types/booking";
 import { useZoneStore } from "@/stores/zoneStore";
 import { extractContactInfo, cleanDescription, formatContactInfo } from "@/utils/facility/contactUtils";
 import { toast } from "react-toastify";
+import { MAPBOX_TOKEN } from '@/lib/clients/mapbox';
 
 type Facility = Database['public']['Tables']['facilities']['Row'];
 
@@ -570,14 +571,14 @@ const FacilityEditPage = (_props: IFacilityEditPageProps): JSX.Element => {
     try {
       // First try with Norway restriction
       let response = await fetch(
-        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(address)}.json?access_token=pk.eyJ1IjoiYW1pbjA3IiwiYSI6ImNtZzlqcjNnczBmMmsycXM2cm4xYzU0OGwifQ.1Vuiv_9pPIUY478LP3yccA&country=NO&limit=1`
+        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(address)}.json?access_token=${MAPBOX_TOKEN}&country=NO&limit=1`
       );
       let data = await response.json();
       
       // If no results, try without country restriction
       if (!data.features || data.features.length === 0) {
         response = await fetch(
-          `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(address)}.json?access_token=pk.eyJ1IjoiYW1pbjA3IiwiYSI6ImNtZzlqcjNnczBmMmsycXM2cm4xYzU0OGwifQ.1Vuiv_9pPIUY478LP3yccA&limit=1`
+          `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(address)}.json?access_token=${MAPBOX_TOKEN}&limit=1`
         );
         data = await response.json();
       }

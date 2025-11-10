@@ -177,7 +177,7 @@ export default function GalleryHeader({
   return (
     <section className="container mx-auto px-4 md:px-6 max-w-7xl">
       {/* Galleri */}
-      <div className="grid grid-cols-[3fr_1fr] gap-4 md:gap-6 items-stretch h-[min(60vh,720px)] md:h-[70vh] mb-8 md:mb-10">
+      <div className="pt-4 grid grid-cols-[3fr_1fr] gap-4 md:gap-6 items-stretch h-[min(60vh,720px)] md:h-[70vh] mb-8 md:mb-10">
         <div className="relative h-full w-full rounded-2xl overflow-hidden">
           <img
             src={images[0]}

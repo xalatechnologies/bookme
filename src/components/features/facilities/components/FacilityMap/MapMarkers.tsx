@@ -7,7 +7,6 @@ import mapboxgl from 'mapbox-gl';
 // Internal imports
 import type { FacilityWithCoords } from '@/types/facility';
 import { geocodeAddress } from '@/lib/geocode';
-import { facilitiesService } from '@/services/supabase/facilities.service';
 
 interface MapMarkersProps {
   readonly map: mapboxgl.Map | null;
@@ -15,24 +14,62 @@ interface MapMarkersProps {
   readonly onMarkerClick?: (facility: FacilityWithCoords) => void;
 }
 
-// Function to normalize facility with geocoding fallback
-async function normalizeFacility(facility: FacilityWithCoords): Promise<FacilityWithCoords> {
-  // If we already have valid coordinates, return as is
+// Helper function to extract coordinates from location data
+const extractCoordinates = (location: unknown): { lat: number | null; lng: number | null } => {
+  let lat: number | null = null;
+  let lng: number | null = null;
+  
+  try {
+    // If location is an object with lat/lng properties
+    if (location && typeof location === 'object' && !Array.isArray(location)) {
+      const locObj = location as Record<string, unknown>;
+      if ('lat' in locObj && 'lng' in locObj) {
+        lat = typeof locObj.lat === 'number' ? locObj.lat : null;
+        lng = typeof locObj.lng === 'number' ? locObj.lng : null;
+      }
+    }
+    // If location is a string in POINT format (POINT(lng lat))
+    else if (typeof location === 'string' && location.startsWith('POINT(') && location.endsWith(')')) {
+      const coords = location.slice(6, -1).split(' ');
+      if (coords.length === 2) {
+        lng = parseFloat(coords[0]);
+        lat = parseFloat(coords[1]);
+      }
+    }
+    // If location is a binary PostGIS object, we can't parse it directly
+    // In this case, we need to rely on the database to convert it to text format
+    else if (location && typeof location === 'object' && Array.isArray(location)) {
+      // This might be a binary array, we can't parse it directly
+      console.warn('Cannot parse binary PostGIS location data directly');
+    }
+  } catch (error) {
+    console.warn('Error parsing location data:', error);
+  }
+  
+  return { lat, lng };
+};
+
+// Normalize facility with coordinates, but don't save to database automatically
+const normalizeFacility = async (facility: FacilityWithCoords): Promise<FacilityWithCoords> => {
+  // If we already have coordinates, use them
   if (Number.isFinite(facility.lat) && Number.isFinite(facility.lng)) {
     return facility;
   }
   
-  // If we have an address, try to geocode it
+  // Try to extract from location_geog field if it exists
+  if (facility.location_geog) {
+    const { lat, lng } = extractCoordinates(facility.location_geog);
+    if (Number.isFinite(lat) && Number.isFinite(lng)) {
+      return { ...facility, lat, lng };
+    }
+  }
+  
+  // Fallback to geocoding if we have an address
   if (facility.address) {
     const result = await geocodeAddress(facility.address);
     if (result) {
-      // Save the coordinates to the database for better performance next time
-      try {
-        await facilitiesService.saveCoords(facility.id, result.lat, result.lng);
-      } catch (error) {
-        console.warn('Failed to save coordinates to database:', error);
-      }
-      
+      // Return facility with geocoded coordinates but don't save to database
+      // This prevents performance issues and database timeouts
       return { 
         ...facility, 
         lat: result.lat, 

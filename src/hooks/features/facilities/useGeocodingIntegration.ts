@@ -1,4 +1,5 @@
-import { useState, useCallback } from "react";
+import { useCallback, useState } from "react";
+import { MAPBOX_TOKEN } from '@/lib/clients/mapbox';
 
 /**
  * Coordinate structure
@@ -54,12 +55,6 @@ export interface GeocodingConfig {
 }
 
 /**
- * Default Mapbox token (should be moved to environment variables)
- */
-const DEFAULT_MAPBOX_TOKEN =
-  "pk.eyJ1IjoiYW1pbjA3IiwiYSI6ImNtZzlqcjNnczBmMmsycXM2cm4xYzU0OGwifQ.1Vuiv_9pPIUY478LP3yccA";
-
-/**
  * Custom hook for geocoding integration with Mapbox
  *
  * Features:
@@ -71,7 +66,7 @@ const DEFAULT_MAPBOX_TOKEN =
  * - Country-specific geocoding
  *
  * @param config - Geocoding configuration
- * @returns Geocoding functions and state
+ * * @returns Geocoding functions and state
  *
  * @example
  * ```tsx
@@ -82,7 +77,7 @@ const DEFAULT_MAPBOX_TOKEN =
  *   geocodeAddress,
  *   validateCoordinates,
  * } = useGeocodingIntegration({
- *   mapboxToken: process.env.MAPBOX_TOKEN,
+ *   mapboxToken: process.env.VITE_MAPBOX_TOKEN, // Now using the centralized token
  *   countryCode: 'no',
  * });
  *
@@ -94,7 +89,7 @@ export const useGeocodingIntegration = (
   config?: Partial<GeocodingConfig>
 ): UseGeocodingIntegrationReturn => {
   const {
-    mapboxToken = DEFAULT_MAPBOX_TOKEN,
+    mapboxToken = MAPBOX_TOKEN, // Use the centralized token as default
     geocodingTypes = ["address", "place"],
     limit = 1,
     countryCode,

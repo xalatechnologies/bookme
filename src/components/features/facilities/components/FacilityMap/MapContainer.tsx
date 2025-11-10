@@ -10,14 +10,14 @@ interface MapContainerProps {
   readonly onMapLoad: (map: mapboxgl.Map) => void;
   readonly onMapError: (error: string) => void;
   readonly onLoadingChange: (loading: boolean) => void;
-  readonly mapboxToken: string;
+  readonly mapboxToken?: string; // Make token optional
 }
 
 export const MapContainer: React.FC<MapContainerProps> = ({
   onMapLoad,
   onMapError,
   onLoadingChange,
-  mapboxToken
+  mapboxToken = '' // Default to empty string
 }): JSX.Element => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
@@ -44,11 +44,14 @@ export const MapContainer: React.FC<MapContainerProps> = ({
       mapboxgl.accessToken = mapboxToken;
 
       // Validate the access token format using hook (with error handling)
-      try {
-        validateToken(mapboxToken);
-      } catch (validationError) {
-        console.warn('Token validation failed:', validationError);
-        // Continue anyway as the map might still work
+      // Only validate if token is provided
+      if (mapboxToken) {
+        try {
+          validateToken(mapboxToken);
+        } catch (validationError) {
+          console.warn('Token validation failed:', validationError);
+          // Continue anyway as the map might still work
+        }
       }
 
       // Clear any existing map
@@ -80,7 +83,16 @@ export const MapContainer: React.FC<MapContainerProps> = ({
       // Handle map errors using hook
       map.current.on('error', (e): void => {
         const errorMessage = parseMapError(e);
-        console.error('Mapbox error:', e);
+        // Only log errors that are likely to affect functionality
+        // Suppress less critical errors to reduce console noise
+        if (errorMessage.includes('Invalid Mapbox access token') || 
+            errorMessage.includes('Network error') || 
+            errorMessage.includes('error occurred')) {
+          console.error('Mapbox error:', e);
+        } else {
+          // Log non-critical errors as warnings instead
+          console.warn('Mapbox warning:', e);
+        }
         onMapError(errorMessage);
         onLoadingChange(false);
       });

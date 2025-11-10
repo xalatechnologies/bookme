@@ -246,9 +246,11 @@ export const FacilityListItem: React.FC<FacilityListItemProps> = ({
           </div>
 
           {/* Map Section - 3 columns */}
-          <div className="col-span-3 bg-gray-100 relative overflow-hidden">
+          <div className="col-span-3 bg-gray-100 relative overflow-hidden flex items-center justify-center">
             <FacilityMiniMap
               address={facility.address || undefined}
+              height={310}
+              width={310}
               // Note: lat/lng are not directly available on the facility object
               // The FacilityMiniMap component will handle geocoding if needed
             />

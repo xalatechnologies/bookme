@@ -9,7 +9,9 @@ export const Logo = (): JSX.Element => {
   const { t } = useTranslation('common');
 
   const handleClick = (): void => {
-    navigate("/");
+    // Navigate to home page and indicate this is coming from a portal
+    // This prevents automatic redirection back to portals
+    navigate("/", { state: { fromPortal: true } });
   };
 
   return (

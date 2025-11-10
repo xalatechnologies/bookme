@@ -9,6 +9,7 @@ import type { FacilityWithCoords, FacilityFilters } from '@/types/facility';
 import { usePublishedFacilitiesWithCoords, useFacilitiesWithCoords } from '@/services/supabase/facilities.service';
 import { useOrganizationId } from '@/hooks/useOrganizationId';
 import { useMapOverlay } from '@/hooks/features/facilities';
+import { MAPBOX_TOKEN } from '@/lib/clients/mapbox';
 
 type Facility = Database['public']['Tables']['facilities']['Row'];
 
@@ -28,9 +29,6 @@ interface MapViewProps {
   readonly showHeader?: boolean; // New prop to control header visibility
   readonly onMarkerClick?: (facility: FacilityWithCoords) => void; // New prop for handling marker clicks
 }
-
-// Mapbox public token provided by user
-const DEFAULT_MAPBOX_TOKEN = 'pk.eyJ1IjoiYW1pbjA3IiwiYSI6ImNtZzlqcjNnczBmMmsycXM2cm4xYzU0OGwifQ.1Vuiv_9pPIUY478LP3yccA';
 
 export const MapView: React.FC<MapViewProps> = ({
   facilityType,
@@ -140,7 +138,7 @@ export const MapView: React.FC<MapViewProps> = ({
             onMapLoad={handleMapLoad}
             onMapError={handleMapError}
             onLoadingChange={() => {}} // We're not using this in MapContainer
-            mapboxToken={DEFAULT_MAPBOX_TOKEN}
+            mapboxToken={MAPBOX_TOKEN}
           />
           {isInitialized && map && (
             <MapMarkers

@@ -80,7 +80,7 @@ export const GalleryModal: React.FC<GalleryModalProps> = ({
   if (typeof document === 'undefined') return null;
 
   return createPortal(
-    <div className="fixed inset-0 z-[9999]" role="dialog" aria-modal="true">
+    <div className="fixed inset-0 z-[9999] overflow-y-auto" role="dialog" aria-modal="true">
       {/* Backdrop */}
       <div
         className="absolute inset-0 bg-black/80 backdrop-blur-sm"
@@ -88,9 +88,9 @@ export const GalleryModal: React.FC<GalleryModalProps> = ({
       />
       
       {/* Content */}
-      <div className="relative h-full w-full flex flex-col">
+      <div className="relative min-h-full w-full flex flex-col py-6">
         {/* Modal Header */}
-        <div className="flex items-center justify-between p-6 text-white z-10">
+        <div className="flex items-center justify-between p-6 text-white z-10 sticky top-0 bg-black/30 backdrop-blur-sm">
           <button
             onClick={onClose}
             className="p-3 rounded-full hover:bg-white/10 transition-all duration-300 hover:scale-110"
@@ -117,11 +117,11 @@ export const GalleryModal: React.FC<GalleryModalProps> = ({
         </div>
 
         {/* Main Image Area */}
-        <div className="flex-1 flex items-center justify-center relative px-6 pb-6">
+        <div className="flex flex-col items-center justify-center px-6 pb-6">
           <img
             src={images[activeImageIndex]}
             alt={`${facilityName} - Image ${activeImageIndex + 1}`}
-            className="max-w-full max-h-full object-contain object-center rounded-2xl shadow-2xl transition-all duration-500"
+            className="max-w-full max-h-[70vh] object-contain object-center rounded-2xl shadow-2xl transition-all duration-500"
           />
 
           {/* Navigation in modal - only show if more than 1 image */}

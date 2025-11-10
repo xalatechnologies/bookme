@@ -53,7 +53,16 @@ export const useMapOverlay = (): UseMapOverlayReturn => {
    * @param errorMessage - The error message to display
    */
   const handleMapError = useCallback((errorMessage: string): void => {
-    console.error('Map error:', errorMessage);
+    // Only log errors that are likely to affect functionality
+    // Suppress less critical errors to reduce console noise
+    if (errorMessage.includes('Invalid Mapbox access token') || 
+        errorMessage.includes('Network error') || 
+        errorMessage.includes('error occurred')) {
+      console.error('Map error:', errorMessage);
+    } else {
+      // Log non-critical errors as warnings instead
+      console.warn('Map warning:', errorMessage);
+    }
     setError(errorMessage);
     setIsInitialized(false);
   }, []);

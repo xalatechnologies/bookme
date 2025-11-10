@@ -2,9 +2,10 @@
 
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { User, LogIn } from "lucide-react";
+import { User, LogIn, Shield } from "lucide-react";
 
 import { useTranslation } from "react-i18next";
+import { useAuth } from "@/contexts/AuthContext";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -32,7 +33,13 @@ export const ProfileMenu: React.FC<ProfileMenuProps> = ({
   userProfile
 }): JSX.Element => {
   const navigate = useNavigate();
-  const { t } = useTranslation('common');
+  const { t } = useTranslation("common");
+  const { memberships } = useAuth();
+  
+  // Check if user has admin role in any organization
+  const isAdmin = memberships.some(membership => 
+    membership.role === 'admin' || membership.role === 'owner'
+  );
 
   if (!isLoggedIn) {
     return (
@@ -42,7 +49,7 @@ export const ProfileMenu: React.FC<ProfileMenuProps> = ({
         onClick={handleLogin}
       >
         <LogIn className="w-4 h-4" />
-        <span>{t('actions.login')}</span>
+        <span>{t("actions.login")}</span>
       </Button>
     );
   }
@@ -53,7 +60,7 @@ export const ProfileMenu: React.FC<ProfileMenuProps> = ({
         <Button variant="ghost" className="flex items-center gap-2 h-10 px-3 bg-gray-100 hover:bg-gray-200">
           <User className="h-5 w-5 text-gray-700" />
           <span className="text-sm font-medium text-gray-700">
-            {userProfile ? `${userProfile.firstName} ${userProfile.lastName}` : t('labels.user')}
+            {userProfile ? `${userProfile.firstName} ${userProfile.lastName}` : t("labels.user")}
           </span>
         </Button>
       </DropdownMenuTrigger>
@@ -66,18 +73,38 @@ export const ProfileMenu: React.FC<ProfileMenuProps> = ({
             <p className="text-xs text-gray-500">{userProfile.email}</p>
           </div>
         )}
-        <DropdownMenuItem onClick={() => navigate("/user/profile")}>
-          {t('navigation.profile')}
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => navigate("/user/bookings")}>
-          {t('navigation.my_bookings')}
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => navigate("/user/facilities")}>
-          {t('navigation.facilities')}
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={handleLogout}>
-          {t('actions.logout')}
-        </DropdownMenuItem>
+        {isAdmin ? (
+          <>
+            <DropdownMenuItem onClick={() => navigate("/admin/overview")}>
+              <Shield className="w-4 h-4 mr-2" />
+              Admin Portal
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => navigate("/admin/facilities")}>
+              Facilities
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => navigate("/admin/bookings")}>
+              Bookings
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={handleLogout}>
+              {t("common.logout")}
+            </DropdownMenuItem>
+          </>
+        ) : (
+          <>
+            <DropdownMenuItem onClick={() => navigate("/user/profile")}>
+              {t("common.profile")}
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => navigate("/user/bookings")}>
+              Bookings
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => navigate("/user/facilities")}>
+              Facilities
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={handleLogout}>
+              {t("common.logout")}
+            </DropdownMenuItem>
+          </>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );

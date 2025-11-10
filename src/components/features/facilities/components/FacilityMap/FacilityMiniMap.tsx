@@ -1,9 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import mapboxgl from 'mapbox-gl';
+import { mapboxgl } from '@/lib/clients/mapbox';
 import { geocodeAddress } from '@/lib/geocode';
 
-// Set Mapbox access token
-mapboxgl.accessToken = import.meta.env.MAPBOX_TOKEN || 'pk.eyJ1IjoiYW1pbjA3IiwiYSI6ImNtZzlqcjNnczBmMmsycXM2cm4xYzU0OGwifQ.1Vuiv_9pPIUY478LP3yccA';
+// Remove duplicate imports
+// import { useEffect, useRef } from 'react';
+// import mapboxgl from 'mapbox-gl';
+
+// Remove the hardcoded token line
+// mapboxgl.accessToken = import.meta.env.MAPBOX_TOKEN || 'pk.eyJ1IjoiYW1pbjA3IiwiYSI6ImNtZzlqcjNnczBmMmsycXM2cm4xYzU0OGwifQ.1Vuiv_9pPIUY478LP3yccA';
 
 type Props = {
   address?: string | null;
@@ -13,7 +17,7 @@ type Props = {
   width?: number;
 };
 
-const FacilityMiniMap = ({ address, lat, lng, height = 160, width = 200 }: Props) => {
+const FacilityMiniMap = ({ address, lat, lng, height = 310, width = 310 }: Props) => {
   const containerId = useMemo(
     () => `mini-map-${(address ?? `${lat}-${lng}` ?? Math.random()).replace(/\s+/g, '-')}`,
     [address, lat, lng]
@@ -44,7 +48,20 @@ const FacilityMiniMap = ({ address, lat, lng, height = 160, width = 200 }: Props
       zoom: 14,
       interactive: false
     });
-    new mapboxgl.Marker().setLngLat([coords.lng, coords.lat]).addTo(map);
+    
+    // Create a larger black marker using SVG (increased from default size)
+    const markerElement = document.createElement('div');
+    markerElement.innerHTML = `
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="black"/>
+        <path d="M12 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" fill="white"/>
+      </svg>
+    `;
+    
+    new mapboxgl.Marker(markerElement)
+      .setLngLat([coords.lng, coords.lat])
+      .addTo(map);
+      
     mapRef.current = map;
 
     return () => map.remove();
