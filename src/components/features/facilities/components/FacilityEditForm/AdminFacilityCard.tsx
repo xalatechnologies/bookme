@@ -8,12 +8,13 @@ import { MapPin, Trash2, Eye, Plus, User, Clock, Users, AlertTriangle, CheckCirc
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 
 import type { Database } from '@/types/database';
+import { useAmenityTranslation } from '@/hooks/shared/useAmenityTranslation';
 
 type Facility = Database['public']['Tables']['facilities']['Row'] & {
   amenities: string[];
@@ -33,7 +34,45 @@ interface IAdminFacilityCardProps {
 
 const AdminFacilityCard = ({ facility, onDelete, onToggleStatus, onDuplicate }: IAdminFacilityCardProps): JSX.Element => {
   const navigate = useNavigate();
-  const { t } = useTranslation(['facility']);
+  const { t } = useTranslation(['admin', 'facility', 'common']);
+  const translateAmenity = useAmenityTranslation();
+  
+  // Create a flexible translation function that ensures string return
+  const translate = (key: string, options?: any): string => {
+    // Handle facility namespace keys separately
+    if (key.startsWith('facility:')) {
+      return t(key, options);
+    }
+    // For admin namespace keys, use the admin namespace
+    return t(key, options);
+  };
+
+  // Simple amenities translation map - DEPRECATED: Using useAmenityTranslation hook instead
+  /*
+  const translateAmenityOld = (amenity: string): string => {
+    const amenityMap: Record<string, string> = {
+      // Norwegian to English translations
+      'innendørs': 'indoor',
+      'profesjonell-underlag': 'professional-underlay',
+      'garderober': 'lockers',
+      'wifi': 'wifi',
+      'parking': 'parking',
+      'projector': 'projector',
+      'whiteboard': 'whiteboard',
+      'kitchen': 'kitchen',
+      'bathroom': 'bathroom',
+      'air-conditioning': 'air-conditioning',
+      'heating': 'heating',
+      'sound-system': 'sound-system',
+      'outdoor': 'outdoor',
+      'indoor': 'indoor'
+    };
+    
+    // Return English translation if available, otherwise return original
+    return amenityMap[amenity.toLowerCase()] || amenity;
+  };
+  */
+
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [editValue, setEditValue] = useState<string>("");
   const [editField, setEditField] = useState<string>("");
@@ -74,13 +113,13 @@ const AdminFacilityCard = ({ facility, onDelete, onToggleStatus, onDuplicate }: 
   const getStatusText = (status: string): string => {
     switch (status) {
       case "published":
-        return "Publisert";
+        return translate('pages.facilities.card.published');
       case "draft":
-        return "Utkast";
+        return translate('pages.facilities.card.unpublished');
       case "archived":
-        return "Arkivert";
+        return translate('common:status.archived');
       default:
-        return "Ukjent";
+        return translate('common:status.unknown');
     }
   };
 
@@ -144,12 +183,12 @@ const AdminFacilityCard = ({ facility, onDelete, onToggleStatus, onDuplicate }: 
       localStorage.setItem('adminFacilities', JSON.stringify(updatedFacilities));
       
       // Show success message
-      toast.success(t('facility:admin.messages.updated_success'));
+      toast.success(translate('facility:messages.success.facility_updated'));
       setIsEditing(false);
       setEditField("");
     } catch (error) {
       console.error('Failed to save facility:', error);
-      toast.error(t('facility:admin.messages.save_error'));
+      toast.error(translate('facility:messages.error.save_error'));
     }
   };
 
@@ -183,11 +222,11 @@ const AdminFacilityCard = ({ facility, onDelete, onToggleStatus, onDuplicate }: 
       );
       localStorage.setItem('adminFacilities', JSON.stringify(updatedFacilities));
 
-      toast.success(t('facility:admin.messages.updated_success'));
+      toast.success(translate('facility:messages.success.facility_updated'));
       setShowEditModal(false);
     } catch (error) {
       console.error('Failed to save facility:', error);
-      toast.error(t('facility:admin.messages.save_error'));
+      toast.error(translate('facility:messages.error.save_error'));
     }
   };
 
@@ -214,11 +253,11 @@ const AdminFacilityCard = ({ facility, onDelete, onToggleStatus, onDuplicate }: 
       );
       localStorage.setItem('adminFacilities', JSON.stringify(updatedFacilities));
 
-      toast.success(t('facility:admin.messages.images_uploaded_success'));
+      toast.success(translate('facility:messages.success.images_uploaded'));
       setShowImageModal(false);
     } catch (error) {
       console.error('Failed to upload images:', error);
-      toast.error(t('facility:admin.messages.image_upload_error'));
+      toast.error(translate('facility:messages.error.image_upload_error'));
     }
   };
 
@@ -236,7 +275,7 @@ const AdminFacilityCard = ({ facility, onDelete, onToggleStatus, onDuplicate }: 
       onMouseLeave={() => setIsHovered(false)}
       role="button"
       tabIndex={0}
-      aria-label={`Se detaljer for ${facility.name} på ${facility.address}`}
+      aria-label={translate('admin:actions.view_details') + ' ' + facility.name + ' ' + translate('common:common.at') + ' ' + facility.address}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
@@ -266,7 +305,7 @@ const AdminFacilityCard = ({ facility, onDelete, onToggleStatus, onDuplicate }: 
             size="sm"
             variant="secondary"
             className="h-8 w-8 p-0 bg-white/90 backdrop-blur-sm shadow-lg hover:bg-white"
-            aria-label="Se i hovedapplikasjon"
+            aria-label={translate('pages.facilities.card.view_main_app')}
           >
             <Eye className="h-4 w-4" />
           </Button>
@@ -275,7 +314,7 @@ const AdminFacilityCard = ({ facility, onDelete, onToggleStatus, onDuplicate }: 
             size="sm"
             variant="outline"
             className="h-8 w-8 p-0 bg-blue-500/90 backdrop-blur-sm shadow-lg hover:bg-blue-600 text-white border-blue-600"
-            aria-label="Dupliser lokale"
+            aria-label={translate('pages.facilities.card.duplicate')}
           >
             <Copy className="h-4 w-4" />
           </Button>
@@ -284,7 +323,7 @@ const AdminFacilityCard = ({ facility, onDelete, onToggleStatus, onDuplicate }: 
             size="sm"
             variant="destructive"
             className="h-8 w-8 p-0 bg-red-500/90 backdrop-blur-sm shadow-lg hover:bg-red-600"
-            aria-label="Slett lokale"
+            aria-label={translate('pages.facilities.card.delete')}
           >
             <Trash2 className="h-4 w-4" />
           </Button>
@@ -298,7 +337,7 @@ const AdminFacilityCard = ({ facility, onDelete, onToggleStatus, onDuplicate }: 
               className="flex flex-col items-center gap-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
             >
               <Plus className="w-8 h-8" />
-              <span className="text-sm font-medium">Legg til bilde</span>
+              <span className="text-sm font-medium">{translate('pages.facilities.card.add_image')}</span>
             </button>
           </div>
         )}
@@ -327,6 +366,7 @@ const AdminFacilityCard = ({ facility, onDelete, onToggleStatus, onDuplicate }: 
             <h3 
               className="text-2xl font-bold text-gray-900 dark:text-white mb-4 hover:bg-gray-50 dark:hover:bg-gray-700 px-1 py-1 rounded cursor-pointer transition-colors"
               onClick={(e) => handleInlineEdit(e, "name")}
+              aria-label={translate('pages.facilities.card.edit_name')}
             >
               {facility.name || ''}
             </h3>
@@ -339,6 +379,7 @@ const AdminFacilityCard = ({ facility, onDelete, onToggleStatus, onDuplicate }: 
           <span 
             className="text-base font-medium cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 px-1 py-1 rounded transition-colors"
             onClick={(e) => handleInlineEdit(e, "address")}
+            aria-label={translate('pages.facilities.card.edit_address')}
           >
             {facility.address || ''}
           </span>
@@ -348,6 +389,7 @@ const AdminFacilityCard = ({ facility, onDelete, onToggleStatus, onDuplicate }: 
         <p 
           className="text-gray-700 dark:text-gray-300 text-base leading-relaxed mb-4 hover:bg-gray-50 dark:hover:bg-gray-700 px-1 py-1 rounded cursor-pointer transition-colors"
           onClick={(e) => handleInlineEdit(e, "description")}
+          aria-label={translate('pages.facilities.card.edit_description')}
         >
           {facility.description || ''}
         </p>
@@ -360,16 +402,18 @@ const AdminFacilityCard = ({ facility, onDelete, onToggleStatus, onDuplicate }: 
                 key={index}
                 onClick={(e) => handleTagClick(amenity, e)}
                 className="bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800 font-medium px-3 py-1 text-sm rounded-md hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors"
+                aria-label={`${translateAmenity(amenity)} - ${translate('pages.facilities.card.edit')}`}
               >
-                {amenity}
+                {translateAmenity(amenity)}
               </button>
             ))}
             {(facility.amenities as string[]).length > 3 && (
               <button
                 onClick={handleShowAllAmenities}
                 className="bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 border-gray-300 dark:border-gray-600 font-medium px-3 py-1 text-sm rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                aria-label={translate('pages.facilities.card.show_more_amenities', { count: (facility.amenities as string[]).length - 3 })}
               >
-                +{(facility.amenities as string[]).length - 3} mer
+                {translate('pages.facilities.card.show_more_amenities', { count: (facility.amenities as string[]).length - 3 })}
               </button>
             )}
           </div>
@@ -379,7 +423,7 @@ const AdminFacilityCard = ({ facility, onDelete, onToggleStatus, onDuplicate }: 
         <div className="flex items-center justify-between text-gray-600 dark:text-gray-400 mt-auto">
           <div className="flex items-center gap-3">
             <Users className="h-5 w-5" />
-            <span className="text-base font-medium">Kapasitet: {facility.capacity}</span>
+            <span className="text-base font-medium">{translate('pages.facilities.card.capacity', { capacity: facility.capacity })}</span>
           </div>
           <Button
             onClick={handleEditModal}
@@ -388,7 +432,7 @@ const AdminFacilityCard = ({ facility, onDelete, onToggleStatus, onDuplicate }: 
             className="h-8 px-3"
           >
             <Edit className="h-4 w-4 mr-1" />
-            Rediger
+            {translate('pages.facilities.card.edit')}
           </Button>
         </div>
 
@@ -396,7 +440,7 @@ const AdminFacilityCard = ({ facility, onDelete, onToggleStatus, onDuplicate }: 
         <div className="border-t border-gray-200 dark:border-gray-700 pt-3 mt-4 space-y-3">
           {/* Status Toggle */}
           <div className="flex items-center justify-between">
-            <span className="text-xs text-gray-500 dark:text-gray-400">Status:</span>
+            <span className="text-xs text-gray-500 dark:text-gray-400">{translate('pages.facilities.card.status')}</span>
             <Button
               onClick={handleToggleStatus}
               size="sm"
@@ -410,12 +454,12 @@ const AdminFacilityCard = ({ facility, onDelete, onToggleStatus, onDuplicate }: 
               {facility.status === "published" ? (
                 <>
                   <CheckCircle className="h-3 w-3 mr-1" />
-                  Publisert
+                  {translate('pages.facilities.card.published')}
                 </>
               ) : (
                 <>
                   <XCircle className="h-3 w-3 mr-1" />
-                  Upublisert
+                  {translate('pages.facilities.card.unpublished')}
                 </>
               )}
             </Button>
@@ -425,7 +469,7 @@ const AdminFacilityCard = ({ facility, onDelete, onToggleStatus, onDuplicate }: 
           <div className="flex items-center gap-2">
             <User className="w-3 h-3 text-gray-400" />
             <span className="text-xs text-gray-500 dark:text-gray-400">
-              Eier: {facility.owner || ''}
+              {translate('pages.facilities.card.owner', { owner: facility.owner || '' })}
             </span>
           </div>
           
@@ -433,7 +477,7 @@ const AdminFacilityCard = ({ facility, onDelete, onToggleStatus, onDuplicate }: 
           <div className="flex items-center gap-2">
             <Clock className="w-3 h-3 text-gray-400" />
             <span className="text-xs text-gray-500 dark:text-gray-400">
-              Sist oppdatert: {facility.lastUpdated || ''}
+              {translate('pages.facilities.card.last_updated', { date: facility.lastUpdated || '' })}
             </span>
           </div>
 
@@ -442,7 +486,7 @@ const AdminFacilityCard = ({ facility, onDelete, onToggleStatus, onDuplicate }: 
             <div className="flex items-center gap-2">
               <AlertTriangle className="w-3 h-3 text-gray-400" />
               <span className="text-xs text-gray-500 dark:text-gray-400">
-                Oppdatert av: {facility.updatedBy || ''}
+                {translate('pages.facilities.card.updated_by', { user: facility.updatedBy || '' })}
               </span>
             </div>
           )}
@@ -466,17 +510,18 @@ const AdminFacilityCard = ({ facility, onDelete, onToggleStatus, onDuplicate }: 
             </div>
             <div>
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                Slett lokale
+                {translate('pages.facilities.card.delete_dialog.title')}
               </h3>
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                Denne handlingen kan ikke angres
+                {translate('pages.facilities.card.delete_dialog.warning')}
               </p>
             </div>
           </div>
           
-          <p className="text-gray-700 dark:text-gray-300 mb-6">
-            Er du sikker på at du vil slette <strong>{facility.name || ''}</strong>? 
-            Alle tilknyttede data vil bli permanent slettet.
+          <p className="text-gray-700 dark:text-gray-300 mb-6" 
+             dangerouslySetInnerHTML={{ 
+               __html: translate('pages.facilities.card.delete_dialog.confirm_text', { name: facility.name || '' }) 
+             }}>
           </p>
           
           <div className="flex gap-3 justify-end">
@@ -485,7 +530,7 @@ const AdminFacilityCard = ({ facility, onDelete, onToggleStatus, onDuplicate }: 
               variant="outline"
               size="sm"
             >
-              Avbryt
+              {translate('pages.facilities.card.delete_dialog.cancel')}
             </Button>
             <Button
               onClick={confirmDelete}
@@ -493,7 +538,7 @@ const AdminFacilityCard = ({ facility, onDelete, onToggleStatus, onDuplicate }: 
               size="sm"
             >
               <Trash2 className="h-4 w-4 mr-2" />
-              Slett
+              {translate('pages.facilities.card.delete_dialog.confirm')}
             </Button>
           </div>
         </div>
@@ -504,12 +549,12 @@ const AdminFacilityCard = ({ facility, onDelete, onToggleStatus, onDuplicate }: 
     <Dialog open={showEditModal} onOpenChange={setShowEditModal}>
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
-          <DialogTitle>Rediger fasilitet</DialogTitle>
+          <DialogTitle>{translate('pages.facilities.card.edit_modal.title')}</DialogTitle>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="edit-name" className="text-right">
-              Navn
+              {translate('pages.facilities.card.edit_modal.name')}
             </Label>
             <Input
               id="edit-name"
@@ -520,18 +565,29 @@ const AdminFacilityCard = ({ facility, onDelete, onToggleStatus, onDuplicate }: 
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="edit-address" className="text-right">
-              Adresse
+              {translate('pages.facilities.card.edit_modal.address')}
             </Label>
             <Input
               id="edit-address"
               value={editFormData.address}
               onChange={(e) => setEditFormData(prev => ({ ...prev, address: e.target.value }))}
+              className="col-span-33"
+            />
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="edit-description" className="text-right">
+              {translate('pages.facilities.card.edit_modal.description')}
+            </Label>
+            <Textarea
+              id="edit-description"
+              value={editFormData.description}
+              onChange={(e) => setEditFormData(prev => ({ ...prev, description: e.target.value }))}
               className="col-span-3"
             />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="edit-type" className="text-right">
-              Type
+              {translate('pages.facilities.card.edit_modal.type')}
             </Label>
             <Input
               id="edit-type"
@@ -542,7 +598,7 @@ const AdminFacilityCard = ({ facility, onDelete, onToggleStatus, onDuplicate }: 
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="edit-capacity" className="text-right">
-              Kapasitet
+              {translate('pages.facilities.card.edit_modal.capacity')}
             </Label>
             <Input
               id="edit-capacity"
@@ -552,31 +608,27 @@ const AdminFacilityCard = ({ facility, onDelete, onToggleStatus, onDuplicate }: 
               className="col-span-3"
             />
           </div>
-          <div className="grid grid-cols-4 items-start gap-4">
-            <Label htmlFor="edit-description" className="text-right pt-2">
-              Beskrivelse
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="edit-amenities" className="text-right">
+              {translate('pages.facilities.card.edit_modal.amenities')}
             </Label>
-            <Textarea
-              id="edit-description"
-              value={editFormData.description}
-              onChange={(e) => setEditFormData(prev => ({ ...prev, description: e.target.value }))}
+            <Input
+              id="edit-amenities"
+              value={editFormData.amenities.join(', ')}
+              onChange={(e) => setEditFormData(prev => ({ ...prev, amenities: e.target.value.split(',').map(item => item.trim()) }))}
               className="col-span-3"
-              rows={3}
+              placeholder="Separer med komma"
             />
           </div>
         </div>
-        <div className="flex justify-end gap-2">
-          <Button
-            variant="outline"
-            onClick={() => setShowEditModal(false)}
-          >
-            Avbryt
+        <DialogFooter>
+          <Button onClick={() => setShowEditModal(false)} variant="outline">
+            {translate('pages.facilities.card.edit_modal.cancel')}
           </Button>
           <Button onClick={handleSaveModalEdit}>
-            <Save className="h-4 w-4 mr-2" />
-            Lagre endringer
+            {translate('pages.facilities.card.edit_modal.save')}
           </Button>
-        </div>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
 
@@ -584,7 +636,7 @@ const AdminFacilityCard = ({ facility, onDelete, onToggleStatus, onDuplicate }: 
     <Dialog open={showImageModal} onOpenChange={setShowImageModal}>
       <DialogContent className="sm:max-w-[400px]">
         <DialogHeader>
-          <DialogTitle>Last opp bilder</DialogTitle>
+          <DialogTitle>{translate('pages.facilities.card.image_modal.title')}</DialogTitle>
         </DialogHeader>
         <div className="py-4">
           <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 text-center">
@@ -602,10 +654,10 @@ const AdminFacilityCard = ({ facility, onDelete, onToggleStatus, onDuplicate }: 
             >
               <Plus className="w-8 h-8 text-gray-400" />
               <span className="text-sm text-gray-600 dark:text-gray-400">
-                Klikk for å velge bilder
+                {translate('pages.facilities.card.image_modal.drag_drop')}
               </span>
               <span className="text-xs text-gray-500 dark:text-gray-500">
-                PNG, JPG, GIF opptil 10MB
+                {translate('pages.facilities.card.image_modal.max_size', { size: '10MB' })}
               </span>
             </label>
           </div>
@@ -615,7 +667,7 @@ const AdminFacilityCard = ({ facility, onDelete, onToggleStatus, onDuplicate }: 
             variant="outline"
             onClick={() => setShowImageModal(false)}
           >
-            Avbryt
+            {translate('pages.facilities.card.image_modal.cancel')}
           </Button>
         </div>
       </DialogContent>
@@ -625,7 +677,7 @@ const AdminFacilityCard = ({ facility, onDelete, onToggleStatus, onDuplicate }: 
     <Dialog open={showAmenitiesModal} onOpenChange={setShowAmenitiesModal}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Alle fasiliteter</DialogTitle>
+          <DialogTitle>{translate('pages.facilities.card.amenities_modal.title')}</DialogTitle>
         </DialogHeader>
         <div className="py-4">
           <div className="flex flex-wrap gap-2">
@@ -644,7 +696,7 @@ const AdminFacilityCard = ({ facility, onDelete, onToggleStatus, onDuplicate }: 
             variant="outline"
             onClick={() => setShowAmenitiesModal(false)}
           >
-            Lukk
+            {translate('pages.facilities.card.amenities_modal.close')}
           </Button>
         </div>
       </DialogContent>

@@ -129,6 +129,7 @@ export const MapMarkers: React.FC<MapMarkersProps> = ({
           <img src="${imageUrl}" alt="${facility.name}" style="width: 100%; height: 128px; object-fit: cover; border-radius: 4px;" onerror="this.src='/placeholder.svg'">
         </div>
         <h3 style="font-weight: bold; font-size: 16px; margin: 0;">${facility.name}</h3>
+        ${facility.address ? `<p style="margin: 4px 0 0 0; font-size: 14px; color: #666;">${facility.address}</p>` : ''}
       </div>
     `;
   };

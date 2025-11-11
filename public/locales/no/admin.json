@@ -164,6 +164,17 @@
     "refresh_data": "Oppdater data"
   },
 
+  "facilities": {
+    "edit": "Rediger lokale",
+    "images": "Bilder",
+    "uploading": "Laster opp...",
+    "add_image": "Legg til bilde",
+    "preview": "Forhåndsvisning",
+    "no_images": "Ingen bilder lagt til",
+    "image_number": "Bilde {{number}}",
+    "remove_image": "Fjern bilde {{number}}",
+    "fetching_coordinates": "Henter koordinater..."
+  },
   "pages": {
     "users_roles": {
       "title": "Brukere og roller",
@@ -795,7 +806,6 @@
     "approvals": {
       "title": "Godkjenninger",
       "description": "Administrer godkjenninger og arbeidsflyter.",
-
       "kpi": {
         "pending": "Ventende godkjenninger",
         "approved_today": "Godkjent i dag",
@@ -807,6 +817,94 @@
         "description": "Beskrivelse av arbeidsflyt",
         "edit": "Rediger",
         "deactivate": "Deaktiver"
+      }
+    },
+
+    "facilities": {
+      "title": "Lokaler",
+      "subtitle": "Administrer lokaler, soner og tilgjengelighet",
+      "create_new": "Nytt lokale",
+      "search_placeholder": "Søk etter lokaler...",
+      "copy_suffix": "(Kopi)",
+      "sort": {
+        "name": "Navn",
+        "capacity": "Kapasitet",
+        "last_updated": "Sist oppdatert"
+      },
+      "filters": {
+        "capacity": "Kapasitet",
+        "min": "Min",
+        "max": "Maks"
+      },
+      "batch_actions": {
+        "selected": "{{count}} lokaler valgt",
+        "clear_all": "Fjern alle",
+        "select_all": "Velg alle",
+        "publish": "Publiser",
+        "unpublish": "Avpubliser",
+        "archive": "Arkiver"
+      },
+      "results": {
+        "count": "{{count}} lokaler funnet",
+        "matching": "{{count}} lokaler matcher filteret"
+      },
+      "empty": {
+        "title": "Ingen lokaler funnet",
+        "description": "Prøv å endre søkekriteriene eller opprett et nytt lokale",
+        "create_first": "Opprett første lokale"
+      },
+      "confirmations": {
+        "delete_multiple": "Er du sikker på at du vil slette {{count}} lokaler? Denne handlingen kan ikke angres.",
+        "delete_single": "Er du sikker på at du vil slette '{{name}}'? Denne handlingen kan ikke angres.",
+        "select": "Velg {{name}}"
+      },
+      "card": {
+        "view_main_app": "Se i hovedapplikasjon",
+        "duplicate": "Dupliser lokale",
+        "delete": "Slett lokale",
+        "add_image": "Legg til bilde",
+        "edit_name": "Rediger navn",
+        "edit_address": "Rediger adresse",
+        "edit_description": "Rediger beskrivelse",
+        "show_more_amenities": "+{{count}} mer",
+        "capacity": "Kapasitet: {{capacity}}",
+        "edit": "Rediger",
+        "status": "Status:",
+        "published": "Publisert",
+        "unpublished": "Upublisert",
+        "owner": "Eier: {{owner}}",
+        "last_updated": "Sist oppdatert: {{date}}",
+        "updated_by": "Oppdatert av: {{user}}",
+        "delete_dialog": {
+          "title": "Slett lokale",
+          "warning": "Denne handlingen kan ikke angres",
+          "confirm_text": "Er du sikker på at du vil slette <strong>{{name}}</strong>? Alle tilknyttede data vil bli permanent slettet.",
+          "cancel": "Avbryt",
+          "confirm": "Slett"
+        },
+        "edit_modal": {
+          "title": "Rediger fasilitet",
+          "name": "Navn",
+          "address": "Adresse",
+          "description": "Beskrivelse",
+          "type": "Type",
+          "capacity": "Kapasitet",
+          "amenities": "Fasiliteter",
+          "save": "Lagre endringer",
+          "cancel": "Avbryt"
+        },
+        "image_modal": {
+          "title": "Last opp bilder",
+          "drag_drop": "Dra og slipp bilder her, eller klikk for å velge filer",
+          "max_files": "Maksimum {{count}} filer",
+          "max_size": "Maksimal filstørrelse: {{size}}",
+          "upload": "Last opp bilder",
+          "cancel": "Avbryt"
+        },
+        "amenities_modal": {
+          "title": "Alle fasiliteter",
+          "close": "Lukk"
+        }
       }
     },
 

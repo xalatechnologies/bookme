@@ -42,7 +42,7 @@ export const TrendCard = ({
   icon: Icon,
   color,
 }: ITrendCardProps): JSX.Element => {
-  const { t, i18n } = useTranslation(["admin", "common"]);
+  const { t, i18n } = useTranslation("admin");
 
   const maxValue = Math.max(...data.map((d) => d.value));
   const minValue = Math.min(...data.map((d) => d.value));
@@ -85,28 +85,28 @@ export const TrendCard = ({
 
   const getTrendLabel = (): string => {
     const direction = getTrendDirection();
-    if (direction === "stable") return t("admin:dashboard.trends.stable");
+    if (direction === "stable") return t("dashboard.trends.stable");
     return "";
   };
 
   const getUnitLabel = (): string => {
     // Determine unit based on title content
     if (title.toLowerCase().includes("booking")) {
-      return t("admin:dashboard.trends.bookings");
+      return t("dashboard.trends.bookings");
     }
     if (
       title.toLowerCase().includes("lokal") ||
       title.toLowerCase().includes("facilit")
     ) {
-      return t("admin:dashboard.trends.facilities");
+      return t("dashboard.trends.facilities");
     }
     if (
       title.toLowerCase().includes("bruker") ||
       title.toLowerCase().includes("user")
     ) {
-      return t("admin:dashboard.trends.users");
+      return t("dashboard.trends.users");
     }
-    return t("admin:dashboard.trends.bookings");
+    return t("dashboard.trends.bookings");
   };
 
   const trendDirection = getTrendDirection();
@@ -153,9 +153,9 @@ export const TrendCard = ({
                 }`}
                 aria-label={`${
                   trendDirection === "up"
-                    ? t("admin:dashboard.trends.up")
+                    ? t("dashboard.trends.up")
                     : trendDirection === "down"
-                    ? t("admin:dashboard.trends.down")
+                    ? t("dashboard.trends.down")
                     : getTrendLabel()
                 } ${Math.abs(trendPercentage)}`}
               >
@@ -164,7 +164,7 @@ export const TrendCard = ({
               </span>
             </div>
             <Badge className="bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300">
-              {t("admin:dashboard.trends.last_7_days")}
+              {t("dashboard.trends.last_7_days")}
             </Badge>
           </div>
 
@@ -172,9 +172,9 @@ export const TrendCard = ({
           <div
             className="flex items-end justify-between h-16 space-x-1"
             role="img"
-            aria-label={`${title} ${t("admin:charts.trend")} ${t(
-              "admin:charts.chart_title",
-              { title, period: t("admin:dashboard.trends.last_7_days") }
+            aria-label={`${title} ${t("charts.trend")} ${t(
+              "charts.chart_title",
+              { title: title, period: t("dashboard.trends.last_7_days") }
             )}`}
           >
             {data.map((item, index) => {

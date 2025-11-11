@@ -24,15 +24,15 @@ export const SystemAlerts = ({ alerts }: ISystemAlertsProps): JSX.Element => {
     return (
       <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-          {t("dashboard.alerts.title")}
+          {t("dashboard.alerts_section.title")}
         </h3>
         <div className="text-center py-8">
           <CheckCircle className="w-12 h-12 text-green-500 mx-auto mb-3" />
           <p className="text-gray-600 dark:text-gray-400 mb-4">
-            {t("dashboard.alerts.no_alerts")}
+            {t("dashboard.alerts_section.no_alerts")}
           </p>
           <p className="text-sm text-gray-500 dark:text-gray-500">
-            {t("dashboard.alerts.all_systems_normal")}
+            {t("dashboard.alerts_section.all_systems_normal")}
           </p>
         </div>
       </div>
@@ -42,7 +42,7 @@ export const SystemAlerts = ({ alerts }: ISystemAlertsProps): JSX.Element => {
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
       <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-        {t("dashboard.alerts.title")}
+        {t("dashboard.alerts_section.title")}
       </h3>
 
       <div className="space-y-3">
@@ -51,7 +51,7 @@ export const SystemAlerts = ({ alerts }: ISystemAlertsProps): JSX.Element => {
             key={alert.id}
             className={`p-4 rounded-lg border ${getAlertColor(alert.type)}`}
             role="alert"
-            aria-label={t("dashboard.alerts.alert_item", { title: alert.title })}
+            aria-label={t("dashboard.alerts_section.alert_item", { title: alert.title })}
           >
             <div className="flex items-start gap-3">
               <div className="flex-shrink-0 mt-0.5">

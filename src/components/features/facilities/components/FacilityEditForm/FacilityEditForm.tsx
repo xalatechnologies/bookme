@@ -73,7 +73,7 @@ export const FacilityEditForm: React.FC<IFacilityEditFormProps> = ({
   onClose,
   onUpdate,
 }): JSX.Element => {
-  const { t } = useTranslation(["facility", "admin", "validation", "common"]);
+  const { t } = useTranslation(["admin", "facility", "common"]);
 
   const [formData, setFormData] = useState<Partial<Facility>>({ ...facility });
 
@@ -248,13 +248,13 @@ export const FacilityEditForm: React.FC<IFacilityEditFormProps> = ({
     <Card className="w-full max-w-md h-full flex flex-col">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-lg font-bold">
-          {t("admin:facilities.edit", "Rediger lokale")}
+          {t("admin:facilities.edit", "Edit Facility")}
         </CardTitle>
         <Button
           variant="ghost"
           size="icon"
           onClick={onClose}
-          aria-label={t("common:actions.close", "Lukk")}
+          aria-label={t("common:actions.close", "Close")}
         >
           <X className="h-4 w-4" />
         </Button>
@@ -264,7 +264,7 @@ export const FacilityEditForm: React.FC<IFacilityEditFormProps> = ({
           {/* Name Field */}
           <FormField
             name="name"
-            label={t("common:name", "Navn")}
+            label={t("common:name", "Name")}
             type="text"
             value={formData.name || ""}
             onChange={(value) => handleChange("name", String(value))}
@@ -276,7 +276,7 @@ export const FacilityEditForm: React.FC<IFacilityEditFormProps> = ({
           <div className="space-y-2">
             <FormField
               name="address"
-              label={t("common:address", "Adresse")}
+              label={t("common:address", "Address")}
               type="text"
               value={formData.address || ""}
               onChange={(value) => handleAddressChange(String(value))}
@@ -290,7 +290,7 @@ export const FacilityEditForm: React.FC<IFacilityEditFormProps> = ({
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                 {t(
                   "admin:facilities.fetching_coordinates",
-                  "Henter koordinater..."
+                  "Fetching coordinates..."
                 )}
               </div>
             )}
@@ -317,7 +317,7 @@ export const FacilityEditForm: React.FC<IFacilityEditFormProps> = ({
           <div className="space-y-2">
             <div className="flex justify-between items-center">
               <label className="text-sm font-medium">
-                {t("admin:facilities.images", "Bilder")}
+                {t("admin:facilities.images", "Images")}
               </label>
               <Button
                 type="button"
@@ -329,12 +329,12 @@ export const FacilityEditForm: React.FC<IFacilityEditFormProps> = ({
                 {isImageUploading ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    {t("admin:facilities.uploading", "Laster opp...")}
+                    {t("admin:facilities.uploading", "Uploading...")}
                   </>
                 ) : (
                   <>
                     <Upload className="h-4 w-4 mr-2" />
-                    {t("admin:facilities.add_image", "Legg til bilde")}
+                    {t("admin:facilities.add_image", "Add Image")}
                   </>
                 )}
               </Button>
@@ -411,7 +411,7 @@ export const FacilityEditForm: React.FC<IFacilityEditFormProps> = ({
                       <div className="flex-1 text-sm text-gray-500 truncate">
                         {t(
                           "admin:facilities.image_number",
-                          "Bilde {{number}}",
+                          "Image {{number}}",
                           { number: index + 1 }
                         )}
                       </div>
@@ -424,7 +424,7 @@ export const FacilityEditForm: React.FC<IFacilityEditFormProps> = ({
                       onClick={() => handleRemoveImage(index)}
                       aria-label={t(
                         "admin:facilities.remove_image",
-                        "Fjern bilde {{number}}",
+                        "Remove image {{number}}",
                         { number: index + 1 }
                       )}
                     >
@@ -437,7 +437,7 @@ export const FacilityEditForm: React.FC<IFacilityEditFormProps> = ({
               <div className="text-center py-4 text-gray-500">
                 <ImageIcon className="h-8 w-8 mx-auto mb-2" />
                 <p>
-                  {t("admin:facilities.no_images", "Ingen bilder lagt til")}
+                  {t("admin:facilities.no_images", "No images added")}
                 </p>
               </div>
             )}
@@ -449,8 +449,8 @@ export const FacilityEditForm: React.FC<IFacilityEditFormProps> = ({
               handleSubmit(new Event('submit') as unknown as React.FormEvent);
             }}
             onCancel={onClose}
-            submitLabel={t("common:actions.save", "Lagre endringer")}
-            cancelLabel={t("common:actions.cancel", "Avbryt")}
+            submitLabel={t("common:actions.save", "Save Changes")}
+            cancelLabel={t("common:actions.cancel", "Cancel")}
             isSubmitting={updateFacilityMutation.isPending}
             isValid={isValid}
           />

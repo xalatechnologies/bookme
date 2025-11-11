@@ -31,6 +31,10 @@ import facilityEN from '../../public/locales/en/facility.json';
 import facilityNO from '../../public/locales/no/facility.json';
 import checkoutEN from '../../public/locales/en/checkout.json';
 import checkoutNO from '../../public/locales/no/checkout.json';
+import adminEN from '../../public/locales/en/admin.json';
+import adminNO from '../../public/locales/no/admin.json';
+import validationEN from '../../public/locales/en/validation.json';
+import validationNO from '../../public/locales/no/validation.json';
 
 // Supported languages
 export const SUPPORTED_LANGUAGES = {
@@ -57,6 +61,8 @@ export const NAMESPACES = {
   NAVIGATION: 'navigation',
   ERRORS: 'errors',
   CHECKOUT: 'checkout',
+  ADMIN: 'admin',
+  VALIDATION: 'validation',
 } as const;
 
 // Initialize i18next
@@ -141,6 +147,8 @@ i18n
         bookings: bookingsEN,
         facility: facilityEN,
         checkout: checkoutEN,
+        admin: adminEN,
+        validation: validationEN,
       },
       no: {
         roles: rolesNO,
@@ -151,6 +159,8 @@ i18n
         bookings: bookingsNO,
         facility: facilityNO,
         checkout: checkoutNO,
+        admin: adminNO,
+        validation: validationNO,
       },
     },
 

@@ -164,6 +164,17 @@
     "refresh_data": "Refresh Data"
   },
 
+  "facilities": {
+    "edit": "Edit Facility",
+    "images": "Images",
+    "uploading": "Uploading...",
+    "add_image": "Add Image",
+    "preview": "Preview",
+    "no_images": "No images added",
+    "image_number": "Image {{number}}",
+    "remove_image": "Remove image {{number}}",
+    "fetching_coordinates": "Fetching coordinates..."
+  },
   "pages": {
     "users_roles": {
       "title": "Users and Roles",
@@ -480,6 +491,54 @@
         "delete_multiple": "Are you sure you want to delete {{count}} facilities? This action cannot be undone.",
         "delete_single": "Are you sure you want to delete '{{name}}'? This action cannot be undone.",
         "select": "Select {{name}}"
+      },
+      "card": {
+        "view_main_app": "View in main application",
+        "duplicate": "Duplicate facility",
+        "delete": "Delete facility",
+        "add_image": "Add image",
+        "edit_name": "Edit name",
+        "edit_address": "Edit address",
+        "edit_description": "Edit description",
+        "show_more_amenities": "+{{count}} more",
+        "capacity": "Capacity: {{capacity}}",
+        "edit": "Edit",
+        "status": "Status:",
+        "published": "Published",
+        "unpublished": "Unpublished",
+        "owner": "Owner: {{owner}}",
+        "last_updated": "Last updated: {{date}}",
+        "updated_by": "Updated by: {{user}}",
+        "delete_dialog": {
+          "title": "Delete facility",
+          "warning": "This action cannot be undone",
+          "confirm_text": "Are you sure you want to delete <strong>{{name}}</strong>? All associated data will be permanently deleted.",
+          "cancel": "Cancel",
+          "confirm": "Delete"
+        },
+        "edit_modal": {
+          "title": "Edit facility",
+          "name": "Name",
+          "address": "Address",
+          "description": "Description",
+          "type": "Type",
+          "capacity": "Capacity",
+          "amenities": "Amenities",
+          "save": "Save changes",
+          "cancel": "Cancel"
+        },
+        "image_modal": {
+          "title": "Upload images",
+          "drag_drop": "Drag and drop images here, or click to select files",
+          "max_files": "Maximum {{count}} files",
+          "max_size": "Maximum file size: {{size}}",
+          "upload": "Upload images",
+          "cancel": "Cancel"
+        },
+        "amenities_modal": {
+          "title": "All amenities",
+          "close": "Close"
+        }
       }
     },
     "bookings": {

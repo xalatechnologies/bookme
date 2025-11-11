@@ -1,21 +1,23 @@
 {
-  "required": "This field is required",
-  "email": "Please enter a valid email address",
-  "url": "Please enter a valid URL",
-  "date": "Please enter a valid date",
-  "time": "Please enter a valid time",
-  "number": "Please enter a valid number",
-  "integer": "Please enter a whole number",
-  "positive": "Value must be positive",
-  "negative": "Value must be negative",
-  "decimal": "Please enter a decimal number",
-  "phone": "Please enter a valid phone number",
-  "postalCode": "Please enter a valid postal code",
-  "creditCard": "Please enter a valid card number",
-  "pattern": "Value does not match the required pattern",
-  "alphanumeric": "Only letters and numbers are allowed",
-  "letters": "Only letters are allowed",
-  "digits": "Only numbers are allowed",
+  "field": {
+    "required": "This field is required",
+    "email": "Please enter a valid email address",
+    "url": "Please enter a valid URL",
+    "date": "Please enter a valid date",
+    "time": "Please enter a valid time",
+    "number": "Please enter a valid number",
+    "integer": "Please enter a whole number",
+    "positive": "Value must be positive",
+    "negative": "Value must be negative",
+    "decimal": "Please enter a decimal number",
+    "phone": "Please enter a valid phone number",
+    "postalCode": "Please enter a valid postal code",
+    "creditCard": "Please enter a valid card number",
+    "pattern": "Value does not match the required pattern",
+    "alphanumeric": "Only letters and numbers are allowed",
+    "letters": "Only letters are allowed",
+    "digits": "Only numbers are allowed"
+  },
   "string": {
     "min": "Must be at least {{min}} characters",
     "max": "Must be at most {{max}} characters",
@@ -106,5 +108,8 @@
     "invalid": "Invalid value",
     "required": "Required",
     "optional": "Optional"
-  }
+  },
+  "name_required": "Name is required",
+  "name_min_length": "Name must be at least 3 characters",
+  "address_required": "Address is required"
 }

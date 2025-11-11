@@ -77,90 +77,120 @@ interface IAdminRoutesProps {
 
 const AdminRoutes = (_props: IAdminRoutesProps): JSX.Element => {
   return (
-    <Suspense fallback={<AdminPageLoader />}>
-      <Routes>
-        <Route path="/" element={
-          <ProtectedRoute requiredRole="admin" unauthorizedComponent={<AdminUnauthorizedComponent />}>
+    <Routes>
+      <Route path="/" element={
+        <ProtectedRoute requiredRole="admin" unauthorizedComponent={<AdminUnauthorizedComponent />}>
+          <Suspense fallback={<AdminPageLoader />}>
             <AdminLayout><Navigate to="/admin/overview" replace /></AdminLayout>
-          </ProtectedRoute>
-        } />
-        <Route path="/overview" element={
-          <ProtectedRoute requiredRole="admin" unauthorizedComponent={<AdminUnauthorizedComponent />}>
+          </Suspense>
+        </ProtectedRoute>
+      } />
+      <Route path="/overview" element={
+        <ProtectedRoute requiredRole="admin" unauthorizedComponent={<AdminUnauthorizedComponent />}>
+          <Suspense fallback={<AdminPageLoader />}>
             <AdminLayout><Overview /></AdminLayout>
-          </ProtectedRoute>
-        } />
-        <Route path="/facilities" element={
-          <ProtectedRoute requiredRole="admin" unauthorizedComponent={<AdminUnauthorizedComponent />}>
+          </Suspense>
+        </ProtectedRoute>
+      } />
+      <Route path="/facilities" element={
+        <ProtectedRoute requiredRole="admin" unauthorizedComponent={<AdminUnauthorizedComponent />}>
+          <Suspense fallback={<AdminPageLoader />}>
             <AdminLayout><FacilitiesPage /></AdminLayout>
-          </ProtectedRoute>
-        } />
-        <Route path="/facilities/new" element={
-          <ProtectedRoute requiredRole="admin" unauthorizedComponent={<AdminUnauthorizedComponent />}>
+          </Suspense>
+        </ProtectedRoute>
+      } />
+      <Route path="/facilities/new" element={
+        <ProtectedRoute requiredRole="admin" unauthorizedComponent={<AdminUnauthorizedComponent />}>
+          <Suspense fallback={<AdminPageLoader />}>
             <AdminLayout><FacilityEditPage /></AdminLayout>
-          </ProtectedRoute>
-        } />
-        <Route path="/facilities/:id/edit" element={
-          <ProtectedRoute requiredRole="admin" unauthorizedComponent={<AdminUnauthorizedComponent />}>
+          </Suspense>
+        </ProtectedRoute>
+      } />
+      <Route path="/facilities/:id/edit" element={
+        <ProtectedRoute requiredRole="admin" unauthorizedComponent={<AdminUnauthorizedComponent />}>
+          <Suspense fallback={<AdminPageLoader />}>
             <AdminLayout><FacilityEditPage /></AdminLayout>
-          </ProtectedRoute>
-        } />
-        <Route path="/bookings" element={
-          <ProtectedRoute requiredRole="admin" unauthorizedComponent={<AdminUnauthorizedComponent />}>
+          </Suspense>
+        </ProtectedRoute>
+      } />
+      <Route path="/bookings" element={
+        <ProtectedRoute requiredRole="admin" unauthorizedComponent={<AdminUnauthorizedComponent />}>
+          <Suspense fallback={<AdminPageLoader />}>
             <AdminLayout><BookingsPage /></AdminLayout>
-          </ProtectedRoute>
-        } />
-        <Route path="/approvals" element={
-          <ProtectedRoute requiredRole="admin" unauthorizedComponent={<AdminUnauthorizedComponent />}>
+          </Suspense>
+        </ProtectedRoute>
+      } />
+      <Route path="/approvals" element={
+        <ProtectedRoute requiredRole="admin" unauthorizedComponent={<AdminUnauthorizedComponent />}>
+          <Suspense fallback={<AdminPageLoader />}>
             <AdminLayout><ApprovalsPage /></AdminLayout>
-          </ProtectedRoute>
-        } />
-        <Route path="/users-roles" element={
-          <ProtectedRoute requiredRole="admin" unauthorizedComponent={<AdminUnauthorizedComponent />}>
+          </Suspense>
+        </ProtectedRoute>
+      } />
+      <Route path="/users-roles" element={
+        <ProtectedRoute requiredRole="admin" unauthorizedComponent={<AdminUnauthorizedComponent />}>
+          <Suspense fallback={<AdminPageLoader />}>
             <AdminLayout><UsersRolesPage /></AdminLayout>
-          </ProtectedRoute>
-        } />
-        <Route path="/notifications" element={
-          <ProtectedRoute requiredRole="admin" unauthorizedComponent={<AdminUnauthorizedComponent />}>
+          </Suspense>
+        </ProtectedRoute>
+      } />
+      <Route path="/notifications" element={
+        <ProtectedRoute requiredRole="admin" unauthorizedComponent={<AdminUnauthorizedComponent />}>
+          <Suspense fallback={<AdminPageLoader />}>
             <AdminLayout><NotificationsPage /></AdminLayout>
-          </ProtectedRoute>
-        } />
-        <Route path="/integrations" element={
-          <ProtectedRoute requiredRole="admin" unauthorizedComponent={<AdminUnauthorizedComponent />}>
+          </Suspense>
+        </ProtectedRoute>
+      } />
+      <Route path="/integrations" element={
+        <ProtectedRoute requiredRole="admin" unauthorizedComponent={<AdminUnauthorizedComponent />}>
+          <Suspense fallback={<AdminPageLoader />}>
             <AdminLayout><IntegrationsPage /></AdminLayout>
-          </ProtectedRoute>
-        } />
-        <Route path="/reports" element={
-          <ProtectedRoute requiredRole="admin" unauthorizedComponent={<AdminUnauthorizedComponent />}>
+          </Suspense>
+        </ProtectedRoute>
+      } />
+      <Route path="/reports" element={
+        <ProtectedRoute requiredRole="admin" unauthorizedComponent={<AdminUnauthorizedComponent />}>
+          <Suspense fallback={<AdminPageLoader />}>
             <AdminLayout><ReportsPage /></AdminLayout>
-          </ProtectedRoute>
-        } />
-        <Route path="/audit-logs" element={
-          <ProtectedRoute requiredRole="admin" unauthorizedComponent={<AdminUnauthorizedComponent />}>
+          </Suspense>
+        </ProtectedRoute>
+      } />
+      <Route path="/audit-logs" element={
+        <ProtectedRoute requiredRole="admin" unauthorizedComponent={<AdminUnauthorizedComponent />}>
+          <Suspense fallback={<AdminPageLoader />}>
             <AdminLayout><AuditLogPage /></AdminLayout>
-          </ProtectedRoute>
-        } />
-        <Route path="/data-retention" element={
-          <ProtectedRoute requiredRole="admin" unauthorizedComponent={<AdminUnauthorizedComponent />}>
+          </Suspense>
+        </ProtectedRoute>
+      } />
+      <Route path="/data-retention" element={
+        <ProtectedRoute requiredRole="admin" unauthorizedComponent={<AdminUnauthorizedComponent />}>
+          <Suspense fallback={<AdminPageLoader />}>
             <AdminLayout><DeletionPlanPage /></AdminLayout>
-          </ProtectedRoute>
-        } />
-        <Route path="/messages" element={
-          <ProtectedRoute requiredRole="admin" unauthorizedComponent={<AdminUnauthorizedComponent />}>
+          </Suspense>
+        </ProtectedRoute>
+      } />
+      <Route path="/messages" element={
+        <ProtectedRoute requiredRole="admin" unauthorizedComponent={<AdminUnauthorizedComponent />}>
+          <Suspense fallback={<AdminPageLoader />}>
             <AdminLayout><AdminMessages /></AdminLayout>
-          </ProtectedRoute>
-        } />
-        <Route path="/settings" element={
-          <ProtectedRoute requiredRole="admin" unauthorizedComponent={<AdminUnauthorizedComponent />}>
+          </Suspense>
+        </ProtectedRoute>
+      } />
+      <Route path="/settings" element={
+        <ProtectedRoute requiredRole="admin" unauthorizedComponent={<AdminUnauthorizedComponent />}>
+          <Suspense fallback={<AdminPageLoader />}>
             <AdminLayout><SettingsPage /></AdminLayout>
-          </ProtectedRoute>
-        } />
-        <Route path="/localization" element={
-          <ProtectedRoute requiredRole="admin" unauthorizedComponent={<AdminUnauthorizedComponent />}>
+          </Suspense>
+        </ProtectedRoute>
+      } />
+      <Route path="/localization" element={
+        <ProtectedRoute requiredRole="admin" unauthorizedComponent={<AdminUnauthorizedComponent />}>
+          <Suspense fallback={<AdminPageLoader />}>
             <AdminLayout><LocalizationManagementPage /></AdminLayout>
-          </ProtectedRoute>
-        } />
-      </Routes>
-    </Suspense>
+          </Suspense>
+        </ProtectedRoute>
+      } />
+    </Routes>
   );
 };
 
