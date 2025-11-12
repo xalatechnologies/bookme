@@ -13,7 +13,6 @@ import {
   validateSettingsData,
   compareSettings,
   getChangedFields,
-  formatSettingsForDisplay,
   prepareSettingsForStorage,
   getDefaultSettings,
   getAvailableTimezones,

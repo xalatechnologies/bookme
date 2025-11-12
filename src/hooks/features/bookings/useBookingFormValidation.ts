@@ -21,14 +21,6 @@ import { useFormValidation } from '@/hooks/shared';
 import type { IBookingFormData, ISelectedTimeSlot, ActorType, ActivityType } from '@/components/features/bookings/types';
 
 /**
- * Validation state interface
- */
-interface ValidationState {
-  readonly errors: Record<string, string>;
-  readonly isValid: boolean;
-}
-
-/**
  * Select option type
  */
 interface SelectOption {
@@ -175,7 +167,6 @@ export const useBookingFormValidation = (): UseBookingFormValidationReturn => {
   const {
     errors,
     validateField: baseValidateField,
-    validateAll: baseValidateAll,
     clearError,
     clearAllErrors,
     setError,

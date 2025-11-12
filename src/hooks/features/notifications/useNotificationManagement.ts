@@ -25,7 +25,6 @@ import {
   calculateUnreadCountByPriority,
   getHighPriorityUnread,
   getUrgentNotifications,
-  formatNotificationForDisplay,
   type INotificationFilters,
   type INotificationSortConfig,
 } from '@/services/business/notification.business.service';

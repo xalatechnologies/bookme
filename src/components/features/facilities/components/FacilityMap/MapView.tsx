@@ -11,8 +11,6 @@ import { useOrganizationId } from '@/hooks/useOrganizationId';
 import { useMapOverlay } from '@/hooks/features/facilities';
 import { MAPBOX_TOKEN } from '@/lib/clients/mapbox';
 
-type Facility = Database['public']['Tables']['facilities']['Row'];
-
 // Sibling imports
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
