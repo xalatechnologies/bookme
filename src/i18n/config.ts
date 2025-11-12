@@ -33,6 +33,8 @@ import checkoutEN from '../../public/locales/en/checkout.json';
 import checkoutNO from '../../public/locales/no/checkout.json';
 import adminEN from '../../public/locales/en/admin.json';
 import adminNO from '../../public/locales/no/admin.json';
+import userEN from '../../public/locales/en/user.json';
+import userNO from '../../public/locales/no/user.json';
 import validationEN from '../../public/locales/en/validation.json';
 import validationNO from '../../public/locales/no/validation.json';
 
@@ -62,6 +64,7 @@ export const NAMESPACES = {
   ERRORS: 'errors',
   CHECKOUT: 'checkout',
   ADMIN: 'admin',
+  USER: 'user',
   VALIDATION: 'validation',
 } as const;
 
@@ -148,6 +151,7 @@ i18n
         facility: facilityEN,
         checkout: checkoutEN,
         admin: adminEN,
+        user: userEN,
         validation: validationEN,
       },
       no: {
@@ -160,6 +164,7 @@ i18n
         facility: facilityNO,
         checkout: checkoutNO,
         admin: adminNO,
+        user: userNO,
         validation: validationNO,
       },
     },

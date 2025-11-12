@@ -33,7 +33,7 @@ export const HeroSection = (props: IHeroSectionProps): JSX.Element => {
     nextBooking,
     onNewBooking,
   } = props;
-  const { t } = useTranslation("common");
+  const { t } = useTranslation("user");
 
   const getDayOfWeek = (): string => {
     const dayIndex = new Date().getDay();
@@ -46,7 +46,7 @@ export const HeroSection = (props: IHeroSectionProps): JSX.Element => {
       "friday",
       "saturday",
     ];
-    return t(`user:dashboard.days.${dayKeys[dayIndex]}`);
+    return t(`dashboard.days.${dayKeys[dayIndex]}` as any);
   };
 
   const getWeatherIcon = (
@@ -69,10 +69,10 @@ export const HeroSection = (props: IHeroSectionProps): JSX.Element => {
           <div className="flex-1">
             <div className="flex items-center gap-3 mb-3">
               <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-                {t("user:dashboard.greeting", {
+                {t("dashboard.greeting", {
                   dayOfWeek: getDayOfWeek(),
                   name: userName,
-                })}{" "}
+                } as any)}{" "}
                 👋
               </h1>
               {weather && (
@@ -86,20 +86,20 @@ export const HeroSection = (props: IHeroSectionProps): JSX.Element => {
             </div>
             <p className="text-gray-600 dark:text-gray-400 mb-3">
               {weather &&
-                `${t("user:dashboard.weather_in_city", {
+                `${t("dashboard.weather_in_city", {
                   description: weather.description,
-                })} `}
-              {t("user:dashboard.perfect_day")}
+                } as any)} `}
+              {t("dashboard.perfect_day", { defaultValue: "Perfect day to book an activity!" })}
             </p>
 
             {/* Progress Bar */}
             <div className="mb-4">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                  {t("user:dashboard.monthly_bookings")}
+                  {t("dashboard.monthly_bookings", { defaultValue: "Monthly bookings" })}
                 </span>
                 <span className="text-sm text-gray-500 dark:text-gray-400">
-                  {totalBookings} {t("user:dashboard.of")} {monthlyBookingLimit}
+                  {totalBookings} {t("dashboard.of", { defaultValue: "of" })} {monthlyBookingLimit}
                 </span>
               </div>
               <Progress
@@ -110,12 +110,12 @@ export const HeroSection = (props: IHeroSectionProps): JSX.Element => {
 
             <p className="text-sm text-blue-600 dark:text-blue-400">
               {nextBooking
-                ? t("user:dashboard.next_booking", {
+                ? t("dashboard.next_booking", {
                     facility: nextBooking.facility,
                     date: nextBooking.date,
                     time: nextBooking.time,
-                  })
-                : t("user:dashboard.no_upcoming_bookings")}
+                  } as any)
+                : t("dashboard.no_upcoming_bookings", { defaultValue: "No upcoming bookings" })}
             </p>
           </div>
           <div className="ml-6">
@@ -125,7 +125,7 @@ export const HeroSection = (props: IHeroSectionProps): JSX.Element => {
               size="lg"
             >
               <Plus className="h-5 w-5 mr-2" />
-              {t("user:dashboard.new_booking")}
+              {t("dashboard.new_booking", { defaultValue: "New Booking" })}
             </Button>
           </div>
         </div>

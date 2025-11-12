@@ -42,7 +42,7 @@ import type { IUseDashboardManagementReturn } from "@/hooks/features/dashboard/u
 /**
  * Get current day of week localized
  */
-const getDayOfWeek = (t: (key: string) => string): string => {
+const getDayOfWeek = (): string => {
   const dayIndex = new Date().getDay();
   const dayKeys = [
     "sunday",
@@ -53,7 +53,7 @@ const getDayOfWeek = (t: (key: string) => string): string => {
     "friday",
     "saturday",
   ];
-  return t(`user:dashboard.days.${dayKeys[dayIndex]}`);
+  return dayKeys[dayIndex];
 };
 
 /**
@@ -216,7 +216,7 @@ const UserDashboard = (): JSX.Element => {
               <div className="flex items-center gap-3 mb-3">
                 <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
                   {t("user:dashboard.greeting", {
-                    dayOfWeek: getDayOfWeek(t),
+                    dayOfWeek: t(`user:dashboard.days.${getDayOfWeek()}` as any),
                     name: dashboard.user.name,
                   })}{" "}
                   👋
@@ -411,7 +411,7 @@ const UserDashboard = (): JSX.Element => {
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2">
               <Bell className="h-5 w-5" />
-              {t("user:dashboard.system_messages")}
+              {t("user:dashboard.system_messages.title")}
               {dashboard.unreadMessagesCount > 0 && (
                 <Badge className="bg-red-500 text-white">
                   {dashboard.unreadMessagesCount}

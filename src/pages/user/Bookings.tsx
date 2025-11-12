@@ -31,7 +31,7 @@ type BookingStatus = Database['public']['Enums']['booking_status'];
 const Bookings = (): JSX.Element => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { t } = useTranslation(['booking', 'common']);
+  const { t } = useTranslation(['booking', 'common', 'user']);
   const cancelBookingMutation = useCancelBooking();
 
   // Use our custom hook for all booking logic
@@ -263,7 +263,7 @@ END:VCALENDAR`;
             className="flex items-center gap-2 h-12"
           >
             <Plus className="w-4 h-4" />
-            {t('booking:button_labels.new_booking')}
+            {t('user:dashboard.new_booking' as any)}
           </Button>
         </div>
       </header>
@@ -330,7 +330,7 @@ END:VCALENDAR`;
                 className="flex items-center gap-2"
               >
                 <Trash2 className="h-4 w-4" />
-                {t('booking:button_labels.cancel_selected')}
+                {t('booking:button_labels.cancel_selected' as any)}
               </Button>
             </div>
           )}
@@ -427,7 +427,7 @@ END:VCALENDAR`;
                 className="flex items-center gap-2"
               >
                 <X className="w-4 h-4" />
-                {t('booking:button_labels.cancel')}
+                {t('booking:button_labels.cancel' as any)}
               </Button>
               <Button
                 variant="destructive"
@@ -440,7 +440,7 @@ END:VCALENDAR`;
                   ? t('booking:delete_confirm.canceling')
                   : (bookingsToDelete.length > 1
                     ? t('booking:delete_confirm.cancel_all')
-                    : t('booking:button_labels.cancel_booking'))}
+                    : t('booking:button_labels.cancel_booking' as any))}
               </Button>
             </div>
           </div>

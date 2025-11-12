@@ -30,6 +30,8 @@ import type adminEN from '../../../public/locales/en/admin.json';
 import type adminNO from '../../../public/locales/no/admin.json';
 import type checkoutEN from '../../../public/locales/en/checkout.json';
 import type checkoutNO from '../../../public/locales/no/checkout.json';
+import type userEN from '../../../public/locales/en/user.json';
+import type userNO from '../../../public/locales/no/user.json';
 
 /**
  * Default namespace for translations
@@ -50,7 +52,8 @@ export type Namespaces =
   | 'facility'
   | 'calendar'
   | 'admin'
-  | 'checkout';
+  | 'checkout'
+  | 'user';
 
 /**
  * Resource type for each namespace
@@ -67,6 +70,7 @@ export interface NamespaceResources {
   calendar: typeof calendarNO;
   admin: typeof adminNO;
   checkout: typeof checkoutNO;
+  user: typeof userNO;
 }
 
 /**
@@ -84,46 +88,13 @@ export interface Resources {
   calendar: typeof calendarNO;
   admin: typeof adminNO;
   checkout: typeof checkoutNO;
+  user: typeof userNO;
 }
 
 /**
- * Utility type for creating dot notation paths from nested objects
- *
- * @example
- * DotNotation<{ a: { b: { c: string } } }> = 'a' | 'a.b' | 'a.b.c'
+ * Simplified type for translation keys to avoid deep instantiation issues
  */
-export type DotNotation<T, P extends string = ''> = T extends object
-  ? {
-      [K in keyof T]: K extends string
-        ? T[K] extends object
-          ? DotNotation<T[K], P extends '' ? K : `${P}.${K}`> | (P extends '' ? K : `${P}.${K}`)
-          : P extends ''
-          ? K
-          : `${P}.${K}`
-        : never;
-    }[keyof T]
-  : never;
-
-/**
- * Type-safe translation key for a specific namespace
- *
- * @example
- * TranslationKey<'common'> = 'actions.save' | 'actions.cancel' | ...
- */
-export type TranslationKey<NS extends Namespaces = DefaultNamespace> =
-  NS extends keyof Resources ? DotNotation<Resources[NS]> : never;
-
-/**
- * Get the type of a translation value for a specific key
- */
-export type TranslationValue<
-  NS extends Namespaces,
-  K extends TranslationKey<NS>
-> = NS extends keyof Resources
-  ? K extends keyof Resources[NS]
-    ? Resources[NS][K]
-    : never
-  : never;
+export type TranslationKey<NS extends Namespaces = DefaultNamespace> = string;
 
 /**
  * Translation function parameters
@@ -162,7 +133,7 @@ declare module 'i18next' {
  * Type guard to check if a string is a valid namespace
  */
 export const isNamespace = (value: string): value is Namespaces => {
-  return ['common', 'rbac', 'forms', 'errors', 'validation', 'booking', 'bookings', 'facility', 'calendar', 'admin'].includes(value);
+  return ['common', 'rbac', 'forms', 'errors', 'validation', 'booking', 'bookings', 'facility', 'calendar', 'admin', 'checkout', 'user'].includes(value);
 };
 
 /**

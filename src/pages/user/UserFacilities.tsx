@@ -24,7 +24,7 @@ import type { IUserFacility } from "@/hooks/features/facilities/useUserFacilitie
  * Clean Architecture: Pure presentation component, all logic in hook
  */
 const UserFacilities = (): JSX.Element => {
-  const { t } = useTranslation('user');
+  const { t } = useTranslation(['user', 'common']);
 
   // Get all data and actions from the hook
   const {
@@ -154,7 +154,7 @@ const UserFacilities = (): JSX.Element => {
         </div>
         <div className="text-center py-12">
           <p className="text-gray-600 dark:text-gray-400">
-            {t('common.loading')}
+            {t('common:loading' as any)}
           </p>
         </div>
       </div>
