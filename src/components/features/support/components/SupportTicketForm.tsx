@@ -271,7 +271,10 @@ export const SupportTicketForm: React.FC<ISupportTicketFormProps> = ({
       setFiles([]);
 
       onClose();
-    } catch (error) {
+    } catch (
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      _error: unknown
+    ) {
       setError("general", t("support:messages.error.generic"));
     } finally {
       setIsSubmitting(false);

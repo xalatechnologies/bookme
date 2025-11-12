@@ -29,7 +29,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Message } from "@/types/message";
+import type { Message } from "@/types/message";
 import { useMessageStore } from "@/stores/messageStore";
 import { cn } from "@/lib/utils/cn";
 import { useUserProfile } from "@/contexts/UserProfileContext";
@@ -96,7 +96,10 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
     onDelete(message.id);
   }, [onDelete, message.id]);
 
-  const handleDownloadClick = useCallback((_attachment: { readonly id: string; readonly name: string; readonly type: string; readonly size: number }) => {
+  const handleDownloadClick = useCallback((
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _attachment: { readonly id: string; readonly name: string; readonly type: string; readonly size: number }
+  ) => {
     // Create download link from attachment data
     // In a real implementation, this would fetch the actual file data
 
@@ -353,7 +356,10 @@ export const MessageThread: React.FC<MessageThreadProps> = ({
       setNewMessage("");
       setAttachments([]);
       setReplyTo(null);
-    } catch (_error: unknown) {
+    } catch (
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      _error: unknown
+    ) {
       // Error handling can be added here if needed
     }
   };
@@ -387,15 +393,24 @@ export const MessageThread: React.FC<MessageThreadProps> = ({
     textareaRef.current?.focus();
   };
 
-  const handleForward = (message: Message) => {
+  const handleForward = (
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _message: Message
+  ) => {
     // TODO: Implement message forwarding functionality
   };
 
-  const handleStar = (_messageId: string) => {
+  const handleStar = (
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _messageId: string
+  ) => {
     // TODO: Implement message starring functionality
   };
 
-  const handleDelete = (_messageId: string) => {
+  const handleDelete = (
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _messageId: string
+  ) => {
     // TODO: Implement message deletion functionality
   };
 

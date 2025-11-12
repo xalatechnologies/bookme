@@ -35,7 +35,10 @@ interface IIntegrationsPageProps {
   readonly children?: never;
 }
 
-const IntegrationsPage = (_props: IIntegrationsPageProps): JSX.Element => {
+const IntegrationsPage = (
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _props: IIntegrationsPageProps
+): JSX.Element => {
   const {
     integrations,
     availableProviders,

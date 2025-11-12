@@ -285,9 +285,10 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
         console.error('Error signing out:', error);
         throw error;
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       // If session is already missing, that's fine - just clear local state
-      if (error?.message !== 'Auth session missing!') {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      if (errorMessage !== 'Auth session missing!') {
         console.error('Error signing out:', error);
         throw error;
       }

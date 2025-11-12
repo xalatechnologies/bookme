@@ -104,8 +104,8 @@ export const TimeSlotDisplay: React.FC<ITimeSlotDisplayProps> = ({
             {datePackage.dateFormatted}
           </span>
         </div>
-        {datePackage.groups.map((group, groupIndex) => (
-          <div key={`${datePackage.date}-${groupIndex}`}>
+        {datePackage.groups.map((group, index) => (
+          <div key={`${datePackage.date}-${index}`}>
             {renderSlotGroup(group, isRecurring)}
           </div>
         ))}

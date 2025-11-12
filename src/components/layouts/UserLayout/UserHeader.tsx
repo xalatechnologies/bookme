@@ -12,7 +12,10 @@ interface IUserHeaderProps {
   readonly children?: never;
 }
 
-const UserHeader = (_props: IUserHeaderProps): JSX.Element => {
+const UserHeader = (
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _props: IUserHeaderProps
+): JSX.Element => {
   const { language, toggleLanguage } = useLanguage();
 
   return (

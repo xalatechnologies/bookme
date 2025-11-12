@@ -5,7 +5,7 @@
  * Provides complete state and actions for the Bookings page.
  */
 
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useUserBookings } from '@/services/supabase/bookings.service';
 import { useBookingFilters, type BookingFilters } from './useBookingFilters';

@@ -31,7 +31,10 @@ interface ILocalizationManagementPageProps {
   readonly children?: never;
 }
 
-const LocalizationManagementPage = (_props: ILocalizationManagementPageProps): JSX.Element => {
+const LocalizationManagementPage = (
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _props: ILocalizationManagementPageProps
+): JSX.Element => {
   const {
     translationKeys,
     languages,

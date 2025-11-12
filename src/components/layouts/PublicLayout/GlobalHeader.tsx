@@ -39,15 +39,12 @@ export const GlobalHeader = (): JSX.Element => {
   const { itemCount } = useCart();
   const { profile } = useUserProfile();
 
-  // Check if we're on a booking page, user pages, or checkout
-  const isBookingPage = location.pathname.includes("/book");
-  const isUserPage = location.pathname.startsWith("/user");
-  const isCheckoutPage = location.pathname === "/checkout";
   // Use actual auth state instead of route-based detection
   const isAuthenticated = !!user;
   
   // Check if user has admin role in any organization
-  const isAdmin = memberships.some(membership => 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const _isAdmin = memberships.some(membership => 
     membership.role === 'admin' || membership.role === 'owner'
   );
 
