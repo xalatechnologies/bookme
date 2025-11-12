@@ -25,7 +25,9 @@ interface IAdminFacilityListItemProps {
   readonly onDuplicate?: (facilityId: string) => void;
 }
 
-const AdminFacilityListItem = ({ facility, onDelete, onToggleStatus, onDuplicate }: IAdminFacilityListItemProps): JSX.Element => {
+const AdminFacilityListItem = ({ facility, onDelete, 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  onToggleStatus: _onToggleStatus, onDuplicate }: IAdminFacilityListItemProps): JSX.Element => {
   const { t } = useTranslation(['admin', 'facility', 'common']);
   const translateAmenity = useAmenityTranslation();
   
@@ -186,8 +188,11 @@ const AdminFacilityListItem = ({ facility, onDelete, onToggleStatus, onDuplicate
     }
   };
 
-  const handleImageUpload = (e: React.MouseEvent): void => {
-    e.stopPropagation();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const _handleImageUpload = (
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _e: React.MouseEvent
+  ): void => {
     setShowImageModal(true);
   };
 

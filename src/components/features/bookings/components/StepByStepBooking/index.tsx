@@ -95,7 +95,9 @@ export interface IStepByStepBookingProps {
 }
 
 export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
-  facilityId,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  facilityId: _facilityId,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   facilityName: _facilityName,
   zones,
   selectedZoneId,
@@ -108,10 +110,12 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
   error,
   openingHoursStart = "08:00",
   openingHoursEnd = "22:00",
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   calendarWeek: _calendarWeek,
   onSlotClick,
   onBulkSlotSelection,
   getAvailabilityStatus,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   isSlotSelected: _isSlotSelected,
 }) => {
   const { t, i18n } = useTranslation(["booking", "common"]);

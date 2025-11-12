@@ -39,6 +39,7 @@ export const TimeSlotDisplay: React.FC<ITimeSlotDisplayProps> = ({
   slots,
   recurringSlots = [],
   bookingType,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   onRemoveSlot: _onRemoveSlot,
   onClearAll,
   showClearButton = true,

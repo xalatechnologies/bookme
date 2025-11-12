@@ -32,6 +32,7 @@ export const WeekNavigation: React.FC<IWeekNavigationProps> = ({
   currentWeek,
   onPreviousWeek,
   onNextWeek,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   onCurrentWeek: _onCurrentWeek,
   isLoading = false,
 }) => {

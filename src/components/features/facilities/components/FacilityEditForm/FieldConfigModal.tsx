@@ -37,7 +37,8 @@ export const FieldConfigModal = ({
   onClose, 
   onSave, 
   initialFields,
-  facilityId,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  facilityId: _facilityId,
   onToggleVisibility,
   onUpdateValue,
   onAddField,

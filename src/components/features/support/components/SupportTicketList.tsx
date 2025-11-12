@@ -277,15 +277,15 @@ export const SupportTicketList: React.FC<SupportTicketListProps> = ({
   );
   const closedTickets = filteredTickets.filter((t) => t.status === "closed");
 
-  const handleEdit = (ticketId: string): void => {
+  const handleEdit = (_ticketId: string): void => {
     // TODO: Implementation would open edit dialog
   };
 
-  const handleDelete = (ticketId: string): void => {
+  const handleDelete = (_ticketId: string): void => {
     // TODO: Implementation would delete ticket
   };
 
-  const handleArchive = (ticketId: string): void => {
+  const handleArchive = (_ticketId: string): void => {
     // TODO: Implementation would archive ticket
   };
 

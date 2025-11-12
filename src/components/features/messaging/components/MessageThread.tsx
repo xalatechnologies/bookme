@@ -353,8 +353,8 @@ export const MessageThread: React.FC<MessageThreadProps> = ({
       setNewMessage("");
       setAttachments([]);
       setReplyTo(null);
-    } catch (error) {
-      void error; // Intentionally unused - error handled silently
+    } catch (_error: unknown) {
+      // Error handling can be added here if needed
     }
   };
 
@@ -366,7 +366,7 @@ export const MessageThread: React.FC<MessageThreadProps> = ({
         const result = reader.result as string;
         resolve(result.split(",")[1]); // Remove data:type;base64, prefix
       };
-      reader.onerror = (error) => reject(error);
+      reader.onerror = (error: unknown) => reject(error);
     });
   };
 
@@ -391,11 +391,11 @@ export const MessageThread: React.FC<MessageThreadProps> = ({
     // TODO: Implement message forwarding functionality
   };
 
-  const handleStar = (messageId: string) => {
+  const handleStar = (_messageId: string) => {
     // TODO: Implement message starring functionality
   };
 
-  const handleDelete = (messageId: string) => {
+  const handleDelete = (_messageId: string) => {
     // TODO: Implement message deletion functionality
   };
 

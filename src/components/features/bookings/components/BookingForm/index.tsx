@@ -3,11 +3,9 @@
 // External libraries
 import React, { useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
-
-// Internal libraries/utilities
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FormField } from "@/components/common/forms/FormField";
 import { useBookingFormValidation } from "@/hooks/features/bookings";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 // Sibling imports
 import { SelectedSlotsDisplay } from "./SelectedSlotsDisplay";
@@ -54,12 +52,15 @@ export interface IBookingFormProps {
   readonly onAddToCart: (bookingData: IBookingFormData) => void;
   readonly onCompleteBooking: (bookingData: IBookingFormData) => void;
   readonly isLoading?: boolean;
-  readonly error?: string;
+  readonly error?: string | undefined;
 }
 
 export const BookingForm: React.FC<IBookingFormProps> = ({
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   facilityId: _facilityId,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   facilityName: _facilityName,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   zoneId: _zoneId,
   selectedSlots,
   onSlotsChange,
