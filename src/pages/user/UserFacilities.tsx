@@ -154,7 +154,7 @@ const UserFacilities = (): JSX.Element => {
         </div>
         <div className="text-center py-12">
           <p className="text-gray-600 dark:text-gray-400">
-            {t('common:loading' as any)}
+            {t('common:loading' as string)}
           </p>
         </div>
       </div>

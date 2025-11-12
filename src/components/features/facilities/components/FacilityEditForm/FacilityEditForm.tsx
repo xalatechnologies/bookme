@@ -86,7 +86,6 @@ export const FacilityEditForm: React.FC<IFacilityEditFormProps> = ({
     draggedIndex,
     fileInputRef,
     handleAddImage,
-    handleFileChange,
     handleRemoveImage,
     handleDragStart,
     handleDragOver,
@@ -247,8 +246,8 @@ export const FacilityEditForm: React.FC<IFacilityEditFormProps> = ({
         });
         onUpdate();
         onClose();
-      } catch (error) {
-
+      } catch (_error: unknown) {
+        // Error handling can be added here if needed
       }
     },
     [formData, validateAll, facility.id, updateFacilityMutation, onUpdate, onClose]

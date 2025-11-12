@@ -195,7 +195,7 @@ export const useBookingEditor = (
   const validation: BookingValidationResult = validateBookingData(editedBooking || {});
 
   // Actions
-  const updateField = useCallback((field: keyof Booking, value: any): void => {
+  const updateField = useCallback((field: keyof Booking, value: Booking[keyof Booking]): void => {
     setEditedBooking((prev) => {
       if (!prev) return prev;
       return { ...prev, [field]: value };

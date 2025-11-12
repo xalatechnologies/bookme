@@ -9,9 +9,7 @@ import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
-interface LoadingStateProps {}
-
-export const LoadingState: React.FC<LoadingStateProps> = ({}): JSX.Element => {
+export const LoadingState: React.FC = (): JSX.Element => {
   const { t } = useTranslation('common');
 
   return (

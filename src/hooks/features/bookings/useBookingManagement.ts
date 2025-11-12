@@ -29,6 +29,7 @@ import {
   type BookingStats,
   type CancellationEligibility,
   type ModificationEligibility,
+  type BookingStatus,
 } from '@/services/business/booking.business.service';
 import type { Database } from '@/types/database';
 
@@ -191,7 +192,7 @@ export const useBookingManagement = (): IUseBookingManagementReturn => {
     // Apply business logic filters
     const filters: IBookingFilters = {
       searchTerm,
-      statusFilter: statusFilter as any[],
+      statusFilter: statusFilter as readonly BookingStatus[],
       facilityIds: facilityFilter,
       dateRange: dateRange.startDate && dateRange.endDate
         ? {
@@ -205,8 +206,8 @@ export const useBookingManagement = (): IUseBookingManagementReturn => {
 
     // Apply business logic sorting
     const sortConfig: IBookingSortConfig = {
-      sortBy: sortBy as any,
-      sortOrder: sortOrder as any,
+      sortBy: sortBy as IBookingSortConfig['sortBy'],
+      sortOrder: sortOrder as IBookingSortConfig['sortOrder'],
     };
 
     return sortBookings(filtered, sortConfig) as readonly BookingWithDetails[];
@@ -271,7 +272,7 @@ export const useBookingManagement = (): IUseBookingManagementReturn => {
     async (id: string, status: string): Promise<void> => {
       await updateBookingMutation.mutateAsync({
         id,
-        updates: { status: status as any },
+        updates: { status: status as BookingStatus },
       });
     },
     [updateBookingMutation]
@@ -283,7 +284,7 @@ export const useBookingManagement = (): IUseBookingManagementReturn => {
         ids.map((id) =>
           updateBookingMutation.mutateAsync({
             id,
-            updates: { status: status as any },
+            updates: { status: status as BookingStatus },
           })
         )
       );

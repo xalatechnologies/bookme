@@ -4,9 +4,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
-import { MapPin, Trash2, Eye, Plus, User, Clock, Users, AlertTriangle, CheckCircle, XCircle, Copy, Edit, Save, X } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { MapPin, Trash2, Eye, Plus, User, Clock, Users, AlertTriangle, CheckCircle, XCircle, Copy, Edit } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -76,7 +74,6 @@ const AdminFacilityCard = ({ facility, onDelete, onToggleStatus, onDuplicate }: 
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [editValue, setEditValue] = useState<string>("");
   const [editField, setEditField] = useState<string>("");
-  const [isHovered, setIsHovered] = useState<boolean>(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<boolean>(false);
   const [showEditModal, setShowEditModal] = useState<boolean>(false);
   const [showImageModal, setShowImageModal] = useState<boolean>(false);
@@ -97,38 +94,7 @@ const AdminFacilityCard = ({ facility, onDelete, onToggleStatus, onDuplicate }: 
     amenities: facility.amenities ? [...(facility.amenities as string[])] : []
   });
 
-  const getStatusColor = (status: string): string => {
-    switch (status) {
-      case "published":
-        return "bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800";
-      case "draft":
-        return "bg-yellow-100 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-300 border-yellow-200 dark:border-yellow-800";
-      case "archived":
-        return "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700";
-      default:
-        return "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700";
-    }
-  };
-
-  const getStatusText = (status: string): string => {
-    switch (status) {
-      case "published":
-        return translate('pages.facilities.card.published');
-      case "draft":
-        return translate('pages.facilities.card.unpublished');
-      case "archived":
-        return translate('common:status.archived');
-      default:
-        return translate('common:status.unknown');
-    }
-  };
-
   const handleCardClick = (): void => {
-    navigate(`/admin/facilities/${facility.id}/edit`);
-  };
-
-  const handleEdit = (e: React.MouseEvent): void => {
-    e.stopPropagation();
     navigate(`/admin/facilities/${facility.id}/edit`);
   };
 
@@ -271,8 +237,6 @@ const AdminFacilityCard = ({ facility, onDelete, onToggleStatus, onDuplicate }: 
     <Card 
       className="group overflow-hidden hover:shadow-2xl transition-all duration-500 hover:translate-y-[-8px] border-0 shadow-lg bg-white dark:bg-gray-800 relative cursor-pointer focus:outline-none focus:ring-4 focus:ring-blue-500 focus:ring-opacity-50 h-full flex flex-col"
       onClick={handleCardClick}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
       role="button"
       tabIndex={0}
       aria-label={translate('admin:actions.view_details') + ' ' + facility.name + ' ' + translate('common:common.at') + ' ' + facility.address}

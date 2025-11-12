@@ -205,8 +205,8 @@ export const useUserManagement = (): IUseUserManagementReturn => {
     const filtered = filterUsers(users, filters);
 
     const sortConfig: IUserSortConfig = {
-      sortBy: sortBy as any,
-      sortOrder: sortOrder as any,
+      sortBy: sortBy as IUserSortConfig['sortBy'],
+      sortOrder: sortOrder as IUserSortConfig['sortOrder'],
     };
 
     return sortUsers(filtered, sortConfig);

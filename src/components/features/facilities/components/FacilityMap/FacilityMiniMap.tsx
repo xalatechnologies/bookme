@@ -19,7 +19,7 @@ type Props = {
 
 const FacilityMiniMap = ({ address, lat, lng, height = 310, width = 310 }: Props) => {
   const containerId = useMemo(
-    () => `mini-map-${(address ?? `${lat}-${lng}` ?? Math.random()).replace(/\s+/g, '-')}`,
+    () => `mini-map-${(address || (lat !== undefined && lng !== undefined ? `${lat}-${lng}` : String(Math.random()))).replace(/\s+/g, '-')}`,
     [address, lat, lng]
   );
   const mapRef = useRef<mapboxgl.Map | null>(null);

@@ -226,7 +226,7 @@ const UserFavorites = (): JSX.Element => {
               </span>
               <select
                 value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as any)}
+                onChange={(e) => setSortBy(e.target.value as "recently-added" | "last-visited" | "most-used" | "highest-rated" | "name" | "price-low" | "price-high")}
                 className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-800"
               >
                 {sortOptions.map((option) => (

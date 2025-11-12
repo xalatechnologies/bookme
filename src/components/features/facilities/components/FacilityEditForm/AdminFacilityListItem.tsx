@@ -3,11 +3,10 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { MapPin, Users, Edit, Trash2, Eye, Plus, AlertTriangle, Copy, X, Save, Image as ImageIcon } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
+import { MapPin, Users, Edit, Trash2, Eye, Plus, AlertTriangle, Copy, Save, Image as ImageIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -90,40 +89,10 @@ const AdminFacilityListItem = ({ facility, onDelete, onToggleStatus, onDuplicate
     amenities: facility.amenities
   });
 
-  const getStatusColor = (status: string): string => {
-    switch (status) {
-      case "published":
-        return "bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800";
-      case "draft":
-        return "bg-yellow-100 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-300 border-yellow-200 dark:border-yellow-800";
-      case "archived":
-        return "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700";
-      default:
-        return "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700";
-    }
-  };
-
-  const getStatusText = (status: string): string => {
-    switch (status) {
-      case "published":
-        return translate('pages.facilities.card.published');
-      case "draft":
-        return translate('pages.facilities.card.unpublished');
-      case "archived":
-        return translate('common:status.archived');
-      default:
-        return translate('common:status.unknown');
-    }
-  };
-
   const handleCardClick = (): void => {
     navigate(`/admin/facilities/${facility.id}/edit`);
   };
 
-  const handleEdit = (e: React.MouseEvent): void => {
-    e.stopPropagation();
-    navigate(`/admin/facilities/${facility.id}/edit`);
-  };
 
   const handleDelete = (e: React.MouseEvent): void => {
     e.stopPropagation();

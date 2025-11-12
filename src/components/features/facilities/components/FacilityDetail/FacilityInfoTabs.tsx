@@ -39,18 +39,18 @@ interface FacilityInfoTabsProps {
 export const FacilityInfoTabs: React.FC<FacilityInfoTabsProps> = ({
   description,
   capacity,
-  equipment,
+  equipment: _equipment,
   zones,
   amenities,
   area,
-  suitableFor,
+  suitableFor: _suitableFor,
   facilityId,
   facilityName,
   showBookingInterface = false,
   contactEmail,
   contactPhone
 }): JSX.Element => {
-  const { t, i18n } = useTranslation(['facility', 'common']);
+  const { t } = useTranslation(['facility', 'common']);
   const [expandedFAQ, setExpandedFAQ] = useState<string | null>(null);
   const { data: facilityAvailability } = useFacilityAvailability(facilityId);
 
@@ -120,7 +120,7 @@ export const FacilityInfoTabs: React.FC<FacilityInfoTabsProps> = ({
   const { getFieldConfigsForFacility } = useFieldConfigStore();
   const fieldConfigs = getFieldConfigsForFacility(facilityId);
   const visibleFields = getVisibleFields(fieldConfigs);
-  const { firstColumn, secondColumn } = splitFieldsIntoColumns(visibleFields);
+  const { firstColumn: _firstColumn, secondColumn: _secondColumn } = splitFieldsIntoColumns(visibleFields);
 
   return (
     <Tabs defaultValue="book" className="w-full">

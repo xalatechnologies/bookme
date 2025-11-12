@@ -216,7 +216,7 @@ const UserDashboard = (): JSX.Element => {
               <div className="flex items-center gap-3 mb-3">
                 <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
                   {t("user:dashboard.greeting", {
-                    dayOfWeek: t(`user:dashboard.days.${getDayOfWeek()}` as any),
+                    dayOfWeek: t(`user:dashboard.days.${getDayOfWeek()}` as string),
                     name: dashboard.user.name,
                   })}{" "}
                   👋

@@ -96,14 +96,14 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
     onDelete(message.id);
   }, [onDelete, message.id]);
 
-  const handleDownloadClick = useCallback((attachment: { readonly id: string; readonly name: string; readonly type: string; readonly size: number }) => {
+  const handleDownloadClick = useCallback((_attachment: { readonly id: string; readonly name: string; readonly type: string; readonly size: number }) => {
     // Create download link from attachment data
     // In a real implementation, this would fetch the actual file data
 
     // TODO: Implement actual download logic when backend is ready
     // const link = document.createElement("a");
-    // link.href = `data:${attachment.type};base64,${attachment.base64Data}`;
-    // link.download = attachment.name;
+    // link.href = `data:${_attachment.type};base64,${_attachment.base64Data}`;
+    // link.download = _attachment.name;
     // link.click();
   }, []);
 

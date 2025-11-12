@@ -17,7 +17,6 @@ interface FacilityDetailLayoutProps {
   readonly onShare: () => void;
   readonly isFavorited: boolean;
   readonly onToggleFavorite: () => void;
-  readonly showBookingInterface?: boolean;
 }
 
 export const FacilityDetailLayout = ({
