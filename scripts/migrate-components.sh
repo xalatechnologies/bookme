@@ -6,7 +6,7 @@
 
 set -e  # Exit on error
 
-BASE_DIR="/Users/ibrahimrahmani/Documents/xaheen/bookme/src/components"
+BASE_DIR="/Users/ibrahimrahmani/Documents/xaheen/booknor/src/components"
 cd "$BASE_DIR"
 
 echo "======================================================"

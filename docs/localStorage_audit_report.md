@@ -1,4 +1,4 @@
-# BookMe localStorage Audit Report
+# Booknor localStorage Audit Report
 
 ## Executive Summary
 
@@ -55,7 +55,7 @@ The application uses **two parallel approaches** for data persistence:
 
 | Key Name | Location | Purpose | Data Type |
 |----------|----------|---------|-----------|
-| `bookme-language` | `LanguageContext.tsx` | User language preference (NO/EN) | `string: "NO" \| "EN"` |
+| `booknor-language` | `LanguageContext.tsx` | User language preference (NO/EN) | `string: "NO" \| "EN"` |
 | `favorites-view-mode` | `UserFavorites.tsx` | View mode for favorites (grid/list) | `string` |
 | `lastBookingNumber` | `Checkout.tsx` | Sequential booking ID counter | `string: number` |
 
@@ -172,8 +172,8 @@ All located in `/src/stores/`:
 ### Context (1 file)
 
 **`/src/contexts/LanguageContext.tsx`**
-- Reads: `bookme-language` on mount
-- Writes: `bookme-language` on language change
+- Reads: `booknor-language` on mount
+- Writes: `booknor-language` on language change
 - Operations: READ, WRITE
 - Purpose: Persist user language preference
 
@@ -234,7 +234,7 @@ All located in `/src/stores/`:
 - All 10 Zustand stores have TypeScript interfaces
 - Full type safety through Zustand
 
-✅ **bookme-language**
+✅ **booknor-language**
 - Type: `Language` ("NO" | "EN")
 - Defined in: LanguageContext.tsx
 
@@ -324,7 +324,7 @@ All located in `/src/stores/`:
 - `cart-store`
 
 **User Preferences** (3 keys)
-- `bookme-language`
+- `booknor-language`
 - `favorites-view-mode`
 - `userSettings`
 
@@ -439,7 +439,7 @@ export interface LocalStorageKeys {
   deletionLogs: IDeletionLog[];
   
   // User Preferences
-  'bookme-language': 'NO' | 'EN';
+  'booknor-language': 'NO' | 'EN';
   'favorites-view-mode': 'grid' | 'list';
   userSettings: IUserSettings;
   lastBookingNumber: string;
@@ -452,7 +452,7 @@ export interface LocalStorageKeys {
 ### 2. Create Centralized localStorage Utility
 ```typescript
 // src/utils/localStorage.ts
-export class BookMeStorage {
+export class BooknorStorage {
   static get<K extends keyof LocalStorageKeys>(key: K): LocalStorageKeys[K] | null
   static set<K extends keyof LocalStorageKeys>(key: K, value: LocalStorageKeys[K]): void
   static remove<K extends keyof LocalStorageKeys>(key: K): void

@@ -1,6 +1,6 @@
 # i18n Quick Reference Guide
 
-**For BookMe Developers** - Quick guide to using translations in the codebase
+**For Booknor Developers** - Quick guide to using translations in the codebase
 
 ---
 

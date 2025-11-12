@@ -1,4 +1,4 @@
-# Manglende Brukerfunksjoner - BookMe (localStorage-basert)
+# Manglende Brukerfunksjoner - Booknor (localStorage-basert)
 
 > **Merk:** Alle funksjoner implementeres med localStorage som datalagring. Ingen backend-krav.
 

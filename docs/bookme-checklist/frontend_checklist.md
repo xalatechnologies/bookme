@@ -1,4 +1,4 @@
-# bookme — Frontend-first sjekkliste (STRICT Standards Edition)
+# booknor — Frontend-first sjekkliste (STRICT Standards Edition)
 
 > Formål: Implementer hele UI/UX med **dummy data først** via adapter-lag, i tråd med prosjektets regler og standarder fra `/docs/standards/*` og krav i PRD/SRSD. Ingen businesslogikk i komponenter. Alt via veldefinerte adaptere, zod-validering og MSW. Etterpå byttes adaptere til Supabase/Stripe uten UI-endringer.
 

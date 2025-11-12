@@ -26,7 +26,6 @@ export const FacilityDetailLayout = ({
   onShare,
   isFavorited,
   onToggleFavorite,
-  showBookingInterface = false // eslint-disable-line @typescript-eslint/no-unused-vars
 }: FacilityDetailLayoutProps): JSX.Element => {
   return (
     <div className="container mx-auto px-4 md:px-6 max-w-7xl">

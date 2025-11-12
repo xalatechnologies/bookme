@@ -1,7 +1,7 @@
 # Contact Fields Implementation - Complete Guide
 
 ## Overview
-This document provides a complete guide to implementing separate contact fields for facilities in the BookMe application. The implementation separates contact information (email and phone) from the facility description field, storing them in dedicated database columns.
+This document provides a complete guide to implementing separate contact fields for facilities in the Booknor application. The implementation separates contact information (email and phone) from the facility description field, storing them in dedicated database columns.
 
 ## Implementation Status
 ✅ **Completed Components:**
@@ -59,7 +59,7 @@ AND column_name IN ('contact_email', 'contact_phone');
 Run the verification script to ensure everything works:
 
 ```bash
-cd /Users/aminismail/Documents/GitHub/bookme-1
+cd /Users/aminismail/Documents/GitHub/booknor-1
 node scripts/verify-contact-fields.js
 ```
 

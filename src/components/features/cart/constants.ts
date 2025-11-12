@@ -107,5 +107,5 @@ export const CART_PERFORMANCE = {
   DEBOUNCE: {
     QUANTITY_UPDATE: 500,
   },
-  LOCAL_STORAGE_KEY: 'bookme_cart',
+  LOCAL_STORAGE_KEY: 'booknor_cart',
 } as const;

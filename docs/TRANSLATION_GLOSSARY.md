@@ -1,4 +1,4 @@
-# BookMe Translation Glossary
+# Booknor Translation Glossary
 
 *Generated automatically by translation analysis tool*
 
@@ -181,7 +181,7 @@
 | `aria.cart` | ✅ | Shopping cart | ✅ | Handlekurv | components/layouts/PublicLayout/GlobalHeader.tsx |
 | `aria.close_modal` | ✅ | Close modal | ✅ | Lukk modal | components/common/modals/BaseModal.tsx |
 | `aria.go_to_home` | ✅ | Go to home | ✅ | Gå til forsiden | components/layouts/PublicLayout/Logo.tsx |
-| `aria.logo` | ✅ | BookMe logo | ✅ | BookMe logo | components/layouts/PublicLayout/Logo.tsx |
+| `aria.logo` | ✅ | Booknor logo | ✅ | Booknor logo | components/layouts/PublicLayout/Logo.tsx |
 | `aria.mobile_menu` | ✅ | Mobile menu | ✅ | Mobil meny | components/layouts/PublicLayout/GlobalHeader.tsx |
 | `aria.open_notifications` | ✅ | Open notifications | ✅ | Åpne notifikasjoner | components/layouts/AdminLayout/NotificationBell.tsx, components/layouts/UserLayout/UserNotificationBell.tsx |
 | `aria.search_input` | ✅ | Search field | ✅ | Søkefelt | components/features/search/components/UserSearchField.tsx, components/features/search/components/GlobalSearch.tsx +1 more |

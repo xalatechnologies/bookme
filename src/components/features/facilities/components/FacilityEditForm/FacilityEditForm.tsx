@@ -153,7 +153,17 @@ export const FacilityEditForm: React.FC<IFacilityEditFormProps> = ({
     setImages(facility.images ? (facility.images as string[]) : []);
     // Note: We're using location instead of coordinates since that's what the database has
     if (facility.location) {
-      setCoordinates(facility.location as any);
+      // Extract coordinates from location (can be string, object, or PostGIS format)
+      const location = facility.location;
+      if (typeof location === 'object' && location !== null && 'lat' in location && 'lng' in location) {
+        setCoordinates(location as { lat: number; lng: number });
+      } else if (typeof location === 'string' && location.startsWith('POINT(')) {
+        // Parse POINT(lng lat) format
+        const coords = location.slice(6, -1).split(' ');
+        if (coords.length === 2) {
+          setCoordinates({ lng: parseFloat(coords[0]), lat: parseFloat(coords[1]) });
+        }
+      }
     }
   }, [facility, setImages, setCoordinates]);
 

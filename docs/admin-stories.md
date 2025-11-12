@@ -1,6 +1,6 @@
-# bookme-admin-stories.md
+# booknor-admin-stories.md
 
-# BookMe – Brukerhistorier for administratorer (kommune/utleier)
+# Booknor – Brukerhistorier for administratorer (kommune/utleier)
 
 ## Roller
 - Superadmin (plattformeier)

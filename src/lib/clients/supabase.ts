@@ -87,7 +87,7 @@ export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
   global: {
     headers: {
       // Add custom headers if needed
-      'x-application-name': 'bookme-frontend',
+      'x-application-name': 'booknor-frontend',
     },
   },
 

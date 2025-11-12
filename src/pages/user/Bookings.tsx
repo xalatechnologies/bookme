@@ -192,9 +192,9 @@ const Bookings = (): JSX.Element => {
 
     const icsContent = `BEGIN:VCALENDAR
 VERSION:2.0
-PRODID:-//BookMe//Booking//EN
+PRODID:-//Booknor//Booking//EN
 BEGIN:VEVENT
-UID:${booking.id}@bookme.no
+UID:${booking.id}@booknor.no
 DTSTAMP:${new Date().toISOString().replace(/[-:]/g, '').split('.')[0]}Z
 DTSTART:${startDate.toISOString().replace(/[-:]/g, '').split('.')[0]}Z
 DTEND:${endDate.toISOString().replace(/[-:]/g, '').split('.')[0]}Z

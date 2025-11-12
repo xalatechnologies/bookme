@@ -358,7 +358,7 @@ CREATE TABLE role_permissions (
 ## File Locations
 
 ```
-/Users/ibrahimrahmani/Documents/xaheen/bookme/
+/Users/ibrahimrahmani/Documents/xaheen/booknor/
 ├── src/
 │   ├── constants/
 │   │   ├── roles.ts              # 327 lines - Role constants
@@ -392,4 +392,4 @@ For questions or issues, refer to:
 
 ## License
 
-Part of the BookMe application - internal use only.
+Part of the Booknor application - internal use only.

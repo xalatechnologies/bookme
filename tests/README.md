@@ -1,4 +1,4 @@
-# BookMe Testing Suite
+# Booknor Testing Suite
 
 ## Quick Start
 

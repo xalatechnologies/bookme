@@ -60,7 +60,7 @@ ${
 ${receipt.refundReason ? `Refunderingsinfo: ${receipt.refundReason}` : ""}
 
 ---
-BookMe - Drammen kommune
+Booknor - Drammen kommune
   `.trim();
 };
 
@@ -87,7 +87,7 @@ Fakturanummer: ${receipt.invoiceNumber}
 Booking-ID: ${receipt.bookingId}
 
 Med vennlig hilsen
-BookMe - Drammen kommune
+Booknor - Drammen kommune
   `.trim();
 };
 

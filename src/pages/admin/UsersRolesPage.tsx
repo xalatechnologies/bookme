@@ -876,7 +876,7 @@ const UsersRolesPage = (): JSX.Element => {
     {
       id: "1",
       name: "Amin Ismail",
-      email: "amin@bookme.com",
+      email: "amin@booknor.com",
       role: "admin",
       status: "active",
       lastLogin: "2024-01-15T10:30:00Z",

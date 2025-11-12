@@ -113,7 +113,7 @@ const UserProfileDropdown = (_props: IUserProfileDropdownProps): JSX.Element => 
             {user?.name || t('common:labels.user')}
           </p>
           <p className="text-xs text-gray-500 dark:text-gray-400">
-            {user?.email || "user@bookme.no"}
+            {user?.email || "user@booknor.no"}
           </p>
         </div>
         

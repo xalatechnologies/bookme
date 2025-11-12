@@ -2,7 +2,7 @@
 
 ## ✅ What's Ready
 
-Your BookMe frontend is now configured with:
+Your Booknor frontend is now configured with:
 
 1. **Supabase Client** - Connected to local Supabase backend
 2. **Authentication** - Magic link auth with user profiles
@@ -15,7 +15,7 @@ Your BookMe frontend is now configured with:
 ### 1. Start Supabase Backend
 
 ```bash
-cd "/Volumes/Development/Xala Products/bookme"
+cd "/Volumes/Development/Xala Products/booknor"
 supabase start
 ```
 
@@ -27,7 +27,7 @@ supabase start
 ### 2. Start Frontend
 
 ```bash
-cd ~/Documents/xaheen/bookme
+cd ~/Documents/xaheen/booknor
 npm run dev
 ```
 

@@ -1,6 +1,6 @@
 {
-  "name": "BookMe - Lokalebookingssystem",
-  "short_name": "BookMe",
+  "name": "Booknor - Lokalebookingssystem",
+  "short_name": "Booknor",
   "description": "Book og administrer lokaler enkelt med avanserte funksjoner",
   "start_url": "/",
   "display": "standalone",

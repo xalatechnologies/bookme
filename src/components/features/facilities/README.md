@@ -1,6 +1,6 @@
 # Facilities Feature Domain
 
-Complete feature domain for facility management in the BookMe application.
+Complete feature domain for facility management in the Booknor application.
 
 ## Overview
 

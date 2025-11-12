@@ -22,7 +22,7 @@ import { useLocalizedDbValues } from './useLocalizedDbValues';
  * Matches the database normalize_amenity function behavior
  */
 const normalizeAmenityKey = (amenity: string): string => {
-  let normalized = amenity
+  const normalized = amenity
     .toLowerCase()
     .replace(/\//g, '-') // Replace slashes with dashes
     .replace(/\s+/g, '-') // Replace spaces with dashes

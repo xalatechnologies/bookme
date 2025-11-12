@@ -1,6 +1,6 @@
 # Accessibility Documentation
 
-This document outlines the accessibility features and best practices implemented in the BookMe Portal application.
+This document outlines the accessibility features and best practices implemented in the Booknor Portal application.
 
 ## WCAG Compliance
 

@@ -38,6 +38,7 @@ interface IFacilityListItemUserProps {
   readonly coordinates?: { lat: number; lng: number };
   readonly lat?: number | null;
   readonly lng?: number | null;
+  readonly slug?: string;
 }
 
 const FacilityListItemUser = (props: IFacilityListItemUserProps): JSX.Element => {
@@ -72,7 +73,7 @@ const FacilityListItemUser = (props: IFacilityListItemUserProps): JSX.Element =>
     incrementUsage(id);
     updateLastVisited(id);
     // Use slug if available, fallback to id
-    const facilityPath = (props as any).slug || id;
+    const facilityPath = props.slug || id;
     navigate(`/facilities/${facilityPath}`);
   };
 
@@ -81,7 +82,7 @@ const FacilityListItemUser = (props: IFacilityListItemUserProps): JSX.Element =>
     incrementUsage(id);
     updateLastVisited(id);
     // Use slug if available, fallback to id
-    const facilityPath = (props as any).slug || id;
+    const facilityPath = props.slug || id;
     navigate(`/facilities/${facilityPath}/book`);
   };
 
@@ -97,7 +98,7 @@ const FacilityListItemUser = (props: IFacilityListItemUserProps): JSX.Element =>
   const handleShare = (e: React.MouseEvent): void => {
     e.stopPropagation();
     // Use slug if available, fallback to id
-    const facilityPath = (props as any).slug || id;
+    const facilityPath = props.slug || id;
     if (navigator.share) {
       navigator.share({
         title: name,

@@ -155,7 +155,7 @@ const INITIAL_TEMPLATES: readonly INotificationTemplate[] = [
     enabled: true,
     lastSent: "2024-01-20T14:30:00Z",
     subject: "Booking bekreftet - {facilityName}",
-    content: "Hei {contactPerson}!\n\nDin booking for {facilityName} er bekreftet:\n\n📅 Dato: {date}\n🕐 Tid: {time}\n📍 Sted: {facilityName}\n\nBooking-ID: {bookingId}\n\nVi gleder oss til å se deg!\n\nMed vennlig hilsen\nBookMe Team",
+    content: "Hei {contactPerson}!\n\nDin booking for {facilityName} er bekreftet:\n\n📅 Dato: {date}\n🕐 Tid: {time}\n📍 Sted: {facilityName}\n\nBooking-ID: {bookingId}\n\nVi gleder oss til å se deg!\n\nMed vennlig hilsen\nBooknor Team",
     smsContent: "Booking bekreftet! {facilityName} {date} kl. {time}. ID: {bookingId}"
   },
   {
@@ -167,7 +167,7 @@ const INITIAL_TEMPLATES: readonly INotificationTemplate[] = [
     enabled: true,
     lastSent: "2024-01-19T18:00:00Z",
     subject: "Påminnelse: Booking i morgen",
-    content: "Hei {contactPerson}!\n\nDette er en påminnelse om at du har en booking i morgen:\n\n📅 Dato: {date}\n🕐 Tid: {time}\n📍 Sted: {facilityName}\n\nBooking-ID: {bookingId}\n\nVi gleder oss til å se deg!\n\nMed vennlig hilsen\nBookMe Team",
+    content: "Hei {contactPerson}!\n\nDette er en påminnelse om at du har en booking i morgen:\n\n📅 Dato: {date}\n🕐 Tid: {time}\n📍 Sted: {facilityName}\n\nBooking-ID: {bookingId}\n\nVi gleder oss til å se deg!\n\nMed vennlig hilsen\nBooknor Team",
     smsContent: "Påminnelse: {facilityName} {date} kl. {time}. ID: {bookingId}"
   },
   {
@@ -179,7 +179,7 @@ const INITIAL_TEMPLATES: readonly INotificationTemplate[] = [
     enabled: true,
     lastSent: "2024-01-18T10:15:00Z",
     subject: "Booking avlyst - {facilityName}",
-    content: "Hei {contactPerson}!\n\nDin booking for {facilityName} er dessverre avlyst:\n\n📅 Dato: {date}\n🕐 Tid: {time}\n📍 Sted: {facilityName}\n\nBooking-ID: {bookingId}\n\nVi beklager uleiligheten. Vennligst kontakt oss hvis du har spørsmål.\n\nMed vennlig hilsen\nBookMe Team",
+    content: "Hei {contactPerson}!\n\nDin booking for {facilityName} er dessverre avlyst:\n\n📅 Dato: {date}\n🕐 Tid: {time}\n📍 Sted: {facilityName}\n\nBooking-ID: {bookingId}\n\nVi beklager uleiligheten. Vennligst kontakt oss hvis du har spørsmål.\n\nMed vennlig hilsen\nBooknor Team",
     smsContent: "Booking avlyst: {facilityName} {date} kl. {time}. ID: {bookingId}"
   }
 ];

@@ -34,7 +34,7 @@ export const UserProfileProvider = ({ children }: { readonly children: React.Rea
   const profile: IUserProfile = {
     firstName: authProfile?.display_name?.split(' ')[0] || user?.email?.split('@')[0] || "Bruker",
     lastName: authProfile?.display_name?.split(' ').slice(1).join(' ') || "",
-    email: user?.email || "user@bookme.no",
+    email: user?.email || "user@booknor.no",
     phone: authProfile?.phone || "",
     address: "",
     dateOfBirth: "",

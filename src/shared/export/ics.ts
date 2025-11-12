@@ -5,9 +5,9 @@ export function bookingToICS(e: IBookingEvent): string {
   return [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
-    "PRODID:-//BookMe//NO",
+    "PRODID:-//Booknor//NO",
     "BEGIN:VEVENT",
-    `UID:${e.id}@bookme`,
+    `UID:${e.id}@booknor`,
     `DTSTAMP:${dt(new Date().toISOString())}`,
     `DTSTART:${dt(e.start)}`,
     `DTEND:${dt(e.end)}`,

@@ -5,13 +5,8 @@ import { useTranslation } from "react-i18next";
 import {
   ChevronLeft,
   ChevronRight,
-  CheckCircle,
-  Clock,
   Calendar as CalendarIcon,
-  FileText,
-  Shield,
   Users,
-  X,
 } from "lucide-react";
 import {
   startOfWeek,
@@ -57,7 +52,6 @@ import type {
   IZone,
   BookingType,
   IBookingFormData,
-  ActivityType,
 } from "../../types";
 
 export interface IStepByStepBookingProps {
@@ -102,7 +96,7 @@ export interface IStepByStepBookingProps {
 
 export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
   facilityId,
-  facilityName,
+  facilityName: _facilityName,
   zones,
   selectedZoneId,
   onZoneChange,
@@ -114,11 +108,11 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
   error,
   openingHoursStart = "08:00",
   openingHoursEnd = "22:00",
-  calendarWeek,
+  calendarWeek: _calendarWeek,
   onSlotClick,
   onBulkSlotSelection,
   getAvailabilityStatus,
-  isSlotSelected,
+  isSlotSelected: _isSlotSelected,
 }) => {
   const { t, i18n } = useTranslation(["booking", "common"]);
   const currentLocale = i18n.language === "en" ? enUS : nb;

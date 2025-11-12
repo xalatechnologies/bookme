@@ -267,7 +267,7 @@ export function exportMigrationData(): void {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `bookme-migration-backup-${Date.now()}.json`;
+  a.download = `booknor-migration-backup-${Date.now()}.json`;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);

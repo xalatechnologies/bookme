@@ -2,7 +2,7 @@
 
 ## Summary
 
-A comprehensive testing infrastructure has been successfully set up for the BookMe application, including unit tests, integration tests, and end-to-end tests with proper mocking and utilities.
+A comprehensive testing infrastructure has been successfully set up for the Booknor application, including unit tests, integration tests, and end-to-end tests with proper mocking and utilities.
 
 ## What Was Created
 

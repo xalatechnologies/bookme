@@ -12,7 +12,7 @@ Failed to load resource: the server responded with a status of 400 ()
 3. **Missing Validation**: There was insufficient validation of required fields before sending data to the server.
 
 ## Solution
-The fix involved updating the [FacilityEditPage.tsx](file:///Users/aminismail/Documents/GitHub/bookme-1/src/pages/admin/FacilityEditPage.tsx) file to properly handle these issues:
+The fix involved updating the [FacilityEditPage.tsx](file:///Users/aminismail/Documents/GitHub/booknor-1/src/pages/admin/FacilityEditPage.tsx) file to properly handle these issues:
 
 ### 1. PostGIS Location Field Handling
 ```typescript

@@ -49,7 +49,7 @@ const TEST_USERS = [
     displayName: "Owner User",
   },
   {
-    email: "superadmin@bookme.no",
+    email: "superadmin@booknor.no",
     password: "Test123!",
     displayName: "Super Admin",
   },

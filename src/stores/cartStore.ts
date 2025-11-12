@@ -8,7 +8,7 @@ import { ICartItem, ICartState } from "@/types/cart";
  * Custom replacer function for JSON serialization
  * Converts Date objects to ISO strings with a special marker
  */
-const replacer = (key: string, value: any): any => {
+const replacer = (_key: string, value: unknown): unknown => {
   if (value instanceof Date) {
     return { __type: 'Date', value: value.toISOString() };
   }
@@ -19,8 +19,8 @@ const replacer = (key: string, value: any): any => {
  * Custom reviver function for JSON deserialization
  * Converts ISO strings back to Date objects
  */
-const reviver = (key: string, value: any): any => {
-  if (value && typeof value === 'object' && value.__type === 'Date') {
+const reviver = (_key: string, value: unknown): unknown => {
+  if (value && typeof value === 'object' && value !== null && '__type' in value && value.__type === 'Date' && 'value' in value && typeof value.value === 'string') {
     return new Date(value.value);
   }
   return value;

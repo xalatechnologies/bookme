@@ -2,7 +2,7 @@
 
 ## Overview
 
-This guide provides comprehensive **unit and integration testing** strategies for the BookMe application using Vitest and React Testing Library.
+This guide provides comprehensive **unit and integration testing** strategies for the Booknor application using Vitest and React Testing Library.
 
 ---
 

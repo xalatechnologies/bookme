@@ -1,13 +1,13 @@
-# BookMe - Quick Start Guide for Developers
+# Booknor - Quick Start Guide for Developers
 
-**Welcome to the refactored BookMe codebase!** 🎉  
+**Welcome to the refactored Booknor codebase!** 🎉  
 This guide will help you quickly understand the new architecture and start contributing.
 
 ---
 
 ## 🏗️ **New Architecture Overview**
 
-BookMe now uses a **feature-based architecture** where code is organized by business domain rather than technical type.
+Booknor now uses a **feature-based architecture** where code is organized by business domain rather than technical type.
 
 ### **Key Principles**
 
@@ -508,7 +508,7 @@ npx tsc --noEmit
 
 ## 🚀 **You're Ready!**
 
-You now understand the BookMe architecture and can start contributing! Remember:
+You now understand the Booknor architecture and can start contributing! Remember:
 
 - **Look for patterns** in existing features
 - **Follow the structure** established

@@ -39,7 +39,7 @@ export const FacilityListItem: React.FC<FacilityListItemProps> = ({
     e.stopPropagation();
     try {
       // Use slug for SEO-friendly URLs, fallback to id
-      const facilityPath = (facility as any).slug || facility.id;
+      const facilityPath = facility.slug || facility.id;
       if (navigator.share) {
         await navigator.share({
           title: facility.name,
@@ -53,7 +53,7 @@ export const FacilityListItem: React.FC<FacilityListItemProps> = ({
     } catch (error) {
       // Handle share cancellation or other errors silently; fallback to clipboard
       if (error instanceof Error && error.name !== "AbortError") {
-        const facilityPath = (facility as any).slug || facility.id;
+        const facilityPath = facility.slug || facility.id;
         await navigator.clipboard
           .writeText(`${window.location.origin}/facilities/${facilityPath}`)
           .catch(() => undefined);
@@ -70,7 +70,7 @@ export const FacilityListItem: React.FC<FacilityListItemProps> = ({
     <Card
       className="group overflow-hidden hover:shadow-xl transition-all duration-500 hover:translate-y-[-2px] border border-slate-200/60 shadow-md bg-white cursor-pointer mb-3 focus:outline-none focus:ring-4 focus:ring-blue-500 focus:ring-opacity-50"
       onClick={() => {
-        const facilityPath = (facility as any).slug || facility.id;
+        const facilityPath = facility.slug || facility.id;
         navigate(`/facilities/${facilityPath}`);
       }}
       role="button"
@@ -79,7 +79,7 @@ export const FacilityListItem: React.FC<FacilityListItemProps> = ({
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
-          const facilityPath = (facility as any).slug || facility.id;
+          const facilityPath = facility.slug || facility.id;
           navigate(`/facilities/${facilityPath}`);
         }
       }}

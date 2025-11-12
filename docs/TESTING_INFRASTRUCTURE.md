@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document describes the comprehensive testing infrastructure for the BookMe application. The testing stack includes unit tests, integration tests, and end-to-end tests with proper mocking and test utilities.
+This document describes the comprehensive testing infrastructure for the Booknor application. The testing stack includes unit tests, integration tests, and end-to-end tests with proper mocking and test utilities.
 
 ## Testing Stack
 

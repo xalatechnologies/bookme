@@ -1,4 +1,4 @@
-# BookMe - Architecture Audit & Refactoring Plan
+# Booknor - Architecture Audit & Refactoring Plan
 
 **Generated**: 2025-10-28  
 **Analysis Tools**: `analyze-codebase.js` + `analyze-architecture.js`  

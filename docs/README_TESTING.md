@@ -1,8 +1,8 @@
-# 🧪 BookMe Testing Infrastructure
+# 🧪 Booknor Testing Infrastructure
 
 ## 🎉 Welcome to Your Complete Testing Suite!
 
-This directory contains a **production-ready testing infrastructure** with **171+ comprehensive tests** covering E2E, unit, and integration testing for the BookMe application.
+This directory contains a **production-ready testing infrastructure** with **171+ comprehensive tests** covering E2E, unit, and integration testing for the Booknor application.
 
 ## 📚 Documentation Quick Links
 

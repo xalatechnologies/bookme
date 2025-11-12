@@ -9,7 +9,7 @@ test.describe('Bookings - Manage Bookings', () => {
   });
 
   test('should display user bookings list', async ({ page }) => {
-    await expect(page).toHaveTitle(/Bookings|My Bookings|BookMe/);
+    await expect(page).toHaveTitle(/Bookings|My Bookings|Booknor/);
 
     // Should have bookings header
     await expect(

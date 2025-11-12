@@ -24,7 +24,7 @@ export const extractContactInfo = (
 ): ContactInfo => {
   // Default contact information
   const defaultContact: ContactInfo = {
-    email: 'kontakt@bookme.no',
+    email: 'kontakt@booknor.no',
     phone: '+47 123 45 678'
   };
 

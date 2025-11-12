@@ -182,7 +182,7 @@ const transformFacilityToUserFormat = (
     address: facility.address || '',
     capacity: facility.capacity || 0,
     amenities: (facility.amenities as string[]) || [],
-    image: (facility.images as any)?.[0] || '/placeholder.svg',
+    image: (Array.isArray(facility.images) && facility.images.length > 0 && typeof facility.images[0] === 'string' ? facility.images[0] : null) || '/placeholder.svg',
     rating: facility.rating || 0,
     price: `0 kr/time`,
     description: facility.description || '',

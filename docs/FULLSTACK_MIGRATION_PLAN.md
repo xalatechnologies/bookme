@@ -1,4 +1,4 @@
-# BookMe Full-Stack Migration Plan
+# Booknor Full-Stack Migration Plan
 
 **Current State:** Frontend-only application using localStorage
 **Target State:** Full-stack application with Supabase backend
@@ -26,7 +26,7 @@
 ## Executive Summary
 
 ### Scope
-Migrate BookMe from a frontend-only application to a full-stack application with:
+Migrate Booknor from a frontend-only application to a full-stack application with:
 - **Backend:** Supabase (PostgreSQL + Auth + Real-time + Storage)
 - **State Management:** React Query + Custom Hooks (replacing Zustand)
 - **Architecture:** Service Layer Pattern with proper separation of concerns

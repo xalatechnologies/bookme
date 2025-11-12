@@ -1,4 +1,4 @@
-# 🚀 Get Started with BookMe Testing
+# 🚀 Get Started with Booknor Testing
 
 ## Quick Installation Guide
 

@@ -2,7 +2,7 @@
  * Simple Button Component Test
  *
  * A working example test to demonstrate the correct testing pattern
- * for the BookMe platform without jest-axe complications.
+ * for the Booknor platform without jest-axe complications.
  */
 
 import { describe, it, expect, vi } from 'vitest';

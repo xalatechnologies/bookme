@@ -1,8 +1,8 @@
-# BookMe - Development Setup Guide
+# Booknor - Development Setup Guide
 
 ## Architecture Overview
 
-BookMe is a **Supabase-powered React application** with:
+Booknor is a **Supabase-powered React application** with:
 - **Frontend**: React + TypeScript + Vite + TailwindCSS
 - **Backend**: Supabase (PostgreSQL, Auth, Storage, Realtime)
 - **No separate backend server required** - All backend logic in Supabase
@@ -174,7 +174,7 @@ All users have password: `Test123!`
 | staff@drammen.kommune.no | Staff | Drammen Kommune | Manage facilities & bookings |
 | admin@drammen.kommune.no | Admin | Drammen Kommune | Organization settings |
 | owner@drammen.kommune.no | Owner | Drammen Kommune | Full organization control |
-| superadmin@bookme.no | Platform Admin | (None) | Platform-wide access |
+| superadmin@booknor.no | Platform Admin | (None) | Platform-wide access |
 
 ---
 
@@ -394,7 +394,7 @@ npx supabase gen types typescript --local > src/types/database.ts
 ## Project Structure
 
 ```
-bookme/
+booknor/
 ├── src/
 │   ├── components/        # React components
 │   ├── contexts/          # React contexts (Auth, etc.)

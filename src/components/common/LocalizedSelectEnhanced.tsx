@@ -86,9 +86,9 @@ export const LocalizedSelectEnhanced: React.FC<LocalizedSelectProps> = ({
   searchable = false,
 }): JSX.Element => {
   const { t } = useTranslation('common');
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm] = useState('');
 
-  const { options, loading, error, search, isSearching } =
+  const { options, loading, error } =
     useLocalizedDbValueEnhanced(entityType, {
       searchEnabled: searchable,
     });

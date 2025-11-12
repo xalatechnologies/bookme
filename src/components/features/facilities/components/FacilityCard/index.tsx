@@ -51,14 +51,14 @@ export const FacilityCard = ({
 
   const handleCardClick = (): void => {
     // Use slug for SEO-friendly URLs, fallback to id for backward compatibility
-    const facilityPath = (facility as any).slug || facility.id;
+    const facilityPath = facility.slug || facility.id;
     navigate(`/facilities/${facilityPath}`);
   };
 
   const handleShare = async (e: React.MouseEvent): Promise<void> => {
     e.stopPropagation();
     try {
-      const facilityPath = (facility as any).slug || facility.id;
+      const facilityPath = facility.slug || facility.id;
       const shareUrl = generateShareUrl(`/facilities/${facilityPath}`);
 
       if (navigator.share) {
@@ -72,7 +72,7 @@ export const FacilityCard = ({
     } catch (error) {
       if (error instanceof Error && error.name !== "AbortError") {
         try {
-          const facilityPath = (facility as any).slug || facility.id;
+          const facilityPath = facility.slug || facility.id;
           const shareUrl = generateShareUrl(`/facilities/${facilityPath}`);
           await copyToClipboard(shareUrl);
         } catch (clipboardError) {
@@ -241,7 +241,7 @@ export const FacilityCard = ({
                 >
                   {getFieldIcon(field.key)}
                   <span className="text-sm sm:text-base font-medium">
-                    {t(field.label as any)}: {value || booleanValue}
+                    {t(field.label)}: {value || booleanValue}
                     {unit && ` ${unit}`}
                   </span>
                 </div>

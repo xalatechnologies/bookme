@@ -1,4 +1,4 @@
-const CACHE_NAME = 'bookme-v1';
+const CACHE_NAME = 'booknor-v1';
 const urlsToCache = [
   '/',
   '/static/css/main.css',
@@ -105,7 +105,7 @@ self.addEventListener('push', (event) => {
   };
 
   event.waitUntil(
-    self.registration.showNotification('BookMe', options)
+    self.registration.showNotification('Booknor', options)
   );
 });
 

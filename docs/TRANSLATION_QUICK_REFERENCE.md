@@ -1,6 +1,6 @@
 # Translation Quick Reference Guide
 
-A developer-friendly guide for working with translations in BookMe.
+A developer-friendly guide for working with translations in Booknor.
 
 ---
 

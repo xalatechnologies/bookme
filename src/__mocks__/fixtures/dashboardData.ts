@@ -1,16 +1,9 @@
 "use client";
 
 import { 
-  Building2, 
   Calendar, 
-  CheckCircle, 
-  Users, 
-  TrendingUp, 
-  TrendingDown, 
-  Minus,
   Home,
   User,
-  Clock,
   AlertTriangle
 } from "lucide-react";
 import { 
@@ -193,7 +186,7 @@ export const systemAlerts: readonly ISystemAlert[] = [
     id: "1",
     type: "info",
     title: "Systemoppdatering tilgjengelig",
-    message: "En ny versjon av BookMe er tilgjengelig for installasjon.",
+    message: "En ny versjon av Booknor er tilgjengelig for installasjon.",
     timestamp: "2 timer siden",
     action: "Installer nå"
   },

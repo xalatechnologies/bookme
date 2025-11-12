@@ -145,7 +145,7 @@ export const ProtectedRoute = ({
 }: ProtectedRouteProps): JSX.Element => {
   const location = useLocation();
   const { user, loading: authLoading } = useAuth();
-  const { role, loading: roleLoading, hasMinimumRole } = useRole(orgId);
+  const { loading: roleLoading, hasMinimumRole } = useRole(orgId);
 
   // Show loading state while checking authentication
   if (authLoading) {

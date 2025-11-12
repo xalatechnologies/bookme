@@ -21,6 +21,7 @@ import {
   type IFacilitySortConfig,
 } from '@/services/business/facility.business.service';
 import type { Database } from '@/types/database';
+import type { TView, TSortBy, TSortOrder } from '@/stores/facilityUIStore';
 
 type Facility = Database['public']['Tables']['facilities']['Row'];
 
@@ -48,13 +49,13 @@ export interface IUseFacilityManagementReturn {
   readonly selectedFacilityIds: readonly string[];
 
   // UI Actions
-  readonly setView: (view: any) => void;
+  readonly setView: (view: TView) => void;
   readonly toggleFilters: () => void;
   readonly setSearchTerm: (term: string) => void;
   readonly toggleStatusFilter: (status: string) => void;
   readonly toggleTypeFilter: (type: string) => void;
   readonly setCapacityRange: (range: { min: number; max: number }) => void;
-  readonly toggleSort: (sortBy: any) => void;
+  readonly toggleSort: (sortBy: TSortBy) => void;
   readonly toggleFacilitySelection: (id: string) => void;
   readonly selectAllFacilities: () => void;
   readonly clearSelection: () => void;
@@ -119,8 +120,8 @@ export const useFacilityManagement = (): IUseFacilityManagementReturn => {
     const filtered = filterFacilities(safeFacilities, filters);
 
     const sortConfig: IFacilitySortConfig = {
-      sortBy: sortBy as any,
-      sortOrder: sortOrder as any,
+      sortBy: sortBy as TSortBy,
+      sortOrder: sortOrder as TSortOrder,
     };
 
     return sortFacilities(filtered, sortConfig);
@@ -134,7 +135,7 @@ export const useFacilityManagement = (): IUseFacilityManagementReturn => {
   // Business operations
   const deleteFacility = useCallback(
     async (id: string): Promise<void> => {
-      const facility = safeFacilities.find((f: any) => f.id === id);
+      const facility = safeFacilities.find((f) => f.id === id);
       if (!facility) {
         throw new Error('Facility not found');
       }
@@ -151,7 +152,7 @@ export const useFacilityManagement = (): IUseFacilityManagementReturn => {
 
   const batchDeleteFacilities = useCallback(
     async (ids: readonly string[]): Promise<void> => {
-      const facilitiesToDelete = safeFacilities.filter((f: any) => ids.includes(f.id));
+      const facilitiesToDelete = safeFacilities.filter((f) => ids.includes(f.id));
 
       const validation = canBatchDeleteFacilities(facilitiesToDelete);
       if (!validation.canDelete) {
@@ -168,7 +169,7 @@ export const useFacilityManagement = (): IUseFacilityManagementReturn => {
     async (id: string, status: string): Promise<void> => {
       await updateFacilityMutation.mutateAsync({ 
         id, 
-        updates: { status } as any
+        updates: { status }
       });
     },
     [updateFacilityMutation]
@@ -180,7 +181,7 @@ export const useFacilityManagement = (): IUseFacilityManagementReturn => {
         ids.map((id) =>
           updateFacilityMutation.mutateAsync({
             id,
-            updates: { status } as any,
+            updates: { status },
           })
         )
       );
@@ -190,7 +191,7 @@ export const useFacilityManagement = (): IUseFacilityManagementReturn => {
   );
 
   const selectAllFacilities = useCallback(() => {
-    selectAll(filteredFacilities.map((f: any) => f.id));
+    selectAll(filteredFacilities.map((f) => f.id));
   }, [filteredFacilities, selectAll]);
 
   return {

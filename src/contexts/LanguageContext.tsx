@@ -35,7 +35,7 @@ export const LanguageProvider = ({ children }: LanguageProviderProps): JSX.Eleme
     await changeI18nLanguage(i18nLang as 'no' | 'en');
 
     // Store in localStorage (keeping existing key for compatibility)
-    localStorage.setItem('bookme-language', newLanguage);
+    localStorage.setItem('booknor-language', newLanguage);
   }, []);
 
   const toggleLanguage = useCallback((): void => {
@@ -60,7 +60,7 @@ export const LanguageProvider = ({ children }: LanguageProviderProps): JSX.Eleme
 
   // Load language from localStorage on mount
   useEffect(() => {
-    const savedLanguage = localStorage.getItem('bookme-language') as Language;
+    const savedLanguage = localStorage.getItem('booknor-language') as Language;
     if (savedLanguage && (savedLanguage === 'NO' || savedLanguage === 'EN')) {
       void setLanguage(savedLanguage);
     }

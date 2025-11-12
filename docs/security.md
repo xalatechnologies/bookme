@@ -1,6 +1,6 @@
 # Security Documentation
 
-This document outlines the security practices and measures implemented in the BookMe Portal application.
+This document outlines the security practices and measures implemented in the Booknor Portal application.
 
 ## Environment Security
 

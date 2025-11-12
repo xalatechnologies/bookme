@@ -1,8 +1,6 @@
 import { useState, useCallback } from 'react';
 import mapboxgl from 'mapbox-gl';
-import type { Database } from '@/types/database';
-
-type Facility = Database['public']['Tables']['facilities']['Row'];
+import type { FacilityWithCoords } from '@/types/facility';
 
 interface UseMapOverlayReturn {
   readonly map: mapboxgl.Map | null;
@@ -14,7 +12,7 @@ interface UseMapOverlayReturn {
   readonly handleMapLoad: (mapInstance: mapboxgl.Map) => void;
   readonly handleMapError: (errorMessage: string) => void;
   readonly handleRetry: () => void;
-  readonly handleMarkerClick: (facility: Facility, onMarkerClick?: (facility: Facility) => void) => void;
+  readonly handleMarkerClick: (facility: FacilityWithCoords, onMarkerClick?: (facility: FacilityWithCoords) => void) => void;
 }
 
 /**
@@ -87,8 +85,8 @@ export const useMapOverlay = (): UseMapOverlayReturn => {
    * @param onMarkerClick - Optional custom click handler
    */
   const handleMarkerClick = useCallback((
-    facility: Facility,
-    onMarkerClick?: (facility: Facility) => void
+    facility: FacilityWithCoords,
+    onMarkerClick?: (facility: FacilityWithCoords) => void
   ): void => {
     if (onMarkerClick) {
       onMarkerClick(facility);

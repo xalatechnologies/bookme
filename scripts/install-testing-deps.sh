@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "📦 Installing BookMe Testing Dependencies..."
+echo "📦 Installing Booknor Testing Dependencies..."
 echo ""
 
 echo "1️⃣ Installing NPM packages..."

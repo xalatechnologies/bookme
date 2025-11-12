@@ -6,7 +6,7 @@ const path = require('path');
 function extractContactInfo(description) {
   // Default contact information
   const defaultContact = {
-    email: 'kontakt@bookme.no',
+    email: 'kontakt@booknor.no',
     phone: '+47 123 45 678'
   };
 

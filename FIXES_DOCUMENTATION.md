@@ -1,4 +1,4 @@
-# BookMe Application Fixes Documentation - November 3, 2025
+# Booknor Application Fixes Documentation - November 3, 2025
 
 ## Issue 1: Facility Mini Map Error
 **Error Message:** "Cannot read properties of undefined (reading 'lng')"
@@ -822,7 +822,7 @@ The "Prisberegning" text was not translating to "Pricing Breakdown" when the lan
 - Included all other keys from the various "details" sections
 
 ### Additional Notes
-This fix resolves the translation issue by ensuring the translation key [booking:details.pricing_breakdown](file:///Users/aminismail/Documents/GitHub/bookme-1/src/components/features/bookings/components/StepByStepBooking/hooks/usePriceCalculation.ts#L121-L121) can be properly found in both English and Norwegian translation files. The "Prisberegning" text will now correctly translate to "Pricing Breakdown" when the language is switched to English.
+This fix resolves the translation issue by ensuring the translation key [booking:details.pricing_breakdown](file:///Users/aminismail/Documents/GitHub/booknor-1/src/components/features/bookings/components/StepByStepBooking/hooks/usePriceCalculation.ts#L121-L121) can be properly found in both English and Norwegian translation files. The "Prisberegning" text will now correctly translate to "Pricing Breakdown" when the language is switched to English.
 
 ## Issue 24: Fixed Translation for Booking Process Progress Indicator (November 3, 2025)
 **Problem:** "Steg 1 av 4" text in the booking process progress indicator was not being translated to English
@@ -1561,23 +1561,23 @@ These additions ensure that all translation keys used by the Step5Actions compon
 
 ### Fix for Recurrence Pattern Selector Translations
 
-I identified that the recurrence pattern selector was displaying a mix of Norwegian and English text because the [getPatternDescription](file:///Users/aminismail/Documents/GitHub/bookme-1/src/components/features/bookings/utils/recurrence.ts#L267-L291) function in the recurrence engine had hardcoded Norwegian text. I fixed this by:
+I identified that the recurrence pattern selector was displaying a mix of Norwegian and English text because the [getPatternDescription](file:///Users/aminismail/Documents/GitHub/booknor-1/src/components/features/bookings/utils/recurrence.ts#L267-L291) function in the recurrence engine had hardcoded Norwegian text. I fixed this by:
 
-1. Modifying the [getPatternDescription](file:///Users/aminismail/Documents/GitHub/bookme-1/src/components/features/bookings/utils/recurrence.ts#L267-L291) function to accept an optional translation function
+1. Modifying the [getPatternDescription](file:///Users/aminismail/Documents/GitHub/booknor-1/src/components/features/bookings/utils/recurrence.ts#L267-L291) function to accept an optional translation function
 2. Updating all places where this function is called to pass the translation function
 3. Adding missing translation keys to both English and Norwegian booking.json files
 #### Changes Made:
 
-1. **Modified recurrence engine** ([src/components/features/bookings/utils/recurrence.ts](file:///Users/aminismail/Documents/GitHub/bookme-1/src/components/features/bookings/utils/recurrence.ts)):
-   - Updated [getPatternDescription](file:///Users/aminismail/Documents/GitHub/bookme-1/src/components/features/bookings/utils/recurrence.ts#L267-L291) to accept an optional translation function
+1. **Modified recurrence engine** ([src/components/features/bookings/utils/recurrence.ts](file:///Users/aminismail/Documents/GitHub/booknor-1/src/components/features/bookings/utils/recurrence.ts)):
+   - Updated [getPatternDescription](file:///Users/aminismail/Documents/GitHub/booknor-1/src/components/features/bookings/utils/recurrence.ts#L267-L291) to accept an optional translation function
    - Added proper fallback handling for when no translation function is provided
 
-2. **Updated RecurrencePatternSelector** ([src/components/features/bookings/components/RecurringBookingModal/RecurrencePatternSelector.tsx](file:///Users/aminismail/Documents/GitHub/bookme-1/src/components/features/bookings/components/RecurringBookingModal/RecurrencePatternSelector.tsx)):
-   - Modified the call to [getPatternDescription](file:///Users/aminismail/Documents/GitHub/bookme-1/src/components/features/bookings/utils/recurrence.ts#L267-L291) to pass the translation function
+2. **Updated RecurrencePatternSelector** ([src/components/features/bookings/components/RecurringBookingModal/RecurrencePatternSelector.tsx](file:///Users/aminismail/Documents/GitHub/booknor-1/src/components/features/bookings/components/RecurringBookingModal/RecurrencePatternSelector.tsx)):
+   - Modified the call to [getPatternDescription](file:///Users/aminismail/Documents/GitHub/booknor-1/src/components/features/bookings/utils/recurrence.ts#L267-L291) to pass the translation function
 
-3. **Updated RecurringBookingCard** ([src/components/features/bookings/components/RecurringBookingModal/RecurringBookingCard.tsx](file:///Users/aminismail/Documents/GitHub/bookme-1/src/components/features/bookings/components/RecurringBookingModal/RecurringBookingCard.tsx)):
+3. **Updated RecurringBookingCard** ([src/components/features/bookings/components/RecurringBookingModal/RecurringBookingCard.tsx](file:///Users/aminismail/Documents/GitHub/booknor-1/src/components/features/bookings/components/RecurringBookingModal/RecurringBookingCard.tsx)):
    - Added import for useTranslation hook
-   - Modified the call to [getPatternDescription](file:///Users/aminismail/Documents/GitHub/bookme-1/src/components/features/bookings/utils/recurrence.ts#L267-L291) to pass the translation function
+   - Modified the call to [getPatternDescription](file:///Users/aminismail/Documents/GitHub/booknor-1/src/components/features/bookings/utils/recurrence.ts#L267-L291) to pass the translation function
 
 4. **Added missing translation keys** to both English and Norwegian booking.json files:
    - "recurrence.single": "Single booking" / "Enkelt booking"
@@ -1605,12 +1605,12 @@ I identified that the validation error messages in the recurrence pattern select
    - "validation.custom_interval_required": "Custom interval must be at least 1" / "Tilpasset intervall må være minst 1"
    - "validation.end_date_after_start": "End date must be after start date" / "Sluttdato må være etter startdato"
 
-2. **Updated recurrence engine** ([src/components/features/bookings/utils/recurrence.ts](file:///Users/aminismail/Documents/GitHub/bookme-1/src/components/features/bookings/utils/recurrence.ts)):
-   - Modified [validatePattern](file:///Users/aminismail/Documents/GitHub/bookme-1/src/components/features/bookings/utils/recurrence.ts#L307-L345) to accept an optional translation function
+2. **Updated recurrence engine** ([src/components/features/bookings/utils/recurrence.ts](file:///Users/aminismail/Documents/GitHub/booknor-1/src/components/features/bookings/utils/recurrence.ts)):
+   - Modified [validatePattern](file:///Users/aminismail/Documents/GitHub/booknor-1/src/components/features/bookings/utils/recurrence.ts#L307-L345) to accept an optional translation function
    - Updated all validation error messages to use translation keys instead of hardcoded English text
 
-3. **Updated RecurrencePatternSelector** ([src/components/features/bookings/components/RecurringBookingModal/RecurrencePatternSelector.tsx](file:///Users/aminismail/Documents/GitHub/bookme-1/src/components/features/bookings/components/RecurringBookingModal/RecurrencePatternSelector.tsx)):
-   - Modified the call to [validatePattern](file:///Users/aminismail/Documents/GitHub/bookme-1/src/components/features/bookings/utils/recurrence.ts#L307-L345) to pass the translation function
+3. **Updated RecurrencePatternSelector** ([src/components/features/bookings/components/RecurringBookingModal/RecurrencePatternSelector.tsx](file:///Users/aminismail/Documents/GitHub/booknor-1/src/components/features/bookings/components/RecurringBookingModal/RecurrencePatternSelector.tsx)):
+   - Modified the call to [validatePattern](file:///Users/aminismail/Documents/GitHub/booknor-1/src/components/features/bookings/utils/recurrence.ts#L307-L345) to pass the translation function
 
 These changes ensure that all validation error messages in the recurrence pattern selector will now properly display in the selected language without mixing untranslated English text with translated Norwegian text.
 
@@ -1620,7 +1620,7 @@ I updated the weekday checkbox order in the recurrence pattern selector from Sun
 
 #### Changes Made:
 
-1. **Updated RecurrencePatternSelector** ([src/components/features/bookings/components/RecurringBookingModal/RecurrencePatternSelector.tsx](file:///Users/aminismail/Documents/GitHub/bookme-1/src/components/features/bookings/components/RecurringBookingModal/RecurrencePatternSelector.tsx)):
+1. **Updated RecurrencePatternSelector** ([src/components/features/bookings/components/RecurringBookingModal/RecurrencePatternSelector.tsx](file:///Users/aminismail/Documents/GitHub/booknor-1/src/components/features/bookings/components/RecurringBookingModal/RecurrencePatternSelector.tsx)):
    - Modified the weekdays array to display checkboxes in Monday-Sunday order instead of Sunday-Saturday
    - This affects both the weekday selection for weekly/biweekly/custom patterns and the weekday selection in the monthly pattern configuration
 

@@ -10,13 +10,13 @@ This document summarizes all the fixes implemented to resolve issues with facili
 {code: 'XX000', message: 'parse error - invalid geometry', details: null, hint: '"{"" <-- parse error at position 2 within geometry'}
 ```
 
-**Solution**: Modified [FacilityEditPage.tsx](file:///Users/aminismail/Documents/GitHub/bookme-1/src/pages/admin/FacilityEditPage.tsx) to set the location field to null instead of a JavaScript object:
+**Solution**: Modified [FacilityEditPage.tsx](file:///Users/aminismail/Documents/GitHub/booknor-1/src/pages/admin/FacilityEditPage.tsx) to set the location field to null instead of a JavaScript object:
 ```typescript
 // Handle location field for PostGIS compatibility
 facilityData.location = null;
 ```
 
-**Documentation**: [FIX_FACILITY_CREATION_POSTGIS.md](file:///Users/aminismail/Documents/GitHub/bookme-1/docs/facility-editing-fixes/FIX_FACILITY_CREATION_POSTGIS.md)
+**Documentation**: [FIX_FACILITY_CREATION_POSTGIS.md](file:///Users/aminismail/Documents/GitHub/booknor-1/docs/facility-editing-fixes/FIX_FACILITY_CREATION_POSTGIS.md)
 
 ### 2. Invalid Facility Type Error
 **Problem**: Facilities were being created with invalid facility_type values:
@@ -33,7 +33,7 @@ const createNewFacilityTemplate = (): Partial<Facility> => ({
 });
 ```
 
-**Documentation**: [FIX_FACILITY_TYPE_VALIDATION.md](file:///Users/aminismail/Documents/GitHub/bookme-1/docs/facility-editing-fixes/FIX_FACILITY_TYPE_VALIDATION.md)
+**Documentation**: [FIX_FACILITY_TYPE_VALIDATION.md](file:///Users/aminismail/Documents/GitHub/booknor-1/docs/facility-editing-fixes/FIX_FACILITY_TYPE_VALIDATION.md)
 
 ### 3. Facility Type Case Sensitivity Issue
 **Problem**: Facility types with uppercase letters were rejected:
@@ -46,7 +46,7 @@ const createNewFacilityTemplate = (): Partial<Facility> => ({
 facility_type: editedFacility.facility_type?.toLowerCase() || "møterom"
 ```
 
-**Documentation**: [FIX_FACILITY_TYPE_CASE_SENSITIVE.md](file:///Users/aminismail/Documents/GitHub/bookme-1/docs/facility-editing-fixes/FIX_FACILITY_TYPE_CASE_SENSITIVE.md)
+**Documentation**: [FIX_FACILITY_TYPE_CASE_SENSITIVE.md](file:///Users/aminismail/Documents/GitHub/booknor-1/docs/facility-editing-fixes/FIX_FACILITY_TYPE_CASE_SENSITIVE.md)
 
 ### 4. Generic 400 Error When Updating Existing Facilities
 **Problem**: When updating existing facilities, a generic 400 error occurred:
@@ -61,7 +61,7 @@ Failed to load resource: the server responded with a status of 400 ()
 4. Ensured proper data formatting for PostGIS compatibility
 5. Added "fotballbane" to the list of valid facility types
 
-**Documentation**: [FIX_FACILITY_UPDATE_400_ERROR.md](file:///Users/aminismail/Documents/GitHub/bookme-1/docs/FIX_FACILITY_UPDATE_400_ERROR.md)
+**Documentation**: [FIX_FACILITY_UPDATE_400_ERROR.md](file:///Users/aminismail/Documents/GitHub/booknor-1/docs/FIX_FACILITY_UPDATE_400_ERROR.md)
 
 ### 5. Facility Type Dropdown Implementation
 **Problem**: Users had to manually type facility types, which often resulted in invalid values like "fotballbane" not being accepted.
@@ -71,7 +71,7 @@ Failed to load resource: the server responded with a status of 400 ()
 2. Added "fotballbane" to the list of valid facility types
 3. Updated validation logic to accept the new facility type
 
-**Documentation**: [FIX_FACILITY_TYPE_DROPDOWN.md](file:///Users/aminismail/Documents/GitHub/bookme-1/docs/facility-editing-fixes/FIX_FACILITY_TYPE_DROPDOWN.md)
+**Documentation**: [FIX_FACILITY_TYPE_DROPDOWN.md](file:///Users/aminismail/Documents/GitHub/booknor-1/docs/facility-editing-fixes/FIX_FACILITY_TYPE_DROPDOWN.md)
 
 ### 6. Amenities Validation Issue
 **Problem**: When adding amenities in the "Fasiliteter" tab, users encountered validation errors because they were entering free text that didn't match valid amenity keys in the database.
@@ -83,7 +83,7 @@ Failed to load resource: the server responded with a status of 400 ()
 4. Ensured only valid amenities can be added to facilities
 5. Maintained existing tag display and removal functionality
 
-**Documentation**: [FIX_AMENITIES_VALIDATION.md](file:///Users/aminismail/Documents/GitHub/bookme-1/docs/facility-editing-fixes/FIX_AMENITIES_VALIDATION.md)
+**Documentation**: [FIX_AMENITIES_VALIDATION.md](file:///Users/aminismail/Documents/GitHub/booknor-1/docs/facility-editing-fixes/FIX_AMENITIES_VALIDATION.md)
 
 ### 7. Contact Information Fields Issue
 **Problem**: Contact information was not being properly saved or displayed.
@@ -93,12 +93,12 @@ Failed to load resource: the server responded with a status of 400 ()
 2. Added separate contact_email and contact_phone fields
 3. Improved formatting and cleaning of contact information
 
-**Documentation**: [CONTACT_FIELDS_IMPLEMENTATION.md](file:///Users/aminismail/Documents/GitHub/bookme-1/docs/facility-editing-fixes/CONTACT_FIELDS_IMPLEMENTATION.md)
+**Documentation**: [CONTACT_FIELDS_IMPLEMENTATION.md](file:///Users/aminismail/Documents/GitHub/booknor-1/docs/facility-editing-fixes/CONTACT_FIELDS_IMPLEMENTATION.md)
 
 ## Files Modified
 
-1. [/src/pages/admin/FacilityEditPage.tsx](file:///Users/aminismail/Documents/GitHub/bookme-1/src/pages/admin/FacilityEditPage.tsx) - Main facility editing page with all fixes
-2. [/src/services/supabase/facilities.service.ts](file:///Users/aminismail/Documents/GitHub/bookme-1/src/services/supabase/facilities.service.ts) - Facility service with update/create operations
+1. [/src/pages/admin/FacilityEditPage.tsx](file:///Users/aminismail/Documents/GitHub/booknor-1/src/pages/admin/FacilityEditPage.tsx) - Main facility editing page with all fixes
+2. [/src/services/supabase/facilities.service.ts](file:///Users/aminismail/Documents/GitHub/booknor-1/src/services/supabase/facilities.service.ts) - Facility service with update/create operations
 
 ## Testing
 

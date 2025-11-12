@@ -121,10 +121,10 @@ const extractCoordinates = (location: unknown): { lat: number | null; lng: numbe
 // Helper function to convert FacilityWithLocationText to FacilityWithCoords
 const convertToFacilityWithCoords = (facility: FacilityWithLocationText): FacilityWithCoords => {
   // Create a base facility object with all properties from FacilityWithLocationText
-  const baseFacility: any = { ...facility };
-  
-  // Convert the specific properties that differ
-  baseFacility.location = facility.location_text;
+  const baseFacility: Omit<FacilityWithCoords, 'lat' | 'lng'> = {
+    ...facility,
+    location: facility.location_text,
+  };
   
   // Add lat/lng properties
   const facilityWithCoords: FacilityWithCoords = {
@@ -198,18 +198,19 @@ export const facilitiesService = {
   async getAllWithCoords(orgId: string): Promise<FacilityWithCoords[]> {
     try {
       // Try to use the RPC function that extracts coordinates directly
-      // Using 'as any' to bypass TypeScript type checking for RPC functions
-      const { data, error } = await (supabase.rpc as any)('get_all_facilities_with_location_text', {
+      // Type assertion needed because RPC function types aren't generated
+      const { data, error } = await supabase.rpc('get_all_facilities_with_location_text', {
         org_id: orgId
-      });
+      }) as { data: FacilityWithLocationText[] | null; error: Error | null };
 
       if (!error && data) {
         // Convert the RPC result to FacilityWithCoords
-        return (data as FacilityWithLocationText[]).map(convertToFacilityWithCoords);
+        return data.map(convertToFacilityWithCoords);
       }
-    } catch (rpcError: any) {
+    } catch (rpcError: unknown) {
       // Log the error but don't fail - fall back to client-side extraction
-      console.warn('RPC function failed, falling back to client-side extraction:', rpcError.message || rpcError);
+      const errorMessage = rpcError instanceof Error ? rpcError.message : String(rpcError);
+      console.warn('RPC function failed, falling back to client-side extraction:', errorMessage);
     }
 
     // Fallback to regular query with coordinate extraction
@@ -226,18 +227,19 @@ export const facilitiesService = {
   async getPublishedWithCoords(orgId: string): Promise<FacilityWithCoords[]> {
     try {
       // Try to use the RPC function that extracts coordinates directly
-      // Using 'as any' to bypass TypeScript type checking for RPC functions
-      const { data, error } = await (supabase.rpc as any)('get_published_facilities_with_location_text', {
+      // Type assertion needed because RPC function types aren't generated
+      const { data, error } = await supabase.rpc('get_published_facilities_with_location_text', {
         org_id: orgId
-      });
+      }) as { data: FacilityWithLocationText[] | null; error: Error | null };
 
       if (!error && data) {
         // Convert the RPC result to FacilityWithCoords
-        return (data as FacilityWithLocationText[]).map(convertToFacilityWithCoords);
+        return data.map(convertToFacilityWithCoords);
       }
-    } catch (rpcError: any) {
+    } catch (rpcError: unknown) {
       // Log the error but don't fail - fall back to client-side extraction
-      console.warn('RPC function failed, falling back to client-side extraction:', rpcError.message || rpcError);
+      const errorMessage = rpcError instanceof Error ? rpcError.message : String(rpcError);
+      console.warn('RPC function failed, falling back to client-side extraction:', errorMessage);
     }
 
     // Fallback to regular query with coordinate extraction

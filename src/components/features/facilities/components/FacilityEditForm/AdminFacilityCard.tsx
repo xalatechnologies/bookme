@@ -38,7 +38,7 @@ const AdminFacilityCard = ({ facility, onDelete, onToggleStatus, onDuplicate }: 
   const translateAmenity = useAmenityTranslation();
   
   // Create a flexible translation function that ensures string return
-  const translate = (key: string, options?: any): string => {
+  const translate = (key: string, options?: Record<string, unknown>): string => {
     // Handle facility namespace keys separately
     if (key.startsWith('facility:')) {
       return t(key, options);
@@ -176,8 +176,8 @@ const AdminFacilityCard = ({ facility, onDelete, onToggleStatus, onDuplicate }: 
       };
       
       // Save to localStorage (simulating backend)
-      const facilities = JSON.parse(localStorage.getItem('adminFacilities') || '[]');
-      const updatedFacilities = facilities.map((f: any) => 
+      const facilities = JSON.parse(localStorage.getItem('adminFacilities') || '[]') as Facility[];
+      const updatedFacilities = facilities.map((f) => 
         f.id === facility.id ? updatedFacility : f
       );
       localStorage.setItem('adminFacilities', JSON.stringify(updatedFacilities));
@@ -216,8 +216,8 @@ const AdminFacilityCard = ({ facility, onDelete, onToggleStatus, onDuplicate }: 
       };
       
       // Save to localStorage (simulating backend)
-      const facilities = JSON.parse(localStorage.getItem('adminFacilities') || '[]');
-      const updatedFacilities = facilities.map((f: any) => 
+      const facilities = JSON.parse(localStorage.getItem('adminFacilities') || '[]') as Facility[];
+      const updatedFacilities = facilities.map((f) => 
         f.id === facility.id ? updatedFacility : f
       );
       localStorage.setItem('adminFacilities', JSON.stringify(updatedFacilities));
@@ -247,8 +247,8 @@ const AdminFacilityCard = ({ facility, onDelete, onToggleStatus, onDuplicate }: 
       };
       
       // Save to localStorage (simulating backend)
-      const facilities = JSON.parse(localStorage.getItem('adminFacilities') || '[]');
-      const updatedFacilities = facilities.map((f: any) => 
+      const facilities = JSON.parse(localStorage.getItem('adminFacilities') || '[]') as Facility[];
+      const updatedFacilities = facilities.map((f) => 
         f.id === facility.id ? updatedFacility : f
       );
       localStorage.setItem('adminFacilities', JSON.stringify(updatedFacilities));

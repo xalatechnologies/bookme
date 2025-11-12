@@ -1,4 +1,4 @@
-# Comprehensive Testing Strategy - BookMe Platform
+# Comprehensive Testing Strategy - Booknor Platform
 
 **Date:** October 30, 2025
 **Status:** In Progress
@@ -22,7 +22,7 @@
 
 ## Overview
 
-This document outlines the comprehensive testing strategy for the BookMe platform. The platform has **144 components** (121 feature + 23 UI) that require thorough testing to ensure quality, reliability, and maintainability.
+This document outlines the comprehensive testing strategy for the Booknor platform. The platform has **144 components** (121 feature + 23 UI) that require thorough testing to ensure quality, reliability, and maintainability.
 
 ### Testing Tools
 

@@ -41,8 +41,6 @@ export const BookingSidebar = ({
   const {
     title,
     hasSlots,
-    isRecurring,
-    currentLocale,
     shouldShowTemplate,
     shouldShowRecurringPreview,
     visibleRecurringSlots,

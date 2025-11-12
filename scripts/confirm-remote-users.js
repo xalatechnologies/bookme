@@ -28,7 +28,7 @@ const TEST_USER_EMAILS = [
   "staff@drammen.kommune.no",
   "admin@drammen.kommune.no",
   "owner@drammen.kommune.no",
-  "superadmin@bookme.no",
+  "superadmin@booknor.no",
 ];
 
 async function confirmRemoteUsers() {

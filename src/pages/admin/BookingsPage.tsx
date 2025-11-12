@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { LocalizedSelect } from "@/components/common/LocalizedSelect";
-import {
+import { 
   Search,
   Filter,
   Calendar,
@@ -23,6 +23,8 @@ import {
   Settings,
   Plus,
 } from "lucide-react";
+import type { LocalStorageBooking, TimeSlot as LocalStorageTimeSlot } from "@/types/localStorage";
+import type { RawBookingData } from "@/types/bookingsPage";
 
 interface IBooking {
   readonly id: string;
@@ -507,10 +509,8 @@ const BookingDetailModal = ({
       const all = [...rawPending, ...rawProcessed];
 
       // Determine grouping key
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const parentId = (booking as any).parentBookingId as string | undefined;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const isRecurring = (booking as any).isRecurring || !!parentId;
+      const parentId = booking.parentBookingId;
+      const isRecurring = booking.isRecurring || !!parentId;
       if (!isRecurring) return [];
 
       const groupKey =
@@ -518,23 +518,21 @@ const BookingDetailModal = ({
         `${booking.facility}|${booking.purpose}|${booking.startTime}-${booking.endTime}`;
 
       // Filter same group
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const series = all.filter((b: any) => {
+      const series = all.filter((b: RawBookingData) => {
         const bParent = b.parentBookingId;
         const bKey =
           bParent ||
-          `${b.facility || b.facilityName}|${
-            b.purpose || b.description
+          `${b.facility || b.facilityName || ''}|${
+            b.purpose || b.description || ''
           }|${(() => {
             if (b.time) return b.time;
             if (b.startTime && b.endTime) return `${b.startTime}-${b.endTime}`;
             if (b.timeSlots && b.timeSlots.length > 0) {
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              const sorted = [...b.timeSlots].sort((a: any, c: any) =>
+              const sorted = [...b.timeSlots].sort((a: LocalStorageTimeSlot, c: LocalStorageTimeSlot) =>
                 a.timeSlot.localeCompare(c.timeSlot)
               );
-              const s = sorted[0].timeSlot.split("-")[0];
-              const e = sorted[sorted.length - 1].timeSlot.split("-")[1];
+              const s = sorted[0]?.timeSlot.split("-")[0] || '';
+              const e = sorted[sorted.length - 1]?.timeSlot.split("-")[1] || '';
               return `${s}-${e}`;
             }
             return `${booking.startTime}-${booking.endTime}`;
@@ -546,8 +544,7 @@ const BookingDetailModal = ({
 
       return (
         series
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          .map((b: any) => {
+          .map((b: RawBookingData) => {
             const date =
               b.date || b.startDate || new Date().toISOString().slice(0, 10);
             const time =
@@ -569,8 +566,7 @@ const BookingDetailModal = ({
             return { date, time, durationHours, priceText };
           })
           .sort(
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (a: any, b: any) =>
+            (a: { readonly date: string }, b: { readonly date: string }) =>
               new Date(a.date).getTime() - new Date(b.date).getTime()
           )
       );
@@ -800,8 +796,7 @@ const BookingsPage = (): JSX.Element => {
       const pendingBookings = JSON.parse(
         localStorage.getItem("pendingBookings") || "[]"
       );
-      /* eslint-disable @typescript-eslint/no-explicit-any */
-      return pendingBookings.map((booking: any, index: number) => {
+      return pendingBookings.map((booking: RawBookingData, index: number) => {
         // Calculate proper time range from timeSlots if available
         let startTime: string;
         let endTime: string;
@@ -854,17 +849,13 @@ const BookingsPage = (): JSX.Element => {
           title: `Booking #${booking.id || index + 1} – ${
             booking.facilityName
           }`,
-          facility: booking.facilityName,
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          facilityId: (booking as any).facilityId || "1",
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          bookerName: (booking as any).contactPerson || "Ukjent bruker",
+          facility: booking.facilityName || booking.facility || '',
+          facilityId: booking.facilityId || "1",
+          bookerName: booking.contactPerson || "Ukjent bruker",
           bookerEmail: "bruker@example.com", // This should come from user profile
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          purpose: booking.purpose || (booking as any).description || "Booking",
+          purpose: booking.purpose || booking.description || "Booking",
           startDate:
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (booking as any).date ||
+            booking.date ||
             (() => {
               const today = new Date();
               const year = today.getFullYear();
@@ -873,8 +864,7 @@ const BookingsPage = (): JSX.Element => {
               return `${year}-${month}-${day}`;
             })(),
           endDate:
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (booking as any).date ||
+            booking.date ||
             (() => {
               const today = new Date();
               const year = today.getFullYear();
@@ -884,21 +874,19 @@ const BookingsPage = (): JSX.Element => {
             })(),
           startTime,
           endTime,
-          status: booking.status || "pending",
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          requestedAt: (booking as any).submittedAt || new Date().toISOString(),
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          price: (booking as any).price
-            ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              parseInt((booking as any).price.replace(/\D/g, ""))
+          status: (booking.status || "pending") as "pending" | "approved" | "rejected" | "cancelled",
+          requestedAt: booking.submittedAt || new Date().toISOString(),
+          price: booking.price
+            ? typeof booking.price === 'string'
+              ? parseInt(booking.price.replace(/\D/g, ""))
+              : booking.price
             : 0,
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          duration: booking.duration ? parseInt(booking.duration as any) : 2,
+          duration: booking.duration ? (typeof booking.duration === 'string' ? parseInt(booking.duration) : booking.duration) : 2,
           isRecurring: booking.isRecurring,
           parentBookingId: booking.parentBookingId,
         };
       });
-      /* eslint-enable @typescript-eslint/no-explicit-any */
+       
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       return [];
@@ -911,8 +899,7 @@ const BookingsPage = (): JSX.Element => {
       const processedBookings = JSON.parse(
         localStorage.getItem("processedBookings") || "[]"
       );
-      /* eslint-disable @typescript-eslint/no-explicit-any */
-      return processedBookings.map((booking: any, index: number) => {
+      return processedBookings.map((booking: RawBookingData, index: number) => {
         // Derive start/end time
         let startTime: string;
         let endTime: string;
@@ -924,8 +911,7 @@ const BookingsPage = (): JSX.Element => {
           startTime = timeParts[0];
           endTime = timeParts[1];
         } else if (booking.timeSlots && booking.timeSlots.length > 0) {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const sorted = [...booking.timeSlots].sort((a: any, b: any) =>
+          const sorted = [...booking.timeSlots].sort((a: LocalStorageTimeSlot, b: LocalStorageTimeSlot) =>
             a.timeSlot.localeCompare(b.timeSlot)
           );
           startTime = sorted[0].timeSlot.split("-")[0];
@@ -991,7 +977,7 @@ const BookingsPage = (): JSX.Element => {
           parentBookingId: booking.parentBookingId,
         } as IBooking;
       });
-      /* eslint-enable @typescript-eslint/no-explicit-any */
+       
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       return [];
@@ -1041,10 +1027,8 @@ const BookingsPage = (): JSX.Element => {
 
     // Build group map
     filteredBookings.forEach((b) => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const parentId = (b as any).parentBookingId as string | undefined;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const isRecurring = (b as any).isRecurring || !!parentId;
+      const parentId = b.parentBookingId;
+      const isRecurring = b.isRecurring || !!parentId;
       const key = parentId ?? (isRecurring ? getFallbackGroupKey(b) : null);
 
       if (key) {
@@ -1099,8 +1083,7 @@ const BookingsPage = (): JSX.Element => {
     return `${b.facility}|${b.purpose}|${timeKey}`;
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const getGroupKeyFromRaw = (b: any): string => {
+  const getGroupKeyFromRaw = (b: RawBookingData): string => {
     const baseFacility = b.facility || b.facilityName;
     const basePurpose = b.purpose || b.description;
     let timeKey: string;
@@ -1109,8 +1092,7 @@ const BookingsPage = (): JSX.Element => {
     } else if (b.startTime && b.endTime) {
       timeKey = `${b.startTime}-${b.endTime}`;
     } else if (b.timeSlots && b.timeSlots.length > 0) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const sorted = [...b.timeSlots].sort((a: any, c: any) =>
+      const sorted = [...b.timeSlots].sort((a: LocalStorageTimeSlot, c: LocalStorageTimeSlot) =>
         a.timeSlot.localeCompare(c.timeSlot)
       );
       const s = sorted[0].timeSlot.split("-")[0];
@@ -1136,18 +1118,13 @@ const BookingsPage = (): JSX.Element => {
         );
 
         // Determine series to approve
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const parentId = (booking as any).parentBookingId as string | undefined;
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const isRecurring = (booking as any).isRecurring || !!parentId;
+        const parentId = booking.parentBookingId;
+        const isRecurring = booking.isRecurring || !!parentId;
         const groupKey = parentId || getGroupKeyFromIBooking(booking);
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const keep: any[] = [];
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const moveToProcessed: any[] = [];
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        pendingBookings.forEach((b: any) => {
+        const keep: RawBookingData[] = [];
+        const moveToProcessed: RawBookingData[] = [];
+        pendingBookings.forEach((b: RawBookingData) => {
           const bParent = b.parentBookingId as string | undefined;
           const bKey = bParent || getGroupKeyFromRaw(b);
           if (isRecurring ? bKey === groupKey : b.id === id) {
@@ -1193,18 +1170,13 @@ const BookingsPage = (): JSX.Element => {
           localStorage.getItem("processedBookings") || "[]"
         );
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const parentId = (booking as any).parentBookingId as string | undefined;
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const isRecurring = (booking as any).isRecurring || !!parentId;
+        const parentId = booking.parentBookingId;
+        const isRecurring = booking.isRecurring || !!parentId;
         const groupKey = parentId || getGroupKeyFromIBooking(booking);
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const keep: any[] = [];
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const moveToProcessed: any[] = [];
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        pendingBookings.forEach((b: any) => {
+        const keep: RawBookingData[] = [];
+        const moveToProcessed: RawBookingData[] = [];
+        pendingBookings.forEach((b: RawBookingData) => {
           const bParent = b.parentBookingId as string | undefined;
           const bKey = bParent || getGroupKeyFromRaw(b);
           if (isRecurring ? bKey === groupKey : b.id === id) {

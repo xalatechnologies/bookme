@@ -144,7 +144,9 @@ export const MapView: React.FC<MapViewProps> = ({
             <MapMarkers
               map={map}
               facilities={filteredFacilities}
-              onMarkerClick={(facility) => handleMarkerClickInternal(facility as any, onMarkerClick as any)}
+              onMarkerClick={(facility) => {
+                handleMarkerClickInternal(facility, onMarkerClick);
+              }}
             />
           )}
 

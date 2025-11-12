@@ -1,8 +1,8 @@
-# BookMe Coding Standards
+# Booknor Coding Standards
 
 ## 🎯 Overview
 
-This document defines comprehensive coding standards for the BookMe project, emphasizing consistency, maintainability, and best practices across all development aspects.
+This document defines comprehensive coding standards for the Booknor project, emphasizing consistency, maintainability, and best practices across all development aspects.
 
 ## 🧩 Components & Architecture
 
@@ -164,18 +164,18 @@ export const NavigationMenu = (): JSX.Element => {
 ### Custom Icons
 
 ```typescript
-// src/components/icons/BookMeLogo.tsx
+// src/components/icons/BooknorLogo.tsx
 import React from 'react';
 
-interface BookMeLogoProps {
+interface BooknorLogoProps {
   readonly size?: number;
   readonly className?: string;
 }
 
-export const BookMeLogo = ({ 
+export const BooknorLogo = ({ 
   size = 24, 
   className = '' 
-}: BookMeLogoProps): JSX.Element => {
+}: BooknorLogoProps): JSX.Element => {
   return (
     <svg 
       width={size} 
@@ -578,8 +578,8 @@ export const AnimatedCard = ({ children }: { children: React.ReactNode }): JSX.E
 import { Inngest } from 'inngest';
 
 export const inngest = new Inngest({ 
-  id: 'bookme',
-  name: 'BookMe Background Jobs' 
+  id: 'booknor',
+  name: 'Booknor Background Jobs' 
 });
 ```
 
@@ -769,7 +769,7 @@ git commit -m "docs: add comprehensive coding standards with shadcn/ui integrati
 
 ```markdown
 <!-- .project-updates -->
-# BookMe Project Updates
+# Booknor Project Updates
 
 ## Recent Changes
 

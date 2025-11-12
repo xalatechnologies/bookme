@@ -1,6 +1,6 @@
 # Common Issues Runbook
 
-This document provides troubleshooting guidance for common issues encountered in the BookMe Portal application.
+This document provides troubleshooting guidance for common issues encountered in the Booknor Portal application.
 
 ## Map Issues
 

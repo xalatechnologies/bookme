@@ -1,10 +1,10 @@
-# BookMe Supabase Integration - Complete Status
+# Booknor Supabase Integration - Complete Status
 
 ## 🎉 What's Been Accomplished
 
 ### ✅ Backend (100% Complete)
 
-**Location:** `/Volumes/Development/Xala Products/bookme/`
+**Location:** `/Volumes/Development/Xala Products/booknor/`
 
 **Migrations Applied:** 8/8
 - ✅ Zones (bookable areas within facilities)
@@ -33,7 +33,7 @@
 
 ### ✅ Frontend Infrastructure (100% Complete)
 
-**Location:** `~/Documents/xaheen/bookme/`
+**Location:** `~/Documents/xaheen/booknor/`
 
 #### Core Setup
 1. **Supabase Client** (`src/lib/supabase.ts`)
@@ -265,11 +265,11 @@ function FavoriteButton({ facilityId }) {
 1. **Start the stack:**
    ```bash
    # Terminal 1: Backend
-   cd "/Volumes/Development/Xala Products/bookme"
+   cd "/Volumes/Development/Xala Products/booknor"
    supabase start
 
    # Terminal 2: Frontend
-   cd ~/Documents/xaheen/bookme
+   cd ~/Documents/xaheen/booknor
    npm run dev
    ```
 
@@ -322,7 +322,7 @@ Run migration script on user login:
 
 ### Issue: Connection Refused
 ```bash
-cd "/Volumes/Development/Xala Products/bookme"
+cd "/Volumes/Development/Xala Products/booknor"
 supabase start
 ```
 
@@ -341,8 +341,8 @@ Check:
 
 ### Issue: Regenerate Types
 ```bash
-cd "/Volumes/Development/Xala Products/bookme"
-npx supabase gen types typescript --local > ~/Documents/xaheen/bookme/src/types/database.ts
+cd "/Volumes/Development/Xala Products/booknor"
+npx supabase gen types typescript --local > ~/Documents/xaheen/booknor/src/types/database.ts
 ```
 
 ---

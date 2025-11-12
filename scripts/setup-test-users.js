@@ -38,7 +38,7 @@ const TEST_USERS = [
     displayName: 'Owner User',
   },
   {
-    email: 'superadmin@bookme.no',
+    email: 'superadmin@booknor.no',
     password: 'Test123!',
     role: 'platform_admin',
     displayName: 'Super Admin',

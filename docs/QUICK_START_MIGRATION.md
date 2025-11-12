@@ -1,4 +1,4 @@
-# 🚀 BookMe Supabase Migration - Quick Start Guide
+# 🚀 Booknor Supabase Migration - Quick Start Guide
 
 **Status:** Ready to implement
 **Estimated Time:** 10-12 weeks
@@ -220,7 +220,7 @@ npm run format                 # Format code
 ## 📦 File Structure Reference
 
 ```
-bookme/
+booknor/
 ├── src/
 │   ├── hooks/                     # ← Create custom hooks here
 │   │   ├── bookings/
@@ -408,7 +408,7 @@ export function useBookings(userId: string) {
 
 ```bash
 # 1. Open terminal
-cd /path/to/bookme
+cd /path/to/booknor
 
 # 2. Start Supabase
 npx supabase start

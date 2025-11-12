@@ -30,7 +30,7 @@ console.log('\n1. Testing Contact Utilities...');
 const extractContactInfo = (description, contactEmail, contactPhone) => {
   // Default contact information
   const defaultContact = {
-    email: 'kontakt@bookme.no',
+    email: 'kontakt@booknor.no',
     phone: '+47 123 45 678'
   };
 

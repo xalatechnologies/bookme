@@ -182,7 +182,7 @@
       "users_tab": {
         "title": "Brukere",
         "label": "Brukere",
-        "description": "Se, opprett og administrer brukerkontoer i BookMe.",
+        "description": "Se, opprett og administrer brukerkontoer i Booknor.",
         "subtitle": "Administrer systembrukere og deres tilganger",
         "new_user": "Ny bruker",
         "selected_count": "{{count}} bruker(e) valgt"
@@ -507,7 +507,7 @@
         "csv_error": "Kunne ikke eksportere CSV. Prøv igjen.",
         "pdf_success": "Rapport eksportert! (Simulert PDF som tekstfil)",
         "pdf_error": "Kunne ikke eksportere PDF. Prøv igjen.",
-        "report_title": "BookMe Rapport",
+        "report_title": "Booknor Rapport",
         "generated": "Generert",
         "booking_statistics": "Booking statistikk"
       }
@@ -770,7 +770,7 @@
 
     "integrations": {
       "title": "Integrasjoner",
-      "description": "Koble BookMe mot eksterne systemer og tjenester",
+      "description": "Koble Booknor mot eksterne systemer og tjenester",
 
       "actions": {
         "add": "Legg til integrasjon"

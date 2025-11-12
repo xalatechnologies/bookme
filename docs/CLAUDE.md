@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-BookMe is a comprehensive facility reservation and booking platform built with React 19, TypeScript, and Tailwind CSS. It features both user-facing booking functionality and administrative facility management, with support for recurring bookings, group reservations, and real-time availability tracking.
+Booknor is a comprehensive facility reservation and booking platform built with React 19, TypeScript, and Tailwind CSS. It features both user-facing booking functionality and administrative facility management, with support for recurring bookings, group reservations, and real-time availability tracking.
 
 Primary language is **Norwegian (NO)** with English (EN) as secondary. All UI text must be internationalized.
 
@@ -71,7 +71,7 @@ This codebase uses a **hybrid state management approach**:
 - Includes versioning for future migrations (currently version: 1)
 
 **Manual Persistence (Contexts)**:
-- `LanguageContext` → `bookme-language`
+- `LanguageContext` → `booknor-language`
 - `AdminAuthContext` → `adminUser`
 - `UserProfileContext` → `user-profile` (uses dual-phase loading to prevent race conditions)
 
@@ -420,7 +420,7 @@ const mapboxToken = import.meta.env.VITE_MAPBOX_TOKEN;
 ## Docker & Supabase Local Development
 
 This project has a companion Docker-based Supabase setup for local backend development located at:
-`/Volumes/Development/Xala Products/bookme`
+`/Volumes/Development/Xala Products/booknor`
 
 ### Local Supabase Stack
 
@@ -444,7 +444,7 @@ The Docker Compose setup includes a full Supabase stack:
 
 ```bash
 # Navigate to Docker project
-cd "/Volumes/Development/Xala Products/bookme"
+cd "/Volumes/Development/Xala Products/booknor"
 
 # Start all Supabase services
 ./scripts/start-dev.sh
@@ -517,12 +517,12 @@ When making schema changes:
 - **Remove all data**: `docker-compose down -v`
 - **Restart specific service**: `docker-compose restart [service-name]`
 
-## Project Comparison: Three BookMe Variants
+## Project Comparison: Three Booknor Variants
 
-There are three BookMe projects in the Xala ecosystem:
+There are three Booknor projects in the Xala ecosystem:
 
-### 1. **bookme** (Current - Vite/React)
-- **Location**: `~/Documents/xaheen/bookme`
+### 1. **booknor** (Current - Vite/React)
+- **Location**: `~/Documents/xaheen/booknor`
 - **Stack**: React 19 + Vite + TypeScript + Tailwind CSS
 - **State**: Zustand + React Context with localStorage persistence
 - **Features**: Full client-side booking, recurring bookings, group bookings, map integration
@@ -537,8 +537,8 @@ There are three BookMe projects in the Xala ecosystem:
 - **Architecture**: Separation of concerns (presentational vs container components)
 - **Testing**: Jest + React Testing Library
 
-### 3. **bookme** (Docker/Supabase)
-- **Location**: `/Volumes/Development/Xala Products/bookme`
+### 3. **booknor** (Docker/Supabase)
+- **Location**: `/Volumes/Development/Xala Products/booknor`
 - **Purpose**: Local Supabase backend for development
 - **Stack**: Docker Compose with full Supabase stack
 - **Features**: Database migrations, RPC functions, RLS policies, storage setup

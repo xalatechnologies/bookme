@@ -1,6 +1,6 @@
 # Facility Image Management
 
-This document explains how to manage facility images in the BookMe application using the new Supabase Storage integration.
+This document explains how to manage facility images in the Booknor application using the new Supabase Storage integration.
 
 ## Overview
 

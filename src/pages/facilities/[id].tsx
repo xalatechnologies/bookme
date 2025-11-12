@@ -42,7 +42,7 @@ export const FacilityDetail = (): JSX.Element => {
     try {
       if (navigator.share) {
         await navigator.share({
-          title: facility?.name || "BookMe Facility",
+          title: facility?.name || "Booknor Facility",
           url: window.location.href,
         });
       } else {

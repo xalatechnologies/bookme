@@ -174,7 +174,7 @@ export const Login = (): JSX.Element => {
                   <p>• staff@drammen.kommune.no</p>
                   <p>• admin@drammen.kommune.no</p>
                   <p>• owner@drammen.kommune.no</p>
-                  <p>• superadmin@bookme.no</p>
+                  <p>• superadmin@booknor.no</p>
                   <p className="mt-2 text-gray-500">
                     {t('login.testAccounts.password', 'Passord: password123')}
                   </p>

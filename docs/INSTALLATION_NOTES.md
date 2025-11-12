@@ -2,7 +2,7 @@
 
 ## ✅ What Was Created
 
-**26 files** with **171+ tests** have been successfully created for your BookMe application:
+**26 files** with **171+ tests** have been successfully created for your Booknor application:
 
 ### Files Created
 - ✅ 3 Configuration files (playwright.config.ts, vitest.config.ts, .env.test)

@@ -1,6 +1,6 @@
 # CI/CD Pipeline Documentation
 
-This document describes the continuous integration and continuous deployment pipeline for the BookMe Portal application.
+This document describes the continuous integration and continuous deployment pipeline for the Booknor Portal application.
 
 ## GitHub Actions Workflow
 

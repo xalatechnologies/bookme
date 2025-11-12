@@ -1,6 +1,6 @@
-# BookMe Translation System Documentation
+# Booknor Translation System Documentation
 
-**Complete guide to translation management for the BookMe application**
+**Complete guide to translation management for the Booknor application**
 
 ---
 
@@ -19,7 +19,7 @@
 
 ## Overview
 
-BookMe uses **i18next** with **react-i18next** for internationalization, supporting:
+Booknor uses **i18next** with **react-i18next** for internationalization, supporting:
 - **English (EN)** - Primary language
 - **Norwegian (NO)** - Secondary language
 
@@ -489,7 +489,7 @@ git diff TRANSLATION_GLOSSARY.md
 ### File Locations
 
 ```
-bookme/
+booknor/
 ├── public/
 │   └── locales/
 │       ├── en/           # English translations

@@ -29,7 +29,7 @@ interface ErrorBoundaryProps extends WithTranslation {
   readonly children: ReactNode;
   readonly fallback?: ReactNode;
   readonly onError?: (error: Error, errorInfo: ErrorInfo) => void;
-  readonly resetKeys?: readonly any[];
+  readonly resetKeys?: readonly unknown[];
 }
 
 interface ErrorBoundaryState {

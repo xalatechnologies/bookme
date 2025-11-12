@@ -42,7 +42,7 @@ Comprehensive refactoring of facility, messaging, and support components to use 
 ## Custom Hooks Created
 
 ### 1. useReviews Hook
-**File**: `/Users/ibrahimrahmani/Documents/xaheen/bookme/src/hooks/useReviews.ts`
+**File**: `/Users/ibrahimrahmani/Documents/xaheen/booknor/src/hooks/useReviews.ts`
 
 ```typescript
 export const useReviews = (facilityId: string) => {
@@ -74,7 +74,7 @@ export const useReviews = (facilityId: string) => {
 - Add new reviews
 
 ### 2. useMessaging Hook
-**File**: `/Users/ibrahimrahmani/Documents/xaheen/bookme/src/hooks/useMessaging.ts`
+**File**: `/Users/ibrahimrahmani/Documents/xaheen/booknor/src/hooks/useMessaging.ts`
 
 ```typescript
 export const useMessaging = (userId: string, userType: 'tenant' | 'landlord') => {
@@ -111,7 +111,7 @@ export const useMessaging = (userId: string, userType: 'tenant' | 'landlord') =>
 - Available participants lookup
 
 ### 3. useTickets Hook
-**File**: `/Users/ibrahimrahmani/Documents/xaheen/bookme/src/hooks/useTickets.ts`
+**File**: `/Users/ibrahimrahmani/Documents/xaheen/booknor/src/hooks/useTickets.ts`
 
 ```typescript
 export const useTickets = (userId?: string, isAdmin: boolean = false) => {
@@ -161,7 +161,7 @@ export const useTickets = (userId?: string, isAdmin: boolean = false) => {
 ## Translation Files Created/Enhanced
 
 ### 1. Messaging Translations
-**File**: `/Users/ibrahimrahmani/Documents/xaheen/bookme/src/i18n/locales/no/messaging.json`
+**File**: `/Users/ibrahimrahmani/Documents/xaheen/booknor/src/i18n/locales/no/messaging.json`
 
 ```json
 {
@@ -218,7 +218,7 @@ export const useTickets = (userId?: string, isAdmin: boolean = false) => {
 ```
 
 ### 2. Support Translations
-**File**: `/Users/ibrahimrahmani/Documents/xaheen/bookme/src/i18n/locales/no/support.json`
+**File**: `/Users/ibrahimrahmani/Documents/xaheen/booknor/src/i18n/locales/no/support.json`
 
 ```json
 {
@@ -260,7 +260,7 @@ export const useTickets = (userId?: string, isAdmin: boolean = false) => {
 ```
 
 ### 3. Enhanced Facility Translations
-**File**: `/Users/ibrahimrahmani/Documents/xaheen/bookme/src/i18n/locales/no/facility.json`
+**File**: `/Users/ibrahimrahmani/Documents/xaheen/booknor/src/i18n/locales/no/facility.json`
 
 **Added sections**:
 - `amenities.title`: "Fasiliteter og utstyr"
@@ -277,7 +277,7 @@ export const useTickets = (userId?: string, isAdmin: boolean = false) => {
 - `pricing.discounts`: "Rabatter"
 
 ### 4. Enhanced Common Translations
-**File**: `/Users/ibrahimrahmani/Documents/xaheen/bookme/src/i18n/locales/no/common.json`
+**File**: `/Users/ibrahimrahmani/Documents/xaheen/booknor/src/i18n/locales/no/common.json`
 
 **Added sections**:
 ```json
@@ -317,7 +317,7 @@ export const useTickets = (userId?: string, isAdmin: boolean = false) => {
 ```
 
 ## Hooks Index Updated
-**File**: `/Users/ibrahimrahmani/Documents/xaheen/bookme/src/hooks/index.ts`
+**File**: `/Users/ibrahimrahmani/Documents/xaheen/booknor/src/hooks/index.ts`
 
 Added exports:
 ```typescript
@@ -457,21 +457,21 @@ const { t } = useTranslation();
 ## Files Modified/Created
 
 ### Created Files (5)
-1. `/Users/ibrahimrahmani/Documents/xaheen/bookme/src/hooks/useReviews.ts`
-2. `/Users/ibrahimrahmani/Documents/xaheen/bookme/src/hooks/useMessaging.ts`
-3. `/Users/ibrahimrahmani/Documents/xaheen/bookme/src/hooks/useTickets.ts`
-4. `/Users/ibrahimrahmani/Documents/xaheen/bookme/src/i18n/locales/no/messaging.json`
-5. `/Users/ibrahimrahmani/Documents/xaheen/bookme/src/i18n/locales/no/support.json`
+1. `/Users/ibrahimrahmani/Documents/xaheen/booknor/src/hooks/useReviews.ts`
+2. `/Users/ibrahimrahmani/Documents/xaheen/booknor/src/hooks/useMessaging.ts`
+3. `/Users/ibrahimrahmani/Documents/xaheen/booknor/src/hooks/useTickets.ts`
+4. `/Users/ibrahimrahmani/Documents/xaheen/booknor/src/i18n/locales/no/messaging.json`
+5. `/Users/ibrahimrahmani/Documents/xaheen/booknor/src/i18n/locales/no/support.json`
 
 ### Modified Files (4)
-1. `/Users/ibrahimrahmani/Documents/xaheen/bookme/src/hooks/index.ts`
-2. `/Users/ibrahimrahmani/Documents/xaheen/bookme/src/components/facility/detail/FacilityInfoTabs.tsx`
-3. `/Users/ibrahimrahmani/Documents/xaheen/bookme/src/components/messaging/MessageInbox.tsx`
-4. `/Users/ibrahimrahmani/Documents/xaheen/bookme/src/components/support/SupportTicketList.tsx`
+1. `/Users/ibrahimrahmani/Documents/xaheen/booknor/src/hooks/index.ts`
+2. `/Users/ibrahimrahmani/Documents/xaheen/booknor/src/components/facility/detail/FacilityInfoTabs.tsx`
+3. `/Users/ibrahimrahmani/Documents/xaheen/booknor/src/components/messaging/MessageInbox.tsx`
+4. `/Users/ibrahimrahmani/Documents/xaheen/booknor/src/components/support/SupportTicketList.tsx`
 
 ### Enhanced Files (2)
-1. `/Users/ibrahimrahmani/Documents/xaheen/bookme/src/i18n/locales/no/facility.json`
-2. `/Users/ibrahimrahmani/Documents/xaheen/bookme/src/i18n/locales/no/common.json`
+1. `/Users/ibrahimrahmani/Documents/xaheen/booknor/src/i18n/locales/no/facility.json`
+2. `/Users/ibrahimrahmani/Documents/xaheen/booknor/src/i18n/locales/no/common.json`
 
 ## Next Steps
 

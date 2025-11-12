@@ -282,7 +282,7 @@ async function main() {
   console.log('='.repeat(60));
 
   switch (command) {
-    case '--scan':
+    case '--scan': {
       console.log('\nScanning for hardcoded select options...\n');
       const srcPath = path.join(process.cwd(), 'src');
       const findings = scanComponentsForHardcodedOptions(srcPath);
@@ -294,8 +294,9 @@ async function main() {
         findings.forEach((finding) => console.log(`  - ${finding}`));
       }
       break;
+    }
 
-    case '--migrate':
+    case '--migrate': {
       if (migrationData.length === 0) {
         console.log('\n⚠️  No migration data defined in script');
         console.log('Add your migration data to the migrationData array');
@@ -304,13 +305,15 @@ async function main() {
         console.log('\n✓ Migration complete');
       }
       break;
+    }
 
-    case '--export':
+    case '--export': {
       const exportPath = args[1] || 'localized-values-export.json';
       await exportDatabaseValues(exportPath);
       break;
+    }
 
-    case '--import':
+    case '--import': {
       const importPath = args[1];
       if (!importPath) {
         console.error('\n❌ Please provide input file path');
@@ -320,11 +323,13 @@ async function main() {
         console.log('\n✓ Import complete');
       }
       break;
+    }
 
-    case '--guide':
+    case '--guide': {
       const guidePath = args[1] || 'MIGRATION_GUIDE.md';
       generateMigrationGuide(guidePath);
       break;
+    }
 
     case '--help':
     default:

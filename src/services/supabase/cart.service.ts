@@ -87,7 +87,7 @@ export interface AddToCartParams {
  * For production, consider moving to database table
  */
 export class CartService {
-  private readonly CART_KEY = 'bookme_cart';
+  private readonly CART_KEY = 'booknor_cart';
   private readonly CART_EXPIRY_HOURS = 24;
 
   /**

@@ -116,8 +116,30 @@ const convertBookingToEvent = (booking: {
   }
 };
 
+/**
+ * Recurring occurrence data structure
+ */
+interface RecurringOccurrence {
+  readonly id: string;
+  readonly facilityId: string;
+  readonly date: string;
+  readonly timeSlot: string;
+}
+
+/**
+ * Parent booking data for recurring occurrences
+ */
+interface ParentBookingData {
+  readonly facility?: string;
+  readonly facilityName?: string;
+  readonly description?: string;
+  readonly purpose?: string;
+  readonly status?: string;
+  readonly pricePerHour?: number;
+}
+
 // Convert recurring occurrence to calendar event
-const convertRecurringOccurrenceToEvent = (occurrence: any, parentBooking: any): IBookingEvent => {
+const convertRecurringOccurrenceToEvent = (occurrence: RecurringOccurrence, parentBooking: ParentBookingData): IBookingEvent => {
   try {
     const startTime = occurrence.timeSlot.split('-')[0];
     const endTime = occurrence.timeSlot.split('-')[1];

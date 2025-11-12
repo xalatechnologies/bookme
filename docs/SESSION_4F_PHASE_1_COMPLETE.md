@@ -244,7 +244,7 @@ npm run build
 ## 📁 Project Structure (After Cleanup)
 
 ```
-/Users/ibrahimrahmani/Documents/xaheen/bookme/
+/Users/ibrahimrahmani/Documents/xaheen/booknor/
 ├── docs/                      # ✅ All documentation
 │   ├── ARCHITECTURE_COMPLETION_CHECKLIST.md
 │   ├── REUSABLE_COMPONENTS_COMPLETE.md

@@ -94,7 +94,7 @@ export const LoginSelection = (): JSX.Element => {
   const { t } = useTranslation();
 
   return (
-    <h1>{t('auth:loginSelection.title', 'Velkommen til BookMe Portal')}</h1>
+    <h1>{t('auth:loginSelection.title', 'Velkommen til Booknor Portal')}</h1>
   );
 };
 ```
@@ -107,7 +107,7 @@ export const LoginSelection = (): JSX.Element => {
   const { t } = useTranslation('auth');
 
   return (
-    <h1>{t('loginSelection.title', 'Velkommen til BookMe Portal')}</h1>
+    <h1>{t('loginSelection.title', 'Velkommen til Booknor Portal')}</h1>
   );
 };
 ```
@@ -221,7 +221,7 @@ To verify the fix is working:
 
 1. **Start dev server**: Server should be running at `http://localhost:3006`
 2. **Navigate to login selection**: `http://localhost:3006/login-selection`
-   - Should see: "Velkommen til BookMe Portal" (NO) or "Welcome to BookMe Portal" (EN)
+   - Should see: "Velkommen til Booknor Portal" (NO) or "Welcome to Booknor Portal" (EN)
 3. **Navigate to admin login**: `http://localhost:3006/login?type=admin`
    - Should see: "Administrator Innlogging" (NO) or "Administrator Login" (EN)
 4. **Toggle language**: Use language switcher in header
@@ -298,4 +298,4 @@ Add tests to ensure all components use translations properly
 
 **Document Version**: 1.0
 **Last Updated**: October 27, 2025
-**Author**: BookMe Development Team
+**Author**: Booknor Development Team

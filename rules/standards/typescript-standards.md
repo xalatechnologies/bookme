@@ -1,8 +1,8 @@
-# TypeScript Standards for BookMe
+# TypeScript Standards for Booknor
 
 ## 🎯 Overview
 
-This document defines strict TypeScript standards for the BookMe project, emphasizing type safety, consistency, and maintainability. All code MUST adhere to these standards.
+This document defines strict TypeScript standards for the Booknor project, emphasizing type safety, consistency, and maintainability. All code MUST adhere to these standards.
 
 ## 📋 Core Principles
 

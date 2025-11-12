@@ -1,4 +1,4 @@
-# Testing Summary - BookMe Application
+# Testing Summary - Booknor Application
 
 **Date**: October 27, 2025
 **Version**: Frontend v3
@@ -197,7 +197,7 @@ Admin: admin@drammen.kommune.no / password123
 User: test.user@drammen.kommune.no / password123
 Staff: staff@drammen.kommune.no / password123
 Owner: owner@drammen.kommune.no / password123
-Super Admin: superadmin@bookme.no / password123
+Super Admin: superadmin@booknor.no / password123
 ```
 
 #### **Booking Flow**
@@ -462,5 +462,5 @@ The application is ready for final manual testing and deployment preparation.
 
 **Generated**: October 27, 2025
 **Author**: Claude (AI Assistant)
-**Project**: BookMe - Facility Booking System
+**Project**: Booknor - Facility Booking System
 **Version**: Frontend v3

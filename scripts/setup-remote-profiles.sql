@@ -42,7 +42,7 @@ BEGIN
   SELECT id INTO staff_user_id FROM auth.users WHERE email = 'staff@drammen.kommune.no';
   SELECT id INTO admin_user_id FROM auth.users WHERE email = 'admin@drammen.kommune.no';
   SELECT id INTO owner_user_id FROM auth.users WHERE email = 'owner@drammen.kommune.no';
-  SELECT id INTO super_admin_id FROM auth.users WHERE email = 'superadmin@bookme.no';
+  SELECT id INTO super_admin_id FROM auth.users WHERE email = 'superadmin@booknor.no';
 
   -- Create or update profiles
   INSERT INTO profiles (user_id, display_name, created_at, updated_at)
@@ -88,6 +88,6 @@ WHERE u.email IN (
   'staff@drammen.kommune.no',
   'admin@drammen.kommune.no',
   'owner@drammen.kommune.no',
-  'superadmin@bookme.no'
+  'superadmin@booknor.no'
 )
 ORDER BY u.email;

@@ -182,7 +182,7 @@
       "users_tab": {
         "title": "Users",
         "label": "Users",
-        "description": "View, create and manage user accounts in BookMe.",
+        "description": "View, create and manage user accounts in Booknor.",
         "subtitle": "Manage system users and their access",
         "new_user": "New User",
         "selected_count": "{{count}} user(s) selected"

@@ -6,7 +6,7 @@ The booking calendar was not correctly displaying day-specific opening hours. In
 - Calendar not respecting different opening hours for different days
 
 ## Root Cause
-The TimeSlotGrid component was generating a fixed set of time slots based on a single [openingHoursStart](file:///Users/aminismail/Documents/GitHub/bookme-1/src/components/features/calendar/components/FacilityCalendar/index.tsx#L123-L123) and [openingHoursEnd](file:///Users/aminismail/Documents/GitHub/bookme-1/src/components/features/calendar/components/FacilityCalendar/index.tsx#L124-L124) value, which meant it was using the same opening hours for all days of the week.
+The TimeSlotGrid component was generating a fixed set of time slots based on a single [openingHoursStart](file:///Users/aminismail/Documents/GitHub/booknor-1/src/components/features/calendar/components/FacilityCalendar/index.tsx#L123-L123) and [openingHoursEnd](file:///Users/aminismail/Documents/GitHub/booknor-1/src/components/features/calendar/components/FacilityCalendar/index.tsx#L124-L124) value, which meant it was using the same opening hours for all days of the week.
 
 ## Solution
 Updated the system to generate time slots based on the maximum opening hours across all days and then mark individual slots as unavailable based on day-specific hours:

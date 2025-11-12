@@ -271,7 +271,7 @@
     "book_now": "Book nå"
   },
   "share": {
-    "check_out": "Sjekk ut {{name}} på BookMe - {{type}} med kapasitet for {{capacity}} personer",
+    "check_out": "Sjekk ut {{name}} på Booknor - {{type}} med kapasitet for {{capacity}} personer",
     "facility_shared": "Fasilitet delt!",
     "link_copied": "Lenke kopiert til utklippstavle!",
     "share_failed": "Kunne ikke dele fasilitet. Prøv igjen."

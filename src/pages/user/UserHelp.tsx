@@ -120,7 +120,7 @@ const UserHelp = (): JSX.Element => {
               Vi svarer innen 24 timer
             </p>
             <Button variant="outline" className="w-full">
-              support@bookme.no
+              support@booknor.no
             </Button>
           </CardContent>
         </Card>

@@ -2,7 +2,7 @@
 
 ## 🎯 Overview
 
-This guide provides step-by-step instructions for completing the Supabase integration and data normalization for the BookMe application.
+This guide provides step-by-step instructions for completing the Supabase integration and data normalization for the Booknor application.
 
 ## ✅ Completed Phase 1: Critical Fixes
 
@@ -109,7 +109,7 @@ Expected: All queries should return results.
 ### Step 1: Run Seed Script
 
 ```bash
-cd /Users/ibrahimrahmani/Documents/xaheen/bookme
+cd /Users/ibrahimrahmani/Documents/xaheen/booknor
 npx tsx --env-file=.env.local scripts/seed-database.ts
 ```
 
@@ -195,7 +195,7 @@ function MyComponent() {
 Run this to find all components using facilityStore:
 
 ```bash
-cd /Users/ibrahimrahmani/Documents/xaheen/bookme
+cd /Users/ibrahimrahmani/Documents/xaheen/booknor
 grep -r "useFacilityStore\|facilityStore" src/ --include="*.tsx" --include="*.ts" | grep -v "node_modules"
 ```
 

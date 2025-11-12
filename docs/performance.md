@@ -1,6 +1,6 @@
 # Performance Optimization Guide
 
-This document outlines the performance optimization strategies and best practices implemented in the BookMe Portal application.
+This document outlines the performance optimization strategies and best practices implemented in the Booknor Portal application.
 
 ## Bundle Optimization
 

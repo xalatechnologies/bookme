@@ -1,8 +1,8 @@
-# Comprehensive i18n Architecture for BookMe
+# Comprehensive i18n Architecture for Booknor
 
 ## Executive Summary
 
-This document outlines a production-ready internationalization (i18n) architecture for the BookMe platform, a Norwegian booking/facility management SaaS application. The architecture prioritizes type safety, developer experience, and seamless integration with the existing RBAC system.
+This document outlines a production-ready internationalization (i18n) architecture for the Booknor platform, a Norwegian booking/facility management SaaS application. The architecture prioritizes type safety, developer experience, and seamless integration with the existing RBAC system.
 
 ## 1. Library Selection: react-i18next
 
@@ -195,7 +195,7 @@ i18n
     detection: {
       order: ['localStorage', 'navigator', 'htmlTag'],
       caches: ['localStorage'],
-      lookupLocalStorage: 'bookme-language',
+      lookupLocalStorage: 'booknor-language',
     },
 
     interpolation: {
@@ -874,4 +874,4 @@ describe('i18n Configuration', () => {
 
 ## Conclusion
 
-This i18n architecture provides a robust, type-safe, and scalable solution for the BookMe platform. It seamlessly integrates with the existing RBAC system while maintaining excellent developer experience and performance.
+This i18n architecture provides a robust, type-safe, and scalable solution for the Booknor platform. It seamlessly integrates with the existing RBAC system while maintaining excellent developer experience and performance.

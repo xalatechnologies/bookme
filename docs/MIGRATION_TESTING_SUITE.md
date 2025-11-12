@@ -2,7 +2,7 @@
 
 ## Overview
 
-A comprehensive test suite designed to validate the localStorage → Supabase migration across all three phases of the BookMe application's data migration lifecycle.
+A comprehensive test suite designed to validate the localStorage → Supabase migration across all three phases of the Booknor application's data migration lifecycle.
 
 **Total Test Coverage: 3,323 lines of test code**
 

@@ -5,7 +5,7 @@
 
 set -e
 
-BASE_DIR="/Users/ibrahimrahmani/Documents/xaheen/bookme/src/components"
+BASE_DIR="/Users/ibrahimrahmani/Documents/xaheen/booknor/src/components"
 cd "$BASE_DIR"
 
 echo "======================================================"

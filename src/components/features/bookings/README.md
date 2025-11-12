@@ -1,6 +1,6 @@
 # Bookings Feature Domain
 
-Complete feature domain for booking management in the BookMe application.
+Complete feature domain for booking management in the Booknor application.
 
 ## Overview
 

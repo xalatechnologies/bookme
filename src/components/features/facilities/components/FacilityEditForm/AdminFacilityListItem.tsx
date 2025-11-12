@@ -31,7 +31,7 @@ const AdminFacilityListItem = ({ facility, onDelete, onToggleStatus, onDuplicate
   const translateAmenity = useAmenityTranslation();
   
   // Create a flexible translation function that ensures string return
-  const translate = (key: string, options?: any): string => {
+  const translate = (key: string, options?: Record<string, unknown>): string => {
     // Handle facility namespace keys separately
     if (key.startsWith('facility:')) {
       return t(key, options);
@@ -80,7 +80,7 @@ const AdminFacilityListItem = ({ facility, onDelete, onToggleStatus, onDuplicate
     description: string | null;
     capacity: number;
     facility_type: string;
-    amenities: any | null;
+    amenities: string[] | null;
   }>({
     name: facility.name,
     address: facility.address,
@@ -230,7 +230,7 @@ const AdminFacilityListItem = ({ facility, onDelete, onToggleStatus, onDuplicate
       const imageUrls = Array.from(files).map(file => URL.createObjectURL(file));
       const updatedFacility = {
         ...facility,
-        images: facility.images ? [...(facility.images as any[]), ...imageUrls] : imageUrls
+        images: facility.images ? [...(Array.isArray(facility.images) ? facility.images : []), ...imageUrls] : imageUrls
       };
       
       // Save to localStorage (simulating backend)

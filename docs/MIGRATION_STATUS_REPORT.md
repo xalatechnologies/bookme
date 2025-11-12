@@ -8,7 +8,7 @@
 
 ## 🎯 Executive Summary
 
-The BookMe application is ready for **100% Supabase integration**. All critical code fixes, migrations, seed data, and component migration patterns have been completed. The remaining work requires running the database migration on Supabase Dashboard, seeding the database, and completing component migrations using the provided patterns.
+The Booknor application is ready for **100% Supabase integration**. All critical code fixes, migrations, seed data, and component migration patterns have been completed. The remaining work requires running the database migration on Supabase Dashboard, seeding the database, and completing component migrations using the provided patterns.
 
 ---
 
@@ -187,7 +187,7 @@ supabase db push
 
 **Command**:
 ```bash
-cd /Users/ibrahimrahmani/Documents/xaheen/bookme
+cd /Users/ibrahimrahmani/Documents/xaheen/booknor
 npx tsx --env-file=.env.local scripts/seed-database.ts
 ```
 

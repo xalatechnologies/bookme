@@ -39,7 +39,7 @@ export const TimeSlotDisplay: React.FC<ITimeSlotDisplayProps> = ({
   slots,
   recurringSlots = [],
   bookingType,
-  onRemoveSlot,
+  onRemoveSlot: _onRemoveSlot,
   onClearAll,
   showClearButton = true,
   maxPreviewSlots = 5,

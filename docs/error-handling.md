@@ -1,6 +1,6 @@
 # Error Handling Documentation
 
-This document outlines the error handling strategies and best practices implemented in the BookMe Portal application.
+This document outlines the error handling strategies and best practices implemented in the Booknor Portal application.
 
 ## Error Handling Principles
 

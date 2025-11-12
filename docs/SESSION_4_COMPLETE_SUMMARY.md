@@ -285,7 +285,7 @@ The 80% foundation is already there and solid.
 This isn't a refactoring project.  
 This is **enabling the company to scale efficiently**.
 
-**In 6 weeks, BookMe will have:**
+**In 6 weeks, Booknor will have:**
 - ✅ Enterprise-grade component architecture
 - ✅ Clear team domain ownership
 - ✅ Ready for monorepo when needed

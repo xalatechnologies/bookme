@@ -1,4 +1,4 @@
-# Auth Persistence Guide - BookMe Application
+# Auth Persistence Guide - Booknor Application
 
 **Date:** 2025-10-30
 **Status:** ✅ **FULLY IMPLEMENTED AND WORKING**
@@ -7,7 +7,7 @@
 
 ## Executive Summary
 
-Authentication persistence in the BookMe application is **fully configured and working**. When a user logs in, their session is automatically saved to localStorage and persists across:
+Authentication persistence in the Booknor application is **fully configured and working**. When a user logs in, their session is automatically saved to localStorage and persists across:
 
 - ✅ Page refreshes
 - ✅ Browser restarts
@@ -207,7 +207,7 @@ useEffect(() => {
 1. ✅ User logged in (session in localStorage)
 2. User closes browser completely
 3. User opens browser again after hours/days
-4. User navigates to bookme.example.com
+4. User navigates to booknor.example.com
 5. supabase.auth.getSession() reads localStorage
 6. ✅ If token not expired (or auto-refreshed) → User logged in
 7. User continues where they left off
@@ -252,7 +252,7 @@ useEffect(() => {
 - `window.localStorage` (browser-specific, domain-isolated)
 
 **Security measures:**
-- ✅ Tokens are domain-isolated (only accessible from bookme.example.com)
+- ✅ Tokens are domain-isolated (only accessible from booknor.example.com)
 - ✅ HTTPS required in production (prevents network interception)
 - ✅ HttpOnly cookies NOT used (Supabase uses localStorage by default)
 - ✅ PKCE flow for OAuth (adds security layer)
@@ -607,7 +607,7 @@ const signOut = useCallback(async (): Promise<void> => {
 
 ## Summary
 
-✅ **Auth persistence is fully working in the BookMe application!**
+✅ **Auth persistence is fully working in the Booknor application!**
 
 **Key Points:**
 - Sessions automatically persist to localStorage

@@ -18,7 +18,9 @@ if (!supabaseUrl || !supabaseKey) {
   process.exit(1);
 }
 
-const supabase = createClient(supabaseUrl, supabaseKey);
+// Supabase client created but not used directly in this script
+// Migration must be run via Supabase Dashboard or CLI
+// const supabase = createClient(supabaseUrl, supabaseKey);
 
 async function applyMigration() {
   console.log('🔧 Applying migration: normalize_facility_data\n');
@@ -56,8 +58,9 @@ async function applyMigration() {
     console.log('💡 After running the migration, execute:');
     console.log('   npx tsx --env-file=.env.local scripts/seed-database.ts\n');
 
-  } catch (error: any) {
-    console.error('❌ Error:', error.message);
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error('❌ Error:', errorMessage);
     process.exit(1);
   }
 }

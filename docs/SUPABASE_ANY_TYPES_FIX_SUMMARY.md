@@ -1,7 +1,7 @@
 # Supabase Any Types Fix Summary
 
 ## Overview
-Fixed all `any` types related to Supabase queries and localStorage booking data in the BookMe facility booking system.
+Fixed all `any` types related to Supabase queries and localStorage booking data in the Booknor facility booking system.
 
 ## Files Modified
 

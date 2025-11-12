@@ -1,6 +1,6 @@
 # BOOKME_FULL_SAAS_AGENT_PLAN.md
 
-Formål: Gjøre BookMe om til en komplett SaaS-plattform for både kommunal og privat sektor.
+Formål: Gjøre Booknor om til en komplett SaaS-plattform for både kommunal og privat sektor.
 Mål: Sikker, skalerbar og fleksibel løsning som styres via konfig, ikke forks.
 Strategi: Først refaktorering til domener og funksjonell kjerne. Deretter SaaS-lag med multi-tenant konfig, regelmotor v2, tema og pakker.
 
@@ -8,7 +8,7 @@ Strategi: Først refaktorering til domener og funksjonell kjerne. Deretter SaaS-
 
 ## 0. Forutsetninger
 
-- [ ] Repo: bookme-1
+- [ ] Repo: booknor-1
 - [ ] Frontend: Vite + React + TypeScript + Tailwind + shadcn/ui + TanStack Query
 - [ ] Backend: Supabase (Postgres) med PostGIS og RLS
 - [ ] Domene-struktur i bruk: src/domains/*

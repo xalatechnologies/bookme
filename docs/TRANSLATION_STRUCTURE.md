@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document provides a complete reference for all translation keys used in the BookMe application, organized by namespace and category.
+This document provides a complete reference for all translation keys used in the Booknor application, organized by namespace and category.
 
 ## File Structure
 
@@ -443,7 +443,7 @@ Facility action buttons.
 Sharing functionality.
 
 **Keys:**
-- `check_out` - "Check out {{name}} on BookMe..."
+- `check_out` - "Check out {{name}} on Booknor..."
 - `facility_shared`, `link_copied`, `share_failed`
 
 ### Search (`search.*`)

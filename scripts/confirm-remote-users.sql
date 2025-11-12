@@ -9,7 +9,7 @@ WHERE email IN (
   'staff@drammen.kommune.no',
   'admin@drammen.kommune.no',
   'owner@drammen.kommune.no',
-  'superadmin@bookme.no'
+  'superadmin@booknor.no'
 )
 AND email_confirmed_at IS NULL;
 
@@ -25,6 +25,6 @@ WHERE email IN (
   'staff@drammen.kommune.no',
   'admin@drammen.kommune.no',
   'owner@drammen.kommune.no',
-  'superadmin@bookme.no'
+  'superadmin@booknor.no'
 )
 ORDER BY email;

@@ -113,7 +113,7 @@
 
 2. **Copy migration SQL**
    ```bash
-   cat /Users/ibrahimrahmani/Documents/xaheen/bookme/supabase/migrations/20251030000001_normalize_facility_data.sql | pbcopy
+   cat /Users/ibrahimrahmani/Documents/xaheen/booknor/supabase/migrations/20251030000001_normalize_facility_data.sql | pbcopy
    ```
 
 3. **Paste and Run**
@@ -142,7 +142,7 @@ supabase db push
 **After migration completes:**
 
 ```bash
-cd /Users/ibrahimrahmani/Documents/xaheen/bookme
+cd /Users/ibrahimrahmani/Documents/xaheen/booknor
 npx tsx --env-file=.env.local scripts/seed-database.ts
 ```
 
