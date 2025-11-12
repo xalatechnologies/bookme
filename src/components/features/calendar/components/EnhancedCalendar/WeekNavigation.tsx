@@ -2,7 +2,7 @@
 
 // External libraries
 import React from "react";
-import { format, addDays, startOfWeek } from "date-fns";
+import { format, startOfWeek } from "date-fns";
 import { nb } from "date-fns/locale";
 import { ChevronLeft, ChevronRight, Calendar } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -32,7 +32,7 @@ export const WeekNavigation: React.FC<IWeekNavigationProps> = ({
   currentWeek,
   onPreviousWeek,
   onNextWeek,
-  onCurrentWeek,
+  onCurrentWeek: _onCurrentWeek,
   isLoading = false,
 }) => {
   const { t } = useTranslation('common');

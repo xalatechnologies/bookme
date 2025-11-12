@@ -14,7 +14,7 @@ import {
   type BookingWithDetails,
 } from '@/services/supabase/bookings.service';
 import { useOrganizationId } from '@/hooks/useOrganizationId';
-import { useBookingUIStore } from '@/stores/bookingUIStore';
+import { useBookingUIStore, type TBookingView, type TBookingSortBy } from '@/stores/bookingUIStore';
 import {
   filterBookings,
   sortBookings,
@@ -60,14 +60,14 @@ export interface IUseBookingManagementReturn {
   readonly calendarDate: Date;
 
   // UI Actions
-  readonly setView: (view: any) => void;
+  readonly setView: (view: TBookingView) => void;
   readonly toggleFilters: () => void;
   readonly setSearchTerm: (term: string) => void;
   readonly toggleStatusFilter: (status: string) => void;
   readonly toggleFacilityFilter: (facilityId: string) => void;
   readonly setDateRange: (range: { startDate: Date | null; endDate: Date | null }) => void;
   readonly clearDateRange: () => void;
-  readonly toggleSort: (sortBy: any) => void;
+  readonly toggleSort: (sortBy: TBookingSortBy) => void;
   readonly toggleBookingSelection: (id: string) => void;
   readonly selectAllBookings: () => void;
   readonly clearSelection: () => void;

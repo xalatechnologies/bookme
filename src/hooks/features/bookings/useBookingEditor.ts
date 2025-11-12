@@ -59,7 +59,7 @@ export interface IUseBookingEditorReturn {
   readonly showSaveMessage: boolean;
 
   // Actions
-  readonly updateField: (field: keyof Booking, value: any) => void;
+  readonly updateField: (field: keyof Booking, value: Booking[keyof Booking]) => void;
   readonly updateFields: (fields: Partial<Booking>) => void;
   readonly calculatePrice: (basePrice: number, actorType: ActorType) => void;
   readonly checkConflicts: (existingBookings: readonly Booking[]) => void;

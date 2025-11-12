@@ -8,9 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import {
   Zap,
   CheckCircle,
-  AlertTriangle,
   ArrowRight,
-  Clock,
   CreditCard,
   Users,
 } from "lucide-react";

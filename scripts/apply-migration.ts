@@ -4,7 +4,6 @@
  * Applies the normalization migration by executing SQL statements one by one
  */
 
-import { createClient } from '@supabase/supabase-js';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 

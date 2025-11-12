@@ -21,8 +21,8 @@ export const MonthView: React.FC<MonthViewProps> = ({
   onEventClick,
   onEventHover,
   onEventRightClick,
-  currentMonth,
-  currentYear
+  currentMonth: _currentMonth,
+  currentYear: _currentYear
 }): JSX.Element => {
   const { t } = useTranslation('common');
 

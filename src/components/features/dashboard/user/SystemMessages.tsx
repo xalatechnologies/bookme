@@ -3,7 +3,6 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { Badge } from "@/components/ui/badge";
-import { Bell, AlertTriangle, Clock, CheckCircle } from "lucide-react";
 import { useSystemMessageHelpers } from "../hooks/useSystemMessageHelpers";
 
 interface ISystemMessage {

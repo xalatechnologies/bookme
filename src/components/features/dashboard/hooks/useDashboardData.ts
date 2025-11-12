@@ -34,7 +34,7 @@ interface IUseDashboardDataReturn {
  * @param role - The user role ('admin' | 'user')
  * @returns Dashboard data, loading state, error state, and refetch function
  */
-export const useDashboardData = (role: 'admin' | 'user'): IUseDashboardDataReturn => {
+export const useDashboardData = (_role: 'admin' | 'user'): IUseDashboardDataReturn => {
   const [data, setData] = useState<IDashboardData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<Error | null>(null);

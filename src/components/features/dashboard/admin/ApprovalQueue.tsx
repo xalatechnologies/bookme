@@ -3,7 +3,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Clock, AlertCircle, CheckCircle, User } from "lucide-react";
+import { CheckCircle, User } from "lucide-react";
 import { IApprovalRequest } from "@/types/admin";
 import { usePriorityHelpers } from "../hooks/usePriorityHelpers";
 

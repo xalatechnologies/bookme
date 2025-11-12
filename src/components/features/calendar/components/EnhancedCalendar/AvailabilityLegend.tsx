@@ -28,7 +28,7 @@ import { IAvailabilityLegendProps } from "../../types";
  */
 export const AvailabilityLegend: React.FC<IAvailabilityLegendProps> = ({
   showConflictInfo = true,
-  showHolidayInfo = true,
+  showHolidayInfo: _showHolidayInfo = true,
 }) => {
   const { t } = useTranslation('common');
   const legendItems = [

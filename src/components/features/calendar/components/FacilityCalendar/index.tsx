@@ -98,8 +98,8 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
   onBulkSlotSelection: externalOnBulkSlotSelection,
   getAvailabilityStatus: externalGetAvailabilityStatus,
   isSlotSelected: externalIsSlotSelected,
-  onAddToCart: externalOnAddToCart,
-  onCompleteBooking: externalOnCompleteBooking,
+  onAddToCart: _externalOnAddToCart,
+  onCompleteBooking: _externalOnCompleteBooking,
   openingHoursStart = "08:00",
   openingHoursEnd = "22:00",
   useStepByStepBooking = false,
@@ -116,18 +116,18 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
 
   // Custom hooks
   const { checkIfHoliday, getHolidayName } = useHolidayCalculation();
-  const { calculatePricing, formatPrice } = useCalendarPricing();
+  const { calculatePricing, formatPrice: _formatPrice } = useCalendarPricing();
   const {
     pattern: recurrencePattern,
     setPattern: setRecurrencePattern,
     generateRecurringSlots,
-    clearPattern: clearRecurrencePattern,
+    clearPattern: _clearRecurrencePattern,
   } = useRecurrenceHandler();
 
   // Slot selection hook
   const {
     selectedSlots: internalSelectedSlots,
-    recurringSlots,
+    recurringSlots: _recurringSlots,
     handleSlotClick: internalHandleSlotClick,
     handleBulkSlotSelection: internalHandleBulkSlotSelection,
     clearSelection: internalClearSelection,

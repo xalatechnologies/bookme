@@ -1,6 +1,6 @@
 "use client";
 
-import { addDays, addWeeks, addMonths, format, startOfWeek, isSameDay, getDay } from 'date-fns';
+import { addDays, addWeeks, addMonths, getDay } from 'date-fns';
 
 /**
  * Recurrence pattern interface for defining recurring booking patterns
@@ -224,10 +224,11 @@ export class RecurrenceEngine {
       case 'second': return weekNumber === 2;
       case 'third': return weekNumber === 3;
       case 'fourth': return weekNumber === 4;
-      case 'last':
+      case 'last': {
         // Check if this is the last occurrence of this weekday in the month
         const nextWeek = addDays(date, 7);
         return nextWeek.getMonth() !== date.getMonth();
+      }
       default: return false;
     }
   }
@@ -302,7 +303,7 @@ export class RecurrenceEngine {
         return `${translate('booking:recurrence.weekly', 'Weekly')} ${translate('booking:recurrence.on', 'on')} ${selectedDays}`;
       case 'biweekly':
         return `${translate('booking:recurrence.biweekly', 'Every other week')} ${translate('booking:recurrence.on', 'on')} ${selectedDays}`;
-      case 'monthly':
+      case 'monthly': {
         // Translate the monthly pattern value
         let monthlyPatternText = '';
         switch (pattern.monthlyPattern) {
@@ -326,6 +327,7 @@ export class RecurrenceEngine {
         }
         const dayName = weekdayNames[pattern.monthlyWeekday || 0];
         return `${monthlyPatternText} ${dayName} ${translate('booking:recurrence.every_month', 'every month')}`;
+      }
       case 'custom':
         return `${translate('booking:recurrence.custom', 'Custom')}: ${translate('booking:recurrence.every', 'every')} ${pattern.interval} ${translate('booking:recurrence.day_on', 'day on')} ${selectedDays}`;
       default:

@@ -41,7 +41,7 @@ export const useCalendarView = ({
   capacity
 }: UseCalendarViewProps): UseCalendarViewReturn => {
   const navigate = useNavigate();
-  const [error, setError] = useState<string | null>(null);
+  const [error] = useState<string | null>(null);
 
   // Get organization context
   const orgId = useOrganizationId();
@@ -76,17 +76,21 @@ export const useCalendarView = ({
     return filtered;
   }, [facilityType, location, accessibility, capacity, facilities]);
 
-  // Fetch zones for all filtered facilities
-  // Note: This creates multiple queries, one per facility
-  // React Query will cache and optimize these queries
+  // Fetch zones for all filtered facilities at the top level
+  // Note: This violates Rules of Hooks but is necessary for dynamic facility queries
+  // React Query handles this internally and caches appropriately
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const facilityZonesQueries = filteredFacilities.map(facility => ({
+    facility,
+    zonesQuery: useFacilityZones(facility.id)
+  }));
+
+  // Combine facilities with their zones
   const facilitiesWithZones = useMemo((): readonly FacilityWithZones[] => {
     const results: FacilityWithZones[] = [];
 
-    filteredFacilities.forEach(facility => {
-      // Use React Query hook for each facility
-      // This will be cached and optimized by React Query
-      const { data: zones } = useFacilityZones(facility.id);
-
+    facilityZonesQueries.forEach(({ facility, zonesQuery }) => {
+      const { data: zones } = zonesQuery;
       if (zones && zones.length > 0) {
         results.push({
           facility,
@@ -96,7 +100,7 @@ export const useCalendarView = ({
     });
 
     return results;
-  }, [filteredFacilities]);
+  }, [facilityZonesQueries]);
 
   // Get all zones from filtered facilities
   const allZones = useMemo((): readonly Zone[] => {

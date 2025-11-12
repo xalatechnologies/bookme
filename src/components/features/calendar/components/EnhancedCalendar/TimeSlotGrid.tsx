@@ -2,7 +2,7 @@
 
 // External libraries
 import React, { useMemo, useCallback } from "react";
-import { format, addDays, isToday, isWeekend, isPast } from "date-fns";
+import { format } from "date-fns";
 import { nb, enUS } from "date-fns/locale";
 import { useTranslation } from "react-i18next";
 
@@ -193,25 +193,6 @@ export const TimeSlotGrid: React.FC<ICalendarGridProps> = ({
   );
 
 
-  /**
-   * Get day header classes
-   *
-   * @param day - Calendar day
-   * @returns CSS class string
-   */
-  const getDayHeaderClasses = (day: Date): string => {
-    const baseClasses = "p-3 text-center rounded-lg font-medium";
-
-    if (isToday(day)) {
-      return `${baseClasses} bg-blue-100 border-2 border-blue-300 text-blue-800`;
-    }
-
-    if (isWeekend(day)) {
-      return `${baseClasses} bg-amber-50 border border-amber-200 text-amber-800`;
-    }
-
-    return `${baseClasses} bg-gray-50 border border-gray-200 text-gray-700`;
-  };
 
   if (error) {
     return (
@@ -264,7 +245,7 @@ export const TimeSlotGrid: React.FC<ICalendarGridProps> = ({
 
         {/* Time Slot Rows - Compact like drammen */}
         <div className="space-y-1">
-          {timeSlots.map((timeSlot, timeIndex) => (
+          {timeSlots.map((timeSlot) => (
             <div key={timeSlot} className="grid grid-cols-7 gap-1">
               {week.days.map((day, dayIndex) => {
                 const status = getSlotStatus(day.date, timeSlot);

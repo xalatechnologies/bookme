@@ -13,7 +13,6 @@
  */
 
 import {
-  startOfMonth,
   endOfMonth,
   eachDayOfInterval,
   startOfWeek,

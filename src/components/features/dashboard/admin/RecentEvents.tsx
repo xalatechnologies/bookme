@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { Calendar, CheckCircle, User, Settings, Clock } from "lucide-react";
+import { Clock } from "lucide-react";
 import { IRecentEvent } from "@/types/admin";
 import { useEventHelpers } from "../hooks/useEventHelpers";
 

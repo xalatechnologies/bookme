@@ -58,9 +58,9 @@ export interface IBookingFormProps {
 }
 
 export const BookingForm: React.FC<IBookingFormProps> = ({
-  facilityId,
-  facilityName,
-  zoneId,
+  facilityId: _facilityId,
+  facilityName: _facilityName,
+  zoneId: _zoneId,
   selectedSlots,
   onSlotsChange,
   onAddToCart,

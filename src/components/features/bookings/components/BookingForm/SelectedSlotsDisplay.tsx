@@ -5,12 +5,10 @@ import React from "react";
 import { useTranslation } from 'react-i18next';
 import { format } from "date-fns";
 import { nb } from "date-fns/locale";
-import { X, Trash2, Calendar, Clock } from "lucide-react";
+import { Trash2, Calendar, Clock } from "lucide-react";
 
 // Internal libraries/utilities
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 
 // Types
 import { ISelectedSlotsDisplayProps, ISelectedTimeSlot } from "../../types";
@@ -32,7 +30,7 @@ import { ISelectedSlotsDisplayProps, ISelectedTimeSlot } from "../../types";
  */
 export const SelectedSlotsDisplay: React.FC<ISelectedSlotsDisplayProps> = ({
   selectedSlots,
-  onRemoveSlot,
+  onRemoveSlot: _onRemoveSlot,
   onClearAll,
   isLoading = false,
 }): JSX.Element => {

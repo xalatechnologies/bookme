@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
-import { CheckCircle, XCircle, ChevronDown, ChevronRight, Users } from 'lucide-react';
+import { CheckCircle, XCircle, ChevronDown, ChevronRight } from 'lucide-react';
 
 import type { Zone } from '@/types/booking';
 import { useTranslation } from '@/i18n';

@@ -7,7 +7,6 @@ import {
   LayoutDashboard,
   Building2,
   Calendar,
-  CheckCircle,
   Users,
   Bell,
   MessageCircle,

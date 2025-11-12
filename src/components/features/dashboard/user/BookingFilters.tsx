@@ -9,8 +9,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CardTitle } from "@/components/ui/card";
-import { Calendar } from "lucide-react";
 
 interface IBookingFiltersProps {
   readonly bookingFilter: string;

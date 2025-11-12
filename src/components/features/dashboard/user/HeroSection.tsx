@@ -46,7 +46,7 @@ export const HeroSection = (props: IHeroSectionProps): JSX.Element => {
       "friday",
       "saturday",
     ];
-    return t(`dashboard.days.${dayKeys[dayIndex]}` as any);
+    return t(`dashboard.days.${dayKeys[dayIndex]}` as string);
   };
 
   const getWeatherIcon = (
@@ -72,7 +72,7 @@ export const HeroSection = (props: IHeroSectionProps): JSX.Element => {
                 {t("dashboard.greeting", {
                   dayOfWeek: getDayOfWeek(),
                   name: userName,
-                } as any)}{" "}
+                } as Record<string, string>)}{" "}
                 👋
               </h1>
               {weather && (
@@ -88,7 +88,7 @@ export const HeroSection = (props: IHeroSectionProps): JSX.Element => {
               {weather &&
                 `${t("dashboard.weather_in_city", {
                   description: weather.description,
-                } as any)} `}
+                } as Record<string, string>)} `}
               {t("dashboard.perfect_day", { defaultValue: "Perfect day to book an activity!" })}
             </p>
 
@@ -114,7 +114,7 @@ export const HeroSection = (props: IHeroSectionProps): JSX.Element => {
                     facility: nextBooking.facility,
                     date: nextBooking.date,
                     time: nextBooking.time,
-                  } as any)
+                  } as Record<string, string>)
                 : t("dashboard.no_upcoming_bookings", { defaultValue: "No upcoming bookings" })}
             </p>
           </div>

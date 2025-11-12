@@ -1,7 +1,7 @@
 "use client";
 
 // External libraries
-import React, { useState, useCallback } from "react";
+import React, { useCallback } from "react";
 import { isSameDay } from "date-fns";
 import { useTranslation } from "react-i18next";
 
@@ -28,7 +28,7 @@ interface CalendarViewProps {
 }
 
 export const CalendarView: React.FC<CalendarViewProps> = ({
-  date,
+  date: _date,
   facilityType,
   location,
   accessibility,

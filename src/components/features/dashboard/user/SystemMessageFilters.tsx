@@ -2,8 +2,6 @@
 
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { CardTitle } from "@/components/ui/card";
-import { Bell } from "lucide-react";
 import { LocalizedSelect } from "@/components/common/LocalizedSelect";
 
 interface ISystemMessageFiltersProps {
@@ -15,7 +13,7 @@ interface ISystemMessageFiltersProps {
 export const SystemMessageFilters = (
   props: ISystemMessageFiltersProps
 ): JSX.Element => {
-  const { messageFilter, onFilterChange, unreadMessagesCount } = props;
+  const { messageFilter, onFilterChange, unreadMessagesCount: _unreadMessagesCount } = props;
   const { t } = useTranslation("common");
 
   return (
