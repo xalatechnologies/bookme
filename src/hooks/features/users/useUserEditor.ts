@@ -10,7 +10,7 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from "@/contexts/hooks";
 import { useOrganizationId } from '@/hooks/useOrganizationId';
 import {
   validateUserData,

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, useCallback } from "react";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/hooks";
 import { useUserBookings, type BookingWithDetails } from "@/services/supabase/bookings.service";
 import type { IBookingHistoryItem } from "@/types/history";
 import type { IBookingEvent } from "@/types/calendar";

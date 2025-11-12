@@ -32,7 +32,7 @@ import {
 import type { Message } from "@/types/message";
 import { useMessageStore } from "@/stores/messageStore";
 import { cn } from "@/lib/utils/cn";
-import { useUserProfile } from "@/contexts/UserProfileContext";
+import { useUserProfile } from "@/contexts/hooks";
 
 interface MessageThreadProps {
   readonly threadId: string;

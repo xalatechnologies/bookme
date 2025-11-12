@@ -45,7 +45,7 @@ export const SearchInput = ({
   className = '',
   namespace = 'common'
 }: SearchInputProps): JSX.Element => {
-  const { t } = useTranslation(namespace);
+  const { t } = useTranslation(namespace as any);
 
   const handleClear = useCallback(() => {
     onChange('');

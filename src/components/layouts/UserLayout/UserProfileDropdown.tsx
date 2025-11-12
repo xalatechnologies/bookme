@@ -4,8 +4,8 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { User, Settings, LogOut, Globe, ChevronDown } from "lucide-react";
-import { useUserProfile } from "@/contexts/UserProfileContext";
-import { useAuth } from "@/contexts/AuthContext";
+import { useUserProfile } from "@/contexts/hooks";
+import { useAuth } from "@/contexts/hooks";
 import { toast } from "react-toastify";
 
 interface IUserProfileDropdownProps {

@@ -60,7 +60,7 @@ const CreateThreadModal: React.FC<CreateThreadModalProps> = ({
           </CardHeader>
           <CardContent className="text-center space-y-4">
             <p className="text-muted-foreground">
-              {currentUserType === 'tenant' 
+              {currentUserType === 'tenant'
                 ? t('messages.noBookingsYetTenant')
                 : t('messages.noBookingsYetLandlord')
               }
@@ -120,7 +120,7 @@ const CreateThreadModal: React.FC<CreateThreadModalProps> = ({
         return;
       }
 
-      const threadId = createThread({
+      createThread({
         subject: subject.trim(),
         participants: [
           { id: currentUserId, name: currentUserName, type: currentUserType },
@@ -137,7 +137,7 @@ const CreateThreadModal: React.FC<CreateThreadModalProps> = ({
       });
 
       toast.success(currentUserType === 'tenant' ? 'Melding sendt til utleier!' : 'Melding sendt til leietaker!');
-      
+
       // Reset form
       setSubject("");
       setContent("");
@@ -145,9 +145,9 @@ const CreateThreadModal: React.FC<CreateThreadModalProps> = ({
       setSelectedFacility("");
       setPriority("medium");
       setAttachments([]);
-      
+
       onClose();
-    } catch (error) {
+    } catch (_error) {
       toast.error("Feil ved opprettelse av meldingstråd");
     } finally {
       setIsLoading(false);
@@ -193,7 +193,7 @@ const CreateThreadModal: React.FC<CreateThreadModalProps> = ({
             <X className="h-4 w-4" />
           </Button>
         </CardHeader>
-        
+
         <CardContent className="space-y-6 overflow-y-auto flex-1 min-h-0">
           {/* Subject */}
           <div className="space-y-2">
@@ -375,8 +375,8 @@ const CreateThreadModal: React.FC<CreateThreadModalProps> = ({
           <Button variant="outline" onClick={onClose} disabled={isLoading}>
             {t('messages.cancel')}
           </Button>
-          <Button 
-            onClick={handleSubmit} 
+          <Button
+            onClick={handleSubmit}
             disabled={isLoading || !subject.trim() || !content.trim() || !selectedParticipant}
           >
             {isLoading ? (

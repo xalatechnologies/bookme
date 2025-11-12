@@ -6,7 +6,7 @@
  */
 
 import { useState, useCallback } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from "@/contexts/hooks";
 import { useUserBookings } from '@/services/supabase/bookings.service';
 import { useBookingFilters, type BookingFilters } from './useBookingFilters';
 import { useBookingStats } from './useBookingStats';

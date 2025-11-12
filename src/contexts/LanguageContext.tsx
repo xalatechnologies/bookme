@@ -1,18 +1,18 @@
 "use client";
 
-import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
+import React, { createContext, useState, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { Language } from '@/i18n/types';
 import { changeLanguage as changeI18nLanguage, getCurrentLanguage } from '@/i18n/config';
 
-interface LanguageContextType {
+export interface LanguageContextType {
   readonly language: Language;
   readonly setLanguage: (language: Language) => void;
   readonly toggleLanguage: () => void;
 }
 
-const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
+export const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 interface LanguageProviderProps {
   readonly children: React.ReactNode;
@@ -77,12 +77,4 @@ export const LanguageProvider = ({ children }: LanguageProviderProps): JSX.Eleme
       {children}
     </LanguageContext.Provider>
   );
-};
-
-export const useLanguage = (): LanguageContextType => {
-  const context = useContext(LanguageContext);
-  if (context === undefined) {
-    throw new Error('useLanguage must be used within a LanguageProvider');
-  }
-  return context;
 };

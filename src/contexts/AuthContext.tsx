@@ -13,7 +13,7 @@
  *
  * Usage:
  * ```tsx
- * import { useAuth } from '@/contexts/AuthContext';
+ * import { useAuth } from '@/contexts/hooks/useAuth';
  *
  * function MyComponent() {
  *   const { user, session, loading, signIn, signOut } = useAuth();
@@ -26,7 +26,7 @@
  * ```
  */
 
-import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import React, { createContext, useEffect, useState, useCallback } from 'react';
 import { supabase } from '@/lib/clients/supabase';
 import type { User, Session } from '@supabase/supabase-js';
 import type { Database } from '@/types/database';
@@ -34,7 +34,7 @@ import type { Database } from '@/types/database';
 type Profile = Database['public']['Tables']['profiles']['Row'];
 type Membership = Database['public']['Tables']['memberships']['Row'];
 
-interface AuthContextValue {
+export interface AuthContextValue {
   /** Current authenticated user */
   readonly user: User | null;
 
@@ -69,7 +69,7 @@ interface AuthContextValue {
   readonly setCurrentOrg: (orgId: string) => Promise<void>;
 }
 
-const AuthContext = createContext<AuthContextValue | undefined>(undefined);
+export const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 interface AuthProviderProps {
   readonly children: React.ReactNode;
@@ -260,7 +260,7 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
    * Sign in with email and password
    */
   const signInWithPassword = useCallback(async (email: string, password: string): Promise<void> => {
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
@@ -354,62 +354,4 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
       {children}
     </AuthContext.Provider>
   );
-};
-
-/**
- * Hook to use auth context
- *
- * @throws {Error} If used outside of AuthProvider
- *
- * @example
- * ```tsx
- * function MyComponent() {
- *   const { user, signOut } = useAuth();
- *
- *   return (
- *     <div>
- *       <p>Logged in as: {user?.email}</p>
- *       <button onClick={signOut}>Sign Out</button>
- *     </div>
- *   );
- * }
- * ```
- */
-export const useAuth = (): AuthContextValue => {
-  const context = useContext(AuthContext);
-
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-
-  return context;
-};
-
-/**
- * Hook to require authentication
- * Redirects to login if not authenticated
- *
- * @example
- * ```tsx
- * function ProtectedPage() {
- *   const { user, loading } = useRequireAuth();
- *
- *   if (loading) return <LoadingSpinner />;
- *
- *   return <div>Protected content for {user.email}</div>;
- * }
- * ```
- */
-export const useRequireAuth = (): Omit<AuthContextValue, 'signIn'> => {
-  const auth = useAuth();
-
-  useEffect(() => {
-    if (!auth.loading && !auth.user) {
-      // Redirect to login page
-      // TODO: Implement redirect logic
-      console.warn('User not authenticated, redirect to login');
-    }
-  }, [auth.loading, auth.user]);
-
-  return auth;
 };

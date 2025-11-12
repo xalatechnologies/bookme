@@ -20,7 +20,7 @@ interface MobileMenuProps {
 const MobileMenu = ({
   isOpen,
   isLoggedIn,
-  setLanguage,
+  _setLanguage,
   handleLogin,
   handleLogout,
   closeMobileMenu,

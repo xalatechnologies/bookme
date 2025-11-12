@@ -30,7 +30,7 @@ import { useState, useEffect, useMemo, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { usePublishedFacilities } from "@/services/supabase/facilities.service";
 import { useUserBookings } from "@/services/supabase/bookings.service";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/hooks";
 
 // ============================================================================
 // Types & Interfaces

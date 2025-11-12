@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { useUserBookings } from "@/services/supabase/bookings.service";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/hooks";
 import type { BookingWithDetails } from "@/services/supabase/bookings.service";
 
 interface IReceipt {

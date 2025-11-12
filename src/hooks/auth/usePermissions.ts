@@ -15,7 +15,7 @@
  */
 
 import { useQuery } from '@tanstack/react-query';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from "@/contexts/hooks";
 import { rbacService, type Permission } from '@/services/supabase/rbac.service';
 import type { Database } from '@/types/database';
 

@@ -58,7 +58,7 @@ export const SortDropdown = ({
   className = '',
   namespace = 'common'
 }: SortDropdownProps): JSX.Element => {
-  const { t } = useTranslation(namespace);
+  const { t } = useTranslation(namespace as any);
 
   const defaultPlaceholder = t('filters.sort_by', 'Sorter etter');
   const defaultAriaLabel = t('aria.sort_dropdown', 'Sorteringsvalg');

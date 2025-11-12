@@ -10,7 +10,7 @@
 
 import { useMemo, useCallback } from 'react';
 import { useOrganizationId } from '@/hooks/useOrganizationId';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from "@/contexts/hooks";
 import { useAppUIStore } from '@/stores/appUIStore';
 import {
   filterUsers,

@@ -62,7 +62,7 @@ export const Calendar: React.FC<CalendarProps> = ({
   openingHoursEnd = "22:00",
   compact = false,
 }): JSX.Element => {
-  const { t } = useTranslation("common");
+  const { t } = useTranslation("calendar");
   const [currentWeekStart, setCurrentWeekStart] = useState(() =>
     startOfWeek(new Date(), { weekStartsOn: 1 })
   );
@@ -122,10 +122,10 @@ export const Calendar: React.FC<CalendarProps> = ({
           <div className="flex items-center space-x-2">
             <Button variant="outline" size="sm" onClick={handlePreviousWeek}>
               <ChevronLeft className="h-4 w-4" />
-              {t("calendar:navigation.previous_week")}
+              {t("navigation.previous_week")}
             </Button>
             <Button variant="outline" size="sm" onClick={handleNextWeek}>
-              {t("calendar:navigation.next_week")}
+              {t("navigation.next_week")}
               <ChevronRight className="h-4 w-4" />
             </Button>
           </div>

@@ -48,6 +48,7 @@ import {
 import { useAvailabilityStatus } from "../../hooks";
 
 import type {
+  ActivityType,
   ISelectedTimeSlot,
   IZone,
   BookingType,
@@ -96,9 +97,8 @@ export interface IStepByStepBookingProps {
 
 export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  facilityId: _facilityId,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  facilityName: _facilityName,
+  facilityId,
+  facilityName,
   zones,
   selectedZoneId,
   onZoneChange,

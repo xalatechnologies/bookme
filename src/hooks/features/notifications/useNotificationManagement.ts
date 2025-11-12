@@ -7,7 +7,7 @@
  */
 
 import { useMemo, useCallback, useState } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from "@/contexts/hooks";
 import {
   useNotifications,
   useMarkNotificationAsRead,

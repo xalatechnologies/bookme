@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage } from "@/contexts/hooks";
 import { Logo } from "@/components/layouts/PublicLayout/Logo";
 import { LanguageToggle } from "@/components/layouts/PublicLayout/LanguageToggle";
 import UserSearchField from "@/components/features/search/components/UserSearchField";

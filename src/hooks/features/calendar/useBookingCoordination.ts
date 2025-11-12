@@ -14,7 +14,7 @@
 import { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { useCart } from "@/contexts/CartContext";
+import { useCart } from "@/contexts/hooks";
 import type {
   ISelectedTimeSlot,
   IZone,

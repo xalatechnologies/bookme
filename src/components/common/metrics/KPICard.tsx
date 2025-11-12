@@ -290,7 +290,7 @@ export const KPICard: React.FC<KPICardProps> = ({
       `}
       role={onClick ? "button" : undefined}
       tabIndex={onClick ? 0 : undefined}
-      aria-label={onClick ? t("kpi.navigate_to", { title }) : undefined}
+      aria-label={onClick ? `Navigate to ${title}` : undefined}
     >
       <div className="flex items-start justify-between">
         <div className="flex-1">

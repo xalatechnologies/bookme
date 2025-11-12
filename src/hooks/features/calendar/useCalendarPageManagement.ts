@@ -4,7 +4,7 @@ import { useState, useMemo, useCallback } from 'react';
 import { startOfMonth, endOfMonth, startOfWeek, endOfWeek, startOfDay, endOfDay } from 'date-fns';
 import type { IBookingEventWithMeta } from '@/types/calendar';
 import { useUserBookings, type BookingWithDetails } from '@/services/supabase/bookings.service';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from "@/contexts/hooks";
 
 interface IDateRange {
   readonly from: string;

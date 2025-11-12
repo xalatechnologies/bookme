@@ -5,10 +5,10 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Menu, ShoppingCart } from "lucide-react";
 
-import { useLanguage } from "@/contexts/LanguageContext";
-import { useCart } from "@/contexts/CartContext";
-import { useUserProfile } from "@/contexts/UserProfileContext";
-import { useAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "@/contexts/hooks";
+import { useCart } from "@/contexts/hooks";
+import { useUserProfile } from "@/contexts/hooks";
+import { useAuth } from "@/contexts/hooks";
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";

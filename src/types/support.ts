@@ -1,6 +1,6 @@
 /**
  * Support ticket interface for the support system
- * 
+ *
  * Supports comprehensive ticket management with categories, priorities,
  * status tracking, and full conversation history.
  */
@@ -76,6 +76,8 @@ export interface UpdateSupportTicketData {
   readonly assignedTo?: string;
   readonly assignedToName?: string;
   readonly tags?: readonly string[];
+  readonly resolvedAt?: string;
+  readonly closedAt?: string;
 }
 
 /**
@@ -88,6 +90,7 @@ export interface CreateSupportTicketReplyData {
   readonly authorType: 'user' | 'admin';
   readonly content: string;
   readonly attachments?: readonly {
+    readonly id?: string;
     readonly name: string;
     readonly base64Data: string;
     readonly type: string;
@@ -111,45 +114,29 @@ export interface SupportTicketFilter {
 }
 
 /**
- * Support ticket search criteria interface
+ * Support ticket search criteria
  */
 export interface SupportTicketSearchCriteria {
   readonly query?: string;
   readonly filter?: SupportTicketFilter;
   readonly sortBy?: 'createdAt' | 'updatedAt' | 'priority' | 'status';
   readonly sortOrder?: 'asc' | 'desc';
+  readonly limit?: number;
+  readonly offset?: number;
 }
 
 /**
- * Support ticket statistics interface
+ * Support ticket statistics
  */
 export interface SupportTicketStatistics {
-  readonly totalTickets: number;
-  readonly openTickets: number;
-  readonly inProgressTickets: number;
-  readonly resolvedTickets: number;
-  readonly closedTickets: number;
-  readonly averageResolutionTime: number; // in hours
-  readonly ticketsByCategory: {
-    readonly booking: number;
-    readonly technical: number;
-    readonly billing: number;
-    readonly feedback: number;
-    readonly other: number;
-  };
-  readonly ticketsByPriority: {
-    readonly low: number;
-    readonly medium: number;
-    readonly high: number;
-    readonly urgent: number;
-  };
-  readonly ticketsByStatus: {
-    readonly open: number;
-    readonly inProgress: number;
-    readonly waitingUser: number;
-    readonly resolved: number;
-    readonly closed: number;
-  };
+  readonly total: number;
+  readonly byStatus: Readonly<Record<SupportTicket['status'], number>>;
+  readonly byPriority: Readonly<Record<SupportTicket['priority'], number>>;
+  readonly byCategory: Readonly<Record<SupportTicket['category'], number>>;
+  readonly avgResolutionTime: number;
+  readonly pendingCount: number;
+  readonly resolvedToday: number;
+  readonly overdueCount: number;
 }
 
 /**
@@ -160,64 +147,41 @@ export interface SupportTicketTemplate {
   readonly name: string;
   readonly category: SupportTicket['category'];
   readonly subject: string;
-  readonly description: string;
-  readonly tags: readonly string[];
-  readonly isActive: boolean;
-  readonly createdBy: string;
+  readonly content: string;
+  readonly tags?: readonly string[];
   readonly createdAt: string;
   readonly updatedAt: string;
 }
 
 /**
- * Support ticket assignment interface
- */
-export interface SupportTicketAssignment {
-  readonly ticketId: string;
-  readonly assignedTo: string;
-  readonly assignedToName: string;
-  readonly assignedAt: string;
-  readonly assignedBy: string;
-  readonly assignedByName: string;
-}
-
-/**
- * Support ticket activity interface
+ * Support ticket activity log entry
  */
 export interface SupportTicketActivity {
   readonly id: string;
   readonly ticketId: string;
-  readonly type: 'created' | 'updated' | 'assigned' | 'replied' | 'resolved' | 'closed' | 'reopened';
+  readonly type: 'created' | 'updated' | 'replied' | 'assigned' | 'resolved' | 'closed' | 'reopened';
   readonly userId: string;
   readonly userName: string;
   readonly description: string;
-  readonly metadata?: Record<string, unknown>;
   readonly timestamp: string;
+  readonly metadata?: Readonly<Record<string, unknown>>;
 }
 
 /**
- * Support ticket SLA (Service Level Agreement) interface
+ * Type guards
  */
-export interface SupportTicketSLA {
-  readonly priority: SupportTicket['priority'];
-  readonly responseTime: number; // in hours
-  readonly resolutionTime: number; // in hours
-  readonly businessHours: {
-    readonly start: string; // HH:mm format
-    readonly end: string; // HH:mm format
-    readonly timezone: string;
-    readonly workingDays: readonly number[]; // 0-6 (Sunday-Saturday)
-  };
-}
+export const isSupportTicket = (value: unknown): value is SupportTicket => {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'id' in value &&
+    'userId' in value &&
+    'category' in value &&
+    'status' in value &&
+    'priority' in value
+  );
+};
 
-/**
- * Support ticket escalation interface
- */
-export interface SupportTicketEscalation {
-  readonly ticketId: string;
-  readonly escalatedAt: string;
-  readonly escalatedBy: string;
-  readonly escalatedTo: string;
-  readonly reason: string;
-  readonly previousPriority: SupportTicket['priority'];
-  readonly newPriority: SupportTicket['priority'];
-}
+export const isSupportTicketFilter = (value: unknown): value is SupportTicketFilter => {
+  return typeof value === 'object' && value !== null;
+};

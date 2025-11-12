@@ -49,9 +49,9 @@ const useStatusLabel = (status: BookingStatus): string => {
     paid: t("status.paid"),
     completed: t("status.completed"),
     pending: t("status.pending"),
-    awaiting_payment: t("status.awaiting_payment"),
+    awaiting_payment: t("status.pending_payment"),
     cancelled: t("status.cancelled"),
-    expired: t("status.expired"),
+    expired: t("status.paid"),
     refunded: t("status.refunded"),
   };
 
@@ -85,8 +85,8 @@ export const BookingCard = ({
   const statusLabel = useStatusLabel(booking.status);
 
   const durationTranslations = {
-    hour: t("card.hour"),
-    hours: t("card.hours"),
+    hour: t("time.hour"),
+    hours: t("time.hours"),
   };
 
   const handleCardClick = useCallback(() => {
@@ -139,9 +139,7 @@ export const BookingCard = ({
             checked={selected}
             onCheckedChange={handleCheckboxChange}
             className="mt-1"
-            aria-label={t("card.selectBooking", {
-              facility: booking.facility?.name,
-            })}
+            aria-label={`Select booking for ${booking.facility?.name || t("details.unknownVenue")}`}
           />
         </div>
       )}
@@ -162,7 +160,7 @@ export const BookingCard = ({
               {/* Header */}
               <div className="flex items-center justify-between mb-2">
                 <h3 className="font-semibold text-gray-900 text-lg">
-                  {booking.facility?.name || t("card.unknownFacility")}
+                  {booking.facility?.name || t("details.unknownVenue")}
                 </h3>
                 <Badge className={getStatusBadgeColor(booking.status)}>
                   {statusLabel}
@@ -205,7 +203,7 @@ export const BookingCard = ({
                   </span>
                   {booking.notes && (
                     <span className="text-xs text-gray-500 italic">
-                      {t("card.hasNotes")}
+                      {t("details.notesLabel")}
                     </span>
                   )}
                 </div>
@@ -219,8 +217,8 @@ export const BookingCard = ({
                 size="sm"
                 onClick={handleViewClick}
                 className="h-9 w-9 p-0"
-                aria-label={t("card.viewDetails")}
-                title={t("card.viewDetails")}
+                aria-label={t("actions.view_details")}
+                title={t("actions.view_details")}
               >
                 <Eye className="w-4 h-4" />
               </Button>
@@ -230,8 +228,8 @@ export const BookingCard = ({
                   size="sm"
                   onClick={handleDeleteClick}
                   className="h-9 w-9 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
-                  aria-label={t("card.cancelBooking")}
-                  title={t("card.cancelBooking")}
+                  aria-label={t("actions.cancel")}
+                  title={t("actions.cancel")}
                 >
                   <Trash2 className="w-4 h-4" />
                 </Button>

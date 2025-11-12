@@ -10,7 +10,7 @@ import { GlobalHeader } from "@/components/layouts/PublicLayout/GlobalHeader";
 import SearchFilter from "@/components/features/search/components/SearchFilter";
 import { FacilityList } from "@/components/features/facilities/components/FacilitySearch/FacilityList";
 import { MapView } from "@/components/features/facilities/components/FacilityMap/MapView";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/hooks";
 
 export const Index = (): JSX.Element => {
   const navigate = useNavigate();

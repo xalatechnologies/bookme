@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { User, LogIn, Shield } from "lucide-react";
 
 import { useTranslation } from "react-i18next";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/hooks";
 
 import { Button } from "@/components/ui/button";
 import {

@@ -10,7 +10,7 @@
  * - Organization switcher component
  */
 
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from "@/contexts/hooks";
 import { useMemo } from 'react';
 
 // Default organization ID for Drammen Kommune
