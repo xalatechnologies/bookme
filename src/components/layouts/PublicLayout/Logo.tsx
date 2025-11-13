@@ -29,9 +29,9 @@ export const Logo = (): JSX.Element => {
       }}
     >
       <img
-        src="/Design uten navn.svg"
+        src="/Booknor-logo.svg"
         alt={t('aria.logo')}
-        className="h-8 w-auto"
+        className="h-9 w-auto"
       />
     </div>
   );
