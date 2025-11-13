@@ -35,6 +35,7 @@ export const zoneKeys = {
   all: ['zones'] as const,
   lists: () => [...zoneKeys.all, 'list'] as const,
   facilityZones: (facilityId: string) => [...zoneKeys.lists(), 'facility', facilityId] as const,
+  facilitiesZones: (facilityIds: readonly string[]) => [...zoneKeys.lists(), 'facilities', ...facilityIds.sort()] as const,
   details: () => [...zoneKeys.all, 'detail'] as const,
   detail: (id: string) => [...zoneKeys.details(), id] as const,
   withAvailability: (id: string) => [...zoneKeys.detail(id), 'availability'] as const,
@@ -53,6 +54,23 @@ export const zonesService = {
       .from('zones')
       .select('*')
       .eq('facility_id', facilityId)
+      .eq('status', 'active')
+      .order('name', { ascending: true });
+
+    if (error) throw error;
+    return data;
+  },
+
+  /**
+   * Fetch zones for multiple facilities
+   */
+  async getByFacilities(facilityIds: readonly string[]): Promise<Zone[]> {
+    if (facilityIds.length === 0) return [];
+    
+    const { data, error } = await supabase
+      .from('zones')
+      .select('*')
+      .in('facility_id', facilityIds)
       .eq('status', 'active')
       .order('name', { ascending: true });
 
@@ -203,6 +221,21 @@ export const useFacilityZones = (
     queryKey: zoneKeys.facilityZones(facilityId),
     queryFn: () => zonesService.getByFacility(facilityId),
     enabled: !!facilityId && enabled,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+};
+
+/**
+ * Hook to fetch zones for multiple facilities
+ */
+export const useFacilitiesZones = (
+  facilityIds: readonly string[],
+  enabled = true
+): UseQueryResult<Zone[], Error> => {
+  return useQuery({
+    queryKey: zoneKeys.facilitiesZones(facilityIds),
+    queryFn: () => zonesService.getByFacilities(facilityIds),
+    enabled: facilityIds.length > 0 && enabled,
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 };

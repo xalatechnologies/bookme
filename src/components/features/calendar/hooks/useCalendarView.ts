@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 
 // Internal imports - Supabase services
 import { usePublishedFacilities } from '@/services/supabase/facilities.service';
-import { useFacilityZones } from '@/services/supabase/zones.service';
+import { useFacilitiesZones } from '@/services/supabase/zones.service';
 import { useOrganizationId } from '@/hooks/useOrganizationId';
 import type { Database } from '@/types/database';
 import type { Zone } from '@/types/booking';
@@ -77,22 +77,28 @@ export const useCalendarView = ({
     return filtered;
   }, [facilityType, location, accessibility, capacity, facilities]);
 
-  // Fetch zones for all filtered facilities at the top level
-  // Note: This violates Rules of Hooks but is necessary for dynamic facility queries
-  // React Query handles this internally and caches appropriately
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const facilityZonesQueries = filteredFacilities.map(facility => ({
-    facility,
-    zonesQuery: useFacilityZones(facility.id)
-  }));
+  // Fetch zones for all filtered facilities in a single query
+  const facilityIds = useMemo(() => filteredFacilities.map(f => f.id), [filteredFacilities]);
+  const { data: allZonesData = [], isLoading: zonesLoading } = useFacilitiesZones(facilityIds);
 
   // Combine facilities with their zones
   const facilitiesWithZones = useMemo((): readonly FacilityWithZones[] => {
     const results: FacilityWithZones[] = [];
+    const zonesByFacility = new Map<string, Zone[]>();
 
-    facilityZonesQueries.forEach(({ facility, zonesQuery }) => {
-      const { data: zones } = zonesQuery;
-      if (zones && zones.length > 0) {
+    // Group zones by facility_id
+    allZonesData.forEach(zone => {
+      const facilityId = zone.facility_id;
+      if (!zonesByFacility.has(facilityId)) {
+        zonesByFacility.set(facilityId, []);
+      }
+      zonesByFacility.get(facilityId)!.push(zone);
+    });
+
+    // Combine facilities with their zones
+    filteredFacilities.forEach(facility => {
+      const zones = zonesByFacility.get(facility.id) || [];
+      if (zones.length > 0) {
         results.push({
           facility,
           zones: zones as readonly Zone[]
@@ -101,7 +107,7 @@ export const useCalendarView = ({
     });
 
     return results;
-  }, [facilityZonesQueries]);
+  }, [filteredFacilities, allZonesData]);
 
   // Get all zones from filtered facilities
   const allZones = useMemo((): readonly Zone[] => {
@@ -110,8 +116,8 @@ export const useCalendarView = ({
 
   return {
     facilitiesWithZones,
-    isLoading,
-    error: facilitiesError?.message || error,
+    isLoading: isLoading || zonesLoading,
+    error: facilitiesError?.message || null,
     allZones,
     navigate
   };

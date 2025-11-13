@@ -24,6 +24,7 @@ export interface IUserProfileContext {
   readonly isLoading: boolean;
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const UserProfileContext = createContext<IUserProfileContext | undefined>(undefined);
 
 export const UserProfileProvider = ({ children }: { readonly children: React.ReactNode }): JSX.Element => {
@@ -46,7 +47,7 @@ export const UserProfileProvider = ({ children }: { readonly children: React.Rea
     subscriptionType: "Gratisbruker"
   };
 
-  const updateProfile = (updates: Partial<IUserProfile>): void => {
+  const updateProfile = (_updates: Partial<IUserProfile>): void => {
     // TODO: Implement profile update via Supabase
     setIsLoading(true);
 
