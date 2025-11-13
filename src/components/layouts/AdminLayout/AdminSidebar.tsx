@@ -18,7 +18,7 @@ import {
   ChevronLeft,
   ChevronRight
 } from "lucide-react";
-import { useSidebar } from "./index";
+import { useSidebar } from "./useSidebar";
 
 interface IMenuItem {
   readonly id: string;

@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import AdminHeader from "./AdminHeader";
 import AdminSidebar from "./AdminSidebar";
-import { SidebarContext } from "./useSidebar";
+import { SidebarContext, useSidebar } from "./useSidebar";
 
 interface IAdminLayoutProps {
   readonly children: React.ReactNode;
@@ -43,3 +43,4 @@ const AdminLayout = ({ children }: IAdminLayoutProps): JSX.Element => {
 };
 
 export default AdminLayout;
+export { useSidebar };
