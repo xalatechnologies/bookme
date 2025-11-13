@@ -37,7 +37,10 @@ const initialNotifications: readonly INotification[] = [
   }
 ];
 
-const UserNotificationBell = (_props: IUserNotificationBellProps): JSX.Element => {
+const UserNotificationBell = (
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _props: IUserNotificationBellProps
+): JSX.Element => {
   const { t } = useTranslation('common');
   const {
     isOpen,

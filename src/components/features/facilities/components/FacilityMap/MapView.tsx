@@ -2,7 +2,6 @@
 
 // External imports
 import React, { useMemo } from 'react';
-import type { Database } from '@/types/database';
 import type { FacilityWithCoords, FacilityFilters } from '@/types/facility';
 
 // Internal imports
@@ -10,8 +9,6 @@ import { usePublishedFacilitiesWithCoords, useFacilitiesWithCoords } from '@/ser
 import { useOrganizationId } from '@/hooks/useOrganizationId';
 import { useMapOverlay } from '@/hooks/features/facilities';
 import { MAPBOX_TOKEN } from '@/lib/clients/mapbox';
-
-type Facility = Database['public']['Tables']['facilities']['Row'];
 
 // Sibling imports
 import { Card } from '@/components/ui/card';
@@ -72,7 +69,7 @@ export const MapView: React.FC<MapViewProps> = ({
     }
     if (filters.location) {
       // Filter by address since there's no area field in the database
-      filtered = filtered.filter(f => 
+      filtered = filtered.filter(f =>
         f.address && f.address.toLowerCase().includes(filters.location!.toLowerCase())
       );
     }
@@ -82,7 +79,7 @@ export const MapView: React.FC<MapViewProps> = ({
   return (
     <div className="max-w-7xl mx-auto px-4 my-[12px]">
       {showHeader && (
-        <ViewHeader 
+        <ViewHeader
           facilityCount={filteredFacilities.length}
           isLoading={isLoading}
           viewMode={viewMode}
@@ -122,8 +119,8 @@ export const MapView: React.FC<MapViewProps> = ({
                   <Button onClick={handleRetry} className="w-full">
                     Prøv igjen
                   </Button>
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     onClick={(): void => setViewMode('grid')}
                     className="w-full"
                   >

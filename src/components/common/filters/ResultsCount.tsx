@@ -35,7 +35,7 @@ export const ResultsCount = ({
   namespace = 'common',
   className = ''
 }: ResultsCountProps): JSX.Element => {
-  const { t } = useTranslation(namespace);
+  const { t } = useTranslation(namespace as any);
 
   const getText = (): string => {
     if (count === 0) {

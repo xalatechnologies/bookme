@@ -15,18 +15,10 @@
  * @module hooks/features/bookings/useBookingFormValidation
  */
 
-import { useCallback, useMemo } from 'react';
+import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useFormValidation } from '@/hooks/shared';
 import type { IBookingFormData, ISelectedTimeSlot, ActorType, ActivityType } from '@/components/features/bookings/types';
-
-/**
- * Validation state interface
- */
-interface ValidationState {
-  readonly errors: Record<string, string>;
-  readonly isValid: boolean;
-}
 
 /**
  * Select option type
@@ -175,7 +167,6 @@ export const useBookingFormValidation = (): UseBookingFormValidationReturn => {
   const {
     errors,
     validateField: baseValidateField,
-    validateAll: baseValidateAll,
     clearError,
     clearAllErrors,
     setError,

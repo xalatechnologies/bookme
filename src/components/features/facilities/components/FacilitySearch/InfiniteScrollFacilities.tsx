@@ -1,18 +1,15 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
 import { FacilityFilters } from "@/types/facility";
 import { usePublishedFacilities } from "@/services/supabase/facilities.service";
 import { useOrganizationId } from "@/hooks/useOrganizationId";
-import type { Database } from "@/types/database";
 
 import { FacilityCard } from "../FacilityCard";
 import { FacilityListItem } from "../FacilityCard/FacilityListItem";
 import { ViewHeader } from "@/components/features/search/components/ViewHeader";
-
-type Facility = Database['public']['Tables']['facilities']['Row'];
 
 interface InfiniteScrollFacilitiesProps {
   readonly filters: FacilityFilters;
@@ -62,7 +59,7 @@ export const InfiniteScrollFacilities: React.FC<InfiniteScrollFacilitiesProps> =
     return filtered;
   }, [facilities, filters]);
 
-  const handleAddressClick = (e: React.MouseEvent, facility: { readonly address: string }): void => {
+  const handleAddressClick = (e: React.MouseEvent, _facility: { readonly address: string }): void => {
     e.stopPropagation();
   };
 
@@ -97,7 +94,7 @@ export const InfiniteScrollFacilities: React.FC<InfiniteScrollFacilitiesProps> =
           {filteredFacilities.map((facility) => (
             <FacilityCard
               key={facility.id}
-              facility={facility as any}
+              facility={facility}
               onAddressClick={handleAddressClick}
             />
           ))}
@@ -107,7 +104,7 @@ export const InfiniteScrollFacilities: React.FC<InfiniteScrollFacilitiesProps> =
           {filteredFacilities.map((facility) => (
             <FacilityListItem
               key={facility.id}
-              facility={facility as any}
+              facility={facility}
               onAddressClick={handleAddressClick}
             />
           ))}

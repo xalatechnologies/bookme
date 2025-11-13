@@ -246,7 +246,10 @@ export const FacilityEditForm: React.FC<IFacilityEditFormProps> = ({
         });
         onUpdate();
         onClose();
-      } catch (_error: unknown) {
+      } catch (
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        _error: unknown
+      ) {
         // Error handling can be added here if needed
       }
     },

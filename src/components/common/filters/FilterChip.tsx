@@ -40,7 +40,7 @@ export const FilterChip = ({
   disabled = false,
   namespace = 'common'
 }: FilterChipProps): JSX.Element => {
-  const { t } = useTranslation(namespace);
+  const { t } = useTranslation(namespace as any);
 
   const handleRemove = useCallback((e: React.MouseEvent) => {
     e.preventDefault();

@@ -22,7 +22,7 @@
 
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/hooks";
 
 // Import all domain permission helpers
 import {

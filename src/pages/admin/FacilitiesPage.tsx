@@ -30,7 +30,10 @@ interface IFacilitiesPageProps {
   readonly children?: never;
 }
 
-const FacilitiesPage = (_props: IFacilitiesPageProps): JSX.Element => {
+const FacilitiesPage = (
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _props: IFacilitiesPageProps
+): JSX.Element => {
   const navigate = useNavigate();
   const { t: translate } = useTranslation('admin');
   

@@ -4,15 +4,18 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { User, Settings, LogOut, Globe, ChevronDown } from "lucide-react";
-import { useUserProfile } from "@/contexts/UserProfileContext";
-import { useAuth } from "@/contexts/AuthContext";
+import { useUserProfile } from "@/contexts/hooks";
+import { useAuth } from "@/contexts/hooks";
 import { toast } from "react-toastify";
 
 interface IUserProfileDropdownProps {
   readonly children?: never;
 }
 
-const UserProfileDropdown = (_props: IUserProfileDropdownProps): JSX.Element => {
+const UserProfileDropdown = (
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _props: IUserProfileDropdownProps
+): JSX.Element => {
   const { t } = useTranslation(['common', 'navigation']);
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -39,8 +42,11 @@ const UserProfileDropdown = (_props: IUserProfileDropdownProps): JSX.Element => 
       await signOut();
       toast.success(t('common:messages.logout_success'));
       navigate("/login-selection");
-    } catch (error) {
-      console.error('❌ Logout failed:', error);
+    } catch (
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      _error: unknown
+    ) {
+      console.error('❌ Logout failed:', _error);
       toast.error(t('common:messages.logout_failed'));
       setIsLoggingOut(false);
     }
@@ -77,8 +83,11 @@ const UserProfileDropdown = (_props: IUserProfileDropdownProps): JSX.Element => 
       }));
       
       setIsOpen(false);
-    } catch (error) {
-      console.error('Language change failed:', error);
+    } catch (
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      _error: unknown
+    ) {
+      console.error('Language change failed:', _error);
       toast.error(t('common:messages.language_change_failed'));
     }
   };

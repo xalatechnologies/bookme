@@ -62,7 +62,8 @@ const FacilityListItemUser = (props: IFacilityListItemUserProps): JSX.Element =>
     price,
     description,
     availability = "available",
-    coordinates,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    coordinates: _coordinates,
     lat,
     lng
   } = props;
@@ -94,8 +95,11 @@ const FacilityListItemUser = (props: IFacilityListItemUserProps): JSX.Element =>
     setTimeout(() => setIsAnimating(false), 300);
   };
 
-  const handleShare = (e: React.MouseEvent): void => {
-    e.stopPropagation();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const _handleShare = (
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _e: React.MouseEvent
+  ): void => {
     // Use slug if available, fallback to id
     const facilityPath = props.slug || id;
     if (navigator.share) {
@@ -103,9 +107,13 @@ const FacilityListItemUser = (props: IFacilityListItemUserProps): JSX.Element =>
         title: name,
         text: t('facility:share.check_out', { name, type, capacity }),
         url: window.location.origin + `/facilities/${facilityPath}`
+      }).catch(() => {
+        // Share was cancelled or failed - ignore silently
       });
     } else {
-      navigator.clipboard.writeText(window.location.origin + `/facilities/${facilityPath}`);
+      navigator.clipboard.writeText(window.location.origin + `/facilities/${facilityPath}`).catch(() => {
+        // Clipboard write failed - ignore silently
+      });
     }
   };
 

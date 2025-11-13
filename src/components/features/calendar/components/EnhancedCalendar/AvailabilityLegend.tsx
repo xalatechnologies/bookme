@@ -28,6 +28,7 @@ import { IAvailabilityLegendProps } from "../../types";
  */
 export const AvailabilityLegend: React.FC<IAvailabilityLegendProps> = ({
   showConflictInfo = true,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   showHolidayInfo: _showHolidayInfo = true,
 }) => {
   const { t } = useTranslation('common');

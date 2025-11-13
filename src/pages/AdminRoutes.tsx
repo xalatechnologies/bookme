@@ -75,7 +75,10 @@ interface IAdminRoutesProps {
   readonly children?: never;
 }
 
-const AdminRoutes = (_props: IAdminRoutesProps): JSX.Element => {
+const AdminRoutes = (
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _props: IAdminRoutesProps
+): JSX.Element => {
   return (
     <Routes>
       <Route path="/" element={

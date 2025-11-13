@@ -50,7 +50,7 @@ export const FilterPanel = ({
   className = '',
   namespace = 'common'
 }: FilterPanelProps): JSX.Element => {
-  const { t } = useTranslation(namespace);
+  const { t } = useTranslation(namespace as any);
   const [isExpanded, setIsExpanded] = useState<boolean>(defaultExpanded);
 
   const toggleExpanded = useCallback(() => {

@@ -5,10 +5,10 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Menu, ShoppingCart } from "lucide-react";
 
-import { useLanguage } from "@/contexts/LanguageContext";
-import { useCart } from "@/contexts/CartContext";
-import { useUserProfile } from "@/contexts/UserProfileContext";
-import { useAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "@/contexts/hooks";
+import { useCart } from "@/contexts/hooks";
+import { useUserProfile } from "@/contexts/hooks";
+import { useAuth } from "@/contexts/hooks";
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -39,15 +39,12 @@ export const GlobalHeader = (): JSX.Element => {
   const { itemCount } = useCart();
   const { profile } = useUserProfile();
 
-  // Check if we're on a booking page, user pages, or checkout
-  const isBookingPage = location.pathname.includes("/book");
-  const isUserPage = location.pathname.startsWith("/user");
-  const isCheckoutPage = location.pathname === "/checkout";
   // Use actual auth state instead of route-based detection
   const isAuthenticated = !!user;
   
   // Check if user has admin role in any organization
-  const isAdmin = memberships.some(membership => 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const _isAdmin = memberships.some(membership => 
     membership.role === 'admin' || membership.role === 'owner'
   );
 

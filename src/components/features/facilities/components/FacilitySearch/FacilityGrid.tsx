@@ -14,8 +14,10 @@ interface FacilityGridProps {
 export const FacilityGrid = ({
   searchQuery = '',
   selectedType = 'all',
-  onBook,
-  onViewDetails
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  onBook: _onBook,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  onViewDetails: _onViewDetails
 }: FacilityGridProps): JSX.Element => {
   const { t } = useTranslation();
   const orgId = useOrganizationId();
@@ -65,8 +67,8 @@ export const FacilityGrid = ({
       {filteredFacilities.map((facility) => (
         <FacilityCard
           key={facility.id}
-          facility={facility as any}
-          onAddressClick={(e, facility) => {
+          facility={facility}
+          onAddressClick={(e) => {
             e.stopPropagation();
           }}
         />

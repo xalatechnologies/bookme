@@ -47,7 +47,7 @@ interface SupportState {
   readonly addReply: (reply: CreateSupportTicketReplyData) => string;
   readonly updateReply: (ticketId: string, replyId: string, content: string) => void;
   readonly deleteReply: (ticketId: string, replyId: string) => void;
-  readonly getTicketReplies: (ticketId: string) => readonly SupportTicket['replies'];
+  readonly getTicketReplies: (ticketId: string) => SupportTicket['replies'];
   
   // Template management
   readonly createTemplate: (template: Omit<SupportTicketTemplate, 'id' | 'createdAt' | 'updatedAt'>) => string;
@@ -197,12 +197,12 @@ export const useSupportStore = create<SupportState>()(
         getUserTickets: (userId: string): readonly SupportTicket[] => {
           return get().tickets
             .filter((ticket) => ticket.userId === userId)
-            .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+            .slice().sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
         },
 
         getAdminTickets: (): readonly SupportTicket[] => {
           return get().tickets
-            .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+            .slice().sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
         },
 
         searchTickets: (criteria: SupportTicketSearchCriteria): readonly SupportTicket[] => {
@@ -268,7 +268,7 @@ export const useSupportStore = create<SupportState>()(
 
           // Apply sorting
           if (criteria.sortBy) {
-            results = results.sort((a, b) => {
+            results = [...results].sort((a, b) => {
               let aValue: string | number, bValue: string | number;
               
               switch (criteria.sortBy) {
@@ -371,6 +371,10 @@ export const useSupportStore = create<SupportState>()(
           const newReply: SupportTicket['replies'][0] = {
             id: replyId,
             ...replyData,
+            attachments: replyData.attachments?.map((att, index) => ({
+              id: att.id || `${replyId}-att-${index}`,
+              ...att
+            })),
             createdAt: now
           };
 
@@ -430,7 +434,7 @@ export const useSupportStore = create<SupportState>()(
           }));
         },
 
-        getTicketReplies: (ticketId: string): readonly SupportTicket['replies'] => {
+        getTicketReplies: (ticketId: string): SupportTicket['replies'] => {
           const ticket = get().getTicketById(ticketId);
           return ticket?.replies || [];
         },

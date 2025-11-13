@@ -1,6 +1,6 @@
 import { useState, useCallback, useMemo } from 'react';
 import { useSupportStore } from '@/stores/supportStore';
-import type { SupportTicket, SupportTicketFilter, SupportTicketSearchCriteria } from '@/types/support';
+import type { SupportTicket, SupportTicketSearchCriteria } from '@/types/support';
 
 /**
  * Ticket status filter options

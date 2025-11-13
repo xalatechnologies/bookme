@@ -31,8 +31,8 @@ import {
 } from "lucide-react";
 
 // Internal libraries/utilities
-import { useCart } from "@/contexts/CartContext";
-import { useUserProfile } from "@/contexts/UserProfileContext";
+import { useCart } from "@/contexts/hooks";
+import { useUserProfile } from "@/contexts/hooks";
 import { GlobalHeader } from "@/components/layouts/PublicLayout/GlobalHeader";
 
 // UI components

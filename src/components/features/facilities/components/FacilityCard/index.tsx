@@ -8,7 +8,7 @@ import { useTranslation } from "react-i18next";
 import type { Database } from "@/types/database";
 import { useFieldConfigStore } from "@/stores/fieldConfigStore";
 
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
   getFieldUnit,
@@ -37,7 +37,8 @@ interface FacilityCardProps {
 export const FacilityCard = ({
   facility,
   onAddressClick,
-  viewMode = "grid",
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  viewMode: _viewMode = "grid",
 }: FacilityCardProps): JSX.Element => {
   const { t } = useTranslation(["facility", "common"]);
   const translateAmenity = useAmenityTranslation();

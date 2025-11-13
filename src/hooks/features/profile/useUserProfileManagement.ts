@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
-import { useUserProfile } from '@/contexts/UserProfileContext';
+import { useUserProfile } from "@/contexts/hooks";
 import { useTranslation } from 'react-i18next';
 
 interface PasswordForm {

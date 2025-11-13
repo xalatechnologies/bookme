@@ -35,7 +35,10 @@ interface IUserSidebarProps {
   readonly children?: never;
 }
 
-const UserSidebar = (_props: IUserSidebarProps): JSX.Element => {
+const UserSidebar = (
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _props: IUserSidebarProps
+): JSX.Element => {
   const { isCollapsed, toggleCollapse } = useSidebar();
   const { t } = useTranslation('navigation');
   const location = useLocation();
@@ -93,7 +96,7 @@ const UserSidebar = (_props: IUserSidebarProps): JSX.Element => {
     }`}>
       {/* Navigation Content */}
       <nav className="flex-1 p-4 pt-8 space-y-6 overflow-y-auto">
-        {menuGroups.map((group, groupIndex) => (
+        {menuGroups.map((group) => (
           <div key={group.titleKey} className="space-y-2">
             {/* Group Title */}
             {!isCollapsed && (

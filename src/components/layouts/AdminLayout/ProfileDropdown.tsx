@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/hooks";
 import { toast } from "react-toastify";
 import { User, Settings, LogOut, ChevronDown } from "lucide-react";
 
@@ -11,7 +11,10 @@ interface IProfileDropdownProps {
   readonly children?: never;
 }
 
-const ProfileDropdown = (_props: IProfileDropdownProps): JSX.Element => {
+const ProfileDropdown = (
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _props: IProfileDropdownProps
+): JSX.Element => {
   const { t } = useTranslation(['common', 'navigation']);
   const { user, profile, signOut } = useAuth();
   const navigate = useNavigate();
@@ -31,8 +34,11 @@ const ProfileDropdown = (_props: IProfileDropdownProps): JSX.Element => {
       await signOut();
       toast.success(t('messages.success.logout', 'Du er nå logget ut!'));
       navigate("/login-selection");
-    } catch (error) {
-      console.error('❌ Admin logout failed:', error);
+    } catch (
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      _error: unknown
+    ) {
+      console.error('❌ Admin logout failed:', _error);
       toast.error(t('messages.error.logout', 'Kunne ikke logge ut. Prøv igjen.'));
       setIsLoggingOut(false);
     }

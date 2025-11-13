@@ -48,6 +48,7 @@ import {
 import { useAvailabilityStatus } from "../../hooks";
 
 import type {
+  ActivityType,
   ISelectedTimeSlot,
   IZone,
   BookingType,
@@ -95,8 +96,9 @@ export interface IStepByStepBookingProps {
 }
 
 export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   facilityId,
-  facilityName: _facilityName,
+  facilityName,
   zones,
   selectedZoneId,
   onZoneChange,
@@ -108,10 +110,12 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
   error,
   openingHoursStart = "08:00",
   openingHoursEnd = "22:00",
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   calendarWeek: _calendarWeek,
   onSlotClick,
   onBulkSlotSelection,
   getAvailabilityStatus,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   isSlotSelected: _isSlotSelected,
 }) => {
   const { t, i18n } = useTranslation(["booking", "common"]);

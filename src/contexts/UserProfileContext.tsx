@@ -1,9 +1,9 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from "react";
-import { useAuth } from "./AuthContext";
+import React, { createContext, useState } from "react";
+import { useAuth } from "./hooks/useAuth";
 
-interface IUserProfile {
+export interface IUserProfile {
   readonly firstName: string;
   readonly lastName: string;
   readonly email: string;
@@ -18,13 +18,13 @@ interface IUserProfile {
   readonly subscriptionType: string;
 }
 
-interface IUserProfileContext {
+export interface IUserProfileContext {
   readonly profile: IUserProfile;
   readonly updateProfile: (updates: Partial<IUserProfile>) => void;
   readonly isLoading: boolean;
 }
 
-const UserProfileContext = createContext<IUserProfileContext | undefined>(undefined);
+export const UserProfileContext = createContext<IUserProfileContext | undefined>(undefined);
 
 export const UserProfileProvider = ({ children }: { readonly children: React.ReactNode }): JSX.Element => {
   const { user, profile: authProfile, loading: authLoading } = useAuth();
@@ -67,12 +67,4 @@ export const UserProfileProvider = ({ children }: { readonly children: React.Rea
       {children}
     </UserProfileContext.Provider>
   );
-};
-
-export const useUserProfile = (): IUserProfileContext => {
-  const context = useContext(UserProfileContext);
-  if (context === undefined) {
-    throw new Error("useUserProfile must be used within a UserProfileProvider");
-  }
-  return context;
 };

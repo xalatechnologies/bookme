@@ -571,10 +571,6 @@ const RoleModal = ({ role, isOpen, onClose, onSave, isEditing }: IRoleModalProps
 
 const UserRow = ({ user, onEdit, onDeactivate, onDelete, onResendInvitation, isSelected, onSelect, onRowClick }: IUserRowProps): JSX.Element => {
   const { t } = useTranslation(["admin", "common"]);
-  const formatDate = (dateString?: string): string => {
-    if (!dateString) return t('pages.users_roles.table.never');
-    return new Date(dateString).toLocaleDateString('nb-NO');
-  };
 
   return (
     <tr 

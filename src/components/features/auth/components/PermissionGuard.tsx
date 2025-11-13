@@ -15,7 +15,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from "@/contexts/hooks";
 import { usePermissions } from '@/hooks/auth/usePermissions';
 import type { Permission } from '@/services/supabase/rbac.service';
 
