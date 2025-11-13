@@ -142,6 +142,16 @@ const FacilityEditPage = (_props: IFacilityEditPageProps): JSX.Element => {
     } else if (supabaseFacility) {
       setEditedFacility(supabaseFacility);
 
+      // Redirect to slug-based URL if facility has a slug and we're using ID
+      if (supabaseFacility.slug && id && id !== supabaseFacility.slug) {
+        // Check if the current ID is a UUID (not a slug)
+        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+        if (uuidRegex.test(id)) {
+          // Replace the current history entry with the slug-based URL
+          navigate(`/admin/facilities/${supabaseFacility.slug}/edit`, { replace: true });
+        }
+      }
+
       // Extract contact info from separate fields if available, otherwise from description
       const { email, phone } = extractContactInfo(
         supabaseFacility.description || '',
@@ -212,7 +222,7 @@ const FacilityEditPage = (_props: IFacilityEditPageProps): JSX.Element => {
       
       setOpeningHours(updatedOpeningHours);
     }
-  }, [id, supabaseFacility, facilityAvailability, fieldConfigs, updateFieldValue]);
+  }, [id, supabaseFacility, facilityAvailability, fieldConfigs, updateFieldValue, navigate]);
 
   // Helper function to create new facility template
   const createNewFacilityTemplate = (): Partial<Facility> => ({

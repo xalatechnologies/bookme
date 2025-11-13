@@ -1,7 +1,7 @@
 "use client";
 
 // External libraries
-import React, { useState, useMemo, useCallback } from "react";
+import React, { useState, useMemo, useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import {
   addDays,

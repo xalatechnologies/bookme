@@ -1,7 +1,7 @@
 "use client";
 
 // External libraries
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
 // Internal libraries/utilities
@@ -51,6 +51,18 @@ export const FacilityBooking = (): JSX.Element => {
   // Use hooks to fetch data
   const { facility, loading, error, notFound } = useFacility(id || "");
   const { zones, loading: zonesLoading } = useZones(id || "");
+
+  // Redirect to slug-based URL if facility has a slug and we're using ID
+  useEffect(() => {
+    if (facility && facility.slug && id && id !== facility.slug) {
+      // Check if the current ID is a UUID (not a slug)
+      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+      if (uuidRegex.test(id)) {
+        // Replace the current history entry with the slug-based URL
+        navigate(`/facilities/${facility.slug}/book`, { replace: true });
+      }
+    }
+  }, [facility, id, navigate]);
 
   /**
    * Handle share functionality
@@ -130,7 +142,6 @@ export const FacilityBooking = (): JSX.Element => {
             onShare={handleShare}
             isFavorited={isFavorited}
             onToggleFavorite={() => setIsFavorited(!isFavorited)}
-            showBookingInterface={true}
           />
         </div>
       </div>

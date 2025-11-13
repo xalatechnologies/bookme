@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
 import { useTranslation } from "react-i18next";
@@ -36,6 +36,18 @@ export const FacilityDetail = (): JSX.Element => {
   const { facility, loading, error, notFound } = useFacility(id || "");
   // Use facility UUID for zones query (not the slug from URL)
   const { zones, loading: zonesLoading } = useZones(facility?.id || "");
+
+  // Redirect to slug-based URL if facility has a slug and we're using ID
+  useEffect(() => {
+    if (facility && facility.slug && id && id !== facility.slug) {
+      // Check if the current ID is a UUID (not a slug)
+      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+      if (uuidRegex.test(id)) {
+        // Replace the current history entry with the slug-based URL
+        navigate(`/facilities/${facility.slug}`, { replace: true });
+      }
+    }
+  }, [facility, id, navigate]);
 
   // Handle share functionality
   const handleShare = async (): Promise<void> => {
