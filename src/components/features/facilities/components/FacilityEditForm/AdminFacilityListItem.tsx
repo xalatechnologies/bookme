@@ -35,10 +35,10 @@ const AdminFacilityListItem = ({ facility, onDelete,
   const translate = (key: string, options?: Record<string, unknown>): string => {
     // Handle facility namespace keys separately
     if (key.startsWith('facility:')) {
-      return t(key, options);
+      return t(key as any, options);
     }
     // For admin namespace keys, use the admin namespace
-    return t(key, options);
+    return t(key as any, options);
   };
 
   // Simple amenities translation map - DEPRECATED: Using useAmenityTranslation hook instead
@@ -88,7 +88,7 @@ const AdminFacilityListItem = ({ facility, onDelete,
     description: facility.description,
     capacity: facility.capacity,
     facility_type: facility.facility_type,
-    amenities: facility.amenities
+    amenities: facility.amenities ? (Array.isArray(facility.amenities) ? facility.amenities : JSON.parse(facility.amenities as string)) : null
   });
 
   const handleCardClick = (): void => {
@@ -232,9 +232,9 @@ const AdminFacilityListItem = ({ facility, onDelete,
       <div className="flex min-h-[128px]" onClick={handleCardClick}>
         {/* Image Section */}
         <div className="relative w-48 min-h-[128px] bg-gray-200 dark:bg-gray-700 flex-shrink-0 flex items-center justify-center">
-          {facility.images && (facility.images as string[])[0] ? (
+          {facility.images && (Array.isArray(facility.images) ? facility.images[0] : JSON.parse(facility.images as string)[0]) ? (
             <img 
-              src={(facility.images as string[])[0]} 
+              src={Array.isArray(facility.images) ? facility.images[0] : JSON.parse(facility.images as string)[0]} 
               alt={facility.name} 
               className="w-full h-full object-cover"
             />
@@ -340,13 +340,13 @@ const AdminFacilityListItem = ({ facility, onDelete,
               {/* Capacity */}
               <div className="flex items-center gap-1 text-gray-600 dark:text-gray-400">
                 <Users className="h-4 w-4" />
-                <span className="font-medium text-sm">{translate('pages.facilities.card.capacity', { capacity: facility.capacity })}</span>
+                <span className="font-medium text-sm">{translate('pages.facilities.card.capacity', { capacity: facility.capacity } as any)}</span>
               </div>
 
               {/* Amenities Tags - Clickable for facility editing */}
-              {facility.amenities && (facility.amenities as string[]).length > 0 && (
+              {facility.amenities && (Array.isArray(facility.amenities) ? facility.amenities : JSON.parse(facility.amenities as string)).length > 0 && (
                 <div className="flex flex-wrap gap-1">
-                  {(facility.amenities as string[]).slice(0, 3).map((amenity: string, index: number) => (
+                  {(Array.isArray(facility.amenities) ? facility.amenities : JSON.parse(facility.amenities as string)).slice(0, 3).map((amenity: string, index: number) => (
                     <button
                       key={index}
                       onClick={(e) => handleTagClick(amenity, e)}
@@ -355,12 +355,12 @@ const AdminFacilityListItem = ({ facility, onDelete,
                       {translateAmenity(amenity)}
                     </button>
                   ))}
-                  {(facility.amenities as string[]).length > 3 && (
+                  {(Array.isArray(facility.amenities) ? facility.amenities : JSON.parse(facility.amenities as string)).length > 3 && (
                     <button
                       onClick={handleShowAllAmenities}
                       className="bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 border-gray-300 dark:border-gray-600 font-medium px-2 py-1 text-xs rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                     >
-                      {translate('pages.facilities.card.show_more_amenities', { count: (facility.amenities as string[]).length - 3 })}
+                      {translate('pages.facilities.card.show_more_amenities', { count: (Array.isArray(facility.amenities) ? facility.amenities : JSON.parse(facility.amenities as string)).length - 3 } as any)}
                     </button>
                   )}
                 </div>
@@ -425,7 +425,7 @@ const AdminFacilityListItem = ({ facility, onDelete,
           
           <p className="text-gray-700 dark:text-gray-300 mb-6" 
              dangerouslySetInnerHTML={{ 
-               __html: translate('pages.facilities.card.delete_dialog.confirm_text', { name: facility.name })
+               __html: translate('pages.facilities.card.delete_dialog.confirm_text', { name: facility.name } as any)
              }}>
           </p>
           
@@ -555,7 +555,7 @@ const AdminFacilityListItem = ({ facility, onDelete,
                 {translate('pages.facilities.card.image_modal.drag_drop')}
               </span>
               <span className="text-xs text-gray-500 dark:text-gray-500">
-                {translate('pages.facilities.card.image_modal.max_size', { size: '10MB' })}
+                {translate('pages.facilities.card.image_modal.max_size', { size: '10MB' } as any)}
               </span>
             </label>
           </div>
@@ -579,7 +579,7 @@ const AdminFacilityListItem = ({ facility, onDelete,
         </DialogHeader>
         <div className="py-4">
           <div className="flex flex-wrap gap-2">
-            {facility.amenities && (facility.amenities as string[]).map((amenity: string) => (
+            {facility.amenities && (Array.isArray(facility.amenities) ? facility.amenities : JSON.parse(facility.amenities as string)).map((amenity: string) => (
               <Badge key={amenity} variant="secondary">
                 {amenity}
               </Badge>

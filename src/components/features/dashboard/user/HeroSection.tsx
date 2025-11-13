@@ -46,7 +46,7 @@ export const HeroSection = (props: IHeroSectionProps): JSX.Element => {
       "friday",
       "saturday",
     ];
-    return t(`dashboard.days.${dayKeys[dayIndex]}` as string);
+    return t(`dashboard.days.${dayKeys[dayIndex]}` as any);
   };
 
   const getWeatherIcon = (
@@ -72,7 +72,7 @@ export const HeroSection = (props: IHeroSectionProps): JSX.Element => {
                 {t("dashboard.greeting", {
                   dayOfWeek: getDayOfWeek(),
                   name: userName,
-                } as Record<string, string>)}{" "}
+                } as any)}{" "}
                 👋
               </h1>
               {weather && (
@@ -88,18 +88,18 @@ export const HeroSection = (props: IHeroSectionProps): JSX.Element => {
               {weather &&
                 `${t("dashboard.weather_in_city", {
                   description: weather.description,
-                } as Record<string, string>)} `}
-              {t("dashboard.perfect_day", { defaultValue: "Perfect day to book an activity!" })}
+                } as any)} `}
+              {t("dashboard.perfect_day", "Perfect day to book an activity!")}
             </p>
 
             {/* Progress Bar */}
             <div className="mb-4">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                  {t("dashboard.monthly_bookings", { defaultValue: "Monthly bookings" })}
+                  {t("dashboard.monthly_bookings", "Monthly bookings")}
                 </span>
                 <span className="text-sm text-gray-500 dark:text-gray-400">
-                  {totalBookings} {t("dashboard.of", { defaultValue: "of" })} {monthlyBookingLimit}
+                  {totalBookings} {t("dashboard.of", "of")} {monthlyBookingLimit}
                 </span>
               </div>
               <Progress
@@ -114,8 +114,8 @@ export const HeroSection = (props: IHeroSectionProps): JSX.Element => {
                     facility: nextBooking.facility,
                     date: nextBooking.date,
                     time: nextBooking.time,
-                  } as Record<string, string>)
-                : t("dashboard.no_upcoming_bookings", { defaultValue: "No upcoming bookings" })}
+                  } as any)
+                : t("dashboard.no_upcoming_bookings", "No upcoming bookings")}
             </p>
           </div>
           <div className="ml-6">
@@ -125,7 +125,7 @@ export const HeroSection = (props: IHeroSectionProps): JSX.Element => {
               size="lg"
             >
               <Plus className="h-5 w-5 mr-2" />
-              {t("dashboard.new_booking", { defaultValue: "New Booking" })}
+              {t("dashboard.new_booking", "New Booking")}
             </Button>
           </div>
         </div>

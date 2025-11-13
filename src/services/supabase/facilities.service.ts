@@ -43,7 +43,7 @@ type FacilityWithLocationText = {
   facility_type: string;
   address: string | null;
   capacity: number;
-  images: unknown;
+  images: Database['public']['Tables']['facilities']['Row']['images'];
   location_text: string;
   org_id: string | null;
   lat: number;
@@ -58,9 +58,9 @@ type FacilityWithLocationText = {
   slug: string;
   contact_email: string | null;
   contact_phone: string | null;
-  accessibility_features: unknown;
+  accessibility_features: Database['public']['Tables']['facilities']['Row']['accessibility_features'];
   area_description: string | null;
-  amenities: unknown;
+  amenities: Database['public']['Tables']['facilities']['Row']['amenities'];
   postal_code: string | null;
   city: string | null;
   country: string | null;
@@ -121,9 +121,32 @@ const extractCoordinates = (location: unknown): { lat: number | null; lng: numbe
 // Helper function to convert FacilityWithLocationText to FacilityWithCoords
 const convertToFacilityWithCoords = (facility: FacilityWithLocationText): FacilityWithCoords => {
   // Create a base facility object with all properties from FacilityWithLocationText
-  const baseFacility: Omit<FacilityWithCoords, 'lat' | 'lng'> = {
-    ...facility,
+  const baseFacility: any = {
+    id: facility.id,
+    org_id: facility.org_id,
+    name: facility.name,
+    address: facility.address,
+    postal_code: facility.postal_code,
+    city: facility.city,
+    country: facility.country,
     location: facility.location_text,
+    location_geog: facility.location_text,
+    location_geojson: facility.location_geojson,
+    created_at: facility.created_at,
+    updated_at: facility.updated_at,
+    description: facility.description,
+    facility_type: facility.facility_type,
+    images: facility.images,
+    capacity: facility.capacity,
+    rating: facility.rating,
+    review_count: facility.review_count,
+    status: facility.status,
+    slug: facility.slug,
+    contact_email: facility.contact_email,
+    contact_phone: facility.contact_phone,
+    accessibility_features: facility.accessibility_features,
+    area_description: facility.area_description,
+    amenities: facility.amenities,
   };
   
   // Add lat/lng properties
@@ -199,7 +222,7 @@ export const facilitiesService = {
     try {
       // Try to use the RPC function that extracts coordinates directly
       // Type assertion needed because RPC function types aren't generated
-      const { data, error } = await supabase.rpc('get_all_facilities_with_location_text', {
+      const { data, error } = await (supabase.rpc as any)('get_all_facilities_with_location_text', {
         org_id: orgId
       }) as { data: FacilityWithLocationText[] | null; error: Error | null };
 
@@ -228,7 +251,7 @@ export const facilitiesService = {
     try {
       // Try to use the RPC function that extracts coordinates directly
       // Type assertion needed because RPC function types aren't generated
-      const { data, error } = await supabase.rpc('get_published_facilities_with_location_text', {
+      const { data, error } = await (supabase.rpc as any)('get_published_facilities_with_location_text', {
         org_id: orgId
       }) as { data: FacilityWithLocationText[] | null; error: Error | null };
 

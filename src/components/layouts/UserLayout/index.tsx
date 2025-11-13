@@ -5,6 +5,7 @@ import UserHeader from "./UserHeader";
 import UserSidebar from "./UserSidebar";
 import { UserProfileProvider } from "@/contexts/hooks";
 import { SidebarContext } from "./useSidebar";
+import { useSidebar } from "./useSidebar";
 
 interface IUserLayoutProps {
   readonly children: React.ReactNode;
@@ -46,3 +47,4 @@ const UserLayout = ({ children }: IUserLayoutProps): JSX.Element => {
 };
 
 export default UserLayout;
+export { useSidebar };

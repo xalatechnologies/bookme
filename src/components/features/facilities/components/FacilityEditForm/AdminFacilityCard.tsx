@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Card } from "@/components/ui/card";
 
 import type { Database } from '@/types/database';
 import { useAmenityTranslation } from '@/hooks/shared/useAmenityTranslation';
@@ -39,10 +40,10 @@ const AdminFacilityCard = ({ facility, onDelete, onToggleStatus, onDuplicate }: 
   const translate = (key: string, options?: Record<string, unknown>): string => {
     // Handle facility namespace keys separately
     if (key.startsWith('facility:')) {
-      return t(key, options);
+      return t(key as any, options);
     }
     // For admin namespace keys, use the admin namespace
-    return t(key, options);
+    return t(key as any, options);
   };
 
   // Simple amenities translation map - DEPRECATED: Using useAmenityTranslation hook instead
@@ -377,7 +378,7 @@ const AdminFacilityCard = ({ facility, onDelete, onToggleStatus, onDuplicate }: 
                 className="bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 border-gray-300 dark:border-gray-600 font-medium px-3 py-1 text-sm rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                 aria-label={translate('pages.facilities.card.show_more_amenities', { count: (facility.amenities as string[]).length - 3 })}
               >
-                {translate('pages.facilities.card.show_more_amenities', { count: (facility.amenities as string[]).length - 3 })}
+                {translate('pages.facilities.card.show_more_amenities', { count: (facility.amenities as string[]).length - 3 } as any)}
               </button>
             )}
           </div>
@@ -387,7 +388,7 @@ const AdminFacilityCard = ({ facility, onDelete, onToggleStatus, onDuplicate }: 
         <div className="flex items-center justify-between text-gray-600 dark:text-gray-400 mt-auto">
           <div className="flex items-center gap-3">
             <Users className="h-5 w-5" />
-            <span className="text-base font-medium">{translate('pages.facilities.card.capacity', { capacity: facility.capacity })}</span>
+            <span className="text-base font-medium">{translate('pages.facilities.card.capacity', { capacity: facility.capacity } as any)}</span>
           </div>
           <Button
             onClick={handleEditModal}
@@ -433,7 +434,7 @@ const AdminFacilityCard = ({ facility, onDelete, onToggleStatus, onDuplicate }: 
           <div className="flex items-center gap-2">
             <User className="w-3 h-3 text-gray-400" />
             <span className="text-xs text-gray-500 dark:text-gray-400">
-              {translate('pages.facilities.card.owner', { owner: facility.owner || '' })}
+              {translate('pages.facilities.card.owner', { owner: facility.owner || '' } as any)}
             </span>
           </div>
           
@@ -441,7 +442,7 @@ const AdminFacilityCard = ({ facility, onDelete, onToggleStatus, onDuplicate }: 
           <div className="flex items-center gap-2">
             <Clock className="w-3 h-3 text-gray-400" />
             <span className="text-xs text-gray-500 dark:text-gray-400">
-              {translate('pages.facilities.card.last_updated', { date: facility.lastUpdated || '' })}
+              {translate('pages.facilities.card.last_updated', { date: facility.lastUpdated || '' } as any)}
             </span>
           </div>
 
@@ -450,7 +451,7 @@ const AdminFacilityCard = ({ facility, onDelete, onToggleStatus, onDuplicate }: 
             <div className="flex items-center gap-2">
               <AlertTriangle className="w-3 h-3 text-gray-400" />
               <span className="text-xs text-gray-500 dark:text-gray-400">
-                {translate('pages.facilities.card.updated_by', { user: facility.updatedBy || '' })}
+                {translate('pages.facilities.card.updated_by', { user: facility.updatedBy || '' } as any)}
               </span>
             </div>
           )}
@@ -484,7 +485,7 @@ const AdminFacilityCard = ({ facility, onDelete, onToggleStatus, onDuplicate }: 
           
           <p className="text-gray-700 dark:text-gray-300 mb-6" 
              dangerouslySetInnerHTML={{ 
-               __html: translate('pages.facilities.card.delete_dialog.confirm_text', { name: facility.name || '' }) 
+               __html: translate('pages.facilities.card.delete_dialog.confirm_text', { name: facility.name || '' } as any) 
              }}>
           </p>
           
@@ -535,7 +536,7 @@ const AdminFacilityCard = ({ facility, onDelete, onToggleStatus, onDuplicate }: 
               id="edit-address"
               value={editFormData.address}
               onChange={(e) => setEditFormData(prev => ({ ...prev, address: e.target.value }))}
-              className="col-span-33"
+              className="col-span-3"
             />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
@@ -621,7 +622,7 @@ const AdminFacilityCard = ({ facility, onDelete, onToggleStatus, onDuplicate }: 
                 {translate('pages.facilities.card.image_modal.drag_drop')}
               </span>
               <span className="text-xs text-gray-500 dark:text-gray-500">
-                {translate('pages.facilities.card.image_modal.max_size', { size: '10MB' })}
+                {translate('pages.facilities.card.image_modal.max_size', { size: '10MB' } as any)}
               </span>
             </label>
           </div>
