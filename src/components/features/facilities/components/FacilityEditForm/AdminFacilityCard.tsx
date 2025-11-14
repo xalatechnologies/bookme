@@ -96,7 +96,9 @@ const AdminFacilityCard = ({ facility, onDelete, onToggleStatus, onDuplicate }: 
   });
 
   const handleCardClick = (): void => {
-    navigate(`/admin/facilities/${facility.id}/edit`);
+    // Use slug if available, otherwise use ID
+    const urlId = facility.slug || facility.id;
+    navigate(`/admin/facilities/${urlId}/edit`);
   };
 
   const handleDelete = (e: React.MouseEvent): void => {
@@ -117,7 +119,9 @@ const AdminFacilityCard = ({ facility, onDelete, onToggleStatus, onDuplicate }: 
 
   const handleView = (e: React.MouseEvent): void => {
     e.stopPropagation();
-    navigate(`/facilities/${facility.id}`);
+    // Use slug if available, otherwise use ID
+    const urlId = facility.slug || facility.id;
+    navigate(`/facilities/${urlId}`);
   };
 
   const handleDuplicate = (e: React.MouseEvent): void => {

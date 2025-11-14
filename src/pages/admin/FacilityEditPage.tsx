@@ -5,7 +5,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Save, X, ArrowLeft, Eye, MapPin, Users, Clock, Plus, Trash2, Check, X as XIcon, Settings } from "lucide-react";
 import type { Database } from "@/types/database";
 import type { Json } from "@/types/database";
-import { useFacility as useSupabaseFacility, useUpdateFacility, useCreateFacility, useFacilityAvailability, useUpdateFacilityAvailability } from "@/services/supabase/facilities.service";
+import { useUpdateFacility, useCreateFacility, useFacilityAvailability, useUpdateFacilityAvailability } from "@/services/supabase/facilities.service";
+import { useFacility } from "@/components/features/facilities/hooks/useFacility";
 import { useOrganizationId } from "@/hooks/useOrganizationId";
 import { useFieldConfigStore } from "@/stores/fieldConfigStore";
 import { Card, CardContent } from "@/components/ui/card";
@@ -75,10 +76,12 @@ const FacilityEditPage = (_props: IFacilityEditPageProps): JSX.Element => {
   const [showFieldConfigModal, setShowFieldConfigModal] = useState<boolean>(false);
   const [isGeocoding, setIsGeocoding] = useState<boolean>(false);
   const [showManualCoords, setShowManualCoords] = useState<boolean>(false);
+  const [imageVersion, setImageVersion] = useState<number>(0); // For forcing re-renders when images change
 
   // Use Supabase hooks
-  const { data: supabaseFacility, isLoading, error } = useSupabaseFacility(id || "");
-  const { data: facilityAvailability } = useFacilityAvailability(id || "");
+  const { facility: supabaseFacility, loading: isLoading, error } = useFacility(id || "");
+  // Only fetch availability when we have the actual facility ID
+  const { data: facilityAvailability } = useFacilityAvailability(supabaseFacility?.id || "", !!supabaseFacility?.id);
   const updateFacilityMutation = useUpdateFacility();
   const createFacilityMutation = useCreateFacility();
   const updateAvailabilityMutation = useUpdateFacilityAvailability();
@@ -133,13 +136,35 @@ const FacilityEditPage = (_props: IFacilityEditPageProps): JSX.Element => {
     phone: ''
   });
 
+  // Helper function to create new facility template
+  const createNewFacilityTemplate = (): Partial<Facility> => ({
+    name: "",
+    description: "",
+    facility_type: "møterom",
+    address: "",
+    city: "Drammen",
+    postal_code: "",
+    country: "NO",
+    capacity: 0,
+    amenities: [],
+    images: [],
+    location: null, // Set to null instead of object for PostGIS compatibility
+    rating: 0,
+    review_count: 0,
+    area_description: "",
+    status: "draft",
+    org_id: orgId,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
+  });
+
   // Load facility from Supabase or create new facility
   useEffect(() => {
     if (id === "new" || window.location.pathname.includes('/facilities/new')) {
       // Create new facility template
       const newFacility = createNewFacilityTemplate();
       setEditedFacility(newFacility);
-    } else if (supabaseFacility) {
+    } else if (supabaseFacility && !editedFacility) {
       setEditedFacility(supabaseFacility);
 
       // Redirect to slug-based URL if facility has a slug and we're using ID
@@ -175,77 +200,11 @@ const FacilityEditPage = (_props: IFacilityEditPageProps): JSX.Element => {
         }
       });
     }
-    
-    // Load availability data
-    if (facilityAvailability && facilityAvailability.length > 0) {
-      const dayMap: { [key: number]: keyof IOpeningHoursMap } = {
-        0: 'sunday',
-        1: 'monday',
-        2: 'tuesday',
-        3: 'wednesday',
-        4: 'thursday',
-        5: 'friday',
-        6: 'saturday'
-      };
-      
-      // Build a map of actual availability data
-      const availabilityMap: Record<keyof IOpeningHoursMap, IOpeningHours | undefined> = {
-        monday: undefined,
-        tuesday: undefined,
-        wednesday: undefined,
-        thursday: undefined,
-        friday: undefined,
-        saturday: undefined,
-        sunday: undefined
-      };
-      
-      facilityAvailability.forEach(item => {
-        const dayKey = dayMap[item.day_of_week];
-        if (dayKey) {
-          availabilityMap[dayKey] = {
-            start: item.starts_time.substring(0, 5), // Remove seconds
-            end: item.ends_time.substring(0, 5)     // Remove seconds
-          };
-        }
-      });
-      
-      // Create new opening hours object with actual data or defaults
-      const updatedOpeningHours: IOpeningHoursMap = {
-        monday: availabilityMap.monday || { start: "08:00", end: "22:00" },
-        tuesday: availabilityMap.tuesday || { start: "08:00", end: "22:00" },
-        wednesday: availabilityMap.wednesday || { start: "08:00", end: "22:00" },
-        thursday: availabilityMap.thursday || { start: "08:00", end: "22:00" },
-        friday: availabilityMap.friday || { start: "08:00", end: "22:00" },
-        saturday: availabilityMap.saturday || { start: "09:00", end: "20:00" },
-        sunday: availabilityMap.sunday || { start: "10:00", end: "18:00" }
-      };
-      
-      setOpeningHours(updatedOpeningHours);
-    }
-  }, [id, supabaseFacility, facilityAvailability, fieldConfigs, updateFieldValue, navigate]);
+  }, [id, supabaseFacility, editedFacility, fieldConfigs, navigate, updateFieldValue, orgId]);
 
-  // Helper function to create new facility template
-  const createNewFacilityTemplate = (): Partial<Facility> => ({
-    name: "",
-    description: "",
-    facility_type: "møterom",
-    address: "",
-    city: "Drammen",
-    postal_code: "",
-    country: "NO",
-    capacity: 0,
-    amenities: [],
-    images: [],
-    location: null, // Set to null instead of object for PostGIS compatibility
-    rating: 0,
-    review_count: 0,
-    area_description: "",
-    status: "draft",
-    org_id: orgId,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
-  });
-
+  // If we're using a slug and the facility hasn't loaded yet, don't show "not found" immediately
+  const isUsingSlug = id && !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+  const shouldShowNotFound = !editedFacility && id !== "new" && !window.location.pathname.includes('/facilities/new') && !isLoading && !isUsingSlug;
 
   if (isLoading) {
     return (
@@ -258,7 +217,7 @@ const FacilityEditPage = (_props: IFacilityEditPageProps): JSX.Element => {
     );
   }
 
-  if (!editedFacility && id !== "new" && !window.location.pathname.includes('/facilities/new')) {
+  if (shouldShowNotFound) {
     return (
       <div className="p-6">
         <div className="text-center py-12">
@@ -401,20 +360,24 @@ const FacilityEditPage = (_props: IFacilityEditPageProps): JSX.Element => {
           throw new Error(`Ugyldig type lokale: ${facilityData.facility_type}. Må være en av: ${validFacilityTypes.join(", ")}`);
         }
         
-        await updateFacilityMutation.mutateAsync({
-          id: id || "",
+        const updatedFacility = await updateFacilityMutation.mutateAsync({
+          id: supabaseFacility?.id || id || "",
           updates: facilityData
         });
         
         // Update availability data
         console.log("Updating availability for facility:", id); // Debug log
         await updateAvailabilityMutation.mutateAsync({
-          facilityId: id || "",
+          facilityId: supabaseFacility?.id || id || "",
           availability: availabilityData.map(item => ({
             ...item,
-            facility_id: id
+            facility_id: supabaseFacility?.id || id || ""
           })) as Database['public']['Tables']['facility_availability']['Row'][]
         });
+        
+        // Update the local state with the returned data to ensure UI reflects the saved state
+        setEditedFacility({...updatedFacility});
+        setImageVersion(prev => prev + 1); // Increment to force re-render after save
         
         toast.success("Lokale lagret!");
         setHasUnsavedChanges(false);
@@ -656,6 +619,7 @@ const FacilityEditPage = (_props: IFacilityEditPageProps): JSX.Element => {
                 // Removed lastUpdated and updatedBy as they're not part of the facility type
               });
               setHasUnsavedChanges(true);
+              setImageVersion(prev => prev + 1); // Increment to force re-render
             }
           };
           reader.readAsDataURL(file);
@@ -675,6 +639,7 @@ const FacilityEditPage = (_props: IFacilityEditPageProps): JSX.Element => {
         // Removed lastUpdated and updatedBy as they're not part of the facility type
       });
       setHasUnsavedChanges(true);
+      setImageVersion(prev => prev + 1); // Increment to force re-render
     }
   };
 
@@ -690,6 +655,7 @@ const FacilityEditPage = (_props: IFacilityEditPageProps): JSX.Element => {
         // Removed lastUpdated and updatedBy as they're not part of the facility type
       });
       setHasUnsavedChanges(true);
+      setImageVersion(prev => prev + 1); // Increment to force re-render
     }
   };
 
@@ -896,10 +862,10 @@ const FacilityEditPage = (_props: IFacilityEditPageProps): JSX.Element => {
           </div>
           
           {editedFacility.images && Array.isArray(editedFacility.images) && editedFacility.images.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" key={imageVersion}>
               {editedFacility.images.map((image: string | Json | unknown, index: number) => (
                 <div 
-                  key={index} 
+                  key={`${typeof image === 'string' ? image.substring(0, 50) : JSON.stringify(image)}-${index}`} 
                   className="relative group cursor-move"
                   draggable
                   onDragStart={(e) => handleDragStart(e, index)}

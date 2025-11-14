@@ -690,15 +690,17 @@ export const useFacilityWithZones = (
  * Hook to fetch facility availability
  *
  * @param facilityId - Facility ID
+ * @param enabled - Whether to enable the query (default: true if facilityId exists)
  * @returns React Query result with availability array
  */
 export const useFacilityAvailability = (
-  facilityId: string
+  facilityId: string,
+  enabled = true
 ): UseQueryResult<Database['public']['Tables']['facility_availability']['Row'][], Error> => {
   return useQuery({
     queryKey: [...facilityKeys.detail(facilityId), 'availability'],
     queryFn: () => facilitiesService.getAvailability(facilityId),
-    enabled: !!facilityId,
+    enabled: !!facilityId && enabled,
   });
 };
 

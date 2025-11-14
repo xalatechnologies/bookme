@@ -135,7 +135,9 @@ export const queryClient = new QueryClient({
       refetchOnMount: true,
 
       // Show fresh data while fetching in background
-      staleWhileRevalidate: true,
+      // staleWhileRevalidate has been removed in newer versions of React Query
+      // Using placeholderData with previous data achieves similar behavior
+      // staleWhileRevalidate: true,
 
       // Network mode - fail fast on offline
       networkMode: 'online',
@@ -144,7 +146,7 @@ export const queryClient = new QueryClient({
       structuralSharing: true,
 
       // Placeholder data - show previous data while refetching
-      placeholderData: (previousData) => previousData,
+      placeholderData: (previousData: unknown) => previousData,
     },
 
     mutations: {
