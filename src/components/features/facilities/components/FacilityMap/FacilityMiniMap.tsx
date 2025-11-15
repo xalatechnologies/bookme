@@ -2,22 +2,15 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { mapboxgl } from '@/lib/clients/mapbox';
 import { geocodeAddress } from '@/lib/geocode';
 
-// Remove duplicate imports
-// import { useEffect, useRef } from 'react';
-// import mapboxgl from 'mapbox-gl';
-
-// Remove the hardcoded token line
-// mapboxgl.accessToken = import.meta.env.MAPBOX_TOKEN || 'pk.eyJ1IjoiYW1pbjA3IiwiYSI6ImNtZzlqcjNnczBmMmsycXM2cm4xYzU0OGwifQ.1Vuiv_9pPIUY478LP3yccA';
-
 type Props = {
   address?: string | null;
   lat?: number | null;
   lng?: number | null;
-  height?: number;
-  width?: number;
+  // Removed fixed height and width props to make the map responsive to its container
 };
 
-const FacilityMiniMap = ({ address, lat, lng, height = 310, width = 310 }: Props) => {
+// Updated the component to make the map fill its container
+const FacilityMiniMap = ({ address, lat, lng }: Props) => {
   const containerId = useMemo(
     () => `mini-map-${(address || (lat !== undefined && lng !== undefined ? `${lat}-${lng}` : String(Math.random()))).replace(/\s+/g, '-')}`,
     [address, lat, lng]
@@ -26,6 +19,7 @@ const FacilityMiniMap = ({ address, lat, lng, height = 310, width = 310 }: Props
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(
     Number.isFinite(lat) && Number.isFinite(lng) ? { lat: lat!, lng: lng! } : null
   );
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     let dead = false;
@@ -38,9 +32,12 @@ const FacilityMiniMap = ({ address, lat, lng, height = 310, width = 310 }: Props
   }, [address, coords]);
 
   useEffect(() => {
-    if (!coords) return;
+    if (!coords || !containerRef.current) return;
     if (mapRef.current) mapRef.current.remove();
 
+    // Get container dimensions
+    const { width, height } = containerRef.current.getBoundingClientRect();
+    
     const map = new mapboxgl.Map({
       container: containerId,
       style: 'mapbox://styles/mapbox/streets-v12',
@@ -69,9 +66,9 @@ const FacilityMiniMap = ({ address, lat, lng, height = 310, width = 310 }: Props
 
   return (
     <div
+      ref={containerRef}
       id={containerId}
-      style={{ width, height }}
-      className="rounded-md overflow-hidden border"
+      className="w-full h-full rounded-md overflow-hidden border"
     />
   );
 };

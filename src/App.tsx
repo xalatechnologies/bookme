@@ -35,6 +35,14 @@ export const App = (): React.JSX.Element => {
                           }
                         />
                         <Route
+                          path="/facilities"
+                          element={
+                            <Suspense fallback={<LoadingState type="spinner" size="md" />}>
+                              <Index />
+                            </Suspense>
+                          }
+                        />
+                        <Route
                           path="/facilities/:id"
                           element={
                             <Suspense fallback={<LoadingState type="spinner" size="md" />}>

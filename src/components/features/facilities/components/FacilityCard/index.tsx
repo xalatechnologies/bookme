@@ -17,6 +17,10 @@ import {
 } from "@/components/features/facilities/utils/formatters";
 import { useAmenityTranslation } from "@/hooks/shared";
 import { useFacilityTypeTranslation } from "@/hooks/shared/useFacilityTypeTranslation";
+import { useAuth } from "@/contexts/hooks/useAuth";
+
+// Import the favorites store
+import { useFavoritesStore } from "@/stores/favoritesStore";
 
 type Facility = Database['public']['Tables']['facilities']['Row'];
 
@@ -41,11 +45,15 @@ export const FacilityCard = ({
   viewMode: _viewMode = "grid",
 }: FacilityCardProps): JSX.Element => {
   const { t } = useTranslation(["facility", "common"]);
+  const { user } = useAuth();
   const translateAmenity = useAmenityTranslation();
   const translateFacilityType = useFacilityTypeTranslation();
   const navigate = useNavigate();
-  const [isFavorited, setIsFavorited] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+
+  // Use the favorites store instead of local state
+  const { isFavorite, toggleFavorite } = useFavoritesStore();
+  const isFavorited = isFavorite(facility.id);
 
   const { getFieldConfigsForFacility } = useFieldConfigStore();
   const fieldConfigs = getFieldConfigsForFacility(facility.id);
@@ -83,9 +91,11 @@ export const FacilityCard = ({
     }
   };
 
-  const handleFavorite = (e: React.MouseEvent): void => {
+  const handleFavorite = async (e: React.MouseEvent): Promise<void> => {
     e.stopPropagation();
-    setIsFavorited(!isFavorited);
+    if (user) {
+      await toggleFavorite(facility.id);
+    }
   };
 
   const getFieldValue = (fieldKey: string): string | number => {
@@ -145,19 +155,21 @@ export const FacilityCard = ({
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
         />
 
-        {/* Overlay buttons */}
+        {/* Overlay buttons - only show favorite button when user is logged in */}
         <div className="absolute top-2 sm:top-3 md:top-4 right-2 sm:right-3 md:right-4 flex gap-1 sm:gap-2">
-          <button
-            onClick={handleFavorite}
-            className="p-1.5 sm:p-2 rounded-full bg-white/90 backdrop-blur-sm shadow-lg hover:bg-white transition-colors"
-            aria-label={t("facility:card.addToFavorites")}
-          >
-            <Heart
-              className={`h-3 w-3 sm:h-4 sm:w-4 ${
-                isFavorited ? "fill-red-500 text-red-500" : "text-gray-600"
-              }`}
-            />
-          </button>
+          {user && (
+            <button
+              onClick={handleFavorite}
+              className="p-1.5 sm:p-2 rounded-full bg-white/90 backdrop-blur-sm shadow-lg hover:bg-white transition-colors"
+              aria-label={t("facility:card.addToFavorites")}
+            >
+              <Heart
+                className={`h-3 w-3 sm:h-4 sm:w-4 ${
+                  isFavorited ? "fill-red-500 text-red-500" : "text-gray-600"
+                }`}
+              />
+            </button>
+          )}
           <button
             onClick={handleShare}
             className="p-1.5 sm:p-2 rounded-full bg-white/90 backdrop-blur-sm shadow-lg hover:bg-white transition-colors"
@@ -242,7 +254,7 @@ export const FacilityCard = ({
                 >
                   {getFieldIcon(field.key)}
                   <span className="text-sm sm:text-base font-medium">
-                    {t(field.label)}: {value || booleanValue}
+                    {t(field.label as any)}: {value || booleanValue}
                     {unit && ` ${unit}`}
                   </span>
                 </div>

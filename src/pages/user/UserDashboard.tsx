@@ -181,7 +181,7 @@ const UserDashboard = (): JSX.Element => {
   // ============================================================================
 
   const handleNewBooking = (): void => {
-    navigate("/user/facilities");
+    navigate("/facilities");
   };
 
   const handleViewFacility = (facilityId: string): void => {
@@ -379,26 +379,10 @@ const UserDashboard = (): JSX.Element => {
                   address={facility.address}
                   type={facility.type}
                   capacity={facility.capacity}
-                  amenities={facility.amenities}
                   image={facility.image}
-                  rating={facility.rating}
-                  price={facility.price}
                   description={facility.description}
                   availability={facility.availability}
                 />
-
-                {/*
-                  Recommendation Badge Overlay
-                  Positioned with high z-index (z-40) to appear above the card content
-                  but below the heart/share buttons (z-30) for proper layering
-                */}
-                {facility.recommendationReason && (
-                  <div className="absolute top-2 left-2 z-40">
-                    <Badge className="bg-blue-600 text-white text-xs px-2 py-1">
-                      {facility.recommendationReason}
-                    </Badge>
-                  </div>
-                )}
               </div>
             ))}
           </div>

@@ -124,7 +124,7 @@ const Bookings = (): JSX.Element => {
     try {
       // Cancel all selected bookings
       await Promise.all(
-        bookingsToDelete.map(id => cancelBookingMutation.mutateAsync(id))
+        bookingsToDelete.map(id => cancelBookingMutation.mutateAsync({ id }))
       );
 
       setSelectedBookings([]);
@@ -158,7 +158,7 @@ const Bookings = (): JSX.Element => {
 
   const handleCancelBooking = useCallback(async (booking: BookingWithDetails) => {
     try {
-      await cancelBookingMutation.mutateAsync(booking.id);
+      await cancelBookingMutation.mutateAsync({ id: booking.id });
       toast.success(t('booking:delete_confirm.success_single'));
       handleCloseDetails();
       refetch();
@@ -259,7 +259,7 @@ END:VCALENDAR`;
         </div>
         <div className="flex flex-col sm:flex-row gap-2">
           <Button
-            onClick={() => navigate('/user/facilities')}
+            onClick={() => navigate('/facilities')}
             className="flex items-center gap-2 h-12"
           >
             <Plus className="w-4 h-4" />
@@ -353,7 +353,7 @@ END:VCALENDAR`;
               <p className="text-gray-600 mb-4">
                 {t('booking:page.no_match_message')}
               </p>
-              <Button onClick={() => navigate('/user/facilities')}>
+              <Button onClick={() => navigate('/facilities')}>
                 {t('booking:page.explore_facilities')}
               </Button>
             </CardContent>

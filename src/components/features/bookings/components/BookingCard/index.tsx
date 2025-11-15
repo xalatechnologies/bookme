@@ -22,7 +22,6 @@ import type { Database } from "@/types/database";
 import {
   formatDate,
   formatTime,
-  formatDuration,
   formatPrice,
   getStatusColor,
   getStatusBadgeColor,
@@ -81,7 +80,7 @@ export const BookingCard = ({
   onDelete,
   showCheckbox = true,
 }: BookingCardProps): JSX.Element => {
-  const { t } = useTranslation("booking");
+  const { t, i18n } = useTranslation("booking");
   const statusLabel = useStatusLabel(booking.status);
 
   const durationTranslations = {
@@ -181,11 +180,17 @@ export const BookingCard = ({
                   </span>
                   <span className="text-gray-500">
                     (
-                    {formatDuration(
-                      booking.starts_at,
-                      booking.ends_at,
-                      durationTranslations
-                    )}
+                    {(() => {
+                      const start = new Date(booking.starts_at);
+                      const end = new Date(booking.ends_at);
+                      const hours = (end.getTime() - start.getTime()) / (1000 * 60 * 60);
+                      // Use proper language-specific formatting
+                      if (i18n.language === 'no') {
+                        return hours === 1 ? `1 time` : `${hours} timer`;
+                      } else {
+                        return hours === 1 ? `1 hour` : `${hours} hours`;
+                      }
+                    })()}
                     )
                   </span>
                 </div>

@@ -85,13 +85,17 @@ const DurationLabel = ({
   startsAt: string;
   endsAt: string;
 }): JSX.Element => {
-  const { t } = useTranslation("booking");
+  const { i18n } = useTranslation("booking");
   const start = new Date(startsAt);
   const end = new Date(endsAt);
   const hours = (end.getTime() - start.getTime()) / (1000 * 60 * 60);
-  const label =
-    hours === 1 ? `1 ${t("time.hour")}` : `${hours} ${t("time.hours")}`;
-  return <>{label}</>;
+  
+  // Use proper language-specific formatting
+  if (i18n.language === 'no') {
+    return <>{hours === 1 ? `1 time` : `${hours} timer`}</>;
+  } else {
+    return <>{hours === 1 ? `1 hour` : `${hours} hours`}</>;
+  }
 };
 
 const formatPrice = (cents: number): string => {

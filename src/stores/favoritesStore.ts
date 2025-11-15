@@ -2,6 +2,7 @@
 
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
+import { supabase } from '@/lib/clients/supabase';
 
 /**
  * Interface for a favorite facility
@@ -22,9 +23,11 @@ interface IFavoriteFacility {
  */
 interface IFavoritesStore {
   readonly favorites: readonly IFavoriteFacility[];
-  readonly addFavorite: (facilityId: string) => void;
-  readonly removeFavorite: (facilityId: string) => void;
-  readonly toggleFavorite: (facilityId: string) => void;
+  readonly userId: string | null;
+  readonly setUserId: (userId: string | null) => void;
+  readonly addFavorite: (facilityId: string) => Promise<void>;
+  readonly removeFavorite: (facilityId: string) => Promise<void>;
+  readonly toggleFavorite: (facilityId: string) => Promise<void>;
   readonly isFavorite: (facilityId: string) => boolean;
   readonly getFavoriteById: (facilityId: string) => IFavoriteFacility | undefined;
   readonly updateFavorite: (facilityId: string, updates: Partial<IFavoriteFacility>) => void;
@@ -32,6 +35,7 @@ interface IFavoritesStore {
   readonly updateLastVisited: (facilityId: string) => void;
   readonly clearAllFavorites: () => void;
   readonly getFavoritesCount: () => number;
+  readonly loadFavorites: (userId: string) => Promise<void>;
 }
 
 /**
@@ -57,53 +61,138 @@ export const useFavoritesStore = create<IFavoritesStore>()(
     persist(
       (set, get) => ({
         favorites: [],
+        userId: null,
+
+        /**
+         * Set the current user ID
+         */
+        setUserId: (userId: string | null): void => {
+          set({ userId });
+        },
+
+        /**
+         * Load favorites from the database for the current user
+         */
+        loadFavorites: async (userId: string): Promise<void> => {
+          try {
+            // Load favorites from database
+            const { data, error } = await supabase
+              .from('favorites')
+              .select('*')
+              .eq('user_id', userId)
+              .order('created_at', { ascending: false });
+
+            if (error) throw error;
+            
+            // Convert to our local format
+            const favorites: IFavoriteFacility[] = data.map(fav => ({
+              id: `${fav.user_id}-${fav.facility_id}`, // Create a unique ID
+              facilityId: fav.facility_id,
+              addedAt: fav.created_at,
+              usageCount: 0, // We don't track this in the database
+            }));
+            
+            set({ favorites, userId });
+          } catch (error) {
+            console.error('Error loading favorites:', error);
+            set({ favorites: [], userId });
+          }
+        },
 
         /**
          * Add a facility to favorites
          * Creates a new favorite entry with current timestamp
          */
-        addFavorite: (facilityId: string): void => {
-          const existingFavorite = get().favorites.find(fav => fav.facilityId === facilityId);
-          
-          if (existingFavorite) {
+        addFavorite: async (facilityId: string): Promise<void> => {
+          const userId = get().userId;
+          if (!userId) {
+            console.warn('Cannot add favorite: No user logged in');
             return;
           }
 
-          const newFavorite: IFavoriteFacility = {
-            id: `fav_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-            facilityId,
-            addedAt: new Date().toISOString(),
-            usageCount: 0,
-          };
+          try {
+            // Add to database
+            const { error } = await supabase
+              .from('favorites')
+              .insert({
+                user_id: userId,
+                facility_id: facilityId,
+                created_at: new Date().toISOString()
+              });
 
-          set((state) => ({
-            favorites: [...state.favorites, newFavorite],
-          }));
+            if (error) throw error;
+            
+            // Update local state
+            const existingFavorite = get().favorites.find(fav => fav.facilityId === facilityId);
+            
+            if (existingFavorite) {
+              return;
+            }
 
+            const newFavorite: IFavoriteFacility = {
+              id: `${userId}-${facilityId}`,
+              facilityId,
+              addedAt: new Date().toISOString(),
+              usageCount: 0,
+            };
+
+            set((state) => ({
+              favorites: [...state.favorites, newFavorite],
+            }));
+          } catch (error) {
+            console.error('Error adding favorite:', error);
+            throw error;
+          }
         },
 
         /**
          * Remove a facility from favorites
          * Completely removes the favorite entry
          */
-        removeFavorite: (facilityId: string): void => {
-          set((state) => ({
-            favorites: state.favorites.filter(fav => fav.facilityId !== facilityId),
-          }));
+        removeFavorite: async (facilityId: string): Promise<void> => {
+          const userId = get().userId;
+          if (!userId) {
+            console.warn('Cannot remove favorite: No user logged in');
+            return;
+          }
 
+          try {
+            // Remove from database
+            const { error } = await supabase
+              .from('favorites')
+              .delete()
+              .eq('user_id', userId)
+              .eq('facility_id', facilityId);
+
+            if (error) throw error;
+            
+            // Update local state
+            set((state) => ({
+              favorites: state.favorites.filter(fav => fav.facilityId !== facilityId),
+            }));
+          } catch (error) {
+            console.error('Error removing favorite:', error);
+            throw error;
+          }
         },
 
         /**
          * Toggle favorite status for a facility
          * Adds if not favorited, removes if already favorited
          */
-        toggleFavorite: (facilityId: string): void => {
+        toggleFavorite: async (facilityId: string): Promise<void> => {
+          const userId = get().userId;
+          if (!userId) {
+            console.warn('Cannot toggle favorite: No user logged in');
+            return;
+          }
+
           const isCurrentlyFavorite = get().isFavorite(facilityId);
           
           if (isCurrentlyFavorite) {
-            get().removeFavorite(facilityId);
+            await get().removeFavorite(facilityId);
           } else {
-            get().addFavorite(facilityId);
+            await get().addFavorite(facilityId);
           }
         },
 
@@ -135,7 +224,6 @@ export const useFavoritesStore = create<IFavoritesStore>()(
                 : fav
             ),
           }));
-
         },
 
         /**
@@ -166,7 +254,7 @@ export const useFavoritesStore = create<IFavoritesStore>()(
          * Removes all favorite entries
          */
         clearAllFavorites: (): void => {
-          set({ favorites: [] });
+          set({ favorites: [], userId: null });
         },
 
         /**
@@ -180,6 +268,10 @@ export const useFavoritesStore = create<IFavoritesStore>()(
       {
         name: "favorites-store", // localStorage key
         version: 1, // Version for migration if needed
+        partialize: (state) => ({ 
+          favorites: state.favorites,
+          userId: state.userId
+        }), // Only persist favorites and userId
       }
     ),
     {

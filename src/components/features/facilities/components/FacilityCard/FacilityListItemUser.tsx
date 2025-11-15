@@ -10,16 +10,12 @@ import {
   Calendar,
   Eye,
   MapPin,
-  Users,
-  Star,
-  CheckCircle,
-  Clock,
-  XCircle
+  Users
 } from "lucide-react";
 import FacilityMiniMap from "@/components/features/facilities/components/FacilityMap/FacilityMiniMap";
 import { useFavoritesStore } from "@/stores/favoritesStore";
 import { useFacilityTypeTranslation } from "@/hooks/shared/useFacilityTypeTranslation";
-import { useAmenityTranslation } from "@/hooks/shared/useAmenityTranslation";
+import { useAuth } from "@/contexts/hooks/useAuth";
 
 interface IFacilityListItemUserProps {
   readonly id: string;
@@ -27,14 +23,8 @@ interface IFacilityListItemUserProps {
   readonly address: string;
   readonly type: string;
   readonly capacity: number;
-  readonly amenities: readonly string[];
   readonly image: string;
-  readonly rating?: number;
-  readonly price?: string;
   readonly description?: string;
-  readonly availability?: "available" | "busy" | "full";
-  readonly isFavorite?: boolean;
-  readonly coordinates?: { lat: number; lng: number };
   readonly lat?: number | null;
   readonly lng?: number | null;
   readonly slug?: string;
@@ -42,8 +32,8 @@ interface IFacilityListItemUserProps {
 
 const FacilityListItemUser = (props: IFacilityListItemUserProps): JSX.Element => {
   const { t } = useTranslation(['facility']);
+  const { user } = useAuth();
   const translateFacilityType = useFacilityTypeTranslation();
-  const translateAmenity = useAmenityTranslation();
   const navigate = useNavigate();
   const [isAnimating, setIsAnimating] = useState<boolean>(false);
 
@@ -56,14 +46,8 @@ const FacilityListItemUser = (props: IFacilityListItemUserProps): JSX.Element =>
     address,
     type,
     capacity,
-    amenities,
     image,
-    rating,
-    price,
     description,
-    availability = "available",
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    coordinates: _coordinates,
     lat,
     lng
   } = props;
@@ -117,36 +101,6 @@ const FacilityListItemUser = (props: IFacilityListItemUserProps): JSX.Element =>
     }
   };
 
-  const getAvailabilityBadge = (): JSX.Element => {
-    const availabilityConfig = {
-      available: {
-        label: t('facility:availability.available_today'),
-        className: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300",
-        icon: CheckCircle
-      },
-      busy: {
-        label: t('facility:availability.fully_booked_weekend'),
-        className: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300",
-        icon: Clock
-      },
-      full: {
-        label: t('facility:availability.fully_booked'),
-        className: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300",
-        icon: XCircle
-      }
-    };
-
-    const config = availabilityConfig[availability];
-    const Icon = config.icon;
-
-    return (
-      <Badge className={`${config.className} text-xs`}>
-        <Icon className="h-3 w-3 mr-1" />
-        {config.label}
-      </Badge>
-    );
-  };
-
   // Check if we have valid coordinates or address using numeric checks
   const hasCoords = Number.isFinite(lat) && Number.isFinite(lng);
   const hasAddress = !!address;
@@ -172,22 +126,24 @@ const FacilityListItemUser = (props: IFacilityListItemUserProps): JSX.Element =>
           )}
           
           {/* Favorite Button */}
-          <Button
-            size="sm"
-            variant="secondary"
-            className={`absolute top-2 right-2 w-7 h-7 p-0 bg-white/90 hover:bg-white transition-all z-30 ${
-              isAnimating ? "scale-110" : ""
-            }`}
-            onClick={handleToggleFavorite}
-          >
-            <Heart 
-              className={`h-3 w-3 transition-colors ${
-                isFavorite(id)
-                  ? "text-red-500 fill-current" 
-                  : "text-gray-600 hover:text-red-500"
-              }`} 
-            />
-          </Button>
+          {user && (
+            <Button
+              size="sm"
+              variant="secondary"
+              className={`absolute top-2 right-2 w-7 h-7 p-0 bg-white/90 hover:bg-white transition-all z-30 ${
+                isAnimating ? "scale-110" : ""
+              }`}
+              onClick={handleToggleFavorite}
+            >
+              <Heart 
+                className={`h-3 w-3 transition-colors ${
+                  isFavorite(id)
+                    ? "text-red-500 fill-current" 
+                    : "text-gray-600 hover:text-red-500"
+                }`} 
+              />
+            </Button>
+          )}
         </div>
         
         {/* Content Section */}
@@ -206,15 +162,8 @@ const FacilityListItemUser = (props: IFacilityListItemUserProps): JSX.Element =>
             </div>
             
             <div className="flex items-center space-x-2 ml-4 flex-shrink-0">
-              {rating && (
-                <div className="flex items-center space-x-1">
-                  <Star className="h-4 w-4 text-yellow-400 fill-current" />
-                  <span className="text-sm text-gray-600 dark:text-gray-400">
-                    {rating}
-                  </span>
-                </div>
-              )}
-              {getAvailabilityBadge()}
+              {/* Rating - Removed as requested */}
+              {/* Availability Badge - Removed as requested */}
             </div>
           </div>
           
@@ -233,27 +182,11 @@ const FacilityListItemUser = (props: IFacilityListItemUserProps): JSX.Element =>
                 </span>
               </div>
 
-              {/* Amenities Tags */}
-              <div className="flex flex-wrap gap-1">
-                {amenities && Array.isArray(amenities) && amenities.slice(0, 3).map((amenity, index) => (
-                  <Badge key={index} variant="outline" className="text-xs">
-                    {translateAmenity(amenity)}
-                  </Badge>
-                ))}
-                {amenities && Array.isArray(amenities) && amenities.length > 3 && (
-                  <Badge variant="outline" className="text-xs">
-                    +{amenities.length - 3} {t('facility:card.more')}
-                  </Badge>
-                )}
-              </div>
+              {/* Amenities Tags - Removed as requested */}
             </div>
             
             <div className="flex items-center space-x-2 flex-shrink-0">
-              {price && (
-                <span className="text-sm font-semibold text-blue-600 dark:text-blue-400">
-                  {price}
-                </span>
-              )}
+              {/* Price - Removed as requested */}
               
               <Button
                 size="sm"
@@ -278,13 +211,12 @@ const FacilityListItemUser = (props: IFacilityListItemUserProps): JSX.Element =>
         
         {/* Map Section */}
         {(hasCoords || hasAddress) && (
-          <div className="w-32 min-h-[128px] flex-shrink-0 border-l border-gray-200 dark:border-gray-700 flex items-center justify-center">
+          <div className="relative w-48 min-h-[128px] flex-shrink-0 border-l border-gray-200 dark:border-gray-700">
             <FacilityMiniMap
               address={address}
               lat={lat ?? undefined}
               lng={lng ?? undefined}
-              height={128}
-              width={128}
+              // Removed fixed width and height to allow the map to fill its container
             />
           </div>
         )}

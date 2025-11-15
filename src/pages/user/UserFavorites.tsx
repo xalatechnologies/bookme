@@ -117,13 +117,9 @@ const UserFavorites = (): JSX.Element => {
             address={facility.address}
             type={facility.type}
             capacity={facility.capacity}
-            amenities={facility.amenities}
             image={facility.image}
-            rating={facility.rating}
-            price={facility.price}
             description={facility.description}
             availability={facility.availability}
-            isFavorite={facility.isFavorite}
           />
 
           <div className="mt-2 text-xs text-gray-500 dark:text-gray-500 text-center">
@@ -152,14 +148,10 @@ const UserFavorites = (): JSX.Element => {
             address={facility.address}
             type={facility.type}
             capacity={facility.capacity}
-            amenities={facility.amenities}
             image={facility.image}
-            rating={facility.rating}
-            price={facility.price}
             description={facility.description}
-            availability={facility.availability}
-            isFavorite={facility.isFavorite}
-            coordinates={facility.coordinates}
+            lat={facility.coordinates?.lat}
+            lng={facility.coordinates?.lng}
           />
 
           <div className="mt-2 text-xs text-gray-500 dark:text-gray-500 text-center">
@@ -394,7 +386,7 @@ const UserFavorites = (): JSX.Element => {
               }
             </p>
             {!hasActiveFilters && (
-              <Button onClick={() => window.location.href = '/user/facilities'}>
+              <Button onClick={() => window.location.href = '/facilities'}>
                 <BookOpen className="h-4 w-4 mr-2" />
                 {t('pages.favorites.empty.explore_facilities')}
                 <ArrowRight className="h-4 w-4 ml-2" />

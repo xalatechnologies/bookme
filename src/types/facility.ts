@@ -43,4 +43,6 @@ export interface LocationCoordinates {
 export interface FacilityFilters {
   facilityType?: string;
   location?: string;
+  searchTerm?: string;
+  capacity?: number[];
 }

@@ -91,7 +91,7 @@
       "name": "Utforsk lokaler",
       "short_name": "Lokaler",
       "description": "Utforsk tilgjengelige lokaler",
-      "url": "/user/facilities",
+      "url": "/facilities",
       "icons": [
         {
           "src": "/icons/location-96x96.png",
@@ -115,5 +115,3 @@
   "related_applications": [],
   "prefer_related_applications": false
 }
-
-

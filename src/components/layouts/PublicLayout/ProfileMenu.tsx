@@ -97,7 +97,7 @@ export const ProfileMenu: React.FC<ProfileMenuProps> = ({
             <DropdownMenuItem onClick={() => navigate("/user/bookings")}>
               Bookings
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => navigate("/user/facilities")}>
+            <DropdownMenuItem onClick={() => navigate("/facilities")}>
               Facilities
             </DropdownMenuItem>
             <DropdownMenuItem onClick={handleLogout}>

@@ -45,8 +45,8 @@ const CreateThreadModal: React.FC<CreateThreadModalProps> = ({
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   // Get available participants and facilities based on active bookings
-  const availableParticipants: Participant[] = getAvailableParticipants(currentUserId, currentUserType);
-  const bookedFacilities = getBookedFacilities(currentUserId, currentUserType);
+  const availableParticipants: Participant[] = Array.from(getAvailableParticipants(currentUserId, currentUserType));
+  const bookedFacilities = Array.from(getBookedFacilities(currentUserId, currentUserType));
 
   // Show message if no participants or facilities available
   if (availableParticipants.length === 0 || bookedFacilities.length === 0) {
@@ -77,7 +77,7 @@ const CreateThreadModal: React.FC<CreateThreadModalProps> = ({
               {currentUserType === 'tenant' && (
                 <Button onClick={() => {
                   onClose();
-                  window.location.href = '/user/facilities';
+                  window.location.href = '/facilities';
                 }}>
                   Utforsk lokaler
                 </Button>
@@ -168,7 +168,11 @@ const CreateThreadModal: React.FC<CreateThreadModalProps> = ({
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
-    setAttachments(prev => [...prev, ...files]);
+    setAttachments(prev => {
+      const newFiles = [...prev];
+      files.forEach(file => newFiles.push(file));
+      return newFiles;
+    });
   };
 
   const removeAttachment = (index: number) => {
@@ -202,7 +206,7 @@ const CreateThreadModal: React.FC<CreateThreadModalProps> = ({
               id="subject"
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
-              placeholder={t('common:placeholders.threadSubject')}
+              placeholder={t('placeholders.threadSubject')}
               maxLength={100}
             />
             <p className="text-xs text-muted-foreground">
@@ -244,7 +248,7 @@ const CreateThreadModal: React.FC<CreateThreadModalProps> = ({
             <Label htmlFor="facility">{t('filters.facility')} *</Label>
             <Select value={selectedFacility} onValueChange={setSelectedFacility}>
               <SelectTrigger>
-                <SelectValue placeholder={t('common:placeholders.selectVenue')} />
+                <SelectValue placeholder={t('placeholders.selectVenue')} />
               </SelectTrigger>
               <SelectContent>
                 {bookedFacilities.map((facility) => (

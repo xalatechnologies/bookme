@@ -30,6 +30,7 @@ import React, { createContext, useEffect, useState, useCallback } from 'react';
 import { supabase } from '@/lib/clients/supabase';
 import type { User, Session } from '@supabase/supabase-js';
 import type { Database } from '@/types/database';
+import { useFavoritesStore } from '@/stores/favoritesStore';
 
 type Profile = Database['public']['Tables']['profiles']['Row'];
 type Membership = Database['public']['Tables']['memberships']['Row'];
@@ -179,6 +180,12 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
 
           // Fetch profile and memberships if user is authenticated
           if (initialSession?.user) {
+            // Set user ID in favorites store
+            useFavoritesStore.getState().setUserId(initialSession.user.id);
+            
+            // Load user's favorites
+            await useFavoritesStore.getState().loadFavorites(initialSession.user.id);
+            
             await Promise.all([
               fetchProfile(initialSession.user.id),
               fetchMemberships(initialSession.user.id),
@@ -207,11 +214,17 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
    */
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, newSession) => {
+      async (event, newSession) => {
         setSession(newSession);
         setUser(newSession?.user ?? null);
 
         if (newSession?.user) {
+          // Set user ID in favorites store
+          useFavoritesStore.getState().setUserId(newSession.user.id);
+          
+          // Load user's favorites
+          await useFavoritesStore.getState().loadFavorites(newSession.user.id);
+          
           // Fetch profile and memberships for new user (non-blocking)
           Promise.all([
             fetchProfile(newSession.user.id),
@@ -299,6 +312,9 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
       setProfile(null);
       setMemberships([]);
       setCurrentOrgId(null);
+      
+      // Clear favorites when user logs out
+      useFavoritesStore.getState().clearAllFavorites();
     }
   }, []);
 

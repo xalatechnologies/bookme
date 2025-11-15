@@ -5,7 +5,6 @@ import { Routes, Route } from "react-router-dom";
 import { RequireAuth } from "@/components/features/auth/components/ProtectedRoute";
 import UserLayout from "@/components/layouts/UserLayout";
 import UserDashboard from "@/pages/user/UserDashboard";
-import UserFacilities from "@/pages/user/UserFacilities";
 import Bookings from "@/pages/user/Bookings";
 import CalendarPage from "@/pages/user/CalendarPage";
 import HistoryPage from "@/pages/user/HistoryPage";
@@ -22,7 +21,6 @@ const UserRoutes = (): JSX.Element => {
       <UserLayout>
         <Routes>
           <Route path="/" element={<UserDashboard />} />
-          <Route path="/facilities" element={<UserFacilities />} />
           <Route path="/bookings" element={<Bookings />} />
           <Route path="/mine-bookinger" element={<Bookings />} />
           <Route path="/mine-foresporsler" element={<Bookings />} />

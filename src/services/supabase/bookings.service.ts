@@ -149,14 +149,40 @@ export const bookingsService = {
    * Create a new booking
    */
   async create(booking: BookingInsert): Promise<Booking> {
-    const { data, error } = await supabase
-      .from('bookings')
-      .insert(booking)
-      .select()
-      .single();
-
-    if (error) throw error;
-    return data;
+    console.log('Supabase client available:', !!supabase);
+    console.log('Attempting to create booking:', booking);
+    
+    // Validate that no fields contain invalid UUIDs
+    for (const [key, value] of Object.entries(booking)) {
+      if (typeof value === 'string' && value.length > 0) {
+        // Check if this might be a UUID field with an invalid value
+        if (key.includes('id') && value.length > 10 && !value.includes('-')) {
+          console.warn(`Potential invalid UUID in field ${key}:`, value);
+        }
+      }
+    }
+    
+    try {
+      console.log('Executing Supabase insert...');
+      const { data, error } = await supabase
+        .from('bookings')
+        .insert(booking)
+        .select()
+        .single();
+      
+      console.log('Supabase insert result:', { data, error });
+      
+      if (error) {
+        console.error('Supabase insert error:', error);
+        throw error;
+      }
+      
+      console.log('Booking created successfully:', data);
+      return data;
+    } catch (error) {
+      console.error('Exception in bookingsService.create:', error);
+      throw error;
+    }
   },
 
   /**
@@ -191,11 +217,11 @@ export const bookingsService = {
    * Uses RPC function from backend
    */
   async checkAvailability(params: AvailabilityParams): Promise<boolean> {
-    const { data, error } = await supabase.rpc('check_availability', {
-      p_facility_id: params.facilityId,
-      p_zone_id: params.zoneId || null,
-      p_start_time: params.startTime,
-      p_end_time: params.endTime,
+    // Using has_overlap function with negation to check availability
+    const { data, error } = await supabase.rpc('has_overlap', {
+      p_facility: params.facilityId,
+      p_starts: params.startTime,
+      p_ends: params.endTime,
     });
 
     if (error) {
@@ -203,7 +229,9 @@ export const bookingsService = {
       throw error;
     }
 
-    return data as boolean;
+    // has_overlap returns true if there's an overlap (not available)
+    // We want to return true if it's available (no overlap)
+    return !data;
   },
 
   /**
@@ -397,7 +425,17 @@ export const useCreateBooking = (): UseMutationResult<
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: bookingsService.create,
+    mutationFn: async (booking: BookingInsert) => {
+      console.log('Creating booking with data:', booking);
+      try {
+        const result = await bookingsService.create(booking);
+        console.log('Booking created successfully:', result);
+        return result;
+      } catch (error) {
+        console.error('Error in bookingsService.create:', error);
+        throw error;
+      }
+    },
     onSuccess: (newBooking) => {
       // Invalidate all booking queries
       queryClient.invalidateQueries({ queryKey: bookingKeys.all });
@@ -405,6 +443,9 @@ export const useCreateBooking = (): UseMutationResult<
       // Add to cache
       queryClient.setQueryData(bookingKeys.detail(newBooking.id), newBooking);
     },
+    onError: (error) => {
+      console.error('useCreateBooking mutation error:', error);
+    }
   });
 };
 
@@ -450,12 +491,12 @@ export const useUpdateBooking = (): UseMutationResult<
  * }
  * ```
  */
-export const useCancelBooking = (): UseMutationResult<Booking, Error, string> => {
+export const useCancelBooking = (): UseMutationResult<Booking, Error, { id: string; reason?: string }> => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: bookingsService.cancel,
-    onSuccess: (cancelledBooking, id) => {
+    mutationFn: ({ id, reason }) => bookingsService.cancel(id, reason),
+    onSuccess: (cancelledBooking, { id }) => {
       // Invalidate all booking queries
       queryClient.invalidateQueries({ queryKey: bookingKeys.all });
 
@@ -494,3 +535,9 @@ export const useCheckAvailability = (
     gcTime: 1 * 60 * 1000, // 1 minute
   });
 };
+
+// Helper function to validate UUID format
+function isValidUUID(uuid: string): boolean {
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  return uuidRegex.test(uuid);
+}

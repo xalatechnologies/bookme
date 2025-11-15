@@ -13,9 +13,6 @@ export * from './components/FacilityDetail/FacilityDetailLayout';
 // Facility Image Gallery
 export * from './components/FacilityImageGallery/GalleryGrid';
 
-// Facility Search
-export * from './components/FacilitySearch/FacilityGrid';
-
 // Facility Edit Form
 export * from './components/FacilityEditForm/FacilityEditForm';
 

@@ -33,7 +33,12 @@ import {
 // Internal libraries/utilities
 import { useCart } from "@/contexts/hooks";
 import { useUserProfile } from "@/contexts/hooks";
+import { useAuth } from "@/contexts/hooks/useAuth";
 import { GlobalHeader } from "@/components/layouts/PublicLayout/GlobalHeader";
+import { useCreateBooking } from "@/services/supabase/bookings.service";
+import { supabase } from '@/lib/clients/supabase';
+import type { Database } from '@/types/database';
+import { facilitiesService } from '@/services/supabase/facilities.service';
 
 // UI components
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -66,9 +71,11 @@ import type { ISelectedTimeSlot } from "@/components/features/bookings/types";
  */
 export const Checkout = (): JSX.Element => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const { items, totalPrice, clearCart, removeItem } = useCart();
   const { profile } = useUserProfile();
   const { t, i18n } = useTranslation(["common", "checkout", "bookings"]);
+  const createBookingMutation = useCreateBooking();
   const currentLocale = i18n.language === "en" ? "en-US" : "nb-NO";
 
   // State management
@@ -417,23 +424,89 @@ export const Checkout = (): JSX.Element => {
       return;
     }
 
+    if (!user) {
+      setErrors({
+        payment: t(
+          "checkout:errors.user_required",
+          "You must be logged in to complete a booking"
+        ),
+      });
+      return;
+    }
+
+    // Debug: Log cart items to see what facility IDs we have
+    console.log('Cart items:', items);
+    items.forEach((item, index) => {
+      console.log(`Item ${index}:`, {
+        id: item.id,
+        facilityId: item.facilityId,
+        facilityIdType: typeof item.facilityId,
+        facilityIdLength: typeof item.facilityId === 'string' ? item.facilityId.length : 'N/A',
+        facilityName: item.facilityName,
+        timeSlots: item.timeSlots
+      });
+      
+      // Check for invalid IDs
+      if (item.id && typeof item.id === 'string' && item.id.length > 10 && !item.id.includes('-')) {
+        console.warn('Potential invalid ID in cart item:', item.id);
+      }
+    });
+
+    // Check user authentication status
+    console.log('Current user:', user);
+    console.log('User ID:', user?.id);
+    
+    // Check Supabase session
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    console.log('Current session:', session);
+    if (sessionError) {
+      console.error('Session error:', sessionError);
+    }
+
     setIsProcessing(true);
 
     try {
-      // Simulate payment processing
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      // Test Supabase connection first
+      console.log('Testing Supabase connection...');
+      const { data: test, error: testError } = await supabase
+        .from('facilities')
+        .select('id')
+        .limit(1);
+      
+      if (testError) {
+        console.error('Supabase connection test failed:', testError);
+        throw new Error(`Database connection failed: ${testError.message}`);
+      }
+      console.log('Supabase connection test successful');
+      
+      // Create actual bookings in the database
+      const bookingPromises = items.map(async (item) => {
+        // Validate that facilityId is a proper UUID
+        if (!item.facilityId || typeof item.facilityId !== 'string' || item.facilityId.length !== 36) {
+          console.error('Invalid facility ID:', item.facilityId);
+          throw new Error(`Invalid facility ID: ${item.facilityId}. Expected a valid UUID.`);
+        }
 
-      // Save cart items as pending bookings before clearing cart
-      const pendingBookings = items
-        .map((item) => {
-          // Recurring: one pending booking per occurrence from cart timeSlots
-          if (
-            item.bookingType === "recurring" &&
-            item.timeSlots &&
-            item.timeSlots.length > 0
-          ) {
-            return item.timeSlots.map((slot) => {
-              // normalize date to YYYY-MM-DD
+        // Fetch facility details to get the correct org_id
+        let orgId = "00000000-0000-0000-0000-000000000000";
+        try {
+          console.log('Fetching facility details for:', item.facilityId);
+          const facility = await facilitiesService.getById(item.facilityId);
+          console.log('Facility details:', facility);
+          orgId = facility.org_id || orgId;
+        } catch (facilityError) {
+          console.warn('Failed to fetch facility details, using default org_id:', facilityError);
+        }
+
+        // For recurring bookings, create one booking per time slot
+        if (
+          item.bookingType === "recurring" &&
+          item.timeSlots &&
+          item.timeSlots.length > 0
+        ) {
+          return Promise.all(
+            item.timeSlots.map(async (slot) => {
+              // Normalize date to YYYY-MM-DD
               const d =
                 typeof slot.date === "string"
                   ? new Date(slot.date)
@@ -442,145 +515,186 @@ export const Checkout = (): JSX.Element => {
                 d.getMonth() + 1
               ).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 
-              const hours = (slot.duration ?? 60) / 60;
+              // Parse time slot
+              const [startTime, endTime] = slot.timeSlot.split("-");
 
-              return {
-                id: getNextBookingNumber().toString(),
-                facility: item.facilityName,
-                date: bookingDate,
-                time: slot.timeSlot,
-                duration:
-                  hours === 1
-                    ? t("bookings:time.hour", "1 hour")
-                    : `${hours} ${t("bookings:time.hours", "hours")}`,
+              // Calculate start and end datetime
+              const startDateTime = new Date(`${bookingDate}T${startTime.trim()}:00`);
+              const endDateTime = new Date(`${bookingDate}T${endTime.trim()}:00`);
+
+              // Calculate duration in minutes
+              const duration = slot.duration ?? 60;
+
+              // Log the booking data before creating
+              const bookingData = {
+                user_id: user.id,
+                facility_id: item.facilityId,
+                starts_at: startDateTime.toISOString(),
+                ends_at: endDateTime.toISOString(),
+                total_cents: Math.round(item.pricing?.finalPrice / (item.timeSlots.length || 1) * 100),
                 status: "pending" as const,
-                location: "Drammen",
-                price: `${(
-                  item.pricing?.finalPrice / (item.timeSlots.length || 1)
-                ).toLocaleString("nb-NO")} kr`,
-                description: item.purpose || "Booking",
-                purpose: item.purpose || "Booking",
-                participants: item.attendees || 1,
-                zone: item.zoneName || "Hovedbasseng",
-                isRecurring: true,
-                parentBookingId:
-                  (slot as unknown as Record<string, unknown>)
-                    .parentBookingId ?? `${item.facilityId}-${item.zoneId}`,
-                recurrencePattern: item.recurrencePattern,
-                bookingType: "recurring" as const,
-                timeSlots: [slot],
+                notes: item.purpose || "Booking",
+                is_recurring: true,
+                // Explicitly set group_id to null to avoid any accidental assignment
+                group_id: null,
+                org_id: orgId,
+                currency: "NOK",
+                // Fix zone_id - ensure it's either a valid UUID or null
+                zone_id: item.zoneId && typeof item.zoneId === 'string' && item.zoneId.length === 36 ? item.zoneId : null,
               };
-            });
-          }
-          // Handle date conversion more carefully to avoid timezone issues
-          let bookingDate: string;
-          if (item.timeSlots && item.timeSlots.length > 0) {
-            const slotDate = item.timeSlots[0].date;
-            if (slotDate instanceof Date) {
-              // If it's already a Date object, use local date components to avoid timezone issues
-              const year = slotDate.getFullYear();
-              const month = String(slotDate.getMonth() + 1).padStart(2, "0");
-              const day = String(slotDate.getDate()).padStart(2, "0");
-              bookingDate = `${year}-${month}-${day}`;
-            } else if (typeof slotDate === "string") {
-              // If it's a string, parse it and ensure we get the correct date
-              const parsedDate = new Date(slotDate);
-              // Use local date components to avoid timezone issues
-              const year = parsedDate.getFullYear();
-              const month = String(parsedDate.getMonth() + 1).padStart(2, "0");
-              const day = String(parsedDate.getDate()).padStart(2, "0");
-              bookingDate = `${year}-${month}-${day}`;
-            } else {
-              // Fallback to today's date using local components
-              const today = new Date();
-              const year = today.getFullYear();
-              const month = String(today.getMonth() + 1).padStart(2, "0");
-              const day = String(today.getDate()).padStart(2, "0");
-              bookingDate = `${year}-${month}-${day}`;
-            }
-          } else {
-            // Fallback to today's date using local components
-            const today = new Date();
-            const year = today.getFullYear();
-            const month = String(today.getMonth() + 1).padStart(2, "0");
-            const day = String(today.getDate()).padStart(2, "0");
-            bookingDate = `${year}-${month}-${day}`;
+              
+              // Check for invalid IDs in booking data
+              for (const [key, value] of Object.entries(bookingData)) {
+                if (typeof value === 'string' && value.length > 10 && !value.includes('-') && key.includes('id')) {
+                  console.warn(`Invalid ID detected in booking data field ${key}:`, value);
+                }
+              }
+              
+              console.log('Creating recurring booking:', bookingData);
+              
+              // Create booking in database
+              return createBookingMutation.mutateAsync(bookingData);
+            })
+          );
+        }
+
+        // For single bookings, create one booking
+        if (item.timeSlots && item.timeSlots.length > 0) {
+          // Validate facilityId again
+          if (!item.facilityId || typeof item.facilityId !== 'string' || item.facilityId.length !== 36) {
+            console.error('Invalid facility ID:', item.facilityId);
+            throw new Error(`Invalid facility ID: ${item.facilityId}. Expected a valid UUID.`);
           }
 
-          // Calculate proper time range from timeSlots
-          let timeRange: string;
-          if (item.timeSlots && item.timeSlots.length > 0) {
-            if (item.timeSlots.length === 1) {
-              timeRange = item.timeSlots[0].timeSlot;
-            } else {
-              // Sort slots by time to ensure correct order
-              const sortedSlots = [...item.timeSlots].sort((a, b) => {
-                const timeA = a.timeSlot.split("-")[0];
-                const timeB = b.timeSlot.split("-")[0];
-                return timeA.localeCompare(timeB);
-              });
-              const startTime = sortedSlots[0].timeSlot.split("-")[0];
-              const lastSlot = sortedSlots[sortedSlots.length - 1];
-              const endTime = lastSlot.timeSlot.split("-")[1];
-              timeRange = `${startTime}-${endTime}`;
-            }
-          } else {
-            timeRange = "12:00-13:00";
-          }
+          // Use the first time slot for single bookings
+          const slot = item.timeSlots[0];
+          
+          // Normalize date to YYYY-MM-DD
+          const d =
+            typeof slot.date === "string"
+              ? new Date(slot.date)
+              : (slot.date as Date);
+          const bookingDate = `${d.getFullYear()}-${String(
+            d.getMonth() + 1
+          ).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 
-          return {
-            id: getNextBookingNumber().toString(),
-            facility: item.facilityName,
-            date: bookingDate,
-            time: timeRange,
-            duration:
-              item.timeSlots && item.timeSlots.length > 0
-                ? (() => {
-                    const totalHours =
-                      item.timeSlots.reduce(
-                        (total, slot) => total + (slot.duration ?? 60),
-                        0
-                      ) / 60;
-                    return totalHours === 1
-                      ? t("bookings:time.hour", "1 hour")
-                      : `${totalHours} ${t("bookings:time.hours", "hours")}`;
-                  })()
-                : t("bookings:time.hour", "1 hour"),
+          // Calculate total duration for all time slots in minutes
+          const totalDurationMinutes = item.timeSlots.reduce(
+            (total, s) => total + (s.duration ?? 60),
+            0
+          );
+
+          // For single bookings with multiple time slots, we'll use the first time slot
+          // and calculate the end time based on total duration
+          const [startTime] = slot.timeSlot.split("-");
+
+          // Calculate start and end datetime
+          const startDateTime = new Date(`${bookingDate}T${startTime.trim()}:00`);
+          
+          // Calculate end time based on total duration
+          const endDateTime = new Date(startDateTime.getTime() + (totalDurationMinutes * 60 * 1000));
+
+          // Log the booking data before creating
+          const bookingData = {
+            user_id: user.id,
+            facility_id: item.facilityId,
+            starts_at: startDateTime.toISOString(),
+            ends_at: endDateTime.toISOString(),
+            total_cents: Math.round(item.pricing?.finalPrice * 100),
             status: "pending" as const,
-            location: "Drammen", // This could be dynamic based on facility
-            price: `${item.pricing.finalPrice.toLocaleString("nb-NO")} kr`,
-            description: item.purpose || "Booking",
-            purpose: item.purpose || "Booking",
-            contactPerson: "Hamid Rahmani", // This should come from user profile
-            paymentStatus: "pending" as const,
-            type: "booking" as const,
-            submittedAt: new Date().toISOString(),
-            bookingType: item.bookingType,
-            zoneName: item.zoneName,
-            attendees: item.attendees,
-            activityType: item.activityType,
-            actorType: item.actorType,
-            timeSlots: item.timeSlots, // Store timeSlots for proper time calculation
+            notes: item.purpose || "Booking",
+            is_recurring: false,
+            // Explicitly set group_id to null to avoid any accidental assignment
+            group_id: null,
+            org_id: orgId,
+            currency: "NOK",
+            // Fix zone_id - ensure it's either a valid UUID or null
+            zone_id: item.zoneId && typeof item.zoneId === 'string' && item.zoneId.length === 36 ? item.zoneId : null,
           };
-        })
-        .flat();
+          
+          // Check for invalid IDs in booking data
+          for (const [key, value] of Object.entries(bookingData)) {
+            if (typeof value === 'string' && value.length > 10 && !value.includes('-') && key.includes('id')) {
+              console.warn(`Invalid ID detected in booking data field ${key}:`, value);
+            }
+          }
+          
+          console.log('Creating single booking:', bookingData);
 
-      // Save to localStorage
-      const existingPending = JSON.parse(
-        localStorage.getItem("pendingBookings") || "[]"
-      );
-      const updatedPending = [...existingPending, ...pendingBookings];
-      localStorage.setItem("pendingBookings", JSON.stringify(updatedPending));
+          // Create booking in database
+          return createBookingMutation.mutateAsync(bookingData);
+        }
+
+        // Fallback for bookings without time slots
+        // Validate facilityId again
+        if (!item.facilityId || typeof item.facilityId !== 'string' || item.facilityId.length !== 36) {
+          console.error('Invalid facility ID:', item.facilityId);
+          throw new Error(`Invalid facility ID: ${item.facilityId}. Expected a valid UUID.`);
+        }
+
+        // Fetch facility details to get the correct org_id (fallback case)
+        let fallbackOrgId = "00000000-0000-0000-0000-000000000000";
+        try {
+          console.log('Fetching facility details for fallback case:', item.facilityId);
+          const facility = await facilitiesService.getById(item.facilityId);
+          console.log('Facility details (fallback):', facility);
+          fallbackOrgId = facility.org_id || fallbackOrgId;
+        } catch (facilityError) {
+          console.warn('Failed to fetch facility details for fallback, using default org_id:', facilityError);
+        }
+
+        const today = new Date();
+        const bookingDate = `${today.getFullYear()}-${String(
+          today.getMonth() + 1
+        ).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+
+        const startDateTime = new Date(`${bookingDate}T12:00:00`);
+        const endDateTime = new Date(`${bookingDate}T13:00:00`);
+
+        // Log the booking data before creating
+        const bookingData = {
+          user_id: user.id,
+          facility_id: item.facilityId,
+          starts_at: startDateTime.toISOString(),
+          ends_at: endDateTime.toISOString(),
+          total_cents: Math.round(item.pricing?.finalPrice * 100),
+          status: "pending" as const,
+          notes: item.purpose || "Booking",
+          is_recurring: false,
+          // Explicitly set group_id to null to avoid any accidental assignment
+          group_id: null,
+          org_id: fallbackOrgId,
+          currency: "NOK",
+          // Fix zone_id - ensure it's either a valid UUID or null
+          zone_id: item.zoneId && typeof item.zoneId === 'string' && item.zoneId.length === 36 ? item.zoneId : null,
+        };
+        
+        // Check for invalid IDs in booking data
+        for (const [key, value] of Object.entries(bookingData)) {
+          if (typeof value === 'string' && value.length > 10 && !value.includes('-') && key.includes('id')) {
+            console.warn(`Invalid ID detected in booking data field ${key}:`, value);
+          }
+        }
+        
+        console.log('Creating fallback booking:', bookingData);
+
+        return createBookingMutation.mutateAsync(bookingData);
+      });
+
+      // Wait for all bookings to be created
+      console.log('Waiting for all bookings to be created...');
+      const results = await Promise.all(bookingPromises.flat());
+      console.log('All bookings created successfully:', results);
 
       // Clear cart and redirect
       clearCart();
       navigate("/user/bookings?success=true");
     } catch (error) {
-      void error; // Error handled by displaying payment error message
+      console.error("Error creating bookings:", error);
       setErrors({
         payment: t(
           "checkout:errors.payment_failed",
-          "Betalingen feilet. Prøv igjen eller velg en annen metode."
+          "Payment failed. Please try again or choose a different method. Error: " + (error instanceof Error ? error.message : String(error))
         ),
       });
       setIsProcessing(false);
@@ -591,7 +705,9 @@ export const Checkout = (): JSX.Element => {
     navigate,
     selectedPaymentMethod,
     items,
-    getNextBookingNumber,
+    user,
+    profile,
+    createBookingMutation
   ]);
 
   if (items.length === 0 && !isProcessing) {
@@ -605,13 +721,13 @@ export const Checkout = (): JSX.Element => {
               <h2 className="text-2xl font-bold text-gray-900 mb-2">
                 {t("checkout:empty.title", "Ingen bookinger å betale for")}
               </h2>
-              <p className="text-gray-600 mb-6">
+              <p className="text-gray-600 dark:text-gray-400 mb-6">
                 {t(
                   "checkout:empty.description",
                   "Du har ingen aktive bookinger i handlekurven."
                 )}
               </p>
-              <Button onClick={() => navigate("/user/facilities")}>
+              <Button onClick={() => navigate("/facilities")}>
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 {t("checkout:empty.back_to_facilities", "Tilbake til lokaler")}
               </Button>
@@ -1026,13 +1142,10 @@ export const Checkout = (): JSX.Element => {
                                           0
                                         ) / 60;
                                       return totalHours === 1
-                                        ? `1 ${t("bookings:time.hour", "time")}`
-                                        : `${totalHours} ${t(
-                                            "bookings:time.hours",
-                                            "timer"
-                                          )}`;
+                                        ? `1 time`
+                                        : `${totalHours} timer`;
                                     })()
-                                  : `0 ${t("bookings:time.hours", "timer")}`}
+                                  : `0 timer`}
                               </span>
                             </div>
                             <div className="flex items-center gap-2 text-sm text-gray-600">

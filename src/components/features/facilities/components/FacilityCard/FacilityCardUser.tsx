@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import FacilityCardBase from "./FacilityCardBase";
 import { useFacilityActions } from "@/hooks/features/facilities";
+import { useAuth } from "@/contexts/hooks/useAuth";
 
 interface IFacilityCardUserProps {
   readonly id: string;
@@ -22,18 +23,15 @@ interface IFacilityCardUserProps {
   readonly address: string;
   readonly type: string;
   readonly capacity: number;
-  readonly amenities: readonly string[];
   readonly image: string;
-  readonly rating?: number;
-  readonly price?: string;
   readonly description?: string;
   readonly availability?: "available" | "busy" | "full";
-  readonly isFavorite?: boolean;
   readonly slug?: string;
 }
 
 const FacilityCardUser = (props: IFacilityCardUserProps): JSX.Element => {
   const { t } = useTranslation(['facility']);
+  const { user } = useAuth();
 
   const {
     id,
@@ -41,10 +39,7 @@ const FacilityCardUser = (props: IFacilityCardUserProps): JSX.Element => {
     address,
     type,
     capacity,
-    amenities,
     image,
-    rating,
-    price,
     description,
     availability = "available",
     slug
@@ -103,30 +98,32 @@ const FacilityCardUser = (props: IFacilityCardUserProps): JSX.Element => {
       address={address}
       type={type}
       capacity={capacity}
-      amenities={amenities}
+      amenities={[]} // Empty array to remove amenities
       image={image}
-      rating={rating}
-      price={price}
+      rating={undefined} // Remove rating
+      price={undefined} // Remove price
       description={description}
     >
       {/* Top Right Actions - Positioned above hover overlay for accessibility */}
       <div className="absolute top-3 right-3 flex flex-col space-y-2 z-20">
-        <Button
-          size="sm"
-          variant="secondary"
-          className={`w-8 h-8 p-0 bg-white/90 hover:bg-white transition-all z-30 ${
-            isAnimating ? "scale-110" : ""
-          }`}
-          onClick={handleToggleFavorite}
-        >
-          <Heart
-            className={`h-4 w-4 transition-colors ${
-              isFacilityFavorite
-                ? "text-red-500 fill-current"
-                : "text-gray-600 hover:text-red-500"
+        {user && (
+          <Button
+            size="sm"
+            variant="secondary"
+            className={`w-8 h-8 p-0 bg-white/90 hover:bg-white transition-all z-30 ${
+              isAnimating ? "scale-110" : ""
             }`}
-          />
-        </Button>
+            onClick={handleToggleFavorite}
+          >
+            <Heart
+              className={`h-4 w-4 transition-colors ${
+                isFacilityFavorite
+                  ? "text-red-500 fill-current"
+                  : "text-gray-600 hover:text-red-500"
+              }`}
+            />
+          </Button>
+        )}
         
         <Button
           size="sm"
@@ -136,11 +133,6 @@ const FacilityCardUser = (props: IFacilityCardUserProps): JSX.Element => {
         >
           <Share2 className="h-4 w-4 text-gray-600 hover:text-blue-600" />
         </Button>
-      </div>
-      
-      {/* Availability Badge */}
-      <div className="absolute bottom-3 left-3">
-        {getAvailabilityBadge()}
       </div>
       
       {/* Action Buttons Overlay - Lower z-index to not interfere with top actions */}

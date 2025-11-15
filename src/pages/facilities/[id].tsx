@@ -20,22 +20,31 @@ import {
   ErrorState,
 } from "@/components/features/facilities/components/FacilityDetail/FacilityDetailStates";
 
+// Import the favorites store
+import { useFavoritesStore } from "@/stores/favoritesStore";
+
 export const FacilityDetail = (): JSX.Element => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [isFavorited, setIsFavorited] = useState(false);
+  const { t } = useTranslation("common");
+  
+  // Use the favorites store
+  const { isFavorite, toggleFavorite, incrementUsage, updateLastVisited } = useFavoritesStore();
+  
   const [currentPattern, setCurrentPattern] = useState<RecurrencePattern>({
     type: "weekly",
     weekdays: [],
     timeSlots: [],
     interval: 1,
   });
-  const { t } = useTranslation("common");
 
   // Use hooks to fetch data
   const { facility, loading, error, notFound } = useFacility(id || "");
   // Use facility UUID for zones query (not the slug from URL)
   const { zones, loading: zonesLoading } = useZones(facility?.id || "");
+
+  // Check if current facility is favorited
+  const isFavorited = facility ? isFavorite(facility.id) : false;
 
   // Redirect to slug-based URL if facility has a slug and we're using ID
   useEffect(() => {
@@ -71,6 +80,21 @@ export const FacilityDetail = (): JSX.Element => {
       }
     }
   };
+
+  // Handle favorite toggle
+  const handleToggleFavorite = (): void => {
+    if (facility) {
+      toggleFavorite(facility.id);
+    }
+  };
+
+  // Track usage when component mounts
+  useEffect(() => {
+    if (facility) {
+      incrementUsage(facility.id);
+      updateLastVisited(facility.id);
+    }
+  }, [facility, incrementUsage, updateLastVisited]);
 
   // Handle loading state
   if (loading || zonesLoading) {
@@ -119,7 +143,7 @@ export const FacilityDetail = (): JSX.Element => {
             }))}
             onShare={handleShare}
             isFavorited={isFavorited}
-            onToggleFavorite={() => setIsFavorited(!isFavorited)}
+            onToggleFavorite={handleToggleFavorite}
           />
 
           {/* Calendar is now integrated in the tabs */}
