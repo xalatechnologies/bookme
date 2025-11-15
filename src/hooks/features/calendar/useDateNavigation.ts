@@ -1,4 +1,6 @@
 import { useState, useCallback, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
+import type { SupportedLanguage } from '@/i18n/config';
 
 export type CalendarView = 'month' | 'week' | 'day';
 
@@ -37,11 +39,17 @@ export const useDateNavigation = (
   onDateChange?: (date: Date) => void,
   view: CalendarView = 'month'
 ): UseDateNavigationReturn => {
+  const { i18n } = useTranslation();
   const [internalCurrentDate, setInternalCurrentDate] = useState<Date>(new Date());
 
   // Use external date if provided, otherwise use internal state
   const currentDate = externalCurrentDate || internalCurrentDate;
   const setCurrentDate = onDateChange || setInternalCurrentDate;
+
+  // Get the current locale based on i18n language
+  const getCurrentLocale = (): string => {
+    return i18n.language === 'no' ? 'nb-NO' : 'en-US';
+  };
 
   // Calculate month boundaries
   const firstDayOfMonth = useMemo(() => {
@@ -125,22 +133,24 @@ export const useDateNavigation = (
 
   // Format display text based on view
   const getDisplayText = useCallback((): string => {
+    const locale = getCurrentLocale();
+    
     if (view === 'month') {
-      return firstDayOfMonth.toLocaleDateString('nb-NO', {
+      return firstDayOfMonth.toLocaleDateString(locale, {
         month: 'long',
         year: 'numeric'
       });
     } else if (view === 'week') {
-      return `${weekStartDate.toLocaleDateString('nb-NO', {
+      return `${weekStartDate.toLocaleDateString(locale, {
         day: 'numeric',
         month: 'short'
-      })} - ${weekEndDate.toLocaleDateString('nb-NO', {
+      })} - ${weekEndDate.toLocaleDateString(locale, {
         day: 'numeric',
         month: 'short',
         year: 'numeric'
       })}`;
     } else if (view === 'day') {
-      return currentDate.toLocaleDateString('nb-NO', {
+      return currentDate.toLocaleDateString(locale, {
         weekday: 'long',
         day: 'numeric',
         month: 'long',
@@ -148,7 +158,7 @@ export const useDateNavigation = (
       });
     }
     return '';
-  }, [view, firstDayOfMonth, weekStartDate, weekEndDate, currentDate]);
+  }, [view, firstDayOfMonth, weekStartDate, weekEndDate, currentDate, getCurrentLocale]);
 
   return {
     currentDate,

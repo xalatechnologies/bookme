@@ -91,10 +91,10 @@ export const EventTooltip: React.FC<EventTooltipProps> = ({
           {/* Actions */}
           <div className="flex gap-2 pt-2 border-t border-gray-200 dark:border-gray-700">
             <button className="flex-1 px-3 py-1.5 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
-              {t("context_menu.view_details")}
+              {t("common.view_details")}
             </button>
             <button className="flex-1 px-3 py-1.5 text-sm border border-gray-300 text-gray-700 rounded hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800 transition-colors">
-              {t("context_menu.edit")}
+              {t("actions.edit")}
             </button>
           </div>
         </div>

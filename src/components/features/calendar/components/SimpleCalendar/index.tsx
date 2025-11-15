@@ -56,13 +56,13 @@ export const SimpleCalendar: React.FC<SimpleCalendarProps> = ({
 
   // Day names - starting with Monday
   const dayNames = [
-    t('days.mon'),
-    t('days.tue'),
-    t('days.wed'),
-    t('days.thu'),
-    t('days.fri'),
-    t('days.sat'),
-    t('days.sun')
+    t('time.days.mon', 'Mon'),
+    t('time.days.tue', 'Tue'),
+    t('time.days.wed', 'Wed'),
+    t('time.days.thu', 'Thu'),
+    t('time.days.fri', 'Fri'),
+    t('time.days.sat', 'Sat'),
+    t('time.days.sun', 'Sun')
   ];
 
   // Render the appropriate view component

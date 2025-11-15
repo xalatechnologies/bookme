@@ -174,7 +174,8 @@
     "no_options": "Ingen alternativer tilgjengelige",
     "system_messages": "Systemmeldinger",
     "view_details": "Se detaljer",
-    "all_bookings_completed": "Alle bookinger fullført"
+    "all_bookings_completed": "Alle bookinger fullført",
+    "calendar": "Kalender"
   },
   "navigation": {
     "menu": "Meny",
@@ -189,7 +190,8 @@
     "showing": "Viser {{from}} til {{to}} av {{total}}",
     "goToPage": "Gå til side",
     "previous": "Forrige",
-    "next": "Neste"
+    "next": "Neste",
+    "today": "I dag"
   },
   "breadcrumbs": {
     "home": "Hjem",
@@ -202,6 +204,7 @@
     "search_admin": "Søk i admin...",
     "search_venues": "Søk etter lokaler...",
     "search_bookings": "Søk på lokale eller booking ID...",
+    "search_label": "Søk",
     "no_results": "Ingen resultater funnet",
     "found_results": "Fant {{count}} resultater for \"{{query}}\"",
     "recent_searches": "Nylige søk",
@@ -218,8 +221,11 @@
   "filters": {
     "title": "Filtre",
     "apply": "Bruk filtre",
-    "clear": "Tøm filtre",
+    "clear": "Tøm",
     "clearAll": "Tilbakestill alle",
+    "clear_filters": "Tøm filtre",
+    "clear_all": "Tøm alle",
+    "clear_all_filters": "Tøm alle filtre",
     "active_filters": "Aktive filtre",
     "results_count": "{{count}} resultater",
     "results_filtered": "{{count}} av {{total}} resultater",
@@ -233,7 +239,10 @@
     "select_facility": "Velg lokale",
     "date_period": "Tidsperiode",
     "status": "Status",
-    "priority": "Prioritet"
+    "priority": "Prioritet",
+    "search_placeholder": "Søk...",
+    "filter_button": "Filtrer",
+    "facilities": "Lokaler"
   },
   "sort": {
     "relevance": "Relevans",
@@ -283,7 +292,6 @@
     "hour": "time",
     "hours": "timer",
     "day": "dag",
-    "days": "dager",
     "week": "uke",
     "weeks": "uker",
     "month": "måned",
@@ -331,6 +339,15 @@
       "friday": "Fredag",
       "saturday": "Lørdag",
       "sunday": "Søndag"
+    },
+    "days": {
+      "mon": "Man",
+      "tue": "Tir",
+      "wed": "Ons",
+      "thu": "Tor",
+      "fri": "Fre",
+      "sat": "Lør",
+      "sun": "Søn"
     }
   },
   "messages": {
@@ -429,7 +446,8 @@
     "close_modal": "Lukk modal",
     "open_menu": "Åpne meny",
     "close_menu": "Lukk meny",
-    "remove_filter": "Fjern {{label}} filter"
+    "remove_filter": "Fjern {{label}} filter",
+    "calendar": "Åpne kalender"
   },
   "accessibility": {
     "skipToContent": "Hopp til innhold",
@@ -493,6 +511,10 @@
     "grid": "Rutenett visning",
     "list": "Liste visning",
     "map": "Kart"
+  },
+  "views": {
+    "week": "Uke",
+    "day": "Dag"
   },
   "facilities": {
     "count": "lokaler",

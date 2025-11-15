@@ -174,7 +174,8 @@
     "no_options": "No options available",
     "system_messages": "System Messages",
     "view_details": "View details",
-    "all_bookings_completed": "All bookings completed"
+    "all_bookings_completed": "All bookings completed",
+    "calendar": "Calendar"
   },
   "navigation": {
     "menu": "Menu",
@@ -189,7 +190,8 @@
     "showing": "Showing {{from}} to {{to}} of {{total}}",
     "goToPage": "Go to page",
     "previous": "Previous",
-    "next": "Next"
+    "next": "Next",
+    "today": "Today"
   },
   "breadcrumbs": {
     "home": "Home",
@@ -201,6 +203,8 @@
     "search_facilities": "Search for facilities...",
     "search_admin": "Search in admin...",
     "search_venues": "Search for venues...",
+    "search_bookings": "Search for venues or booking ID...",
+    "search_label": "Search",
     "no_results": "No results found.",
     "found_results": "Found {{count}} results for \"{{query}}\"",
     "recent_searches": "Recent searches",
@@ -213,6 +217,21 @@
     "group_documents": "Documents",
     "available_count": "{{count}} venues available",
     "capacity": "Capacity: {{count}}"
+  },
+  "dateRange": {
+    "all": "All",
+    "today": "Today",
+    "week": "This week",
+    "month": "This month",
+    "upcoming": "Upcoming",
+    "past": "Past"
+  },
+  "sort": {
+    "date_asc": "Date (upcoming first)",
+    "date_desc": "Date (oldest first)",
+    "price_asc": "Price (low to high)",
+    "price_desc": "Price (high to low)",
+    "created_desc": "Created"
   },
   "notifications": {
     "title": "Notifications",
@@ -241,7 +260,6 @@
     "hour": "hour",
     "hours": "hours",
     "day": "day",
-    "days": "days",
     "week": "week",
     "weeks": "weeks",
     "month": "month",
@@ -289,6 +307,15 @@
       "friday": "Friday",
       "saturday": "Saturday",
       "sunday": "Sunday"
+    },
+    "days": {
+      "mon": "Mon",
+      "tue": "Tue",
+      "wed": "Wed",
+      "thu": "Thu",
+      "fri": "Fri",
+      "sat": "Sat",
+      "sun": "Sun"
     }
   },
   "messages": {
@@ -387,7 +414,26 @@
     "close_modal": "Close modal",
     "open_menu": "Open menu",
     "close_menu": "Close menu",
-    "remove_filter": "Remove {{label}} filter"
+    "remove_filter": "Remove {{label}} filter",
+    "calendar": "Open calendar"
+  },
+  "filters": {
+    "title": "Filters",
+    "date_period": "Select time period",
+    "sort_by": "Sort by",
+    "clear": "Clear",
+    "clear_filters": "Clear filters",
+    "clear_all": "Clear all",
+    "clear_all_filters": "Clear all filters",
+    "facility": "Venue",
+    "all_facilities": "All venues",
+    "active_filters": "Active filters",
+    "clearAll": "Reset all",
+    "select_facility": "Select venue",
+    "search_placeholder": "Search...",
+    "filter_button": "Filter",
+    "facilities": "Facilities",
+    "status": "Status"
   },
   "accessibility": {
     "skipToContent": "Skip to content",
@@ -451,6 +497,10 @@
     "grid": "Grid View",
     "list": "List View",
     "map": "Map"
+  },
+  "views": {
+    "week": "Week",
+    "day": "Day"
   },
   "facilities": {
     "count": "venues",

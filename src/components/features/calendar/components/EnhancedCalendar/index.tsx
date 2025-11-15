@@ -45,7 +45,7 @@ export const EnhancedCalendar: React.FC<EnhancedCalendarProps> = ({
   currentDate: externalCurrentDate,
   onDateChange,
 }): JSX.Element => {
-  const { t } = useTranslation("common");
+  const { t } = useTranslation("calendar");
   const {
     searchQuery,
     selectedFacilities,
@@ -131,14 +131,12 @@ export const EnhancedCalendar: React.FC<EnhancedCalendarProps> = ({
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-            {t("calendar:title")}
+            {t("title")}
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
             {lastRefresh
-              ? t("calendar:messages.last_updated", {
-                  time: lastRefresh.toLocaleTimeString("no-NO"),
-                })
-              : t("calendar:manage_bookings")}
+              ? `Last updated: ${lastRefresh.toLocaleTimeString("no-NO")}`
+              : t("manage_bookings")}
           </p>
         </div>
 
@@ -153,8 +151,8 @@ export const EnhancedCalendar: React.FC<EnhancedCalendarProps> = ({
               className={`w-4 h-4 mr-2 ${isLoading ? "animate-spin" : ""}`}
             />
             {isLoading
-              ? t("calendar:actions.refreshing")
-              : t("calendar:actions.refresh")}
+              ? t("actions.refresh") + "..."
+              : t("actions.refresh")}
           </Button>
         </div>
       </div>
@@ -178,16 +176,13 @@ export const EnhancedCalendar: React.FC<EnhancedCalendarProps> = ({
       {hasActiveFilters && (
         <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
           <span>
-            {t("calendar:filters.showing_results", {
-              count: filteredEvents.length,
-              total: events.length,
-            })}
+            Showing {filteredEvents.length} of {events.length} events
           </span>
           {filteredEvents.length === 0 && (
             <Alert className="flex-1">
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>
-                {t("calendar:filters.no_results_with_filters")}
+                No results with current filters
               </AlertDescription>
             </Alert>
           )}
@@ -266,12 +261,12 @@ export const EnhancedCalendar: React.FC<EnhancedCalendarProps> = ({
               </div>
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                  {t("calendar:event.no_bookings")}
+                  {t("event.no_bookings")}
                 </h3>
                 <p className="text-gray-600 dark:text-gray-400">
                   {hasActiveFilters
-                    ? t("calendar:event.adjust_filters")
-                    : t("calendar:event.create_first_booking")}
+                    ? t("event.no_bookings")
+                    : t("event.create_first_booking")}
                 </p>
               </div>
             </div>

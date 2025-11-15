@@ -64,7 +64,7 @@ export const MonthView: React.FC<MonthViewProps> = ({
                         onEventRightClick?.(event, { x: e.clientX, y: e.clientY });
                       }}
                       className={`text-xs p-1 rounded cursor-pointer truncate transition-colors ${
-                        event.status === 'confirmed' || event.status === 'approved'
+                        event.status === 'confirmed'
                           ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 hover:bg-green-200 dark:hover:bg-green-800'
                           : event.status === 'pending'
                           ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200 hover:bg-yellow-200 dark:hover:bg-yellow-800'
@@ -84,7 +84,7 @@ export const MonthView: React.FC<MonthViewProps> = ({
                   {/* Show "more" indicator if there are more than 3 events */}
                   {dayEvents.length > 3 && (
                     <div className="text-xs text-gray-500 dark:text-gray-400 text-center">
-                      {t('event.more_events', { count: dayEvents.length - 3 })}
+                      {t('common.other')} (+{dayEvents.length - 3})
                     </div>
                   )}
                 </div>

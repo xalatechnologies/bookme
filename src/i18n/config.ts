@@ -29,6 +29,8 @@ import bookingsEN from '../../public/locales/en/bookings.json';
 import bookingsNO from '../../public/locales/no/bookings.json';
 import facilityEN from '../../public/locales/en/facility.json';
 import facilityNO from '../../public/locales/no/facility.json';
+import calendarEN from '../../public/locales/en/calendar.json';
+import calendarNO from '../../public/locales/no/calendar.json';
 import checkoutEN from '../../public/locales/en/checkout.json';
 import checkoutNO from '../../public/locales/no/checkout.json';
 import adminEN from '../../public/locales/en/admin.json';
@@ -66,6 +68,7 @@ export const NAMESPACES = {
   ADMIN: 'admin',
   USER: 'user',
   VALIDATION: 'validation',
+  CALENDAR: 'calendar',
 } as const;
 
 // Initialize i18next
@@ -149,6 +152,7 @@ i18n
         booking: bookingEN,
         bookings: bookingsEN,
         facility: facilityEN,
+        calendar: calendarEN,
         checkout: checkoutEN,
         admin: adminEN,
         user: userEN,
@@ -162,6 +166,7 @@ i18n
         booking: bookingNO,
         bookings: bookingsNO,
         facility: facilityNO,
+        calendar: calendarNO,
         checkout: checkoutNO,
         admin: adminNO,
         user: userNO,

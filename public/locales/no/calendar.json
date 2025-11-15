@@ -1,4 +1,18 @@
 {
+  "title": "Kalender",
+  "manage_bookings": "Administrer bookinger",
+  "actions": {
+    "refresh": "Oppdater",
+    "today": "I dag"
+  },
+  "event": {
+    "no_bookings": "Ingen bookinger",
+    "create_first_booking": "Opprett din første booking"
+  },
+  "views": {
+    "week": "Uke",
+    "day": "Dag"
+  },
   "navigation": {
     "previous_week": "Forrige uke",
     "next_week": "Neste uke",

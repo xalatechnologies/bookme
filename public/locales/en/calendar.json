@@ -1,4 +1,18 @@
 {
+  "title": "Calendar",
+  "manage_bookings": "Manage Bookings",
+  "actions": {
+    "refresh": "Refresh",
+    "today": "Today"
+  },
+  "event": {
+    "no_bookings": "No bookings",
+    "create_first_booking": "Create your first booking"
+  },
+  "views": {
+    "week": "Week",
+    "day": "Day"
+  },
   "navigation": {
     "previous_week": "Previous Week",
     "next_week": "Next Week",
