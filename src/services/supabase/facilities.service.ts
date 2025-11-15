@@ -111,6 +111,13 @@ const extractCoordinates = (location: unknown): { lat: number | null; lng: numbe
       // This might be a binary array, we can't parse it directly
       console.warn('Cannot parse binary PostGIS location data directly');
     }
+    // Log when location data is missing or invalid
+    else if (location === null || location === undefined) {
+      console.debug('Location data is null or undefined');
+    }
+    else {
+      console.debug('Unexpected location data format:', typeof location, location);
+    }
   } catch (error) {
     console.warn('Error parsing location data:', error);
   }
@@ -219,24 +226,8 @@ export const facilitiesService = {
    * @returns Array of facilities with coordinates
    */
   async getAllWithCoords(orgId: string): Promise<FacilityWithCoords[]> {
-    try {
-      // Try to use the RPC function that extracts coordinates directly
-      // Type assertion needed because RPC function types aren't generated
-      const { data, error } = await (supabase.rpc as any)('get_all_facilities_with_location_text', {
-        org_id: orgId
-      }) as { data: FacilityWithLocationText[] | null; error: Error | null };
-
-      if (!error && data) {
-        // Convert the RPC result to FacilityWithCoords
-        return data.map(convertToFacilityWithCoords);
-      }
-    } catch (rpcError: unknown) {
-      // Log the error but don't fail - fall back to client-side extraction
-      const errorMessage = rpcError instanceof Error ? rpcError.message : String(rpcError);
-      console.warn('RPC function failed, falling back to client-side extraction:', errorMessage);
-    }
-
-    // Fallback to regular query with coordinate extraction
+    // Always use client-side extraction as primary method to ensure all facilities are returned
+    // The RPC function was filtering out facilities without location data
     const facilities = await this.getAll(orgId);
     return addCoordinatesToFacilities(facilities);
   },
@@ -248,24 +239,8 @@ export const facilitiesService = {
    * @returns Array of published facilities with coordinates
    */
   async getPublishedWithCoords(orgId: string): Promise<FacilityWithCoords[]> {
-    try {
-      // Try to use the RPC function that extracts coordinates directly
-      // Type assertion needed because RPC function types aren't generated
-      const { data, error } = await (supabase.rpc as any)('get_published_facilities_with_location_text', {
-        org_id: orgId
-      }) as { data: FacilityWithLocationText[] | null; error: Error | null };
-
-      if (!error && data) {
-        // Convert the RPC result to FacilityWithCoords
-        return data.map(convertToFacilityWithCoords);
-      }
-    } catch (rpcError: unknown) {
-      // Log the error but don't fail - fall back to client-side extraction
-      const errorMessage = rpcError instanceof Error ? rpcError.message : String(rpcError);
-      console.warn('RPC function failed, falling back to client-side extraction:', errorMessage);
-    }
-
-    // Fallback to regular query with coordinate extraction
+    // Always use client-side extraction as primary method to ensure all facilities are returned
+    // The RPC function was filtering out facilities without location data
     const facilities = await this.getPublished(orgId);
     return addCoordinatesToFacilities(facilities);
   },

@@ -32,6 +32,8 @@ import type checkoutEN from '../../../public/locales/en/checkout.json';
 import type checkoutNO from '../../../public/locales/no/checkout.json';
 import type userEN from '../../../public/locales/en/user.json';
 import type userNO from '../../../public/locales/no/user.json';
+import type navigationEN from '../../../public/locales/en/navigation.json';
+import type navigationNO from '../../../public/locales/no/navigation.json';
 
 /**
  * Default namespace for translations
@@ -53,7 +55,8 @@ export type Namespaces =
   | 'calendar'
   | 'admin'
   | 'checkout'
-  | 'user';
+  | 'user'
+  | 'navigation';
 
 /**
  * Resource type for each namespace
@@ -71,6 +74,7 @@ export interface NamespaceResources {
   admin: typeof adminNO;
   checkout: typeof checkoutNO;
   user: typeof userNO;
+  navigation: typeof navigationNO;
 }
 
 /**
@@ -89,6 +93,7 @@ export interface Resources {
   admin: typeof adminNO;
   checkout: typeof checkoutNO;
   user: typeof userNO;
+  navigation: typeof navigationNO;
 }
 
 /**
@@ -133,7 +138,7 @@ declare module 'i18next' {
  * Type guard to check if a string is a valid namespace
  */
 export const isNamespace = (value: string): value is Namespaces => {
-  return ['common', 'rbac', 'forms', 'errors', 'validation', 'booking', 'bookings', 'facility', 'calendar', 'admin', 'checkout', 'user'].includes(value);
+  return ['common', 'rbac', 'forms', 'errors', 'validation', 'booking', 'bookings', 'facility', 'calendar', 'admin', 'checkout', 'user', 'navigation'].includes(value);
 };
 
 /**

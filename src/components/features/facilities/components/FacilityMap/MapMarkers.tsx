@@ -147,19 +147,48 @@ export const MapMarkers: React.FC<MapMarkersProps> = ({
       facilities.map(normalizeFacility)
     );
 
-    // Filter facilities to only include those with valid coordinates
-    // Using numeric checks instead of truthy checks
+    // Filter facilities to only include those with valid coordinates or address for geocoding
     const facilitiesWithCoordinates = enrichedFacilities.filter(facility => {
-      return Number.isFinite(facility.lat) && Number.isFinite(facility.lng);
+      return (Number.isFinite(facility.lat) && Number.isFinite(facility.lng)) || facility.address;
     });
 
+    // Process each facility to ensure it has coordinates
+    const markerData = await Promise.all(
+      facilitiesWithCoordinates.map(async (facility) => {
+        let lat = facility.lat;
+        let lng = facility.lng;
+        
+        // If we don't have valid coordinates but have an address, try to geocode it
+        if ((!Number.isFinite(lat) || !Number.isFinite(lng)) && facility.address) {
+          const geocoded = await geocodeAddress(facility.address);
+          if (geocoded) {
+            lat = geocoded.lat;
+            lng = geocoded.lng;
+          }
+        }
+        
+        // Return facility with coordinates if available
+        if (Number.isFinite(lat) && Number.isFinite(lng)) {
+          return {
+            facility: {...facility, lat, lng},
+            lat,
+            lng
+          };
+        }
+        // Return null for facilities that can't be geocoded
+        return null;
+      })
+    );
+
+    // Filter out null values and create markers
+    const validMarkerData = markerData.filter(Boolean) as Array<{
+      facility: FacilityWithCoords;
+      lat: number;
+      lng: number;
+    }>;
+
     // Create new markers
-    const newMarkers = facilitiesWithCoordinates.map((facility): mapboxgl.Marker => {
-      // This should not happen due to the filter above, but just in case
-      if (!Number.isFinite(facility.lat) || !Number.isFinite(facility.lng)) {
-        throw new Error(`Failed to extract valid coordinates for facility ${facility.id}`);
-      }
-      
+    const newMarkers = validMarkerData.map(({facility, lat, lng}): mapboxgl.Marker => {
       const markerElement = createMarkerElement(facility);
       const popupContent = createPopupContent(facility);
       
@@ -173,7 +202,7 @@ export const MapMarkers: React.FC<MapMarkersProps> = ({
         element: markerElement,
         anchor: 'bottom'
       })
-        .setLngLat([facility.lng!, facility.lat!]) // We know these are valid numbers due to the filter
+        .setLngLat([lng, lat])
         .setPopup(popup)
         .addTo(map);
 

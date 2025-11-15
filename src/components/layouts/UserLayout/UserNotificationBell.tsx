@@ -156,7 +156,7 @@ const UserNotificationBell = (
                                 ? "text-gray-900 dark:text-white"
                                 : "text-gray-700 dark:text-gray-300"
                             }`}>
-                              {t(notification.title)}
+                              {t(notification.title, notification.title)}
                             </h4>
                             {!notification.isRead && (
                               <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0 mt-1.5" />
