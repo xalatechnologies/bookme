@@ -139,6 +139,59 @@ begin
 end
 $$;
 
+-- Delete booking (SECURITY DEFINER)
+create or replace function delete_booking(p_booking uuid)
+returns void language plpgsql security definer set search_path=public as
+$$
+declare
+  b bookings%rowtype;
+begin
+  select * into b from bookings where id = p_booking;
+  if not found then raise exception 'Booking not found'; end if;
+
+  if not (b.user_id = auth.uid() or is_org_staff(b.org_id) or is_platform_admin()) then
+    raise exception 'Not allowed';
+  end if;
+
+  -- Check if booking can be deleted (only pending or cancelled)
+  if b.status not in ('pending', 'cancelled') then
+    raise exception 'Booking cannot be deleted';
+  end if;
+
+  delete from bookings where id = p_booking;
+  
+  perform audit(b.org_id, auth.uid(), 'booking.delete', 'booking', b.id, jsonb_build_object());
+end
+$$;
+
+-- Delete cancelled booking (SECURITY DEFINER) - specific function to avoid trigger issues
+create or replace function delete_cancelled_booking(p_booking uuid)
+returns void language plpgsql security definer set search_path=public as
+$$
+declare
+  b bookings%rowtype;
+begin
+  select * into b from bookings where id = p_booking;
+  if not found then raise exception 'Booking not found'; end if;
+
+  if not (b.user_id = auth.uid() or is_org_staff(b.org_id) or is_platform_admin()) then
+    raise exception 'Not allowed';
+  end if;
+
+  -- Check if booking is cancelled
+  if b.status != 'cancelled' then
+    raise exception 'Booking is not cancelled';
+  end if;
+
+  -- Delete the booking directly to avoid trigger issues
+  delete from bookings where id = p_booking;
+  
+  -- Log the deletion manually
+  insert into audit_events(org_id, actor_id, action, entity, entity_id, details) 
+  values (b.org_id, auth.uid(), 'booking.delete', 'booking', b.id, jsonb_build_object('status', 'cancelled'));
+end
+$$;
+
 -- Confirm payment (webhook -> RPC)
 create or replace function confirm_payment(p_booking uuid, p_provider text, p_intent text, p_amount bigint, p_raw jsonb)
 returns void language plpgsql security definer set search_path=public as

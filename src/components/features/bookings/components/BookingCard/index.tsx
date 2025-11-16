@@ -130,6 +130,29 @@ export const BookingCard = ({
     }
   }, [onSelect, booking.id]);
 
+  // Determine the appropriate delete action based on booking status
+  const getDeleteButtonProps = () => {
+    if (booking.status === 'cancelled') {
+      // If already cancelled, the action is to permanently delete
+      return {
+        ariaLabel: t("actions.delete_permanently", "Delete Permanently"),
+        title: t("actions.delete_permanently", "Delete Permanently"),
+        variant: "outline" as const,
+        iconColor: "text-red-600 border-red-600 hover:text-red-700 hover:border-red-700 hover:bg-red-50"
+      };
+    } else {
+      // If not cancelled, the action is to cancel the booking
+      return {
+        ariaLabel: t("actions.cancel", "Cancel Booking"),
+        title: t("actions.cancel", "Cancel Booking"),
+        variant: "outline" as const,
+        iconColor: "text-red-600 hover:text-red-700 hover:bg-red-50"
+      };
+    }
+  };
+
+  const deleteButtonProps = getDeleteButtonProps();
+
   return (
     <div className="flex items-start gap-4">
       {showCheckbox && (
@@ -222,19 +245,19 @@ export const BookingCard = ({
                 size="sm"
                 onClick={handleViewClick}
                 className="h-9 w-9 p-0"
-                aria-label={t("actions.view_details")}
-                title={t("actions.view_details")}
+                aria-label={t("actions.view_details", "View Details")}
+                title={t("actions.view_details", "View Details")}
               >
                 <Eye className="w-4 h-4" />
               </Button>
               {onDelete && (
                 <Button
-                  variant="outline"
+                  variant={deleteButtonProps.variant}
                   size="sm"
                   onClick={handleDeleteClick}
-                  className="h-9 w-9 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
-                  aria-label={t("actions.cancel")}
-                  title={t("actions.cancel")}
+                  className={`h-9 w-9 p-0 ${deleteButtonProps.iconColor}`}
+                  aria-label={deleteButtonProps.ariaLabel}
+                  title={deleteButtonProps.title}
                 >
                   <Trash2 className="w-4 h-4" />
                 </Button>

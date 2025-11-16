@@ -120,7 +120,10 @@
     "complete_booking_title": "Complete Booking",
     "complete_booking_description": "Review the information and choose how to proceed.",
     "ready_for_booking": "Ready for booking!",
-    "all_information_filled": "All information is filled out and the terms are accepted."
+    "all_information_filled": "All information is filled out and the terms are accepted.",
+    "delete_permanently": "Delete Permanently",
+    "delete_permanently_message_single": "Are you sure you want to permanently delete this cancelled booking?",
+    "delete_permanently_message_multiple": "Are you sure you want to permanently delete {{count}} cancelled bookings?"
   },
   "recurring": {
     "title": "Recurring Booking",
@@ -253,7 +256,10 @@
     "hours": "{{count}} hours"
   },
   "button_labels": {
-    "checkout": "Proceed to checkout"
+    "checkout": "Proceed to checkout",
+    "cancel": "Cancel",
+    "cancel_booking": "Cancel Booking",
+    "cancel_selected": "Cancel Selected"
   },
   "messages": {
     "success": {
@@ -265,6 +271,7 @@
       "rejected": "Booking rejected!",
       "checked_in": "Checked in!",
       "checked_out": "Checked out!",
+      "deleted": "Booking deleted!",
       "payment_successful": "Payment successful!",
       "added_to_cart": "Added to cart!",
       "removed_from_cart": "Removed from cart!",

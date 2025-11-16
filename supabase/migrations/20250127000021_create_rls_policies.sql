@@ -74,7 +74,7 @@ CREATE POLICY "bookings_delete_own" ON public.bookings
   FOR DELETE
   USING (
     user_id = auth.uid()
-    AND status = 'pending'
+    AND status IN ('pending', 'cancelled')
   );
 
 -- Org staff can delete org bookings

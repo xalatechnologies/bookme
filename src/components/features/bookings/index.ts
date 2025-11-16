@@ -18,6 +18,7 @@ export { RecurringBookingModal } from './components/RecurringBookingModal';
 export { BookingCard } from './components/BookingCard';
 export { BookingDetailsPanel } from './components/BookingCard/BookingDetailsPanel';
 export { RecurringBookingGroup } from './components/BookingCard/RecurringBookingGroup';
+export { RecurringBookingGroupDetails } from './components/BookingCard/RecurringBookingGroupDetails';
 
 // Filters
 export { BookingFiltersBar } from './components/BookingFiltersBar';

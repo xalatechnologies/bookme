@@ -120,7 +120,10 @@
     "complete_booking_title": "Fullfør booking",
     "complete_booking_description": "Gjennomgå informasjonen og velg hvordan du vil fortsette.",
     "ready_for_booking": "Klar for booking!",
-    "all_information_filled": "All informasjon er fylt ut og vilkårene er godtatt."
+    "all_information_filled": "All informasjon er fylt ut og vilkårene er godtatt.",
+    "delete_permanently": "Slett permanent",
+    "delete_permanently_message_single": "Er du sikker på at du vil slette denne avbrutte bookingen permanent?",
+    "delete_permanently_message_multiple": "Er du sikker på at du vil slette {{count}} avbrutte bookinger permanent?"
   },
   "recurring": {
     "title": "Gjentakende booking",
@@ -254,7 +257,10 @@
     "hours": "{{count}} timer"
   },
   "button_labels": {
-    "checkout": "Gå til bestilling"
+    "checkout": "Gå til bestilling",
+    "cancel": "Avbryt",
+    "cancel_booking": "Avbryt booking",
+    "cancel_selected": "Avbryt valgte"
   },
   "messages": {
     "success": {
@@ -266,6 +272,7 @@
       "rejected": "Booking avvist!",
       "checked_in": "Innsjekket!",
       "checked_out": "Utsjekket!",
+      "deleted": "Booking slettet!",
       "payment_successful": "Betaling vellykket!",
       "added_to_cart": "Lagt til i handlekurv!",
       "removed_from_cart": "Fjernet fra handlekurv!",

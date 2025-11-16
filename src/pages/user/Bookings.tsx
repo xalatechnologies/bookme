@@ -16,14 +16,16 @@ import {
 } from "lucide-react";
 import { toast } from "react-toastify";
 import { useBookingListPage } from "@/hooks/bookings";
-import { useCancelBooking } from "@/services/supabase/bookings.service";
+import { useCancelBooking, useDeleteBooking } from "@/services/supabase/bookings.service";
 import type { BookingWithDetails } from "@/services/supabase/bookings.service";
 import type { Database } from "@/types/database";
+import type { RecurringBookingGroup } from "@/hooks/bookings";
 import {
   BookingCard,
   BookingDetailsPanel,
   BookingFiltersBar,
-  RecurringBookingGroup,
+  RecurringBookingGroup as RecurringBookingGroupComponent,
+  RecurringBookingGroupDetails,
 } from "@/components/features/bookings";
 
 type BookingStatus = Database['public']['Enums']['booking_status'];
@@ -33,6 +35,9 @@ const Bookings = (): JSX.Element => {
   const location = useLocation();
   const { t } = useTranslation(['booking', 'common', 'user']);
   const cancelBookingMutation = useCancelBooking();
+  const deleteBookingMutation = useDeleteBooking();
+  // We'll need to implement permanent deletion differently since I don't see a direct hook for it
+  // For now, we'll keep the existing functionality but modify the logic
 
   // Use our custom hook for all booking logic
   const {
@@ -51,6 +56,8 @@ const Bookings = (): JSX.Element => {
     setSortBy,
     resetFilters,
     refetch,
+    viewMode,
+    setViewMode
   } = useBookingListPage();
 
   // Local UI state
@@ -59,6 +66,8 @@ const Bookings = (): JSX.Element => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<boolean>(false);
   const [bookingsToDelete, setBookingsToDelete] = useState<string[]>([]);
   const [selectedBooking, setSelectedBooking] = useState<BookingWithDetails | null>(null);
+  const [showRecurringGroupDetails, setShowRecurringGroupDetails] = useState<boolean>(false);
+  const [selectedRecurringGroup, setSelectedRecurringGroup] = useState<RecurringBookingGroup | null>(null);
 
   // Handle checkout success parameter
   useEffect(() => {
@@ -122,24 +131,63 @@ const Bookings = (): JSX.Element => {
 
   const confirmDelete = useCallback(async () => {
     try {
-      // Cancel all selected bookings
-      await Promise.all(
-        bookingsToDelete.map(id => cancelBookingMutation.mutateAsync({ id }))
+      // Check if the bookings are already cancelled
+      const bookingsToProcess = filteredBookings.filter(booking => 
+        bookingsToDelete.includes(booking.id)
       );
+      
+      const alreadyCancelled = bookingsToProcess.filter(booking => 
+        booking.status === 'cancelled'
+      );
+      
+      if (alreadyCancelled.length > 0) {
+        // If any bookings are already cancelled, permanently delete them
+        await Promise.all(
+          alreadyCancelled.map(booking => deleteBookingMutation.mutateAsync(booking.id))
+        );
+        
+        // Also cancel any remaining non-cancelled bookings
+        const nonCancelled = bookingsToProcess.filter(booking => 
+          booking.status !== 'cancelled'
+        );
+        
+        if (nonCancelled.length > 0) {
+          await Promise.all(
+            nonCancelled.map(booking => cancelBookingMutation.mutateAsync({ id: booking.id }))
+          );
+        }
 
-      setSelectedBookings([]);
-      setShowDeleteConfirm(false);
-      setBookingsToDelete([]);
+        setSelectedBookings([]);
+        setShowDeleteConfirm(false);
+        setBookingsToDelete([]);
 
-      const message = bookingsToDelete.length === 1
-        ? t('booking:delete_confirm.success_single')
-        : t('booking:delete_confirm.success_multiple', { count: bookingsToDelete.length });
-      toast.success(message);
-      refetch();
+        const message = bookingsToDelete.length === 1
+          ? t('booking:delete_confirm.success_single')
+          : t('booking:delete_confirm.success_multiple', { count: bookingsToDelete.length });
+        toast.success(message);
+        refetch();
+      } else {
+        // Cancel all selected bookings (first step)
+        await Promise.all(
+          bookingsToDelete.map(id => cancelBookingMutation.mutateAsync({ id }))
+        );
+
+        setSelectedBookings([]);
+        setShowDeleteConfirm(false);
+        setBookingsToDelete([]);
+
+        const message = bookingsToDelete.length === 1
+          ? t('booking:delete_confirm.success_single')
+          : t('booking:delete_confirm.success_multiple', { count: bookingsToDelete.length });
+        toast.success(message);
+        refetch();
+      }
     } catch (error) {
-      toast.error(t('booking:messages.error.cancel_failed'));
+      console.error('Delete/cancel error:', error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      toast.error(`${t('booking:messages.error.cancel_failed')} ${errorMessage}`);
     }
-  }, [bookingsToDelete, cancelBookingMutation, refetch, t]);
+  }, [bookingsToDelete, cancelBookingMutation, deleteBookingMutation, refetch, t, filteredBookings]);
 
   const cancelDelete = useCallback(() => {
     setShowDeleteConfirm(false);
@@ -158,14 +206,23 @@ const Bookings = (): JSX.Element => {
 
   const handleCancelBooking = useCallback(async (booking: BookingWithDetails) => {
     try {
-      await cancelBookingMutation.mutateAsync({ id: booking.id });
-      toast.success(t('booking:delete_confirm.success_single'));
+      if (booking.status === 'cancelled') {
+        // If already cancelled, permanently delete the booking
+        await deleteBookingMutation.mutateAsync(booking.id);
+        toast.success(t('booking:messages.success.deleted' as any));
+      } else {
+        // Otherwise, cancel the booking
+        await cancelBookingMutation.mutateAsync({ id: booking.id });
+        toast.success(t('booking:messages.success.cancelled' as any));
+      }
       handleCloseDetails();
       refetch();
     } catch (error) {
-      toast.error(t('booking:messages.error.cancel_failed'));
+      console.error('Cancel/delete error:', error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      toast.error(`${t('booking:messages.error.cancel_failed' as any)} ${errorMessage}`);
     }
-  }, [cancelBookingMutation, handleCloseDetails, refetch, t]);
+  }, [cancelBookingMutation, deleteBookingMutation, handleCloseDetails, refetch, t]);
 
   const handleShareBooking = useCallback((booking: BookingWithDetails) => {
     const shareText = `Booking: ${booking.facility?.name}\nDato: ${new Date(booking.starts_at).toLocaleDateString('nb-NO')}`;
@@ -212,6 +269,33 @@ END:VCALENDAR`;
 
     toast.success(t('booking:toast.calendar_added'));
   }, [t]);
+
+  const handleOpenRecurringGroupDetails = useCallback((group: RecurringBookingGroup) => {
+    setSelectedRecurringGroup(group);
+    setShowRecurringGroupDetails(true);
+  }, []);
+
+  const handleCloseRecurringGroupDetails = useCallback(() => {
+    setShowRecurringGroupDetails(false);
+    setSelectedRecurringGroup(null);
+  }, []);
+
+  const handleCancelRecurringGroup = useCallback(async (groupId: string) => {
+    // TODO: Implement cancel recurring group functionality
+    toast.info(t('booking:toast.recurring_coming_soon'));
+    handleCloseRecurringGroupDetails();
+  }, [handleCloseRecurringGroupDetails, t]);
+
+  // Ensure we always show recurring bookings as groups
+  const displayRecurringGroups = hasRecurringBookings && recurringGroups.length > 0;
+  const displayStandaloneBookings = standaloneBookings.length > 0 || !hasRecurringBookings;
+
+  // Set view mode to grouped by default if there are recurring bookings
+  useEffect(() => {
+    if (hasRecurringBookings && viewMode !== 'grouped') {
+      setViewMode('grouped');
+    }
+  }, [hasRecurringBookings, viewMode, setViewMode]);
 
   if (isLoading) {
     return (
@@ -360,20 +444,17 @@ END:VCALENDAR`;
           </Card>
         ) : (
           <>
-            {/* Recurring groups */}
-            {hasRecurringBookings && recurringGroups.map(group => (
-              <RecurringBookingGroup
+            {/* Recurring groups - Always show when there are recurring bookings */}
+            {displayRecurringGroups && recurringGroups.map(group => (
+              <RecurringBookingGroupComponent
                 key={group.recurringId}
                 group={group}
-                onViewDetails={(groupId) => {
-                  // TODO: Implement recurring group details view
-                  toast.info(t('booking:toast.recurring_coming_soon'));
-                }}
+                onViewDetails={() => handleOpenRecurringGroupDetails(group)}
               />
             ))}
 
             {/* Standalone bookings */}
-            {standaloneBookings.map((booking) => (
+            {displayStandaloneBookings && standaloneBookings.map((booking) => (
               <BookingCard
                 key={booking.id}
                 booking={booking}
@@ -403,9 +484,28 @@ END:VCALENDAR`;
                     : t('booking:delete_confirm.title_multiple')}
                 </h3>
                 <p className="text-sm text-gray-600">
-                  {bookingsToDelete.length === 1
-                    ? t('booking:delete_confirm.message_single')
-                    : t('booking:delete_confirm.message_multiple', { count: bookingsToDelete.length })}
+                  {(() => {
+                    // Check if any of the bookings to delete are already cancelled
+                    const bookingsToProcess = filteredBookings.filter(booking => 
+                      bookingsToDelete.includes(booking.id)
+                    );
+                    
+                    const alreadyCancelled = bookingsToProcess.filter(booking => 
+                      booking.status === 'cancelled'
+                    );
+                    
+                    if (alreadyCancelled.length > 0) {
+                      // Show permanent deletion message
+                      return bookingsToDelete.length === 1
+                        ? t('booking:actions.delete_permanently_message_single' as any)
+                        : t('booking:actions.delete_permanently_message_multiple' as any, { count: alreadyCancelled.length });
+                    } else {
+                      // Show cancellation message
+                      return bookingsToDelete.length === 1
+                        ? t('booking:delete_confirm.message_single')
+                        : t('booking:delete_confirm.message_multiple', { count: bookingsToDelete.length });
+                    }
+                  })()}
                 </p>
               </div>
             </div>
@@ -425,6 +525,7 @@ END:VCALENDAR`;
                 variant="outline"
                 onClick={cancelDelete}
                 className="flex items-center gap-2"
+                type="button"
               >
                 <X className="w-4 h-4" />
                 {t('booking:button_labels.cancel' as any)}
@@ -432,15 +533,29 @@ END:VCALENDAR`;
               <Button
                 variant="destructive"
                 onClick={confirmDelete}
-                disabled={cancelBookingMutation.isPending}
+                disabled={cancelBookingMutation.isPending || deleteBookingMutation.isPending}
                 className="flex items-center gap-2"
+                type="button"
               >
                 <Trash2 className="w-4 h-4" />
-                {cancelBookingMutation.isPending
+                {cancelBookingMutation.isPending || deleteBookingMutation.isPending
                   ? t('booking:delete_confirm.canceling')
                   : (bookingsToDelete.length > 1
                     ? t('booking:delete_confirm.cancel_all')
-                    : t('booking:button_labels.cancel_booking' as any))}
+                    : (() => {
+                        // Check if any of the bookings to delete are already cancelled
+                        const bookingsToProcess = filteredBookings.filter(booking => 
+                          bookingsToDelete.includes(booking.id)
+                        );
+                        
+                        const alreadyCancelled = bookingsToProcess.filter(booking => 
+                          booking.status === 'cancelled'
+                        );
+                        
+                        return alreadyCancelled.length > 0
+                          ? t('booking:actions.delete_permanently' as any)
+                          : t('booking:button_labels.cancel_booking' as any);
+                      })())}
               </Button>
             </div>
           </div>
@@ -455,6 +570,15 @@ END:VCALENDAR`;
           onCancel={handleCancelBooking}
           onShare={handleShareBooking}
           onAddToCalendar={handleAddToCalendar}
+        />
+      )}
+
+      {/* Recurring Group Details Panel */}
+      {showRecurringGroupDetails && selectedRecurringGroup && (
+        <RecurringBookingGroupDetails
+          group={selectedRecurringGroup}
+          onClose={handleCloseRecurringGroupDetails}
+          onCancelGroup={handleCancelRecurringGroup}
         />
       )}
     </div>

@@ -213,6 +213,87 @@ export const bookingsService = {
   },
 
   /**
+   * Delete a booking
+   */
+  async delete(id: string): Promise<void> {
+    // First verify the booking exists and belongs to the current user
+    const { data: booking, error: fetchError } = await supabase
+      .from('bookings')
+      .select('id, user_id, status')
+      .eq('id', id)
+      .single();
+
+    if (fetchError) {
+      throw new Error(`Failed to fetch booking: ${fetchError.message}`);
+    }
+
+    // Check if booking belongs to current user
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user || booking.user_id !== user.id) {
+      throw new Error('Not authorized to delete this booking');
+    }
+
+    // For cancelled bookings, use the specific RPC function to avoid trigger issues
+    if (booking.status === 'cancelled') {
+      const { error: rpcError } = await supabase.rpc('delete_cancelled_booking' as any, { p_booking: id });
+      if (rpcError) {
+        throw new Error(`Failed to delete cancelled booking: ${rpcError.message}`);
+      }
+      return;
+    }
+
+    // For other bookings, use the standard delete
+    const { error: deleteError } = await supabase
+      .from('bookings')
+      .delete()
+      .eq('id', id);
+
+    if (deleteError) {
+      throw new Error(`Failed to delete booking: ${deleteError.message}`);
+    }
+  },
+
+  /**
+   * Get upcoming bookings for a user
+   */
+  async getUpcoming(userId: string, limit = 10): Promise<BookingWithDetails[]> {
+    const { data, error } = await supabase
+      .from('bookings')
+      .select(`
+        *,
+        facility:facilities (*),
+        zone:zones (*)
+      `)
+      .eq('user_id', userId)
+      .gte('starts_at', new Date().toISOString())
+      .order('starts_at', { ascending: true })
+      .limit(limit);
+
+    if (error) throw error;
+    return data as BookingWithDetails[];
+  },
+
+  /**
+   * Get past bookings for a user
+   */
+  async getPast(userId: string, limit = 20): Promise<BookingWithDetails[]> {
+    const { data, error } = await supabase
+      .from('bookings')
+      .select(`
+        *,
+        facility:facilities (*),
+        zone:zones (*)
+      `)
+      .eq('user_id', userId)
+      .lt('starts_at', new Date().toISOString())
+      .order('starts_at', { ascending: false })
+      .limit(limit);
+
+    if (error) throw error;
+    return data as BookingWithDetails[];
+  },
+
+  /**
    * Check availability for a time slot
    * Uses RPC function from backend
    */
@@ -229,54 +310,8 @@ export const bookingsService = {
       throw error;
     }
 
-    // has_overlap returns true if there's an overlap (not available)
-    // We want to return true if it's available (no overlap)
+    // has_overlap returns true if there's an overlap, so we negate it
     return !data;
-  },
-
-  /**
-   * Get upcoming bookings for a user
-   */
-  async getUpcoming(userId: string, limit = 10): Promise<BookingWithDetails[]> {
-    const now = new Date().toISOString();
-
-    const { data, error } = await supabase
-      .from('bookings')
-      .select(`
-        *,
-        facility:facilities (*),
-        zone:zones (*)
-      `)
-      .eq('user_id', userId)
-      .gte('starts_at', now)
-      .in('status', ['pending', 'awaiting_payment', 'paid'])
-      .order('starts_at', { ascending: true })
-      .limit(limit);
-
-    if (error) throw error;
-    return data as BookingWithDetails[];
-  },
-
-  /**
-   * Get past bookings for a user
-   */
-  async getPast(userId: string, limit = 20): Promise<BookingWithDetails[]> {
-    const now = new Date().toISOString();
-
-    const { data, error } = await supabase
-      .from('bookings')
-      .select(`
-        *,
-        facility:facilities (*),
-        zone:zones (*)
-      `)
-      .eq('user_id', userId)
-      .lt('ends_at', now)
-      .order('starts_at', { ascending: false })
-      .limit(limit);
-
-    if (error) throw error;
-    return data as BookingWithDetails[];
   },
 };
 
@@ -464,6 +499,9 @@ export const useUpdateBooking = (): UseMutationResult<
     onSuccess: (updatedBooking, { id }) => {
       // Invalidate lists
       queryClient.invalidateQueries({ queryKey: bookingKeys.lists() });
+      
+      // Specifically invalidate user bookings lists to ensure UI updates
+      queryClient.invalidateQueries({ queryKey: bookingKeys.userBookings(updatedBooking.user_id) });
 
       // Update cache
       queryClient.setQueryData(bookingKeys.detail(id), updatedBooking);
@@ -499,9 +537,68 @@ export const useCancelBooking = (): UseMutationResult<Booking, Error, { id: stri
     onSuccess: (cancelledBooking, { id }) => {
       // Invalidate all booking queries
       queryClient.invalidateQueries({ queryKey: bookingKeys.all });
+      
+      // Specifically invalidate user bookings lists to ensure UI updates
+      queryClient.invalidateQueries({ queryKey: bookingKeys.lists() });
+      
+      // Also invalidate all user bookings queries to ensure the list updates
+      queryClient.invalidateQueries({ 
+        predicate: (query) => {
+          return query.queryKey[0] === 'bookings' && 
+                 query.queryKey[1] === 'list' && 
+                 query.queryKey[2] === 'user';
+        }
+      });
 
       // Update cache
       queryClient.setQueryData(bookingKeys.detail(id), cancelledBooking);
+    },
+  });
+};
+
+/**
+ * Hook to delete a booking
+ *
+ * @example
+ * ```tsx
+ * function DeleteButton({ bookingId }: { bookingId: string }) {
+ *   const deleteBooking = useDeleteBooking();
+ *
+ *   const handleDelete = () => {
+ *     if (confirm('Permanently delete this booking?')) {
+ *       deleteBooking.mutate(bookingId, {
+ *         onSuccess: () => toast.success('Booking deleted'),
+ *       });
+ *     }
+ *   };
+ *
+ *   return <button onClick={handleDelete}>Delete Booking</button>;
+ * }
+ * ```
+ */
+export const useDeleteBooking = (): UseMutationResult<void, Error, string> => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: string) => bookingsService.delete(id),
+    onSuccess: (_, bookingId) => {
+      // Invalidate all booking queries
+      queryClient.invalidateQueries({ queryKey: bookingKeys.all });
+      
+      // Specifically invalidate user bookings lists to ensure UI updates
+      queryClient.invalidateQueries({ queryKey: bookingKeys.lists() });
+      
+      // Remove specific booking from cache
+      queryClient.removeQueries({ queryKey: bookingKeys.detail(bookingId) });
+      
+      // Also invalidate all user bookings queries to ensure the list updates
+      queryClient.invalidateQueries({ 
+        predicate: (query) => {
+          return query.queryKey[0] === 'bookings' && 
+                 query.queryKey[1] === 'list' && 
+                 query.queryKey[2] === 'user';
+        }
+      });
     },
   });
 };
