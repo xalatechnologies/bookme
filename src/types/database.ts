@@ -460,6 +460,8 @@ export type Database = {
           notes: string | null
           org_id: string
           price_breakdown: Json | null
+          processed_at: string | null
+          processed_by: string | null
           recurring_booking_id: string | null
           starts_at: string
           status: Database["public"]["Enums"]["booking_status"]
@@ -479,6 +481,8 @@ export type Database = {
           notes?: string | null
           org_id: string
           price_breakdown?: Json | null
+          processed_at?: string | null
+          processed_by?: string | null
           recurring_booking_id?: string | null
           starts_at: string
           status?: Database["public"]["Enums"]["booking_status"]
@@ -498,6 +502,8 @@ export type Database = {
           notes?: string | null
           org_id?: string
           price_breakdown?: Json | null
+          processed_at?: string | null
+          processed_by?: string | null
           recurring_booking_id?: string | null
           starts_at?: string
           status?: Database["public"]["Enums"]["booking_status"]
@@ -1454,6 +1460,7 @@ export type Database = {
           created_at: string
           default_org: string | null
           display_name: string | null
+          email: string | null
           phone: string | null
           updated_at: string
           user_id: string
@@ -1462,6 +1469,7 @@ export type Database = {
           created_at?: string
           default_org?: string | null
           display_name?: string | null
+          email?: string | null
           phone?: string | null
           updated_at?: string
           user_id: string
@@ -1470,6 +1478,7 @@ export type Database = {
           created_at?: string
           default_org?: string | null
           display_name?: string | null
+          email?: string | null
           phone?: string | null
           updated_at?: string
           user_id?: string

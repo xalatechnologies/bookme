@@ -680,7 +680,7 @@ const FacilityEditPage = (_props: IFacilityEditPageProps): JSX.Element => {
     
     const newZone: Zone = {
       id: Date.now().toString(),
-      name: "Ny sone",
+      name: "Navn på ny sone...",
       facilityId: facilityId,
       capacity: 0,
       pricePerHour: 0,

@@ -18,7 +18,8 @@ import {
   RotateCcw,
   Eye,
   ChevronDown,
-  ChevronRight
+  ChevronRight,
+  Repeat
 } from "lucide-react";
 import { useHistoryManagement } from "@/hooks/features/history/useHistoryManagement";
 
@@ -243,39 +244,70 @@ export default function HistoryPage(): JSX.Element {
                         onClick={() => toggleRowExpansion(item.id)}
                       >
                         <td className="px-4 py-3">
-                          {item.originalDate ?
-                            new Date(item.originalDate).toLocaleDateString() :
-                            (() => {
-                              // Handle date display carefully to avoid timezone issues
-                              const dateStr = item.start.split('T')[0]; // Get YYYY-MM-DD part
-                              if (dateStr.match(/^\d{4}-\d{2}-\d{2}$/)) {
-                                // Parse as local date
-                                const [year, month, day] = dateStr.split('-').map(Number);
-                                const localDate = new Date(year, month - 1, day);
-                                return localDate.toLocaleDateString();
-                              } else {
-                                // Fallback
-                                return new Date(item.start).toLocaleDateString();
+                          {item.isRecurring ? (
+                            // For recurring bookings, show the period range vertically with arrow
+                            <div className="flex flex-col items-start">
+                              <div>{item.originalDate ?
+                                new Date(item.originalDate).toLocaleDateString('nb-NO') :
+                                new Date(item.start).toLocaleDateString('nb-NO')
+                              }</div>
+                              <div className="my-1 pl-5">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                                </svg>
+                              </div>
+                              <div>{new Date(item.end).toLocaleDateString('nb-NO')}</div>
+                            </div>
+                          ) : (
+                            // For single bookings, show the single date
+                            <div className="flex items-start">
+                              {item.originalDate ?
+                                new Date(item.originalDate).toLocaleDateString('nb-NO') :
+                                (() => {
+                                  // Handle date display carefully to avoid timezone issues
+                                  const dateStr = item.start.split('T')[0]; // Get YYYY-MM-DD part
+                                  if (dateStr.match(/^\d{4}-\d{2}-\d{2}$/)) {
+                                    // Parse as local date
+                                    const [year, month, day] = dateStr.split('-').map(Number);
+                                    const localDate = new Date(year, month - 1, day);
+                                    return localDate.toLocaleDateString('nb-NO');
+                                  } else {
+                                    // Fallback
+                                    return new Date(item.start).toLocaleDateString('nb-NO');
+                                  }
+                                })()
                               }
-                            })()
-                          }
+                            </div>
+                          )}
                         </td>
                         <td className="px-4 py-3">
                           {item.startTime && item.endTime ?
                             `${item.startTime} - ${item.endTime}` :
-                            `${new Date(item.start).toLocaleTimeString(undefined, {
+                            `${new Date(item.start).toLocaleTimeString('nb-NO', {
                             hour: "2-digit",
                             minute: "2-digit"
-                            })} - ${new Date(item.end).toLocaleTimeString(undefined, {
+                            })} - ${new Date(item.end).toLocaleTimeString('nb-NO', {
                             hour: "2-digit",
                             minute: "2-digit"
                             })}`
                           }
                         </td>
                         <td className="px-4 py-3">{item.facilityName}</td>
-                        <td className="px-4 py-3">{item.purpose || item.title || t('pages.history.table.activity')}</td>
+                        <td className="px-4 py-3">
+                          <div className="flex items-center gap-2">
+                            {item.isRecurring && (
+                              <Repeat className="w-4 h-4 text-blue-500" />
+                            )}
+                            <span>{item.purpose || item.title || t('pages.history.table.activity')}</span>
+                          </div>
+                        </td>
                         <td className="px-4 py-3">
                           {item.duration ? `${item.duration.toFixed(1)} t` : '1.0 t'}
+                          {item.isRecurring && item.occurrenceCount && (
+                            <span className="text-xs text-gray-500 block">
+                              {item.occurrenceCount} forekomster
+                            </span>
+                          )}
                         </td>
                         <td className="px-4 py-3">
                           <Badge className={
@@ -326,7 +358,7 @@ export default function HistoryPage(): JSX.Element {
                         <tr className="border-t border-gray-200 bg-gray-50">
                           <td colSpan={8} className="px-4 py-4">
                             <div className="space-y-4">
-                              <div className="grid grid-cols-2 gap-4 text-sm">
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                                 <div>
                                   <span className="text-gray-600">{t('pages.history.details.created_at')}:</span>
                                   <span className="ml-2">
@@ -341,11 +373,55 @@ export default function HistoryPage(): JSX.Element {
                                 )}
                                 {item.isRecurring && item.occurrenceCount && (
                                   <div>
-                                    <span className="text-gray-600">{t('pages.history.details.invoice_id')}:</span>
-                                    <span className="ml-2">{item.occurrenceCount} {t('pages.history.details.invoice_id')}</span>
+                                    <span className="text-gray-600">Antall forekomster:</span>
+                                    <span className="ml-2">{item.occurrenceCount}</span>
+                                  </div>
+                                )}
+                                {item.isRecurring && (
+                                  <div>
+                                    <span className="text-gray-600">Type:</span>
+                                    <span className="ml-2">Gjentakende booking</span>
                                   </div>
                                 )}
                               </div>
+
+                              {item.isRecurring && item.occurrences && item.occurrences.length > 0 && (
+                                <div className="mt-4">
+                                  <h4 className="font-medium text-gray-900 mb-2">Forekomster:</h4>
+                                  <div className="max-h-40 overflow-y-auto">
+                                    <table className="w-full text-sm">
+                                      <thead>
+                                        <tr className="bg-gray-100">
+                                          <th className="px-2 py-1 text-left">Dato</th>
+                                          <th className="px-2 py-1 text-left">Tid</th>
+                                          <th className="px-2 py-1 text-left">Status</th>
+                                        </tr>
+                                      </thead>
+                                      <tbody>
+                                        {item.occurrences.map((occurrence) => (
+                                          <tr key={occurrence.id} className="border-t border-gray-200">
+                                            <td className="px-2 py-1">
+                                              {new Date(occurrence.date).toLocaleDateString()}
+                                            </td>
+                                            <td className="px-2 py-1">{occurrence.time}</td>
+                                            <td className="px-2 py-1">
+                                              <Badge className={
+                                                occurrence.status === "paid" || occurrence.status === "completed"
+                                                  ? "bg-green-100 text-green-800"
+                                                  : occurrence.status === "cancelled" || occurrence.status === "expired" || occurrence.status === "refunded"
+                                                  ? "bg-red-100 text-red-800"
+                                                  : "bg-yellow-100 text-yellow-800"
+                                              }>
+                                                {occurrence.status}
+                                              </Badge>
+                                            </td>
+                                          </tr>
+                                        ))}
+                                      </tbody>
+                                    </table>
+                                  </div>
+                                </div>
+                              )}
 
                               <div className="flex gap-2">
                                 <Button size="sm" variant="outline">

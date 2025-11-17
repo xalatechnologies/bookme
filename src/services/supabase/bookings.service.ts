@@ -23,6 +23,7 @@ type BookingInsert = Database['public']['Tables']['bookings']['Insert'];
 type BookingUpdate = Database['public']['Tables']['bookings']['Update'];
 type Facility = Database['public']['Tables']['facilities']['Row'];
 type Zone = Database['public']['Tables']['zones']['Row'];
+type UserProfile = Database['public']['Tables']['profiles']['Row'];
 
 /**
  * Booking with related data
@@ -30,6 +31,7 @@ type Zone = Database['public']['Tables']['zones']['Row'];
 export interface BookingWithDetails extends Booking {
   readonly facility?: Facility;
   readonly zone?: Zone | null;
+  readonly user_profile?: UserProfile | null;
 }
 
 /**
@@ -87,7 +89,8 @@ export const bookingsService = {
    * Fetch bookings for an organization
    */
   async getOrgBookings(orgId: string): Promise<BookingWithDetails[]> {
-    const { data, error } = await supabase
+    // First get the bookings with facility information
+    const { data: bookings, error: bookingsError } = await supabase
       .from('bookings')
       .select(`
         *,
@@ -96,8 +99,34 @@ export const bookingsService = {
       .eq('facility.org_id', orgId)
       .order('starts_at', { ascending: false });
 
-    if (error) throw error;
-    return data as BookingWithDetails[];
+    if (bookingsError) throw bookingsError;
+    
+    // If no bookings, return early
+    if (!bookings || bookings.length === 0) {
+      return [];
+    }
+    
+    // Get unique user IDs from the bookings
+    const userIds = [...new Set(bookings.map(booking => booking.user_id))];
+    
+    // Get user profiles for these users
+    const { data: profiles, error: profilesError } = await supabase
+      .from('profiles')
+      .select('*')
+      .in('user_id', userIds);
+    
+    if (profilesError) throw profilesError;
+    
+    // Create a map of user profiles for quick lookup
+    const profileMap = new Map(profiles.map(profile => [profile.user_id, profile]));
+    
+    // Combine bookings with their user profiles
+    const bookingsWithProfiles = bookings.map(booking => ({
+      ...booking,
+      user_profile: profileMap.get(booking.user_id) || null
+    }));
+    
+    return bookingsWithProfiles as BookingWithDetails[];
   },
 
   /**
@@ -502,6 +531,15 @@ export const useUpdateBooking = (): UseMutationResult<
       
       // Specifically invalidate user bookings lists to ensure UI updates
       queryClient.invalidateQueries({ queryKey: bookingKeys.userBookings(updatedBooking.user_id) });
+      
+      // Also invalidate org bookings to ensure admin UI updates
+      queryClient.invalidateQueries({ 
+        predicate: (query) => {
+          return query.queryKey[0] === 'bookings' && 
+                 query.queryKey[1] === 'list' && 
+                 query.queryKey[2] === 'org';
+        }
+      });
 
       // Update cache
       queryClient.setQueryData(bookingKeys.detail(id), updatedBooking);

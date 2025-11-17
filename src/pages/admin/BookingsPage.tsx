@@ -22,9 +22,17 @@ import {
   Trash2,
   Settings,
   Plus,
+  Repeat,
 } from "lucide-react";
+import { useOrgBookings, useUpdateBooking } from "@/services/supabase/bookings.service";
+import { useOrganizationId } from "@/hooks/useOrganizationId";
+import { useAuth } from "@/contexts/hooks";
 import type { LocalStorageBooking, TimeSlot as LocalStorageTimeSlot } from "@/types/localStorage";
 import type { RawBookingData } from "@/types/bookingsPage";
+import type { Database } from "@/types/database";
+
+type Booking = Database["public"]["Tables"]["bookings"]["Row"];
+type BookingUpdate = Database["public"]["Tables"]["bookings"]["Update"];
 
 interface IBooking {
   readonly id: string;
@@ -79,6 +87,7 @@ interface IBookingDetailModalProps {
   readonly onApprove: (id: string) => void;
   readonly onReject: (id: string) => void;
   readonly onDelete: (id: string) => void;
+  readonly groupedRecurring?: Map<string, IBooking[]>; // Make this prop optional
 }
 
 // Parse Norwegian-formatted currency text like "3 562,5 kr" → 3562.5
@@ -391,25 +400,18 @@ const BookingRow = ({
             <div className="flex-1">
               <div className="flex items-center justify-between mb-1">
                 <h4 className="font-medium text-gray-900 dark:text-white truncate">
-                  {booking.title}
+                  {booking.facility}
                 </h4>
                 {getStatusBadge(booking.status)}
               </div>
               <div className="flex items-center space-x-4 text-sm text-gray-600 dark:text-gray-400">
                 <span>
-                  {booking.startTime}-{booking.endTime} (
-                  {booking.duration === 1
-                    ? t("common:time.hour_singular")
-                    : t("common:time.hours_plural", {
-                        count: booking.duration,
-                      })}
-                  )
-                </span>
-                <span>
                   {new Date(booking.startDate).toLocaleDateString("nb-NO")}
                 </span>
-                <span className="flex items-center space-x-1">
-                  <span>{booking.purpose}</span>
+                <span>
+                  {booking.startTime}-{booking.endTime} (
+                  {booking.duration === 1 ? "1 time" : `${booking.duration} timer`}
+                  )
                 </span>
               </div>
             </div>
@@ -482,6 +484,7 @@ const BookingDetailModal = ({
   onApprove,
   onReject,
   onDelete,
+  groupedRecurring, // Add this prop
 }: IBookingDetailModalProps): JSX.Element => {
   const { t } = useTranslation("admin");
   if (!isOpen || !booking) return <></>;
@@ -492,7 +495,7 @@ const BookingDetailModal = ({
     return `${formattedDate} kl. ${_time}`;
   };
 
-  // Try to locate all occurrences from localStorage if this booking is part of a recurring series
+  // Try to locate all occurrences from the grouped recurring bookings if this booking is part of a recurring series
   const occurrences: {
     date: string;
     time: string;
@@ -500,6 +503,36 @@ const BookingDetailModal = ({
     priceText: string;
   }[] = (() => {
     try {
+      // Check if this booking is part of a recurring group
+      const isRecurring = booking.isRecurring || booking.parentBookingId;
+      if (!isRecurring || !groupedRecurring) return [];
+
+      // Find the group this booking belongs to
+      let groupItems: IBooking[] | undefined;
+      for (const [groupId, items] of groupedRecurring.entries()) {
+        if (items.some((item: IBooking) => item.id === booking.id)) {
+          groupItems = items;
+          break;
+        }
+      }
+
+      // If we found the group, build occurrences from the actual booking data
+      if (groupItems) {
+        return groupItems
+          .map((b: IBooking) => {
+            const date: string = b.startDate;
+            const time: string = `${b.startTime}-${b.endTime}`;
+            const durationHours: number = b.duration;
+            const priceText: string = `${b.price} kr`;
+            return { date, time, durationHours, priceText };
+          })
+          .sort(
+            (a: { date: string }, b: { date: string }) =>
+              new Date(a.date).getTime() - new Date(b.date).getTime()
+          );
+      }
+
+      // Fallback to localStorage if needed (for backward compatibility)
       const rawPending = JSON.parse(
         localStorage.getItem("pendingBookings") || "[]"
       );
@@ -510,8 +543,8 @@ const BookingDetailModal = ({
 
       // Determine grouping key
       const parentId = booking.parentBookingId;
-      const isRecurring = booking.isRecurring || !!parentId;
-      if (!isRecurring) return [];
+      const isRecurringLocal = booking.isRecurring || !!parentId;
+      if (!isRecurringLocal) return [];
 
       const groupKey =
         parentId ||
@@ -531,8 +564,8 @@ const BookingDetailModal = ({
               const sorted = [...b.timeSlots].sort((a: LocalStorageTimeSlot, c: LocalStorageTimeSlot) =>
                 a.timeSlot.localeCompare(c.timeSlot)
               );
-              const s = sorted[0]?.timeSlot.split("-")[0] || '';
-              const e = sorted[sorted.length - 1]?.timeSlot.split("-")[1] || '';
+              const s = sorted[0].timeSlot.split("-")[0] || '';
+              const e = sorted[sorted.length - 1].timeSlot.split("-")[1] || '';
               return `${s}-${e}`;
             }
             return `${booking.startTime}-${booking.endTime}`;
@@ -545,17 +578,17 @@ const BookingDetailModal = ({
       return (
         series
           .map((b: RawBookingData) => {
-            const date =
-              b.date || b.startDate || new Date().toISOString().slice(0, 10);
-            const time =
+            const date: string =
+              (b.date || b.startDate || new Date().toISOString().slice(0, 10)) as string;
+            const time: string =
               b.time ||
               (b.startTime && b.endTime
                 ? `${b.startTime}-${b.endTime}`
                 : (b.timeSlots && b.timeSlots[0]?.timeSlot) ||
                   `${booking.startTime}-${booking.endTime}`);
-            const priceText = b.price || "0 kr";
+            const priceText: string = (b.price || "0 kr") as string;
             // Duration may be a string like "1 timer"
-            const durationHours =
+            const durationHours: number =
               typeof b.duration === "string"
                 ? parseFloat(
                     b.duration.replace(/[^0-9.,]/g, "").replace(",", ".")
@@ -566,7 +599,7 @@ const BookingDetailModal = ({
             return { date, time, durationHours, priceText };
           })
           .sort(
-            (a: { readonly date: string }, b: { readonly date: string }) =>
+            (a: { date: string }, b: { date: string }) =>
               new Date(a.date).getTime() - new Date(b.date).getTime()
           )
       );
@@ -575,85 +608,169 @@ const BookingDetailModal = ({
     }
   })();
 
+  // Format date for display
+  const formatDate = (dateString: string): string => {
+    return new Date(dateString).toLocaleDateString('nb-NO', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    });
+  };
+
+  // Format date and time for display
+  const formatBookingDateTime = (dateString: string, timeString: string): string => {
+    const date = new Date(dateString);
+    return `${date.toLocaleDateString('nb-NO')} kl. ${timeString}`;
+  };
+
+  // Generate human-readable title
+  const generateTitle = (): string => {
+    if (booking.isRecurring && occurrences.length > 1) {
+      return `Seriebooking: ${booking.purpose} (${occurrences.length} forekomster)`;
+    }
+    
+    // Try to use purpose if it's meaningful
+    if (booking.purpose && booking.purpose !== 'Booking') {
+      return `${booking.purpose} i ${booking.facility}`;
+    }
+    
+    // Fallback to facility + date
+    return `${booking.facility} – ${formatDate(booking.startDate)}`;
+  };
+
   return (
     <div
       className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
       onClick={onClose}
     >
       <div
-        className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[75vh] overflow-y-auto"
+        className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[85vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="p-6">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-              Booking #{booking.id}
+              {generateTitle()}
             </h2>
             <Button variant="ghost" size="sm" onClick={onClose}>
               <X className="h-4 w-4" />
             </Button>
           </div>
 
+          {/* Summary Bar */}
+          <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 mb-6">
+            <div className="grid grid-cols-2 gap-3 text-sm">
+              <div>
+                <p className="text-blue-600 dark:text-blue-400 font-medium">Lokale</p>
+                <p className="text-gray-900 dark:text-white font-medium truncate">{booking.facility}</p>
+              </div>
+              {occurrences.length > 1 && (
+                <div>
+                  <p className="text-blue-600 dark:text-blue-400 font-medium">Forekomster</p>
+                  <p className="text-gray-900 dark:text-white font-medium">{occurrences.length}</p>
+                </div>
+              )}
+            </div>
+          </div>
+
           <div className="space-y-6">
-            {/* Facility Information */}
+            {/* Booking Details */}
             <div>
               <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-3">
-                Lokaleinformasjon
+                Detaljer
               </h3>
               <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                <p className="font-medium text-gray-900 dark:text-white">
-                  {booking.facility}
-                </p>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                  {formatDateTime(booking.startDate, booking.startTime)} -{" "}
-                  {formatDateTime(booking.endDate, booking.endTime)}
-                </p>
-                {/* Aggregates: periode, total tid, totalpris */}
-                {(() => {
-                  // Build occurrences list (same as above) to compute totals
-                  const occ =
-                    occurrences.length > 0
-                      ? occurrences
-                      : [
-                          {
-                            date: booking.startDate,
-                            time: `${booking.startTime}-${booking.endTime}`,
-                            durationHours: booking.duration,
-                            priceText: booking.price || "0 kr",
-                          },
-                        ];
-                  const totalHours = occ.reduce(
-                    (sum, o) => sum + (o.durationHours || 0),
-                    0
-                  );
-                  const totalPrice = occ.reduce(
-                    (sum, o) => sum + parseNOK(o.priceText),
-                    0
-                  );
-                  const dates = occ.map((o) => o.date).sort();
-                  const period = `${new Date(dates[0]).toLocaleDateString(
-                    "nb-NO"
-                  )} – ${new Date(dates[dates.length - 1]).toLocaleDateString(
-                    "nb-NO"
-                  )}`;
-                  return (
-                    <div className="text-sm text-gray-600 dark:text-gray-400 mt-2 space-y-1">
-                      <p>Periode: {period}</p>
-                      <p>Total tid: {totalHours} timer</p>
-                      <p>Totalpris: {totalPrice.toLocaleString("nb-NO")} kr</p>
+                {occurrences.length > 1 ? (
+                  // For recurring bookings
+                  (() => {
+                    const occ = occurrences;
+                    const totalHours = occ.reduce(
+                      (sum, o) => sum + (o.durationHours || 0),
+                      0
+                    );
+                    const totalPrice = occ.reduce(
+                      (sum, o) => sum + parseNOK(o.priceText),
+                      0
+                    );
+                    const dates = occ.map((o) => o.date).sort();
+                    const period = `${new Date(dates[0]).toLocaleDateString(
+                      "nb-NO"
+                    )} – ${new Date(dates[dates.length - 1]).toLocaleDateString(
+                      "nb-NO"
+                    )}`;
+                    
+                    return (
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                          <p className="text-sm text-gray-600 dark:text-gray-400">Periode</p>
+                          <p className="font-medium text-gray-900 dark:text-white">{period}</p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-gray-600 dark:text-gray-400">Total tid</p>
+                          <p className="font-medium text-gray-900 dark:text-white">
+                            {totalHours === 1 ? "1 time" : `${totalHours} timer`}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-gray-600 dark:text-gray-400">Totalpris</p>
+                          <p className="font-medium text-gray-900 dark:text-white">
+                            {totalPrice.toLocaleString("nb-NO")} kr
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-gray-600 dark:text-gray-400">Status</p>
+                          <p className="font-medium text-gray-900 dark:text-white capitalize">
+                            {booking.status}
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  })()
+                ) : (
+                  // For single bookings
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">Dato</p>
+                      <p className="font-medium text-gray-900 dark:text-white">
+                        {formatDate(booking.startDate)}
+                      </p>
                     </div>
-                  );
-                })()}
+                    <div>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">Tid</p>
+                      <p className="font-medium text-gray-900 dark:text-white">
+                        {booking.startTime}-{booking.endTime}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">Varighet</p>
+                      <p className="font-medium text-gray-900 dark:text-white">
+                        {booking.duration === 1 ? "1 time" : `${booking.duration} timer`}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">Pris</p>
+                      <p className="font-medium text-gray-900 dark:text-white">
+                        {booking.price.toLocaleString("nb-NO")} kr
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">Status</p>
+                      <p className="font-medium text-gray-900 dark:text-white capitalize">
+                        {booking.status}
+                      </p>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 
             {/* Occurrences for recurring series */}
-            {occurrences.length > 0 && (
+            {occurrences.length > 1 && (
               <div>
                 <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-3">
-                  Forekomster
+                  Forekomster ({occurrences.length})
                 </h3>
-                <div className="bg-gray-50 dark:bg-gray-700 rounded-lg divide-y">
+                <div className="bg-gray-50 dark:bg-gray-700 rounded-lg divide-y max-h-60 overflow-y-auto">
                   {occurrences.map((o, idx) => (
                     <div
                       key={idx}
@@ -689,15 +806,26 @@ const BookingDetailModal = ({
                 Booker
               </h3>
               <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                <p className="font-medium text-gray-900 dark:text-white">
-                  {booking.bookerName}
-                </p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  {booking.bookerEmail}
-                </p>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
-                  <strong>Formål:</strong> {booking.purpose}
-                </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Navn</p>
+                    <p className="font-medium text-gray-900 dark:text-white">
+                      {booking.bookerName}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">E-post</p>
+                    <p className="font-medium text-gray-900 dark:text-white">
+                      {booking.bookerEmail}
+                    </p>
+                  </div>
+                  <div className="md:col-span-2">
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Formål</p>
+                    <p className="font-medium text-gray-900 dark:text-white">
+                      {booking.purpose}
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -706,52 +834,67 @@ const BookingDetailModal = ({
               <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-3">
                 Historikk
               </h3>
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-600 dark:text-gray-400">
-                    Søkt:
-                  </span>
-                  <span className="text-gray-900 dark:text-white">
-                    {new Date(booking.requestedAt).toLocaleString("nb-NO")}
-                  </span>
-                </div>
-                {booking.processedBy && booking.processedAt && (
+              <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                <div className="space-y-3">
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600 dark:text-gray-400">
-                      Behandlet av:
+                      Opprettet:
                     </span>
-                    <span className="text-gray-900 dark:text-white">
-                      {booking.processedBy} (
-                      {new Date(booking.processedAt).toLocaleString("nb-NO")})
+                    <span className="text-gray-900 dark:text-white font-medium">
+                      {new Date(booking.requestedAt).toLocaleString("nb-NO")}
                     </span>
                   </div>
-                )}
+                  {booking.processedBy && booking.processedAt && (
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-600 dark:text-gray-400">
+                      Behandlet av:
+                      </span>
+                      <span className="text-gray-900 dark:text-white font-medium">
+                        {booking.processedBy}
+                      </span>
+                    </div>
+                  )}
+                  {booking.processedBy && booking.processedAt && (
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-600 dark:text-gray-400">
+                        Behandlet dato:
+                      </span>
+                      <span className="text-gray-900 dark:text-white font-medium">
+                        {new Date(booking.processedAt).toLocaleString("nb-NO")}
+                      </span>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 
             {/* Actions */}
-            <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200 dark:border-gray-700">
-              {booking.status === "pending" && (
-                <>
-                  <Button
-                    onClick={() => onApprove(booking.id)}
-                    className="bg-green-600 hover:bg-green-700 text-white"
-                  >
-                    <Check className="h-4 w-4 mr-2" />
-                    Godkjenn
-                  </Button>
-                  <Button
-                    variant="destructive"
-                    onClick={() => onReject(booking.id)}
-                  >
-                    <X className="h-4 w-4 mr-2" />
-                    Avvis
-                  </Button>
-                </>
-              )}
+            <div className="flex flex-col sm:flex-row justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+              <div className="flex gap-3">
+                {booking.status === "pending" && (
+                  <>
+                    <Button
+                      onClick={() => onApprove(booking.id)}
+                      className="bg-green-600 hover:bg-green-700 text-white rounded-full px-4 py-2 text-sm"
+                    >
+                      <Check className="h-4 w-4 mr-2" />
+                      Godkjenn
+                    </Button>
+                    <Button
+                      variant="destructive"
+                      onClick={() => onReject(booking.id)}
+                      className="rounded-full px-4 py-2 text-sm"
+                    >
+                      <X className="h-4 w-4 mr-2" />
+                      Avvis
+                    </Button>
+                  </>
+                )}
+              </div>
               <Button
-                variant="destructive"
+                variant="outline"
                 onClick={() => onDelete(booking.id)}
+                className="border-red-500 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full px-4 py-2 text-sm"
               >
                 <Trash2 className="h-4 w-4 mr-2" />
                 Slett
@@ -766,6 +909,7 @@ const BookingDetailModal = ({
 
 const BookingsPage = (): JSX.Element => {
   const { t } = useTranslation(["admin", "common"]);
+  const { user: currentUser } = useAuth(); // Get current user
   const [activeTab, setActiveTab] = useState<
     "all" | "pending" | "approved" | "rejected"
   >("all");
@@ -788,206 +932,72 @@ const BookingsPage = (): JSX.Element => {
     duration: "",
   });
 
-  // New feature states
-
-  // Get pending bookings from localStorage (user bookings)
-  const getPendingBookings = useCallback((): IBooking[] => {
-    try {
-      const pendingBookings = JSON.parse(
-        localStorage.getItem("pendingBookings") || "[]"
-      );
-      return pendingBookings.map((booking: RawBookingData, index: number) => {
-        // Calculate proper time range from timeSlots if available
-        let startTime: string;
-        let endTime: string;
-
-        if (booking.timeSlots && booking.timeSlots.length > 0) {
-          // Calculate time range from multiple time slots
-          const sortedSlots = [...booking.timeSlots].sort(
-            (
-              a: { readonly timeSlot: string },
-              b: { readonly timeSlot: string }
-            ) => {
-              const timeA = a.timeSlot.split("-")[0];
-              const timeB = b.timeSlot.split("-")[0];
-              return timeA.localeCompare(timeB);
-            }
-          );
-          startTime = sortedSlots[0].timeSlot.split("-")[0];
-          const lastSlot = sortedSlots[sortedSlots.length - 1];
-          endTime = lastSlot.timeSlot.split("-")[1];
-        } else if (booking.time) {
-          // If no timeSlots but has time, try to calculate from duration
-          const timeParts = booking.time.split("-");
-          if (timeParts.length === 2 && booking.duration) {
-            startTime = timeParts[0];
-            const durationStr =
-              typeof booking.duration === "string"
-                ? booking.duration
-                : String(booking.duration);
-            const duration = parseInt(durationStr.replace(/\D/g, ""));
-            if (duration > 1) {
-              // Calculate end time based on duration
-              const [hours, minutes] = startTime.split(":").map(Number);
-              const endTimeDate = new Date();
-              endTimeDate.setHours(hours + duration, minutes, 0, 0);
-              endTime = endTimeDate.toTimeString().slice(0, 5);
-            } else {
-              endTime = timeParts[1];
-            }
-          } else {
-            startTime = timeParts[0];
-            endTime = timeParts[1];
-          }
-        } else {
-          startTime = "10:00";
-          endTime = "12:00";
-        }
-
-        return {
-          id: booking.id || (index + 1).toString(),
-          title: `Booking #${booking.id || index + 1} – ${
-            booking.facilityName
-          }`,
-          facility: booking.facilityName || booking.facility || '',
-          facilityId: booking.facilityId || "1",
-          bookerName: booking.contactPerson || "Ukjent bruker",
-          bookerEmail: "bruker@example.com", // This should come from user profile
-          purpose: booking.purpose || booking.description || "Booking",
-          startDate:
-            booking.date ||
-            (() => {
-              const today = new Date();
-              const year = today.getFullYear();
-              const month = String(today.getMonth() + 1).padStart(2, "0");
-              const day = String(today.getDate()).padStart(2, "0");
-              return `${year}-${month}-${day}`;
-            })(),
-          endDate:
-            booking.date ||
-            (() => {
-              const today = new Date();
-              const year = today.getFullYear();
-              const month = String(today.getMonth() + 1).padStart(2, "0");
-              const day = String(today.getDate()).padStart(2, "0");
-              return `${year}-${month}-${day}`;
-            })(),
-          startTime,
-          endTime,
-          status: (booking.status || "pending") as "pending" | "approved" | "rejected" | "cancelled",
-          requestedAt: booking.submittedAt || new Date().toISOString(),
-          price: booking.price
-            ? typeof booking.price === 'string'
-              ? parseInt(booking.price.replace(/\D/g, ""))
-              : booking.price
-            : 0,
-          duration: booking.duration ? (typeof booking.duration === 'string' ? parseInt(booking.duration) : booking.duration) : 2,
-          isRecurring: booking.isRecurring,
-          parentBookingId: booking.parentBookingId,
-        };
-      });
-       
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (error) {
-      return [];
-    }
-  }, []);
-
-  // Get approved/rejected bookings from localStorage
-  const getProcessedBookings = useCallback((): IBooking[] => {
-    try {
-      const processedBookings = JSON.parse(
-        localStorage.getItem("processedBookings") || "[]"
-      );
-      return processedBookings.map((booking: RawBookingData, index: number) => {
-        // Derive start/end time
-        let startTime: string;
-        let endTime: string;
-        if (booking.startTime && booking.endTime) {
-          startTime = booking.startTime;
-          endTime = booking.endTime;
-        } else if (booking.time) {
-          const timeParts = booking.time.split("-");
-          startTime = timeParts[0];
-          endTime = timeParts[1];
-        } else if (booking.timeSlots && booking.timeSlots.length > 0) {
-          const sorted = [...booking.timeSlots].sort((a: LocalStorageTimeSlot, b: LocalStorageTimeSlot) =>
-            a.timeSlot.localeCompare(b.timeSlot)
-          );
-          startTime = sorted[0].timeSlot.split("-")[0];
-          endTime = sorted[sorted.length - 1].timeSlot.split("-")[1];
-        } else {
-          startTime = "10:00";
-          endTime = "12:00";
-        }
-
-        const startDate =
-          booking.date ||
-          booking.startDate ||
-          (() => {
-            const today = new Date();
-            const y = today.getFullYear();
-            const m = String(today.getMonth() + 1).padStart(2, "0");
-            const d = String(today.getDate()).padStart(2, "0");
-            return `${y}-${m}-${d}`;
-          })();
-
-        const endDate = startDate;
-
-        // Normalize price/duration
-        const priceNumber =
-          typeof booking.price === "string"
-            ? parseInt(booking.price.replace(/\D/g, ""))
-            : booking.price || 0;
-        const durationHours =
-          typeof booking.duration === "string"
-            ? parseFloat(
-                booking.duration.replace(/[^0-9.,]/g, "").replace(",", ".")
-              ) || 1
-            : booking.duration
-            ? booking.duration
-            : 1;
-
-        return {
-          id: booking.id || (index + 1).toString(),
-          title: `Booking #${booking.id || index + 1} – ${
-            booking.facility || booking.facilityName || "Ukjent fasilitet"
-          }`,
-          facility:
-            booking.facility || booking.facilityName || "Ukjent fasilitet",
-          facilityId: booking.facilityId || "1",
-          bookerName:
-            booking.contactPerson || booking.bookerName || "Ukjent bruker",
-          bookerEmail: booking.bookerEmail || "bruker@example.com",
-          purpose: booking.purpose || booking.description || "Booking",
-          startDate,
-          endDate,
-          startTime,
-          endTime,
-          status: booking.status || "approved",
-          requestedAt:
-            booking.submittedAt ||
-            booking.requestedAt ||
-            new Date().toISOString(),
-          processedBy: booking.processedBy,
-          processedAt: booking.processedAt,
-          price: priceNumber,
-          duration: durationHours,
-          isRecurring: booking.isRecurring,
-          parentBookingId: booking.parentBookingId,
-        } as IBooking;
-      });
-       
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (error) {
-      return [];
-    }
-  }, []);
+  // Get organization ID
+  const orgId = useOrganizationId();
+  
+  // Supabase hooks
+  const { data: supabaseBookings = [], isLoading, error } = useOrgBookings(orgId);
+  const updateBookingMutation = useUpdateBooking();
+  
+  // Transform Supabase bookings to IBooking format
+  const transformBookings = useCallback((): IBooking[] => {
+    if (isLoading || error) return [];
+    
+    return supabaseBookings.map((booking) => {
+      // Extract date and time information
+      const startDate = new Date(booking.starts_at);
+      const endDate = new Date(booking.ends_at);
+      
+      // Format time as HH:MM
+      const formatTime = (date: Date): string => {
+        return date.toTimeString().slice(0, 5);
+      };
+      
+      // Calculate duration in hours
+      const durationMs = endDate.getTime() - startDate.getTime();
+      const durationHours = durationMs / (1000 * 60 * 60);
+      
+      // Map Supabase status to IBooking status
+      let status: "pending" | "approved" | "rejected" | "cancelled" = "pending";
+      if (booking.status === "paid" || booking.status === "completed") {
+        status = "approved";
+      } else if (booking.status === "cancelled" || booking.status === "expired" || booking.status === "refunded") {
+        // For UI purposes, map cancelled/expired/refunded to rejected
+        status = "rejected";
+      } else if (booking.status === "awaiting_payment") {
+        status = "pending";
+      } else {
+        status = "pending";
+      }
+      
+      return {
+        id: booking.id,
+        title: booking.facility?.name || 'Unknown Facility',
+        facility: booking.facility?.name || 'Unknown Facility',
+        facilityId: booking.facility_id,
+        bookerName: booking.user_profile?.display_name || booking.user_id, // Use display name if available, fallback to user_id
+        bookerEmail: booking.user_profile?.email || `${booking.user_id}@example.com`, // Use actual email if available
+        purpose: booking.notes || "Booking", // Use notes field for purpose if available
+        startDate: startDate.toISOString().split('T')[0],
+        endDate: endDate.toISOString().split('T')[0],
+        startTime: formatTime(startDate),
+        endTime: formatTime(endDate),
+        status,
+        requestedAt: booking.created_at,
+        processedBy: booking.processed_by || undefined, // Only show processed_by if it exists, don't fallback to user info
+        processedAt: booking.processed_at || undefined, // Only show processed_at if it exists
+        price: booking.total_cents / 100, // Convert cents to currency units
+        duration: durationHours,
+        isRecurring: booking.is_recurring,
+        parentBookingId: booking.recurring_booking_id || undefined,
+      };
+    });
+  }, [supabaseBookings, isLoading, error]);
 
   // Real bookings only - refresh when trigger changes
   const bookings: readonly IBooking[] = useMemo(
-    () => [...getPendingBookings(), ...getProcessedBookings()],
-    [getPendingBookings, getProcessedBookings]
+    () => transformBookings(),
+    [transformBookings]
   );
 
   const filteredBookings = useMemo(() => {
@@ -1064,13 +1074,13 @@ const BookingsPage = (): JSX.Element => {
     const approvedToday = bookings.filter(
       (b) =>
         b.status === "approved" &&
-        new Date(b.processedAt || "").toDateString() ===
+        new Date(b.processedAt || b.requestedAt || "").toDateString() ===
           new Date().toDateString()
     ).length;
     const rejectedToday = bookings.filter(
       (b) =>
         b.status === "rejected" &&
-        new Date(b.processedAt || "").toDateString() ===
+        new Date(b.processedAt || b.requestedAt || "").toDateString() ===
           new Date().toDateString()
     ).length;
 
@@ -1110,51 +1120,30 @@ const BookingsPage = (): JSX.Element => {
         const booking = bookings.find((b) => b.id === id);
         if (!booking) return;
 
-        const pendingBookings = JSON.parse(
-          localStorage.getItem("pendingBookings") || "[]"
-        );
-        const processedBookings = JSON.parse(
-          localStorage.getItem("processedBookings") || "[]"
-        );
+        // Get current user's display name or ID for processed_by field
+        const processedBy = currentUser?.user_metadata?.display_name || currentUser?.id || 'Unknown Admin';
 
-        // Determine series to approve
-        const parentId = booking.parentBookingId;
-        const isRecurring = booking.isRecurring || !!parentId;
-        const groupKey = parentId || getGroupKeyFromIBooking(booking);
-
-        const keep: RawBookingData[] = [];
-        const moveToProcessed: RawBookingData[] = [];
-        pendingBookings.forEach((b: RawBookingData) => {
-          const bParent = b.parentBookingId as string | undefined;
-          const bKey = bParent || getGroupKeyFromRaw(b);
-          if (isRecurring ? bKey === groupKey : b.id === id) {
-            moveToProcessed.push({
-              ...b,
-              status: "approved",
-              processedBy: "Admin",
-              processedAt: new Date().toISOString(),
-            });
-          } else {
-            keep.push(b);
+        // Update booking status in Supabase
+        updateBookingMutation.mutate(
+          {
+            id,
+            updates: {
+              status: "paid", // Using "paid" as the approved status
+              updated_at: new Date().toISOString(),
+              processed_by: processedBy, // Add processed_by field
+              processed_at: new Date().toISOString(), // Add processed_at field
+            } as BookingUpdate,
           }
-        });
-
-        localStorage.setItem("pendingBookings", JSON.stringify(keep));
-        localStorage.setItem(
-          "processedBookings",
-          JSON.stringify([...processedBookings, ...moveToProcessed])
         );
-
-        // Close modal and refresh the component
+        
+        // Close modal immediately
         setIsDetailModalOpen(false);
         setSelectedBooking(null);
-        setRefreshTrigger((prev) => prev + 1);
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (error) {
-        // Handle error silently
+        console.error("Error approving booking:", error);
       }
     },
-    [bookings]
+    [bookings, updateBookingMutation, currentUser]
   );
 
   const handleReject = useCallback(
@@ -1163,48 +1152,30 @@ const BookingsPage = (): JSX.Element => {
         const booking = bookings.find((b) => b.id === id);
         if (!booking) return;
 
-        const pendingBookings = JSON.parse(
-          localStorage.getItem("pendingBookings") || "[]"
-        );
-        const processedBookings = JSON.parse(
-          localStorage.getItem("processedBookings") || "[]"
-        );
+        // Get current user's display name or ID for processed_by field
+        const processedBy = currentUser?.user_metadata?.display_name || currentUser?.id || 'Unknown Admin';
 
-        const parentId = booking.parentBookingId;
-        const isRecurring = booking.isRecurring || !!parentId;
-        const groupKey = parentId || getGroupKeyFromIBooking(booking);
-
-        const keep: RawBookingData[] = [];
-        const moveToProcessed: RawBookingData[] = [];
-        pendingBookings.forEach((b: RawBookingData) => {
-          const bParent = b.parentBookingId as string | undefined;
-          const bKey = bParent || getGroupKeyFromRaw(b);
-          if (isRecurring ? bKey === groupKey : b.id === id) {
-            moveToProcessed.push({
-              ...b,
-              status: "rejected",
-              processedBy: "Admin",
-              processedAt: new Date().toISOString(),
-            });
-          } else {
-            keep.push(b);
+        // Update booking status in Supabase
+        updateBookingMutation.mutate(
+          {
+            id,
+            updates: {
+              status: "cancelled", // Using "cancelled" as the rejected status
+              updated_at: new Date().toISOString(),
+              processed_by: processedBy, // Add processed_by field
+              processed_at: new Date().toISOString(), // Add processed_at field
+            } as BookingUpdate,
           }
-        });
-
-        localStorage.setItem("pendingBookings", JSON.stringify(keep));
-        localStorage.setItem(
-          "processedBookings",
-          JSON.stringify([...processedBookings, ...moveToProcessed])
         );
-
-        // Close modal and refresh the component
+        
+        // Close modal immediately
         setIsDetailModalOpen(false);
         setSelectedBooking(null);
-        setRefreshTrigger((prev) => prev + 1);
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-empty
-      } catch (error) {}
+      } catch (error) {
+        console.error("Error rejecting booking:", error);
+      }
     },
-    [bookings]
+    [bookings, updateBookingMutation, currentUser]
   );
 
   const handleViewDetails = (id: string): void => {
@@ -1215,7 +1186,7 @@ const BookingsPage = (): JSX.Element => {
     }
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // eslint-disableine @typescript-eslint/no-unused-vars
   const handleDelete = (id: string): void => {
     // TODO: Implement deletion logic
   };
@@ -1515,9 +1486,14 @@ const BookingsPage = (): JSX.Element => {
                   {/* Recurring groups */}
                   {[...groupedRecurring.entries()].map(([groupId, items]) => {
                     const first = items[0];
-                    const title = `${first.title} – ${t(
-                      "pages.bookings.recurring"
-                    )}`;
+                    // Extract facility name from the title
+                    const facilityName = first.facility;
+                    const title = (
+                      <div className="flex items-center gap-2">
+                        <Repeat className="w-4 h-4 text-purple-600 flex-shrink-0" />
+                        <span>{facilityName}</span>
+                      </div>
+                    );
                     const dates = items.map((i) => i.startDate).sort();
                     const period = `${new Date(dates[0]).toLocaleDateString(
                       "nb-NO"
@@ -1789,7 +1765,7 @@ const BookingsPage = (): JSX.Element => {
                       className={
                         workflow.isActive
                           ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300"
-                          : "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300"
+                          : "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-3300"
                       }
                     >
                       {workflow.status}
@@ -1816,6 +1792,7 @@ const BookingsPage = (): JSX.Element => {
           onApprove={handleApprove}
           onReject={handleReject}
           onDelete={handleDelete}
+          groupedRecurring={groupedRecurring}
         />
 
         {/* Filter Modal */}

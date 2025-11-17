@@ -223,16 +223,16 @@ const UserReceipts = (): JSX.Element => {
                   </div>
                   <Badge
                     className={
-                      occurrence.status === "approved"
+                      occurrence.status === "paid" || occurrence.status === "completed"
                         ? "bg-green-100 text-green-800"
-                        : occurrence.status === "rejected"
+                        : occurrence.status === "cancelled" || occurrence.status === "rejected"
                         ? "bg-red-100 text-red-800"
                         : "bg-yellow-100 text-yellow-800"
                     }
                   >
-                    {occurrence.status === "approved"
+                    {occurrence.status === "paid" || occurrence.status === "completed"
                       ? t('pages.receipts.status_labels.approved')
-                      : occurrence.status === "rejected"
+                      : occurrence.status === "cancelled" || occurrence.status === "rejected"
                       ? t('pages.receipts.status_labels.rejected')
                       : t('pages.receipts.status_labels.pending')}
                   </Badge>

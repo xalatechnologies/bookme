@@ -147,18 +147,38 @@ export const useHistoryManagement = (): IUseHistoryManagementReturn => {
         return [];
       }
 
-      // Group recurring bookings by recurring_booking_id
-      const groupedRecurring = new Map<string, BookingWithDetails[]>();
+      // Separate recurring and single bookings
+      const recurringBookingsMap = new Map<string, BookingWithDetails[]>();
       const singleBookings: BookingWithDetails[] = [];
 
       bookings.forEach((booking) => {
-        if (booking.is_recurring && booking.recurring_booking_id) {
-          const key = booking.recurring_booking_id;
-          if (!groupedRecurring.has(key)) {
-            groupedRecurring.set(key, []);
+        // Check if this is a recurring booking
+        if (booking.is_recurring) {
+          // For recurring bookings, we need to group them
+          // If they have a recurring_booking_id, use that as the key
+          // Otherwise, create a grouping key based on facility, purpose, and time pattern
+          let key: string;
+          if (booking.recurring_booking_id) {
+            // Use the recurring booking ID as the grouping key
+            key = booking.recurring_booking_id;
+          } else {
+            // Create a synthetic key for recurring bookings without an explicit ID
+            // Group by facility, purpose, day of week, and time pattern
+            const startDate = new Date(booking.starts_at);
+            const endDate = new Date(booking.ends_at);
+            const timePattern = `${startDate.getHours()}:${startDate.getMinutes()}-${endDate.getHours()}:${endDate.getMinutes()}`;
+            const dayOfWeek = startDate.getDay(); // 0 = Sunday, 1 = Monday, etc.
+            
+            // Create a unique key based on the recurring pattern
+            key = `recurring-${booking.facility_id}-${booking.notes || 'no-purpose'}-${dayOfWeek}-${timePattern}`;
           }
-          groupedRecurring.get(key)!.push(booking);
+          
+          if (!recurringBookingsMap.has(key)) {
+            recurringBookingsMap.set(key, []);
+          }
+          recurringBookingsMap.get(key)!.push(booking);
         } else {
+          // This is a single booking
           singleBookings.push(booking);
         }
       });
@@ -167,8 +187,9 @@ export const useHistoryManagement = (): IUseHistoryManagementReturn => {
       const singleHistoryItems: IExtendedHistoryItem[] = singleBookings.map(convertBookingToHistoryItem);
 
       // Convert recurring booking groups to history format
-      const recurringHistoryItems: IExtendedHistoryItem[] = Array.from(groupedRecurring.entries()).map(
+      const recurringHistoryItems: IExtendedHistoryItem[] = Array.from(recurringBookingsMap.entries()).map(
         ([recurringId, recurringBookings]) => {
+          // Sort bookings by start date
           const sortedBookings = [...recurringBookings].sort(
             (a, b) => new Date(a.starts_at).getTime() - new Date(b.starts_at).getTime()
           );
@@ -190,7 +211,7 @@ export const useHistoryManagement = (): IUseHistoryManagementReturn => {
           // Determine group status (all must be same for group to have that status)
           const statuses = recurringBookings.map((b) => b.status);
           const allCompleted = statuses.every((s) => s === "paid" || s === "completed");
-          const allCancelled = statuses.every((s) => s === "cancelled" || s === "rejected");
+          const allCancelled = statuses.every((s) => s === "cancelled" || s === "expired" || s === "refunded");
           const groupStatus: "completed" | "cancelled" = allCompleted
             ? "completed"
             : allCancelled
@@ -205,11 +226,16 @@ export const useHistoryManagement = (): IUseHistoryManagementReturn => {
           const lastEnd = new Date(last.ends_at);
           const lastEndTime = lastEnd.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
 
+          // Create a descriptive title for the recurring booking
+          const title = first.notes 
+            ? `${first.notes} (${recurringBookings.length} forekomster)` 
+            : `Gjentakende booking (${recurringBookings.length} forekomster)`;
+
           return {
-            id: recurringId,
+            id: recurringId, // Use the recurring booking ID or synthetic key as the group ID
             facilityId: first.facility_id,
             facilityName: first.facility?.name || "Ukjent lokale",
-            title: first.notes || "Recurring Booking",
+            title: title,
             start: first.starts_at,
             end: last.ends_at,
             startTime: firstStartTime,
