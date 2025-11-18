@@ -59,17 +59,13 @@ export type Organization = Tables<'organizations'>;
 export type OrganizationInsert = Insertable<'organizations'>;
 export type OrganizationUpdate = Updatable<'organizations'>;
 
-export type UserProfile = Tables<'user_profiles'>;
-export type UserProfileInsert = Insertable<'user_profiles'>;
-export type UserProfileUpdate = Updatable<'user_profiles'>;
+export type UserProfile = Tables<'profiles'>;
+export type UserProfileInsert = Insertable<'profiles'>;
+export type UserProfileUpdate = Updatable<'profiles'>;
 
 export type AdditionalService = Tables<'additional_services'>;
 export type AdditionalServiceInsert = Insertable<'additional_services'>;
 export type AdditionalServiceUpdate = Updatable<'additional_services'>;
-
-export type BookingService = Tables<'booking_services'>;
-export type BookingServiceInsert = Insertable<'booking_services'>;
-export type BookingServiceUpdate = Updatable<'booking_services'>;
 
 export type Favorite = Tables<'favorites'>;
 export type FavoriteInsert = Insertable<'favorites'>;
@@ -95,25 +91,30 @@ export type RecurringBooking = Tables<'recurring_bookings'>;
 export type RecurringBookingInsert = Insertable<'recurring_bookings'>;
 export type RecurringBookingUpdate = Updatable<'recurring_bookings'>;
 
-export type Group = Tables<'groups'>;
-export type GroupInsert = Insertable<'groups'>;
-export type GroupUpdate = Updatable<'groups'>;
+export type Group = Tables<'booking_groups'>;
+export type GroupInsert = Insertable<'booking_groups'>;
+export type GroupUpdate = Updatable<'booking_groups'>;
 
-export type GroupMember = Tables<'group_members'>;
-export type GroupMemberInsert = Insertable<'group_members'>;
-export type GroupMemberUpdate = Updatable<'group_members'>;
+export type GroupMember = Tables<'booking_group_members'>;
+export type GroupMemberInsert = Insertable<'booking_group_members'>;
+export type GroupMemberUpdate = Updatable<'booking_group_members'>;
 
 // ============================================================================
 // Enum Types
 // ============================================================================
 
 export type BookingStatus = Enums<'booking_status'>;
-export type FacilityStatus = Enums<'facility_status'>;
-export type UserRole = Enums<'user_role'>;
-export type PaymentStatus = Enums<'payment_status'>;
-export type NotificationType = Enums<'notification_type'>;
+export type OrgRole = Enums<'org_role'>;
+export type NotificationChannel = Enums<'notification_channel'>;
 export type ServiceCategory = Enums<'service_category'>;
-export type RecurrencePattern = Enums<'recurrence_pattern'>;
+export type RecurrenceFrequency = Enums<'recurrence_frequency'>;
+export type ServiceAvailability = Enums<'service_availability'>;
+export type ServicePriceType = Enums<'service_price_type'>;
+export type GroupRole = Enums<'group_role'>;
+export type TicketCategory = Enums<'ticket_category'>;
+export type TicketPriority = Enums<'ticket_priority'>;
+export type TicketStatus = Enums<'ticket_status'>;
+export type PlatformRole = Enums<'platform_role'>;
 
 // ============================================================================
 // Service Response Types
@@ -173,7 +174,7 @@ export interface BookingWithDetails extends Booking {
   readonly facility?: Facility | null;
   readonly zone?: Zone | null;
   readonly user?: UserProfile | null;
-  readonly services?: BookingService[] | null;
+  readonly services?: AdditionalService[] | null;
 }
 
 /**
@@ -252,7 +253,7 @@ export interface BookingFilters extends PaginationParams, SortParams, DateRangeF
  */
 export interface FacilityFilters extends PaginationParams, SortParams {
   readonly orgId?: string;
-  readonly status?: FacilityStatus | FacilityStatus[];
+  readonly status?: string | string[];
   readonly search?: string;
   readonly category?: string;
   readonly hasZones?: boolean;
@@ -263,7 +264,7 @@ export interface FacilityFilters extends PaginationParams, SortParams {
  */
 export interface UserFilters extends PaginationParams, SortParams {
   readonly orgId?: string;
-  readonly role?: UserRole | UserRole[];
+  readonly role?: OrgRole | OrgRole[];
   readonly search?: string;
   readonly isActive?: boolean;
 }
@@ -283,7 +284,7 @@ export interface MessageFilters extends PaginationParams, SortParams {
  */
 export interface NotificationFilters extends PaginationParams, SortParams {
   readonly userId?: string;
-  readonly type?: NotificationType | NotificationType[];
+  readonly type?: string | string[];
   readonly isRead?: boolean;
   readonly priority?: string;
 }

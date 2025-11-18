@@ -121,13 +121,6 @@ const UserFavorites = (): JSX.Element => {
             description={facility.description}
             availability={facility.availability}
           />
-
-          <div className="mt-2 text-xs text-gray-500 dark:text-gray-500 text-center">
-            {t('pages.favorites.added_at', { date: formatDate(facility.addedAt) })}
-            {facility.usageCount && facility.usageCount > 0 && (
-              <span className="ml-2">• {t('pages.favorites.visits', { count: facility.usageCount })}</span>
-            )}
-          </div>
         </div>
       ))}
     </div>
@@ -153,16 +146,6 @@ const UserFavorites = (): JSX.Element => {
             lat={facility.coordinates?.lat}
             lng={facility.coordinates?.lng}
           />
-
-          <div className="mt-2 text-xs text-gray-500 dark:text-gray-500 text-center">
-            {t('pages.favorites.added_at', { date: formatDate(facility.addedAt) })}
-            {facility.usageCount && facility.usageCount > 0 && (
-              <span className="ml-2">• {t('pages.favorites.visits', { count: facility.usageCount })}</span>
-            )}
-            {facility.lastVisited && (
-              <span className="ml-2">• {t('pages.favorites.last_visited', { date: formatDate(facility.lastVisited) })}</span>
-            )}
-          </div>
         </div>
       ))}
     </div>

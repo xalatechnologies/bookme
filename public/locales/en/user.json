@@ -323,10 +323,13 @@
 
       "personal_info": {
         "title": "Personal information",
+        "description": "Manage your personal details and contact info.",
         "edit": "Edit",
         "cancel": "Cancel",
         "save_changes": "Save changes",
         "changes_saved": "Changes saved",
+        "avatar": "Profile picture",
+        "change_photo": "Change photo",
 
         "sections": {
           "personal_details": "Personal details",
@@ -373,6 +376,7 @@
           "connect": "Connect"
         }
       },
+      "activity_integrations": "Activity & integrations",
 
       "preferences": {
         "title": "Preferences and customization",

@@ -1,6 +1,8 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { useUserProfile } from "@/contexts/hooks";
 import { useTranslation } from 'react-i18next';
+import { avatarService } from '@/services/supabase/avatar.service';
+import { usersService } from '@/services/supabase/users.service';
 
 interface PasswordForm {
   readonly currentPassword: string;
@@ -62,7 +64,7 @@ interface UseUserProfileManagementReturn {
   readonly deleteConfirmation: string;
   readonly showDeleteModal: boolean;
   readonly toast: ToastState;
-  readonly fileInputRef: React.RefObject<HTMLInputElement>;
+  readonly fileInputRef: React.RefObject<HTMLInputElement | null>;
   readonly setIsEditing: (value: boolean) => void;
   readonly setDeleteConfirmation: (value: string) => void;
   readonly setShowDeleteModal: (value: boolean) => void;
@@ -233,14 +235,20 @@ export const useUserProfileManagement = (): UseUserProfileManagementReturn => {
   // Handle avatar upload
   const handleAvatarUpload = useCallback((event: React.ChangeEvent<HTMLInputElement>): void => {
     const file = event.target.files?.[0];
-    if (file) {
+    if (file && profile.accountId) {
+      // Convert file to data URL and update profile
       const reader = new FileReader();
-      reader.onload = (e): void => {
-        setAvatarPreview(e.target?.result as string);
+      reader.onload = (e) => {
+        const dataUrl = e.target?.result as string;
+        if (dataUrl) {
+          setAvatarPreview(dataUrl);
+          updateProfile({ avatar: dataUrl });
+          showToastMessage(t('pages.profile.personal_info.changes_saved'));
+        }
       };
       reader.readAsDataURL(file);
     }
-  }, []);
+  }, [profile.accountId, updateProfile, showToastMessage, t]);
 
   // Handle delete account with GDPR logic
   const handleDeleteAccount = useCallback((): void => {

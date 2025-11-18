@@ -323,10 +323,13 @@
 
       "personal_info": {
         "title": "Personlig informasjon",
+        "description": "Administrer dine personlige detaljer og kontaktinformasjon.",
         "edit": "Rediger",
         "cancel": "Avbryt",
         "save_changes": "Lagre endringer",
         "changes_saved": "Endringer lagret",
+        "avatar": "Profilbilde",
+        "change_photo": "Endre bilde",
 
         "sections": {
           "personal_details": "Personlige detaljer",
@@ -373,6 +376,7 @@
           "connect": "Tilknytt"
         }
       },
+      "activity_integrations": "Aktivitet og integrasjoner",
 
       "preferences": {
         "title": "Preferanser og tilpasning",
