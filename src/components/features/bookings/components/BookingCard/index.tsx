@@ -181,7 +181,7 @@ export const BookingCard = ({
             <div className="flex-1 ml-2">
               {/* Header */}
               <div className="flex items-center justify-between mb-2">
-                <h3 className="font-semibold text-gray-900 text-lg">
+                <h3 className="font-semibold text-gray-900 dark:text-white text-lg">
                   {booking.facility?.name || t("details.unknownVenue")}
                 </h3>
                 <Badge className={getStatusBadgeColor(booking.status)}>
@@ -190,7 +190,7 @@ export const BookingCard = ({
               </div>
 
               {/* Details */}
-              <div className="text-sm text-gray-600 space-y-1">
+              <div className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
                 <div className="flex flex-wrap gap-4">
                   <span className="flex items-center gap-1">
                     <Calendar className="w-3 h-3" />
@@ -201,7 +201,7 @@ export const BookingCard = ({
                     {formatTime(booking.starts_at)} -{" "}
                     {formatTime(booking.ends_at)}
                   </span>
-                  <span className="text-gray-500">
+                  <span className="text-gray-500 dark:text-gray-500">
                     (
                     {(() => {
                       const start = new Date(booking.starts_at);
@@ -226,11 +226,11 @@ export const BookingCard = ({
                 )}
 
                 <div className="flex items-center justify-between mt-2">
-                  <span className="font-medium text-gray-900 text-base">
+                  <span className="font-medium text-gray-900 dark:text-white text-base">
                     {formatPrice(booking.total_cents)}
                   </span>
                   {booking.notes && (
-                    <span className="text-xs text-gray-500 italic">
+                    <span className="text-xs text-gray-500 dark:text-gray-500 italic">
                       {t("details.notesLabel")}
                     </span>
                   )}

@@ -148,10 +148,10 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
       >
         {!isOwn && (
           <div className="flex items-center gap-2 mb-1">
-            <span className="text-xs font-medium text-muted-foreground">
+            <span className="text-xs font-medium text-muted-foreground dark:text-gray-400">
               {message.senderName}
             </span>
-            <span className="text-xs text-muted-foreground">
+            <span className="text-xs text-muted-foreground dark:text-gray-500">
               {format(new Date(message.createdAt), "HH:mm")}
             </span>
           </div>
@@ -161,8 +161,8 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
           className={cn(
             "relative px-4 py-2 rounded-2xl",
             isOwn
-              ? "bg-primary text-primary-foreground rounded-br-md"
-              : "bg-muted text-foreground rounded-bl-md"
+              ? "bg-primary text-primary-foreground rounded-br-md dark:bg-blue-600"
+              : "bg-muted text-foreground rounded-bl-md dark:bg-gray-700 dark:text-white"
           )}
         >
           <p className="text-sm whitespace-pre-wrap break-words">
@@ -175,14 +175,14 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
               {message.attachments.map((attachment) => (
                 <div
                   key={attachment.id}
-                  className="flex items-center gap-2 p-2 bg-background/50 rounded-lg"
+                  className="flex items-center gap-2 p-2 bg-background/50 rounded-lg dark:bg-gray-600/50"
                 >
-                  <Paperclip className="h-4 w-4" />
-                  <span className="text-xs truncate">{attachment.name}</span>
+                  <Paperclip className="h-4 w-4 dark:text-gray-300" />
+                  <span className="text-xs truncate dark:text-gray-300">{attachment.name}</span>
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="h-6 w-6 p-0"
+                    className="h-6 w-6 p-0 dark:text-gray-300 dark:hover:bg-gray-600"
                     onClick={() => handleDownloadClick(attachment)}
                   >
                     <Download className="h-3 w-3" />
@@ -260,7 +260,7 @@ export const MessageThread: React.FC<MessageThreadProps> = ({
   currentUserType = "tenant",
   showHeader = true,
 }) => {
-  const { t } = useTranslation(['common', 'messaging']);
+  const { t } = useTranslation(['common']);
   const {
     getThreadById,
     getMessagesByThread,
@@ -417,7 +417,7 @@ export const MessageThread: React.FC<MessageThreadProps> = ({
   if (!thread) {
     return (
       <div className="flex items-center justify-center h-96">
-        <p className="text-muted-foreground">{t('messaging:errors.thread_not_found', 'Tråd ikke funnet')}</p>
+        <p className="text-muted-foreground dark:text-gray-400">{t('messaging:errors.thread_not_found', 'Tråd ikke funnet')}</p>
       </div>
     );
   }
@@ -426,20 +426,20 @@ export const MessageThread: React.FC<MessageThreadProps> = ({
     <div className="flex flex-col h-full relative">
       {/* Header for tittel/status */}
       {showHeader && (
-        <header className="bg-white border-b px-4 py-3 flex-shrink-0">
+        <header className="bg-white border-b px-4 py-3 flex-shrink-0 dark:bg-gray-800 dark:border-gray-700">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={onClose}
-                className="md:hidden"
+                className="md:hidden dark:text-gray-300 dark:hover:bg-gray-700"
               >
                 ←
               </Button>
               <div>
-                <h3 className="font-semibold">{thread.subject}</h3>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <h3 className="font-semibold dark:text-white">{thread.subject}</h3>
+                <div className="flex items-center gap-2 text-sm text-muted-foreground dark:text-gray-400">
                   <span>{thread.participants.length} {t('messaging:labels.participants', 'deltakere')}</span>
                   {thread.facilityName && (
                     <>
@@ -457,6 +457,7 @@ export const MessageThread: React.FC<MessageThreadProps> = ({
             <div className="flex items-center gap-2">
               <Badge
                 variant={thread.status === "active" ? "default" : "secondary"}
+                className="dark:bg-gray-700 dark:text-gray-300"
               >
                 {thread.status === "active"
                   ? t('messaging:status.active', 'Aktiv')
@@ -471,7 +472,7 @@ export const MessageThread: React.FC<MessageThreadProps> = ({
                   variant="outline"
                   size="sm"
                   onClick={() => updateThread(threadId, { status: "resolved" })}
-                  className="text-green-600 border-green-200 hover:bg-green-50"
+                  className="text-green-600 border-green-200 hover:bg-green-50 dark:border-green-800 dark:text-green-400 dark:hover:bg-green-900/20"
                 >
                   <Check className="h-4 w-4 mr-2" />
                   {t('messaging:actions.mark_resolved', 'Marker som løst')}
@@ -480,21 +481,23 @@ export const MessageThread: React.FC<MessageThreadProps> = ({
 
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm">
+                  <Button variant="ghost" size="sm" className="dark:text-gray-300 dark:hover:bg-gray-700">
                     <MoreVertical className="h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent>
+                <DropdownMenuContent className="dark:bg-gray-800 dark:border-gray-700">
                   <DropdownMenuItem
                     onClick={() =>
                       updateThread(threadId, { status: "resolved" })
                     }
+                    className="dark:text-gray-300 dark:focus:bg-gray-700"
                   >
                     <Check className="h-4 w-4 mr-2" />
                     {t('messaging:actions.mark_resolved', 'Marker som løst')}
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() => updateThread(threadId, { status: "closed" })}
+                    className="dark:text-gray-300 dark:focus:bg-gray-700"
                   >
                     <EyeOff className="h-4 w-4 mr-2" />
                     {t('messaging:actions.close_thread', 'Lukk tråd')}
@@ -535,15 +538,15 @@ export const MessageThread: React.FC<MessageThreadProps> = ({
 
       {/* Reply indicator */}
       {replyTo && (
-        <div className="absolute bottom-16 left-0 right-0 px-4 py-2 bg-muted border-t">
+        <div className="absolute bottom-16 left-0 right-0 px-4 py-2 bg-muted border-t dark:bg-gray-800 dark:border-gray-700">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Reply className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">
+              <Reply className="h-4 w-4 text-muted-foreground dark:text-gray-400" />
+              <span className="text-sm text-muted-foreground dark:text-gray-400">
                 {t('messaging:labels.replying_to', 'Svarer til')} {replyTo.senderName}
               </span>
             </div>
-            <Button variant="ghost" size="sm" onClick={() => setReplyTo(null)}>
+            <Button variant="ghost" size="sm" onClick={() => setReplyTo(null)} className="dark:text-gray-300 dark:hover:bg-gray-700">
               ×
             </Button>
           </div>
@@ -551,7 +554,7 @@ export const MessageThread: React.FC<MessageThreadProps> = ({
       )}
 
       {/* Composer - helt fast på bunnen som footer */}
-      <div className="absolute bottom-0 left-0 right-0 bg-white border-t px-4 py-3 z-10">
+      <div className="absolute bottom-0 left-0 right-0 bg-white border-t px-4 py-3 z-10 dark:bg-gray-800 dark:border-gray-700">
         <div className="flex items-end gap-2">
           <div className="flex-1">
             <Textarea
@@ -559,8 +562,8 @@ export const MessageThread: React.FC<MessageThreadProps> = ({
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
               onKeyPress={handleKeyPress}
-              placeholder={t("common:placeholders.message")}
-              className="min-h-[32px] max-h-24 resize-none text-sm"
+              placeholder={t("placeholders.message")}
+              className="min-h-[32px] max-h-24 resize-none text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
               rows={1}
             />
           </div>
@@ -577,7 +580,7 @@ export const MessageThread: React.FC<MessageThreadProps> = ({
               variant="ghost"
               size="sm"
               onClick={() => fileInputRef.current?.click()}
-              className="h-8 w-8 p-0"
+              className="h-8 w-8 p-0 dark:text-gray-300 dark:hover:bg-gray-700"
             >
               <Paperclip className="h-4 w-4" />
             </Button>
@@ -585,7 +588,7 @@ export const MessageThread: React.FC<MessageThreadProps> = ({
               variant="ghost"
               size="sm"
               onClick={() => setIsTyping(!isTyping)}
-              className="h-8 w-8 p-0"
+              className="h-8 w-8 p-0 dark:text-gray-300 dark:hover:bg-gray-700"
             >
               <Smile className="h-4 w-4" />
             </Button>
@@ -606,14 +609,14 @@ export const MessageThread: React.FC<MessageThreadProps> = ({
             {attachments.map((file, index) => (
               <div
                 key={index}
-                className="flex items-center gap-2 px-2 py-1 bg-muted rounded text-xs"
+                className="flex items-center gap-2 px-2 py-1 bg-muted rounded text-xs dark:bg-gray-700 dark:text-gray-300"
               >
                 <Paperclip className="h-3 w-3" />
                 <span className="truncate max-w-20">{file.name}</span>
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="h-4 w-4 p-0"
+                  className="h-4 w-4 p-0 dark:text-gray-300 dark:hover:bg-gray-600"
                   onClick={() =>
                     setAttachments((prev) => prev.filter((_, i) => i !== index))
                   }

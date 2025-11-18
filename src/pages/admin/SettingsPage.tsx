@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback } from "react";
+import React, { useCallback, useState, useRef, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Settings,
@@ -16,6 +16,9 @@ import {
   Eye,
   EyeOff,
   TestTube,
+  User,
+  Camera,
+  Edit
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -26,24 +29,68 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { useSettingsManagement } from "@/hooks/features/settings/useSettingsManagement";
+import { avatarService } from "@/services/supabase/avatar.service";
+import { useAuth } from "@/contexts/hooks";
+import { useAdminProfileManagement } from "@/hooks/features/profile/useAdminProfileManagement";
+import { useUserPreferences } from "@/hooks/features/profile/useUserPreferences";
+import type { Theme } from "@/services/supabase/preferences.service";
 
 // Settings tab type (moved from settingsUIStore)
-type TSettingsTab = 'general' | 'email' | 'payment' | 'notifications' | 'security';
+type TSettingsTab = 'general' | 'email' | 'payment' | 'notifications' | 'security' | 'profile';
 
 interface ISettingsPageProps {
   readonly children?: never;
 }
 
 const SettingsPage = (_props: ISettingsPageProps): JSX.Element => {
-  const { t } = useTranslation();
+  const { t } = useTranslation('admin');
   const [showSmtpPassword, setShowSmtpPassword] = React.useState(false);
   const [showPaymentKeys, setShowPaymentKeys] = React.useState(false);
+  const [activeTab, setActiveTab] = useState<TSettingsTab>('profile');
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { user } = useAuth();
+  
+  // Use the user preferences hook
+  const {
+    preferences,
+    isLoading: preferencesLoading,
+    error: preferencesError,
+    updateLanguage,
+    updateTheme,
+    updateNotifications,
+  } = useUserPreferences(user?.id);
+  
+  // Use the new admin profile management hook
+  const {
+    profileForm,
+    isEditingPersonalInfo,
+    isEditingSecurity,
+    avatarPreview,
+    toast,
+    handleInputChange,
+    handleAvatarUpload,
+    handleSavePersonalInfo,
+    handleSaveSecurity,
+    handleCancelPersonalInfo,
+    handleCancelSecurity,
+    setIsEditingPersonalInfo,
+    setIsEditingSecurity
+  } = useAdminProfileManagement();
+
+  // Load avatar from localStorage when component mounts
+  useEffect(() => {
+    if (user?.id) {
+      const storedAvatar = localStorage.getItem(`avatar_${user.id}`);
+      if (storedAvatar) {
+        // We don't need to set avatarPreview here since it's handled by the hook
+      }
+    }
+  }, [user?.id]);
 
   const {
     settings,
     isLoading,
     error,
-    activeTab,
     unsavedChanges,
     isSaving,
     saveSuccess,
@@ -52,7 +99,7 @@ const SettingsPage = (_props: ISettingsPageProps): JSX.Element => {
     availableTimezones,
     availableCurrencies,
     availableLanguages,
-    setActiveTab,
+    setActiveTab: _setActiveTab,
     updateSettings,
     saveSettings,
     discardChanges,
@@ -63,7 +110,7 @@ const SettingsPage = (_props: ISettingsPageProps): JSX.Element => {
   const [isTestingEmail, setIsTestingEmail] = React.useState(false);
   const [isTestingPayment, setIsTestingPayment] = React.useState(false);
 
-  const handleSave = useCallback(async () => {
+  const handleSaveSettings = useCallback(async () => {
     try {
       await saveSettings();
     } catch (err) {
@@ -77,35 +124,36 @@ const SettingsPage = (_props: ISettingsPageProps): JSX.Element => {
     try {
       const success = await testEmailConnection();
       if (success) {
-        alert('Email connection successful!');
+        alert(t('pages.settings.email.test_success'));
       } else {
-        alert('Email connection failed. Please check your settings.');
+        alert(t('pages.settings.email.test_failed'));
       }
     } finally {
       setIsTestingEmail(false);
     }
-  }, [testEmailConnection]);
+  }, [testEmailConnection, t]);
 
   const handleTestPayment = useCallback(async () => {
     setIsTestingPayment(true);
     try {
       const success = await testPaymentConnection();
       if (success) {
-        alert('Payment connection successful!');
+        alert(t('pages.settings.payment.test_success'));
       } else {
-        alert('Payment connection failed. Please check your settings.');
+        alert(t('pages.settings.payment.test_failed'));
       }
     } finally {
       setIsTestingPayment(false);
     }
-  }, [testPaymentConnection]);
+  }, [testPaymentConnection, t]);
 
   const tabs: Array<{ id: TSettingsTab; label: string; icon: typeof Settings }> = [
-    { id: "general", label: "General Settings", icon: Settings },
-    { id: "email", label: "Email Configuration", icon: Mail },
-    { id: "payment", label: "Payment Settings", icon: CreditCard },
-    { id: "notifications", label: "Notifications", icon: Bell },
-    { id: "security", label: "Security", icon: Shield },
+    { id: "profile", label: t('pages.settings.tabs.profile'), icon: User },
+    { id: "general", label: t('pages.settings.tabs.general'), icon: Settings },
+    { id: "email", label: t('pages.settings.tabs.email'), icon: Mail },
+    { id: "payment", label: t('pages.settings.tabs.payment'), icon: CreditCard },
+    { id: "notifications", label: t('pages.settings.tabs.notifications'), icon: Bell },
+    { id: "security", label: t('pages.settings.tabs.security'), icon: Shield },
   ];
 
   const renderGeneralSettings = (): JSX.Element => {
@@ -117,16 +165,16 @@ const SettingsPage = (_props: ISettingsPageProps): JSX.Element => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Settings className="h-5 w-5" />
-              General Settings
+              {t('pages.settings.general.title')}
             </CardTitle>
             <CardDescription>
-              Configure basic organization settings and preferences
+              {t('pages.settings.general.description')}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label htmlFor="timezone">Timezone</Label>
+                <Label htmlFor="timezone">{t('pages.settings.general.timezone_label')}</Label>
                 <Select
                   value={settings.general.timezone}
                   onValueChange={(value) =>
@@ -145,12 +193,12 @@ const SettingsPage = (_props: ISettingsPageProps): JSX.Element => {
                   </SelectContent>
                 </Select>
                 {validationErrors.general?.includes('Timezone is required') && (
-                  <p className="text-sm text-red-600">Timezone is required</p>
+                  <p className="text-sm text-red-600">{t('pages.settings.general.timezone_required')}</p>
                 )}
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="language">Language</Label>
+                <Label htmlFor="language">{t('pages.settings.general.language_label')}</Label>
                 <Select
                   value={settings.general.language}
                   onValueChange={(value) =>
@@ -171,7 +219,7 @@ const SettingsPage = (_props: ISettingsPageProps): JSX.Element => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="dateFormat">Date Format</Label>
+                <Label htmlFor="dateFormat">{t('pages.settings.general.date_format_label')}</Label>
                 <Select
                   value={settings.general.dateFormat}
                   onValueChange={(value) =>
@@ -190,7 +238,7 @@ const SettingsPage = (_props: ISettingsPageProps): JSX.Element => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="timeFormat">Time Format</Label>
+                <Label htmlFor="timeFormat">{t('pages.settings.general.time_format_label')}</Label>
                 <Select
                   value={settings.general.timeFormat}
                   onValueChange={(value) =>
@@ -201,14 +249,14 @@ const SettingsPage = (_props: ISettingsPageProps): JSX.Element => {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="24h">24-hour (14:30)</SelectItem>
-                    <SelectItem value="12h">12-hour (2:30 PM)</SelectItem>
+                    <SelectItem value="24h">{t('pages.settings.general.time_format_24h')}</SelectItem>
+                    <SelectItem value="12h">{t('pages.settings.general.time_format_12h')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="currency">Currency</Label>
+                <Label htmlFor="currency">{t('pages.settings.general.currency_label')}</Label>
                 <Select
                   value={settings.general.currency}
                   onValueChange={(value) =>
@@ -230,10 +278,10 @@ const SettingsPage = (_props: ISettingsPageProps): JSX.Element => {
             </div>
 
             <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
-              <h3 className="text-lg font-semibold mb-4">Business Hours</h3>
+              <h3 className="text-lg font-semibold mb-4">{t('pages.settings.general.business_hours_title')}</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <Label htmlFor="businessHoursStart">Start Time</Label>
+                  <Label htmlFor="businessHoursStart">{t('pages.settings.general.business_hours_start')}</Label>
                   <Input
                     id="businessHoursStart"
                     type="time"
@@ -247,7 +295,7 @@ const SettingsPage = (_props: ISettingsPageProps): JSX.Element => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="businessHoursEnd">End Time</Label>
+                  <Label htmlFor="businessHoursEnd">{t('pages.settings.general.business_hours_end')}</Label>
                   <Input
                     id="businessHoursEnd"
                     type="time"
@@ -276,10 +324,10 @@ const SettingsPage = (_props: ISettingsPageProps): JSX.Element => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Mail className="h-5 w-5" />
-              Email Configuration
+              {t('pages.settings.email.title')}
             </CardTitle>
             <CardDescription>
-              Configure SMTP settings for sending emails
+              {t('pages.settings.email.description')}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -288,10 +336,10 @@ const SettingsPage = (_props: ISettingsPageProps): JSX.Element => {
                 <Info className="h-5 w-5 text-blue-600" />
                 <div>
                   <p className="font-medium text-blue-900 dark:text-blue-100">
-                    Email Status
+                    {t('pages.settings.email.status_title')}
                   </p>
                   <p className="text-sm text-blue-700 dark:text-blue-300">
-                    {settings.email.enabled ? "Email sending is enabled" : "Email sending is disabled"}
+                    {settings.email.enabled ? t('pages.settings.email.status_enabled') : t('pages.settings.email.status_disabled')}
                   </p>
                 </div>
               </div>
@@ -307,10 +355,10 @@ const SettingsPage = (_props: ISettingsPageProps): JSX.Element => {
               <>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <Label htmlFor="smtpHost">SMTP Host</Label>
+                    <Label htmlFor="smtpHost">{t('pages.settings.email.smtp_host')}</Label>
                     <Input
                       id="smtpHost"
-                      placeholder="smtp.example.com"
+                      placeholder={t('pages.settings.email.smtp_host_placeholder')}
                       value={settings.email.smtpHost}
                       onChange={(e) =>
                         updateSettings("email", { smtpHost: e.target.value })
@@ -319,7 +367,7 @@ const SettingsPage = (_props: ISettingsPageProps): JSX.Element => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="smtpPort">SMTP Port</Label>
+                    <Label htmlFor="smtpPort">{t('pages.settings.email.smtp_port')}</Label>
                     <Input
                       id="smtpPort"
                       type="number"
@@ -332,10 +380,10 @@ const SettingsPage = (_props: ISettingsPageProps): JSX.Element => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="smtpUser">SMTP Username</Label>
+                    <Label htmlFor="smtpUser">{t('pages.settings.email.smtp_user')}</Label>
                     <Input
                       id="smtpUser"
-                      placeholder="user@example.com"
+                      placeholder={t('pages.settings.email.smtp_user_placeholder')}
                       value={settings.email.smtpUser}
                       onChange={(e) =>
                         updateSettings("email", { smtpUser: e.target.value })
@@ -344,12 +392,12 @@ const SettingsPage = (_props: ISettingsPageProps): JSX.Element => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="smtpPassword">SMTP Password</Label>
+                    <Label htmlFor="smtpPassword">{t('pages.settings.email.smtp_password')}</Label>
                     <div className="relative">
                       <Input
                         id="smtpPassword"
                         type={showSmtpPassword ? "text" : "password"}
-                        placeholder="Enter password"
+                        placeholder={t('pages.settings.email.smtp_password_placeholder')}
                         value={settings.email.smtpPassword}
                         onChange={(e) =>
                           updateSettings("email", { smtpPassword: e.target.value })
@@ -370,11 +418,11 @@ const SettingsPage = (_props: ISettingsPageProps): JSX.Element => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="fromEmail">From Email</Label>
+                    <Label htmlFor="fromEmail">{t('pages.settings.email.from_email')}</Label>
                     <Input
                       id="fromEmail"
                       type="email"
-                      placeholder="noreply@example.com"
+                      placeholder={t('pages.settings.email.from_email_placeholder')}
                       value={settings.email.fromEmail}
                       onChange={(e) =>
                         updateSettings("email", { fromEmail: e.target.value })
@@ -383,10 +431,10 @@ const SettingsPage = (_props: ISettingsPageProps): JSX.Element => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="fromName">From Name</Label>
+                    <Label htmlFor="fromName">{t('pages.settings.email.from_name')}</Label>
                     <Input
                       id="fromName"
-                      placeholder="Your Organization"
+                      placeholder={t('pages.settings.email.from_name_placeholder')}
                       value={settings.email.fromName}
                       onChange={(e) =>
                         updateSettings("email", { fromName: e.target.value })
@@ -398,54 +446,29 @@ const SettingsPage = (_props: ISettingsPageProps): JSX.Element => {
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="font-medium">Use SSL</p>
+                      <h3 className="font-medium">{t('pages.settings.email.test_connection')}</h3>
                       <p className="text-sm text-gray-600 dark:text-gray-400">
-                        Enable SSL encryption for SMTP connection
+                        {t('pages.settings.email.test_description')}
                       </p>
                     </div>
-                    <Switch
-                      checked={settings.email.useSSL}
-                      onCheckedChange={(checked) =>
-                        updateSettings("email", { useSSL: checked })
-                      }
-                    />
+                    <Button
+                      variant="outline"
+                      onClick={handleTestEmail}
+                      disabled={isTestingEmail}
+                    >
+                      {isTestingEmail ? (
+                        <>
+                          <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                          {t('pages.settings.email.testing')}
+                        </>
+                      ) : (
+                        <>
+                          <TestTube className="mr-2 h-4 w-4" />
+                          {t('pages.settings.email.test_button')}
+                        </>
+                      )}
+                    </Button>
                   </div>
-
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="font-medium">Use TLS</p>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">
-                        Enable TLS encryption for SMTP connection
-                      </p>
-                    </div>
-                    <Switch
-                      checked={settings.email.useTLS}
-                      onCheckedChange={(checked) =>
-                        updateSettings("email", { useTLS: checked })
-                      }
-                    />
-                  </div>
-                </div>
-
-                <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
-                  <Button
-                    onClick={handleTestEmail}
-                    disabled={isTestingEmail}
-                    variant="outline"
-                    className="w-full md:w-auto"
-                  >
-                    {isTestingEmail ? (
-                      <>
-                        <div className="w-4 h-4 border-2 border-gray-600 border-t-transparent rounded-full animate-spin mr-2" />
-                        Testing Connection...
-                      </>
-                    ) : (
-                      <>
-                        <TestTube className="h-4 w-4 mr-2" />
-                        Test Email Connection
-                      </>
-                    )}
-                  </Button>
                 </div>
               </>
             )}
@@ -464,22 +487,22 @@ const SettingsPage = (_props: ISettingsPageProps): JSX.Element => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <CreditCard className="h-5 w-5" />
-              Payment Configuration
+              {t('pages.settings.payment.title')}
             </CardTitle>
             <CardDescription>
-              Configure payment provider and processing settings
+              {t('pages.settings.payment.description')}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
-            <div className="flex items-center justify-between p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
+            <div className="flex items-center justify-between p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
               <div className="flex items-center gap-3">
-                <Info className="h-5 w-5 text-green-600" />
+                <Info className="h-5 w-5 text-blue-600" />
                 <div>
-                  <p className="font-medium text-green-900 dark:text-green-100">
-                    Payment Status
+                  <p className="font-medium text-blue-900 dark:text-blue-100">
+                    {t('pages.settings.payment.status_title')}
                   </p>
-                  <p className="text-sm text-green-700 dark:text-green-300">
-                    {settings.payment.enabled ? "Payment processing is enabled" : "Payment processing is disabled"}
+                  <p className="text-sm text-blue-700 dark:text-blue-300">
+                    {settings.payment.enabled ? t('pages.settings.payment.status_enabled') : t('pages.settings.payment.status_disabled')}
                   </p>
                 </div>
               </div>
@@ -493,130 +516,119 @@ const SettingsPage = (_props: ISettingsPageProps): JSX.Element => {
 
             {settings.payment.enabled && (
               <>
-                <div className="space-y-2">
-                  <Label htmlFor="paymentProvider">Payment Provider</Label>
-                  <Select
-                    value={settings.payment.provider || ""}
-                    onValueChange={(value) =>
-                      updateSettings("payment", { provider: value })
-                    }
-                  >
-                    <SelectTrigger id="paymentProvider">
-                      <SelectValue placeholder="Select provider" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="stripe">Stripe</SelectItem>
-                      <SelectItem value="vipps">Vipps</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="paymentProvider">{t('pages.settings.payment.provider')}</Label>
+                    <Select
+                      value={settings.payment.provider || undefined}
+                      onValueChange={(value) =>
+                        updateSettings("payment", { provider: value as 'stripe' | 'vipps' | null })
+                      }
+                    >
+                      <SelectTrigger id="paymentProvider">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="stripe">Stripe</SelectItem>
+                        <SelectItem value="vipps">Vipps</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="publicKey">Public Key</Label>
-                  <Input
-                    id="publicKey"
-                    placeholder="pk_test_..."
-                    value={settings.payment.publicKey}
-                    onChange={(e) =>
-                      updateSettings("payment", { publicKey: e.target.value })
-                    }
-                  />
-                </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <Label htmlFor="publicKey">{t('pages.settings.payment.publishable_key')}</Label>
+                      <div className="relative">
+                        <Input
+                          id="publicKey"
+                          type={showPaymentKeys ? "text" : "password"}
+                          placeholder={t('pages.settings.payment.publishable_key_placeholder')}
+                          value={settings.payment.publicKey}
+                          onChange={(e) =>
+                            updateSettings("payment", { publicKey: e.target.value })
+                          }
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPaymentKeys(!showPaymentKeys)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2"
+                        >
+                          {showPaymentKeys ? (
+                            <EyeOff className="h-4 w-4 text-gray-500" />
+                          ) : (
+                            <Eye className="h-4 w-4 text-gray-500" />
+                          )}
+                        </button>
+                      </div>
+                    </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="secretKey">Secret Key</Label>
-                  <div className="relative">
+                    <div className="space-y-2">
+                      <Label htmlFor="secretKey">{t('pages.settings.payment.secret_key')}</Label>
+                      <div className="relative">
+                        <Input
+                          id="secretKey"
+                          type={showPaymentKeys ? "text" : "password"}
+                          placeholder={t('pages.settings.payment.secret_key_placeholder')}
+                          value={settings.payment.secretKey}
+                          onChange={(e) =>
+                            updateSettings("payment", { secretKey: e.target.value })
+                          }
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPaymentKeys(!showPaymentKeys)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2"
+                        >
+                          {showPaymentKeys ? (
+                            <EyeOff className="h-4 w-4 text-gray-500" />
+                          ) : (
+                            <Eye className="h-4 w-4 text-gray-500" />
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="webhookSecret">{t('pages.settings.payment.webhook_secret')}</Label>
                     <Input
-                      id="secretKey"
-                      type={showPaymentKeys ? "text" : "password"}
-                      placeholder="sk_test_..."
-                      value={settings.payment.secretKey}
+                      id="webhookSecret"
+                      type="password"
+                      placeholder={t('pages.settings.payment.webhook_secret_placeholder')}
+                      value={settings.payment.webhookSecret}
                       onChange={(e) =>
-                        updateSettings("payment", { secretKey: e.target.value })
+                        updateSettings("payment", { webhookSecret: e.target.value })
                       }
                     />
-                    <button
-                      type="button"
-                      onClick={() => setShowPaymentKeys(!showPaymentKeys)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2"
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="font-medium">{t('pages.settings.payment.test_connection')}</h3>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        {t('pages.settings.payment.test_description')}
+                      </p>
+                    </div>
+                    <Button
+                      variant="outline"
+                      onClick={handleTestPayment}
+                      disabled={isTestingPayment}
                     >
-                      {showPaymentKeys ? (
-                        <EyeOff className="h-4 w-4 text-gray-500" />
+                      {isTestingPayment ? (
+                        <>
+                          <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                          {t('pages.settings.payment.testing')}
+                        </>
                       ) : (
-                        <Eye className="h-4 w-4 text-gray-500" />
+                        <>
+                          <TestTube className="mr-2 h-4 w-4" />
+                          {t('pages.settings.payment.test_button')}
+                        </>
                       )}
-                    </button>
+                    </Button>
                   </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="webhookSecret">Webhook Secret</Label>
-                  <Input
-                    id="webhookSecret"
-                    type={showPaymentKeys ? "text" : "password"}
-                    placeholder="whsec_..."
-                    value={settings.payment.webhookSecret}
-                    onChange={(e) =>
-                      updateSettings("payment", { webhookSecret: e.target.value })
-                    }
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="paymentCurrency">Currency</Label>
-                  <Select
-                    value={settings.payment.currency}
-                    onValueChange={(value) =>
-                      updateSettings("payment", { currency: value })
-                    }
-                  >
-                    <SelectTrigger id="paymentCurrency">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {availableCurrencies.map((curr) => (
-                        <SelectItem key={curr} value={curr}>
-                          {curr}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium">Test Mode</p>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      Use test API keys and simulate payments
-                    </p>
-                  </div>
-                  <Switch
-                    checked={settings.payment.testMode}
-                    onCheckedChange={(checked) =>
-                      updateSettings("payment", { testMode: checked })
-                    }
-                  />
-                </div>
-
-                <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
-                  <Button
-                    onClick={handleTestPayment}
-                    disabled={isTestingPayment}
-                    variant="outline"
-                    className="w-full md:w-auto"
-                  >
-                    {isTestingPayment ? (
-                      <>
-                        <div className="w-4 h-4 border-2 border-gray-600 border-t-transparent rounded-full animate-spin mr-2" />
-                        Testing Connection...
-                      </>
-                    ) : (
-                      <>
-                        <TestTube className="h-4 w-4 mr-2" />
-                        Test Payment Connection
-                      </>
-                    )}
-                  </Button>
                 </div>
               </>
             )}
@@ -635,134 +647,122 @@ const SettingsPage = (_props: ISettingsPageProps): JSX.Element => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Bell className="h-5 w-5" />
-              Notification Preferences
+              {t('pages.settings.notifications.title')}
             </CardTitle>
             <CardDescription>
-              Configure which notifications you want to receive
+              {t('pages.settings.notifications.description')}
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="font-medium">Booking Created</p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Receive notifications when new bookings are created
-                </p>
-              </div>
-              <Switch
-                checked={settings.notifications.bookingCreated}
-                onCheckedChange={(checked) =>
-                  updateSettings("notifications", { bookingCreated: checked })
-                }
-              />
-            </div>
-
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="font-medium">Booking Cancelled</p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Receive notifications when bookings are cancelled
-                </p>
-              </div>
-              <Switch
-                checked={settings.notifications.bookingCancelled}
-                onCheckedChange={(checked) =>
-                  updateSettings("notifications", { bookingCancelled: checked })
-                }
-              />
-            </div>
-
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="font-medium">Booking Modified</p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Receive notifications when bookings are modified
-                </p>
-              </div>
-              <Switch
-                checked={settings.notifications.bookingModified}
-                onCheckedChange={(checked) =>
-                  updateSettings("notifications", { bookingModified: checked })
-                }
-              />
-            </div>
-
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="font-medium">Payment Received</p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Receive notifications when payments are received
-                </p>
-              </div>
-              <Switch
-                checked={settings.notifications.paymentReceived}
-                onCheckedChange={(checked) =>
-                  updateSettings("notifications", { paymentReceived: checked })
-                }
-              />
-            </div>
-
-            <div className="border-t border-gray-200 dark:border-gray-700 pt-4 mt-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-medium">System Updates</p>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    Receive notifications about system updates and maintenance
-                  </p>
+          <CardContent className="space-y-6">
+            <div className="space-y-4">
+              <h3 className="font-medium">{t('pages.settings.notifications.email_notifications')}</h3>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+                  <div>
+                    <p className="font-medium">{t('pages.settings.notifications.new_bookings')}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      {t('pages.settings.notifications.new_bookings_description')}
+                    </p>
+                  </div>
+                  <Switch
+                    checked={settings.notifications.bookingCreated}
+                    onCheckedChange={(checked) =>
+                      updateSettings("notifications", {
+                        bookingCreated: checked
+                      })
+                    }
+                  />
                 </div>
-                <Switch
-                  checked={settings.notifications.systemUpdates}
-                  onCheckedChange={(checked) =>
-                    updateSettings("notifications", { systemUpdates: checked })
-                  }
-                />
-              </div>
 
-              <div className="flex items-center justify-between mt-4">
-                <div>
-                  <p className="font-medium">Security Alerts</p>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    Receive notifications about security events
-                  </p>
+                <div className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+                  <div>
+                    <p className="font-medium">{t('pages.settings.notifications.cancellations')}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      {t('pages.settings.notifications.cancellations_description')}
+                    </p>
+                  </div>
+                  <Switch
+                    checked={settings.notifications.bookingCancelled}
+                    onCheckedChange={(checked) =>
+                      updateSettings("notifications", {
+                        bookingCancelled: checked
+                      })
+                    }
+                  />
                 </div>
-                <Switch
-                  checked={settings.notifications.securityAlerts}
-                  onCheckedChange={(checked) =>
-                    updateSettings("notifications", { securityAlerts: checked })
-                  }
-                />
+
+                <div className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+                  <div>
+                    <p className="font-medium">{t('pages.settings.notifications.system_updates')}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      {t('pages.settings.notifications.system_updates_description')}
+                    </p>
+                  </div>
+                  <Switch
+                    checked={settings.notifications.systemUpdates}
+                    onCheckedChange={(checked) =>
+                      updateSettings("notifications", {
+                        systemUpdates: checked
+                      })
+                    }
+                  />
+                </div>
+
+                <div className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+                  <div>
+                    <p className="font-medium">{t('pages.settings.notifications.security_alerts')}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      {t('pages.settings.notifications.security_alerts_description')}
+                    </p>
+                  </div>
+                  <Switch
+                    checked={settings.notifications.securityAlerts}
+                    onCheckedChange={(checked) =>
+                      updateSettings("notifications", {
+                        securityAlerts: checked
+                      })
+                    }
+                  />
+                </div>
               </div>
             </div>
 
-            <div className="border-t border-gray-200 dark:border-gray-700 pt-4 mt-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-medium">Push Notifications</p>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    Enable push notifications in browser
-                  </p>
+            <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
+              <h3 className="font-medium mb-4">{t('pages.settings.notifications.push_notifications')}</h3>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+                  <div>
+                    <p className="font-medium">{t('pages.settings.notifications.enable_push')}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      {t('pages.settings.notifications.enable_push_description')}
+                    </p>
+                  </div>
+                  <Switch
+                    checked={settings.notifications.pushEnabled}
+                    onCheckedChange={(checked) =>
+                      updateSettings("notifications", {
+                        pushEnabled: checked
+                      })
+                    }
+                  />
                 </div>
-                <Switch
-                  checked={settings.notifications.pushEnabled}
-                  onCheckedChange={(checked) =>
-                    updateSettings("notifications", { pushEnabled: checked })
-                  }
-                />
-              </div>
 
-              <div className="flex items-center justify-between mt-4">
-                <div>
-                  <p className="font-medium">Notification Sound</p>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    Play sound for push notifications
-                  </p>
+                <div className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+                  <div>
+                    <p className="font-medium">{t('pages.settings.notifications.notification_sound')}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      {t('pages.settings.notifications.notification_sound_description')}
+                    </p>
+                  </div>
+                  <Switch
+                    checked={settings.notifications.pushSound}
+                    onCheckedChange={(checked) =>
+                      updateSettings("notifications", {
+                        pushSound: checked
+                      })
+                    }
+                  />
                 </div>
-                <Switch
-                  checked={settings.notifications.pushSound}
-                  onCheckedChange={(checked) =>
-                    updateSettings("notifications", { pushSound: checked })
-                  }
-                />
               </div>
             </div>
           </CardContent>
@@ -780,99 +780,93 @@ const SettingsPage = (_props: ISettingsPageProps): JSX.Element => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Shield className="h-5 w-5" />
-              Security Settings
+              {t('pages.settings.security.title')}
             </CardTitle>
             <CardDescription>
-              Configure security and authentication settings
+              {t('pages.settings.security.description')}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="font-medium">Two-Factor Authentication</p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Require two-factor authentication for login
-                </p>
+            <div className="space-y-4">
+              <h3 className="font-medium">{t('pages.settings.security.password_requirements')}</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <Label htmlFor="passwordExpiryDays">{t('pages.settings.security.password_expiry_days')}</Label>
+                  <Input
+                    id="passwordExpiryDays"
+                    type="number"
+                    min="1"
+                    max="365"
+                    value={settings.security.passwordExpiryDays}
+                    onChange={(e) =>
+                      updateSettings("security", {
+                        passwordExpiryDays: parseInt(e.target.value) || 90
+                      })
+                    }
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="sessionTimeout">{t('pages.settings.security.session_timeout')}</Label>
+                  <Select
+                    value={settings.security.sessionTimeout.toString()}
+                    onValueChange={(value) =>
+                      updateSettings("security", { sessionTimeout: parseInt(value) })
+                    }
+                  >
+                    <SelectTrigger id="sessionTimeout">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="15">15 {t('pages.settings.security.minutes')}</SelectItem>
+                      <SelectItem value="30">30 {t('pages.settings.security.minutes')}</SelectItem>
+                      <SelectItem value="60">1 {t('pages.settings.security.hour')}</SelectItem>
+                      <SelectItem value="120">2 {t('pages.settings.security.hours')}</SelectItem>
+                      <SelectItem value="240">4 {t('pages.settings.security.hours')}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
-              <Switch
-                checked={settings.security.twoFactorEnabled}
-                onCheckedChange={(checked) =>
-                  updateSettings("security", { twoFactorEnabled: checked })
-                }
-              />
             </div>
 
-            {settings.security.twoFactorEnabled && (
-              <div className="space-y-2">
-                <Label htmlFor="twoFactorMethod">Two-Factor Method</Label>
-                <Select
-                  value={settings.security.twoFactorMethod || ""}
-                  onValueChange={(value) =>
-                    updateSettings("security", { twoFactorMethod: value })
-                  }
-                >
-                  <SelectTrigger id="twoFactorMethod">
-                    <SelectValue placeholder="Select method" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="sms">SMS</SelectItem>
-                    <SelectItem value="app">Authenticator App</SelectItem>
-                  </SelectContent>
-                </Select>
+            <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
+              <h3 className="font-medium mb-4">{t('pages.settings.security.two_factor_auth')}</h3>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+                  <div>
+                    <p className="font-medium">{t('pages.settings.security.enable_2fa')}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      {t('pages.settings.security.enable_2fa_description')}
+                    </p>
+                  </div>
+                  <Switch
+                    checked={settings.security.twoFactorEnabled}
+                    onCheckedChange={(checked) =>
+                      updateSettings("security", { twoFactorEnabled: checked })
+                    }
+                  />
+                </div>
+
+                {settings.security.twoFactorEnabled && (
+                  <div className="space-y-2">
+                    <Label htmlFor="twoFactorMethod">{t('pages.settings.security.two_factor_method')}</Label>
+                    <Select
+                      value={settings.security.twoFactorMethod || undefined}
+                      onValueChange={(value) =>
+                        updateSettings("security", { twoFactorMethod: value as 'sms' | 'app' | null })
+                      }
+                    >
+                      <SelectTrigger id="twoFactorMethod">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="sms">SMS</SelectItem>
+                        <SelectItem value="app">Authenticator App</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
               </div>
-            )}
-
-            <div className="space-y-2">
-              <Label htmlFor="sessionTimeout">Session Timeout (minutes)</Label>
-              <Input
-                id="sessionTimeout"
-                type="number"
-                min="5"
-                max="1440"
-                value={settings.security.sessionTimeout}
-                onChange={(e) =>
-                  updateSettings("security", {
-                    sessionTimeout: parseInt(e.target.value) || 30,
-                  })
-                }
-              />
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                Auto-logout after period of inactivity (5-1440 minutes)
-              </p>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="passwordExpiry">Password Expiry (days)</Label>
-              <Input
-                id="passwordExpiry"
-                type="number"
-                min="0"
-                max="365"
-                value={settings.security.passwordExpiryDays}
-                onChange={(e) =>
-                  updateSettings("security", {
-                    passwordExpiryDays: parseInt(e.target.value) || 90,
-                  })
-                }
-              />
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                Force password change after specified days (0 = never)
-              </p>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="font-medium">Require Password Change</p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Users must change password on next login
-                </p>
-              </div>
-              <Switch
-                checked={settings.security.requirePasswordChange}
-                onCheckedChange={(checked) =>
-                  updateSettings("security", { requirePasswordChange: checked })
-                }
-              />
             </div>
           </CardContent>
         </Card>
@@ -880,166 +874,457 @@ const SettingsPage = (_props: ISettingsPageProps): JSX.Element => {
     );
   };
 
-  const renderTabContent = (): JSX.Element => {
-    switch (activeTab) {
-      case "general":
-        return renderGeneralSettings();
-      case "email":
-        return renderEmailSettings();
-      case "payment":
-        return renderPaymentSettings();
-      case "notifications":
-        return renderNotificationSettings();
-      case "security":
-        return renderSecuritySettings();
-      default:
-        return renderGeneralSettings();
-    }
-  };
-
-  if (isLoading) {
+  const renderProfileSettings = (): JSX.Element => {
     return (
-      <div className="flex items-center justify-center h-96">
-        <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex items-center justify-center h-96">
+      <div className="space-y-6">
         <div className="text-center">
-          <AlertTriangle className="h-12 w-12 text-red-600 mx-auto mb-4" />
-          <p className="text-lg font-medium text-red-600">Failed to load settings</p>
-          <p className="text-sm text-gray-600">{error.message}</p>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+            {t('pages.settings.profile.title')}
+          </h2>
+          <p className="text-gray-600 dark:text-gray-400">
+            {t('pages.settings.profile.subtitle')}
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Profile Card */}
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex flex-col items-center">
+                <div 
+                  className="relative group mb-4 cursor-pointer"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-gray-100 dark:border-gray-800">
+                    {avatarPreview ? (
+                      <img
+                        src={avatarPreview}
+                        alt="Profile"
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+                        <User className="w-12 h-12 text-gray-500 dark:text-gray-400" />
+                      </div>
+                    )}
+                  </div>
+                  <div className="absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                    <Camera className="h-6 w-6 text-white" />
+                  </div>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleAvatarUpload}
+                    className="hidden"
+                  />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                  Admin User
+                </h3>
+                <p className="text-gray-600 dark:text-gray-400 text-sm">
+                  Administrator
+                </p>
+                <div className="mt-4 text-xs text-gray-500 dark:text-gray-400">
+                  <p>{t('pages.settings.profile.account_overview.account_created')}: {new Date().toLocaleDateString()}</p>
+                  <p>{t('pages.settings.profile.account_overview.last_active')}: {new Date().toLocaleDateString()}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Security Settings Card */}
+          <Card className="group">
+            <CardHeader>
+              <div className="flex justify-between items-center">
+                <div>
+                  <CardTitle className="flex items-center gap-2">
+                    <Shield className="h-5 w-5" />
+                    {t('pages.settings.profile.security.title')}
+                  </CardTitle>
+                </div>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                  onClick={() => setIsEditingSecurity(true)}
+                >
+                  <Edit className="h-4 w-4" />
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="currentPassword">
+                      {t('pages.settings.profile.security.password.current')}
+                    </Label>
+                    <Input id="currentPassword" type="password" disabled={!isEditingSecurity} />
+                  </div>
+                  <div></div>
+                  <div>
+                    <Label htmlFor="newPassword">
+                      {t('pages.settings.profile.security.password.new')}
+                    </Label>
+                    <Input id="newPassword" type="password" disabled={!isEditingSecurity} />
+                  </div>
+                  <div>
+                    <Label htmlFor="confirmPassword">
+                      {t('pages.settings.profile.security.password.confirm')}
+                    </Label>
+                    <Input id="confirmPassword" type="password" disabled={!isEditingSecurity} />
+                  </div>
+                </div>
+                {isEditingSecurity && (
+                  <div className="flex justify-end gap-2 pt-4">
+                    <Button variant="outline" onClick={handleCancelSecurity}>
+                      <X className="h-4 w-4 mr-2" />
+                      {t('pages.settings.profile.personal_info.cancel')}
+                    </Button>
+                    <Button onClick={() => handleSaveSecurity()}>
+                      <Save className="h-4 w-4 mr-2" />
+                      {t('pages.settings.profile.security.password.update')}
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Personal Information Card */}
+          <Card className="group">
+            <CardHeader>
+              <div className="flex justify-between items-center">
+                <div>
+                  <CardTitle className="flex items-center gap-2">
+                    <User className="h-5 w-5" />
+                    {t('pages.settings.profile.personal_info.title')}
+                  </CardTitle>
+                  <CardDescription>
+                    {t('pages.settings.profile.personal_info.description')}
+                  </CardDescription>
+                </div>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                  onClick={() => setIsEditingPersonalInfo(true)}
+                >
+                  <Edit className="h-4 w-4" />
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="firstName">
+                      {t('pages.settings.profile.personal_info.fields.first_name')}
+                    </Label>
+                    <Input 
+                      id="firstName" 
+                      placeholder="First Name" 
+                      value={profileForm.firstName}
+                      onChange={(e) => handleInputChange("firstName", e.target.value)}
+                      disabled={!isEditingPersonalInfo}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="lastName">
+                      {t('pages.settings.profile.personal_info.fields.last_name')}
+                    </Label>
+                    <Input 
+                      id="lastName" 
+                      placeholder="Last Name" 
+                      value={profileForm.lastName}
+                      onChange={(e) => handleInputChange("lastName", e.target.value)}
+                      disabled={!isEditingPersonalInfo}
+                    />
+                  </div>
+                </div>
+                
+                <div>
+                  <Label htmlFor="email">
+                    {t('pages.settings.profile.personal_info.fields.email')}
+                  </Label>
+                  <Input 
+                    id="email" 
+                    type="email" 
+                    placeholder="email@example.com" 
+                    value={profileForm.email}
+                    onChange={(e) => handleInputChange("email", e.target.value)}
+                    disabled
+                  />
+                </div>
+                
+                <div>
+                  <Label htmlFor="phone">
+                    {t('pages.settings.profile.personal_info.fields.phone')}
+                  </Label>
+                  <Input 
+                    id="phone" 
+                    type="tel" 
+                    placeholder="+47 123 45 678" 
+                    value={profileForm.phone}
+                    onChange={(e) => handleInputChange("phone", e.target.value)}
+                    disabled={!isEditingPersonalInfo}
+                  />
+                </div>
+                
+                <div>
+                  <Label htmlFor="address">
+                    {t('pages.settings.profile.personal_info.fields.address')}
+                  </Label>
+                  <Input 
+                    id="address" 
+                    type="text" 
+                    placeholder="Address" 
+                    value={profileForm.address}
+                    onChange={(e) => handleInputChange("address", e.target.value)}
+                    disabled={!isEditingPersonalInfo}
+                  />
+                </div>
+                
+                {isEditingPersonalInfo && (
+                  <div className="flex justify-end gap-2 pt-4">
+                    <Button variant="outline" onClick={handleCancelPersonalInfo}>
+                      <X className="h-4 w-4 mr-2" />
+                      {t('pages.settings.profile.personal_info.cancel')}
+                    </Button>
+                    <Button onClick={() => handleSavePersonalInfo()}>
+                      <Save className="h-4 w-4 mr-2" />
+                      {t('pages.settings.profile.personal_info.save')}
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Preferences Card */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Settings className="h-5 w-5" />
+                {t('pages.settings.profile.preferences.title')}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-6">
+                <div>
+                  <h3 className="font-medium mb-3">
+                    {t('pages.settings.profile.preferences.title')}
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="language">
+                        {t('pages.settings.profile.preferences.language_label')}
+                      </Label>
+                      <Select 
+                        value={preferences?.language === 'NO' ? 'nb-NO' : 'en-US'} 
+                        onValueChange={(value) => updateLanguage(value === 'nb-NO' ? 'NO' : 'EN')}
+                        disabled={preferencesLoading}
+                      >
+                        <SelectTrigger id="language">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="nb-NO">Norwegian</SelectItem>
+                          <SelectItem value="en-US">English</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label htmlFor="theme">
+                        {t('pages.settings.profile.preferences.theme_label')}
+                      </Label>
+                      <Select 
+                        value={preferences?.theme || 'system'} 
+                        onValueChange={(value) => updateTheme(value as Theme)}
+                        disabled={preferencesLoading}
+                      >
+                        <SelectTrigger id="theme">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="light">
+                            {t('pages.settings.profile.preferences.theme_options.light')}
+                          </SelectItem>
+                          <SelectItem value="dark">
+                            {t('pages.settings.profile.preferences.theme_options.dark')}
+                          </SelectItem>
+                          <SelectItem value="system">
+                            {t('pages.settings.profile.preferences.theme_options.system')}
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="font-medium mb-3">
+                    {t('pages.settings.profile.preferences.notifications.title')}
+                  </h3>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="font-medium">
+                          {t('pages.settings.profile.preferences.notifications.email')}
+                        </p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                          {t('pages.settings.profile.preferences.notifications.email_desc')}
+                        </p>
+                      </div>
+                      <Switch 
+                        checked={preferences?.emailBookingConfirmation ?? true}
+                        onCheckedChange={(checked) => updateNotifications({ emailBookingConfirmation: checked })}
+                        disabled={preferencesLoading}
+                      />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="font-medium">
+                          {t('pages.settings.profile.preferences.notifications.sms')}
+                        </p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                          {t('pages.settings.profile.preferences.notifications.sms_desc')}
+                        </p>
+                      </div>
+                      <Switch 
+                        checked={preferences?.smsBookingConfirmation ?? false}
+                        onCheckedChange={(checked) => updateNotifications({ smsBookingConfirmation: checked })}
+                        disabled={preferencesLoading}
+                      />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="font-medium">
+                          {t('pages.settings.profile.preferences.notifications.push')}
+                        </p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                          {t('pages.settings.profile.preferences.notifications.push_desc')}
+                        </p>
+                      </div>
+                      <Switch 
+                        checked={preferences?.browserEnabled ?? true}
+                        onCheckedChange={(checked) => updateNotifications({ browserEnabled: checked })}
+                        disabled={preferencesLoading}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
     );
-  }
+  };
 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-            Organization Settings
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400">
-            Manage your organization configuration and preferences
-          </p>
-        </div>
-        <div className="flex items-center gap-3">
-          {unsavedChanges && (
-            <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400">
-              <AlertTriangle className="h-4 w-4" />
-              <span className="text-sm">Unsaved changes</span>
-            </div>
-          )}
-          {unsavedChanges && (
-            <Button
-              onClick={discardChanges}
-              variant="outline"
-              className="flex items-center gap-2"
-            >
-              <X className="h-4 w-4" />
-              Discard
-            </Button>
-          )}
-          <Button
-            onClick={handleSave}
-            disabled={!unsavedChanges || isSaving}
-            className="flex items-center gap-2"
-          >
-            {isSaving ? (
-              <>
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                Saving...
-              </>
-            ) : (
-              <>
-                <Save className="h-4 w-4" />
-                Save Changes
-              </>
-            )}
-          </Button>
-        </div>
+      <div>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+          {t('pages.settings.title')}
+        </h1>
+        <p className="text-gray-600 dark:text-gray-400">
+          {t('pages.settings.subtitle')}
+        </p>
       </div>
 
-      {/* Success Message */}
-      {saveSuccess && (
-        <div className="flex items-center gap-2 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
-          <Check className="h-5 w-5 text-green-600 dark:text-green-400" />
-          <span className="text-green-700 dark:text-green-300 font-medium">
-            Settings saved successfully!
-          </span>
-        </div>
-      )}
-
-      {/* Error Message */}
-      {saveError && (
-        <div className="flex items-center gap-2 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-          <AlertTriangle className="h-5 w-5 text-red-600 dark:text-red-400" />
-          <span className="text-red-700 dark:text-red-300 font-medium">
-            {saveError}
-          </span>
-        </div>
-      )}
-
-      {/* Validation Errors */}
-      {Object.keys(validationErrors).length > 0 && (
-        <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-          <div className="flex items-start gap-2">
-            <AlertTriangle className="h-5 w-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
-            <div className="flex-1">
-              <p className="font-medium text-red-700 dark:text-red-300 mb-2">
-                Validation Errors
-              </p>
-              <ul className="space-y-1 text-sm text-red-600 dark:text-red-400">
-                {Object.entries(validationErrors).map(([section, errors]) =>
-                  errors.map((error, index) => (
-                    <li key={`${section}-${index}`}>
-                      {section}: {error}
-                    </li>
-                  ))
-                )}
-              </ul>
-            </div>
+      {/* Action Bar */}
+      {(unsavedChanges || saveSuccess || saveError) && (
+        <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+          <div className="flex items-center gap-2">
+            {unsavedChanges && (
+              <>
+                <AlertTriangle className="h-5 w-5 text-yellow-600" />
+                <span className="text-yellow-800 dark:text-yellow-200">
+                  {t('pages.settings.unsaved_changes')}
+                </span>
+              </>
+            )}
+            {saveSuccess && (
+              <>
+                <Check className="h-5 w-5 text-green-600" />
+                <span className="text-green-800 dark:text-green-200">
+                  {t('pages.settings.changes_saved')}
+                </span>
+              </>
+            )}
+            {saveError && (
+              <span className="text-red-800 dark:text-red-200">
+                {saveError}
+              </span>
+            )}
+          </div>
+          <div className="flex items-center gap-2">
+            {unsavedChanges && (
+              <>
+                <Button
+                  variant="outline"
+                  onClick={discardChanges}
+                  disabled={isSaving}
+                >
+                  <X className="h-4 w-4 mr-2" />
+                  {t('pages.settings.discard_changes')}
+                </Button>
+                <Button
+                  onClick={handleSaveSettings}
+                  disabled={isSaving}
+                >
+                  {isSaving ? (
+                    <>
+                      <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                      {t('pages.settings.saving')}
+                    </>
+                  ) : (
+                    <>
+                      <Save className="h-4 w-4 mr-2" />
+                      {t('pages.settings.save_button')}
+                    </>
+                  )}
+                </Button>
+              </>
+            )}
           </div>
         </div>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        {/* Sidebar */}
-        <div className="lg:col-span-1">
-          <Card>
-            <CardContent className="p-0">
-              <nav className="space-y-1">
-                {tabs.map((tab) => {
-                  const IconComponent = tab.icon;
-                  return (
-                    <button
-                      key={tab.id}
-                      onClick={() => setActiveTab(tab.id)}
-                      className={`w-full flex items-center gap-3 px-4 py-3 text-left transition-colors ${
-                        activeTab === tab.id
-                          ? "bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 border-r-2 border-blue-600"
-                          : "text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
-                      }`}
-                      aria-label={`Switch to ${tab.label} tab`}
-                    >
-                      <IconComponent className="h-5 w-5" />
-                      <span className="font-medium">{tab.label}</span>
-                    </button>
-                  );
-                })}
-              </nav>
-            </CardContent>
-          </Card>
-        </div>
+      {/* Tab Navigation */}
+      <div className="border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-white dark:bg-gray-900 z-10">
+        <nav className="-mb-px flex space-x-8">
+          {tabs.map((tab) => {
+            const Icon = tab.icon;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex items-center space-x-2 py-3 px-1 border-b-4 font-medium text-sm transition-colors ${
+                  activeTab === tab.id
+                    ? "border-blue-500 text-blue-600 dark:text-blue-400 font-semibold"
+                    : "border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-100/50 dark:text-gray-400 dark:hover:text-gray-300 dark:hover:bg-gray-800/50"
+                }`}
+              >
+                <Icon className="h-4 w-4" />
+                <span>{tab.label}</span>
+              </button>
+            );
+          })}
+        </nav>
+      </div>
 
-        {/* Main Content */}
-        <div className="lg:col-span-3">{renderTabContent()}</div>
+      {/* Tab Content */}
+      <div className="space-y-6">
+        {activeTab === "general" && renderGeneralSettings()}
+        {activeTab === "email" && renderEmailSettings()}
+        {activeTab === "payment" && renderPaymentSettings()}
+        {activeTab === "notifications" && renderNotificationSettings()}
+        {activeTab === "security" && renderSecuritySettings()}
+        {activeTab === "profile" && renderProfileSettings()}
       </div>
     </div>
   );

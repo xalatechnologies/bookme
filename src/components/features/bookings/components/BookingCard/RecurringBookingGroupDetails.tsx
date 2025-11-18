@@ -35,21 +35,21 @@ const formatTime = (dateString: string): string => {
 const getStatusBadgeColor = (status: string): string => {
   switch (status) {
     case "paid":
-      return "bg-green-100 text-green-800 border-green-200";
+      return "bg-green-100 text-green-800 border-green-200 dark:bg-green-900/30 dark:text-green-300 dark:border-green-800";
     case "completed":
-      return "bg-blue-100 text-blue-800 border-blue-200";
+      return "bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-800";
     case "pending":
-      return "bg-yellow-100 text-yellow-800 border-yellow-200";
+      return "bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-900/30 dark:text-yellow-300 dark:border-yellow-800";
     case "awaiting_payment":
-      return "bg-orange-100 text-orange-800 border-orange-200";
+      return "bg-orange-100 text-orange-800 border-orange-200 dark:bg-orange-900/30 dark:text-orange-300 dark:border-orange-800";
     case "cancelled":
-      return "bg-red-100 text-red-800 border-red-200";
+      return "bg-red-100 text-red-800 border-red-200 dark:bg-red-900/30 dark:text-red-300 dark:border-red-800";
     case "expired":
-      return "bg-gray-100 text-gray-800 border-gray-200";
+      return "bg-gray-100 text-gray-800 border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700";
     case "refunded":
-      return "bg-purple-100 text-purple-800 border-purple-200";
+      return "bg-purple-100 text-purple-800 border-purple-200 dark:bg-purple-900/30 dark:text-purple-300 dark:border-purple-800";
     default:
-      return "bg-gray-100 text-gray-800 border-gray-200";
+      return "bg-gray-100 text-gray-800 border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700";
   }
 };
 
@@ -187,10 +187,10 @@ export const RecurringBookingGroupDetails = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-      <Card className="max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+      <Card className="max-w-2xl w-full max-h-[90vh] overflow-y-auto dark:bg-gray-800">
         <CardHeader className="relative">
           <div className="flex items-center justify-between">
-            <CardTitle className="text-xl font-bold text-gray-900">
+            <CardTitle className="text-xl font-bold text-gray-900 dark:text-white">
               {translatedLabels.title}
             </CardTitle>
             <Button
@@ -205,7 +205,7 @@ export const RecurringBookingGroupDetails = ({
           </div>
           
           <div className="flex items-center gap-2 mt-2">
-            <h3 className="text-lg font-semibold text-gray-900">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
               {group.facilityName}
             </h3>
             <Badge variant="secondary">
@@ -214,36 +214,36 @@ export const RecurringBookingGroupDetails = ({
           </div>
           
           {group.zoneName && (
-            <p className="text-sm text-gray-600">{group.zoneName}</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400">{group.zoneName}</p>
           )}
         </CardHeader>
         
         <CardContent className="space-y-6">
           {/* Summary Stats */}
           <div className="grid grid-cols-3 gap-4">
-            <div className="text-center p-3 bg-gray-50 rounded-lg">
-              <p className="text-2xl font-bold text-gray-900">{group.totalBookings}</p>
-              <p className="text-sm text-gray-600">{translatedLabels.occurrences}</p>
+            <div className="text-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{group.totalBookings}</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">{translatedLabels.occurrences}</p>
             </div>
-            <div className="text-center p-3 bg-green-50 rounded-lg">
-              <p className="text-2xl font-bold text-green-600">{group.upcomingCount}</p>
-              <p className="text-sm text-gray-600">{translatedLabels.upcoming}</p>
+            <div className="text-center p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+              <p className="text-2xl font-bold text-green-600 dark:text-green-400">{group.upcomingCount}</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">{translatedLabels.upcoming}</p>
             </div>
-            <div className="text-center p-3 bg-blue-50 rounded-lg">
-              <p className="text-2xl font-bold text-blue-600">{group.completedCount}</p>
-              <p className="text-sm text-gray-600">{translatedLabels.completed}</p>
+            <div className="text-center p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+              <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">{group.completedCount}</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">{translatedLabels.completed}</p>
             </div>
           </div>
           
           {/* Next Booking */}
           {group.nextBooking && (
-            <div className="p-4 bg-purple-50 rounded-lg border border-purple-200">
-              <h4 className="font-medium text-gray-900 mb-2">{translatedLabels.nextOccurrence}</h4>
+            <div className="p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-800">
+              <h4 className="font-medium text-gray-900 dark:text-white mb-2">{translatedLabels.nextOccurrence}</h4>
               <div className="flex items-center gap-2 text-sm">
-                <Calendar className="w-4 h-4 text-purple-600" />
-                <span>{formatDate(group.nextBooking.starts_at)}</span>
-                <Clock className="w-4 h-4 text-purple-600 ml-2" />
-                <span>
+                <Calendar className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                <span className="text-gray-900 dark:text-white">{formatDate(group.nextBooking.starts_at)}</span>
+                <Clock className="w-4 h-4 text-purple-600 dark:text-purple-400 ml-2" />
+                <span className="text-gray-900 dark:text-white">
                   {formatTime(group.nextBooking.starts_at)} - {formatTime(group.nextBooking.ends_at)}
                 </span>
               </div>
@@ -253,15 +253,15 @@ export const RecurringBookingGroupDetails = ({
           {/* Purpose */}
           {group.bookings[0]?.notes && (
             <div>
-              <h4 className="font-medium text-gray-900 mb-1">{translatedLabels.purpose}</h4>
-              <p className="text-sm text-gray-600">{group.bookings[0].notes}</p>
+              <h4 className="font-medium text-gray-900 dark:text-white mb-1">{translatedLabels.purpose}</h4>
+              <p className="text-sm text-gray-600 dark:text-gray-400">{group.bookings[0].notes}</p>
             </div>
           )}
           
           {/* Occurrences List */}
           <div>
             <div className="flex items-center justify-between mb-3">
-              <h4 className="font-medium text-gray-900">
+              <h4 className="font-medium text-gray-900 dark:text-white">
                 {translatedLabels.occurrences}
               </h4>
               {group.bookings.length > 5 && (
@@ -269,6 +269,7 @@ export const RecurringBookingGroupDetails = ({
                   variant="ghost"
                   size="sm"
                   onClick={() => setShowAllOccurrences(!showAllOccurrences)}
+                  className="dark:text-gray-300 dark:hover:bg-gray-700"
                 >
                   {showAllOccurrences 
                     ? translatedLabels.showLess 
@@ -284,21 +285,21 @@ export const RecurringBookingGroupDetails = ({
                   <div 
                     key={booking.id} 
                     className={`flex items-center justify-between p-3 rounded-lg border ${
-                      isPast ? "bg-gray-50 border-gray-200" : "bg-white border-gray-200"
+                      isPast ? "bg-gray-50 border-gray-200 dark:bg-gray-700 dark:border-gray-600" : "bg-white border-gray-200 dark:bg-gray-800 dark:border-gray-700"
                     }`}
                   >
                     <div className="flex items-center gap-3">
                       {getStatusIcon(booking.status)}
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="font-medium text-gray-900">
+                          <span className="font-medium text-gray-900 dark:text-white">
                             {formatDate(booking.starts_at)}
                           </span>
                           <Badge className={getStatusBadgeColor(booking.status)} variant="secondary">
                             {getStatusLabel(booking.status)}
                           </Badge>
                         </div>
-                        <div className="flex items-center gap-2 text-sm text-gray-600">
+                        <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                           <Clock className="w-3 h-3" />
                           <span>
                             {formatTime(booking.starts_at)} - {formatTime(booking.ends_at)}
@@ -308,7 +309,7 @@ export const RecurringBookingGroupDetails = ({
                     </div>
                     
                     {booking.total_cents > 0 && (
-                      <span className="text-sm font-medium text-gray-900">
+                      <span className="text-sm font-medium text-gray-900 dark:text-white">
                         {Math.round(booking.total_cents / 100)} kr
                       </span>
                     )}
@@ -319,9 +320,9 @@ export const RecurringBookingGroupDetails = ({
           </div>
           
           {/* Actions */}
-          <Separator />
+          <Separator className="dark:bg-gray-700" />
           <div className="flex justify-end gap-3">
-            <Button variant="outline" onClick={onClose}>
+            <Button variant="outline" onClick={onClose} className="dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700">
               {translatedLabels.close}
             </Button>
             {onCancelGroup && (

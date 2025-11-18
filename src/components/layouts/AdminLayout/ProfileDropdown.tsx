@@ -54,12 +54,16 @@ const ProfileDropdown = (
   };
 
   // Get user name from profile or email
-  const userName = profile?.first_name
-    ? `${profile.first_name} ${profile.last_name || ''}`.trim()
+  const userName = profile?.display_name
+    ? profile.display_name
     : user?.email || "Admin";
 
   const userEmail = user?.email || "";
-  const userAvatar = profile?.avatar_url || "";
+  
+  // Get avatar from localStorage (similar to user profile)
+  const userAvatar = user?.id 
+    ? (localStorage.getItem(`avatar_${user.id}`) || "")
+    : "";
 
   return (
     <div className="relative">
@@ -81,13 +85,10 @@ const ProfileDropdown = (
           )}
         </div>
 
-        {/* User Info */}
+        {/* User Info - Only show name, not email */}
         <div className="hidden sm:block text-left">
           <p className="text-sm font-medium text-gray-900 dark:text-white">
             {userName}
-          </p>
-          <p className="text-xs text-gray-500 dark:text-gray-400">
-            {userEmail}
           </p>
         </div>
         

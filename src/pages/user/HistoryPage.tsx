@@ -77,50 +77,50 @@ export default function HistoryPage(): JSX.Element {
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
+        <Card className="dark:bg-gray-800">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">{t('pages.history.kpis.bookings')}</p>
-                <p className="text-2xl font-bold">{kpis.totalBookings}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">{t('pages.history.kpis.bookings')}</p>
+                <p className="text-2xl font-bold dark:text-white">{kpis.totalBookings}</p>
               </div>
-              <History className="w-8 h-8 text-blue-600" />
+              <History className="w-8 h-8 text-blue-600 dark:text-blue-400" />
             </div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="dark:bg-gray-800">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">{t('pages.history.kpis.hours_used')}</p>
-                <p className="text-2xl font-bold">{kpis.totalHours.toFixed(1)}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">{t('pages.history.kpis.hours_used')}</p>
+                <p className="text-2xl font-bold dark:text-white">{kpis.totalHours.toFixed(1)}</p>
               </div>
-              <Clock className="w-8 h-8 text-green-600" />
+              <Clock className="w-8 h-8 text-green-600 dark:text-green-400" />
             </div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="dark:bg-gray-800">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">{t('pages.history.kpis.total_spent')}</p>
-                <p className="text-2xl font-bold">{kpis.totalSpent.toLocaleString()} kr</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">{t('pages.history.kpis.total_spent')}</p>
+                <p className="text-2xl font-bold dark:text-white">{kpis.totalSpent.toLocaleString()} kr</p>
               </div>
-              <DollarSign className="w-8 h-8 text-yellow-600" />
+              <DollarSign className="w-8 h-8 text-yellow-600 dark:text-yellow-400" />
             </div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="dark:bg-gray-800">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">{t('pages.history.kpis.cancellations')}</p>
-                <p className="text-2xl font-bold">{kpis.cancellations}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">{t('pages.history.kpis.cancellations')}</p>
+                <p className="text-2xl font-bold dark:text-white">{kpis.cancellations}</p>
               </div>
-              <Calendar className="w-8 h-8 text-red-600" />
+              <Calendar className="w-8 h-8 text-red-600 dark:text-red-400" />
             </div>
           </CardContent>
         </Card>
@@ -209,22 +209,22 @@ export default function HistoryPage(): JSX.Element {
           {isLoading ? (
             <div className="p-8 text-center">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-              <p className="mt-2 text-gray-600">{t('pages.history.loading')}</p>
+              <p className="mt-2 text-gray-600 dark:text-gray-400">{t('pages.history.loading')}</p>
             </div>
           ) : historyItems.length === 0 ? (
             <div className="p-8 text-center">
               <History className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
                 {t('pages.history.empty.title')}
               </h3>
-              <p className="text-gray-600 mb-4">
+              <p className="text-gray-600 dark:text-gray-400 mb-4">
                 {t('pages.history.empty.description')}
               </p>
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-                <thead className="text-left text-gray-600 bg-gray-50">
+                <thead className="text-left text-gray-600 bg-gray-50 dark:bg-gray-800 dark:text-gray-300">
                   <tr>
                     <th className="px-4 py-3 font-medium">{t('pages.history.table.date')}</th>
                     <th className="px-4 py-3 font-medium">{t('pages.history.table.time')}</th>
@@ -240,7 +240,7 @@ export default function HistoryPage(): JSX.Element {
                   {historyItems.map((item) => (
                     <React.Fragment key={item.id}>
                       <tr
-                        className="border-t border-gray-200 hover:bg-gray-50 cursor-pointer"
+                        className="border-t border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer"
                         onClick={() => toggleRowExpansion(item.id)}
                       >
                         <td className="px-4 py-3">
@@ -355,64 +355,60 @@ export default function HistoryPage(): JSX.Element {
 
                       {/* Expanded Row Details */}
                       {expandedRow === item.id && (
-                        <tr className="border-t border-gray-200 bg-gray-50">
+                        <tr className="border-t border-gray-200 bg-gray-50 dark:bg-gray-800">
                           <td colSpan={8} className="px-4 py-4">
                             <div className="space-y-4">
                               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                                 <div>
-                                  <span className="text-gray-600">{t('pages.history.details.created_at')}:</span>
-                                  <span className="ml-2">
+                                  <span className="text-gray-600 dark:text-gray-400">{t('pages.history.details.created_at')}:</span>
+                                  <span className="ml-2 dark:text-white">
                                     {new Date(item.createdAt).toLocaleDateString()}
                                   </span>
                                 </div>
                                 {item.invoiceId && (
                                   <div>
-                                    <span className="text-gray-600">{t('pages.history.details.invoice_id')}:</span>
-                                    <span className="ml-2">{item.invoiceId}</span>
+                                    <span className="text-gray-600 dark:text-gray-400">{t('pages.history.details.invoice_id')}:</span>
+                                    <span className="ml-2 dark:text-white">{item.invoiceId}</span>
                                   </div>
                                 )}
                                 {item.isRecurring && item.occurrenceCount && (
                                   <div>
-                                    <span className="text-gray-600">Antall forekomster:</span>
-                                    <span className="ml-2">{item.occurrenceCount}</span>
+                                    <span className="text-gray-600 dark:text-gray-400">Antall forekomster:</span>
+                                    <span className="ml-2 dark:text-white">{item.occurrenceCount}</span>
                                   </div>
                                 )}
                                 {item.isRecurring && (
                                   <div>
-                                    <span className="text-gray-600">Type:</span>
-                                    <span className="ml-2">Gjentakende booking</span>
+                                    <span className="text-gray-600 dark:text-gray-400">Type:</span>
+                                    <span className="ml-2 dark:text-white">Gjentakende booking</span>
                                   </div>
                                 )}
                               </div>
 
                               {item.isRecurring && item.occurrences && item.occurrences.length > 0 && (
                                 <div className="mt-4">
-                                  <h4 className="font-medium text-gray-900 mb-2">Forekomster:</h4>
+                                  <h4 className="font-medium text-gray-900 dark:text-white mb-2">Forekomster:</h4>
                                   <div className="max-h-40 overflow-y-auto">
                                     <table className="w-full text-sm">
                                       <thead>
-                                        <tr className="bg-gray-100">
-                                          <th className="px-2 py-1 text-left">Dato</th>
-                                          <th className="px-2 py-1 text-left">Tid</th>
-                                          <th className="px-2 py-1 text-left">Status</th>
+                                        <tr className="bg-gray-100 dark:bg-gray-700">
+                                          <th className="px-2 py-1 text-left dark:text-white">Dato</th>
+                                          <th className="px-2 py-1 text-left dark:text-white">Tid</th>
+                                          <th className="px-2 py-1 text-left dark:text-white">Status</th>
                                         </tr>
                                       </thead>
                                       <tbody>
-                                        {item.occurrences.map((occurrence) => (
-                                          <tr key={occurrence.id} className="border-t border-gray-200">
-                                            <td className="px-2 py-1">
-                                              {new Date(occurrence.date).toLocaleDateString()}
-                                            </td>
-                                            <td className="px-2 py-1">{occurrence.time}</td>
+                                        {item.occurrences.map((occurrence, idx) => (
+                                          <tr key={idx} className="border-t border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700">
+                                            <td className="px-2 py-1 dark:text-white">{new Date(occurrence.date).toLocaleDateString('nb-NO')}</td>
+                                            <td className="px-2 py-1 dark:text-white">{occurrence.time}</td>
                                             <td className="px-2 py-1">
                                               <Badge className={
-                                                occurrence.status === "paid" || occurrence.status === "completed"
-                                                  ? "bg-green-100 text-green-800"
-                                                  : occurrence.status === "cancelled" || occurrence.status === "expired" || occurrence.status === "refunded"
-                                                  ? "bg-red-100 text-red-800"
-                                                  : "bg-yellow-100 text-yellow-800"
+                                                occurrence.status === "completed"
+                                                  ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300"
+                                                  : "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300"
                                               }>
-                                                {occurrence.status}
+                                                {occurrence.status === "completed" ? t('pages.history.status.confirmed') : t('pages.history.status.rejected')}
                                               </Badge>
                                             </td>
                                           </tr>
@@ -422,28 +418,6 @@ export default function HistoryPage(): JSX.Element {
                                   </div>
                                 </div>
                               )}
-
-                              <div className="flex gap-2">
-                                <Button size="sm" variant="outline">
-                                  <FileText className="w-4 h-4 mr-2" />
-                                  {t('pages.history.details.download_receipt')}
-                                </Button>
-                                <Button size="sm" variant="outline">
-                                  <RotateCcw className="w-4 h-4 mr-2" />
-                                  {t('pages.history.details.rebook')}
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleDownloadICS(item);
-                                  }}
-                                >
-                                  <Calendar className="w-4 h-4 mr-2" />
-                                  {t('pages.history.details.add_to_calendar')}
-                                </Button>
-                              </div>
                             </div>
                           </td>
                         </tr>

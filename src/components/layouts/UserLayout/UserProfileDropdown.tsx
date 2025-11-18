@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { User, Settings, LogOut, Globe, ChevronDown } from "lucide-react";
+import { User, LogOut, ChevronDown } from "lucide-react";
 import { useUserProfile } from "@/contexts/hooks";
 import { useAuth } from "@/contexts/hooks";
 import { toast } from "react-toastify";
@@ -52,44 +52,9 @@ const UserProfileDropdown = (
     }
   };
 
-  const handleSettings = (): void => {
-    navigate('/user/profile');
-    setIsOpen(false);
-  };
-
   const handleProfile = (): void => {
     navigate('/user/profile');
     setIsOpen(false);
-  };
-
-  const handleLanguageChange = (): void => {
-    try {
-      // Get current language from localStorage
-      const currentLanguage = localStorage.getItem('userLanguage') || 'no';
-      
-      // Toggle between Norwegian and English
-      const newLanguage = currentLanguage === 'no' ? 'en' : 'no';
-      
-      // Save new language preference
-      localStorage.setItem('userLanguage', newLanguage);
-      
-      // Show language change confirmation
-      const languageName = newLanguage === 'no' ? 'Norsk' : 'English';
-      toast.success(t('common:messages.language_changed', { language: languageName }));
-      
-      // Trigger a custom event for other components to listen to
-      window.dispatchEvent(new CustomEvent('languageChanged', {
-        detail: { language: newLanguage }
-      }));
-      
-      setIsOpen(false);
-    } catch (
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      _error: unknown
-    ) {
-      console.error('Language change failed:', _error);
-      toast.error(t('common:messages.language_change_failed'));
-    }
   };
 
   const toggleDropdown = (): void => {
@@ -121,9 +86,6 @@ const UserProfileDropdown = (
           <p className="text-sm font-medium text-gray-900 dark:text-white">
             {user?.name || t('common:labels.user')}
           </p>
-          <p className="text-xs text-gray-500 dark:text-gray-400">
-            {user?.email || "user@booknor.no"}
-          </p>
         </div>
         
         {/* Dropdown Arrow */}
@@ -150,22 +112,6 @@ const UserProfileDropdown = (
               >
                 <User className="w-4 h-4" />
                 {t('navigation:my_profile')}
-              </button>
-
-              <button
-                onClick={handleSettings}
-                className="flex items-center gap-3 w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-              >
-                <Settings className="w-4 h-4" />
-                {t('navigation:settings')}
-              </button>
-
-              <button
-                onClick={handleLanguageChange}
-                className="flex items-center gap-3 w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-              >
-                <Globe className="w-4 h-4" />
-                {t('navigation:language')}
               </button>
 
               <div className="border-t border-gray-200 dark:border-gray-700 my-1" />

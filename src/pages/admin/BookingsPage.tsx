@@ -159,7 +159,7 @@ const BookingKPICard = ({
                 } mt-1`}
               >
                 {trend.isPositive ? "+" : ""}
-                {trend.value}% {t("dashboard.trends.since_yesterday")}
+                {trend.value}% {t("pages.dashboard.trends.since_yesterday")}
               </p>
             )}
           </div>

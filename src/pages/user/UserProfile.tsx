@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -76,17 +76,53 @@ const UserProfile = (): JSX.Element => {
     formatDate
   } = useUserProfileManagement();
 
+  // Apply theme when it changes
+  useEffect(() => {
+    const applyTheme = (theme: string) => {
+      if (theme === 'dark') {
+        document.documentElement.classList.add('dark');
+      } else if (theme === 'light') {
+        document.documentElement.classList.remove('dark');
+      } else {
+        // System theme - check system preference
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      }
+    };
+
+    applyTheme(preferences.theme);
+
+    // Listen for system theme changes
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const handleSystemThemeChange = (e: MediaQueryListEvent) => {
+      if (preferences.theme === 'system') {
+        if (e.matches) {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      }
+    };
+
+    mediaQuery.addEventListener('change', handleSystemThemeChange);
+
+    // Save theme preference to localStorage
+    localStorage.setItem('theme', preferences.theme);
+
+    return () => {
+      mediaQuery.removeEventListener('change', handleSystemThemeChange);
+    };
+  }, [preferences.theme]);
+
   const tabs = [
     { id: "profile", label: t('pages.profile.tabs.profile'), icon: User },
     { id: "security", label: t('pages.profile.tabs.security'), icon: Shield },
     { id: "preferences", label: t('pages.profile.tabs.preferences'), icon: Settings },
     { id: "privacy", label: t('pages.profile.tabs.privacy'), icon: Lock }
   ];
-
-  // Add debugging for avatar state
-  React.useEffect(() => {
-
-  }, [avatarPreview, profile.avatar]);
 
   const renderProfileTab = (): JSX.Element => (
     <div className="space-y-6">

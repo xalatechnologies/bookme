@@ -302,7 +302,7 @@ END:VCALENDAR`;
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">{t('booking:page.loading')}</p>
+          <p className="text-gray-600 dark:text-gray-400">{t('booking:page.loading')}</p>
         </div>
       </div>
     );
@@ -311,13 +311,13 @@ END:VCALENDAR`;
   if (isError) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <Card className="max-w-md">
+        <Card className="max-w-md dark:bg-gray-800">
           <CardContent className="p-8 text-center">
             <AlertTriangle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
+            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
               {t('booking:page.error_loading')}
             </h3>
-            <p className="text-gray-600 mb-4">
+            <p className="text-gray-600 dark:text-gray-400 mb-4">
               {t('booking:page.error_message')}
             </p>
             <Button onClick={() => refetch()}>
@@ -360,12 +360,12 @@ END:VCALENDAR`;
             onClick={() => handleStatusChange(option.value)}
             className={`flex items-center gap-2 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
               filters.status === option.value
-                ? option.color === "green" ? "bg-green-100 text-green-800 border border-green-200"
-                : option.color === "yellow" ? "bg-yellow-100 text-yellow-800 border border-yellow-200"
-                : option.color === "red" ? "bg-red-100 text-red-800 border border-red-200"
-                : option.color === "blue" ? "bg-blue-100 text-blue-800 border border-blue-200"
-                : "bg-gray-100 text-gray-800 border border-gray-200"
-                : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50"
+                ? option.color === "green" ? "bg-green-100 text-green-800 border border-green-200 dark:bg-green-900/30 dark:text-green-200 dark:border-green-800"
+                : option.color === "yellow" ? "bg-yellow-100 text-yellow-800 border border-yellow-200 dark:bg-yellow-900/30 dark:text-yellow-200 dark:border-yellow-800"
+                : option.color === "red" ? "bg-red-100 text-red-800 border border-red-200 dark:bg-red-900/30 dark:text-red-200 dark:border-red-800"
+                : option.color === "blue" ? "bg-blue-100 text-blue-800 border border-blue-200 dark:bg-blue-900/30 dark:text-blue-200 dark:border-blue-800"
+                : "bg-gray-100 text-gray-800 border border-gray-200 dark:bg-gray-800 dark:text-gray-200 dark:border-gray-700"
+                : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-700 dark:hover:bg-gray-700"
             }`}
           >
             {option.label}
@@ -397,14 +397,14 @@ END:VCALENDAR`;
               onCheckedChange={handleSelectAll}
               aria-label={t('booking:page.select_all', { count: filteredBookings.length })}
             />
-            <span className="text-sm text-gray-600">
+            <span className="text-sm text-gray-600 dark:text-gray-400">
               {t('booking:page.select_all', { count: filteredBookings.length })}
             </span>
           </div>
 
           {selectedBookings.length > 0 && (
             <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-600">
+              <span className="text-sm text-gray-600 dark:text-gray-400">
                 {t('booking:page.selected_count', { count: selectedBookings.length })}
               </span>
               <Button
@@ -420,7 +420,7 @@ END:VCALENDAR`;
           )}
         </div>
 
-        <div className="text-sm text-gray-600">
+        <div className="text-sm text-gray-600 dark:text-gray-400">
           {t('booking:page.showing_count', { count: filteredBookings.length, total: stats.total })}
         </div>
       </div>
@@ -428,13 +428,13 @@ END:VCALENDAR`;
       {/* Results */}
       <div className="space-y-4">
         {filteredBookings.length === 0 ? (
-          <Card>
+          <Card className="dark:bg-gray-800">
             <CardContent className="p-8 text-center">
               <Calendar className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
                 {t('booking:page.no_match')}
               </h3>
-              <p className="text-gray-600 mb-4">
+              <p className="text-gray-600 dark:text-gray-400 mb-4">
                 {t('booking:page.no_match_message')}
               </p>
               <Button onClick={() => navigate('/facilities')}>
@@ -472,18 +472,18 @@ END:VCALENDAR`;
       {/* Delete Confirmation Dialog */}
       {showDeleteConfirm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full mx-4">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
-                <Trash2 className="w-5 h-5 text-red-600" />
+              <div className="w-10 h-10 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center">
+                <Trash2 className="w-5 h-5 text-red-600 dark:text-red-400" />
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                   {bookingsToDelete.length === 1
                     ? t('booking:delete_confirm.title_single')
                     : t('booking:delete_confirm.title_multiple')}
                 </h3>
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-gray-600 dark:text-gray-400">
                   {(() => {
                     // Check if any of the bookings to delete are already cancelled
                     const bookingsToProcess = filteredBookings.filter(booking => 
@@ -510,10 +510,10 @@ END:VCALENDAR`;
               </div>
             </div>
 
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-6">
+            <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-3 mb-6">
               <div className="flex items-start gap-2">
-                <AlertTriangle className="w-4 h-4 text-yellow-600 mt-0.5 flex-shrink-0" />
-                <div className="text-sm text-yellow-800">
+                <AlertTriangle className="w-4 h-4 text-yellow-600 dark:text-yellow-400 mt-0.5 flex-shrink-0" />
+                <div className="text-sm text-yellow-800 dark:text-yellow-200">
                   <p className="font-medium">{t('booking:terms.warning_title')}</p>
                   <p>{t('booking:terms.warning_text')}</p>
                 </div>
@@ -524,7 +524,7 @@ END:VCALENDAR`;
               <Button
                 variant="outline"
                 onClick={cancelDelete}
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
                 type="button"
               >
                 <X className="w-4 h-4" />

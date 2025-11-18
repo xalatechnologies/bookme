@@ -132,7 +132,7 @@ export const SimpleCalendar: React.FC<SimpleCalendarProps> = ({
               variant="outline"
               size="sm"
               onClick={() => onViewChange?.('month')}
-              className={`p-2 ${view === 'month' ? 'bg-blue-50 border-blue-300' : ''}`}
+              className={`p-2 ${view === 'month' ? 'bg-blue-50 border-blue-300 dark:bg-blue-900/30 dark:border-blue-700 dark:text-white' : 'dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700'}`}
             >
               <Grid3X3 className="w-4 h-4" />
             </Button>
@@ -140,7 +140,7 @@ export const SimpleCalendar: React.FC<SimpleCalendarProps> = ({
               variant="outline"
               size="sm"
               onClick={() => onViewChange?.('week')}
-              className={`px-3 ${view === 'week' ? 'bg-blue-50 border-blue-300' : ''}`}
+              className={`px-3 ${view === 'week' ? 'bg-blue-50 border-blue-300 dark:bg-blue-900/30 dark:border-blue-700 dark:text-white' : 'dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700'}`}
             >
               {t('views.week')}
             </Button>
@@ -148,7 +148,7 @@ export const SimpleCalendar: React.FC<SimpleCalendarProps> = ({
               variant="outline"
               size="sm"
               onClick={() => onViewChange?.('day')}
-              className={`px-3 ${view === 'day' ? 'bg-blue-50 border-blue-300' : ''}`}
+              className={`px-3 ${view === 'day' ? 'bg-blue-50 border-blue-300 dark:bg-blue-900/30 dark:border-blue-700 dark:text-white' : 'dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700'}`}
             >
               {t('views.day')}
             </Button>

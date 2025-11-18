@@ -1,570 +1,133 @@
 {
-  "title": "Admin",
-  "dashboard": {
-    "overview": "Overview",
-    "statistics": "Statistics",
-    "welcome": "Welcome back! Here's an overview of your system.",
-    "daily_tasks": "Daily Tasks",
-    "key_metrics": "Key Metrics",
-    "trends_dashboard": "Trends and Development",
-    "operations": "Operational Sections",
-    "new_facility": "New Facility",
-
-    "kpi": {
-      "total_facilities": "Total Facilities",
-      "active_facilities": "Active facilities in system",
-      "active_percentage": "active",
-      "today_bookings": "New Bookings Today",
-      "bookings_received": "Bookings received today",
-      "pending_approvals": "Pending Approvals",
-      "requires_attention": "Requires immediate attention",
-      "active_users": "Active Users",
-      "unique_users": "Unique users with bookings",
-      "total_bookings": "Total Bookings",
-      "total_revenue": "Total Revenue",
-      "avg_booking_value": "Average Booking Value",
-      "occupancy_rate": "Occupancy Rate",
-      "go_to": "Go to {{title}}"
+  "common": {
+    "app_name": "BookNor",
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "success": "Success!",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "view": "View",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "finish": "Finish",
+    "continue": "Continue",
+    "confirm": "Confirm",
+    "actions": {
+      "add": "Add",
+      "remove": "Remove",
+      "update": "Update",
+      "create": "Create",
+      "save": "Save",
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "edit": "Edit",
+      "view": "View",
+      "close": "Close",
+      "applyFilters": "Apply Filters",
+      "reset": "Reset",
+      "filter": "Filter"
     },
-
-    "trends": {
-      "booking_last_7_days": "Bookings Last 7 Days",
-      "top_facilities_month": "Top Facilities This Month",
-      "revenue_trend": "Revenue Trend",
-      "user_growth": "User Growth",
-      "last_7_days": "Last 7 days",
-      "last_30_days": "Last 30 days",
-      "bookings": "bookings",
-      "facilities": "facilities",
-      "users": "users",
-      "up": "up",
-      "down": "down",
-      "stable": "unchanged",
-      "since_yesterday": "since yesterday",
-      "since_last_week": "since last week",
-      "since_last_month": "since last month",
-      "last_30_days_period": "last 30 days"
+    "status": {
+      "pending": "Pending",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "cancelled": "Cancelled",
+      "confirmed": "Confirmed",
+      "completed": "Completed",
+      "paid": "Paid",
+      "awaiting_payment": "Awaiting Payment",
+      "expired": "Expired",
+      "refunded": "Refunded",
+      "active": "Active",
+      "inactive": "Inactive",
+      "invitation_sent": "Invitation Sent"
     },
-
-    "approvals": {
-      "title": "Approval Queue",
-      "view_all": "View All Approvals",
-      "view_all_count": "View All ({{count}})",
-      "no_pending": "No pending approvals",
-      "all_updated": "Everything is up to date!",
-      "view_request": "View approval {{title}}",
-      "approve": "Approve",
-      "reject": "Reject",
-      "priority_high": "High",
-      "priority_medium": "Medium",
-      "priority_low": "Low",
-      "requester": "Requester",
-      "facility": "Facility",
-      "date": "Date"
+    "permissions": {
+      "insufficient_permissions": "You don't have permission to access this page"
     },
-
-    "daily_tasks_section": {
-      "title": "Your Tasks Today",
-      "pending_approvals": "Pending approvals",
-      "payment_errors": "Bookings with payment errors",
-      "users_no_roles": "Users without roles",
-      "view_task": "View task: {{task}}"
+    "aria": {
+      "profile_menu": "Open profile menu",
+      "profile_image": "Profile image",
+      "notification_menu": "Open notification menu",
+      "language_selector": "Select language",
+      "theme_toggle": "Toggle theme"
     },
-
-    "events": {
-      "title": "Recent Events",
-      "view_all": "View All Events",
-      "no_recent": "No events recorded",
-      "event_item": "Event: {{message}}",
-      "types": {
-        "booking": "Booking",
-        "approval": "Approval",
-        "user": "User",
-        "system": "System"
-      }
-    },
-
-    "todays_bookings": {
-      "title": "Today's Bookings",
-      "view_all": "View All Bookings",
-      "no_bookings": "No bookings today",
-      "facility": "Facility",
-      "time": "Time",
-      "duration": "Duration",
-      "user": "User",
-      "status": "Status"
-    },
-
-    "alerts_section": {
-      "title": "System Alerts",
-      "view_all": "View All Alerts",
-      "no_alerts": "No active alerts",
-      "alert_item": "Alert: {{title}}",
-      "draft_facilities": "Draft Facilities",
-      "facilities_waiting": "{{count}} facilities awaiting publication",
-      "cancelled_bookings": "Cancelled Bookings",
-      "bookings_cancelled": "{{count}} bookings have been cancelled",
-      "system_status": "System Status",
-      "all_systems_normal": "System is running as expected!",
-      "see_details": "See Details",
-      "types": {
-        "info": "Info",
-        "warning": "Warning",
-        "error": "Error",
-        "success": "Success"
-      }
-    },
-
-    "loading_stats": "Loading statistics...",
-    "no_data": "No data available",
-    "error_loading": "Error loading data"
+    "messages": {
+      "loading": "Loading..."
+    }
   },
-
-  "charts": {
-    "booking_trends": "Booking Trends",
-    "revenue_over_time": "Revenue Over Time",
-    "popular_facilities": "Popular Facilities",
-    "peak_hours": "Peak Hours",
-    "bookings": "Bookings",
-    "revenue": "Revenue",
-    "period": "Period",
-    "day": "Day",
-    "week": "Week",
-    "month": "Month",
-    "year": "Year",
-    "total": "Total",
-    "average": "Average",
-    "trend": "Trend",
-    "growth": "Growth",
-    "decline": "Decline",
-    "vs_last_period": "vs. last period",
-    "percentage_change": "{{value}}% change",
-    "chart_title": "{{title}} - {{period}}",
-    "no_data": "No data available for this period",
-    "loading": "Loading chart data..."
-  },
-
   "navigation": {
-    "overview": "Overview",
-    "facilities": "Facilities",
+    "dashboard": "Dashboard",
     "bookings": "Bookings",
+    "facilities": "Facilities",
     "users": "Users",
     "reports": "Reports",
-    "settings": "Settings"
-  },
-
-  "actions": {
-    "create_facility": "Create Facility",
-    "edit_facility": "Edit Facility",
-    "delete_facility": "Delete Facility",
-    "approve_booking": "Approve Booking",
-    "reject_booking": "Reject Booking",
-    "view_details": "View Details",
-    "export_report": "Export Report",
-    "refresh_data": "Refresh Data"
-  },
-
-  "facilities": {
-    "edit": "Edit Facility",
-    "images": "Images",
-    "uploading": "Uploading...",
-    "add_image": "Add Image",
-    "preview": "Preview",
-    "no_images": "No images added",
-    "image_number": "Image {{number}}",
-    "remove_image": "Remove image {{number}}",
-    "fetching_coordinates": "Fetching coordinates..."
+    "settings": "Settings",
+    "help": "Help",
+    "logout": "Log out"
   },
   "pages": {
-    "users_roles": {
-      "title": "Users and Roles",
-      "subtitle": "Manage users, roles, and access levels in the system.",
-      "users_tab": {
-        "title": "Users",
-        "label": "Users",
-        "description": "View, create and manage user accounts in Booknor.",
-        "subtitle": "Manage system users and their access",
-        "new_user": "New User",
-        "selected_count": "{{count}} user(s) selected"
+    "dashboard": {
+      "title": "Dashboard",
+      "welcome": "Welcome back",
+      "quick_stats": "Quick Stats",
+      "recent_bookings": "Recent Bookings",
+      "upcoming_events": "Upcoming Events",
+      "trends": {
+        "since_yesterday": "since yesterday",
+        "last_30_days_period": "last 30 days"
       },
-      "roles_tab": {
-        "title": "Roles and Access Levels",
-        "label": "Roles",
-        "description": "Define permissions and access levels for different roles in the system.",
-        "subtitle": "Define and manage system roles and their permissions",
-        "new_role": "New Role"
-      },
-      "search": {
-        "placeholder": "Search by name, email or role..."
-      },
-      "filters": {
-        "all_roles": "All Roles",
-        "all_statuses": "All Statuses",
-        "role_admin": "Admin",
-        "role_saksbehandler": "Case Handler",
-        "role_redaktor": "Editor",
-        "role_lesetilgang": "Read Access",
-        "status_active": "Active",
-        "status_inactive": "Deactivated",
-        "status_invitation_sent": "Invitation Sent"
-      },
-      "table": {
-        "user": "User",
-        "role": "Role",
-        "created_by": "Created By",
-        "last_login": "Last Login",
-        "status": "Status",
-        "actions": "Actions",
-        "role_name": "Role",
-        "user_count": "Number of Users",
-        "users_count": "{{count}} users",
-        "no_users_found": "No users found",
-        "no_users_description": "There are no users to display at the moment",
-        "try_different_criteria": "Try changing your search criteria",
-        "no_roles_found": "No roles found",
-        "create_first_role": "Create your first role to get started",
-        "never": "Never"
-      },
-      "status_badges": {
-        "active": "Active",
-        "inactive": "Deactivated",
-        "invitation_sent": "Invitation sent",
-        "invitation_sent_time": "Invitation sent – {{time}}"
-      },
-      "time": {
-        "today": "Today",
-        "days_ago_one": "1 day ago",
-        "days_ago_other": "{{count}} days ago",
-        "weeks_ago_one": "1 week ago",
-        "weeks_ago_other": "{{count}} weeks ago",
-        "months_ago_one": "1 month ago",
-        "months_ago_other": "{{count}} months ago"
-      },
-      "actions": {
-        "edit_role": "Change Role",
-        "reset_password": "Reset Password",
-        "resend_invitation": "Resend Invitation",
-        "remove_access": "Remove Access",
-        "delete_user": "Delete User",
-        "edit": "Edit",
-        "view_users": "View Users",
-        "deactivate": "Deactivate",
-        "activate": "Activate",
-        "change_role": "Change Role",
-        "enter_new_role": "Enter new role for selected users:"
-      },
-      "bulk_actions": {
-        "change_role": "Change Role",
-        "resend_invitation": "Resend Invitation",
-        "users_updated": "{{count}} user(s) updated with new role!",
-        "invitations_sent": "Invitations resent to {{count}} user(s)!",
-        "action_not_implemented": "Action not implemented"
-      },
-      "modals": {
-        "user": {
-          "title_edit": "Edit User",
-          "title_new": "New User",
-          "name_label": "Name",
-          "name_placeholder": "Full name",
-          "email_label": "Email",
-          "email_placeholder": "user@example.com",
-          "role_label": "Role",
-          "role_placeholder": "Select role",
-          "status_label": "Status",
-          "permissions_label": "Assigned Permissions",
-          "no_permissions": "No special permissions",
-          "cancel": "Cancel",
-          "save": "Save Changes",
-          "send_invitation": "Send Invitation"
-        },
-        "role": {
-          "title_edit": "Edit Role",
-          "title_new": "New Role",
-          "name_label": "Role Name",
-          "name_placeholder": "E.g. Case Handler",
-          "description_label": "Description",
-          "description_placeholder": "Describe what this role can do...",
-          "permissions_label": "Permissions",
-          "cancel": "Cancel",
-          "save": "Save Changes",
-          "create": "Create Role"
-        }
-      },
-      "permissions": {
-        "facilities": "Facilities",
-        "facilities_create": "Create",
-        "facilities_edit": "Edit",
-        "facilities_publish": "Publish",
-        "facilities_delete": "Delete",
-        "bookings": "Bookings",
-        "bookings_view": "View",
-        "bookings_approve": "Approve",
-        "bookings_reject": "Reject",
-        "reports": "Reports",
-        "reports_view": "View",
-        "reports_export": "Export"
-      },
-      "confirmations": {
-        "deactivate_user": "Are you sure you want to deactivate this user?",
-        "delete_user": "Are you sure you want to permanently delete this user?",
-        "user_updated": "User updated!",
-        "user_deactivated": "User deactivated!",
-        "user_deleted": "User deleted!",
-        "invitation_resent": "Invitation resent!",
-        "role_updated": "Role updated!",
-        "role_created": "Role created!",
-        "role_status_changed": "Role status changed!",
-        "error_save": "Could not save. Please try again.",
-        "error_deactivate": "Could not deactivate user. Please try again.",
-        "error_delete": "Could not delete user. Please try again.",
-        "error_invitation": "Could not send invitation. Please try again.",
-        "error_role_status": "Could not change role status. Please try again.",
-        "error_bulk_action": "Could not perform bulk action. Please try again."
-      },
-      "role_descriptions": {
-        "admin": "Full system access",
-        "saksbehandler": "Can approve and process bookings",
-        "redaktor": "Can edit facilities, not approve",
-        "lesetilgang": "Can only view information"
-      },
-      "users_with_role": "Users with role \"{{role}}\":\n{{users}}"
-    },
-    "settings": {
-      "title": "Settings",
-      "subtitle": "Manage account, security and system settings",
-      "unsaved_changes": "Unsaved changes",
-      "save_button": "Save Changes",
-      "saving": "Saving...",
-      "changes_saved": "Changes saved!",
-      "tabs": {
-        "profile": "Profile",
-        "notifications": "Notifications",
-        "security": "Security",
-        "appearance": "Appearance",
-        "general": "General",
-        "integrations": "Integrations",
-        "data": "Data",
-        "api": "API"
-      },
-      "profile": {
-        "title": "Profile Information",
-        "avatar_title": "Profile Picture",
-        "avatar_description": "Upload a profile picture to make your account more personal",
-        "upload_image": "Upload Image",
-        "change_image": "Change Image",
-        "remove": "Remove",
-        "first_name": "First Name",
-        "last_name": "Last Name",
-        "email": "Email",
-        "phone": "Phone",
-        "phone_placeholder": "+47 123 45 678",
-        "bio": "Biography",
-        "bio_placeholder": "Describe yourself...",
-        "roles_title": "Roles and Access",
-        "role_system_admin": "System Administrator",
-        "role_system_admin_desc": "Full access to all features",
-        "role_org_admin": "Organization Administrator",
-        "role_org_admin_desc": "Manage organization data",
-        "role_active": "Active"
-      },
-      "notifications": {
-        "email_title": "Email Notifications",
-        "new_bookings": "New Bookings",
-        "new_bookings_desc": "Get notified when new bookings are created",
-        "cancellations": "Cancellations",
-        "cancellations_desc": "Get notified when bookings are cancelled",
-        "system_updates": "System Updates",
-        "system_updates_desc": "Get notified about system maintenance",
-        "security_alerts": "Security Alerts",
-        "security_alerts_desc": "Get notified about security events",
-        "push_title": "Push Notifications",
-        "enable_push": "Enable Push Notifications",
-        "enable_push_desc": "Receive notifications in browser",
-        "notification_sound": "Notification Sound",
-        "notification_sound_desc": "Play sound when you receive notifications"
-      },
-      "security": {
-        "password_title": "Password and Authentication",
-        "current_password": "Current Password",
-        "new_password": "New Password",
-        "confirm_password": "Confirm New Password",
-        "change_password": "Change Password",
-        "two_factor_title": "Two-Factor Authentication",
-        "sms_auth": "SMS Authentication",
-        "sms_auth_desc": "Receive code via SMS",
-        "app_auth": "App Authentication",
-        "app_auth_desc": "Use authentication app",
-        "active_sessions_title": "Active Sessions",
-        "current_session": "Current Session",
-        "current_session_location": "Chrome on macOS • Oslo, Norway",
-        "session_active": "Active",
-        "session_device": "Safari on iPhone",
-        "session_last_active": "Last active: 2 hours ago",
-        "end_session": "End"
-      },
-      "appearance": {
-        "theme_title": "Theme and Appearance",
-        "theme_label": "Theme",
-        "theme_light": "Light",
-        "theme_dark": "Dark",
-        "theme_system": "System",
-        "language_label": "Language",
-        "language_no": "Norwegian",
-        "language_en": "English",
-        "compact_view": "Compact View",
-        "compact_view_desc": "Smaller spacing and padding",
-        "animations": "Animations",
-        "animations_desc": "Enable transitions and animations",
-        "dashboard_title": "Dashboard Layout",
-        "sidebar_collapsed": "Sidebar Collapsed",
-        "sidebar_collapsed_desc": "Start with collapsed sidebar",
-        "compact_header": "Compact Header",
-        "compact_header_desc": "Smaller header with fewer elements"
-      },
-      "general": {
-        "title": "General Settings",
-        "timezone_label": "Timezone",
-        "timezone_oslo": "Europe/Oslo (GMT+1)",
-        "timezone_london": "Europe/London (GMT+0)",
-        "timezone_ny": "America/New York (GMT-5)",
-        "date_format_label": "Date Format",
-        "time_format_label": "Time Format",
-        "time_format_24h": "24-hour (14:30)",
-        "time_format_12h": "12-hour (2:30 PM)",
-        "system_info_title": "System Information",
-        "version": "Version",
-        "last_updated": "Last Updated",
-        "database_version": "Database Version",
-        "nodejs_version": "Node.js Version",
-        "version_value": "1.0.0",
-        "last_updated_value": "January 15, 2024",
-        "database_version_value": "v2.1.3",
-        "nodejs_version_value": "v18.17.0"
-      },
-      "integrations": {
-        "title": "Integrations",
-        "coming_soon": "Integrations coming soon"
-      },
-      "data": {
-        "title": "Data Management",
-        "coming_soon": "Data management coming soon"
-      },
-      "api": {
-        "title": "API Keys",
-        "coming_soon": "API keys coming soon"
-      }
-    },
-    "facilities": {
-      "title": "Facilities",
-      "subtitle": "Manage facilities, zones and availability",
-      "create_new": "New Facility",
-      "search_placeholder": "Search for facilities...",
-      "copy_suffix": "(Copy)",
-      "sort": {
-        "name": "Name",
-        "capacity": "Capacity",
-        "last_updated": "Last Updated"
-      },
-      "filters": {
-        "capacity": "Capacity",
-        "min": "Min",
-        "max": "Max"
-      },
-      "batch_actions": {
-        "selected": "{{count}} facilities selected",
-        "clear_all": "Clear all",
-        "select_all": "Select all",
-        "publish": "Publish",
-        "unpublish": "Unpublish",
-        "archive": "Archive"
-      },
-      "results": {
-        "count": "{{count}} facilities found",
-        "matching": "{{count}} facilities match the filter"
-      },
-      "empty": {
-        "title": "No facilities found",
-        "description": "Try changing search criteria or create a new facility",
-        "create_first": "Create first facility"
-      },
-      "confirmations": {
-        "delete_multiple": "Are you sure you want to delete {{count}} facilities? This action cannot be undone.",
-        "delete_single": "Are you sure you want to delete '{{name}}'? This action cannot be undone.",
-        "select": "Select {{name}}"
-      },
-      "card": {
-        "view_main_app": "View in main application",
-        "duplicate": "Duplicate facility",
-        "delete": "Delete facility",
-        "add_image": "Add image",
-        "edit_name": "Edit name",
-        "edit_address": "Edit address",
-        "edit_description": "Edit description",
-        "show_more_amenities": "+{{count}} more",
-        "capacity": "Capacity: {{capacity}}",
-        "edit": "Edit",
-        "status": "Status:",
-        "published": "Published",
-        "unpublished": "Unpublished",
-        "owner": "Owner: {{owner}}",
-        "last_updated": "Last updated: {{date}}",
-        "updated_by": "Updated by: {{user}}",
-        "delete_dialog": {
-          "title": "Delete facility",
-          "warning": "This action cannot be undone",
-          "confirm_text": "Are you sure you want to delete <strong>{{name}}</strong>? All associated data will be permanently deleted.",
-          "cancel": "Cancel",
-          "confirm": "Delete"
-        },
-        "edit_modal": {
-          "title": "Edit facility",
-          "name": "Name",
-          "address": "Address",
-          "description": "Description",
-          "type": "Type",
-          "capacity": "Capacity",
-          "amenities": "Amenities",
-          "save": "Save changes",
-          "cancel": "Cancel"
-        },
-        "image_modal": {
-          "title": "Upload images",
-          "drag_drop": "Drag and drop images here, or click to select files",
-          "max_files": "Maximum {{count}} files",
-          "max_size": "Maximum file size: {{size}}",
-          "upload": "Upload images",
-          "cancel": "Cancel"
-        },
-        "amenities_modal": {
-          "title": "All amenities",
-          "close": "Close"
-        }
+      "kpi": {
+        "total_facilities": "Total Facilities",
+        "active_facilities": "Active Facilities",
+        "active_percentage": "Active Percentage",
+        "today_bookings": "Today's Bookings",
+        "bookings_received": "Bookings Received",
+        "pending_approvals": "Pending Approvals",
+        "requires_attention": "Require Attention",
+        "active_users": "Active Users",
+        "unique_users": "Unique Users"
       }
     },
     "bookings": {
-      "title": "Bookings & Approvals",
-      "subtitle": "Manage all bookings and approval processes in the system",
+      "title": "Bookings",
+      "subtitle": "Manage all facility bookings",
+      "create_booking": "Create Booking",
+      "view_all": "View All Bookings",
       "search_placeholder": "Search bookings...",
-      "recurring": "Recurring",
-      "period": "Period",
       "select_all": "Select all ({{count}})",
       "selected_count": "{{count}} selected",
-      "bulk_selected": "{{count}} booking(s) selected",
-      "bulk_approve_all": "Approve all",
-      "bulk_reject_all": "Reject all",
-      "bulk_delete_all": "Delete all",
-      "occurrences_count": "{{count}} occurrences",
-      "status_mixed_pending": "Partially pending",
-      "status_mixed_approved": "Partially approved",
+      "bulk_selected": "{{count}} items selected",
+      "bulk_approve_all": "Approve All",
+      "bulk_reject_all": "Reject All",
+      "bulk_delete_all": "Delete All",
       "kpi": {
         "total_bookings": "Total Bookings",
-        "active_last_30": "Active last 30 days",
+        "active_last_30": "Active in last 30 days",
         "pending_approvals": "Pending Approvals",
-        "requires_action": "Requires action",
+        "requires_action": "Require your attention",
         "approved_today": "Approved Today",
         "processed_today": "Processed today",
         "rejected_today": "Rejected Today",
         "rejected_today_sub": "Rejected today"
+      },
+      "filters": {
+        "status": "Status",
+        "date_range": "Date Range",
+        "facility": "Facility",
+        "advanced_title": "Advanced Filters",
+        "date_from": "From Date",
+        "date_to": "To Date",
+        "facility_type": "Facility Type",
+        "handler": "Handler",
+        "all_handlers": "All Handlers",
+        "admin": "Admin",
+        "case_worker": "Case Worker",
+        "duration": "Duration"
       },
       "tabs": {
         "all": "All",
@@ -573,49 +136,390 @@
         "rejected": "Rejected"
       },
       "actions": {
-        "view_details": "View details",
+        "view_details": "View Details",
         "approve": "Approve",
         "reject": "Reject"
       },
-      "filters": {
-        "advanced_title": "Advanced Filters",
-        "date_from": "Date from",
-        "date_to": "Date to",
-        "facility_type": "Facility type",
-        "all_types": "All types",
-        "sports_hall": "Sports Hall",
-        "culture_house": "Culture House",
-        "meeting_room": "Meeting Room",
-        "handler": "Handler",
-        "all_handlers": "All handlers",
-        "admin": "Admin",
-        "case_worker": "Case worker",
-        "duration": "Duration",
-        "all_durations": "All durations",
-        "one_hour": "1 hour",
-        "two_hours": "2 hours",
-        "four_hours": "4 hours",
-        "eight_hours": "8 hours"
-      },
       "empty": {
         "no_bookings": "No bookings found",
-        "try_different_criteria": "Try changing search criteria",
-        "no_bookings_currently": "There are no bookings to show at the moment"
+        "try_different_criteria": "Try adjusting your search or filter criteria",
+        "no_bookings_currently": "There are currently no bookings to display"
       },
+      "status_mixed_pending": "Mixed (contains pending)",
+      "status_mixed_approved": "Mixed (approved/rejected)",
+      "occurrences_count": "{{count}} occurrences",
+      "period": "Period",
       "workflows": {
-        "title": "Approval Workflows",
-        "subtitle": "Manage rules and flows for booking approvals",
-        "description": "Define how different types of bookings are processed and who must approve them.",
-        "create_new": "Create new flow",
+        "title": "Booking Workflows",
+        "subtitle": "Automate and streamline your booking processes",
+        "description": "Automate and streamline your booking processes",
+        "create_new": "Create New Workflow",
         "status_active": "Active",
         "examples": {
-          "schools_name": "School Bookings",
-          "schools_desc": "Automatic approval for schools",
-          "sports_name": "Sports Clubs",
-          "sports_desc": "Manual approval required",
-          "commercial_name": "Commercial Rental",
-          "commercial_desc": "Case worker approval required"
+          "schools_name": "Schools & Educational Institutions",
+          "schools_desc": "Streamlined booking process for educational facilities",
+          "sports_name": "Sports Clubs & Associations",
+          "sports_desc": "Recurring bookings for sports teams and activities",
+          "commercial_name": "Commercial & Business",
+          "commercial_desc": "Professional booking management for businesses"
         }
+      },
+      "confirmations": {
+        "delete_multiple": "Are you sure you want to delete {{count}} facilities?",
+        "delete_single": "Are you sure you want to delete {{name}}?"
+      }
+    },
+    "facilities": {
+      "title": "Facilities",
+      "subtitle": "Manage your organization's facilities",
+      "add_facility": "Add Facility",
+      "view_all": "View All Facilities",
+      "search_placeholder": "Search facilities...",
+      "filters": {
+        "status": "Status",
+        "type": "Type",
+        "capacity": "Capacity"
+      },
+      "confirmations": {
+        "delete_multiple": "Are you sure you want to delete {{count}} facilities?",
+        "delete_single": "Are you sure you want to delete {{name}}?"
+      }
+    },
+    "users_roles": {
+      "title": "Users & Roles",
+      "subtitle": "Manage users and their roles in your organization",
+      "search_placeholder": "Search users...",
+      "actions": {
+        "edit_role": "Edit Role",
+        "reset_password": "Reset Password",
+        "resend_invitation": "Resend Invitation",
+        "remove_access": "Remove Access",
+        "delete_user": "Delete User",
+        "add_user": "Add User",
+        "invite_user": "Invite User"
+      },
+      "modals": {
+        "user": {
+          "title_new": "Add New User",
+          "title_edit": "Edit User",
+          "name_label": "Full Name",
+          "name_placeholder": "Enter full name",
+          "email_label": "Email Address",
+          "email_placeholder": "Enter email address",
+          "role_label": "Role",
+          "role_placeholder": "Select a role",
+          "status_label": "Status",
+          "permissions_label": "Permissions",
+          "no_permissions": "No specific permissions assigned"
+        },
+        "role": {
+          "title_new": "Create New Role",
+          "title_edit": "Edit Role",
+          "name_label": "Role Name",
+          "name_placeholder": "Enter role name",
+          "description_label": "Description",
+          "description_placeholder": "Enter role description",
+          "permissions_label": "Permissions",
+          "status_label": "Status",
+          "active": "Active",
+          "inactive": "Inactive"
+        }
+      },
+      "filters": {
+        "role": "Role",
+        "status": "Status",
+        "organization": "Organization",
+        "role_admin": "Admin",
+        "role_saksbehandler": "Case Handler",
+        "role_redaktor": "Editor",
+        "role_lesetilgang": "Read Only",
+        "status_active": "Active",
+        "status_inactive": "Inactive",
+        "status_invitation_sent": "Invitation Sent"
+      }
+    },
+    "reports": {
+      "title": "Reports",
+      "subtitle": "Generate and view reports for your organization",
+      "generate_report": "Generate Report",
+      "report_types": {
+        "booking_summary": "Booking Summary",
+        "revenue": "Revenue Report",
+        "usage": "Facility Usage"
+      }
+    },
+    "settings": {
+      "title": "Settings",
+      "subtitle": "Manage your organization settings",
+      "unsaved_changes": "You have unsaved changes",
+      "save_button": "Save Changes",
+      "saving": "Saving...",
+      "changes_saved": "Changes saved successfully!",
+      "save_failed": "Failed to save changes",
+      "discard_changes": "Discard changes",
+      "tabs": {
+        "general": "General",
+        "email": "Email",
+        "payment": "Payment",
+        "notifications": "Notifications",
+        "security": "Security",
+        "profile": "Profile"
+      },
+      "general": {
+        "title": "General Settings",
+        "description": "Configure basic organization settings",
+        "organization_name": "Organization Name",
+        "organization_name_placeholder": "Enter organization name",
+        "timezone_label": "Timezone",
+        "timezone_required": "Timezone is required",
+        "language_label": "Language",
+        "date_format_label": "Date Format",
+        "time_format_label": "Time Format",
+        "time_format_24h": "24-hour (14:30)",
+        "time_format_12h": "12-hour (2:30 PM)",
+        "currency_label": "Currency",
+        "business_hours_title": "Business Hours",
+        "business_hours_start": "Start Time",
+        "business_hours_end": "End Time"
+      },
+      "email": {
+        "title": "Email Configuration",
+        "description": "Configure SMTP settings for sending emails",
+        "status_title": "Email Status",
+        "status_enabled": "Email sending is enabled",
+        "status_disabled": "Email sending is disabled",
+        "smtp_host": "SMTP Host",
+        "smtp_host_placeholder": "smtp.example.com",
+        "smtp_port": "SMTP Port",
+        "smtp_user": "SMTP Username",
+        "smtp_user_placeholder": "user@example.com",
+        "smtp_password": "SMTP Password",
+        "smtp_password_placeholder": "Enter password",
+        "from_email": "From Email",
+        "from_email_placeholder": "noreply@example.com",
+        "from_name": "From Name",
+        "from_name_placeholder": "Your Organization",
+        "test_connection": "Test Connection",
+        "test_description": "Verify that your email settings are correct",
+        "test_button": "Test Email",
+        "testing": "Testing...",
+        "test_success": "Email connection successful!",
+        "test_failed": "Email connection failed. Please check your settings."
+      },
+      "payment": {
+        "title": "Payment Settings",
+        "description": "Configure payment provider settings",
+        "status_title": "Payment Status",
+        "status_enabled": "Payment processing is enabled",
+        "status_disabled": "Payment processing is disabled",
+        "provider": "Payment Provider",
+        "publishable_key": "Publishable Key",
+        "publishable_key_placeholder": "Enter publishable key",
+        "secret_key": "Secret Key",
+        "secret_key_placeholder": "Enter secret key",
+        "webhook_secret": "Webhook Secret",
+        "webhook_secret_placeholder": "Enter webhook secret",
+        "test_connection": "Test Connection",
+        "test_description": "Verify that your payment settings are correct",
+        "test_button": "Test Payment",
+        "testing": "Testing...",
+        "test_success": "Payment connection successful!",
+        "test_failed": "Payment connection failed. Please check your settings."
+      },
+      "notifications": {
+        "title": "Notification Settings",
+        "description": "Configure how and when you receive notifications",
+        "email_notifications": "Email Notifications",
+        "new_bookings": "New Bookings",
+        "new_bookings_description": "Get notified when new bookings are created",
+        "cancellations": "Cancellations",
+        "cancellations_description": "Get notified when bookings are cancelled",
+        "system_updates": "System Updates",
+        "system_updates_description": "Get notified about system maintenance",
+        "security_alerts": "Security Alerts",
+        "security_alerts_description": "Get notified about security events",
+        "push_notifications": "Push Notifications",
+        "enable_push": "Enable Push Notifications",
+        "enable_push_description": "Receive notifications in the browser",
+        "notification_sound": "Notification Sound",
+        "notification_sound_description": "Play sound when you receive notifications"
+      },
+      "security": {
+        "title": "Security Settings",
+        "description": "Configure security policies and authentication settings",
+        "password_requirements": "Password Requirements",
+        "password_expiry_days": "Password Expiry (Days)",
+        "min_password_length": "Minimum Password Length",
+        "max_login_attempts": "Maximum Login Attempts",
+        "session_management": "Session Management",
+        "session_timeout": "Session Timeout",
+        "max_sessions": "Maximum Active Sessions",
+        "minutes": "minutes",
+        "hour": "hour",
+        "hours": "hours",
+        "two_factor_auth": "Two-Factor Authentication",
+        "enable_2fa": "Enable Two-Factor Authentication",
+        "enable_2fa_description": "Add an extra layer of security to your account",
+        "ip_whitelist": "IP Whitelist",
+        "ip_whitelist_description": "Restrict access to specific IP addresses",
+        "two_factor_method": "Two-Factor Method"
+      },
+      "profile": {
+        "title": "Profile Settings",
+        "subtitle": "Manage your personal profile information",
+        "personal_info": {
+          "title": "Personal Information",
+          "description": "Update your personal details",
+          "fields": {
+            "first_name": "First Name",
+            "last_name": "Last Name",
+            "email": "Email Address",
+            "phone": "Phone Number",
+            "address": "Address"
+          },
+          "cancel": "Cancel",
+          "save": "Save Changes"
+        },
+        "account_overview": {
+          "account_created": "Account Created",
+          "last_active": "Last Active"
+        },
+        "security": {
+          "title": "Security",
+          "password": {
+            "current": "Current Password",
+            "new": "New Password",
+            "confirm": "Confirm New Password",
+            "update": "Update Password"
+          }
+        },
+        "name_label": "Full Name",
+        "name_placeholder": "Enter your full name",
+        "email_label": "Email Address",
+        "email_placeholder": "Enter your email address",
+        "phone_label": "Phone Number",
+        "phone_placeholder": "Enter your phone number",
+        "address_label": "Address",
+        "address_placeholder": "Enter your address",
+        "avatar": {
+          "title": "Profile Picture",
+          "description": "Upload a profile picture to personalize your account",
+          "upload_button": "Upload Picture",
+          "remove_button": "Remove Picture",
+          "preview_alt": "Profile picture preview"
+        },
+        "preferences": {
+          "title": "Preferences",
+          "language_label": "Language",
+          "theme_label": "Theme",
+          "theme_options": {
+            "light": "Light",
+            "dark": "Dark",
+            "system": "System"
+          },
+          "language_theme": {
+            "title": "Language & Theme",
+            "language": "Language",
+            "theme": "Theme",
+            "theme_light": "Light",
+            "theme_dark": "Dark",
+            "theme_system": "System"
+          },
+          "notifications": {
+            "title": "Notification Preferences",
+            "email": "Email Notifications",
+            "email_desc": "Receive email notifications for bookings",
+            "sms": "SMS Notifications",
+            "sms_desc": "Receive SMS notifications for bookings",
+            "push": "Push Notifications",
+            "push_desc": "Receive browser push notifications"
+          }
+        },
+        "notifications": {
+          "title": "Notification Preferences",
+          "email_booking_confirmation": "Email Booking Confirmation",
+          "email_booking_reminder": "Email Booking Reminder",
+          "sms_booking_confirmation": "SMS Booking Confirmation",
+          "sms_booking_reminder": "SMS Booking Reminder",
+          "browser_booking_reminder": "Browser Booking Reminder",
+          "browser_enabled": "Browser Notifications"
+        }
+      }
+    }
+  },
+  "components": {
+    "booking_card": {
+      "booking_id": "Booking ID",
+      "facility": "Facility",
+      "date": "Date",
+      "time": "Time",
+      "duration": "Duration",
+      "status": "Status",
+      "user": "User",
+      "actions": "Actions",
+      "approve": "Approve",
+      "reject": "Reject",
+      "cancel": "Cancel",
+      "view_details": "View Details"
+    },
+    "facility_card": {
+      "capacity": "Capacity",
+      "type": "Type",
+      "status": "Status",
+      "actions": "Actions",
+      "edit": "Edit",
+      "delete": "Delete",
+      "view_bookings": "View Bookings"
+    },
+    "user_card": {
+      "role": "Role",
+      "status": "Status",
+      "last_active": "Last Active",
+      "actions": "Actions",
+      "edit": "Edit",
+      "delete": "Delete",
+      "view_profile": "View Profile"
+    }
+  },
+  "messages": {
+    "success": {
+      "booking_approved": "Booking approved successfully!",
+      "booking_rejected": "Booking rejected successfully!",
+      "booking_cancelled": "Booking cancelled successfully!",
+      "settings_saved": "Settings saved successfully!",
+      "profile_updated": "Profile updated successfully!",
+      "logout": "You have been logged out successfully!"
+    },
+    "error": {
+      "booking_action": "Failed to process booking. Please try again.",
+      "settings_save": "Failed to save settings. Please try again.",
+      "profile_update": "Failed to update profile. Please try again.",
+      "logout": "Failed to log out. Please try again.",
+      "data_fetch": "Failed to fetch data. Please try again."
+    },
+    "warning": {
+      "booking_cancel": "Are you sure you want to cancel this booking?",
+      "booking_reject": "Are you sure you want to reject this booking?",
+      "user_delete": "Are you sure you want to delete this user?",
+      "facility_delete": "Are you sure you want to delete this facility?"
+    },
+    "info": {
+      "no_bookings": "No bookings found matching your criteria",
+      "no_facilities": "No facilities found matching your criteria",
+      "no_users": "No users found matching your criteria",
+      "no_reports": "No reports available for the selected period"
+    },
+    "validations": {
+      "required": "This field is required",
+      "email": "Please enter a valid email address",
+      "phone": "Please enter a valid phone number",
+      "password": {
+        "min_length": "Password must be at least 8 characters long",
+        "complexity": "Password must contain uppercase, lowercase, number and special character"
+      },
+      "date": {
+        "invalid": "Please enter a valid date",
+        "future": "Date must be in the future"
       }
     }
   }

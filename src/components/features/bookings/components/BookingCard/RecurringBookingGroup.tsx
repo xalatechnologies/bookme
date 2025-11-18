@@ -118,7 +118,7 @@ export const RecurringBookingGroup = ({
             {/* Header */}
             <div className="flex items-center gap-2 mb-2">
               <Repeat className="w-4 h-4 text-purple-600 flex-shrink-0" />
-              <h3 className="font-semibold text-gray-900 text-lg">
+              <h3 className="font-semibold text-gray-900 dark:text-white text-lg">
                 {group.facilityName}
               </h3>
               <Badge className={getFrequencyColor(group.frequency)}>
@@ -128,18 +128,18 @@ export const RecurringBookingGroup = ({
 
             {/* Zone info */}
             {group.zoneName && (
-              <p className="text-sm text-gray-600 mb-2">{group.zoneName}</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">{group.zoneName}</p>
             )}
 
             {/* Summary stats */}
-            <div className="flex flex-wrap gap-4 text-sm text-gray-600 mb-3">
+            <div className="flex flex-wrap gap-4 text-sm text-gray-600 dark:text-gray-400 mb-3">
               <span className="font-medium">
                 {group.totalBookings} {t("booking:recurring.occurrences", "Occurrences")}
               </span>
-              <span className="text-green-600">
+              <span className="text-green-600 dark:text-green-400">
                 {group.upcomingCount} {t("booking:filters.upcoming", "Upcoming")}
               </span>
-              <span className="text-blue-600">
+              <span className="text-blue-600 dark:text-blue-400">
                 {group.completedCount} {t("booking:status.completed", "Completed")}
               </span>
             </div>
@@ -147,12 +147,12 @@ export const RecurringBookingGroup = ({
             {/* Next booking info */}
             {nextBooking && (
               <div className="flex flex-wrap gap-4 text-sm">
-                <span className="flex items-center gap-1 text-gray-700">
+                <span className="flex items-center gap-1 text-gray-700 dark:text-gray-300">
                   <Calendar className="w-3 h-3" />
                   <span className="font-medium">{t("booking:recurring.next_label", "Next:")}</span>
                   {nextDate}
                 </span>
-                <span className="flex items-center gap-1 text-gray-700">
+                <span className="flex items-center gap-1 text-gray-700 dark:text-gray-300">
                   <Clock className="w-3 h-3" />
                   {nextTime}
                 </span>
@@ -160,7 +160,7 @@ export const RecurringBookingGroup = ({
             )}
 
             {!nextBooking && group.completedCount > 0 && (
-              <p className="text-sm text-gray-500 italic">
+              <p className="text-sm text-gray-500 dark:text-gray-500 italic">
                 {t("common.all_bookings_completed", "All bookings completed")}
               </p>
             )}
