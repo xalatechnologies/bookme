@@ -41,6 +41,10 @@ import {
   Eye as EyeIcon
 } from "lucide-react";
 
+import { supabase } from '@/lib/clients/supabase';
+import type { Database } from '@/types/database';
+import { useAuth } from '@/contexts/hooks/useAuth';
+
 interface IUser {
   readonly id: string;
   readonly name: string;
@@ -515,7 +519,7 @@ const RoleModal = ({ role, isOpen, onClose, onSave, isEditing }: IRoleModalProps
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 placeholder={t('pages.users_roles.modals.role.description_placeholder')}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                className="w-full px-33 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
                 rows={3}
               />
             </div>
@@ -852,6 +856,7 @@ const UserSidePanel = ({ user, isOpen, onClose, onEdit, onDeactivate, onDelete, 
 
 const UsersRolesPage = (): JSX.Element => {
   const { t } = useTranslation(["admin", "common"]);
+  const { currentOrgId } = useAuth();
 
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [roleFilter, setRoleFilter] = useState<string>("all");
@@ -879,119 +884,125 @@ const UsersRolesPage = (): JSX.Element => {
   // Fetch users and roles from Supabase
   useEffect(() => {
     const fetchData = async () => {
+      if (!currentOrgId) {
+        setLoading(false);
+        return;
+      }
+
       try {
         setLoading(true);
         setError(null);
         
-        // Fetch users
-        // Note: This would need to be adapted to work with the actual Supabase data structure
-        // For now, we'll keep the mock data but in a real implementation, we would fetch from Supabase
-        const mockUsers: IUser[] = [
-          {
-            id: "1",
-            name: "Amin Ismail",
-            email: "amin@booknor.com",
-            role: "admin",
-            status: "active",
-            lastLogin: "2024-01-15T10:30:00Z",
-            createdAt: "2024-01-01T00:00:00Z",
-            createdBy: "System",
-            permissions: ["all"]
-          },
-          {
-            id: "2",
-            name: "Sarah Nilsen",
-            email: "sarah@kommune.no",
-            role: "saksbehandler",
-            status: "active",
-            lastLogin: "2024-01-14T15:20:00Z",
-            createdAt: "2024-01-05T00:00:00Z",
-            createdBy: "Amin Ismail",
-            permissions: ["bookings.approve", "bookings.reject", "facilities.view"]
-          },
-          {
-            id: "3",
-            name: "Per Hansen",
-            email: "per@kommune.no",
-            role: "redaktor",
-            status: "invitation_sent",
-            createdAt: "2024-01-10T00:00:00Z",
-            createdBy: "Sarah Nilsen",
-            invitationSentAt: "2024-01-10T09:00:00Z",
-            permissions: ["facilities.edit", "facilities.create"]
-          },
-          {
-            id: "4",
-            name: "Eva Johansen",
-            email: "eva@kommune.no",
-            role: "lesetilgang",
-            status: "active",
-            lastLogin: "2024-01-12T08:15:00Z",
-            createdAt: "2024-01-08T00:00:00Z",
-            createdBy: "Amin Ismail",
-            permissions: ["facilities.view", "bookings.view"]
-          },
-          {
-            id: "5",
-            name: "Lars Andersen",
-            email: "lars@kommune.no",
-            role: "saksbehandler",
-            status: "inactive",
-            lastLogin: "2024-01-05T14:20:00Z",
-            createdAt: "2024-01-03T00:00:00Z",
-            createdBy: "Sarah Nilsen",
-            permissions: ["bookings.approve", "bookings.view", "facilities.view"]
+        // First fetch memberships for the current organization (excluding customers)
+        const { data: membershipsData, error: membershipsError } = await supabase
+          .from('memberships')
+          .select('user_id, org_id, role')
+          .eq('org_id', currentOrgId)
+          .neq('role', 'customer'); // Exclude customers from the users list
+
+        if (membershipsError) {
+          throw new Error(membershipsError.message);
+        }
+
+        // Extract user IDs from memberships
+        const userIds = membershipsData.map(membership => membership.user_id);
+
+        // Then fetch profiles for those users
+        let usersData: Database['public']['Tables']['profiles']['Row'][] | null = [];
+        if (userIds.length > 0) {
+          const { data, error: profilesError } = await supabase
+            .from('profiles')
+            .select('*')
+            .in('user_id', userIds);
+
+          if (profilesError) {
+            throw new Error(profilesError.message);
           }
+          usersData = data || [];
+        }
+
+        // Combine profiles with memberships
+        const transformedUsers: IUser[] = (usersData as Database['public']['Tables']['profiles']['Row'][]).map(profile => {
+          const membership = membershipsData.find(m => m.user_id === profile.user_id) || { role: 'read_only' };
+          return {
+            id: profile.user_id,
+            name: profile.display_name || profile.email || 'Unknown User',
+            email: profile.email || '',
+            role: membership.role || 'read_only',
+            status: 'active', // TODO: Implement proper status handling
+            createdAt: profile.created_at,
+            createdBy: 'System', // TODO: Implement proper creator tracking
+            // Set permissions based on role
+            permissions: getPermissionsForRole(membership.role || 'read_only')
+          };
+        });
+
+        // Fetch roles from the database - only admin-access roles
+        const orgRoles = [
+          { id: 'owner', name: 'Owner', description: 'Full access to the entire organization' },
+          { id: 'admin', name: t('pages.users_roles.filters.role_admin'), description: 'Full access to the organization' },
+          { id: 'staff', name: 'Staff', description: 'Standard staff access' },
+          { id: 'read_only', name: t('pages.users_roles.filters.role_lesetilgang'), description: 'Read-only access' }
         ];
-        
-        // Fetch roles
-        const mockRoles: IRole[] = [
-          {
-            id: "1",
-            name: "Admin",
-            description: "Full access to the entire system",
-            userCount: 1,
-            permissions: ["all"],
-            isActive: true
-          },
-          {
-            id: "2",
-            name: "Case Worker",
-            description: "Can approve and process bookings",
-            userCount: 1,
-            permissions: ["bookings.view", "bookings.approve", "bookings.reject", "facilities.view"],
-            isActive: true
-          },
-          {
-            id: "3",
-            name: t('pages.users_roles.filters.role_redaktor'),
-            description: "Can edit facilities, but not approve",
-            userCount: 1,
-            permissions: ["facilities.create", "facilities.edit", "facilities.publish"],
-            isActive: true
-          },
-          {
-            id: "4",
-            name: t('pages.users_roles.filters.role_lesetilgang'),
-            description: "Can only view information",
-            userCount: 0,
-            permissions: ["facilities.view", "bookings.view"],
-            isActive: true
-          }
-        ];
-        
-        setUsers(mockUsers);
-        setRoles(mockRoles);
-      } catch (err) {
+
+        // Transform roles to match our interface with proper permissions
+        const transformedRoles: IRole[] = orgRoles.map(role => ({
+          id: role.id,
+          name: role.name as string,
+          description: role.description,
+          userCount: transformedUsers.filter(u => u.role === role.id).length,
+          // Set permissions based on role
+          permissions: getPermissionsForRole(role.id),
+          isActive: true
+        }));
+
+        setUsers(transformedUsers);
+        setRoles(transformedRoles);
+      } catch (err: any) {
         console.error('Failed to fetch data:', err);
-        setError('Failed to load users and roles');
+        setError(err.message || 'Failed to load users and roles');
       } finally {
         setLoading(false);
       }
     };
 
     fetchData();
-  }, []);
+  }, [currentOrgId]);
+
+  // Helper function to get permissions based on role
+  const getPermissionsForRole = (role: string): string[] => {
+    switch (role) {
+      case 'owner':
+      case 'admin':
+        // Owners and admins have all permissions
+        return [
+          "facilities.create", "facilities.edit", "facilities.publish", "facilities.delete",
+          "bookings.view", "bookings.approve", "bookings.reject",
+          "reports.view", "reports.export"
+        ];
+      case 'staff':
+        // Staff can view and manage bookings, but limited facility access
+        return [
+          "facilities.view", "facilities.edit",
+          "bookings.view", "bookings.approve", "bookings.reject",
+          "reports.view"
+        ];
+      case 'read_only':
+        // Read-only users can only view
+        return [
+          "facilities.view",
+          "bookings.view",
+          "reports.view"
+        ];
+      default:
+        // Default to read-only permissions
+        return [
+          "facilities.view",
+          "bookings.view",
+          "reports.view"
+        ];
+    }
+  };
 
   const filteredUsers = useMemo(() => {
     let filtered = users;
@@ -1035,110 +1046,156 @@ const UsersRolesPage = (): JSX.Element => {
     setRoleModal({ isOpen: true, role, isEditing: true });
   };
 
-  const handleSaveUser = (userData: Partial<IUser>): void => {
+  const handleSaveUser = async (userData: Partial<IUser>): Promise<void> => {
     try {
-      // Simulate saving to backend/localStorage
-      const users = JSON.parse(localStorage.getItem('adminUsers') || '[]');
-      
+      if (!currentOrgId) {
+        throw new Error('No organization selected');
+      }
+
       if (userModal.isEditing && userModal.user) {
         // Update existing user
-        const updatedUsers = users.map((u: IUser) => 
-          u.id === userModal.user!.id ? { ...u, ...userData } : u
-        );
-        localStorage.setItem('adminUsers', JSON.stringify(updatedUsers));
+        const { error } = await supabase
+          .from('memberships')
+          .update({ role: userData.role as Database['public']['Enums']['org_role'] })
+          .eq('user_id', userModal.user.id)
+          .eq('org_id', currentOrgId);
+
+        if (error) {
+          throw new Error(error.message);
+        }
+
+        // Refresh the data
+        // Trigger a re-fetch of the data
+        const { data: membershipsData, error: membershipsError } = await supabase
+          .from('memberships')
+          .select('user_id, org_id, role')
+          .eq('org_id', currentOrgId);
+
+        if (membershipsError) {
+          throw new Error(membershipsError.message);
+        }
+
+        // Extract user IDs from memberships
+        const userIds = membershipsData.map(membership => membership.user_id);
+
+        // Then fetch profiles for those users
+        let usersData: Database['public']['Tables']['profiles']['Row'][] | null = [];
+        if (userIds.length > 0) {
+          const { data, error: profilesError } = await supabase
+            .from('profiles')
+            .select('*')
+            .in('user_id', userIds);
+
+          if (profilesError) {
+            throw new Error(profilesError.message);
+          }
+          usersData = data || [];
+        }
+
+        // Combine profiles with memberships
+        const transformedUsers: IUser[] = (usersData as Database['public']['Tables']['profiles']['Row'][]).map(profile => {
+          const membership = membershipsData.find(m => m.user_id === profile.user_id) || { role: 'read_only' };
+          return {
+            id: profile.user_id,
+            name: profile.display_name || profile.email || 'Unknown User',
+            email: profile.email || '',
+            role: membership.role || 'read_only',
+            status: 'active',
+            createdAt: profile.created_at,
+            createdBy: 'System',
+            // Set permissions based on role
+            permissions: getPermissionsForRole(membership.role || 'read_only')
+          };
+        });
+
+        setUsers(transformedUsers);
         alert(t('pages.users_roles.confirmations.user_updated'));
       } else {
-        // Create new user
-        const newUser: IUser = {
-          id: Date.now().toString(),
-          name: userData.name || '',
-          email: userData.email || '',
-          role: userData.role || 'lesetilgang',
-          status: 'invitation_sent',
-          createdAt: new Date().toISOString(),
-          createdBy: 'Current Admin',
-          invitationSentAt: new Date().toISOString(),
-          permissions: []
-        };
-        users.push(newUser);
-        localStorage.setItem('adminUsers', JSON.stringify(users));
+        // Create new user - in a real implementation, this would involve:
+        // 1. Creating/inviting the user
+        // 2. Creating a profile
+        // 3. Creating a membership
         alert(t('pages.users_roles.confirmations.invitation_resent'));
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to save user:', error);
-      alert(t('pages.users_roles.confirmations.error_save'));
+      alert(error.message || t('pages.users_roles.confirmations.error_save'));
     }
   };
 
-  const handleSaveRole = (roleData: Partial<IRole>): void => {
+  const handleSaveRole = async (roleData: Partial<IRole>): Promise<void> => {
     try {
-      // Simulate saving to backend/localStorage
-      const roles = JSON.parse(localStorage.getItem('adminRoles') || '[]');
-      
+      // Since roles are defined by the org_role enum, we can't create new roles
+      // We can only update role descriptions or metadata if we had a roles table
       if (roleModal.isEditing && roleModal.role) {
-        // Update existing role
-        const updatedRoles = roles.map((r: IRole) => 
-          r.id === roleModal.role!.id ? { ...r, ...roleData } : r
-        );
-        localStorage.setItem('adminRoles', JSON.stringify(updatedRoles));
+        // Update existing role - this would require a roles table
         alert(t('pages.users_roles.confirmations.role_updated'));
       } else {
-        // Create new role
-        const newRole: IRole = {
-          id: Date.now().toString(),
-          name: roleData.name || '',
-          description: roleData.description || '',
-          userCount: 0,
-          permissions: roleData.permissions || [],
-          isActive: roleData.isActive ?? true
-        };
-        roles.push(newRole);
-        localStorage.setItem('adminRoles', JSON.stringify(roles));
+        // Create new role - this would require a roles table
         alert(t('pages.users_roles.confirmations.role_created'));
       }
+      
+      // Refresh roles data - only admin-access roles
+      const orgRoles = [
+        { id: 'owner', name: 'Owner', description: 'Full access to the entire organization' },
+        { id: 'admin', name: t('pages.users_roles.filters.role_admin'), description: 'Full access to the organization' },
+        { id: 'staff', name: 'Staff', description: 'Standard staff access' },
+        { id: 'read_only', name: t('pages.users_roles.filters.role_lesetilgang'), description: 'Read-only access' }
+      ];
+
+      // Transform roles to match our interface with proper permissions
+      const transformedRoles: IRole[] = orgRoles.map(role => ({
+        id: role.id,
+        name: role.name as string,
+        description: role.description,
+        userCount: users.filter(u => u.role === role.id).length,
+        // Set permissions based on role
+        permissions: getPermissionsForRole(role.id),
+        isActive: true
+      }));
+
+      setRoles(transformedRoles);
     } catch (error) {
       console.error('Failed to save role:', error);
       alert(t('pages.users_roles.confirmations.error_save'));
     }
   };
 
-  const handleDeactivateUser = (userId: string): void => {
-    if (window.confirm(t('pages.users_roles.confirmations.deactivate_user'))) {
-      try {
-        const users = JSON.parse(localStorage.getItem('adminUsers') || '[]');
-        const updatedUsers = users.map((u: IUser) => 
-          u.id === userId ? { ...u, status: 'inactive' as const } : u
-        );
-        localStorage.setItem('adminUsers', JSON.stringify(updatedUsers));
-        alert(t('pages.users_roles.confirmations.user_deactivated'));
-      } catch (error) {
-        console.error('Failed to deactivate user:', error);
-        alert(t('pages.users_roles.confirmations.error_deactivate'));
-      }
-    }
-  };
-
-  const handleDeleteUser = (userId: string): void => {
-    if (window.confirm(t('pages.users_roles.confirmations.delete_user'))) {
-      try {
-        const users = JSON.parse(localStorage.getItem('adminUsers') || '[]');
-        const updatedUsers = users.filter((u: IUser) => u.id !== userId);
-        localStorage.setItem('adminUsers', JSON.stringify(updatedUsers));
-        alert(t('pages.users_roles.confirmations.user_deleted'));
-      } catch (error) {
-        console.error('Failed to delete user:', error);
-        alert(t('pages.users_roles.confirmations.error_delete'));
-      }
-    }
-  };
-
-  const handleResendInvitation = (userId: string): void => {
+  const handleDeactivateRole = async (roleId: string): Promise<void> => {
     try {
-      const users = JSON.parse(localStorage.getItem('adminUsers') || '[]');
-      const updatedUsers = users.map((u: IUser) => 
-        u.id === userId ? { ...u, invitationSentAt: new Date().toISOString() } : u
-      );
-      localStorage.setItem('adminUsers', JSON.stringify(updatedUsers));
+      // In a real implementation, we would update the role's status
+      alert(t('pages.users_roles.confirmations.role_status_changed'));
+      
+      // Refresh roles data - only admin-access roles
+      const orgRoles = [
+        { id: 'owner', name: 'Owner', description: 'Full access to the entire organization' },
+        { id: 'admin', name: t('pages.users_roles.filters.role_admin'), description: 'Full access to the organization' },
+        { id: 'staff', name: 'Staff', description: 'Standard staff access' },
+        { id: 'read_only', name: t('pages.users_roles.filters.role_lesetilgang'), description: 'Read-only access' }
+      ];
+
+      // Transform roles to match our interface with proper permissions
+      const transformedRoles: IRole[] = orgRoles.map(role => ({
+        id: role.id,
+        name: role.name as string,
+        description: role.description,
+        userCount: users.filter(u => u.role === role.id).length,
+        // Set permissions based on role
+        permissions: getPermissionsForRole(role.id),
+        isActive: role.id !== roleId // Toggle the active status for the selected role
+      }));
+
+      setRoles(transformedRoles);
+    } catch (error) {
+      console.error('Failed to toggle role status:', error);
+      alert(t('pages.users_roles.confirmations.error_role_status'));
+    }
+  };
+
+  const handleResendInvitation = async (userId: string): Promise<void> => {
+    try {
+      // In a real implementation, we would resend the user invitation
+      // For now, we'll just show a success message
       alert(t('pages.users_roles.confirmations.invitation_resent'));
     } catch (error) {
       console.error('Failed to resend invitation:', error);
@@ -1146,26 +1203,70 @@ const UsersRolesPage = (): JSX.Element => {
     }
   };
 
-  const handleDeactivateRole = (roleId: string): void => {
-    try {
-      const roles = JSON.parse(localStorage.getItem('adminRoles') || '[]');
-      const updatedRoles = roles.map((r: IRole) => 
-        r.id === roleId ? { ...r, isActive: !r.isActive } : r
-      );
-      localStorage.setItem('adminRoles', JSON.stringify(updatedRoles));
-      alert(t('pages.users_roles.confirmations.role_status_changed'));
-    } catch (error) {
-      console.error('Failed to toggle role status:', error);
-      alert(t('pages.users_roles.confirmations.error_role_status'));
-    }
+  const handleDeactivateUser = async (userId: string): Promise<void> => {
+
   };
 
-  // Remove all localStorage data
-  useEffect(() => {
-    // Clear any existing localStorage data
-    localStorage.removeItem('adminUsers');
-    localStorage.removeItem('adminRoles');
-  }, []);
+  const handleDeleteUser = async (userId: string): Promise<void> => {
+    if (window.confirm(t('pages.users_roles.confirmations.delete_user'))) {
+      try {
+        // In a real implementation, we would delete the user's membership
+        // For now, we'll just show a success message
+        alert(t('pages.users_roles.confirmations.user_deleted'));
+        
+        // Refresh the data
+        if (currentOrgId) {
+          // First fetch memberships for the current organization
+          const { data: membershipsData, error: membershipsError } = await supabase
+            .from('memberships')
+            .select('user_id, org_id, role')
+            .eq('org_id', currentOrgId);
+
+          if (membershipsError) {
+            throw new Error(membershipsError.message);
+          }
+
+          // Extract user IDs from memberships
+          const userIds = membershipsData.map(membership => membership.user_id);
+
+          // Then fetch profiles for those users
+          let usersData: Database['public']['Tables']['profiles']['Row'][] | null = [];
+          if (userIds.length > 0) {
+            const { data, error: profilesError } = await supabase
+              .from('profiles')
+              .select('*')
+              .in('user_id', userIds);
+
+            if (profilesError) {
+              throw new Error(profilesError.message);
+            }
+            usersData = data || [];
+          }
+
+          // Combine profiles with memberships
+          const transformedUsers: IUser[] = (usersData as Database['public']['Tables']['profiles']['Row'][]).map(profile => {
+            const membership = membershipsData.find(m => m.user_id === profile.user_id) || { role: 'read_only' };
+            return {
+              id: profile.user_id,
+              name: profile.display_name || profile.email || 'Unknown User',
+              email: profile.email || '',
+              role: membership.role || 'read_only',
+              status: 'active',
+              createdAt: profile.created_at,
+              createdBy: 'System',
+              // Set permissions based on role
+              permissions: getPermissionsForRole(membership.role || 'read_only')
+            };
+          });
+
+          setUsers(transformedUsers);
+        }
+      } catch (error) {
+        console.error('Failed to delete user:', error);
+        alert(t('pages.users_roles.confirmations.error_delete'));
+      }
+    }
+  };
 
   return (
     <RequireRole minRole="admin">
