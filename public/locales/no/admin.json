@@ -71,183 +71,6 @@
     "logout": "Logg ut"
   },
   "pages": {
-    "dashboard": {
-      "title": "Dashboard",
-      "welcome": "Velkommen tilbake",
-      "quick_stats": "Hurtigstatistikk",
-      "recent_bookings": "Nylige bookinger",
-      "upcoming_events": "Kommende arrangementer",
-      "trends": {
-        "since_yesterday": "siden i går",
-        "last_30_days_period": "siste 30 dager"
-      },
-      "kpi": {
-        "total_facilities": "Totalt antall fasiliteter",
-        "active_facilities": "Aktive fasiliteter",
-        "active_percentage": "Aktiv prosentandel",
-        "today_bookings": "Dagens bookinger",
-        "bookings_received": "Bookinger mottatt",
-        "pending_approvals": "Ventende godkjenninger",
-        "requires_attention": "Krever oppmerksomhet",
-        "active_users": "Aktive brukere",
-        "unique_users": "Unike brukere"
-      }
-    },
-    "bookings": {
-      "title": "Bookinger",
-      "subtitle": "Administrer alle fasilitetsbookinger",
-      "create_booking": "Opprett booking",
-      "view_all": "Vis alle bookinger",
-      "search_placeholder": "Søk i bookinger...",
-      "select_all": "Velg alle ({{count}})",
-      "selected_count": "{{count}} valgt",
-      "bulk_selected": "{{count}} elementer valgt",
-      "bulk_approve_all": "Godkjenn alle",
-      "bulk_reject_all": "Avvis alle",
-      "bulk_delete_all": "Slett alle",
-      "kpi": {
-        "total_bookings": "Totalt antall bookinger",
-        "active_last_30": "Aktive siste 30 dager",
-        "pending_approvals": "Ventende godkjenninger",
-        "requires_action": "Krever din oppmerksomhet",
-        "approved_today": "Godkjent i dag",
-        "processed_today": "Behandlet i dag",
-        "rejected_today": "Avvist i dag",
-        "rejected_today_sub": "Avvist i dag"
-      },
-      "filters": {
-        "status": "Status",
-        "date_range": "Datoperiode",
-        "facility": "Fasilitet",
-        "advanced_title": "Avanserte filtre",
-        "date_from": "Fra dato",
-        "date_to": "Til dato",
-        "facility_type": "Fasilitetstype",
-        "handler": "Behandler",
-        "all_handlers": "Alle behandlere",
-        "admin": "Administrator",
-        "case_worker": "Saksbehandler",
-        "duration": "Varighet"
-      },
-      "tabs": {
-        "all": "Alle",
-        "pending": "Ventende",
-        "approved": "Godkjent",
-        "rejected": "Avvist"
-      },
-      "actions": {
-        "view_details": "Vis detaljer",
-        "approve": "Godkjenn",
-        "reject": "Avvis"
-      },
-      "empty": {
-        "no_bookings": "Ingen bookinger funnet",
-        "try_different_criteria": "Prøv å justere søk eller filterkriterier",
-        "no_bookings_currently": "Det er for øyeblikket ingen bookinger å vise"
-      },
-      "status_mixed_pending": "Blandet (inneholder ventende)",
-      "status_mixed_approved": "Blandet (godkjent/avvist)",
-      "occurrences_count": "{{count}} forekomster",
-      "period": "Periode",
-      "workflows": {
-        "title": "Bookingarbeidsflyter",
-        "subtitle": "Automatiser og strømlinjeform dine bookingprosesser",
-        "description": "Automatiser og strømlinjeform dine bookingprosesser",
-        "create_new": "Opprett ny arbeidsflyt",
-        "status_active": "Aktiv",
-        "examples": {
-          "schools_name": "Skoler og utdanningsinstitusjoner",
-          "schools_desc": "Strømlinjeformet bookingprosess for utdanningsfasiliteter",
-          "sports_name": "Sportsklubber og foreninger",
-          "sports_desc": "Gjentakende bookinger for sportslag og aktiviteter",
-          "commercial_name": "Kommeresielt og forretning",
-          "commercial_desc": "Profesjonell bookinghåndtering for bedrifter"
-        }
-      },
-      "confirmations": {
-        "delete_multiple": "Er du sikker på at du vil slette {{count}} fasiliteter?",
-        "delete_single": "Er du sikker på at du vil slette {{name}}?"
-      }
-    },
-    "facilities": {
-      "title": "Fasiliteter",
-      "subtitle": "Administrer organisasjonens fasiliteter",
-      "add_facility": "Legg til fasilitet",
-      "view_all": "Vis alle fasiliteter",
-      "search_placeholder": "Søk i fasiliteter...",
-      "filters": {
-        "status": "Status",
-        "type": "Type",
-        "capacity": "Kapasitet"
-      },
-      "confirmations": {
-        "delete_multiple": "Er du sikker på at du vil slette {{count}} fasiliteter?",
-        "delete_single": "Er du sikker på at du vil slette {{name}}?"
-      }
-    },
-    "users_roles": {
-      "title": "Brukere og roller",
-      "subtitle": "Administrer brukere og deres roller i organisasjonen",
-      "search_placeholder": "Søk i brukere...",
-      "actions": {
-        "edit_role": "Rediger rolle",
-        "reset_password": "Tilbakestill passord",
-        "resend_invitation": "Send invitasjon på nytt",
-        "remove_access": "Fjern tilgang",
-        "delete_user": "Slett bruker",
-        "add_user": "Legg til bruker",
-        "invite_user": "Inviter bruker"
-      },
-      "modals": {
-        "user": {
-          "title_new": "Legg til ny bruker",
-          "title_edit": "Rediger bruker",
-          "name_label": "Fullt navn",
-          "name_placeholder": "Skriv inn fullt navn",
-          "email_label": "E-postadresse",
-          "email_placeholder": "Skriv inn e-postadresse",
-          "role_label": "Rolle",
-          "role_placeholder": "Velg en rolle",
-          "status_label": "Status",
-          "permissions_label": "Tillatelser",
-          "no_permissions": "Ingen spesifikke tillatelser tildelt"
-        },
-        "role": {
-          "title_new": "Opprett ny rolle",
-          "title_edit": "Rediger rolle",
-          "name_label": "Rollenavn",
-          "name_placeholder": "Skriv inn rollenavn",
-          "description_label": "Beskrivelse",
-          "description_placeholder": "Skriv inn rollebeskrivelse",
-          "permissions_label": "Tillatelser",
-          "status_label": "Status",
-          "active": "Aktiv",
-          "inactive": "Inaktiv"
-        }
-      },
-      "filters": {
-        "role": "Rolle",
-        "status": "Status",
-        "organization": "Organisasjon",
-        "role_admin": "Administrator",
-        "role_saksbehandler": "Saksbehandler",
-        "role_redaktor": "Redaktør",
-        "role_lesetilgang": "Lesetilgang",
-        "status_active": "Aktiv",
-        "status_inactive": "Inaktiv",
-        "status_invitation_sent": "Invitasjon sendt"
-      }
-    },
-    "reports": {
-      "title": "Rapporter",
-      "subtitle": "Generer og vis rapporter for organisasjonen",
-      "generate_report": "Generer rapport",
-      "report_types": {
-        "booking_summary": "Bookingoppsummering",
-        "revenue": "Inntektsrapport",
-        "usage": "Fasilitetsbruk"
-      }
-    },
     "settings": {
       "title": "Innstillinger",
       "subtitle": "Administrer organisasjonsinnstillinger",
@@ -412,10 +235,38 @@
           "title": "Preferanser",
           "language_label": "Språk",
           "theme_label": "Tema",
+          "timezone_label": "Tidssone",
+          "date_format_label": "Datoformat",
+          "landing_page_label": "Standard landingsside",
+          "calendar_view_label": "Standard kalendervisning",
           "theme_options": {
             "light": "Lys",
             "dark": "Mørk",
             "system": "System"
+          },
+          "timezone_options": {
+            "oslo": "Europa/Oslo (UTC+1)",
+            "stockholm": "Europa/Stockholm (UTC+1)",
+            "copenhagen": "Europa/København (UTC+1)",
+            "utc": "UTC"
+          },
+          "date_format_options": {
+            "dd.mm.yyyy": "dd.mm.yyyy",
+            "yyyy-mm-dd": "yyyy-mm-dd",
+            "mm/dd/yyyy": "mm/dd/yyyy"
+          },
+          "landing_page_options": {
+            "dashboard": "Dashboard",
+            "bookings": "Bookinger",
+            "messages": "Meldinger"
+          },
+          "calendar_view_options": {
+            "month": "Måned",
+            "week": "Uke",
+            "day": "Dag"
+          },
+          "additional": {
+            "title": "Flere preferanser"
           },
           "language_theme": {
             "title": "Språk og tema",
@@ -444,7 +295,304 @@
           "browser_booking_reminder": "Nettleserpåminnelse om booking",
           "browser_enabled": "Nettleservarsler"
         }
+      },
+      "organization": {
+        "coming_soon": "Organisasjonsinnstillinger kommer snart"
       }
+    },
+    "dashboard": {
+      "loading_stats": "Laster inn dashbordstatistikk...",
+      "error_loading": "Feil ved lasting av dashborddata",
+      "overview": "Dashbordoversikt",
+      "welcome": "Velkommen tilbake! Her er hva som skjer i dag.",
+      "new_facility": "Ny fasilitet",
+      "key_metrics": "Nøkkeltall",
+      "trends_dashboard": "Trendanalyse",
+      "trends": {
+        "booking_last_7_days": "Bookinger - Siste 7 dager",
+        "top_facilities_month": "Topp fasiliteter - Denne måneden",
+        "bookings": "Bookinger",
+        "facilities": "Fasiliteter",
+        "users": "Brukere",
+        "down": "Ned",
+        "up": "Opp",
+        "stable": "Stabil",
+        "last_7_days": "Siste 7 dager",
+        "since_yesterday": "siden i går",
+        "last_30_days_period": "siste 30 dager"
+      },
+      "daily_tasks": "Daglige oppgaver",
+      "daily_tasks_section": {
+        "pending_approvals": "Ventende godkjenninger",
+        "payment_errors": "Betalingsfeil",
+        "users_no_roles": "Brukere uten roller",
+        "view_task": "Vis oppgave"
+      },
+      "approvals": {
+        "title": "Ventende godkjenninger",
+        "view_all": "Vis alle",
+        "no_pending": "Ingen ventende godkjenninger",
+        "all_updated": "Alt oppdatert! Ingen ventende elementer.",
+        "priority_high": "Høy prioritet",
+        "priority_medium": "Middels prioritet",
+        "priority_low": "Lav prioritet"
+      },
+      "events": {
+        "title": "Nylige hendelser",
+        "no_recent": "Ingen nylige hendelser"
+      },
+      "todays_bookings": {
+        "title": "Dagens bookinger",
+        "view_all": "Vis alle",
+        "no_bookings": "Ingen bookinger i dag"
+      },
+      "kpi": {
+        "total_facilities": "Totalt antall fasiliteter",
+        "active_facilities": "Aktive fasiliteter",
+        "active_percentage": "aktive",
+        "today_bookings": "Dagens bookinger",
+        "bookings_received": "Bookinger mottatt",
+        "pending_approvals": "Ventende godkjenninger",
+        "requires_attention": "Krever oppmerksomhet",
+        "active_users": "Aktive brukere",
+        "unique_users": "Unike brukere"
+      },
+      "alerts_section": {
+        "title": "Systemvarsler",
+        "no_alerts": "Ingen aktive varsler",
+        "draft_facilities": "Utkast til fasiliteter",
+        "facilities_waiting": "{{count}} fasiliteter venter på gjennomgang",
+        "see_details": "Se detaljer",
+        "cancelled_bookings": "Avlyste bookinger",
+        "bookings_cancelled": "{{count}} bookinger avlyst i dag",
+        "system_status": "Systemstatus",
+        "all_systems_normal": "Alle systemer er operative"
+      }
+    },
+    "bookings": {
+      "title": "Bookingadministrasjon",
+      "subtitle": "Administrer og behandle fasilitetsbookinger",
+      "search_placeholder": "Søk i bookinger...",
+      "select_all": "Velg alle ({{count}})",
+      "selected_count": "{{count}} valgt",
+      "bulk_selected": "{{count}} elementer valgt",
+      "bulk_approve_all": "Godkjenn alle",
+      "bulk_reject_all": "Avvis alle",
+      "bulk_delete_all": "Slett alle",
+      "tabs": {
+        "all": "Alle bookinger",
+        "pending": "Ventende",
+        "approved": "Godkjent",
+        "rejected": "Avvist"
+      },
+      "kpi": {
+        "total_bookings": "Totalt antall bookinger",
+        "active_last_30": "Aktive siste 30 dager",
+        "pending_approvals": "Ventende godkjenninger",
+        "requires_action": "Krever handling",
+        "approved_today": "Godkjent i dag",
+        "processed_today": "Behandlet i dag",
+        "rejected_today": "Avvist i dag",
+        "rejected_today_sub": "Avvist i dag"
+      },
+      "filters": {
+        "advanced_title": "Avanserte filtre",
+        "date_from": "Fra dato",
+        "date_to": "Til dato",
+        "facility_type": "Fasilitetstype",
+        "handler": "Behandler",
+        "all_handlers": "Alle behandlere",
+        "admin": "Administrator",
+        "case_worker": "Saksbehandler",
+        "duration": "Varighet"
+      },
+      "actions": {
+        "view_details": "Vis detaljer",
+        "approve": "Godkjenn",
+        "reject": "Avvis",
+        "delete": "Slett",
+        "edit": "Rediger"
+      },
+      "empty": {
+        "no_bookings": "Ingen bookinger funnet",
+        "try_different_criteria": "Prøv å justere søk eller filterkriterier",
+        "no_bookings_currently": "Det er ingen bookinger som matcher dine nåværende filtre"
+      },
+      "status_mixed_pending": "Blandet - Ventende",
+      "status_mixed_approved": "Blandet - Godkjent",
+      "occurrences_count": "{{count}} forekomster",
+      "period": "Periode",
+      "workflows": {
+        "title": "Bookingarbeidsflyter",
+        "subtitle": "Administrer bookingarbeidsflyter og maler",
+        "description": "Opprett og administrer gjenbrukbare bookingarbeidsflyter for vanlige scenarier",
+        "create_new": "Opprett ny arbeidsflyt",
+        "examples": {
+          "schools_name": "Skolebookinger",
+          "schools_desc": "Gjentakende bookinger for skoler og pedagogiske institusjoner",
+          "sports_name": "Sportsklubbbookinger",
+          "sports_desc": "Regelmessige bookinger for sportsklubber og idrettsorganisasjoner",
+          "commercial_name": "Kommeresielle bookinger",
+          "commercial_desc": "Bedrifts- og kommersielle fasilitetsbookinger"
+        },
+        "status_active": "Aktiv"
+      }
+    },
+    "facilities": {
+      "title": "Fasilitetsadministrasjon",
+      "subtitle": "Administrer og organiser fasilitetsoppføringer",
+      "create_new": "Opprett ny fasilitet",
+      "search_placeholder": "Søk i fasiliteter...",
+      "filter": "Filtrer",
+      "sort": {
+        "name": "Navn",
+        "capacity": "Kapasitet",
+        "last_updated": "Sist oppdatert"
+      },
+      "results": {
+        "count": "{{count}} fasiliteter funnet"
+      },
+      "view_modes": {
+        "grid": "Rutenettvisning",
+        "list": "Listevisning"
+      },
+      "card": {
+        "show_more_amenities": "+{{count}} flere fasiliteter",
+        "capacity": "{{capacity}} personer",
+        "edit": "Rediger",
+        "status": "Status",
+        "published": "Publisert",
+        "owner": "Eier",
+        "last_updated": "Sist oppdatert"
+      }
+    },
+    "users_roles": {
+      "title": "Brukere og roller",
+      "subtitle": "Administrer brukerkontoer og rolletillatelser",
+      "users_tab": {
+        "title": "Brukere",
+        "subtitle": "Vis og administrer alle brukerkontoer",
+        "new_user": "Ny bruker",
+        "selected_count": "{{count}} valgt"
+      },
+      "roles_tab": {
+        "title": "Roller",
+        "subtitle": "Definer og administrer rolletillatelser",
+        "new_role": "Ny rolle"
+      },
+      "search": {
+        "placeholder": "Søk i brukere..."
+      },
+      "filters": {
+        "all_roles": "Alle roller",
+        "all_statuses": "Alle statuser",
+        "role_admin": "Administrator",
+        "role_saksbehandler": "Saksbehandler",
+        "role_redaktor": "Redaktør",
+        "role_lesetilgang": "Lesetilgang",
+        "status_active": "Aktiv",
+        "status_inactive": "Inaktiv",
+        "status_invitation_sent": "Invitasjon sendt"
+      },
+      "table": {
+        "user": "Bruker",
+        "role": "Rolle",
+        "last_login": "Sist innlogget",
+        "status": "Status",
+        "actions": "Handlinger",
+        "role_name": "Rollenavn",
+        "user_count": "Brukerantall",
+        "users_count": "{{count}} brukere",
+        "no_users_found": "Ingen brukere funnet",
+        "try_different_criteria": "Prøv å justere søk eller filterkriterier",
+        "no_users_description": "Det er ingen brukere i systemet ennå",
+        "no_roles_found": "Ingen roller funnet",
+        "create_first_role": "Opprett din første rolle for å komme i gang",
+        "status_badges": {
+          "active": "Aktiv",
+          "inactive": "Inaktiv",
+          "invitation_sent": "Invitasjon sendt"
+        }
+      },
+      "modals": {
+        "role": {
+          "permissions_label": "Tillatelser",
+          "title_new": "Opprett ny rolle",
+          "title_edit": "Rediger rolle",
+          "name_label": "Rollenavn",
+          "name_placeholder": "Skriv inn rollenavn",
+          "description_label": "Beskrivelse",
+          "description_placeholder": "Skriv inn rollebeskrivelse",
+          "cancel": "Avbryt",
+          "create": "Opprett rolle",
+          "save": "Lagre rolle"
+        },
+        "user": {
+          "title_edit": "Rediger bruker",
+          "title_new": "Opprett ny bruker",
+          "name_label": "Fullt navn",
+          "name_placeholder": "Skriv inn fullt navn",
+          "email_label": "E-postadresse",
+          "email_placeholder": "Skriv inn e-postadresse",
+          "role_label": "Rolle",
+          "role_placeholder": "Velg en rolle",
+          "status_label": "Status",
+          "cancel": "Avbryt",
+          "save": "Lagre bruker",
+          "send_invitation": "Send invitasjon",
+          "no_permissions": "Ingen tillatelser tildelt",
+          "permissions_label": "Tillatelser"
+        }
+      },
+      "actions": {
+        "edit": "Rediger",
+        "edit_role": "Rediger rolle",
+        "view_users": "Vis brukere",
+        "deactivate": "Deaktiver",
+        "reset_password": "Tilbakestill passord",
+        "resend_invitation": "Send invitasjon på nytt",
+        "remove_access": "Fjern tilgang",
+        "delete_user": "Slett bruker",
+        "enter_new_role": "Skriv inn ny rolle:",
+        "change_role": "Endre rolle"
+      },
+      "confirmations": {
+        "deactivate_user": "Er du sikker på at du vil deaktivere denne brukeren?",
+        "delete_user": "Er du sikker på at du vil slette denne brukeren?",
+        "user_updated": "Bruker oppdatert!",
+        "invitation_resent": "Invitasjon sendt på nytt!",
+        "error_save": "Feil ved lagring av data. Vennligst prøv igjen.",
+        "role_updated": "Rolle oppdatert!",
+        "role_created": "Rolle opprettet!",
+        "user_deactivated": "Bruker deaktivert!",
+        "error_deactivate": "Feil ved deaktivering av bruker. Vennligst prøv igjen.",
+        "user_deleted": "Bruker slettet!",
+        "error_delete": "Feil ved sletting av bruker. Vennligst prøv igjen.",
+        "error_invitation": "Feil ved sending av invitasjon. Vennligst prøv igjen.",
+        "role_status_changed": "Rollestatus endret!",
+        "error_role_status": "Feil ved endring av rollestatus. Vennligst prøv igjen.",
+        "error_bulk_action": "Feil ved utføring av massehandling. Vennligst prøv igjen."
+      },
+      "bulk_actions": {
+        "users_updated": "{{count}} brukere oppdatert!",
+        "invitations_sent": "Invitasjoner sendt til {{count}} brukere!",
+        "action_not_implemented": "Denne handlingen er ikke implementert ennå."
+      },
+      "permissions": {
+        "facilities": "Fasiliteter",
+        "facilities_create": "Opprett fasiliteter",
+        "facilities_edit": "Rediger fasiliteter",
+        "facilities_publish": "Publiser fasiliteter",
+        "facilities_delete": "Slett fasiliteter",
+        "bookings": "Bookinger",
+        "bookings_view": "Vis bookinger",
+        "bookings_approve": "Godkjenn bookinger",
+        "bookings_reject": "Avvis bookinger",
+        "reports": "Rapporter",
+        "reports_view": "Vis rapporter",
+        "reports_export": "Eksporter rapporter"
+      },
+      "users_with_role": "{{count}} brukere med denne rollen"
     }
   },
   "components": {

@@ -179,6 +179,10 @@
     "all_bookings_completed": "All bookings completed",
     "calendar": "Calendar"
   },
+  "charts": {
+    "trend": "Trend Chart",
+    "chart_title": "{{title}} - {{period}}"
+  },
   "navigation": {
     "menu": "Menu",
     "sidebar": "Sidebar",

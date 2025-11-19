@@ -83,9 +83,9 @@ export function useStorageMigration<T>({
 
               if (supabaseError) throw supabaseError;
 
-              if (supabaseData && supabaseData[supabaseColumn]) {
+              if (supabaseData && (supabaseData as Record<string, any>)[supabaseColumn]) {
                 logMigrationEvent('readData:supabase', { success: true });
-                return supabaseData[supabaseColumn] as T;
+                return (supabaseData as Record<string, any>)[supabaseColumn] as T;
               }
             } catch (supabaseError) {
               logMigrationEvent('readData:supabase:fallback', { error: supabaseError });
@@ -109,8 +109,8 @@ export function useStorageMigration<T>({
 
             if (supabaseError) throw supabaseError;
 
-            if (supabaseData && supabaseData[supabaseColumn]) {
-              return supabaseData[supabaseColumn] as T;
+            if (supabaseData && (supabaseData as Record<string, any>)[supabaseColumn]) {
+              return (supabaseData as Record<string, any>)[supabaseColumn] as T;
             }
           }
 
@@ -156,19 +156,16 @@ export function useStorageMigration<T>({
           localStorage.setItem(localStorageKey, serializer(value));
 
           if (supabaseTable && supabaseColumn && userId) {
-            const payload: Record<string, unknown> = {
+            const payload = {
               user_id: userId,
               [supabaseColumn]: value,
             };
 
             const { error: supabaseError } = await supabase
               .from(supabaseTable)
-              .upsert(payload);
+              .upsert(payload as any);
 
-            if (supabaseError) {
-              logMigrationEvent('writeData:supabase:error', { error: supabaseError });
-              throw supabaseError;
-            }
+            if (supabaseError) throw supabaseError;
           }
           break;
         }
@@ -183,7 +180,7 @@ export function useStorageMigration<T>({
 
             const { error: supabaseError } = await supabase
               .from(supabaseTable)
-              .upsert(payload);
+              .upsert(payload as any);
 
             if (supabaseError) throw supabaseError;
 
@@ -245,14 +242,14 @@ export function useStorageMigration<T>({
 
       const localData = parser(stored);
 
-      const payload: Record<string, unknown> = {
+      const payload = {
         user_id: userId,
         [supabaseColumn]: localData,
       };
 
       const { error: supabaseError } = await supabase
         .from(supabaseTable)
-        .upsert(payload);
+        .upsert(payload as any);
 
       if (supabaseError) throw supabaseError;
 

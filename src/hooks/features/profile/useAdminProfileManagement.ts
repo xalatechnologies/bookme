@@ -133,7 +133,7 @@ export const useAdminProfileManagement = (): UseAdminProfileManagementReturn => 
           // Save to localStorage
           const storageKey = `avatar_${user.id}`;
           localStorage.setItem(storageKey, dataUrl);
-          showToastMessage(t('pages.settings.profile.personal_info.changes_saved'));
+          showToastMessage(t('pages.settings.changes_saved'));
         }
       };
       reader.readAsDataURL(file);
@@ -166,10 +166,10 @@ export const useAdminProfileManagement = (): UseAdminProfileManagementReturn => 
       await refreshProfile();
       
       setIsEditingPersonalInfo(false);
-      showToastMessage(t('pages.settings.profile.personal_info.changes_saved'));
+      showToastMessage(t('pages.settings.changes_saved'));
     } catch (error) {
       console.error('Failed to save profile:', error);
-      showToastMessage(t('pages.settings.profile.personal_info.save_failed'));
+      showToastMessage(t('pages.settings.save_failed'));
     }
   }, [profileForm, user?.id, refreshProfile, showToastMessage, t]);
 
@@ -177,7 +177,7 @@ export const useAdminProfileManagement = (): UseAdminProfileManagementReturn => 
   const handleSaveSecurity = useCallback(async (): Promise<void> => {
     // For now, just close the editing mode
     setIsEditingSecurity(false);
-    showToastMessage(t('pages.settings.profile.security.password.updated'));
+    showToastMessage(t('pages.settings.changes_saved'));
   }, [showToastMessage, t]);
 
   // Handle cancel editing for personal info

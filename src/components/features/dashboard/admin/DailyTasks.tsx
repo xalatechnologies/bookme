@@ -32,7 +32,7 @@ export const DailyTasks = (): JSX.Element => {
   const dailyTasks: readonly IDailyTask[] = [
     {
       id: "1",
-      title: t("dashboard.daily_tasks_section.pending_approvals"),
+      title: t("pages.dashboard.daily_tasks_section.pending_approvals"),
       count: 3,
       priority: "high",
       href: "/admin/bookings?filter=pending",
@@ -40,7 +40,7 @@ export const DailyTasks = (): JSX.Element => {
     },
     {
       id: "2",
-      title: t("dashboard.daily_tasks_section.payment_errors"),
+      title: t("pages.dashboard.daily_tasks_section.payment_errors"),
       count: 1,
       priority: "high",
       href: "/admin/bookings?filter=payment-error",
@@ -48,7 +48,7 @@ export const DailyTasks = (): JSX.Element => {
     },
     {
       id: "3",
-      title: t("dashboard.daily_tasks_section.users_no_roles"),
+      title: t("pages.dashboard.daily_tasks_section.users_no_roles"),
       count: 2,
       priority: "medium",
       href: "/admin/users-roles?filter=no-role",
@@ -65,7 +65,7 @@ export const DailyTasks = (): JSX.Element => {
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2 text-lg">
           <Zap className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-          {t("dashboard.daily_tasks")}
+          {t("pages.dashboard.daily_tasks")}
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -81,7 +81,7 @@ export const DailyTasks = (): JSX.Element => {
                 onClick={() => handleTaskClick(task.href)}
                 role="button"
                 tabIndex={0}
-                aria-label={t("dashboard.daily_tasks_section.view_task", { task: task.title })}
+                aria-label={t("pages.dashboard.daily_tasks_section.view_task", { task: task.title })}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" || e.key === " ") {
                     e.preventDefault();

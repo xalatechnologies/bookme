@@ -85,28 +85,28 @@ export const TrendCard = ({
 
   const getTrendLabel = (): string => {
     const direction = getTrendDirection();
-    if (direction === "stable") return t("dashboard.trends.stable");
+    if (direction === "stable") return t("pages.dashboard.trends.stable");
     return "";
   };
 
   const getUnitLabel = (): string => {
     // Determine unit based on title content
     if (title.toLowerCase().includes("booking")) {
-      return t("dashboard.trends.bookings");
+      return t("pages.dashboard.trends.bookings");
     }
     if (
       title.toLowerCase().includes("lokal") ||
       title.toLowerCase().includes("facilit")
     ) {
-      return t("dashboard.trends.facilities");
+      return t("pages.dashboard.trends.facilities");
     }
     if (
       title.toLowerCase().includes("bruker") ||
       title.toLowerCase().includes("user")
     ) {
-      return t("dashboard.trends.users");
+      return t("pages.dashboard.trends.users");
     }
-    return t("dashboard.trends.bookings");
+    return t("pages.dashboard.trends.bookings");
   };
 
   const trendDirection = getTrendDirection();
@@ -153,9 +153,9 @@ export const TrendCard = ({
                 }`}
                 aria-label={`${
                   trendDirection === "up"
-                    ? t("dashboard.trends.up")
+                    ? t("pages.dashboard.trends.up")
                     : trendDirection === "down"
-                    ? t("dashboard.trends.down")
+                    ? t("pages.dashboard.trends.down")
                     : getTrendLabel()
                 } ${Math.abs(trendPercentage)}`}
               >
@@ -164,7 +164,7 @@ export const TrendCard = ({
               </span>
             </div>
             <Badge className="bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300">
-              {t("dashboard.trends.last_7_days")}
+              {t("pages.dashboard.trends.last_7_days")}
             </Badge>
           </div>
 
@@ -172,10 +172,7 @@ export const TrendCard = ({
           <div
             className="flex items-end justify-between h-16 space-x-1"
             role="img"
-            aria-label={`${title} ${t("charts.trend")} ${t(
-              "charts.chart_title",
-              { title: title, period: t("dashboard.trends.last_7_days") }
-            )}`}
+            aria-label={`${title} chart`}
           >
             {data.map((item, index) => {
               const height =

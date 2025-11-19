@@ -390,6 +390,24 @@
           "theme_system": "System"
         },
 
+        "additional": {
+          "title": "Additional preferences",
+          "timezone": "Timezone",
+          "date_format": "Date format",
+          "landing_page": "Default landing page",
+          "landing_options": {
+            "dashboard": "Dashboard",
+            "bookings": "Bookings",
+            "messages": "Messages"
+          },
+          "calendar_view": "Default calendar view",
+          "calendar_options": {
+            "month": "Month",
+            "week": "Week",
+            "day": "Day"
+          }
+        },
+
         "notifications": {
           "title": "Notification settings",
           "email": "Email notifications",

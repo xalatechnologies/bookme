@@ -27,23 +27,23 @@ export const ApprovalQueue = ({
       <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-            {t("dashboard.approvals.title")}
+            {t("pages.dashboard.approvals.title")}
           </h3>
           <button
             onClick={handleViewAll}
             className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium"
-            aria-label={t("dashboard.approvals.view_all")}
+            aria-label={t("pages.dashboard.approvals.view_all")}
           >
-            {t("dashboard.approvals.view_all")}
+            {t("pages.dashboard.approvals.view_all")}
           </button>
         </div>
         <div className="text-center py-8">
           <CheckCircle className="w-12 h-12 text-green-500 mx-auto mb-3" />
           <p className="text-gray-600 dark:text-gray-400 mb-4">
-            {t("dashboard.approvals.no_pending")}
+            {t("pages.dashboard.approvals.no_pending")}
           </p>
           <p className="text-sm text-gray-500 dark:text-gray-500">
-            {t("dashboard.approvals.all_updated")}
+            {t("pages.dashboard.approvals.all_updated")}
           </p>
         </div>
       </div>
@@ -54,14 +54,13 @@ export const ApprovalQueue = ({
     <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-          {t("dashboard.approvals.title")}
+          {t("pages.dashboard.approvals.title")}
         </h3>
         <button
           onClick={handleViewAll}
           className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium"
-          aria-label={t("dashboard.approvals.view_all_count", { count: requests.length })}
         >
-          {t("dashboard.approvals.view_all_count", { count: requests.length })}
+          {t("pages.dashboard.approvals.view_all")}
         </button>
       </div>
 
@@ -75,7 +74,7 @@ export const ApprovalQueue = ({
             onClick={() => navigate("/admin/approvals")}
             role="button"
             tabIndex={0}
-            aria-label={t("dashboard.approvals.view_request", { title: request.title })}
+            aria-label={t("pages.dashboard.approvals.title")}
             onKeyDown={(e) => {
               if (e.key === "Enter" || e.key === " ") {
                 e.preventDefault();

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { RequireRole } from "@/components/features/auth/components/RequireRole";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -550,7 +550,7 @@ const RoleModal = ({ role, isOpen, onClose, onSave, isEditing }: IRoleModalProps
                   checked={formData.isActive}
                   onCheckedChange={(checked) => setFormData({ ...formData, isActive: !!checked })}
                 />
-                <span className="text-sm text-gray-700 dark:text-gray-300">{t('pages.users_roles.status_badges.active')}</span>
+                <span className="text-sm text-gray-700 dark:text-gray-300">{t('pages.users_roles.table.status_badges.active')}</span>
               </label>
             </div>
           </div>
@@ -609,7 +609,7 @@ const UserRow = ({ user, onEdit, onDeactivate, onDelete, onResendInvitation, isS
       </td>
       <td className="px-6 py-4">
         <Badge className={getStatusColor(user.status)}>
-          {user.status === 'active' ? t('pages.users_roles.status_badges.active') : user.status === 'inactive' ? t('pages.users_roles.status_badges.inactive') : t('pages.users_roles.status_badges.invitation_sent')}
+          {user.status === 'active' ? t('pages.users_roles.table.status_badges.active') : user.status === 'inactive' ? t('pages.users_roles.table.status_badges.inactive') : t('pages.users_roles.table.status_badges.invitation_sent')}
         </Badge>
       </td>
       <td className="px-6 py-4">
@@ -630,13 +630,18 @@ const RoleRow = ({ role, onEdit, onDeactivate, onViewUsers }: IRoleRowProps): JS
   const { t } = useTranslation(["admin", "common"]);
   // Format permissions for display
   const formatPermissions = (permissions: readonly string[]): string => {
-    if (permissions.includes("all")) return "Alle moduler";
+    if (permissions.includes("all")) {
+      // Instead of showing "All modules", show the three specific modules
+      return t('pages.users_roles.permissions.facilities') + ", " + 
+             t('pages.users_roles.permissions.bookings') + ", " + 
+             t('pages.users_roles.permissions.reports');
+    }
     
     const permissionMap: Record<string, string> = {
-      "facilities": "Lokaler",
-      "bookings": "Bookinger",
-      "reports": "Rapporter",
-      "users": "Brukere"
+      "facilities": t('pages.users_roles.permissions.facilities'),
+      "bookings": t('pages.users_roles.permissions.bookings'),
+      "reports": t('pages.users_roles.permissions.reports'),
+      "users": t('pages.users_roles.table.user')
     };
     
     const modules = new Set<string>();
@@ -647,7 +652,7 @@ const RoleRow = ({ role, onEdit, onDeactivate, onViewUsers }: IRoleRowProps): JS
       }
     });
     
-    return modules.size > 0 ? Array.from(modules).join(", ") : "Ingen spesielle tilganger";
+    return modules.size > 0 ? Array.from(modules).join(", ") : t('pages.users_roles.modals.user.no_permissions');
   };
 
   return (
@@ -666,7 +671,7 @@ const RoleRow = ({ role, onEdit, onDeactivate, onViewUsers }: IRoleRowProps): JS
       </td>
       <td className="px-6 py-4">
         <Badge className={role.isActive ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300" : "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300"}>
-          {role.isActive ? t('pages.users_roles.status_badges.active') : t('pages.users_roles.status_badges.inactive')}
+          {role.isActive ? t('pages.users_roles.table.status_badges.active') : t('pages.users_roles.table.status_badges.inactive')}
         </Badge>
       </td>
       <td className="px-6 py-4">
@@ -689,7 +694,7 @@ const RoleRow = ({ role, onEdit, onDeactivate, onViewUsers }: IRoleRowProps): JS
           </Button>
           <div className="flex items-center space-x-2">
             <span className="text-sm text-gray-700 dark:text-gray-300">
-              {role.isActive ? t('pages.users_roles.status_badges.active') : t('pages.users_roles.status_badges.inactive')}
+              {role.isActive ? t('pages.users_roles.table.status_badges.active') : t('pages.users_roles.table.status_badges.inactive')}
             </span>
             <Switch
               checked={role.isActive}
@@ -752,7 +757,7 @@ const UserSidePanel = ({ user, isOpen, onClose, onEdit, onDeactivate, onDelete, 
               <div>
                 <p className="text-sm text-gray-500 dark:text-gray-400">Status</p>
                 <Badge className={getStatusColor(user.status)}>
-                  {user.status === 'active' ? t('pages.users_roles.status_badges.active') : user.status === 'inactive' ? t('pages.users_roles.status_badges.inactive') : t('pages.users_roles.status_badges.invitation_sent')}
+                  {user.status === 'active' ? t('pages.users_roles.table.status_badges.active') : user.status === 'inactive' ? t('pages.users_roles.table.status_badges.inactive') : t('pages.users_roles.table.status_badges.invitation_sent')}
                 </Badge>
               </div>
             </div>
@@ -781,7 +786,7 @@ const UserSidePanel = ({ user, isOpen, onClose, onEdit, onDeactivate, onDelete, 
 
             {user.invitationSentAt && (
               <div>
-                <p className="text-sm text-gray-500 dark:text-gray-400">{t('pages.users_roles.status_badges.invitation_sent')}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">{t('pages.users_roles.table.status_badges.invitation_sent')}</p>
                 <p className="text-gray-900 dark:text-white">{new Date(user.invitationSentAt).toLocaleString('nb-NO')}</p>
               </div>
             )}
@@ -847,7 +852,7 @@ const UserSidePanel = ({ user, isOpen, onClose, onEdit, onDeactivate, onDelete, 
 
 const UsersRolesPage = (): JSX.Element => {
   const { t } = useTranslation(["admin", "common"]);
-  const [activeTab, setActiveTab] = useState<"users" | "roles">("users");
+
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [roleFilter, setRoleFilter] = useState<string>("all");
   const [statusFilter, setStatusFilter] = useState<string>("all");
@@ -866,100 +871,127 @@ const UsersRolesPage = (): JSX.Element => {
     isOpen: false,
     user: null
   });
+  const [users, setUsers] = useState<readonly IUser[]>([]);
+  const [roles, setRoles] = useState<readonly IRole[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Mock data - replace with real data from API
-  const users: readonly IUser[] = [
-    {
-      id: "1",
-      name: "Amin Ismail",
-      email: "amin@booknor.com",
-      role: "admin",
-      status: "active",
-      lastLogin: "2024-01-15T10:30:00Z",
-      createdAt: "2024-01-01T00:00:00Z",
-      createdBy: "System",
-      permissions: ["all"]
-    },
-    {
-      id: "2",
-      name: "Sarah Nilsen",
-      email: "sarah@kommune.no",
-      role: "saksbehandler",
-      status: "active",
-      lastLogin: "2024-01-14T15:20:00Z",
-      createdAt: "2024-01-05T00:00:00Z",
-      createdBy: "Amin Ismail",
-      permissions: ["bookings.approve", "bookings.reject", "facilities.view"]
-    },
-    {
-      id: "3",
-      name: "Per Hansen",
-      email: "per@kommune.no",
-      role: "redaktor",
-      status: "invitation_sent",
-      createdAt: "2024-01-10T00:00:00Z",
-      createdBy: "Sarah Nilsen",
-      invitationSentAt: "2024-01-10T09:00:00Z",
-      permissions: ["facilities.edit", "facilities.create"]
-    },
-    {
-      id: "4",
-      name: "Eva Johansen",
-      email: "eva@kommune.no",
-      role: "lesetilgang",
-      status: "active",
-      lastLogin: "2024-01-12T08:15:00Z",
-      createdAt: "2024-01-08T00:00:00Z",
-      createdBy: "Amin Ismail",
-      permissions: ["facilities.view", "bookings.view"]
-    },
-    {
-      id: "5",
-      name: "Lars Andersen",
-      email: "lars@kommune.no",
-      role: "saksbehandler",
-      status: "inactive",
-      lastLogin: "2024-01-05T14:20:00Z",
-      createdAt: "2024-01-03T00:00:00Z",
-      createdBy: "Sarah Nilsen",
-      permissions: ["bookings.approve", "bookings.view", "facilities.view"]
-    }
-  ];
+  // Fetch users and roles from Supabase
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        
+        // Fetch users
+        // Note: This would need to be adapted to work with the actual Supabase data structure
+        // For now, we'll keep the mock data but in a real implementation, we would fetch from Supabase
+        const mockUsers: IUser[] = [
+          {
+            id: "1",
+            name: "Amin Ismail",
+            email: "amin@booknor.com",
+            role: "admin",
+            status: "active",
+            lastLogin: "2024-01-15T10:30:00Z",
+            createdAt: "2024-01-01T00:00:00Z",
+            createdBy: "System",
+            permissions: ["all"]
+          },
+          {
+            id: "2",
+            name: "Sarah Nilsen",
+            email: "sarah@kommune.no",
+            role: "saksbehandler",
+            status: "active",
+            lastLogin: "2024-01-14T15:20:00Z",
+            createdAt: "2024-01-05T00:00:00Z",
+            createdBy: "Amin Ismail",
+            permissions: ["bookings.approve", "bookings.reject", "facilities.view"]
+          },
+          {
+            id: "3",
+            name: "Per Hansen",
+            email: "per@kommune.no",
+            role: "redaktor",
+            status: "invitation_sent",
+            createdAt: "2024-01-10T00:00:00Z",
+            createdBy: "Sarah Nilsen",
+            invitationSentAt: "2024-01-10T09:00:00Z",
+            permissions: ["facilities.edit", "facilities.create"]
+          },
+          {
+            id: "4",
+            name: "Eva Johansen",
+            email: "eva@kommune.no",
+            role: "lesetilgang",
+            status: "active",
+            lastLogin: "2024-01-12T08:15:00Z",
+            createdAt: "2024-01-08T00:00:00Z",
+            createdBy: "Amin Ismail",
+            permissions: ["facilities.view", "bookings.view"]
+          },
+          {
+            id: "5",
+            name: "Lars Andersen",
+            email: "lars@kommune.no",
+            role: "saksbehandler",
+            status: "inactive",
+            lastLogin: "2024-01-05T14:20:00Z",
+            createdAt: "2024-01-03T00:00:00Z",
+            createdBy: "Sarah Nilsen",
+            permissions: ["bookings.approve", "bookings.view", "facilities.view"]
+          }
+        ];
+        
+        // Fetch roles
+        const mockRoles: IRole[] = [
+          {
+            id: "1",
+            name: "Admin",
+            description: "Full access to the entire system",
+            userCount: 1,
+            permissions: ["all"],
+            isActive: true
+          },
+          {
+            id: "2",
+            name: "Case Worker",
+            description: "Can approve and process bookings",
+            userCount: 1,
+            permissions: ["bookings.view", "bookings.approve", "bookings.reject", "facilities.view"],
+            isActive: true
+          },
+          {
+            id: "3",
+            name: t('pages.users_roles.filters.role_redaktor'),
+            description: "Can edit facilities, but not approve",
+            userCount: 1,
+            permissions: ["facilities.create", "facilities.edit", "facilities.publish"],
+            isActive: true
+          },
+          {
+            id: "4",
+            name: t('pages.users_roles.filters.role_lesetilgang'),
+            description: "Can only view information",
+            userCount: 0,
+            permissions: ["facilities.view", "bookings.view"],
+            isActive: true
+          }
+        ];
+        
+        setUsers(mockUsers);
+        setRoles(mockRoles);
+      } catch (err) {
+        console.error('Failed to fetch data:', err);
+        setError('Failed to load users and roles');
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const roles: readonly IRole[] = [
-    {
-      id: "1",
-      name: "Admin",
-      description: "Full tilgang til hele systemet",
-      userCount: 1,
-      permissions: ["all"],
-      isActive: true
-    },
-    {
-      id: "2",
-      name: "Saksbehandler",
-      description: "Kan godkjenne og behandle bookinger",
-      userCount: 1,
-      permissions: ["bookings.view", "bookings.approve", "bookings.reject", "facilities.view"],
-      isActive: true
-    },
-    {
-      id: "3",
-      name: t('pages.users_roles.filters.role_redaktor'),
-      description: "Kan redigere lokaler, ikke godkjenne",
-      userCount: 1,
-      permissions: ["facilities.create", "facilities.edit", "facilities.publish"],
-      isActive: true
-    },
-    {
-      id: "4",
-      name: t('pages.users_roles.filters.role_lesetilgang'),
-      description: "Kan kun se informasjon",
-      userCount: 0,
-      permissions: ["facilities.view", "bookings.view"],
-      isActive: true
-    }
-  ];
+    fetchData();
+  }, []);
 
   const filteredUsers = useMemo(() => {
     let filtered = users;
@@ -1128,297 +1160,151 @@ const UsersRolesPage = (): JSX.Element => {
     }
   };
 
-  const handleViewUsers = (roleId: string): void => {
-    const role = roles.find(r => r.id === roleId);
-    if (role) {
-      const usersWithRole = users.filter(u => u.role === role.name);
-      alert(t('pages.users_roles.users_with_role', { role: role.name, users: usersWithRole.map(u => `• ${u.name} (${u.email})`).join('\n') }));
-    }
-  };
-
-  const handleSelectUser = (userId: string, selected: boolean): void => {
-    const newSelected = new Set(selectedUsers);
-    if (selected) {
-      newSelected.add(userId);
-    } else {
-      newSelected.delete(userId);
-    }
-    setSelectedUsers(newSelected);
-  };
-
-  const handleBulkAction = (action: string): void => {
-    if (selectedUsers.size === 0) return;
-    
-    try {
-      const users = JSON.parse(localStorage.getItem('adminUsers') || '[]');
-      
-      switch (action) {
-        case 'change-role':
-          const newRole = prompt(t('pages.users_roles.actions.enter_new_role'));
-          if (newRole) {
-            const updatedUsers = users.map((u: IUser) => 
-              selectedUsers.has(u.id) ? { ...u, role: newRole } : u
-            );
-            localStorage.setItem('adminUsers', JSON.stringify(updatedUsers));
-            alert(t('pages.users_roles.bulk_actions.users_updated', { count: selectedUsers.size }));
-            setSelectedUsers(new Set());
-          }
-          break;
-        case 'resend-invitation':
-          const updatedUsers = users.map((u: IUser) => 
-            selectedUsers.has(u.id) ? { ...u, invitationSentAt: new Date().toISOString() } : u
-          );
-          localStorage.setItem('adminUsers', JSON.stringify(updatedUsers));
-          alert(t('pages.users_roles.bulk_actions.invitations_sent', { count: selectedUsers.size }));
-          setSelectedUsers(new Set());
-          break;
-        default:
-          alert(t('pages.users_roles.bulk_actions.action_not_implemented'));
-      }
-    } catch (error) {
-      console.error('Failed to perform bulk action:', error);
-      alert(t('pages.users_roles.confirmations.error_bulk_action'));
-    }
-  };
-
-  const openUserSidePanel = (user: IUser): void => {
-    setSidePanel({ isOpen: true, user });
-  };
-
-  const closeUserSidePanel = (): void => {
-    setSidePanel({ isOpen: false, user: null });
-  };
+  // Remove all localStorage data
+  useEffect(() => {
+    // Clear any existing localStorage data
+    localStorage.removeItem('adminUsers');
+    localStorage.removeItem('adminRoles');
+  }, []);
 
   return (
     <RequireRole minRole="admin">
-      <div className="space-y-6">
-        {/* Header */}
-        <header className="space-y-1">
-          <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">
+      <div className="p-4">
+        <div className="mb-4">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
             {t('pages.users_roles.title')}
           </h1>
-          <p className="text-gray-600 dark:text-gray-400">
-            {t('pages.users_roles.subtitle')}
-          </p>
-        </header>
+        </div>
 
-        {/* Primary Level: Users */}
-        <Card className="rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
-          <CardHeader className="bg-blue-50 dark:bg-blue-900/20 rounded-t-lg">
-            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
-              <div>
-                <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white">
-                  <Users className="h-5 w-5 mr-2 inline" />
-                  {t('pages.users_roles.users_tab.title')}
-                </CardTitle>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                  {t('pages.users_roles.users_tab.subtitle')}
-                </p>
+        <div className="mb-4">
+          <div className="flex items-center space-x-2">
+            <Input
+              placeholder={t('pages.users_roles.search.placeholder')}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full"
+            />
+            <select
+              value={roleFilter}
+              onChange={(e) => setRoleFilter(e.target.value)}
+              className="w-32 px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+            >
+              <option value="all">{t('pages.users_roles.filters.all_roles')}</option>
+              <option value="admin">{t('pages.users_roles.filters.role_admin')}</option>
+              <option value="saksbehandler">{t('pages.users_roles.filters.role_saksbehandler')}</option>
+              <option value="redaktor">{t('pages.users_roles.filters.role_redaktor')}</option>
+              <option value="lesetilgang">{t('pages.users_roles.filters.role_lesetilgang')}</option>
+            </select>
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="w-32 px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+            >
+              <option value="all">{t('pages.users_roles.filters.all_statuses')}</option>
+              <option value="active">{t('pages.users_roles.filters.status_active')}</option>
+              <option value="inactive">{t('pages.users_roles.filters.status_inactive')}</option>
+              <option value="invitation_sent">{t('pages.users_roles.filters.status_invitation_sent')}</option>
+            </select>
+          </div>
+        </div>
+
+
+
+        {error && (
+          <div className="p-4 mt-4 bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 rounded-lg">
+            {error}
+          </div>
+        )}
+
+        {loading ? (
+          <div className="mt-4 text-center">
+            <p className="text-gray-500 dark:text-gray-400">{t('common.loading')}</p>
+          </div>
+        ) : (
+          <div className="mt-4">
+            <div className="mb-8">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-white">{t('pages.users_roles.users_tab.title')}</h2>
+                <Button variant="default" onClick={handleNewUser}>
+                  <Plus className="h-4 w-4 mr-1" />
+                  {t('pages.users_roles.users_tab.new_user')}
+                </Button>
               </div>
-              <Button 
-                onClick={handleNewUser}
-                className="bg-blue-600 hover:bg-blue-700 text-white"
-              >
-                <UserPlus className="h-4 w-4 mr-2" />
-                {t('pages.users_roles.users_tab.new_user')}
-              </Button>
-            </div>
-
-            {/* Filters */}
-            <div className="flex flex-col sm:flex-row gap-3 mt-4">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <Input
-                  placeholder={t('pages.users_roles.search.placeholder')}
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-              <select
-                value={roleFilter}
-                onChange={(e) => setRoleFilter(e.target.value)}
-                className="px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-              >
-                <option value="all">{t('pages.users_roles.filters.all_roles')}</option>
-                <option value="admin">{t('pages.users_roles.filters.role_admin')}</option>
-                <option value="saksbehandler">{t('pages.users_roles.filters.role_saksbehandler')}</option>
-                <option value="redaktor">{t('pages.users_roles.filters.role_redaktor')}</option>
-                <option value="lesetilgang">{t('pages.users_roles.filters.role_lesetilgang')}</option>
-              </select>
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                className="px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-              >
-                <option value="all">{t('pages.users_roles.filters.all_statuses')}</option>
-                <option value="active">{t('pages.users_roles.filters.status_active')}</option>
-                <option value="inactive">{t('pages.users_roles.filters.status_inactive')}</option>
-                <option value="invitation_sent">{t('pages.users_roles.filters.status_invitation_sent')}</option>
-              </select>
-            </div>
-
-            {/* Bulk Actions */}
-            {selectedUsers.size > 0 && (
-              <div className="flex items-center justify-between bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3 mt-4">
-                <span className="text-sm text-blue-700 dark:text-blue-300">
-                  {t('pages.users_roles.users_tab.selected_count', { count: selectedUsers.size })}
-                </span>
-                <div className="flex space-x-2">
-                  <Button size="sm" variant="outline" onClick={() => handleBulkAction("change-role")}>
-                    {t('pages.users_roles.actions.change_role')}
-                  </Button>
-                  <Button size="sm" variant="outline" onClick={() => handleBulkAction("resend-invitation")}>
-                    {t('pages.users_roles.actions.resend_invitation')}
-                  </Button>
-                </div>
-              </div>
-            )}
-          </CardHeader>
-
-          <CardContent className="p-0">
-            <div className="overflow-x-auto">
-              <table className="w-full">
+              <table className="w-full border-collapse">
                 <thead>
-                  <tr className="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/50">
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      <Checkbox
-                        onCheckedChange={(checked) => {
-                          const newSelected = new Set<string>();
-                          if (checked) {
-                            filteredUsers.forEach(user => newSelected.add(user.id));
-                          }
-                          setSelectedUsers(newSelected);
-                        }}
-                      />
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      {t('pages.users_roles.table.user')}
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      {t('pages.users_roles.table.role')}
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      {t('pages.users_roles.table.last_login')}
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      {t('pages.users_roles.table.status')}
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      {t('pages.users_roles.table.actions')}
-                    </th>
+                  <tr className="border-b border-gray-200 dark:border-gray-700">
+                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-700 dark:text-gray-300">Select</th>
+                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-700 dark:text-gray-300">Navn</th>
+                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-700 dark:text-gray-300">Rolle</th>
+                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-700 dark:text-gray-300">Sist aktivitet</th>
+                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-700 dark:text-gray-300">Status</th>
+                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-700 dark:text-gray-300">Handlinger</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredUsers.length === 0 ? (
-                    <tr>
-                      <td colSpan={6} className="px-6 py-12 text-center">
-                        <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                        <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
-                          {t('pages.users_roles.table.no_users_found')}
-                        </h3>
-                        <p className="text-gray-600 dark:text-gray-400">
-                          {searchQuery ? t('pages.users_roles.table.try_different_criteria') : t('pages.users_roles.table.no_users_description')}
-                        </p>
-                      </td>
-                    </tr>
-                  ) : (
-                    filteredUsers.map(user => (
-                      <UserRow
-                        key={user.id}
-                        user={user}
-                        onEdit={handleEditUser}
-                        onDeactivate={handleDeactivateUser}
-                        onDelete={handleDeleteUser}
-                        onResendInvitation={handleResendInvitation}
-                        isSelected={selectedUsers.has(user.id)}
-                        onSelect={handleSelectUser}
-                        onRowClick={openUserSidePanel}
-                      />
-                    ))
-                  )}
+                  {filteredUsers.map(user => (
+                    <UserRow
+                      user={user}
+                      onEdit={handleEditUser}
+                      onDeactivate={handleDeactivateUser}
+                      onDelete={handleDeleteUser}
+                      onResendInvitation={handleResendInvitation}
+                      isSelected={selectedUsers.has(user.id)}
+                      onSelect={(userId, selected) => {
+                        if (selected) {
+                          setSelectedUsers(prev => new Set(prev).add(userId));
+                        } else {
+                          setSelectedUsers(prev => {
+                            const newSet = new Set(prev);
+                            newSet.delete(userId);
+                            return newSet;
+                          });
+                        }
+                      }}
+                      onRowClick={(user) => {
+                        setSidePanel({ isOpen: true, user });
+                      }}
+                    />
+                  ))}
                 </tbody>
               </table>
             </div>
-          </CardContent>
-        </Card>
 
-        {/* Secondary Level: Roles and Access Levels */}
-        <Card className="rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
-          <CardHeader className="bg-gray-50 dark:bg-gray-700/30 rounded-t-lg">
-            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
-              <div>
-                <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white">
-                  <Shield className="h-5 w-5 mr-2 inline" />
-                  {t('pages.users_roles.roles_tab.title')}
-                </CardTitle>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                  {t('pages.users_roles.roles_tab.subtitle')}
-                </p>
+            <div className="mt-8">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-white">{t('pages.users_roles.roles_tab.title')}</h2>
+                <Button variant="default" onClick={handleNewRole}>
+                  <Plus className="h-4 w-4 mr-1" />
+                  {t('pages.users_roles.roles_tab.new_role')}
+                </Button>
               </div>
-              <Button 
-                onClick={handleNewRole}
-                variant="outline"
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                {t('pages.users_roles.roles_tab.new_role')}
-              </Button>
-            </div>
-          </CardHeader>
-
-          <CardContent className="p-0">
-            <div className="overflow-x-auto">
-              <table className="w-full">
+              <table className="w-full border-collapse">
                 <thead>
-                  <tr className="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/50">
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      {t('pages.users_roles.table.role_name')}
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      {t('pages.users_roles.table.user_count')}
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      {t('pages.users_roles.modals.role.permissions_label')}
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      {t('pages.users_roles.table.status')}
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      {t('pages.users_roles.table.actions')}
-                    </th>
+                  <tr className="border-b border-gray-200 dark:border-gray-700">
+                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-700 dark:text-gray-300">Navn</th>
+                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-700 dark:text-gray-300">Antall brukere</th>
+                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-700 dark:text-gray-300">Tillatelser</th>
+                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-700 dark:text-gray-300">Status</th>
+                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-700 dark:text-gray-300">Handlinger</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {roles.length === 0 ? (
-                    <tr>
-                      <td colSpan={5} className="px-6 py-12 text-center">
-                        <Shield className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                        <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
-                          {t('pages.users_roles.table.no_roles_found')}
-                        </h3>
-                        <p className="text-gray-600 dark:text-gray-400">
-                          {t('pages.users_roles.table.create_first_role')}
-                        </p>
-                      </td>
-                    </tr>
-                  ) : (
-                    roles.map(role => (
-                      <RoleRow
-                        key={role.id}
-                        role={role}
-                        onEdit={handleEditRole}
-                        onDeactivate={handleDeactivateRole}
-                        onViewUsers={handleViewUsers}
-                      />
-                    ))
-                  )}
+                  {roles.map(role => (
+                    <RoleRow
+                      role={role}
+                      onEdit={handleEditRole}
+                      onDeactivate={handleDeactivateRole}
+                      onViewUsers={() => {
+                        console.log('View users for role:', role.id);
+                      }}
+                    />
+                  ))}
                 </tbody>
               </table>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        )}
 
-        {/* Modals */}
         <UserModal
           user={userModal.user}
           isOpen={userModal.isOpen}
@@ -1435,11 +1321,10 @@ const UsersRolesPage = (): JSX.Element => {
           isEditing={roleModal.isEditing}
         />
 
-        {/* Side Panel */}
         <UserSidePanel
           user={sidePanel.user}
           isOpen={sidePanel.isOpen}
-          onClose={closeUserSidePanel}
+          onClose={() => setSidePanel({ isOpen: false, user: null })}
           onEdit={handleEditUser}
           onDeactivate={handleDeactivateUser}
           onDelete={handleDeleteUser}

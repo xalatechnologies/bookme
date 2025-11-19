@@ -46,9 +46,9 @@ export const useDailyTasksData = (): IDailyTasksHelpers => {
 
   const getPriorityLabel = (priority: "high" | "medium" | "low"): string => {
     const labels = {
-      high: t("dashboard.approvals.priority_high"),
-      medium: t("dashboard.approvals.priority_medium"),
-      low: t("dashboard.approvals.priority_low"),
+      high: t("pages.dashboard.approvals.priority_high"),
+      medium: t("pages.dashboard.approvals.priority_medium"),
+      low: t("pages.dashboard.approvals.priority_low"),
     };
     return labels[priority];
   };

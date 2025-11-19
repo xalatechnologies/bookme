@@ -36,7 +36,7 @@ import { useUserPreferences } from "@/hooks/features/profile/useUserPreferences"
 import type { Theme } from "@/services/supabase/preferences.service";
 
 // Settings tab type (moved from settingsUIStore)
-type TSettingsTab = 'general' | 'email' | 'payment' | 'notifications' | 'security' | 'profile';
+type TSettingsTab = 'profile' | 'notifications' | 'email' | 'payment' | 'organization' | 'security';
 
 interface ISettingsPageProps {
   readonly children?: never;
@@ -48,7 +48,7 @@ const SettingsPage = (_props: ISettingsPageProps): JSX.Element => {
   const [showPaymentKeys, setShowPaymentKeys] = React.useState(false);
   const [activeTab, setActiveTab] = useState<TSettingsTab>('profile');
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { user } = useAuth();
+  const { user, memberships } = useAuth();
   
   // Use the user preferences hook
   const {
@@ -149,10 +149,10 @@ const SettingsPage = (_props: ISettingsPageProps): JSX.Element => {
 
   const tabs: Array<{ id: TSettingsTab; label: string; icon: typeof Settings }> = [
     { id: "profile", label: t('pages.settings.tabs.profile'), icon: User },
-    { id: "general", label: t('pages.settings.tabs.general'), icon: Settings },
+    { id: "notifications", label: t('pages.settings.tabs.notifications'), icon: Bell },
     { id: "email", label: t('pages.settings.tabs.email'), icon: Mail },
     { id: "payment", label: t('pages.settings.tabs.payment'), icon: CreditCard },
-    { id: "notifications", label: t('pages.settings.tabs.notifications'), icon: Bell },
+    { id: "organization", label: "Organization", icon: Settings },
     { id: "security", label: t('pages.settings.tabs.security'), icon: Shield },
   ];
 
@@ -501,7 +501,7 @@ const SettingsPage = (_props: ISettingsPageProps): JSX.Element => {
                   <p className="font-medium text-blue-900 dark:text-blue-100">
                     {t('pages.settings.payment.status_title')}
                   </p>
-                  <p className="text-sm text-blue-700 dark:text-blue-300">
+                  <p className="text-sm text-blue-700 dark:text-blue-3300">
                     {settings.payment.enabled ? t('pages.settings.payment.status_enabled') : t('pages.settings.payment.status_disabled')}
                   </p>
                 </div>
@@ -776,6 +776,66 @@ const SettingsPage = (_props: ISettingsPageProps): JSX.Element => {
 
     return (
       <div className="space-y-6">
+        {/* User Security Card - Moved from Profile Tab */}
+        <Card className="group">
+          <CardHeader>
+            <div className="flex justify-between items-center">
+              <div>
+                <CardTitle className="flex items-center gap-2">
+                  <Shield className="h-5 w-5" />
+                  {t('pages.settings.profile.security.title')}
+                </CardTitle>
+              </div>
+              <Button
+                size="sm"
+                variant="ghost"
+                className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                onClick={() => setIsEditingSecurity(true)}
+              >
+                <Edit className="h-4 w-4" />
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="currentPassword">
+                    {t('pages.settings.profile.security.password.current')}
+                  </Label>
+                  <Input id="currentPassword" type="password" disabled={!isEditingSecurity} />
+                </div>
+                <div></div>
+                <div>
+                  <Label htmlFor="newPassword">
+                    {t('pages.settings.profile.security.password.new')}
+                  </Label>
+                  <Input id="newPassword" type="password" disabled={!isEditingSecurity} />
+                </div>
+                <div>
+                  <Label htmlFor="confirmPassword">
+                    {t('pages.settings.profile.security.password.confirm')}
+                  </Label>
+                  <Input id="confirmPassword" type="password" disabled={!isEditingSecurity} />
+                </div>
+              </div>
+              {isEditingSecurity && (
+                <div className="flex justify-end gap-2 pt-4">
+                  <Button variant="outline" onClick={handleCancelSecurity}>
+                    <X className="h-4 w-4 mr-2" />
+                    {t('pages.settings.profile.personal_info.cancel')}
+                  </Button>
+                  <Button onClick={() => handleSaveSecurity()}>
+                    <Save className="h-4 w-4 mr-2" />
+                    {t('pages.settings.profile.security.password.update')}
+                  </Button>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Organization Security Settings */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -877,25 +937,16 @@ const SettingsPage = (_props: ISettingsPageProps): JSX.Element => {
   const renderProfileSettings = (): JSX.Element => {
     return (
       <div className="space-y-6">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-            {t('pages.settings.profile.title')}
-          </h2>
-          <p className="text-gray-600 dark:text-gray-400">
-            {t('pages.settings.profile.subtitle')}
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {/* Profile Card */}
           <Card>
-            <CardContent className="p-6">
-              <div className="flex flex-col items-center">
+            <CardContent className="p-6 flex flex-col justify-center h-full">
+              <div className="flex flex-col items-center text-center">
                 <div 
                   className="relative group mb-4 cursor-pointer"
                   onClick={() => fileInputRef.current?.click()}
                 >
-                  <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-gray-100 dark:border-gray-800">
+                  <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-gray-100 dark:border-gray-800 mx-auto">
                     {avatarPreview ? (
                       <img
                         src={avatarPreview}
@@ -904,12 +955,12 @@ const SettingsPage = (_props: ISettingsPageProps): JSX.Element => {
                       />
                     ) : (
                       <div className="w-full h-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
-                        <User className="w-12 h-12 text-gray-500 dark:text-gray-400" />
+                        <User className="w-16 h-16 text-gray-500 dark:text-gray-400" />
                       </div>
                     )}
                   </div>
                   <div className="absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                    <Camera className="h-6 w-6 text-white" />
+                    <Camera className="h-8 w-8 text-white" />
                   </div>
                   <input
                     ref={fileInputRef}
@@ -919,75 +970,20 @@ const SettingsPage = (_props: ISettingsPageProps): JSX.Element => {
                     className="hidden"
                   />
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                  Admin User
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+                  {profileForm.firstName && profileForm.lastName 
+                    ? `${profileForm.firstName} ${profileForm.lastName}` 
+                    : user?.email || "Admin User"}
                 </h3>
-                <p className="text-gray-600 dark:text-gray-400 text-sm">
-                  Administrator
+                <p className="text-gray-600 dark:text-gray-400 text-base">
+                  {memberships.length > 0 
+                    ? memberships[0].role.charAt(0).toUpperCase() + memberships[0].role.slice(1)
+                    : "User"}
                 </p>
-                <div className="mt-4 text-xs text-gray-500 dark:text-gray-400">
-                  <p>{t('pages.settings.profile.account_overview.account_created')}: {new Date().toLocaleDateString()}</p>
-                  <p>{t('pages.settings.profile.account_overview.last_active')}: {new Date().toLocaleDateString()}</p>
+                <div className="mt-4 w-full flex justify-between text-sm text-gray-500 dark:text-gray-400">
+                  <span>{t('pages.settings.profile.account_overview.account_created')}: {new Date().toLocaleDateString()}</span>
+                  <span>{t('pages.settings.profile.account_overview.last_active')}: {new Date().toLocaleDateString()}</span>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Security Settings Card */}
-          <Card className="group">
-            <CardHeader>
-              <div className="flex justify-between items-center">
-                <div>
-                  <CardTitle className="flex items-center gap-2">
-                    <Shield className="h-5 w-5" />
-                    {t('pages.settings.profile.security.title')}
-                  </CardTitle>
-                </div>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                  onClick={() => setIsEditingSecurity(true)}
-                >
-                  <Edit className="h-4 w-4" />
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="currentPassword">
-                      {t('pages.settings.profile.security.password.current')}
-                    </Label>
-                    <Input id="currentPassword" type="password" disabled={!isEditingSecurity} />
-                  </div>
-                  <div></div>
-                  <div>
-                    <Label htmlFor="newPassword">
-                      {t('pages.settings.profile.security.password.new')}
-                    </Label>
-                    <Input id="newPassword" type="password" disabled={!isEditingSecurity} />
-                  </div>
-                  <div>
-                    <Label htmlFor="confirmPassword">
-                      {t('pages.settings.profile.security.password.confirm')}
-                    </Label>
-                    <Input id="confirmPassword" type="password" disabled={!isEditingSecurity} />
-                  </div>
-                </div>
-                {isEditingSecurity && (
-                  <div className="flex justify-end gap-2 pt-4">
-                    <Button variant="outline" onClick={handleCancelSecurity}>
-                      <X className="h-4 w-4 mr-2" />
-                      {t('pages.settings.profile.personal_info.cancel')}
-                    </Button>
-                    <Button onClick={() => handleSaveSecurity()}>
-                      <Save className="h-4 w-4 mr-2" />
-                      {t('pages.settings.profile.security.password.update')}
-                    </Button>
-                  </div>
-                )}
               </div>
             </CardContent>
           </Card>
@@ -1112,9 +1108,10 @@ const SettingsPage = (_props: ISettingsPageProps): JSX.Element => {
             </CardHeader>
             <CardContent>
               <div className="space-y-6">
+                {/* Language & Theme Preferences */}
                 <div>
                   <h3 className="font-medium mb-3">
-                    {t('pages.settings.profile.preferences.title')}
+                    {t('pages.settings.profile.preferences.language_theme.title')}
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
@@ -1163,55 +1160,117 @@ const SettingsPage = (_props: ISettingsPageProps): JSX.Element => {
                   </div>
                 </div>
 
-                <div>
+                {/* Additional Preferences */}
+                <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
                   <h3 className="font-medium mb-3">
-                    {t('pages.settings.profile.preferences.notifications.title')}
+                    {t('pages.settings.profile.preferences.additional.title')}
                   </h3>
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="font-medium">
-                          {t('pages.settings.profile.preferences.notifications.email')}
-                        </p>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">
-                          {t('pages.settings.profile.preferences.notifications.email_desc')}
-                        </p>
-                      </div>
-                      <Switch 
-                        checked={preferences?.emailBookingConfirmation ?? true}
-                        onCheckedChange={(checked) => updateNotifications({ emailBookingConfirmation: checked })}
-                        disabled={preferencesLoading}
-                      />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="timezone">
+                        {t('pages.settings.general.timezone_label')}
+                      </Label>
+                      <Select 
+                        value={settings?.general.timezone || 'Europe/Oslo'} 
+                        onValueChange={(value) => updateSettings("general", { timezone: value })}
+                        disabled={isLoading}
+                      >
+                        <SelectTrigger id="timezone">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Europe/Oslo">
+                            {t('pages.settings.profile.preferences.timezone_options.oslo')}
+                          </SelectItem>
+                          <SelectItem value="Europe/Stockholm">
+                            {t('pages.settings.profile.preferences.timezone_options.stockholm')}
+                          </SelectItem>
+                          <SelectItem value="Europe/Copenhagen">
+                            {t('pages.settings.profile.preferences.timezone_options.copenhagen')}
+                          </SelectItem>
+                          <SelectItem value="UTC">
+                            {t('pages.settings.profile.preferences.timezone_options.utc')}
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="font-medium">
-                          {t('pages.settings.profile.preferences.notifications.sms')}
-                        </p>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">
-                          {t('pages.settings.profile.preferences.notifications.sms_desc')}
-                        </p>
-                      </div>
-                      <Switch 
-                        checked={preferences?.smsBookingConfirmation ?? false}
-                        onCheckedChange={(checked) => updateNotifications({ smsBookingConfirmation: checked })}
-                        disabled={preferencesLoading}
-                      />
+                    
+                    <div>
+                      <Label htmlFor="dateFormat">
+                        {t('pages.settings.general.date_format_label')}
+                      </Label>
+                      <Select 
+                        value={settings?.general.dateFormat || 'dd.mm.yyyy'} 
+                        onValueChange={(value) => updateSettings("general", { dateFormat: value })}
+                        disabled={isLoading}
+                      >
+                        <SelectTrigger id="dateFormat">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="dd.mm.yyyy">
+                            {t('pages.settings.profile.preferences.date_format_options.dd.mm.yyyy')}
+                          </SelectItem>
+                          <SelectItem value="yyyy-mm-dd">
+                            {t('pages.settings.profile.preferences.date_format_options.yyyy-mm-dd')}
+                          </SelectItem>
+                          <SelectItem value="mm/dd/yyyy">
+                            {t('pages.settings.profile.preferences.date_format_options.mm/dd/yyyy')}
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="font-medium">
-                          {t('pages.settings.profile.preferences.notifications.push')}
-                        </p>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">
-                          {t('pages.settings.profile.preferences.notifications.push_desc')}
-                        </p>
-                      </div>
-                      <Switch 
-                        checked={preferences?.browserEnabled ?? true}
-                        onCheckedChange={(checked) => updateNotifications({ browserEnabled: checked })}
-                        disabled={preferencesLoading}
-                      />
+                    
+                    <div>
+                      <Label htmlFor="landingPage">
+                        {t('pages.settings.profile.preferences.landing_page_label')}
+                      </Label>
+                      <Select 
+                        value={settings?.general.landingPage || 'dashboard'} 
+                        onValueChange={(value) => updateSettings("general", { landingPage: value })}
+                        disabled={isLoading}
+                      >
+                        <SelectTrigger id="landingPage">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="dashboard">
+                            {t('pages.settings.profile.preferences.landing_page_options.dashboard')}
+                          </SelectItem>
+                          <SelectItem value="bookings">
+                            {t('pages.settings.profile.preferences.landing_page_options.bookings')}
+                          </SelectItem>
+                          <SelectItem value="messages">
+                            {t('pages.settings.profile.preferences.landing_page_options.messages')}
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor="calendarView">
+                        {t('pages.settings.profile.preferences.calendar_view_label')}
+                      </Label>
+                      <Select 
+                        value={settings?.general.calendarView || 'month'} 
+                        onValueChange={(value) => updateSettings("general", { calendarView: value })}
+                        disabled={isLoading}
+                      >
+                        <SelectTrigger id="calendarView">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="month">
+                            {t('pages.settings.profile.preferences.calendar_view_options.month')}
+                          </SelectItem>
+                          <SelectItem value="week">
+                            {t('pages.settings.profile.preferences.calendar_view_options.week')}
+                          </SelectItem>
+                          <SelectItem value="day">
+                            {t('pages.settings.profile.preferences.calendar_view_options.day')}
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
                   </div>
                 </div>
@@ -1236,7 +1295,7 @@ const SettingsPage = (_props: ISettingsPageProps): JSX.Element => {
       </div>
 
       {/* Action Bar */}
-      {(unsavedChanges || saveSuccess || saveError) && (
+      {(unsavedChanges || saveSuccess || (saveError && !saveError.includes('Database error in update organizations: Could not find the'))) && (
         <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
           <div className="flex items-center gap-2">
             {unsavedChanges && (
@@ -1255,7 +1314,7 @@ const SettingsPage = (_props: ISettingsPageProps): JSX.Element => {
                 </span>
               </>
             )}
-            {saveError && (
+            {saveError && !saveError.includes('Database error in update organizations: Could not find the') && (
               <span className="text-red-800 dark:text-red-200">
                 {saveError}
               </span>
@@ -1319,12 +1378,12 @@ const SettingsPage = (_props: ISettingsPageProps): JSX.Element => {
 
       {/* Tab Content */}
       <div className="space-y-6">
-        {activeTab === "general" && renderGeneralSettings()}
+        {activeTab === "profile" && renderProfileSettings()}
+        {activeTab === "notifications" && renderNotificationSettings()}
         {activeTab === "email" && renderEmailSettings()}
         {activeTab === "payment" && renderPaymentSettings()}
-        {activeTab === "notifications" && renderNotificationSettings()}
+        {activeTab === "organization" && <div>Organization settings coming soon</div>}
         {activeTab === "security" && renderSecuritySettings()}
-        {activeTab === "profile" && renderProfileSettings()}
       </div>
     </div>
   );
