@@ -194,7 +194,18 @@
     "facilities": "Facilities",
     "book_facility": "Book this facility",
     "per_hour": "per hour",
-    "people": "people"
+    "people": "people",
+    "average_rating": "Average rating",
+    "rating": "Rating",
+    "no_rating": "No rating yet",
+    "total_area": "Total area",
+    "service_hours": "Service hours",
+    "property_type": "Property Type",
+    "amenities": "Amenities",
+    "experience": "Experience",
+    "spots": "Spots",
+    "used": "Used",
+    "no_address": "No address available"
   },
   "messages": {
     "success": {

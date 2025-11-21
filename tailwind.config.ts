@@ -2,7 +2,7 @@ import type { Config } from "tailwindcss";
 import tailwindcssAnimate from "tailwindcss-animate";
 
 const config: Config = {
-  darkMode: false, // Dark mode disabled
+  darkMode: ["class"], // Dark mode code preserved for future phases, but currently disabled (only light mode active)
   content: [
     "./pages/**/*.{ts,tsx}",
     "./components/**/*.{ts,tsx}",

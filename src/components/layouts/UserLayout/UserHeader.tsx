@@ -4,7 +4,7 @@ import React from "react";
 import { useLanguage } from "@/contexts/hooks";
 import { Logo } from "@/components/layouts/PublicLayout/Logo";
 import { LanguageToggle } from "@/components/layouts/PublicLayout/LanguageToggle";
-import { ThemeToggle } from "@/components/layouts/PublicLayout/ThemeToggle";
+// ThemeToggle removed - dark mode disabled
 import UserSearchField from "@/components/features/search/components/UserSearchField";
 import UserNotificationBell from "@/components/layouts/UserLayout/UserNotificationBell";
 import UserProfileDropdown from "@/components/layouts/UserLayout/UserProfileDropdown";
@@ -20,7 +20,7 @@ const UserHeader = (
   const { language, toggleLanguage } = useLanguage();
 
   return (
-    <header className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
+    <header className="flex items-center justify-between p-4 border-b border-gray-200 bg-white">
       {/* Logo */}
       <Logo />
 
@@ -32,7 +32,6 @@ const UserHeader = (
       {/* Right side actions */}
       <div className="flex items-center gap-2">
         <LanguageToggle language={language} toggleLanguage={toggleLanguage} />
-        <ThemeToggle />
         <UserNotificationBell />
         <UserProfileDropdown />
       </div>

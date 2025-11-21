@@ -194,7 +194,18 @@
     "facilities": "Fasiliteter",
     "book_facility": "Book denne fasiliteten",
     "per_hour": "per time",
-    "people": "personer"
+    "people": "personer",
+    "average_rating": "Gjennomsnittlig vurdering",
+    "rating": "Vurdering",
+    "no_rating": "Ingen vurdering ennå",
+    "total_area": "Total areal",
+    "service_hours": "Service timer",
+    "property_type": "Eiendomstype",
+    "amenities": "Fasiliteter",
+    "experience": "Opplevelse",
+    "spots": "Plasser",
+    "used": "Brukt",
+    "no_address": "Ingen adresse tilgjengelig"
   },
   "messages": {
     "success": {
