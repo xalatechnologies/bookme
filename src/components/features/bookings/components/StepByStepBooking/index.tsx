@@ -96,9 +96,9 @@ export interface IStepByStepBookingProps {
 }
 
 export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   facilityId,
-  facilityName,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  facilityName: _facilityName,
   zones,
   selectedZoneId,
   onZoneChange,

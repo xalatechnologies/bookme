@@ -437,7 +437,7 @@ export const LocalizedMultiSelect: React.FC<LocalizedMultiSelectProps> = ({
               {filteredOptions.map((option) => {
                 const isSelected = value.includes(option.value);
                 const isMaxReached =
-                  maxSelections && value.length >= maxSelections && !isSelected;
+                  maxSelections && maxSelections > 0 && value.length >= maxSelections && !isSelected;
 
                 return (
                   <CommandItem

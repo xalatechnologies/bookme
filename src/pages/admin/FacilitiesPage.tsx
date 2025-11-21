@@ -38,8 +38,9 @@ const FacilitiesPage = (
   const { t: translate } = useTranslation('admin');
   
   // Create a flexible translation function that bypasses strict type checking
-  const t = (key: string, options?: any) => {
-    return translate(key as any, options);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const _t = (key: string, options?: unknown) => {
+    return translate(key as never, options);
   };
 
   // ALL business logic and state management delegated to this hook

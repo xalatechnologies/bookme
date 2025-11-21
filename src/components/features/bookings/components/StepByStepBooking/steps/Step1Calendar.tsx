@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { format } from 'date-fns';
@@ -65,6 +65,23 @@ export const Step1Calendar = ({
     initialDate: new Date(),
     weekStartsOn: 1 // Monday
   });
+
+  /**
+   * Map WeekRange to calendar week format
+   */
+  const calendarWeek = useMemo(() => ({
+    startDate: currentWeek.startDate,
+    endDate: currentWeek.endDate,
+    days: currentWeek.days.map(day => ({
+      date: day.date,
+      isToday: day.isToday,
+      isWeekend: day.isWeekend,
+      isPast: day.isPast,
+      isHoliday: false,
+      holidayName: undefined,
+      timeSlots: []
+    }))
+  }), [currentWeek]);
 
   /**
    * Check if slot is selected
@@ -171,7 +188,7 @@ export const Step1Calendar = ({
               <TimeSlotGrid
                 facilityId={facilityId}
                 zoneId={selectedZone.id}
-                week={currentWeek}
+                week={calendarWeek}
                 selectedSlots={selectedSlots}
                 onSlotClick={handleSlotClick}
                 onBulkSelect={handleBulkSelect}

@@ -21,6 +21,7 @@ import type { ICartContext, ICartItem, ISelectedTimeSlot } from "@/types/cart";
  * - Wrap your app with CartProvider
  * - Use useCart() hook from '@/contexts/hooks/useCart' in components to access cart functionality
  */
+// eslint-disable-next-line react-refresh/only-export-components
 export const CartContext = createContext<ICartContext | undefined>(undefined);
 
 /**
