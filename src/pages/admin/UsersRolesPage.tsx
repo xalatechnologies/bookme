@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { useSearchParams } from "react-router-dom";
 import { RequireRole } from "@/components/features/auth/components/RequireRole";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -44,6 +45,10 @@ import {
 import { supabase } from '@/lib/clients/supabase';
 import type { Database } from '@/types/database';
 import { useAuth } from '@/contexts/hooks/useAuth';
+import { useRole } from '@/hooks/auth/useRole';
+import { ORG_ROLES, getAvailableRoles, normalizeRole } from '@/constants/roles';
+import { validateRoleChange } from '@/services/business/user.business.service';
+import type { OrgRole } from '@/constants/roles';
 
 interface IUser {
   readonly id: string;
@@ -136,23 +141,39 @@ const getInitials = (name: string): string => {
 };
 
 const getRoleColor = (role: string): string => {
-  const roleColors = {
+  const normalizedRole = normalizeRole(role);
+  const roleColors: Record<string, string> = {
+    owner: "bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-300",
     admin: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300",
+    case_handler: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300",
+    editor: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300",
+    read_only: "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300",
+    customer: "bg-slate-100 text-slate-800 dark:bg-slate-900/30 dark:text-slate-300",
+    staff: "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300",
+    // Backwards compatibility with Norwegian role names
     saksbehandler: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300",
     redaktor: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300",
     lesetilgang: "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300"
   };
-  return roleColors[role as keyof typeof roleColors] || roleColors.lesetilgang;
+  return roleColors[normalizedRole] || roleColors.read_only;
 };
 
 const getRoleIcon = (role: string): React.ComponentType<{ className?: string }> => {
-  const roleIcons = {
+  const normalizedRole = normalizeRole(role);
+  const roleIcons: Record<string, React.ComponentType<{ className?: string }>> = {
+    owner: Crown,
     admin: Crown,
+    case_handler: Briefcase,
+    editor: PenTool,
+    read_only: EyeIcon,
+    customer: User,
+    staff: Briefcase,
+    // Backwards compatibility with Norwegian role names
     saksbehandler: Briefcase,
     redaktor: PenTool,
     lesetilgang: EyeIcon
   };
-  return roleIcons[role as keyof typeof roleIcons] || EyeIcon;
+  return roleIcons[normalizedRole] || EyeIcon;
 };
 
 const formatTimeAgo = (dateString: string): string => {
@@ -365,10 +386,13 @@ const UserModal = ({ user, isOpen, onClose, onSave, isEditing }: IUserModalProps
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
               >
                 <option value="">{t('pages.users_roles.modals.user.role_placeholder')}</option>
-                <option value="admin">{t('pages.users_roles.filters.role_admin')}</option>
-                <option value="saksbehandler">{t('pages.users_roles.filters.role_saksbehandler')}</option>
-                <option value="redaktor">{t('pages.users_roles.filters.role_redaktor')}</option>
-                <option value="lesetilgang">{t('pages.users_roles.filters.role_lesetilgang')}</option>
+                <option value={ORG_ROLES.OWNER}>{t('roles.owner', 'Owner')}</option>
+                <option value={ORG_ROLES.ADMIN}>{t('roles.admin', 'Administrator')}</option>
+                <option value={ORG_ROLES.CASE_HANDLER}>{t('roles.case_handler', 'Case Handler')}</option>
+                <option value={ORG_ROLES.EDITOR}>{t('roles.editor', 'Editor')}</option>
+                <option value={ORG_ROLES.READ_ONLY}>{t('roles.read_only', 'Read Only')}</option>
+                <option value={ORG_ROLES.CUSTOMER}>{t('roles.customer', 'Customer')}</option>
+                <option value={ORG_ROLES.STAFF}>{t('roles.staff_deprecated', 'Staff (deprecated)')}</option>
               </select>
             </div>
 
@@ -856,7 +880,9 @@ const UserSidePanel = ({ user, isOpen, onClose, onEdit, onDeactivate, onDelete, 
 
 const UsersRolesPage = (): JSX.Element => {
   const { t } = useTranslation(["admin", "common"]);
-  const { currentOrgId } = useAuth();
+  const { currentOrgId, user: currentUser } = useAuth();
+  const { role: currentUserRole } = useRole(currentOrgId);
+  const [searchParams] = useSearchParams();
 
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [roleFilter, setRoleFilter] = useState<string>("all");
@@ -881,6 +907,18 @@ const UsersRolesPage = (): JSX.Element => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Initialize filters from URL query parameters
+  useEffect(() => {
+    const filterParam = searchParams.get('filter');
+    if (filterParam === 'no-role') {
+      // Show all users when filter=no-role
+      setRoleFilter('all');
+    } else if (filterParam) {
+      // Set role filter if a specific role is provided
+      setRoleFilter(filterParam);
+    }
+  }, [searchParams]);
+
   // Fetch users and roles from Supabase
   useEffect(() => {
     const fetchData = async () => {
@@ -893,56 +931,156 @@ const UsersRolesPage = (): JSX.Element => {
         setLoading(true);
         setError(null);
         
-        // First fetch memberships for the current organization (excluding customers)
-        const { data: membershipsData, error: membershipsError } = await supabase
+        // First fetch ALL memberships for the current organization (we'll filter customers later)
+        // This helps us debug what roles are actually in the database
+        const { data: allMembershipsData, error: allMembershipsError } = await supabase
           .from('memberships')
           .select('user_id, org_id, role')
-          .eq('org_id', currentOrgId)
-          .neq('role', 'customer'); // Exclude customers from the users list
+          .eq('org_id', currentOrgId);
 
-        if (membershipsError) {
-          throw new Error(membershipsError.message);
+        if (allMembershipsError) {
+          throw new Error(allMembershipsError.message);
         }
 
+        console.log('ALL memberships (before filtering):', allMembershipsData?.length || 0);
+        console.log('ALL memberships data:', JSON.stringify(allMembershipsData, null, 2));
+
+        // Filter out customers
+        const membershipsData = allMembershipsData?.filter(m => {
+          const normalizedRole = normalizeRole(m.role);
+          return normalizedRole !== 'customer';
+        }) || [];
+
+        console.log('Memberships after filtering customers:', membershipsData.length);
+
+        console.log('Memberships fetched:', membershipsData?.length || 0);
+        console.log('Memberships data:', JSON.stringify(membershipsData, null, 2));
+        
+        // Log all unique roles found
+        const uniqueRoles = new Set(membershipsData?.map(m => m.role) || []);
+        console.log('Unique roles in memberships:', Array.from(uniqueRoles));
+
+        // Also fetch profiles by default_org to catch users who might not have explicit memberships
+        const { data: profilesByDefaultOrg, error: profilesByOrgError } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('default_org', currentOrgId);
+
+        if (profilesByOrgError) {
+          console.warn('Error fetching profiles by default_org:', profilesByOrgError);
+        }
+
+        console.log('Profiles by default_org:', profilesByDefaultOrg?.length || 0);
+
         // Extract user IDs from memberships
-        const userIds = membershipsData.map(membership => membership.user_id);
+        const userIdsFromMemberships = membershipsData?.map(membership => membership.user_id) || [];
+        const userIdsFromProfiles = profilesByDefaultOrg?.map(profile => profile.user_id) || [];
+        
+        // Combine and deduplicate user IDs
+        const allUserIds = Array.from(new Set([...userIdsFromMemberships, ...userIdsFromProfiles]));
+
+        console.log('All user IDs to fetch:', allUserIds.length, allUserIds);
 
         // Then fetch profiles for those users
         let usersData: Database['public']['Tables']['profiles']['Row'][] | null = [];
-        if (userIds.length > 0) {
+        if (allUserIds.length > 0) {
           const { data, error: profilesError } = await supabase
             .from('profiles')
             .select('*')
-            .in('user_id', userIds);
+            .in('user_id', allUserIds);
 
           if (profilesError) {
             throw new Error(profilesError.message);
           }
           usersData = data || [];
+          console.log('Profiles fetched:', usersData.length);
         }
 
         // Combine profiles with memberships
+        // Create a map of memberships for quick lookup (use original role from DB)
+        const membershipMap = new Map(
+          (membershipsData || []).map(m => [m.user_id, m.role])
+        );
+
+        console.log('Membership map size:', membershipMap.size);
+        console.log('Membership map entries:', Array.from(membershipMap.entries()));
+
         const transformedUsers: IUser[] = (usersData as Database['public']['Tables']['profiles']['Row'][]).map(profile => {
-          const membership = membershipsData.find(m => m.user_id === profile.user_id) || { role: 'read_only' };
+          // Get role from membership
+          let role = membershipMap.get(profile.user_id);
+          
+          console.log(`Processing profile ${profile.user_id} (${profile.email}): role from membership = ${role}`);
+          
+          // If user doesn't have a membership but has default_org set, 
+          // try to infer role from email or create a default non-customer role
+          if (!role) {
+            // Check if user has default_org set (they're part of the organization)
+            const hasDefaultOrg = profile.default_org === currentOrgId;
+            
+            if (hasDefaultOrg) {
+              // Try to infer role from email (for users that should have memberships but don't)
+              const emailLower = (profile.email || '').toLowerCase();
+              if (emailLower.includes('owner') || emailLower.includes('eier')) {
+                role = 'owner';
+                console.log(`  -> Inferred role 'owner' from email`);
+              } else if (emailLower.includes('admin') || emailLower.includes('administrator')) {
+                role = 'admin';
+                console.log(`  -> Inferred role 'admin' from email`);
+              } else if (emailLower.includes('staff') || emailLower.includes('saksbehandler') || emailLower.includes('case')) {
+                role = 'staff'; // Will be normalized to case_handler
+                console.log(`  -> Inferred role 'staff' from email`);
+              } else if (emailLower.includes('editor') || emailLower.includes('redaktor')) {
+                role = 'editor';
+                console.log(`  -> Inferred role 'editor' from email`);
+              } else {
+                // Default to read_only for users with default_org but no membership
+                role = 'read_only';
+                console.log(`  -> Assigned default role 'read_only' (has default_org but no membership)`);
+              }
+            } else {
+              // User doesn't have default_org set and no membership - skip them
+              console.log(`  -> Skipping: no membership and no default_org`);
+              return null;
+            }
+          }
+          
+          // Use the original role from database (don't normalize for storage, only for comparison)
+          const normalizedRole = normalizeRole(role);
+          console.log(`  -> Original role: ${role}, normalized: ${normalizedRole}`);
+          
+          // Exclude customers from the users list - only show admin, owner, staff, etc.
+          if (normalizedRole === 'customer') {
+            console.log(`  -> Skipping: customer role`);
+            return null;
+          }
+          
+          console.log(`  -> Including user with role: ${role}`);
+          
           return {
             id: profile.user_id,
             name: profile.display_name || profile.email || 'Unknown User',
             email: profile.email || '',
-            role: membership.role || 'read_only',
+            role: role, // Store original role from DB
             status: 'active', // TODO: Implement proper status handling
             createdAt: profile.created_at,
             createdBy: 'System', // TODO: Implement proper creator tracking
             // Set permissions based on role
-            permissions: getPermissionsForRole(membership.role || 'read_only')
+            permissions: getPermissionsForRole(role)
           };
-        });
+        }).filter((user): user is IUser => user !== null);
 
-        // Fetch roles from the database - only admin-access roles
+        console.log('Transformed users count:', transformedUsers.length);
+        console.log('Transformed users:', transformedUsers.map(u => ({ id: u.id, email: u.email, role: u.role })));
+
+        // Fetch roles from constants - all available organization roles
         const orgRoles = [
-          { id: 'owner', name: 'Owner', description: 'Full access to the entire organization' },
-          { id: 'admin', name: t('pages.users_roles.filters.role_admin'), description: 'Full access to the organization' },
-          { id: 'staff', name: 'Staff', description: 'Standard staff access' },
-          { id: 'read_only', name: t('pages.users_roles.filters.role_lesetilgang'), description: 'Read-only access' }
+          { id: ORG_ROLES.OWNER, name: t('roles.owner', 'Owner'), description: t('roles.descriptions.owner', 'Full access to the entire organization') },
+          { id: ORG_ROLES.ADMIN, name: t('roles.admin', 'Administrator'), description: t('roles.descriptions.admin', 'Full access to the organization') },
+          { id: ORG_ROLES.CASE_HANDLER, name: t('roles.case_handler', 'Case Handler'), description: t('roles.descriptions.case_handler', 'Main operational role for handling bookings') },
+          { id: ORG_ROLES.EDITOR, name: t('roles.editor', 'Editor'), description: t('roles.descriptions.editor', 'Content management role') },
+          { id: ORG_ROLES.READ_ONLY, name: t('roles.read_only', 'Read Only'), description: t('roles.descriptions.read_only', 'Read-only access') },
+          { id: ORG_ROLES.CUSTOMER, name: t('roles.customer', 'Customer'), description: t('roles.descriptions.customer', 'Standard customer access') },
+          { id: ORG_ROLES.STAFF, name: t('roles.staff_deprecated', 'Staff (deprecated)'), description: t('roles.descriptions.staff_deprecated', 'Deprecated role - maps to case_handler') }
         ];
 
         // Transform roles to match our interface with proper permissions
@@ -971,7 +1109,9 @@ const UsersRolesPage = (): JSX.Element => {
 
   // Helper function to get permissions based on role
   const getPermissionsForRole = (role: string): string[] => {
-    switch (role) {
+    const normalizedRole = normalizeRole(role);
+    
+    switch (normalizedRole) {
       case 'owner':
       case 'admin':
         // Owners and admins have all permissions
@@ -980,11 +1120,19 @@ const UsersRolesPage = (): JSX.Element => {
           "bookings.view", "bookings.approve", "bookings.reject",
           "reports.view", "reports.export"
         ];
-      case 'staff':
-        // Staff can view and manage bookings, but limited facility access
+      case 'case_handler':
+      case 'staff': // Deprecated, maps to case_handler
+        // Case handlers can view and manage bookings, but limited facility access
         return [
           "facilities.view", "facilities.edit",
           "bookings.view", "bookings.approve", "bookings.reject",
+          "reports.view"
+        ];
+      case 'editor':
+        // Editors can manage facilities and content
+        return [
+          "facilities.create", "facilities.edit", "facilities.publish",
+          "bookings.view",
           "reports.view"
         ];
       case 'read_only':
@@ -993,6 +1141,12 @@ const UsersRolesPage = (): JSX.Element => {
           "facilities.view",
           "bookings.view",
           "reports.view"
+        ];
+      case 'customer':
+        // Customers can view facilities and create bookings
+        return [
+          "facilities.view",
+          "bookings.view", "bookings.create"
         ];
       default:
         // Default to read-only permissions
@@ -1048,15 +1202,29 @@ const UsersRolesPage = (): JSX.Element => {
 
   const handleSaveUser = async (userData: Partial<IUser>): Promise<void> => {
     try {
-      if (!currentOrgId) {
-        throw new Error('No organization selected');
+      if (!currentOrgId || !currentUser || !currentUserRole) {
+        throw new Error('No organization selected or user not authenticated');
       }
 
       if (userModal.isEditing && userModal.user) {
+        // Validate role change
+        const newRole = normalizeRole(userData.role || 'customer') as OrgRole;
+        const validation = validateRoleChange(
+          currentUserRole as OrgRole,
+          userModal.user.id,
+          currentUser.id,
+          newRole
+        );
+
+        if (!validation.canChange) {
+          alert(validation.reason || 'Cannot change role');
+          return;
+        }
+
         // Update existing user
         const { error } = await supabase
           .from('memberships')
-          .update({ role: userData.role as Database['public']['Enums']['org_role'] })
+          .update({ role: newRole as Database['public']['Enums']['org_role'] })
           .eq('user_id', userModal.user.id)
           .eq('org_id', currentOrgId);
 
@@ -1093,20 +1261,37 @@ const UsersRolesPage = (): JSX.Element => {
         }
 
         // Combine profiles with memberships
+        const membershipMap = new Map(
+          (membershipsData || []).map(m => [m.user_id, m.role])
+        );
+
         const transformedUsers: IUser[] = (usersData as Database['public']['Tables']['profiles']['Row'][]).map(profile => {
-          const membership = membershipsData.find(m => m.user_id === profile.user_id) || { role: 'read_only' };
+          const role = membershipMap.get(profile.user_id);
+          
+          // Skip users without a membership or with customer role
+          if (!role) {
+            return null;
+          }
+          
+          const normalizedRole = normalizeRole(role);
+          
+          // Exclude customers from the users list - only show admin, owner, staff, etc.
+          if (normalizedRole === 'customer') {
+            return null;
+          }
+          
           return {
             id: profile.user_id,
             name: profile.display_name || profile.email || 'Unknown User',
             email: profile.email || '',
-            role: membership.role || 'read_only',
+            role: role,
             status: 'active',
             createdAt: profile.created_at,
             createdBy: 'System',
             // Set permissions based on role
-            permissions: getPermissionsForRole(membership.role || 'read_only')
+            permissions: getPermissionsForRole(role)
           };
-        });
+        }).filter((user): user is IUser => user !== null);
 
         setUsers(transformedUsers);
         alert(t('pages.users_roles.confirmations.user_updated'));
@@ -1135,12 +1320,15 @@ const UsersRolesPage = (): JSX.Element => {
         alert(t('pages.users_roles.confirmations.role_created'));
       }
       
-      // Refresh roles data - only admin-access roles
+      // Refresh roles data - all available organization roles
       const orgRoles = [
-        { id: 'owner', name: 'Owner', description: 'Full access to the entire organization' },
-        { id: 'admin', name: t('pages.users_roles.filters.role_admin'), description: 'Full access to the organization' },
-        { id: 'staff', name: 'Staff', description: 'Standard staff access' },
-        { id: 'read_only', name: t('pages.users_roles.filters.role_lesetilgang'), description: 'Read-only access' }
+        { id: ORG_ROLES.OWNER, name: t('roles.owner', 'Owner'), description: t('roles.descriptions.owner', 'Full access to the entire organization') },
+        { id: ORG_ROLES.ADMIN, name: t('roles.admin', 'Administrator'), description: t('roles.descriptions.admin', 'Full access to the organization') },
+        { id: ORG_ROLES.CASE_HANDLER, name: t('roles.case_handler', 'Case Handler'), description: t('roles.descriptions.case_handler', 'Main operational role for handling bookings') },
+        { id: ORG_ROLES.EDITOR, name: t('roles.editor', 'Editor'), description: t('roles.descriptions.editor', 'Content management role') },
+        { id: ORG_ROLES.READ_ONLY, name: t('roles.read_only', 'Read Only'), description: t('roles.descriptions.read_only', 'Read-only access') },
+        { id: ORG_ROLES.CUSTOMER, name: t('roles.customer', 'Customer'), description: t('roles.descriptions.customer', 'Standard customer access') },
+        { id: ORG_ROLES.STAFF, name: t('roles.staff_deprecated', 'Staff (deprecated)'), description: t('roles.descriptions.staff_deprecated', 'Deprecated role - maps to case_handler') }
       ];
 
       // Transform roles to match our interface with proper permissions
@@ -1166,12 +1354,15 @@ const UsersRolesPage = (): JSX.Element => {
       // In a real implementation, we would update the role's status
       alert(t('pages.users_roles.confirmations.role_status_changed'));
       
-      // Refresh roles data - only admin-access roles
+      // Refresh roles data - all available organization roles
       const orgRoles = [
-        { id: 'owner', name: 'Owner', description: 'Full access to the entire organization' },
-        { id: 'admin', name: t('pages.users_roles.filters.role_admin'), description: 'Full access to the organization' },
-        { id: 'staff', name: 'Staff', description: 'Standard staff access' },
-        { id: 'read_only', name: t('pages.users_roles.filters.role_lesetilgang'), description: 'Read-only access' }
+        { id: ORG_ROLES.OWNER, name: t('roles.owner', 'Owner'), description: t('roles.descriptions.owner', 'Full access to the entire organization') },
+        { id: ORG_ROLES.ADMIN, name: t('roles.admin', 'Administrator'), description: t('roles.descriptions.admin', 'Full access to the organization') },
+        { id: ORG_ROLES.CASE_HANDLER, name: t('roles.case_handler', 'Case Handler'), description: t('roles.descriptions.case_handler', 'Main operational role for handling bookings') },
+        { id: ORG_ROLES.EDITOR, name: t('roles.editor', 'Editor'), description: t('roles.descriptions.editor', 'Content management role') },
+        { id: ORG_ROLES.READ_ONLY, name: t('roles.read_only', 'Read Only'), description: t('roles.descriptions.read_only', 'Read-only access') },
+        { id: ORG_ROLES.CUSTOMER, name: t('roles.customer', 'Customer'), description: t('roles.descriptions.customer', 'Standard customer access') },
+        { id: ORG_ROLES.STAFF, name: t('roles.staff_deprecated', 'Staff (deprecated)'), description: t('roles.descriptions.staff_deprecated', 'Deprecated role - maps to case_handler') }
       ];
 
       // Transform roles to match our interface with proper permissions
@@ -1204,7 +1395,69 @@ const UsersRolesPage = (): JSX.Element => {
   };
 
   const handleDeactivateUser = async (userId: string): Promise<void> => {
+    if (window.confirm(t('pages.users_roles.confirmations.deactivate_user'))) {
+      try {
+        if (!currentOrgId) {
+          throw new Error('No organization selected');
+        }
 
+        // Remove user's membership (deactivate access)
+        const { error } = await supabase
+          .from('memberships')
+          .delete()
+          .eq('user_id', userId)
+          .eq('org_id', currentOrgId);
+
+        if (error) {
+          throw new Error(error.message);
+        }
+
+        // Refresh the data
+        const { data: membershipsData, error: membershipsError } = await supabase
+          .from('memberships')
+          .select('user_id, org_id, role')
+          .eq('org_id', currentOrgId);
+
+        if (membershipsError) {
+          throw new Error(membershipsError.message);
+        }
+
+        const userIds = membershipsData.map(membership => membership.user_id);
+
+        let usersData: Database['public']['Tables']['profiles']['Row'][] | null = [];
+        if (userIds.length > 0) {
+          const { data, error: profilesError } = await supabase
+            .from('profiles')
+            .select('*')
+            .in('user_id', userIds);
+
+          if (profilesError) {
+            throw new Error(profilesError.message);
+          }
+          usersData = data || [];
+        }
+
+        const transformedUsers: IUser[] = (usersData as Database['public']['Tables']['profiles']['Row'][]).map(profile => {
+          const membership = membershipsData.find(m => m.user_id === profile.user_id) || { role: 'read_only' };
+          return {
+            id: profile.user_id,
+            name: profile.display_name || profile.email || 'Unknown User',
+            email: profile.email || '',
+            role: membership.role || 'read_only',
+            status: 'active',
+            createdAt: profile.created_at,
+            createdBy: 'System',
+            permissions: getPermissionsForRole(membership.role || 'read_only')
+          };
+        });
+
+        setUsers(transformedUsers);
+        alert(t('pages.users_roles.confirmations.user_deactivated'));
+      } catch (error: any) {
+        console.error('Failed to deactivate user:', error);
+        alert(error.message || t('pages.users_roles.confirmations.error_deactivate'));
+      }
+    }
   };
 
   const handleDeleteUser = async (userId: string): Promise<void> => {
@@ -1291,10 +1544,13 @@ const UsersRolesPage = (): JSX.Element => {
               className="w-32 px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
             >
               <option value="all">{t('pages.users_roles.filters.all_roles')}</option>
-              <option value="admin">{t('pages.users_roles.filters.role_admin')}</option>
-              <option value="saksbehandler">{t('pages.users_roles.filters.role_saksbehandler')}</option>
-              <option value="redaktor">{t('pages.users_roles.filters.role_redaktor')}</option>
-              <option value="lesetilgang">{t('pages.users_roles.filters.role_lesetilgang')}</option>
+              <option value={ORG_ROLES.OWNER}>{t('roles.owner', 'Owner')}</option>
+              <option value={ORG_ROLES.ADMIN}>{t('roles.admin', 'Administrator')}</option>
+              <option value={ORG_ROLES.CASE_HANDLER}>{t('roles.case_handler', 'Case Handler')}</option>
+              <option value={ORG_ROLES.EDITOR}>{t('roles.editor', 'Editor')}</option>
+              <option value={ORG_ROLES.READ_ONLY}>{t('roles.read_only', 'Read Only')}</option>
+              <option value={ORG_ROLES.CUSTOMER}>{t('roles.customer', 'Customer')}</option>
+              <option value={ORG_ROLES.STAFF}>{t('roles.staff_deprecated', 'Staff (deprecated)')}</option>
             </select>
             <select
               value={statusFilter}
