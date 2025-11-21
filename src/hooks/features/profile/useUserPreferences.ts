@@ -152,25 +152,27 @@ export const useUserPreferences = (userId: string | undefined): UseUserPreferenc
     }
   }, [userId]);
 
-  // Update theme preference
+  // Update theme preference - disabled (dark mode removed)
   const updateTheme = useCallback(async (theme: Theme) => {
     if (!userId) return;
 
     try {
-      // Update in database (with localStorage fallback)
-      await preferencesService.updateThemePreference(userId, theme);
+      // Dark mode has been removed - always use light theme
+      const lightTheme: Theme = 'light';
       
-      // Apply theme to document
-      if (theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
+      // Update in localStorage (existing system)
+      localStorage.setItem('theme', lightTheme);
+      
+      // Also save in user-specific storage
+      localStorage.setItem(`theme_${userId}`, lightTheme);
+      
+      // Ensure dark class is never added
+      document.documentElement.classList.remove('dark');
       
       // Update local state
-      setPreferences(prev => prev ? { ...prev, theme } : {
+      setPreferences(prev => prev ? { ...prev, theme: lightTheme } : {
         ...defaultPreferences,
-        theme
+        theme: lightTheme
       });
     } catch (err) {
       const error = err instanceof Error ? err : new Error(String(err));
