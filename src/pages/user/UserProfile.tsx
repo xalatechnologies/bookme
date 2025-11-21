@@ -79,50 +79,12 @@ const UserProfile = (): JSX.Element => {
     formatDate
   } = useUserProfileManagement();
 
-  // Apply theme when it changes
+  // Ensure dark mode is never enabled (dark mode removed)
   useEffect(() => {
-    // Use theme from userPreferences if available, otherwise from local preferences
-    const theme = userPreferences?.theme || preferences.theme || localTheme;
-    
-    const applyTheme = (theme: string) => {
-      if (theme === 'dark') {
-        document.documentElement.classList.add('dark');
-      } else if (theme === 'light') {
-        document.documentElement.classList.remove('dark');
-      } else {
-        // System theme - check system preference
-        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-          document.documentElement.classList.add('dark');
-        } else {
-          document.documentElement.classList.remove('dark');
-        }
-      }
-    };
-
-    applyTheme(theme);
-    setLocalTheme(theme);
-
-    // Listen for system theme changes
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    const handleSystemThemeChange = (e: MediaQueryListEvent) => {
-      if (theme === 'system') {
-        if (e.matches) {
-          document.documentElement.classList.add('dark');
-        } else {
-          document.documentElement.classList.remove('dark');
-        }
-      }
-    };
-
-    mediaQuery.addEventListener('change', handleSystemThemeChange);
-
-    // Save theme preference to localStorage
-    localStorage.setItem('theme', theme);
-
-    return () => {
-      mediaQuery.removeEventListener('change', handleSystemThemeChange);
-    };
-  }, [preferences.theme, userPreferences?.theme, localTheme]);
+    document.documentElement.classList.remove('dark');
+    // Clear theme preference from localStorage
+    localStorage.removeItem('theme');
+  }, []);
 
   const tabs = [
     { id: "profile", label: t('pages.profile.tabs.profile'), icon: User },
