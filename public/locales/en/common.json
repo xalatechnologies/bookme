@@ -177,7 +177,9 @@
     "system_messages": "System Messages",
     "view_details": "View details",
     "all_bookings_completed": "All bookings completed",
-    "calendar": "Calendar"
+    "calendar": "Calendar",
+    "read_more": "Read More",
+    "read_less": "Read Less"
   },
   "charts": {
     "trend": "Trend Chart",

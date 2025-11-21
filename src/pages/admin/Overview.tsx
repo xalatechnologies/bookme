@@ -334,7 +334,7 @@ const Overview = (): JSX.Element => {
 
       {/* Trend Cards */}
       <section className="space-y-4">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
           {t("pages.dashboard.trends_dashboard")}
         </h2>
         <div className="grid gap-6 lg:grid-cols-2">

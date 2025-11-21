@@ -177,7 +177,9 @@
     "system_messages": "Systemmeldinger",
     "view_details": "Vis detaljer",
     "all_bookings_completed": "Alle bookinger fullført",
-    "calendar": "Kalender"
+    "calendar": "Kalender",
+    "read_more": "Les mer",
+    "read_less": "Les mindre"
   },
   "charts": {
     "trend": "Trendgraf",
