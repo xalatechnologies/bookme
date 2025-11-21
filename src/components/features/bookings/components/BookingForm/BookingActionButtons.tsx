@@ -4,6 +4,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
+import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ShoppingCart, CreditCard, Trash2 } from "lucide-react";
 import { IBookingActionButtonsProps } from "../../types";
@@ -133,15 +134,15 @@ export const BookingActionButtons: React.FC<IBookingActionButtonsProps> = ({
         </Button>
 
         {/* Complete Booking Button */}
-        <Button
+        <PrimaryButton
           onClick={handleCompleteBooking}
           disabled={!canProceed()}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3"
+          className="w-full py-3"
           size="lg"
         >
           <CreditCard className="h-5 w-5 mr-2" />
           {t('booking:actions.complete_booking')}
-        </Button>
+        </PrimaryButton>
 
         {/* Clear All Button */}
         <Button

@@ -13,6 +13,7 @@ import { useAvailabilityCalculation } from "@/hooks/features/calendar/useAvailab
 import { Card } from "@/components/ui/card";
 import { ViewHeader } from "@/components/features/search/components/ViewHeader";
 import { Accordion } from "@/components/ui/accordion";
+import { PrimaryButton } from "@/components/ui/PrimaryButton";
 
 // Sibling imports
 import { FacilityAccordionContent } from "./FacilityCalendar/FacilityAccordionContent";
@@ -273,12 +274,12 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                     >
                       {t("time_slots.select")}
                     </button>
-                    <button
+                    <PrimaryButton
                       onClick={() => navigate("/checkout")}
-                      className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md font-medium"
+                      className="px-4 py-2 rounded-md font-medium"
                     >
                       {"Proceed to checkout"}
-                    </button>
+                    </PrimaryButton>
                   </div>
                 </div>
               </Card>
@@ -296,7 +297,11 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                 <FacilityAccordionContent
                   key={facility.id}
                   facility={facility}
-                  selectedSlots={selectedSlots}
+                  selectedSlots={selectedSlots.map(slot => ({
+                    ...slot,
+                    facilityName: slot.facilityName || "",
+                    zoneName: slot.zoneName || ""
+                  }))}
                   onSlotClick={handleEnhancedSlotClick}
                   onBulkSlotSelection={handleEnhancedBulkSlotSelection}
                   getAvailabilityStatus={getAvailabilityStatus}

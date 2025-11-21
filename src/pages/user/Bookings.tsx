@@ -5,6 +5,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -342,13 +343,13 @@ END:VCALENDAR`;
           </p>
         </div>
         <div className="flex flex-col sm:flex-row gap-2">
-          <Button
+          <PrimaryButton
             onClick={() => navigate('/facilities')}
-            className="flex items-center gap-2 h-12"
+            className="h-12"
           >
             <Plus className="w-4 h-4" />
             {t('user:dashboard.new_booking' as any)}
-          </Button>
+          </PrimaryButton>
         </div>
       </header>
 

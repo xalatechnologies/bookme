@@ -26,6 +26,7 @@ import {
 import { useFacilities } from "@/services/supabase/facilities.service";
 import { useOrganizationId } from "@/hooks/useOrganizationId";
 import { useRecurringBookingStore } from "@/stores/recurringBookingStore";
+import { PrimaryButton } from "@/components/ui/PrimaryButton";
 
 /**
  * Admin Overview Dashboard Component
@@ -306,14 +307,13 @@ const Overview = (): JSX.Element => {
           </p>
         </div>
         <div className="flex gap-3">
-          <button
+          <PrimaryButton
             onClick={handleNewFacility}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
             aria-label={t("pages.dashboard.new_facility")}
           >
             <Plus className="w-4 h-4" aria-hidden="true" />
             {t("pages.dashboard.new_facility")}
-          </button>
+          </PrimaryButton>
         </div>
       </header>
 

@@ -1,6 +1,7 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
+import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { X, User, Globe, Shield } from "lucide-react";
 
 interface MobileMenuProps {
@@ -20,7 +21,7 @@ interface MobileMenuProps {
 const MobileMenu = ({
   isOpen,
   isLoggedIn,
-  _setLanguage,
+  setLanguage: _setLanguage,
   handleLogin,
   handleLogout,
   closeMobileMenu,
@@ -76,9 +77,9 @@ const MobileMenu = ({
               </Button>
             </>
           ) : (
-            <Button onClick={handleLogin} className="w-full bg-blue-600 hover:bg-blue-700 text-white">
+            <PrimaryButton onClick={handleLogin} className="w-full">
               {t('login')}
-            </Button>
+            </PrimaryButton>
           )}
         </div>
       </div>

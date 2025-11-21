@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { useOrganizationId } from "@/hooks/useOrganizationId";
@@ -270,14 +271,13 @@ const UserDashboard = (): JSX.Element => {
               </p>
             </div>
             <div className="ml-6">
-              <Button
+              <PrimaryButton
                 onClick={handleNewBooking}
-                className="bg-blue-600 hover:bg-blue-700 text-lg px-6 py-3 shadow-lg"
                 size="lg"
               >
                 <Plus className="h-5 w-5 mr-2" />
                 {t("user:dashboard.new_booking")}
-              </Button>
+              </PrimaryButton>
             </div>
           </div>
         </CardContent>
