@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useUserProfile } from "@/contexts/hooks";
 import { useUserProfileManagement } from "@/hooks/features/profile/useUserProfileManagement";
+import { useUserPreferences } from '@/hooks/features/profile/useUserPreferences';
 import { useTranslation } from "react-i18next";
 import {
   User,
@@ -44,8 +45,10 @@ import {
 const UserProfile = (): JSX.Element => {
   const { t } = useTranslation('user');
   const { profile } = useUserProfile();
+  const { preferences: userPreferences, updateTheme, isLoading } = useUserPreferences(profile.accountId);
   const [activeTab, setActiveTab] = useState<string>("profile");
   const [editingSection, setEditingSection] = useState<string | null>(null);
+  const [localTheme, setLocalTheme] = useState<string>('system');
 
   const {
     editingProfile,
@@ -78,6 +81,9 @@ const UserProfile = (): JSX.Element => {
 
   // Apply theme when it changes
   useEffect(() => {
+    // Use theme from userPreferences if available, otherwise from local preferences
+    const theme = userPreferences?.theme || preferences.theme || localTheme;
+    
     const applyTheme = (theme: string) => {
       if (theme === 'dark') {
         document.documentElement.classList.add('dark');
@@ -93,12 +99,13 @@ const UserProfile = (): JSX.Element => {
       }
     };
 
-    applyTheme(preferences.theme);
+    applyTheme(theme);
+    setLocalTheme(theme);
 
     // Listen for system theme changes
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
     const handleSystemThemeChange = (e: MediaQueryListEvent) => {
-      if (preferences.theme === 'system') {
+      if (theme === 'system') {
         if (e.matches) {
           document.documentElement.classList.add('dark');
         } else {
@@ -110,12 +117,12 @@ const UserProfile = (): JSX.Element => {
     mediaQuery.addEventListener('change', handleSystemThemeChange);
 
     // Save theme preference to localStorage
-    localStorage.setItem('theme', preferences.theme);
+    localStorage.setItem('theme', theme);
 
     return () => {
       mediaQuery.removeEventListener('change', handleSystemThemeChange);
     };
-  }, [preferences.theme]);
+  }, [preferences.theme, userPreferences?.theme, localTheme]);
 
   const tabs = [
     { id: "profile", label: t('pages.profile.tabs.profile'), icon: User },
@@ -612,7 +619,7 @@ const UserProfile = (): JSX.Element => {
                 <label className="block text-sm font-medium text-gray-500 dark:text-gray-400">
                   {t('pages.profile.preferences.language_theme.language')}
                 </label>
-                <Select value={preferences.language} onValueChange={(value) => setPreferences(prev => ({ ...prev, language: value }))}>
+                <Select value={userPreferences?.language === 'EN' ? 'en' : userPreferences?.language === 'NO' ? 'nb' : preferences.language} onValueChange={(value) => setPreferences(prev => ({ ...prev, language: value }))}>
                   <SelectTrigger className="w-full h-9">
                     <SelectValue />
                   </SelectTrigger>
@@ -638,9 +645,16 @@ const UserProfile = (): JSX.Element => {
                     return (
                       <Button
                         key={theme.value}
-                        variant={preferences.theme === theme.value ? "default" : "outline"}
+                        variant={(userPreferences?.theme || preferences.theme) === theme.value ? "default" : "outline"}
                         size="sm"
-                        onClick={() => setPreferences(prev => ({ ...prev, theme: theme.value }))}
+                        onClick={async () => {
+                          setPreferences(prev => ({ ...prev, theme: theme.value }));
+                          setLocalTheme(theme.value);
+                          // Also update theme in the database
+                          if (profile.accountId) {
+                            await updateTheme(theme.value as 'light' | 'dark' | 'system');
+                          }
+                        }}
                         className="flex flex-col items-center gap-1 h-14 rounded-lg"
                       >
                         <Icon className="h-4 w-4" />

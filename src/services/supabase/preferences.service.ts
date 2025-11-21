@@ -285,7 +285,7 @@ export class PreferencesService {
         theme,
         email_booking_confirmation: payload.email_booking_confirmation,
         email_booking_reminder: payload.email_booking_reminder,
-        sms_booking_confirmation: payload.sms_booking_confirmation,
+        sms_booking_confirmation: payload.sms_booking_reminder,
         sms_booking_reminder: payload.sms_booking_reminder,
         browser_booking_reminder: payload.browser_booking_reminder,
         browser_enabled: payload.browser_enabled,
@@ -298,26 +298,196 @@ export class PreferencesService {
   }
 
   /**
-   * Update user language preference (stored in localStorage)
+   * Get user theme preference from database
    *
    * @param userId - User ID
-   * @param language - Language preference
+   * @returns User theme preference or null if not found
    */
-  async updateLanguage(userId: string, language: Language): Promise<void> {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem(`language_${userId}`, language);
+  async getThemePreference(userId: string): Promise<Theme | null> {
+    try {
+      // Try to get theme preference from database
+      const { data, error } = await supabase
+        .from('user_notification_preferences')
+        .select('*')
+        .eq('user_id', userId)
+        .single();
+
+      if (error) {
+        // If not found, try to get from localStorage as fallback
+        if (typeof window !== 'undefined') {
+          const storedTheme = localStorage.getItem(`theme_${userId}`);
+          if (storedTheme && (storedTheme === 'light' || storedTheme === 'dark' || storedTheme === 'system')) {
+            return storedTheme as Theme;
+          }
+        }
+        return null;
+      }
+
+      // Check if theme column exists in the data
+      if (data && typeof data === 'object' && 'theme' in data) {
+        const theme = (data as any).theme;
+        if (theme && (theme === 'light' || theme === 'dark' || theme === 'system')) {
+          return theme as Theme;
+        }
+      }
+
+      // Fallback to localStorage if theme column doesn't exist
+      if (typeof window !== 'undefined') {
+        const storedTheme = localStorage.getItem(`theme_${userId}`);
+        if (storedTheme && (storedTheme === 'light' || storedTheme === 'dark' || storedTheme === 'system')) {
+          return storedTheme as Theme;
+        }
+      }
+
+      return null;
+    } catch (error) {
+      // Fallback to localStorage
+      if (typeof window !== 'undefined') {
+        const storedTheme = localStorage.getItem(`theme_${userId}`);
+        if (storedTheme && (storedTheme === 'light' || storedTheme === 'dark' || storedTheme === 'system')) {
+          return storedTheme as Theme;
+        }
+      }
+      return null;
     }
   }
 
   /**
-   * Update user theme preference (stored in localStorage)
+   * Update user theme preference in database
    *
    * @param userId - User ID
    * @param theme - Theme preference
    */
-  async updateTheme(userId: string, theme: Theme): Promise<void> {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem(`theme_${userId}`, theme);
+  async updateThemePreference(userId: string, theme: Theme): Promise<void> {
+    try {
+      // Try to update theme in database
+      const { error } = await supabase
+        .from('user_notification_preferences')
+        .update({ updated_at: new Date().toISOString() })
+        .eq('user_id', userId);
+
+      // If the update succeeded, try to update the theme column specifically
+      if (!error) {
+        try {
+          await supabase
+            .from('user_notification_preferences')
+            .update({ theme, updated_at: new Date().toISOString() })
+            .eq('user_id', userId);
+        } catch (themeError) {
+          // If theme column doesn't exist, continue with localStorage only
+        }
+      }
+
+      // Also save to localStorage as fallback
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(`theme_${userId}`, theme);
+        localStorage.setItem('theme', theme);
+      }
+    } catch (error) {
+      // Fallback to localStorage only
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(`theme_${userId}`, theme);
+        localStorage.setItem('theme', theme);
+      }
+      // Don't throw error for localStorage fallback
+    }
+  }
+
+  /**
+   * Get user language preference from database
+   *
+   * @param userId - User ID
+   * @returns User language preference or null if not found
+   */
+  async getLanguagePreference(userId: string): Promise<Language | null> {
+    try {
+      // Try to get language preference from database
+      const { data, error } = await supabase
+        .from('user_notification_preferences')
+        .select('*')
+        .eq('user_id', userId)
+        .single();
+
+      if (error) {
+        // If not found, try to get from localStorage as fallback
+        if (typeof window !== 'undefined') {
+          const storedLanguage = localStorage.getItem(`language_${userId}`);
+          if (storedLanguage && (storedLanguage === 'nb-NO' || storedLanguage === 'en-US')) {
+            return storedLanguage as Language;
+          }
+        }
+        return null;
+      }
+
+      // Check if language column exists in the data
+      if (data && typeof data === 'object' && 'language' in data) {
+        const language = (data as any).language;
+        if (language && (language === 'nb-NO' || language === 'en-US')) {
+          return language as Language;
+        }
+      }
+
+      // Fallback to localStorage if language column doesn't exist
+      if (typeof window !== 'undefined') {
+        const storedLanguage = localStorage.getItem(`language_${userId}`);
+        if (storedLanguage && (storedLanguage === 'nb-NO' || storedLanguage === 'en-US')) {
+          return storedLanguage as Language;
+        }
+      }
+
+      return null;
+    } catch (error) {
+      // Fallback to localStorage
+      if (typeof window !== 'undefined') {
+        const storedLanguage = localStorage.getItem(`language_${userId}`);
+        if (storedLanguage && (storedLanguage === 'nb-NO' || storedLanguage === 'en-US')) {
+          return storedLanguage as Language;
+        }
+      }
+      return null;
+    }
+  }
+
+  /**
+   * Update user language preference in database
+   *
+   * @param userId - User ID
+   * @param language - Language preference
+   */
+  async updateLanguagePreference(userId: string, language: Language): Promise<void> {
+    try {
+      // Try to update language in database
+      const { error } = await supabase
+        .from('user_notification_preferences')
+        .update({ updated_at: new Date().toISOString() })
+        .eq('user_id', userId);
+
+      // If the update succeeded, try to update the language column specifically
+      if (!error) {
+        try {
+          await supabase
+            .from('user_notification_preferences')
+            .update({ language, updated_at: new Date().toISOString() })
+            .eq('user_id', userId);
+        } catch (languageError) {
+          // If language column doesn't exist, continue with localStorage only
+        }
+      }
+
+      // Also save to localStorage as fallback
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(`language_${userId}`, language);
+        const uiLanguage = language === 'en-US' ? 'EN' : 'NO';
+        localStorage.setItem('booknor-language', uiLanguage);
+      }
+    } catch (error) {
+      // Fallback to localStorage only
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(`language_${userId}`, language);
+        const uiLanguage = language === 'en-US' ? 'EN' : 'NO';
+        localStorage.setItem('booknor-language', uiLanguage);
+      }
+      // Don't throw error for localStorage fallback
     }
   }
 }

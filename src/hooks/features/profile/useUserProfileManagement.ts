@@ -3,6 +3,7 @@ import { useUserProfile } from "@/contexts/hooks";
 import { useTranslation } from 'react-i18next';
 import { avatarService } from '@/services/supabase/avatar.service';
 import { usersService } from '@/services/supabase/users.service';
+import { preferencesService } from '@/services/supabase/preferences.service';
 
 interface PasswordForm {
   readonly currentPassword: string;
@@ -155,6 +156,63 @@ export const useUserProfileManagement = (): UseUserProfileManagementReturn => {
       device: "Chrome på Mac"
     }
   ]);
+
+  // Load theme preference from database when component mounts
+  useEffect(() => {
+    const loadPreferences = async () => {
+      if (profile.accountId) {
+        try {
+          // Try to get theme from database using the preferences service
+          // This will fallback to localStorage if the database columns don't exist
+          const theme = await preferencesService.getThemePreference(profile.accountId);
+          if (theme && (theme === 'light' || theme === 'dark' || theme === 'system')) {
+            setPreferences(prev => ({
+              ...prev,
+              theme
+            }));
+          } else {
+            // Fallback to localStorage
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme && (savedTheme === 'light' || savedTheme === 'dark' || savedTheme === 'system')) {
+              setPreferences(prev => ({
+                ...prev,
+                theme: savedTheme
+              }));
+            }
+            
+            // Also check user-specific storage
+            const userSpecificTheme = localStorage.getItem(`theme_${profile.accountId}`);
+            if (userSpecificTheme && (userSpecificTheme === 'light' || userSpecificTheme === 'dark' || userSpecificTheme === 'system')) {
+              setPreferences(prev => ({
+                ...prev,
+                theme: userSpecificTheme
+              }));
+            }
+          }
+        } catch (error) {
+          // Fallback to localStorage if there's any error
+          const savedTheme = localStorage.getItem('theme');
+          if (savedTheme && (savedTheme === 'light' || savedTheme === 'dark' || savedTheme === 'system')) {
+            setPreferences(prev => ({
+              ...prev,
+              theme: savedTheme
+            }));
+          }
+          
+          // Also check user-specific storage
+          const userSpecificTheme = localStorage.getItem(`theme_${profile.accountId}`);
+          if (userSpecificTheme && (userSpecificTheme === 'light' || userSpecificTheme === 'dark' || userSpecificTheme === 'system')) {
+            setPreferences(prev => ({
+              ...prev,
+              theme: userSpecificTheme
+            }));
+          }
+        }
+      }
+    };
+    
+    loadPreferences();
+  }, [profile.accountId]);
 
   // Sync editingProfile with profile only once when profile is loaded
   useEffect(() => {

@@ -70,37 +70,33 @@ export const useUserPreferences = (userId: string | undefined): UseUserPreferenc
       // Get notification preferences from Supabase
       const data = await preferencesService.getByUserId(userId);
       
-      // Get language and theme from localStorage (existing system)
+      // Get language and theme from database (with localStorage fallback)
       let language: I18nLanguage = 'NO';
       let theme: Theme = 'system';
       
-      // Check existing language system
-      const savedLanguage = localStorage.getItem('booknor-language');
-      if (savedLanguage === 'EN') {
-        language = 'EN';
-      } else if (savedLanguage === 'NO') {
-        language = 'NO';
-      }
-      
-      // Check existing theme system
-      const savedTheme = localStorage.getItem('theme') as Theme | null;
-      if (savedTheme && (savedTheme === 'light' || savedTheme === 'dark' || savedTheme === 'system')) {
-        theme = savedTheme;
-      }
-      
-      // Also check user-specific preferences as fallback
-      if (language === 'NO' && theme === 'system') {
-        const storedLanguage = localStorage.getItem(`language_${userId}`);
-        const storedTheme = localStorage.getItem(`theme_${userId}`);
-        
-        if (storedLanguage === 'en-US') {
+      // Try to get language from database
+      const dbLanguage = await preferencesService.getLanguagePreference(userId);
+      if (dbLanguage) {
+        language = dbLanguage === 'en-US' ? 'EN' : 'NO';
+      } else {
+        // Fallback to localStorage
+        const savedLanguage = localStorage.getItem('booknor-language');
+        if (savedLanguage === 'EN') {
           language = 'EN';
-        } else if (storedLanguage === 'nb-NO') {
+        } else if (savedLanguage === 'NO') {
           language = 'NO';
         }
-        
-        if (storedTheme && (storedTheme === 'light' || storedTheme === 'dark' || storedTheme === 'system')) {
-          theme = storedTheme;
+      }
+      
+      // Try to get theme from database
+      const dbTheme = await preferencesService.getThemePreference(userId);
+      if (dbTheme) {
+        theme = dbTheme;
+      } else {
+        // Fallback to localStorage
+        const savedTheme = localStorage.getItem('theme') as Theme | null;
+        if (savedTheme && (savedTheme === 'light' || savedTheme === 'dark' || savedTheme === 'system')) {
+          theme = savedTheme;
         }
       }
 
@@ -137,12 +133,9 @@ export const useUserPreferences = (userId: string | undefined): UseUserPreferenc
     if (!userId) return;
 
     try {
-      // Update in localStorage (existing system)
-      localStorage.setItem('booknor-language', language);
-      
-      // Also save in user-specific storage with the format expected by the service
+      // Update in database (with localStorage fallback)
       const serviceLanguage = language === 'EN' ? 'en-US' : 'nb-NO';
-      localStorage.setItem(`language_${userId}`, serviceLanguage);
+      await preferencesService.updateLanguagePreference(userId, serviceLanguage);
       
       // Update i18n
       const i18nLang = language === 'EN' ? 'en' : 'no';
@@ -164,11 +157,8 @@ export const useUserPreferences = (userId: string | undefined): UseUserPreferenc
     if (!userId) return;
 
     try {
-      // Update in localStorage (existing system)
-      localStorage.setItem('theme', theme);
-      
-      // Also save in user-specific storage
-      localStorage.setItem(`theme_${userId}`, theme);
+      // Update in database (with localStorage fallback)
+      await preferencesService.updateThemePreference(userId, theme);
       
       // Apply theme to document
       if (theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
