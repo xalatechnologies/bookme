@@ -43,6 +43,7 @@ import { facilitiesService } from '@/services/supabase/facilities.service';
 // UI components
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
@@ -1083,13 +1084,12 @@ export const Checkout = (): JSX.Element => {
                           >
                             {t("common:actions.cancel", "Avbryt")}
                           </Button>
-                          <Button
+                          <PrimaryButton
                             onClick={handleBookingDetailsSave}
-                            className="bg-blue-600 hover:bg-blue-700"
                           >
                             <CheckCircle className="h-4 w-4 mr-2" />
                             {t("common:actions.save", "Lagre endringer")}
-                          </Button>
+                          </PrimaryButton>
                         </div>
                       </div>
                     </div>
@@ -2072,8 +2072,8 @@ export const Checkout = (): JSX.Element => {
               </div>
             </div>
 
-            <Button
-              className="w-full h-12 text-lg font-bold bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-lg"
+            <PrimaryButton
+              className="w-full h-12 text-lg font-bold shadow-lg"
               disabled={isProcessing}
               onClick={handleCompletePayment}
             >
@@ -2099,7 +2099,7 @@ export const Checkout = (): JSX.Element => {
                       )}
                 </>
               )}
-            </Button>
+            </PrimaryButton>
           </div>
         </div>
 

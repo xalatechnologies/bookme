@@ -2,6 +2,7 @@
 
 import React from "react";
 import type { IBookingEventWithMeta } from "@/types/calendar";
+import { PrimaryButton } from "@/components/ui/PrimaryButton";
 
 interface IEventDetailsModalProps {
   readonly event: IBookingEventWithMeta;
@@ -81,13 +82,13 @@ export const EventDetailsModal = ({
 
           {/* Action Buttons */}
           <div className="flex gap-2 mt-6">
-            <button
+            <PrimaryButton
               onClick={() => onEdit(event)}
               aria-label={t('pages.calendar.actions.edit')}
-              className="flex-1 h-12 px-4 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors shadow-md"
+              className="flex-1 h-12 px-4 font-medium rounded-lg shadow-md"
             >
               {t('pages.calendar.actions.edit')}
-            </button>
+            </PrimaryButton>
             <button
               onClick={() => onDelete(event)}
               aria-label={t('pages.calendar.actions.delete')}

@@ -3,6 +3,7 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
+import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { Badge } from "@/components/ui/badge";
 import {
   Heart,
@@ -148,14 +149,13 @@ const FacilityCardUser = (props: IFacilityCardUserProps): JSX.Element => {
             {t('facility:buttons.view_details')}
           </Button>
 
-          <Button
+          <PrimaryButton
             size="sm"
-            className="bg-blue-600 hover:bg-blue-700 text-white"
             onClick={handleBookNow}
           >
             <Calendar className="h-4 w-4 mr-1" />
             {t('facility:buttons.book_now')}
-          </Button>
+          </PrimaryButton>
         </div>
       </div>
     </FacilityCardBase>

@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
@@ -291,10 +292,10 @@ const IntegrationsPage = (
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
               {selectedCategory ? "No integrations in this category" : "Start by adding your first integration"}
             </p>
-            <Button onClick={() => handleOpenConfigureModal()} className="flex items-center gap-2 mx-auto">
+            <PrimaryButton onClick={() => handleOpenConfigureModal()} className="flex items-center gap-2 mx-auto">
               <Plus className="h-4 w-4" />
               Add Integration
-            </Button>
+            </PrimaryButton>
           </CardContent>
         </Card>
       );
@@ -630,10 +631,10 @@ const IntegrationsPage = (
             <RefreshCw className="h-4 w-4" />
             Refresh
           </Button>
-          <Button onClick={() => handleOpenConfigureModal()} className="flex items-center gap-2">
+          <PrimaryButton onClick={() => handleOpenConfigureModal()} className="flex items-center gap-2">
             <Plus className="h-4 w-4" />
             Add Integration
-          </Button>
+          </PrimaryButton>
         </div>
       </div>
 

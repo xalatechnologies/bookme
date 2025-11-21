@@ -6,6 +6,7 @@ import { useSearchParams } from "react-router-dom";
 import { RequireRole } from "@/components/features/auth/components/RequireRole";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -881,7 +882,7 @@ const UserSidePanel = ({ user, isOpen, onClose, onEdit, onDeactivate, onDelete, 
 const UsersRolesPage = (): JSX.Element => {
   const { t } = useTranslation(["admin", "common"]);
   const { currentOrgId, user: currentUser } = useAuth();
-  const { role: currentUserRole } = useRole(currentOrgId);
+  const { role: currentUserRole } = useRole(currentOrgId || undefined);
   const [searchParams] = useSearchParams();
 
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -913,7 +914,7 @@ const UsersRolesPage = (): JSX.Element => {
     if (filterParam === 'no-role') {
       // Show all users when filter=no-role
       setRoleFilter('all');
-    } else if (filterParam) {
+    } else if (filterParam && filterParam !== null) {
       // Set role filter if a specific role is provided
       setRoleFilter(filterParam);
     }
@@ -1067,7 +1068,7 @@ const UsersRolesPage = (): JSX.Element => {
             // Set permissions based on role
             permissions: getPermissionsForRole(role)
           };
-        }).filter((user): user is IUser => user !== null);
+        }).filter((user): user is Exclude<typeof user, null> => user !== null) as IUser[];
 
         console.log('Transformed users count:', transformedUsers.length);
         console.log('Transformed users:', transformedUsers.map(u => ({ id: u.id, email: u.email, role: u.role })));
@@ -1291,7 +1292,7 @@ const UsersRolesPage = (): JSX.Element => {
             // Set permissions based on role
             permissions: getPermissionsForRole(role)
           };
-        }).filter((user): user is IUser => user !== null);
+        }).filter((user): user is Exclude<typeof user, null> => user !== null) as IUser[];
 
         setUsers(transformedUsers);
         alert(t('pages.users_roles.confirmations.user_updated'));
@@ -1582,10 +1583,10 @@ const UsersRolesPage = (): JSX.Element => {
             <div className="mb-8">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-semibold text-gray-900 dark:text-white">{t('pages.users_roles.users_tab.title')}</h2>
-                <Button variant="default" onClick={handleNewUser}>
+                <PrimaryButton onClick={handleNewUser}>
                   <Plus className="h-4 w-4 mr-1" />
                   {t('pages.users_roles.users_tab.new_user')}
-                </Button>
+                </PrimaryButton>
               </div>
               <table className="w-full border-collapse">
                 <thead>
@@ -1630,10 +1631,10 @@ const UsersRolesPage = (): JSX.Element => {
             <div className="mt-8">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-semibold text-gray-900 dark:text-white">{t('pages.users_roles.roles_tab.title')}</h2>
-                <Button variant="default" onClick={handleNewRole}>
+                <PrimaryButton onClick={handleNewRole}>
                   <Plus className="h-4 w-4 mr-1" />
                   {t('pages.users_roles.roles_tab.new_role')}
-                </Button>
+                </PrimaryButton>
               </div>
               <table className="w-full border-collapse">
                 <thead>

@@ -3,6 +3,7 @@
 import React, { Suspense, lazy } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { ProtectedRoute } from "@/components/features/auth/components/ProtectedRoute";
+import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import AdminLayout from "@/components/layouts/AdminLayout";
 
 // Lazy load admin pages for better performance
@@ -53,12 +54,13 @@ const AdminUnauthorizedComponent = (): JSX.Element => {
           You do not have permission to access the admin portal.
         </p>
 
-        <a
-          href="/"
-          className="inline-block h-12 px-6 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+        <PrimaryButton
+          asChild
         >
-          Go to Home
-        </a>
+          <a href="/">
+            Go to Home
+          </a>
+        </PrimaryButton>
       </div>
     </div>
   );

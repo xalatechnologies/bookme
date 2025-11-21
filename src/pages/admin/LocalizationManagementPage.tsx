@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
@@ -318,10 +319,10 @@ const LocalizationManagementPage = (
                 ? "Try adjusting your filters"
                 : "Start by creating your first translation key"}
             </p>
-            <Button onClick={handleOpenCreateModal} className="flex items-center gap-2 mx-auto">
+            <PrimaryButton onClick={handleOpenCreateModal} className="flex items-center gap-2 mx-auto">
               <Plus className="h-4 w-4" />
               Create Translation Key
-            </Button>
+            </PrimaryButton>
           </CardContent>
         </Card>
       );
@@ -582,10 +583,10 @@ const LocalizationManagementPage = (
             <Download className="h-4 w-4" />
             Export
           </Button>
-          <Button onClick={handleOpenCreateModal} className="flex items-center gap-2">
+          <PrimaryButton onClick={handleOpenCreateModal} className="flex items-center gap-2">
             <Plus className="h-4 w-4" />
             New Translation
-          </Button>
+          </PrimaryButton>
         </div>
       </div>
 

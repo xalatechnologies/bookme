@@ -4,6 +4,7 @@ import React, { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { LocalizedSelect } from "@/components/common/LocalizedSelect";
@@ -338,14 +339,13 @@ const UserReceipts = (): JSX.Element => {
             {t('pages.receipts.disclaimer')}
           </p>
         </div>
-        <Button
+        <PrimaryButton
           onClick={() => handleExportCSV(filteredAndSortedReceipts)}
-          variant="outline"
           className="flex items-center gap-2"
         >
           <Download className="h-4 w-4" />
           {t('pages.receipts.export')}
-        </Button>
+        </PrimaryButton>
       </div>
 
       {/* Summary Cards */}

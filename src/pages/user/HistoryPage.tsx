@@ -4,6 +4,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -65,14 +66,14 @@ export default function HistoryPage(): JSX.Element {
             {t('pages.history.subtitle')}
           </p>
         </div>
-        <Button
+        <PrimaryButton
           onClick={handleExportCsv}
           className="flex items-center gap-2"
           aria-label={t('pages.history.export')}
         >
           <Download className="w-4 h-4" />
           {t('pages.history.export')}
-        </Button>
+        </PrimaryButton>
       </header>
 
       {/* KPI Cards */}
