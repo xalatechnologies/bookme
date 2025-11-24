@@ -95,256 +95,248 @@ const UserProfile = (): JSX.Element => {
 
   const renderProfileTab = (): JSX.Element => (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Left Column - Avatar and Personal Details */}
-        <div className="space-y-6">
-          {/* Avatar Section */}
-          <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-5 transition-all duration-200 hover:border-blue-300 hover:shadow-sm group">
-            <div className="flex justify-between items-start mb-4">
-              <h3 className="text-base font-semibold text-gray-900 dark:text-white">
-                {t('pages.profile.tabs.profile')}
-              </h3>
-            </div>
-            <div className="flex flex-col items-center">
-              <div className="relative group mb-4 cursor-pointer" onClick={() => fileInputRef.current?.click()}>
-                <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-gray-100 dark:border-gray-800">
-                  <img
-                    src={avatarPreview || profile.avatar || undefined}
-                    alt="Profile"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div className="absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                  <Camera className="h-6 w-6 text-white" />
-                </div>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => {
-                    handleAvatarUpload(e);
-                    // Auto-save when avatar is changed
-                    setTimeout(() => {
-                      handleSave();
-                    }, 100);
-                  }}
-                  className="hidden"
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Profile Card */}
+        <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-5 transition-all duration-200 hover:border-blue-300 hover:shadow-sm group">
+          <div className="flex justify-between items-start mb-4">
+            <h3 className="text-base font-semibold text-gray-900 dark:text-white">
+              {t('pages.profile.tabs.profile')}
+            </h3>
+          </div>
+          <div className="flex flex-col items-center">
+            <div className="relative group mb-4 cursor-pointer" onClick={() => fileInputRef.current?.click()}>
+              <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-gray-100 dark:border-gray-800">
+                <img
+                  src={avatarPreview || profile.avatar || undefined}
+                  alt="Profile"
+                  className="w-full h-full object-cover"
                 />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                {profile.firstName} {profile.lastName}
-              </h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400">{profile.email}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">{profile.role}</p>
-              <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 mt-2">
-                <span>{t('pages.profile.account_overview.account_created')}: {new Date(profile.accountCreated).toLocaleDateString('nb-NO')}</span>
-                <span className="mx-1">•</span>
-                <span>{t('pages.profile.account_overview.last_active')}: {formatDate(profile.lastActive)}</span>
+              <div className="absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                <Camera className="h-6 w-6 text-white" />
               </div>
-            </div>
-          </div>
-
-          {/* Personal Details Section */}
-          <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-5 transition-all duration-200 hover:border-blue-300 hover:shadow-sm group">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-base font-semibold text-gray-900 dark:text-white">
-                {t('pages.profile.personal_info.sections.personal_details')}
-              </h3>
-              <Button
-                size="sm"
-                variant="ghost"
-                className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                onClick={() => {
-                  setEditingSection("personal");
-                  setIsEditing(true);
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={(e) => {
+                  handleAvatarUpload(e);
+                  // Auto-save when avatar is changed
+                  setTimeout(() => {
+                    handleSave();
+                  }, 100);
                 }}
-              >
-                <Edit className="h-4 w-4" />
-              </Button>
+                className="hidden"
+              />
             </div>
-            
-            {editingSection === "personal" && isEditing ? (
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    {t('pages.profile.personal_info.fields.first_name')}
-                  </label>
-                  <Input
-                    type="text"
-                    value={editingProfile.firstName}
-                    onChange={(e) => handleInputChange("firstName", e.target.value)}
-                    className="h-9"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    {t('pages.profile.personal_info.fields.last_name')}
-                  </label>
-                  <Input
-                    type="text"
-                    value={editingProfile.lastName}
-                    onChange={(e) => handleInputChange("lastName", e.target.value)}
-                    className="h-9"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    {t('pages.profile.personal_info.fields.date_of_birth')}
-                  </label>
-                  <Input
-                    type="date"
-                    value={editingProfile.dateOfBirth}
-                    onChange={(e) => handleInputChange("dateOfBirth", e.target.value)}
-                    className="h-9"
-                  />
-                </div>
-                <div className="flex gap-2">
-                  <Button
-                    size="sm"
-                    className="h-8 rounded-lg"
-                    onClick={() => {
-                      handleSave();
-                      setEditingSection(null);
-                    }}
-                  >
-                    <Save className="h-4 w-4 mr-1" />
-                    {t('pages.profile.personal_info.save_changes')}
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="h-8 rounded-lg"
-                    onClick={() => {
-                      handleCancel();
-                      setEditingSection(null);
-                    }}
-                  >
-                    <X className="h-4 w-4" />
-                    {t('pages.profile.personal_info.cancel')}
-                  </Button>
-                </div>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                <div className="flex justify-between py-2 border-b border-gray-100 dark:border-gray-800">
-                  <span className="text-sm text-gray-700 dark:text-gray-300">{t('pages.profile.personal_info.fields.first_name')}</span>
-                  <span className="text-sm font-medium text-gray-900 dark:text-white">{profile.firstName || t('bookings.not_specified')}</span>
-                </div>
-                <div className="flex justify-between py-2 border-b border-gray-100 dark:border-gray-800">
-                  <span className="text-sm text-gray-700 dark:text-gray-300">{t('pages.profile.personal_info.fields.last_name')}</span>
-                  <span className="text-sm font-medium text-gray-900 dark:text-white">{profile.lastName || t('bookings.not_specified')}</span>
-                </div>
-                <div className="flex justify-between py-2 border-b border-gray-100 dark:border-gray-800">
-                  <span className="text-sm text-gray-700 dark:text-gray-300">{t('pages.profile.personal_info.fields.date_of_birth')}</span>
-                  <span className="text-sm font-medium text-gray-900 dark:text-white">
-                    {profile.dateOfBirth && profile.dateOfBirth !== 'Invalid Date' ? new Date(profile.dateOfBirth).toLocaleDateString('nb-NO') : t('bookings.not_specified')}
-                  </span>
-                </div>
-              </div>
-            )}
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+              {profile.firstName} {profile.lastName}
+            </h3>
+            <p className="text-sm text-gray-500 dark:text-gray-400">{profile.role}</p>
+            <div className="flex items-center justify-between w-full text-xs text-gray-500 dark:text-gray-400 mt-2">
+              <span>{t('pages.profile.account_overview.account_created')}: {new Date(profile.accountCreated).toLocaleDateString('nb-NO')}</span>
+              <span>{t('pages.profile.account_overview.last_active')}: {formatDate(profile.lastActive)}</span>
+            </div>
           </div>
         </div>
 
-        {/* Right Column - Contact Info */}
-        <div className="space-y-6">
-          {/* Contact Info Section */}
-          <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-5 transition-all duration-200 hover:border-blue-300 hover:shadow-sm group">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-base font-semibold text-gray-900 dark:text-white">
-                {t('pages.profile.personal_info.sections.contact_info')}
-              </h3>
-              <Button
-                size="sm"
-                variant="ghost"
-                className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                onClick={() => {
-                  setEditingSection("contact");
-                  setIsEditing(true);
-                }}
-              >
-                <Edit className="h-4 w-4" />
-              </Button>
-            </div>
-            
-            {editingSection === "contact" && isEditing ? (
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    {t('pages.profile.personal_info.fields.email')}
-                  </label>
-                  <Input
-                    type="email"
-                    value={editingProfile.email}
-                    onChange={(e) => handleInputChange("email", e.target.value)}
-                    className="h-9"
-                    disabled
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    {t('pages.profile.personal_info.fields.phone')}
-                  </label>
-                  <Input
-                    type="tel"
-                    value={editingProfile.phone}
-                    onChange={(e) => handleInputChange("phone", e.target.value)}
-                    className="h-9"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    {t('pages.profile.personal_info.fields.address')}
-                  </label>
-                  <Input
-                    type="text"
-                    value={editingProfile.address}
-                    onChange={(e) => handleInputChange("address", e.target.value)}
-                    className="h-9"
-                  />
-                </div>
-                <div className="flex gap-2">
-                  <Button
-                    size="sm"
-                    className="h-8 rounded-lg"
-                    onClick={() => {
-                      handleSave();
-                      setEditingSection(null);
-                    }}
-                  >
-                    <Save className="h-4 w-4 mr-1" />
-                    {t('pages.profile.personal_info.save_changes')}
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="h-8 rounded-lg"
-                    onClick={() => {
-                      handleCancel();
-                      setEditingSection(null);
-                    }}
-                  >
-                    <X className="h-4 w-4" />
-                    {t('pages.profile.personal_info.cancel')}
-                  </Button>
-                </div>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                <div className="flex py-2 border-b border-gray-100 dark:border-gray-800">
-                  <span className="text-sm text-gray-700 dark:text-gray-300 w-24">{t('pages.profile.personal_info.fields.email')}</span>
-                  <span className="text-sm font-medium text-gray-900 dark:text-white">{profile.email || t('bookings.not_specified')}</span>
-                </div>
-                <div className="flex py-2 border-b border-gray-100 dark:border-gray-800">
-                  <span className="text-sm text-gray-700 dark:text-gray-300 w-24">{t('pages.profile.personal_info.fields.phone')}</span>
-                  <span className="text-sm font-medium text-gray-900 dark:text-white">{profile.phone || t('bookings.not_specified')}</span>
-                </div>
-                <div className="flex py-2 border-b border-gray-100 dark:border-gray-800">
-                  <span className="text-sm text-gray-700 dark:text-gray-300 w-24">{t('pages.profile.personal_info.fields.address')}</span>
-                  <span className="text-sm font-medium text-gray-900 dark:text-white">{profile.address || t('bookings.not_specified')}</span>
-                </div>
-              </div>
-            )}
+        {/* Personal Details Card */}
+        <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-5 transition-all duration-200 hover:border-blue-300 hover:shadow-sm group">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-base font-semibold text-gray-900 dark:text-white">
+              {t('pages.profile.personal_info.sections.personal_details')}
+            </h3>
+            <Button
+              size="sm"
+              variant="ghost"
+              className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+              onClick={() => {
+                setEditingSection("personal");
+                setIsEditing(true);
+              }}
+            >
+              <Edit className="h-4 w-4" />
+            </Button>
           </div>
+          
+          {editingSection === "personal" && isEditing ? (
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  {t('pages.profile.personal_info.fields.first_name')}
+                </label>
+                <Input
+                  type="text"
+                  value={editingProfile.firstName}
+                  onChange={(e) => handleInputChange("firstName", e.target.value)}
+                  className="h-9"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  {t('pages.profile.personal_info.fields.last_name')}
+                </label>
+                <Input
+                  type="text"
+                  value={editingProfile.lastName}
+                  onChange={(e) => handleInputChange("lastName", e.target.value)}
+                  className="h-9"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  {t('pages.profile.personal_info.fields.date_of_birth')}
+                </label>
+                <Input
+                  type="date"
+                  value={editingProfile.dateOfBirth}
+                  onChange={(e) => handleInputChange("dateOfBirth", e.target.value)}
+                  className="h-9"
+                />
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  size="sm"
+                  className="h-8 rounded-lg"
+                  onClick={() => {
+                    handleSave();
+                    setEditingSection(null);
+                  }}
+                >
+                  <Save className="h-4 w-4 mr-1" />
+                  {t('pages.profile.personal_info.save_changes')}
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="h-8 rounded-lg"
+                  onClick={() => {
+                    handleCancel();
+                    setEditingSection(null);
+                  }}
+                >
+                  <X className="h-4 w-4" />
+                  {t('pages.profile.personal_info.cancel')}
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              <div className="flex justify-between py-2 border-b border-gray-100 dark:border-gray-800">
+                <span className="text-sm text-gray-700 dark:text-gray-300">{t('pages.profile.personal_info.fields.first_name')}</span>
+                <span className="text-sm font-medium text-gray-900 dark:text-white">{profile.firstName || t('bookings.not_specified')}</span>
+              </div>
+              <div className="flex justify-between py-2 border-b border-gray-100 dark:border-gray-800">
+                <span className="text-sm text-gray-700 dark:text-gray-300">{t('pages.profile.personal_info.fields.last_name')}</span>
+                <span className="text-sm font-medium text-gray-900 dark:text-white">{profile.lastName || t('bookings.not_specified')}</span>
+              </div>
+              <div className="flex justify-between py-2 border-b border-gray-100 dark:border-gray-800">
+                <span className="text-sm text-gray-700 dark:text-gray-300">{t('pages.profile.personal_info.fields.date_of_birth')}</span>
+                <span className="text-sm font-medium text-gray-900 dark:text-white">
+                  {profile.dateOfBirth && profile.dateOfBirth !== 'Invalid Date' ? new Date(profile.dateOfBirth).toLocaleDateString('nb-NO') : t('bookings.not_specified')}
+                </span>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Contact Info Card */}
+        <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-5 transition-all duration-200 hover:border-blue-300 hover:shadow-sm group">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-base font-semibold text-gray-900 dark:text-white">
+              {t('pages.profile.personal_info.sections.contact_info')}
+            </h3>
+            <Button
+              size="sm"
+              variant="ghost"
+              className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+              onClick={() => {
+                setEditingSection("contact");
+                setIsEditing(true);
+              }}
+            >
+              <Edit className="h-4 w-4" />
+            </Button>
+          </div>
+          
+          {editingSection === "contact" && isEditing ? (
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  {t('pages.profile.personal_info.fields.email')}
+                </label>
+                <Input
+                  type="email"
+                  value={editingProfile.email}
+                  onChange={(e) => handleInputChange("email", e.target.value)}
+                  className="h-9"
+                  disabled
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  {t('pages.profile.personal_info.fields.phone')}
+                </label>
+                <Input
+                  type="tel"
+                  value={editingProfile.phone}
+                  onChange={(e) => handleInputChange("phone", e.target.value)}
+                  className="h-9"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  {t('pages.profile.personal_info.fields.address')}
+                </label>
+                <Input
+                  type="text"
+                  value={editingProfile.address}
+                  onChange={(e) => handleInputChange("address", e.target.value)}
+                  className="h-9"
+                />
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  size="sm"
+                  className="h-8 rounded-lg"
+                  onClick={() => {
+                    handleSave();
+                    setEditingSection(null);
+                  }}
+                >
+                  <Save className="h-4 w-4 mr-1" />
+                  {t('pages.profile.personal_info.save_changes')}
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="h-8 rounded-lg"
+                  onClick={() => {
+                    handleCancel();
+                    setEditingSection(null);
+                  }}
+                >
+                  <X className="h-4 w-4" />
+                  {t('pages.profile.personal_info.cancel')}
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              <div className="flex py-2 border-b border-gray-100 dark:border-gray-800">
+                <span className="text-sm text-gray-700 dark:text-gray-300 w-24">{t('pages.profile.personal_info.fields.email')}</span>
+                <span className="text-sm font-medium text-gray-900 dark:text-white">{profile.email || t('bookings.not_specified')}</span>
+              </div>
+              <div className="flex py-2 border-b border-gray-100 dark:border-gray-800">
+                <span className="text-sm text-gray-700 dark:text-gray-300 w-24">{t('pages.profile.personal_info.fields.phone')}</span>
+                <span className="text-sm font-medium text-gray-900 dark:text-white">{profile.phone || t('bookings.not_specified')}</span>
+              </div>
+              <div className="flex py-2 border-b border-gray-100 dark:border-gray-800">
+                <span className="text-sm text-gray-700 dark:text-gray-300 w-24">{t('pages.profile.personal_info.fields.address')}</span>
+                <span className="text-sm font-medium text-gray-900 dark:text-white">{profile.address || t('bookings.not_specified')}</span>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -947,9 +947,9 @@ const SettingsPage = (_props: ISettingsPageProps): JSX.Element => {
                   onClick={() => fileInputRef.current?.click()}
                 >
                   <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-gray-100 dark:border-gray-800 mx-auto">
-                    {avatarPreview ? (
+                    {avatarPreview || (user?.id && localStorage.getItem(`avatar_${user.id}`)) ? (
                       <img
-                        src={avatarPreview}
+                        src={avatarPreview || (user?.id ? localStorage.getItem(`avatar_${user.id}`) : '') || undefined}
                         alt="Profile"
                         className="w-full h-full object-cover"
                       />

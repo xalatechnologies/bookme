@@ -16,6 +16,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
 import { FieldConfigModal } from "@/components/features/facilities/components/FacilityEditForm/FieldConfigModal";
+import { ConfirmationModal } from "@/components/common/modals/ConfirmationModal";
 import { Zone } from "@/types/booking";
 import { useZoneStore } from "@/stores/zoneStore";
 import { extractContactInfo, cleanDescription, formatContactInfo } from "@/utils/facility/contactUtils";
@@ -77,6 +78,8 @@ const FacilityEditPage = (_props: IFacilityEditPageProps): JSX.Element => {
   const [isGeocoding, setIsGeocoding] = useState<boolean>(false);
   const [showManualCoords, setShowManualCoords] = useState<boolean>(false);
   const [imageVersion, setImageVersion] = useState<number>(0); // For forcing re-renders when images change
+  const [showDeleteImageModal, setShowDeleteImageModal] = useState<boolean>(false);
+  const [imageToDeleteIndex, setImageToDeleteIndex] = useState<number | null>(null);
 
   // Use Supabase hooks
   const { facility: supabaseFacility, loading: isLoading, error } = useFacility(id || "");
@@ -631,8 +634,16 @@ const FacilityEditPage = (_props: IFacilityEditPageProps): JSX.Element => {
   };
 
   const handleRemoveImage = (index: number): void => {
+    // Show confirmation modal before deleting image
+    setImageToDeleteIndex(index);
+    setShowDeleteImageModal(true);
+  };
+
+  const confirmDeleteImage = (): void => {
+    if (imageToDeleteIndex === null) return;
+    
     if (editedFacility && editedFacility.images) {
-      const newImages = (editedFacility.images as string[]).filter((_: string, i: number) => i !== index);
+      const newImages = (editedFacility.images as string[]).filter((_: string, i: number) => i !== imageToDeleteIndex);
       setEditedFacility({
         ...editedFacility,
         images: newImages,
@@ -641,6 +652,15 @@ const FacilityEditPage = (_props: IFacilityEditPageProps): JSX.Element => {
       setHasUnsavedChanges(true);
       setImageVersion(prev => prev + 1); // Increment to force re-render
     }
+    
+    // Reset modal state
+    setShowDeleteImageModal(false);
+    setImageToDeleteIndex(null);
+  };
+
+  const cancelDeleteImage = (): void => {
+    setShowDeleteImageModal(false);
+    setImageToDeleteIndex(null);
   };
 
   const handleMoveImage = (fromIndex: number, toIndex: number): void => {
@@ -1492,6 +1512,17 @@ const FacilityEditPage = (_props: IFacilityEditPageProps): JSX.Element => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Image Deletion Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={showDeleteImageModal}
+        onClose={cancelDeleteImage}
+        onConfirm={confirmDeleteImage}
+        title="Slett bilde"
+        message="Er du sikker på at du vil slette dette bildet?"
+        confirmText="Slett"
+        cancelText="Avbryt"
+      />
 
       {/* Field Configuration Modal */}
       <FieldConfigModal

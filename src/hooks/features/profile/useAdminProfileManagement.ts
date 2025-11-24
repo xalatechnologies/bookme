@@ -191,9 +191,15 @@ export const useAdminProfileManagement = (): UseAdminProfileManagementReturn => 
       address: ""
     });
     setIsEditingPersonalInfo(false);
-    setAvatarPreview(null);
+    
+    // Restore avatar preview to original state
+    if (user?.id) {
+      const storedAvatar = localStorage.getItem(`avatar_${user.id}`);
+      setAvatarPreview(storedAvatar);
+    }
+    
     hasSyncedRef.current = false; // Allow sync again
-  }, [profile?.display_name, profile?.phone, user?.email]);
+  }, [profile?.display_name, profile?.phone, user?.email, user?.id]);
 
   // Handle cancel editing for security
   const handleCancelSecurity = useCallback((): void => {

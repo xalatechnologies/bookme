@@ -214,9 +214,9 @@ export const useUserProfileManagement = (): UseUserProfileManagementReturn => {
     loadPreferences();
   }, [profile.accountId]);
 
-  // Sync editingProfile with profile only once when profile is loaded
+  // Sync editingProfile with profile when profile changes
   useEffect(() => {
-    if (!hasSyncedRef.current && profile.firstName) {
+    if (profile.firstName || profile.lastName || profile.email) {
       setEditingProfile({
         firstName: profile.firstName,
         lastName: profile.lastName,
@@ -225,9 +225,19 @@ export const useUserProfileManagement = (): UseUserProfileManagementReturn => {
         address: profile.address,
         dateOfBirth: profile.dateOfBirth
       });
+      
+      // Load avatar from Supabase Storage
+      if (profile.accountId) {
+        avatarService.getAvatarUrl(profile.accountId).then(avatarUrl => {
+          setAvatarPreview(avatarUrl);
+        }).catch(error => {
+          console.error('Error loading avatar:', error);
+        });
+      }
+      
       hasSyncedRef.current = true;
     }
-  }, [profile.firstName, profile.lastName, profile.email, profile.phone, profile.address, profile.dateOfBirth]);
+  }, [profile.firstName, profile.lastName, profile.email, profile.phone, profile.address, profile.dateOfBirth, profile.accountId, profile.avatar]);
 
   // Toast management
   const showToastMessage = useCallback((message: string): void => {
@@ -254,7 +264,6 @@ export const useUserProfileManagement = (): UseUserProfileManagementReturn => {
     const updates: Record<string, string> = { ...editingProfile };
     if (avatarPreview) {
       updates.avatar = avatarPreview;
-      setAvatarPreview(null);
     }
 
     updateProfile(updates);
@@ -274,7 +283,16 @@ export const useUserProfileManagement = (): UseUserProfileManagementReturn => {
       dateOfBirth: profile.dateOfBirth
     });
     setIsEditing(false);
-    setAvatarPreview(null);
+    
+    // Restore avatar preview to original state
+    if (profile.accountId) {
+      avatarService.getAvatarUrl(profile.accountId).then(avatarUrl => {
+        setAvatarPreview(avatarUrl);
+      }).catch(error => {
+        console.error('Error loading avatar:', error);
+      });
+    }
+    
     hasSyncedRef.current = false; // Allow sync again
   }, [profile]);
 
@@ -294,17 +312,15 @@ export const useUserProfileManagement = (): UseUserProfileManagementReturn => {
   const handleAvatarUpload = useCallback((event: React.ChangeEvent<HTMLInputElement>): void => {
     const file = event.target.files?.[0];
     if (file && profile.accountId) {
-      // Convert file to data URL and update profile
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const dataUrl = e.target?.result as string;
-        if (dataUrl) {
-          setAvatarPreview(dataUrl);
-          updateProfile({ avatar: dataUrl });
-          showToastMessage(t('pages.profile.personal_info.changes_saved'));
-        }
-      };
-      reader.readAsDataURL(file);
+      // Upload file to Supabase Storage
+      avatarService.uploadAvatar(profile.accountId, file).then(result => {
+        setAvatarPreview(result.url);
+        updateProfile({ avatar: result.url });
+        showToastMessage(t('pages.profile.personal_info.changes_saved'));
+      }).catch(error => {
+        console.error('Error uploading avatar:', error);
+        showToastMessage(t('pages.profile.personal_info.changes_saved'));
+      });
     }
   }, [profile.accountId, updateProfile, showToastMessage, t]);
 

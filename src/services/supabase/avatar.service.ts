@@ -4,7 +4,7 @@
  * Manages user avatar uploads and storage.
  *
  * Features:
- * - Avatar upload to Supabase Storage
+ * - Avatar upload to Supabase Storage with localStorage fallback
  * - Avatar URL management
  * - Avatar deletion
  *
@@ -45,7 +45,7 @@ export class AvatarService {
   }
 
   /**
-   * Upload user avatar (simplified version that stores in localStorage)
+   * Upload user avatar to Supabase Storage with localStorage fallback
    *
    * @param userId - User ID
    * @param file - Avatar file to upload
@@ -53,10 +53,35 @@ export class AvatarService {
    */
   async uploadAvatar(userId: string, file: File): Promise<AvatarUploadResult> {
     try {
-      // Convert file to data URL for localStorage storage
-      const dataUrl = await this.fileToDataUrl(file);
+      // First, try to upload to Supabase Storage
+      const fileExtension = file.name.split('.').pop() || 'jpg';
+      const fileName = `avatars/${userId}.${fileExtension}`;
       
-      // Store in localStorage
+      const { data, error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(fileName, file, {
+          cacheControl: '3600',
+          upsert: true // Allow overwriting existing avatar
+        });
+
+      if (!uploadError && data) {
+        // Successfully uploaded to Supabase Storage
+        const { data: { publicUrl } } = supabase.storage
+          .from('avatars')
+          .getPublicUrl(fileName);
+
+        return {
+          url: publicUrl,
+          path: fileName
+        };
+      }
+    } catch (error) {
+      console.warn('Failed to upload to Supabase Storage, falling back to localStorage:', error);
+    }
+
+    // Fallback to localStorage
+    try {
+      const dataUrl = await this.fileToDataUrl(file);
       const storageKey = `avatar_${userId}`;
       localStorage.setItem(storageKey, dataUrl);
       
@@ -65,6 +90,7 @@ export class AvatarService {
         path: storageKey, // Use localStorage key as path
       };
     } catch (error) {
+      console.error('Error processing avatar file:', error);
       throw new Error('Failed to process avatar file');
     }
   }
@@ -76,6 +102,20 @@ export class AvatarService {
    * @returns True if deleted successfully
    */
   async deleteAvatar(filePath: string): Promise<boolean> {
+    try {
+      // Try to delete from Supabase Storage first
+      const { error } = await supabase.storage
+        .from('avatars')
+        .remove([filePath]);
+
+      if (!error) {
+        return true;
+      }
+    } catch (error) {
+      console.warn('Failed to delete from Supabase Storage:', error);
+    }
+
+    // Fallback to localStorage
     try {
       localStorage.removeItem(filePath);
       return true;
@@ -92,6 +132,27 @@ export class AvatarService {
    * @returns Avatar URL or null if not found
    */
   async getAvatarUrl(userId: string): Promise<string | null> {
+    try {
+      // Try to get from Supabase Storage first
+      const { data, error } = await supabase.storage
+        .from('avatars')
+        .list('avatars', {
+          search: userId
+        });
+
+      if (!error && data && data.length > 0) {
+        const fileName = data[0].name;
+        const { data: { publicUrl } } = supabase.storage
+          .from('avatars')
+          .getPublicUrl(fileName);
+        
+        return publicUrl;
+      }
+    } catch (error) {
+      console.warn('Failed to get avatar from Supabase Storage:', error);
+    }
+
+    // Fallback to localStorage
     try {
       const storageKey = `avatar_${userId}`;
       return localStorage.getItem(storageKey);

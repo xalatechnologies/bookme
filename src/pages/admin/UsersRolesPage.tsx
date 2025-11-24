@@ -146,17 +146,10 @@ const getRoleColor = (role: string): string => {
   const roleColors: Record<string, string> = {
     owner: "bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-300",
     admin: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300",
-    case_handler: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300",
-    editor: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300",
-    read_only: "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300",
-    customer: "bg-slate-100 text-slate-800 dark:bg-slate-900/30 dark:text-slate-300",
     staff: "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300",
-    // Backwards compatibility with Norwegian role names
-    saksbehandler: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300",
-    redaktor: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300",
-    lesetilgang: "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300"
+    customer: "bg-slate-100 text-slate-800 dark:bg-slate-900/30 dark:text-slate-300"
   };
-  return roleColors[normalizedRole] || roleColors.read_only;
+  return roleColors[normalizedRole] || roleColors.staff;
 };
 
 const getRoleIcon = (role: string): React.ComponentType<{ className?: string }> => {
@@ -164,17 +157,10 @@ const getRoleIcon = (role: string): React.ComponentType<{ className?: string }> 
   const roleIcons: Record<string, React.ComponentType<{ className?: string }>> = {
     owner: Crown,
     admin: Crown,
-    case_handler: Briefcase,
-    editor: PenTool,
-    read_only: EyeIcon,
-    customer: User,
     staff: Briefcase,
-    // Backwards compatibility with Norwegian role names
-    saksbehandler: Briefcase,
-    redaktor: PenTool,
-    lesetilgang: EyeIcon
+    customer: User
   };
-  return roleIcons[normalizedRole] || EyeIcon;
+  return roleIcons[normalizedRole] || User;
 };
 
 const formatTimeAgo = (dateString: string): string => {
@@ -389,11 +375,8 @@ const UserModal = ({ user, isOpen, onClose, onSave, isEditing }: IUserModalProps
                 <option value="">{t('pages.users_roles.modals.user.role_placeholder')}</option>
                 <option value={ORG_ROLES.OWNER}>{t('roles.owner', 'Owner')}</option>
                 <option value={ORG_ROLES.ADMIN}>{t('roles.admin', 'Administrator')}</option>
-                <option value={ORG_ROLES.CASE_HANDLER}>{t('roles.case_handler', 'Case Handler')}</option>
-                <option value={ORG_ROLES.EDITOR}>{t('roles.editor', 'Editor')}</option>
-                <option value={ORG_ROLES.READ_ONLY}>{t('roles.read_only', 'Read Only')}</option>
+                <option value={ORG_ROLES.STAFF}>{t('roles.staff', 'Staff')}</option>
                 <option value={ORG_ROLES.CUSTOMER}>{t('roles.customer', 'Customer')}</option>
-                <option value={ORG_ROLES.STAFF}>{t('roles.staff_deprecated', 'Staff (deprecated)')}</option>
               </select>
             </div>
 
@@ -1028,15 +1011,12 @@ const UsersRolesPage = (): JSX.Element => {
                 role = 'admin';
                 console.log(`  -> Inferred role 'admin' from email`);
               } else if (emailLower.includes('staff') || emailLower.includes('saksbehandler') || emailLower.includes('case')) {
-                role = 'staff'; // Will be normalized to case_handler
+                role = 'staff';
                 console.log(`  -> Inferred role 'staff' from email`);
-              } else if (emailLower.includes('editor') || emailLower.includes('redaktor')) {
-                role = 'editor';
-                console.log(`  -> Inferred role 'editor' from email`);
               } else {
-                // Default to read_only for users with default_org but no membership
-                role = 'read_only';
-                console.log(`  -> Assigned default role 'read_only' (has default_org but no membership)`);
+                // Default to staff for users with default_org but no membership
+                role = 'staff';
+                console.log(`  -> Assigned default role 'staff' (has default_org but no membership)`);
               }
             } else {
               // User doesn't have default_org set and no membership - skip them
@@ -1073,15 +1053,12 @@ const UsersRolesPage = (): JSX.Element => {
         console.log('Transformed users count:', transformedUsers.length);
         console.log('Transformed users:', transformedUsers.map(u => ({ id: u.id, email: u.email, role: u.role })));
 
-        // Fetch roles from constants - all available organization roles
+        // Fetch roles from constants - only the four required organization roles
         const orgRoles = [
           { id: ORG_ROLES.OWNER, name: t('roles.owner', 'Owner'), description: t('roles.descriptions.owner', 'Full access to the entire organization') },
           { id: ORG_ROLES.ADMIN, name: t('roles.admin', 'Administrator'), description: t('roles.descriptions.admin', 'Full access to the organization') },
-          { id: ORG_ROLES.CASE_HANDLER, name: t('roles.case_handler', 'Case Handler'), description: t('roles.descriptions.case_handler', 'Main operational role for handling bookings') },
-          { id: ORG_ROLES.EDITOR, name: t('roles.editor', 'Editor'), description: t('roles.descriptions.editor', 'Content management role') },
-          { id: ORG_ROLES.READ_ONLY, name: t('roles.read_only', 'Read Only'), description: t('roles.descriptions.read_only', 'Read-only access') },
-          { id: ORG_ROLES.CUSTOMER, name: t('roles.customer', 'Customer'), description: t('roles.descriptions.customer', 'Standard customer access') },
-          { id: ORG_ROLES.STAFF, name: t('roles.staff_deprecated', 'Staff (deprecated)'), description: t('roles.descriptions.staff_deprecated', 'Deprecated role - maps to case_handler') }
+          { id: ORG_ROLES.STAFF, name: t('roles.staff', 'Staff'), description: t('roles.descriptions.staff', 'Operational role for handling bookings and tasks') },
+          { id: ORG_ROLES.CUSTOMER, name: t('roles.customer', 'Customer'), description: t('roles.descriptions.customer', 'Standard customer access') }
         ];
 
         // Transform roles to match our interface with proper permissions
@@ -1121,26 +1098,11 @@ const UsersRolesPage = (): JSX.Element => {
           "bookings.view", "bookings.approve", "bookings.reject",
           "reports.view", "reports.export"
         ];
-      case 'case_handler':
-      case 'staff': // Deprecated, maps to case_handler
-        // Case handlers can view and manage bookings, but limited facility access
+      case 'staff':
+        // Staff can view and manage bookings, but limited facility access
         return [
           "facilities.view", "facilities.edit",
           "bookings.view", "bookings.approve", "bookings.reject",
-          "reports.view"
-        ];
-      case 'editor':
-        // Editors can manage facilities and content
-        return [
-          "facilities.create", "facilities.edit", "facilities.publish",
-          "bookings.view",
-          "reports.view"
-        ];
-      case 'read_only':
-        // Read-only users can only view
-        return [
-          "facilities.view",
-          "bookings.view",
           "reports.view"
         ];
       case 'customer':
@@ -1439,16 +1401,16 @@ const UsersRolesPage = (): JSX.Element => {
         }
 
         const transformedUsers: IUser[] = (usersData as Database['public']['Tables']['profiles']['Row'][]).map(profile => {
-          const membership = membershipsData.find(m => m.user_id === profile.user_id) || { role: 'read_only' };
+          const membership = membershipsData.find(m => m.user_id === profile.user_id) || { role: 'staff' };
           return {
             id: profile.user_id,
             name: profile.display_name || profile.email || 'Unknown User',
             email: profile.email || '',
-            role: membership.role || 'read_only',
+            role: membership.role || 'staff',
             status: 'active',
             createdAt: profile.created_at,
             createdBy: 'System',
-            permissions: getPermissionsForRole(membership.role || 'read_only')
+            permissions: getPermissionsForRole(membership.role || 'staff')
           };
         });
 
@@ -1499,17 +1461,17 @@ const UsersRolesPage = (): JSX.Element => {
 
           // Combine profiles with memberships
           const transformedUsers: IUser[] = (usersData as Database['public']['Tables']['profiles']['Row'][]).map(profile => {
-            const membership = membershipsData.find(m => m.user_id === profile.user_id) || { role: 'read_only' };
+            const membership = membershipsData.find(m => m.user_id === profile.user_id) || { role: 'staff' };
             return {
               id: profile.user_id,
               name: profile.display_name || profile.email || 'Unknown User',
               email: profile.email || '',
-              role: membership.role || 'read_only',
+              role: membership.role || 'staff',
               status: 'active',
               createdAt: profile.created_at,
               createdBy: 'System',
               // Set permissions based on role
-              permissions: getPermissionsForRole(membership.role || 'read_only')
+              permissions: getPermissionsForRole(membership.role || 'staff')
             };
           });
 

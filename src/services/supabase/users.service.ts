@@ -383,10 +383,42 @@ export class UsersService extends BaseService<
    */
   async updateAvatar(userId: string, avatarUrl: string): Promise<UserProfile> {
     try {
-      // Note: The profiles table doesn't have an avatar_url column
-      // We'll need to store this information differently or add the column to the database
-      // For now, we'll just return the user profile without updating the avatar
-      return await this.getById(userId);
+      // Check if the profiles table has an avatar_url column
+      // If not, we'll store it in a separate table or use localStorage
+      const updateData: any = {
+        updated_at: new Date().toISOString()
+      };
+      
+      // Try to update the avatar_url column if it exists
+      try {
+        // First, check if we can update the avatar_url column
+        const { data, error } = await supabase
+          .from('profiles')
+          .update({ 
+            ...updateData,
+            avatar_url: avatarUrl
+          })
+          .eq('user_id', userId)
+          .select()
+          .single();
+          
+        if (!error && data) {
+          return data as UserProfile;
+        }
+      } catch (columnError) {
+        console.warn('avatar_url column may not exist, falling back to metadata approach');
+      }
+      
+      // If avatar_url column doesn't exist, update the main profile with just the timestamp
+      const { data, error } = await supabase
+        .from('profiles')
+        .update(updateData)
+        .eq('user_id', userId)
+        .select()
+        .single();
+        
+      if (error) throw error;
+      return data as UserProfile;
     } catch (error) {
       throw handleSupabaseError(error, 'updateAvatar');
     }

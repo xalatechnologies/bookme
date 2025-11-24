@@ -151,15 +151,6 @@ export const GlobalHeader = (): JSX.Element => {
               isLoggedIn={isAuthenticated}
               handleLogin={handleLogin}
               handleLogout={handleLogout}
-              userProfile={
-                isAuthenticated
-                  ? {
-                      firstName: profile.firstName,
-                      lastName: profile.lastName,
-                      email: profile.email,
-                    }
-                  : undefined
-              }
             />
           </div>
         </div>
@@ -183,15 +174,6 @@ export const GlobalHeader = (): JSX.Element => {
         handleLogin={handleLogin}
         handleLogout={handleLogout}
         closeMobileMenu={() => setMobileMenuOpen(false)}
-        userProfile={
-          isAuthenticated
-            ? {
-                firstName: profile.firstName,
-                lastName: profile.lastName,
-                email: profile.email,
-              }
-            : undefined
-        }
       />
     </header>
   );
