@@ -131,6 +131,39 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
   }, []);
 
   /**
+   * Record user login event
+   */
+  const recordLoginEvent = useCallback(async (userId: string, orgId?: string | null): Promise<void> => {
+    try {
+      // Try to record login event in audit_events table
+      const { error } = await supabase
+        .from('audit_events')
+        .insert({
+          action: 'user_login',
+          actor_id: userId,
+          entity: 'user',
+          entity_id: userId,
+          org_id: orgId || undefined, // Include org_id if available
+          details: { login_method: 'auth_state_change' },
+          created_at: new Date().toISOString()
+        });
+
+      if (error) {
+        console.warn('Could not record login event (might be due to permissions):', error);
+        // If we can't record the event in the database, store it in localStorage as a fallback
+        localStorage.setItem(`last_login_${userId}`, new Date().toISOString());
+      } else {
+        // Also store in localStorage as a backup
+        localStorage.setItem(`last_login_${userId}`, new Date().toISOString());
+      }
+    } catch (error) {
+      console.warn('Error recording login event:', error);
+      // If we can't record the event, store it in localStorage as a fallback
+      localStorage.setItem(`last_login_${userId}`, new Date().toISOString());
+    }
+  }, []);
+
+  /**
    * Fetch user's organization memberships
    */
   const fetchMemberships = useCallback(async (userId: string): Promise<void> => {
@@ -187,10 +220,15 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
             // Load user's favorites
             await useFavoritesStore.getState().loadFavorites(initialSession.user.id);
             
-            await Promise.all([
-              fetchProfile(initialSession.user.id),
-              fetchMemberships(initialSession.user.id),
-            ]);
+            // Fetch profile and memberships to get org ID
+            try {
+              await Promise.all([
+                fetchProfile(initialSession.user.id),
+                fetchMemberships(initialSession.user.id),
+              ]);
+            } catch (error) {
+              console.error('Error fetching profile/memberships:', error);
+            }
           }
 
           setLoading(false);
@@ -226,13 +264,56 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
           // Load user's favorites
           await useFavoritesStore.getState().loadFavorites(newSession.user.id);
           
-          // Fetch profile and memberships for new user (non-blocking)
-          Promise.all([
-            fetchProfile(newSession.user.id),
-            fetchMemberships(newSession.user.id),
-          ]).catch((error) => {
+          // Fetch profile and memberships first to get org ID
+          try {
+            const [profileData, membershipsData] = await Promise.all([
+              new Promise((resolve, reject) => {
+                supabase
+                  .from('profiles')
+                  .select('*')
+                  .eq('user_id', newSession.user.id)
+                  .single()
+                  .then(({ data, error }) => {
+                    if (error) {
+                      reject(error);
+                    } else {
+                      setProfile(data);
+                      resolve(data);
+                    }
+                  });
+              }),
+              new Promise((resolve, reject) => {
+                supabase
+                  .from('memberships')
+                  .select('*')
+                  .eq('user_id', newSession.user.id)
+                  .then(({ data, error }) => {
+                    if (error) {
+                      reject(error);
+                    } else {
+                      setMemberships(data);
+                      resolve(data);
+                    }
+                  });
+              })
+            ]);
+            
+            // Set current org ID from profile or first membership
+            const profile = profileData as any;
+            const memberships = membershipsData as any;
+            let orgId = profile.default_org || null;
+            if (!orgId && memberships.length > 0) {
+              orgId = memberships[0].org_id;
+              setCurrentOrgId(orgId);
+            }
+            
+            // Now record login event with organization ID if available
+            await recordLoginEvent(newSession.user.id, orgId);
+          } catch (error) {
             console.error('Error fetching profile/memberships:', error);
-          });
+            // Still record login event even if we can't fetch profile/memberships
+            await recordLoginEvent(newSession.user.id, null);
+          }
         } else {
           // Clear profile and memberships on logout
           setProfile(null);

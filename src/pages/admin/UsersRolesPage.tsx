@@ -178,10 +178,12 @@ const formatTimeAgo = (dateString: string): string => {
 const getLastActivity = (user: IUser): string => {
   if (user.lastLogin) {
     return `Sist innlogget: ${formatTimeAgo(user.lastLogin)}`;
-  } else if (user.invitationSentAt) {
-    return `Invitasjon sendt: ${formatTimeAgo(user.invitationSentAt)}`;
+  } else if (user.invitationSentAt && user.invitationSentAt !== user.createdAt) {
+    // Only show invitation sent if it's different from creation date
+    return `Sent invitasjon: ${formatTimeAgo(user.invitationSentAt)}`;
   } else {
-    return "Aldri aktiv – kun invitert";
+    // Fallback to showing invitation sent even if it's the same as creation date
+    return `Sent invitasjon: ${formatTimeAgo(user.createdAt)}`;
   }
 };
 
@@ -917,25 +919,83 @@ const UsersRolesPage = (): JSX.Element => {
         
         // First fetch ALL memberships for the current organization (we'll filter customers later)
         // This helps us debug what roles are actually in the database
-        const { data: allMembershipsData, error: allMembershipsError } = await supabase
+        const { data: membershipsData, error: membershipsError } = await supabase
           .from('memberships')
-          .select('user_id, org_id, role')
+          .select('user_id, org_id, role, created_at')
           .eq('org_id', currentOrgId);
 
-        if (allMembershipsError) {
-          throw new Error(allMembershipsError.message);
+        // Fetch last login information for all users
+        let lastLoginData: { actor_id: string; created_at: string }[] | null = null;
+        if (membershipsData && membershipsData.length > 0) {
+          try {
+            const userIds = membershipsData.map(m => m.user_id);
+            const { data, error } = await supabase
+              .from('audit_events')
+              .select('actor_id, created_at')
+              .eq('action', 'user_login')
+              .in('actor_id', userIds)
+              .order('created_at', { ascending: false });
+            
+            if (!error && data) {
+              // Get the most recent login for each user
+              const latestLogins = new Map<string, string>();
+              data.forEach(event => {
+                // Skip events with null actor_id
+                if (event.actor_id && !latestLogins.has(event.actor_id)) {
+                  latestLogins.set(event.actor_id, event.created_at);
+                }
+              });
+              lastLoginData = Array.from(latestLogins.entries()).map(([actor_id, created_at]) => ({
+                actor_id,
+                created_at
+              }));
+            } else if (error) {
+              console.warn('Could not fetch last login data from audit_events (might be due to permissions):', error);
+              
+              // Fallback to localStorage if we can't fetch from database
+              const localStorageLogins = new Map<string, string>();
+              userIds.forEach(userId => {
+                const lastLogin = localStorage.getItem(`last_login_${userId}`);
+                if (lastLogin) {
+                  localStorageLogins.set(userId, lastLogin);
+                }
+              });
+              
+              if (localStorageLogins.size > 0) {
+                lastLoginData = Array.from(localStorageLogins.entries()).map(([actor_id, created_at]) => ({
+                  actor_id,
+                  created_at
+                }));
+              }
+            }
+          } catch (error) {
+            console.warn('Error fetching last login data:', error);
+            
+            // Fallback to localStorage if we get an error
+            const userIds = membershipsData.map(m => m.user_id);
+            const localStorageLogins = new Map<string, string>();
+            userIds.forEach(userId => {
+              const lastLogin = localStorage.getItem(`last_login_${userId}`);
+              if (lastLogin) {
+                localStorageLogins.set(userId, lastLogin);
+              }
+            });
+            
+            if (localStorageLogins.size > 0) {
+              lastLoginData = Array.from(localStorageLogins.entries()).map(([actor_id, created_at]) => ({
+                actor_id,
+                created_at
+              }));
+            }
+          }
         }
 
-        console.log('ALL memberships (before filtering):', allMembershipsData?.length || 0);
-        console.log('ALL memberships data:', JSON.stringify(allMembershipsData, null, 2));
+        if (membershipsError) {
+          throw new Error(membershipsError.message);
+        }
 
-        // Filter out customers
-        const membershipsData = allMembershipsData?.filter(m => {
-          const normalizedRole = normalizeRole(m.role);
-          return normalizedRole !== 'customer';
-        }) || [];
-
-        console.log('Memberships after filtering customers:', membershipsData.length);
+        console.log('ALL memberships (before filtering):', membershipsData?.length || 0);
+        console.log('ALL memberships data:', JSON.stringify(membershipsData, null, 2));
 
         console.log('Memberships fetched:', membershipsData?.length || 0);
         console.log('Memberships data:', JSON.stringify(membershipsData, null, 2));
@@ -943,6 +1003,9 @@ const UsersRolesPage = (): JSX.Element => {
         // Log all unique roles found
         const uniqueRoles = new Set(membershipsData?.map(m => m.role) || []);
         console.log('Unique roles in memberships:', Array.from(uniqueRoles));
+
+        // Create a map of last login data for quick lookup
+        const lastLoginMap = new Map(lastLoginData?.map(login => [login.actor_id, login.created_at]) || []);
 
         // Also fetch profiles by default_org to catch users who might not have explicit memberships
         const { data: profilesByDefaultOrg, error: profilesByOrgError } = await supabase
@@ -996,7 +1059,7 @@ const UsersRolesPage = (): JSX.Element => {
           console.log(`Processing profile ${profile.user_id} (${profile.email}): role from membership = ${role}`);
           
           // If user doesn't have a membership but has default_org set, 
-          // try to infer role from email or create a default non-customer role
+          // try to infer role from email
           if (!role) {
             // Check if user has default_org set (they're part of the organization)
             const hasDefaultOrg = profile.default_org === currentOrgId;
@@ -1014,9 +1077,10 @@ const UsersRolesPage = (): JSX.Element => {
                 role = 'staff';
                 console.log(`  -> Inferred role 'staff' from email`);
               } else {
-                // Default to staff for users with default_org but no membership
-                role = 'staff';
-                console.log(`  -> Assigned default role 'staff' (has default_org but no membership)`);
+                // If we can't infer a role and they don't have a membership,
+                // they might be a customer who shouldn't be in the admin UI
+                console.log(`  -> Cannot infer role, skipping user without explicit membership`);
+                return null;
               }
             } else {
               // User doesn't have default_org set and no membership - skip them
@@ -1037,12 +1101,17 @@ const UsersRolesPage = (): JSX.Element => {
           
           console.log(`  -> Including user with role: ${role}`);
           
+          // Find membership data for this user to get additional information
+          const userMembership = membershipsData?.find(m => m.user_id === profile.user_id);
+          
           return {
             id: profile.user_id,
             name: profile.display_name || profile.email || 'Unknown User',
             email: profile.email || '',
             role: role, // Store original role from DB
             status: 'active', // TODO: Implement proper status handling
+            lastLogin: lastLoginMap.get(profile.user_id), // Get actual last login time
+            invitationSentAt: userMembership?.created_at, // Use membership creation date as invitation sent date
             createdAt: profile.created_at,
             createdBy: 'System', // TODO: Implement proper creator tracking
             // Set permissions based on role
@@ -1053,12 +1122,11 @@ const UsersRolesPage = (): JSX.Element => {
         console.log('Transformed users count:', transformedUsers.length);
         console.log('Transformed users:', transformedUsers.map(u => ({ id: u.id, email: u.email, role: u.role })));
 
-        // Fetch roles from constants - only the four required organization roles
+        // Fetch roles from constants - only the organizational roles (excluding customers)
         const orgRoles = [
-          { id: ORG_ROLES.OWNER, name: t('roles.owner', 'Owner'), description: t('roles.descriptions.owner', 'Full access to the entire organization') },
-          { id: ORG_ROLES.ADMIN, name: t('roles.admin', 'Administrator'), description: t('roles.descriptions.admin', 'Full access to the organization') },
-          { id: ORG_ROLES.STAFF, name: t('roles.staff', 'Staff'), description: t('roles.descriptions.staff', 'Operational role for handling bookings and tasks') },
-          { id: ORG_ROLES.CUSTOMER, name: t('roles.customer', 'Customer'), description: t('roles.descriptions.customer', 'Standard customer access') }
+          { id: ORG_ROLES.OWNER, name: t('roles.owner', 'Eier'), description: t('roles.descriptions.owner', 'Full tilgang til hele organisasjonen') },
+          { id: ORG_ROLES.ADMIN, name: t('roles.admin', 'Administrator'), description: t('roles.descriptions.admin', 'Full tilgang til organisasjonen') },
+          { id: ORG_ROLES.STAFF, name: t('roles.staff', 'Ansatt'), description: t('roles.descriptions.staff', 'Operasjonell rolle for håndtering av bookinger og oppgaver') }
         ];
 
         // Transform roles to match our interface with proper permissions
@@ -1199,8 +1267,44 @@ const UsersRolesPage = (): JSX.Element => {
         // Trigger a re-fetch of the data
         const { data: membershipsData, error: membershipsError } = await supabase
           .from('memberships')
-          .select('user_id, org_id, role')
+          .select('user_id, org_id, role, created_at')
           .eq('org_id', currentOrgId);
+
+        // Fetch last login information for all users
+        let lastLoginData: { actor_id: string; created_at: string }[] | null = null;
+        if (membershipsData && membershipsData.length > 0) {
+          try {
+            const userIds = membershipsData.map(m => m.user_id);
+            const { data, error } = await supabase
+              .from('audit_events')
+              .select('actor_id, created_at')
+              .eq('action', 'user_login')
+              .in('actor_id', userIds)
+              .order('created_at', { ascending: false });
+              
+            if (!error && data) {
+              // Get the most recent login for each user
+              const latestLogins = new Map<string, string>();
+              data.forEach(event => {
+                // Skip events with null actor_id
+                if (event.actor_id && !latestLogins.has(event.actor_id)) {
+                  latestLogins.set(event.actor_id, event.created_at);
+                }
+              });
+              lastLoginData = Array.from(latestLogins.entries()).map(([actor_id, created_at]) => ({
+                actor_id,
+                created_at
+              }));
+            } else if (error) {
+              console.warn('Could not fetch last login data from audit_events (might be due to permissions):', error);
+            }
+          } catch (error) {
+            console.warn('Error fetching last login data:', error);
+          }
+        }
+
+        // Create a map of last login data for quick lookup
+        const lastLoginMap = new Map(lastLoginData?.map(login => [login.actor_id, login.created_at]) || []);
 
         if (membershipsError) {
           throw new Error(membershipsError.message);
@@ -1249,6 +1353,8 @@ const UsersRolesPage = (): JSX.Element => {
             email: profile.email || '',
             role: role,
             status: 'active',
+            lastLogin: lastLoginMap.get(profile.user_id), // Get actual last login time
+            invitationSentAt: membershipsData.find(m => m.user_id === profile.user_id)?.created_at, // Use membership creation date as invitation sent date
             createdAt: profile.created_at,
             createdBy: 'System',
             // Set permissions based on role
@@ -1285,13 +1391,13 @@ const UsersRolesPage = (): JSX.Element => {
       
       // Refresh roles data - all available organization roles
       const orgRoles = [
-        { id: ORG_ROLES.OWNER, name: t('roles.owner', 'Owner'), description: t('roles.descriptions.owner', 'Full access to the entire organization') },
-        { id: ORG_ROLES.ADMIN, name: t('roles.admin', 'Administrator'), description: t('roles.descriptions.admin', 'Full access to the organization') },
-        { id: ORG_ROLES.CASE_HANDLER, name: t('roles.case_handler', 'Case Handler'), description: t('roles.descriptions.case_handler', 'Main operational role for handling bookings') },
-        { id: ORG_ROLES.EDITOR, name: t('roles.editor', 'Editor'), description: t('roles.descriptions.editor', 'Content management role') },
-        { id: ORG_ROLES.READ_ONLY, name: t('roles.read_only', 'Read Only'), description: t('roles.descriptions.read_only', 'Read-only access') },
-        { id: ORG_ROLES.CUSTOMER, name: t('roles.customer', 'Customer'), description: t('roles.descriptions.customer', 'Standard customer access') },
-        { id: ORG_ROLES.STAFF, name: t('roles.staff_deprecated', 'Staff (deprecated)'), description: t('roles.descriptions.staff_deprecated', 'Deprecated role - maps to case_handler') }
+        { id: ORG_ROLES.OWNER, name: t('roles.owner', 'Eier'), description: t('roles.descriptions.owner', 'Full tilgang til hele organisasjonen') },
+        { id: ORG_ROLES.ADMIN, name: t('roles.admin', 'Administrator'), description: t('roles.descriptions.admin', 'Full tilgang til organisasjonen') },
+        { id: ORG_ROLES.CASE_HANDLER, name: t('roles.case_handler', 'Saksbehandler'), description: t('roles.descriptions.case_handler', 'Hovedoperasjonell rolle for håndtering av bookinger') },
+        { id: ORG_ROLES.EDITOR, name: t('roles.editor', 'Redaktør'), description: t('roles.descriptions.editor', 'Innholdsbehandlingsrolle') },
+        { id: ORG_ROLES.READ_ONLY, name: t('roles.read_only', 'Kun lesing'), description: t('roles.descriptions.read_only', 'Skrivebeskyttet tilgang') },
+        { id: ORG_ROLES.CUSTOMER, name: t('roles.customer', 'Kunde'), description: t('roles.descriptions.customer', 'Standard kundetilgang') },
+        { id: ORG_ROLES.STAFF, name: t('roles.staff_deprecated', 'Ansatt (avviklet)'), description: t('roles.descriptions.staff_deprecated', 'Avviklet rolle - kartlegges til saksbehandler') }
       ];
 
       // Transform roles to match our interface with proper permissions
@@ -1319,13 +1425,13 @@ const UsersRolesPage = (): JSX.Element => {
       
       // Refresh roles data - all available organization roles
       const orgRoles = [
-        { id: ORG_ROLES.OWNER, name: t('roles.owner', 'Owner'), description: t('roles.descriptions.owner', 'Full access to the entire organization') },
-        { id: ORG_ROLES.ADMIN, name: t('roles.admin', 'Administrator'), description: t('roles.descriptions.admin', 'Full access to the organization') },
-        { id: ORG_ROLES.CASE_HANDLER, name: t('roles.case_handler', 'Case Handler'), description: t('roles.descriptions.case_handler', 'Main operational role for handling bookings') },
-        { id: ORG_ROLES.EDITOR, name: t('roles.editor', 'Editor'), description: t('roles.descriptions.editor', 'Content management role') },
-        { id: ORG_ROLES.READ_ONLY, name: t('roles.read_only', 'Read Only'), description: t('roles.descriptions.read_only', 'Read-only access') },
-        { id: ORG_ROLES.CUSTOMER, name: t('roles.customer', 'Customer'), description: t('roles.descriptions.customer', 'Standard customer access') },
-        { id: ORG_ROLES.STAFF, name: t('roles.staff_deprecated', 'Staff (deprecated)'), description: t('roles.descriptions.staff_deprecated', 'Deprecated role - maps to case_handler') }
+        { id: ORG_ROLES.OWNER, name: t('roles.owner', 'Eier'), description: t('roles.descriptions.owner', 'Full tilgang til hele organisasjonen') },
+        { id: ORG_ROLES.ADMIN, name: t('roles.admin', 'Administrator'), description: t('roles.descriptions.admin', 'Full tilgang til organisasjonen') },
+        { id: ORG_ROLES.CASE_HANDLER, name: t('roles.case_handler', 'Saksbehandler'), description: t('roles.descriptions.case_handler', 'Hovedoperasjonell rolle for håndtering av bookinger') },
+        { id: ORG_ROLES.EDITOR, name: t('roles.editor', 'Redaktør'), description: t('roles.descriptions.editor', 'Innholdsbehandlingsrolle') },
+        { id: ORG_ROLES.READ_ONLY, name: t('roles.read_only', 'Kun lesing'), description: t('roles.descriptions.read_only', 'Skrivebeskyttet tilgang') },
+        { id: ORG_ROLES.CUSTOMER, name: t('roles.customer', 'Kunde'), description: t('roles.descriptions.customer', 'Standard kundetilgang') },
+        { id: ORG_ROLES.STAFF, name: t('roles.staff_deprecated', 'Ansatt (avviklet)'), description: t('roles.descriptions.staff_deprecated', 'Avviklet rolle - kartlegges til saksbehandler') }
       ];
 
       // Transform roles to match our interface with proper permissions
@@ -1376,67 +1482,80 @@ const UsersRolesPage = (): JSX.Element => {
         }
 
         // Refresh the data
-        const { data: membershipsData, error: membershipsError } = await supabase
-          .from('memberships')
-          .select('user_id, org_id, role')
-          .eq('org_id', currentOrgId);
-
-        if (membershipsError) {
-          throw new Error(membershipsError.message);
-        }
-
-        const userIds = membershipsData.map(membership => membership.user_id);
-
-        let usersData: Database['public']['Tables']['profiles']['Row'][] | null = [];
-        if (userIds.length > 0) {
-          const { data, error: profilesError } = await supabase
-            .from('profiles')
-            .select('*')
-            .in('user_id', userIds);
-
-          if (profilesError) {
-            throw new Error(profilesError.message);
-          }
-          usersData = data || [];
-        }
-
-        const transformedUsers: IUser[] = (usersData as Database['public']['Tables']['profiles']['Row'][]).map(profile => {
-          const membership = membershipsData.find(m => m.user_id === profile.user_id) || { role: 'staff' };
-          return {
-            id: profile.user_id,
-            name: profile.display_name || profile.email || 'Unknown User',
-            email: profile.email || '',
-            role: membership.role || 'staff',
-            status: 'active',
-            createdAt: profile.created_at,
-            createdBy: 'System',
-            permissions: getPermissionsForRole(membership.role || 'staff')
-          };
-        });
-
-        setUsers(transformedUsers);
-        alert(t('pages.users_roles.confirmations.user_deactivated'));
-      } catch (error: any) {
-        console.error('Failed to deactivate user:', error);
-        alert(error.message || t('pages.users_roles.confirmations.error_deactivate'));
-      }
-    }
-  };
-
-  const handleDeleteUser = async (userId: string): Promise<void> => {
-    if (window.confirm(t('pages.users_roles.confirmations.delete_user'))) {
-      try {
-        // In a real implementation, we would delete the user's membership
-        // For now, we'll just show a success message
-        alert(t('pages.users_roles.confirmations.user_deleted'));
-        
-        // Refresh the data
         if (currentOrgId) {
           // First fetch memberships for the current organization
           const { data: membershipsData, error: membershipsError } = await supabase
             .from('memberships')
-            .select('user_id, org_id, role')
+            .select('user_id, org_id, role, created_at')
             .eq('org_id', currentOrgId);
+
+          // Fetch last login information for all users
+          let lastLoginData: { actor_id: string; created_at: string }[] | null = null;
+          if (membershipsData && membershipsData.length > 0) {
+            try {
+              const userIds = membershipsData.map(m => m.user_id);
+              const { data, error } = await supabase
+                .from('audit_events')
+                .select('actor_id, created_at')
+                .eq('action', 'user_login')
+                .in('actor_id', userIds)
+                .order('created_at', { ascending: false });
+              
+              if (!error && data) {
+                // Get the most recent login for each user
+                const latestLogins = new Map<string, string>();
+                data.forEach(event => {
+                  // Skip events with null actor_id
+                  if (event.actor_id && !latestLogins.has(event.actor_id)) {
+                    latestLogins.set(event.actor_id, event.created_at);
+                  }
+                });
+                lastLoginData = Array.from(latestLogins.entries()).map(([actor_id, created_at]) => ({
+                  actor_id,
+                  created_at
+                }));
+              } else if (error) {
+                console.warn('Could not fetch last login data from audit_events (might be due to permissions):', error);
+                
+                // Fallback to localStorage if we can't fetch from database
+                const localStorageLogins = new Map<string, string>();
+                userIds.forEach(userId => {
+                  const lastLogin = localStorage.getItem(`last_login_${userId}`);
+                  if (lastLogin) {
+                    localStorageLogins.set(userId, lastLogin);
+                  }
+                });
+                
+                if (localStorageLogins.size > 0) {
+                  lastLoginData = Array.from(localStorageLogins.entries()).map(([actor_id, created_at]) => ({
+                    actor_id,
+                    created_at
+                  }));
+                }
+              }
+            } catch (error) {
+              console.warn('Error fetching last login data:', error);
+              
+              // Fallback to localStorage if we get an error
+              const localStorageLogins = new Map<string, string>();
+              membershipsData.forEach(membership => {
+                const lastLogin = localStorage.getItem(`last_login_${membership.user_id}`);
+                if (lastLogin) {
+                  localStorageLogins.set(membership.user_id, lastLogin);
+                }
+              });
+              
+              if (localStorageLogins.size > 0) {
+                lastLoginData = Array.from(localStorageLogins.entries()).map(([actor_id, created_at]) => ({
+                  actor_id,
+                  created_at
+                }));
+              }
+            }
+          }
+
+          // Create a map of last login data for quick lookup
+          const lastLoginMap = new Map(lastLoginData?.map(login => [login.actor_id, login.created_at]) || []);
 
           if (membershipsError) {
             throw new Error(membershipsError.message);
@@ -1461,17 +1580,151 @@ const UsersRolesPage = (): JSX.Element => {
 
           // Combine profiles with memberships
           const transformedUsers: IUser[] = (usersData as Database['public']['Tables']['profiles']['Row'][]).map(profile => {
-            const membership = membershipsData.find(m => m.user_id === profile.user_id) || { role: 'staff' };
+            const membership = membershipsData.find(m => m.user_id === profile.user_id);
             return {
               id: profile.user_id,
               name: profile.display_name || profile.email || 'Unknown User',
               email: profile.email || '',
-              role: membership.role || 'staff',
+              role: membership?.role || 'staff',
               status: 'active',
+              lastLogin: lastLoginMap.get(profile.user_id), // Get actual last login time
+              invitationSentAt: membership?.created_at, // Use membership creation date as invitation sent date
               createdAt: profile.created_at,
               createdBy: 'System',
               // Set permissions based on role
-              permissions: getPermissionsForRole(membership.role || 'staff')
+              permissions: getPermissionsForRole(membership?.role || 'staff')
+            };
+          });
+
+          setUsers(transformedUsers);
+        }
+        alert(t('pages.users_roles.confirmations.user_deactivated'));
+      } catch (error: any) {
+        console.error('Failed to deactivate user:', error);
+        alert(error.message || t('pages.users_roles.confirmations.error_deactivate'));
+      }
+    }
+  };
+
+  const handleDeleteUser = async (userId: string): Promise<void> => {
+    if (window.confirm(t('pages.users_roles.confirmations.delete_user'))) {
+      try {
+        // In a real implementation, we would delete the user's membership
+        // For now, we'll just show a success message
+        alert(t('pages.users_roles.confirmations.user_deleted'));
+        
+        // Refresh the data
+        if (currentOrgId) {
+          // First fetch memberships for the current organization
+          const { data: membershipsData, error: membershipsError } = await supabase
+            .from('memberships')
+            .select('user_id, org_id, role, created_at')
+            .eq('org_id', currentOrgId);
+
+          // Fetch last login information for all users
+          let lastLoginData: { actor_id: string; created_at: string }[] | null = null;
+          if (membershipsData && membershipsData.length > 0) {
+            try {
+              const userIds = membershipsData.map(m => m.user_id);
+              const { data, error } = await supabase
+                .from('audit_events')
+                .select('actor_id, created_at')
+                .eq('action', 'user_login')
+                .in('actor_id', userIds)
+                .order('created_at', { ascending: false });
+              
+              if (!error && data) {
+                // Get the most recent login for each user
+                const latestLogins = new Map<string, string>();
+                data.forEach(event => {
+                  // Skip events with null actor_id
+                  if (event.actor_id && !latestLogins.has(event.actor_id)) {
+                    latestLogins.set(event.actor_id, event.created_at);
+                  }
+                });
+                lastLoginData = Array.from(latestLogins.entries()).map(([actor_id, created_at]) => ({
+                  actor_id,
+                  created_at
+                }));
+              } else if (error) {
+                console.warn('Could not fetch last login data from audit_events (might be due to permissions):', error);
+                
+                // Fallback to localStorage if we can't fetch from database
+                const localStorageLogins = new Map<string, string>();
+                userIds.forEach(userId => {
+                  const lastLogin = localStorage.getItem(`last_login_${userId}`);
+                  if (lastLogin) {
+                    localStorageLogins.set(userId, lastLogin);
+                  }
+                });
+                
+                if (localStorageLogins.size > 0) {
+                  lastLoginData = Array.from(localStorageLogins.entries()).map(([actor_id, created_at]) => ({
+                    actor_id,
+                    created_at
+                  }));
+                }
+              }
+            } catch (error) {
+              console.warn('Error fetching last login data:', error);
+              
+              // Fallback to localStorage if we get an error
+              const localStorageLogins = new Map<string, string>();
+              membershipsData.forEach(membership => {
+                const lastLogin = localStorage.getItem(`last_login_${membership.user_id}`);
+                if (lastLogin) {
+                  localStorageLogins.set(membership.user_id, lastLogin);
+                }
+              });
+              
+              if (localStorageLogins.size > 0) {
+                lastLoginData = Array.from(localStorageLogins.entries()).map(([actor_id, created_at]) => ({
+                  actor_id,
+                  created_at
+                }));
+              }
+            }
+          }
+
+          // Create a map of last login data for quick lookup
+          const lastLoginMap = new Map(lastLoginData?.map(login => [login.actor_id, login.created_at]) || []);
+
+          if (membershipsError) {
+            throw new Error(membershipsError.message);
+          }
+
+          // Extract user IDs from memberships
+          const userIds = membershipsData.map(membership => membership.user_id);
+
+          // Then fetch profiles for those users
+          let usersData: Database['public']['Tables']['profiles']['Row'][] | null = [];
+          if (userIds.length > 0) {
+            const { data, error: profilesError } = await supabase
+              .from('profiles')
+              .select('*')
+              .in('user_id', userIds);
+
+            if (profilesError) {
+              throw new Error(profilesError.message);
+            }
+            usersData = data || [];
+          }
+
+          // Combine profiles with memberships
+          const transformedUsers: IUser[] = (usersData as Database['public']['Tables']['profiles']['Row'][]).map(profile => {
+            const membership = membershipsData.find(m => m.user_id === profile.user_id);
+            return {
+              id: profile.user_id,
+              name: profile.display_name || profile.email || 'Unknown User',
+              email: profile.email || '',
+              role: membership?.role || 'staff',
+              status: 'active',
+              lastLogin: lastLoginMap.get(profile.user_id), // Get actual last login time
+              invitationSentAt: membership?.created_at, // Use membership creation date as invitation sent date
+              createdAt: profile.created_at,
+              createdBy: 'System',
+              // Set permissions based on role
+              permissions: getPermissionsForRole(membership?.role || 'staff')
             };
           });
 
@@ -1507,13 +1760,9 @@ const UsersRolesPage = (): JSX.Element => {
               className="w-32 px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
             >
               <option value="all">{t('pages.users_roles.filters.all_roles')}</option>
-              <option value={ORG_ROLES.OWNER}>{t('roles.owner', 'Owner')}</option>
+              <option value={ORG_ROLES.OWNER}>{t('roles.owner', 'Eier')}</option>
               <option value={ORG_ROLES.ADMIN}>{t('roles.admin', 'Administrator')}</option>
-              <option value={ORG_ROLES.CASE_HANDLER}>{t('roles.case_handler', 'Case Handler')}</option>
-              <option value={ORG_ROLES.EDITOR}>{t('roles.editor', 'Editor')}</option>
-              <option value={ORG_ROLES.READ_ONLY}>{t('roles.read_only', 'Read Only')}</option>
-              <option value={ORG_ROLES.CUSTOMER}>{t('roles.customer', 'Customer')}</option>
-              <option value={ORG_ROLES.STAFF}>{t('roles.staff_deprecated', 'Staff (deprecated)')}</option>
+              <option value={ORG_ROLES.STAFF}>{t('roles.staff', 'Ansatt')}</option>
             </select>
             <select
               value={statusFilter}
