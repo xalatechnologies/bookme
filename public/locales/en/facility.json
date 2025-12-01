@@ -1,6 +1,16 @@
 {
   "title": "Facilities",
   "subtitle": "Explore and book available facilities",
+  "facilityTypes": {
+    "all": "All Facilities",
+    "idrettshall": "Sports Hall",
+    "kulturhus": "Cultural Center",
+    "møterom": "Meeting Room",
+    "fotballbane": "Football Field",
+    "svømmehall": "Swimming Pool",
+    "tennisbane": "Tennis Court"
+  },
+  "searchFacilities": "Search facilities...",
   "fields": {
     "name": "Name",
     "description": "Description",

@@ -1,6 +1,16 @@
 {
   "title": "Fasiliteter",
   "subtitle": "Utforsk og book tilgjengelige fasiliteter",
+  "facilityTypes": {
+    "all": "Alle fasiliteter",
+    "idrettshall": "Idrettshall",
+    "kulturhus": "Kulturhus",
+    "møterom": "Møterom",
+    "fotballbane": "Fotballbane",
+    "svømmehall": "Svømmehall",
+    "tennisbane": "Tennisbane"
+  },
+  "searchFacilities": "Søk fasiliteter...",
   "fields": {
     "name": "Navn",
     "description": "Beskrivelse",

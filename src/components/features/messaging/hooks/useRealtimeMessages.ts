@@ -240,7 +240,7 @@ export const useRealtimeUnreadCount = (
         },
         (payload: RealtimePostgresChangesPayload<Message>) => {
           // Only invalidate if this is not the user's own message
-          if (payload.new && payload.new.sender_id !== userId) {
+          if (payload.new && 'sender_id' in payload.new && payload.new.sender_id !== userId) {
             console.log('[Realtime] New message from someone else, update unread count');
 
             queryClient.invalidateQueries({

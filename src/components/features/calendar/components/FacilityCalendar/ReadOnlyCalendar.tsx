@@ -64,10 +64,10 @@ export const ReadOnlyCalendar: React.FC<ReadOnlyCalendarProps> = ({
             <div className="flex gap-2">
               <Button variant="outline" size="sm" onClick={handlePreviousWeek}>
                 <ChevronLeft className="w-4 h-4 mr-2" />
-                {t('calendar:navigation.previous_week')}
+                {t('navigation.previous_week')}
               </Button>
               <Button variant="outline" size="sm" onClick={handleNextWeek}>
-                {t('calendar:navigation.next_week')}
+                {t('navigation.next_week')}
                 <ChevronRight className="w-4 h-4 ml-2" />
               </Button>
             </div>
@@ -102,13 +102,13 @@ export const ReadOnlyCalendar: React.FC<ReadOnlyCalendarProps> = ({
             {/* Calendar Header */}
             <div className="grid grid-cols-8 border-b border-gray-200 dark:border-gray-700">
               <div className="p-3 text-center font-medium text-gray-500 dark:text-gray-400"></div>
-              <div className="p-3 text-center font-medium text-gray-900 dark:text-white">{t('common:time.weekdays.monday').substring(0, 3)}</div>
-              <div className="p-3 text-center font-medium text-gray-900 dark:text-white">{t('common:time.weekdays.tuesday').substring(0, 3)}</div>
-              <div className="p-3 text-center font-medium text-gray-900 dark:text-white">{t('common:time.weekdays.wednesday').substring(0, 3)}</div>
-              <div className="p-3 text-center font-medium text-gray-900 dark:text-white">{t('common:time.weekdays.thursday').substring(0, 3)}</div>
-              <div className="p-3 text-center font-medium text-gray-900 dark:text-white">{t('common:time.weekdays.friday').substring(0, 3)}</div>
-              <div className="p-3 text-center font-medium text-gray-900 dark:text-white">{t('common:time.weekdays.saturday').substring(0, 3)}</div>
-              <div className="p-3 text-center font-medium text-gray-900 dark:text-white">{t('common:time.weekdays.sunday').substring(0, 3)}</div>
+              <div className="p-3 text-center font-medium text-gray-900 dark:text-white">{t('time.weekdays.monday', { ns: 'common' }).substring(0, 3)}</div>
+              <div className="p-3 text-center font-medium text-gray-900 dark:text-white">{t('time.weekdays.tuesday', { ns: 'common' }).substring(0, 3)}</div>
+              <div className="p-3 text-center font-medium text-gray-900 dark:text-white">{t('time.weekdays.wednesday', { ns: 'common' }).substring(0, 3)}</div>
+              <div className="p-3 text-center font-medium text-gray-900 dark:text-white">{t('time.weekdays.thursday', { ns: 'common' }).substring(0, 3)}</div>
+              <div className="p-3 text-center font-medium text-gray-900 dark:text-white">{t('time.weekdays.friday', { ns: 'common' }).substring(0, 3)}</div>
+              <div className="p-3 text-center font-medium text-gray-900 dark:text-white">{t('time.weekdays.saturday', { ns: 'common' }).substring(0, 3)}</div>
+              <div className="p-3 text-center font-medium text-gray-900 dark:text-white">{t('time.weekdays.sunday', { ns: 'common' }).substring(0, 3)}</div>
             </div>
 
             {/* Time Slots */}

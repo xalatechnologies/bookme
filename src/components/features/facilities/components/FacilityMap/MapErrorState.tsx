@@ -30,8 +30,8 @@ export const MapErrorState: React.FC<MapErrorStateProps> = ({
             <h2 className="text-xl font-semibold text-gray-900">Kart ikke tilgjengelig</h2>
           </div>
           <div className="flex gap-2">
-            {(['grid', 'list', 'map', 'calendar'] as const).map((mode) => {
-              const Icon = mode === 'grid' ? Grid3X3 : mode === 'list' ? List : mode === 'map' ? Map : Calendar;
+            {(['grid', 'list', 'map'] as const).map((mode) => {
+              const Icon = mode === 'grid' ? Grid3X3 : mode === 'list' ? List : Map;
               return (
                 <button
                   key={mode}

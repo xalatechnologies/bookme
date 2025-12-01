@@ -192,6 +192,21 @@ export function useBookings(options: UseBookingsOptions = {}): UseBookingsReturn
     }
   }, [phase, userId]);
 
+  // Refresh function - must be defined before other callbacks that use it
+  const refresh = useCallback(async (): Promise<void> => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      const data = await readBookings();
+      setBookings(data);
+    } catch (err) {
+      const error = err instanceof Error ? err : new Error(String(err));
+      setError(error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [readBookings]);
+
   // Public methods
   const addBooking = useCallback(async (booking: IStoredBooking): Promise<void> => {
     try {
@@ -306,20 +321,6 @@ export function useBookings(options: UseBookingsOptions = {}): UseBookingsReturn
       throw error;
     }
   }, [userId]);
-
-  const refresh = useCallback(async (): Promise<void> => {
-    try {
-      setIsLoading(true);
-      setError(null);
-      const data = await readBookings();
-      setBookings(data);
-    } catch (err) {
-      const error = err instanceof Error ? err : new Error(String(err));
-      setError(error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [readBookings]);
 
   // Initial load
   useEffect(() => {

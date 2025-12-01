@@ -29,12 +29,12 @@ import {
   type BookingStats,
   type CancellationEligibility,
   type ModificationEligibility,
-  type BookingStatus,
 } from '@/services/business/booking.business.service';
 import type { Database } from '@/types/database';
 
 type Booking = Database['public']['Tables']['bookings']['Row'];
 type BookingUpdate = Database['public']['Tables']['bookings']['Update'];
+type BookingStatus = Database['public']['Enums']['booking_status'];
 
 export interface IUseBookingManagementReturn {
   // Data
@@ -242,7 +242,7 @@ export const useBookingManagement = (): IUseBookingManagementReturn => {
         throw new Error(validation.reason || 'Cannot cancel booking');
       }
 
-      await cancelBookingMutation.mutateAsync(id);
+      await cancelBookingMutation.mutateAsync({ id });
     },
     [bookings, cancelBookingMutation]
   );
@@ -262,7 +262,7 @@ export const useBookingManagement = (): IUseBookingManagementReturn => {
       }
 
       // Cancel all bookings
-      await Promise.all(ids.map((id) => cancelBookingMutation.mutateAsync(id)));
+      await Promise.all(ids.map((id) => cancelBookingMutation.mutateAsync({ id })));
       clearSelection();
     },
     [bookings, cancelBookingMutation, clearSelection]

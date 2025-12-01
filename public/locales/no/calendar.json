@@ -76,5 +76,15 @@
     "conflict_description": "Bookingkonflikt",
     "click_available": "Klikk på ledige tidspunkter for å velge",
     "drag_select": "Dra for å velge flere tidspunkter"
+  },
+  "pricing": {
+    "title": "Prissammendrag",
+    "slots_selected": "Valgte tider",
+    "base_price": "Grunnpris",
+    "actor_adjustment": "Brukertype-justering",
+    "activity_adjustment": "Aktivitetsjustering",
+    "adjusted_price": "Justert pris",
+    "vat": "MVA",
+    "total": "Totalpris"
   }
 }

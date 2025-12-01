@@ -17,16 +17,16 @@ export const SearchFilter = ({
   onSearchChange,
   onTypeChange
 }: SearchFilterProps): JSX.Element => {
-  const { t } = useTranslation();
+  const { t } = useTranslation('facility');
 
   const facilityTypes = [
-    { value: 'all', label: t('facility.facilityTypes.all') },
-    { value: 'idrettshall', label: t('facility.facilityTypes.idrettshall') },
-    { value: 'kulturhus', label: t('facility.facilityTypes.kulturhus') },
-    { value: 'møterom', label: t('facility.facilityTypes.møterom') },
-    { value: 'fotballbane', label: t('facility.facilityTypes.fotballbane') },
-    { value: 'svømmehall', label: t('facility.facilityTypes.svømmehall') },
-    { value: 'tennisbane', label: t('facility.facilityTypes.tennisbane') }
+    { value: 'all', label: t('facilityTypes.all') },
+    { value: 'idrettshall', label: t('facilityTypes.idrettshall') },
+    { value: 'kulturhus', label: t('facilityTypes.kulturhus') },
+    { value: 'møterom', label: t('facilityTypes.møterom') },
+    { value: 'fotballbane', label: t('facilityTypes.fotballbane') },
+    { value: 'svømmehall', label: t('facilityTypes.svømmehall') },
+    { value: 'tennisbane', label: t('facilityTypes.tennisbane') }
   ];
 
   return (
@@ -36,7 +36,7 @@ export const SearchFilter = ({
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
         <Input
           type="text"
-          placeholder={t('facility.searchFacilities')}
+          placeholder={t('searchFacilities')}
           value={searchQuery}
           onChange={(e) => onSearchChange(e.target.value)}
           className="pl-10"

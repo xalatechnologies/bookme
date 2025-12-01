@@ -288,13 +288,12 @@ export const useDashboardManagement = (
       name: facility.name,
       description: facility.description || "",
       type: facility.facility_type || "",
-      location: facility.area || "",
+      location: facility.city || "",
       address: facility.address || "",
       capacity: facility.capacity || 0,
-      amenities: facility.amenities || [],
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      image: (facility.images as any)?.[0] || "/placeholder.svg",
-      rating: facility.rating || 0,
+      amenities: Array.isArray(facility.amenities) ? facility.amenities : [],
+      image: Array.isArray(facility.images) ? (facility.images[0] as string) || "/placeholder.svg" : "/placeholder.svg",
+      rating: 0,
       price: `${(facility.price_per_hour_cents || 0) / 100} kr/time`,
       availability: "available" as const,
       recommendationReason:

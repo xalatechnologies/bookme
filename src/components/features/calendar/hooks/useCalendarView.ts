@@ -9,10 +9,10 @@ import { usePublishedFacilities } from '@/services/supabase/facilities.service';
 import { useFacilitiesZones } from '@/services/supabase/zones.service';
 import { useOrganizationId } from '@/hooks/useOrganizationId';
 import type { Database } from '@/types/database';
-import type { Zone } from '@/types/booking';
 
 // Type aliases
 type Facility = Database['public']['Tables']['facilities']['Row'];
+type Zone = Database['public']['Tables']['zones']['Row'];
 
 interface UseCalendarViewProps {
   readonly facilityType?: string;
@@ -59,13 +59,20 @@ export const useCalendarView = ({
     }
 
     if (location && location !== "all") {
-      filtered = filtered.filter(f => f.area === location);
+      filtered = filtered.filter(f => f.city === location);
     }
 
     if (accessibility && accessibility !== "all") {
-      filtered = filtered.filter(f =>
-        f.accessibility_features && f.accessibility_features.includes(accessibility)
-      );
+      filtered = filtered.filter(f => {
+        const features = f.accessibility_features;
+        if (!features) return false;
+        if (Array.isArray(features)) {
+          return features.some((feature: unknown) => 
+            typeof feature === 'string' && feature.includes(accessibility)
+          );
+        }
+        return false;
+      });
     }
 
     if (capacity) {
@@ -101,7 +108,7 @@ export const useCalendarView = ({
       if (zones.length > 0) {
         results.push({
           facility,
-          zones: zones as readonly Zone[]
+          zones
         });
       }
     });

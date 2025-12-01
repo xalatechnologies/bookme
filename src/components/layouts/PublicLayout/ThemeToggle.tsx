@@ -11,7 +11,7 @@ interface ThemeToggleProps {
  * Dark mode code is preserved for future phases, but currently only light mode is active
  * When ready to implement dark mode with design system, this component will be re-enabled
  */
-export const ThemeToggle: React.FC<ThemeToggleProps> = (): JSX.Element => {
+export const ThemeToggle: React.FC<ThemeToggleProps> = (): JSX.Element | null => {
   // Ensure dark class is never added to document (light mode only for now)
   React.useEffect(() => {
     document.documentElement.classList.remove('dark');

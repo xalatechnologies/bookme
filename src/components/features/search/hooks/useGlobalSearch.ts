@@ -66,9 +66,16 @@ export const useGlobalSearch = (
           const matchesLocation = facility.address
             ?.toLowerCase()
             .includes(searchLower);
-          const matchesAmenities = facility.amenities?.some((amenity) =>
-            amenity.toLowerCase().includes(searchLower)
-          );
+          const matchesAmenities = (() => {
+            const amenities = facility.amenities;
+            if (!amenities) return false;
+            if (Array.isArray(amenities)) {
+              return amenities.some((amenity: unknown) =>
+                typeof amenity === 'string' && amenity.toLowerCase().includes(searchLower)
+              );
+            }
+            return false;
+          })();
 
           return (
             matchesName ||
@@ -83,29 +90,29 @@ export const useGlobalSearch = (
           id: facility.id,
           type: 'facility' as const,
           title: facility.name,
-          subtitle: `${facility.address || facility.area || ''} - Kapasitet: ${facility.capacity || 'N/A'}`,
+          subtitle: `${facility.address || facility.city || ''} - Kapasitet: ${facility.capacity || 'N/A'}`,
           iconType: 'building' as const,
           url: `/facilities/${facility.slug || facility.id}`,
-          image: facility.images?.[0],
+          image: Array.isArray(facility.images) ? facility.images[0] as string | undefined : undefined,
         }));
 
-      // Add location results (unique areas from facilities)
+      // Add location results (unique cities from facilities)
       const uniqueLocations = Array.from(
-        new Set(facilities.map((f) => f.area).filter(Boolean))
+        new Set(facilities.map((f) => f.city).filter(Boolean))
       )
-        .filter((area) => area && area.toLowerCase().includes(searchLower))
+        .filter((city) => city && city.toLowerCase().includes(searchLower))
         .slice(0, 3)
-        .map((area) => {
-          const count = facilities.filter((f) => f.area === area).length;
+        .map((city) => {
+          const count = facilities.filter((f) => f.city === city).length;
           return {
-            id: `location-${area}`,
+            id: `location-${city}`,
             type: 'location' as const,
-            title: area!,
+            title: city!,
             subtitle: `${count} lokaler tilgjengelig`,
             iconType: 'location' as const,
             url: '/',
             searchParams: {
-              location: area!.toLowerCase().replace(/\s+/g, '-'),
+              location: city!.toLowerCase().replace(/\s+/g, '-'),
             },
           };
         });

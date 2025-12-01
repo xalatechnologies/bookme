@@ -39,6 +39,8 @@ import userEN from '../../public/locales/en/user.json';
 import userNO from '../../public/locales/no/user.json';
 import validationEN from '../../public/locales/en/validation.json';
 import validationNO from '../../public/locales/no/validation.json';
+import supportEN from '../../public/locales/en/support.json';
+import supportNO from '../../public/locales/no/support.json';
 
 // Supported languages
 export const SUPPORTED_LANGUAGES = {
@@ -158,6 +160,7 @@ i18n
         admin: adminEN,
         user: userEN,
         validation: validationEN,
+        support: supportEN,
       },
       no: {
         roles: rolesNO,
@@ -172,6 +175,7 @@ i18n
         admin: adminNO,
         user: userNO,
         validation: validationNO,
+        support: supportNO,
       },
     },
 

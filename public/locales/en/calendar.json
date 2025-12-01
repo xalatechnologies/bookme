@@ -76,5 +76,15 @@
     "conflict_description": "Booking conflict",
     "click_available": "Click on available slots to select",
     "drag_select": "Drag to select multiple slots"
+  },
+  "pricing": {
+    "title": "Pricing Summary",
+    "slots_selected": "Slots Selected",
+    "base_price": "Base Price",
+    "actor_adjustment": "User Type Adjustment",
+    "activity_adjustment": "Activity Adjustment",
+    "adjusted_price": "Adjusted Price",
+    "vat": "VAT",
+    "total": "Total Price"
   }
 }

@@ -1,0 +1,189 @@
+{
+  "title": "Support",
+  "subtitle": "Get help with questions and issues",
+  "tickets": {
+    "create": "Create support ticket",
+    "view": "View ticket",
+    "list": "Support tickets",
+    "my_tickets": "My tickets",
+    "all_tickets": "All tickets",
+    "list_title": "Support Tickets",
+    "manage_all": "Manage all support tickets",
+    "your_tickets": "Your support tickets",
+    "new_ticket": "New Ticket",
+    "create_ticket": "Create Ticket",
+    "no_tickets": "No tickets found",
+    "no_tickets_search": "No tickets match your search criteria",
+    "no_tickets_yet": "You haven't created any support tickets yet",
+    "search_placeholder": "Search tickets...",
+    "ticket_id": "Ticket #{{id}}",
+    "status": {
+      "open": "Open",
+      "in_progress": "In Progress",
+      "in-progress": "In Progress",
+      "waiting_user": "Waiting for User",
+      "waiting-user": "Waiting for User",
+      "resolved": "Resolved",
+      "closed": "Closed"
+    },
+    "priority": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
+      "urgent": "Urgent"
+    },
+    "category": {
+      "booking": "Booking",
+      "technical": "Technical",
+      "billing": "Billing",
+      "feedback": "Feedback",
+      "other": "Other"
+    },
+    "details": {
+      "assigned": "Assigned to {{name}}",
+      "attachments": "{{count}} attachments"
+    },
+    "actions": {
+      "view": "View",
+      "edit": "Edit",
+      "archive": "Archive",
+      "delete": "Delete"
+    },
+    "filters": {
+      "status": "Status",
+      "priority": "Priority",
+      "category": "Category",
+      "all_statuses": "All Statuses",
+      "all_priorities": "All Priorities",
+      "all_categories": "All Categories"
+    },
+    "statistics": {
+      "open_tickets": "Open",
+      "in_progress": "In Progress",
+      "resolved": "Resolved",
+      "closed": "Closed"
+    },
+    "tabs": {
+      "all": "All ({{count}})",
+      "open": "Open ({{count}})",
+      "in_progress": "In Progress ({{count}})",
+      "resolved": "Resolved ({{count}})",
+      "closed": "Closed ({{count}})"
+    }
+  },
+  "fields": {
+    "category": "Category",
+    "subject": "Subject",
+    "description": "Description",
+    "priority": "Priority",
+    "tags": "Tags",
+    "attachments": "Attachments",
+    "status": "Status",
+    "assigned_to": "Assigned To",
+    "created_at": "Created",
+    "updated_at": "Updated",
+    "resolved_at": "Resolved"
+  },
+  "categories": {
+    "booking": "Booking",
+    "technical": "Technical",
+    "billing": "Billing",
+    "feedback": "Feedback",
+    "other": "Other"
+  },
+  "category_descriptions": {
+    "booking": "Questions or issues with bookings",
+    "technical": "Technical problems or errors",
+    "billing": "Questions about billing or payments",
+    "feedback": "Feedback or suggestions",
+    "other": "Other questions or issues"
+  },
+  "priorities": {
+    "low": "Low",
+    "medium": "Medium",
+    "high": "High",
+    "urgent": "Urgent"
+  },
+  "priority_descriptions": {
+    "low": "Not critical, can wait",
+    "medium": "Important, but not urgent",
+    "high": "Critical, needs quick help",
+    "urgent": "Very critical, needs immediate help"
+  },
+  "status": {
+    "open": "Open",
+    "in_progress": "In Progress",
+    "pending": "Pending",
+    "resolved": "Resolved",
+    "closed": "Closed"
+  },
+  "actions": {
+    "create_ticket": "Create Ticket",
+    "submit": "Create Ticket",
+    "submitting": "Creating...",
+    "cancel": "Cancel",
+    "close": "Close Ticket",
+    "reopen": "Reopen",
+    "assign": "Assign",
+    "resolve": "Mark as Resolved",
+    "add_comment": "Add Comment",
+    "attach_file": "Attach File"
+  },
+  "placeholders": {
+    "subject": "Describe the issue briefly...",
+    "description": "Describe the issue in as much detail as possible...",
+    "tags": "e.g. booking, payment, mobile"
+  },
+  "helper_text": {
+    "subject": "A brief description of the issue",
+    "description": "Include steps to reproduce the issue, error messages, and what you expected to happen",
+    "tags": "Separate tags with commas for better categorization"
+  },
+  "attachments": {
+    "title": "Attachments (optional)",
+    "drag_drop": "Drag and drop files here, or click to select",
+    "select_files": "Select Files",
+    "selected_files": "Selected Files",
+    "remove": "Remove",
+    "file_too_large": "File is too large",
+    "max_size": "Max {{size}}"
+  },
+  "related": {
+    "booking": "Related to booking",
+    "booking_id": "This ticket is related to booking #{{id}}"
+  },
+  "contact_info": {
+    "title": "Contact Information",
+    "name": "Name: {{name}}",
+    "email": "Email: {{email}}"
+  },
+  "messages": {
+    "success": {
+      "created": "Support ticket created!",
+      "updated": "Ticket updated!",
+      "closed": "Ticket closed!",
+      "resolved": "Ticket marked as resolved!",
+      "comment_added": "Comment added!"
+    },
+    "error": {
+      "create_failed": "Failed to create ticket",
+      "update_failed": "Failed to update ticket",
+      "not_found": "Ticket not found",
+      "generic": "Failed to create ticket. Please try again."
+    },
+    "validation": {
+      "subject_required": "Please enter a subject",
+      "description_required": "Please enter a description"
+    },
+    "empty": {
+      "no_tickets": "No tickets found",
+      "no_comments": "No comments yet"
+    }
+  },
+  "dialogs": {
+    "create": {
+      "title": "Create Support Ticket",
+      "description": "Describe your issue in as much detail as possible for quick assistance"
+    }
+  }
+}

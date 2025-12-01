@@ -86,7 +86,7 @@ const localizationKeys = {
  */
 export function useLocalizedDbValueEnhanced(
   entityType: LocalizedEntityType,
-  options: UseLocalizedDbValueOptions = {}
+  hookOptions: UseLocalizedDbValueOptions = {}
 ): UseLocalizedDbValueResult {
   const { i18n } = useTranslation();
   const currentLang = i18n.language || 'no';
@@ -100,7 +100,7 @@ export function useLocalizedDbValueEnhanced(
     onError,
     staleTime = 1000 * 60 * 30, // 30 minutes
     cacheTime = 1000 * 60 * 60, // 1 hour
-  } = options;
+  } = hookOptions;
 
   // Fetch localized values
   const {

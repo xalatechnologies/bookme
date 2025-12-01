@@ -26,8 +26,8 @@ export const MapLoadingState: React.FC<MapLoadingStateProps> = ({
             <div className="h-4 w-24 bg-gray-200 rounded animate-pulse"></div>
           </div>
           <div className="flex gap-2">
-            {(['grid', 'list', 'map', 'calendar'] as const).map((mode) => {
-              const Icon = mode === 'grid' ? Grid3X3 : mode === 'list' ? List : mode === 'map' ? Map : Calendar;
+            {(['grid', 'list', 'map'] as const).map((mode) => {
+              const Icon = mode === 'grid' ? Grid3X3 : mode === 'list' ? List : Map;
               return (
                 <button
                   key={mode}

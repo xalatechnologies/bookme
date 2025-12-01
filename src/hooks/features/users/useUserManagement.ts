@@ -169,6 +169,8 @@ export const useUserManagement = (): IUseUserManagementReturn => {
     searchTerm,
     roleFilter,
     statusFilter,
+    sortBy,
+    sortOrder,
     selectedUserIds,
   } = appUIStore.users;
 
@@ -184,7 +186,7 @@ export const useUserManagement = (): IUseUserManagementReturn => {
   const filteredUsers = useMemo(() => {
     const filters: IUserFilters = {
       searchTerm,
-      roleFilter,
+      roleFilter: roleFilter as readonly OrgRole[],
       statusFilter: statusFilter as readonly ('active' | 'inactive' | 'suspended')[],
     };
 

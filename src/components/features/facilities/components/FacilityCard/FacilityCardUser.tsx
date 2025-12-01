@@ -36,7 +36,6 @@ const FacilityCardUser = (props: IFacilityCardUserProps): JSX.Element => {
     capacity,
     image,
     description,
-    _availability = "available",
     slug
   } = props;
 
@@ -47,7 +46,6 @@ const FacilityCardUser = (props: IFacilityCardUserProps): JSX.Element => {
     handleViewDetails,
     handleBookNow,
     handleToggleFavorite,
-    _handleShare
   } = useFacilityActions({
     id,
     name,

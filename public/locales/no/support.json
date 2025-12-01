@@ -5,8 +5,71 @@
     "create": "Opprett support-ticket",
     "view": "Vis ticket",
     "list": "Support-tickets",
+    "list_title": "Support-tickets",
     "my_tickets": "Mine tickets",
-    "all_tickets": "Alle tickets"
+    "all_tickets": "Alle tickets",
+    "manage_all": "Administrer alle support-tickets",
+    "your_tickets": "Dine support-tickets",
+    "new_ticket": "Ny Ticket",
+    "create_ticket": "Opprett Ticket",
+    "no_tickets": "Ingen tickets funnet",
+    "no_tickets_search": "Ingen tickets matcher søkekriteriene",
+    "no_tickets_yet": "Du har ikke opprettet noen support-tickets ennå",
+    "search_placeholder": "Søk tickets...",
+    "ticket_id": "Ticket #{{id}}",
+    "status": {
+      "open": "Åpen",
+      "in_progress": "Under behandling",
+      "in-progress": "Under behandling",
+      "waiting_user": "Venter på bruker",
+      "waiting-user": "Venter på bruker",
+      "resolved": "Løst",
+      "closed": "Lukket"
+    },
+    "priority": {
+      "low": "Lav",
+      "medium": "Medium",
+      "high": "Høy",
+      "urgent": "Urgent"
+    },
+    "category": {
+      "booking": "Booking",
+      "technical": "Teknisk",
+      "billing": "Fakturering",
+      "feedback": "Tilbakemelding",
+      "other": "Annet"
+    },
+    "details": {
+      "assigned": "Tildelt {{name}}",
+      "attachments": "{{count}} vedlegg"
+    },
+    "actions": {
+      "view": "Vis",
+      "edit": "Rediger",
+      "archive": "Arkiver",
+      "delete": "Slett"
+    },
+    "filters": {
+      "status": "Status",
+      "priority": "Prioritet",
+      "category": "Kategori",
+      "all_statuses": "Alle statuser",
+      "all_priorities": "Alle prioriteter",
+      "all_categories": "Alle kategorier"
+    },
+    "statistics": {
+      "open_tickets": "Åpne",
+      "in_progress": "Under behandling",
+      "resolved": "Løste",
+      "closed": "Lukkede"
+    },
+    "tabs": {
+      "all": "Alle ({{count}})",
+      "open": "Åpne ({{count}})",
+      "in_progress": "Under behandling ({{count}})",
+      "resolved": "Løste ({{count}})",
+      "closed": "Lukkede ({{count}})"
+    }
   },
   "fields": {
     "category": "Kategori",
@@ -57,6 +120,7 @@
   "actions": {
     "create_ticket": "Opprett ticket",
     "submit": "Opprett ticket",
+    "submitting": "Oppretter...",
     "cancel": "Avbryt",
     "close": "Lukk ticket",
     "reopen": "Gjenåpne",

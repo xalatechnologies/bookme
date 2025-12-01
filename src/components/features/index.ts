@@ -56,7 +56,6 @@ export type * from './dashboard/types';
 export * from './facilities/components/FacilityCard';
 export * from './facilities/components/FacilityDetail/FacilityDetailLayout';
 export * from './facilities/components/FacilityImageGallery/GalleryGrid';
-export * from './facilities/components/FacilitySearch/FacilityGrid';
 export * from './facilities/components/FacilityEditForm/FacilityEditForm';
 export * from './facilities/components/FacilityMap/MapContainer';
 export type * from './facilities/types';
