@@ -199,7 +199,10 @@
     "goToPage": "Gå til side",
     "previous": "Forrige",
     "next": "Neste",
-    "today": "I dag"
+    "today": "I dag",
+    "previous_week": "Forrige uke",
+    "current_week": "Denne uken",
+    "next_week": "Neste uke"
   },
   "breadcrumbs": {
     "home": "Hjem",

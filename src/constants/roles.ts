@@ -14,7 +14,6 @@
  * @module constants/roles
  */
 
-import type { Database } from '@/types/database';
 
 /**
  * Organization role type from database (ENGLISH)

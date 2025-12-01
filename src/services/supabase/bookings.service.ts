@@ -55,8 +55,7 @@ export const bookingKeys = {
   orgBookings: (orgId: string) => [...bookingKeys.lists(), 'org', orgId] as const,
   facilityBookings: (facilityId: string) => [...bookingKeys.lists(), 'facility', facilityId] as const,
   details: () => [...bookingKeys.all, 'detail'] as const,
-  detail: (id: string) => [...bookingKeys.details(), id] as const,
-};
+  detail: (id: string) => [...bookingKeys.details(), id] as const};
 
 // ============================================================================
 // Service Functions
@@ -235,8 +234,7 @@ export const bookingsService = {
   async cancel(id: string, reason?: string): Promise<Booking> {
     const updates: BookingUpdate = {
       status: 'cancelled',
-      updated_at: new Date().toISOString(),
-    };
+      updated_at: new Date().toISOString()};
 
     return this.update(id, updates);
   },
@@ -331,8 +329,7 @@ export const bookingsService = {
     const { data, error } = await supabase.rpc('has_overlap', {
       p_facility: params.facilityId,
       p_starts: params.startTime,
-      p_ends: params.endTime,
-    });
+      p_ends: params.endTime});
 
     if (error) {
       console.error('Availability check error:', error);
@@ -341,8 +338,7 @@ export const bookingsService = {
 
     // has_overlap returns true if there's an overlap, so we negate it
     return !data;
-  },
-};
+  }};
 
 // ============================================================================
 // React Query Hooks
@@ -423,8 +419,7 @@ export const useBooking = (
   return useQuery({
     queryKey: bookingKeys.detail(id),
     queryFn: () => bookingsService.getById(id),
-    enabled: !!id && enabled,
-  });
+    enabled: !!id && enabled});
 };
 
 /**
@@ -438,8 +433,7 @@ export const useUpcomingBookings = (
     queryKey: [...bookingKeys.userBookings(userId), 'upcoming'],
     queryFn: () => bookingsService.getUpcoming(userId, limit),
     enabled: !!userId,
-    staleTime: 2 * 60 * 1000,
-  });
+    staleTime: 2 * 60 * 1000});
 };
 
 /**
@@ -543,8 +537,7 @@ export const useUpdateBooking = (): UseMutationResult<
 
       // Update cache
       queryClient.setQueryData(bookingKeys.detail(id), updatedBooking);
-    },
-  });
+    }});
 };
 
 /**
@@ -590,8 +583,7 @@ export const useCancelBooking = (): UseMutationResult<Booking, Error, { id: stri
 
       // Update cache
       queryClient.setQueryData(bookingKeys.detail(id), cancelledBooking);
-    },
-  });
+    }});
 };
 
 /**
@@ -637,8 +629,7 @@ export const useDeleteBooking = (): UseMutationResult<void, Error, string> => {
                  query.queryKey[2] === 'user';
         }
       });
-    },
-  });
+    }});
 };
 
 /**

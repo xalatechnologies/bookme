@@ -3,7 +3,7 @@
 import React, { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
-import { FacilityFilters, Facility } from "@/types/facility";
+import { FacilityFilters } from "@/types/facility";
 import { usePublishedFacilities } from "@/services/supabase/facilities.service";
 import { useOrganizationId } from "@/hooks/useOrganizationId";
 
@@ -59,7 +59,7 @@ export const InfiniteScrollFacilities: React.FC<InfiniteScrollFacilitiesProps> =
     return filtered;
   }, [facilities, filters]);
 
-  const handleAddressClick = (e: React.MouseEvent, _facility: Facility): void => {
+  const handleAddressClick = (e: React.MouseEvent): void => {
     e.stopPropagation();
   };
 

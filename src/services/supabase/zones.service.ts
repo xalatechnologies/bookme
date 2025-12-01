@@ -38,8 +38,7 @@ export const zoneKeys = {
   facilitiesZones: (facilityIds: readonly string[]) => [...zoneKeys.lists(), 'facilities', ...facilityIds.sort()] as const,
   details: () => [...zoneKeys.all, 'detail'] as const,
   detail: (id: string) => [...zoneKeys.details(), id] as const,
-  withAvailability: (id: string) => [...zoneKeys.detail(id), 'availability'] as const,
-};
+  withAvailability: (id: string) => [...zoneKeys.detail(id), 'availability'] as const};
 
 // ============================================================================
 // Service Functions
@@ -161,8 +160,7 @@ export const zonesService = {
     const { data, error } = await supabase.rpc('is_zone_available', {
       p_zone_id: zoneId,
       p_start_time: startTime,
-      p_end_time: endTime,
-    });
+      p_end_time: endTime});
 
     if (error) {
       console.error('Zone availability check error:', error);
@@ -186,8 +184,7 @@ export const zonesService = {
 
     if (error) throw error;
     return data;
-  },
-};
+  }};
 
 // ============================================================================
 // React Query Hooks
@@ -250,8 +247,7 @@ export const useZone = (
   return useQuery({
     queryKey: zoneKeys.detail(id),
     queryFn: () => zonesService.getById(id),
-    enabled: !!id && enabled,
-  });
+    enabled: !!id && enabled});
 };
 
 /**
@@ -286,8 +282,7 @@ export const useZoneWithAvailability = (
   return useQuery({
     queryKey: zoneKeys.withAvailability(id),
     queryFn: () => zonesService.getWithAvailability(id),
-    enabled: !!id && enabled,
-  });
+    enabled: !!id && enabled});
 };
 
 /**
@@ -316,13 +311,11 @@ export const useCreateZone = (): UseMutationResult<Zone, Error, ZoneInsert> => {
     onSuccess: (newZone) => {
       // Invalidate facility zones list
       queryClient.invalidateQueries({
-        queryKey: zoneKeys.facilityZones(newZone.facility_id),
-      });
+        queryKey: zoneKeys.facilityZones(newZone.facility_id)});
 
       // Add to cache
       queryClient.setQueryData(zoneKeys.detail(newZone.id), newZone);
-    },
-  });
+    }});
 };
 
 /**
@@ -340,14 +333,12 @@ export const useUpdateZone = (): UseMutationResult<
     onSuccess: (updatedZone, { id }) => {
       // Invalidate lists
       queryClient.invalidateQueries({
-        queryKey: zoneKeys.facilityZones(updatedZone.facility_id),
-      });
+        queryKey: zoneKeys.facilityZones(updatedZone.facility_id)});
 
       // Update cache
       queryClient.setQueryData(zoneKeys.detail(id), updatedZone);
       queryClient.invalidateQueries({ queryKey: zoneKeys.withAvailability(id) });
-    },
-  });
+    }});
 };
 
 /**
@@ -364,8 +355,7 @@ export const useDeleteZone = (): UseMutationResult<void, Error, string> => {
 
       // Remove from cache
       queryClient.removeQueries({ queryKey: zoneKeys.detail(id) });
-    },
-  });
+    }});
 };
 
 /**

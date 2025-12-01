@@ -169,8 +169,7 @@ const createSingleReceipt = (booking: BookingWithDetails, index: number): IRecei
     category: getCategory(facilityName),
     mvaAmount,
     refundReason: status === "cancelled" ? "Avvist av administrator" : undefined,
-    isRecurring: false,
-  };
+    isRecurring: false};
 };
 
 const createRecurringReceipt = (
@@ -221,8 +220,7 @@ const createRecurringReceipt = (
       time: booking.starts_at ? new Date(booking.starts_at).toTimeString().slice(0, 5) : "",
       status: booking.status,
       amount: booking.total_cents ? booking.total_cents / 100 : 0, // Convert from cents to NOK
-    })),
-  };
+    }))};
 };
 
 const transformBookingsToReceipts = (
@@ -309,8 +307,7 @@ const calculateStatistics = (
     pendingAmount,
     paidCount,
     categoryStats,
-    averageAmount,
-  };
+    averageAmount};
 };
 
 const getStatusCounts = (receipts: ReadonlyArray<IReceipt>) => {
@@ -319,8 +316,7 @@ const getStatusCounts = (receipts: ReadonlyArray<IReceipt>) => {
     paid: receipts.filter((r) => r.status === "paid").length,
     pending: receipts.filter((r) => r.status === "pending").length,
     cancelled: receipts.filter((r) => r.status === "cancelled").length,
-    refunded: receipts.filter((r) => r.status === "refunded").length,
-  };
+    refunded: receipts.filter((r) => r.status === "refunded").length};
 };
 
 export const useReceiptData = (filters: FilterOptions): UseReceiptDataReturn => {
@@ -347,8 +343,7 @@ export const useReceiptData = (filters: FilterOptions): UseReceiptDataReturn => 
     filteredAndSortedReceipts,
     statistics,
     statusCounts,
-    isLoading,
-  };
+    isLoading};
 };
 
 export type { IReceipt, FilterOptions, ReceiptStatistics };

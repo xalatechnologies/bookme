@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback } from "react";
-import { format } from "date-fns";
 import type {
   Zone,
   SelectedTimeSlot,
@@ -193,7 +192,7 @@ export const useCalendarGridDragSelection = ({
         // Fill in the missing data for the slots
         const completeSlots = previewSlots.map((slot) => ({
           ...slot,
-          facilityId: zone.facilityId,
+          _facilityId: zone.facilityId,
           facilityName: "", // This should be filled by the parent component
           zoneName: zone.name,
           pricePerHour: zone.pricePerHour,

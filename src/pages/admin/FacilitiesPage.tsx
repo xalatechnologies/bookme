@@ -32,7 +32,7 @@ interface IFacilitiesPageProps {
 }
 
 const FacilitiesPage = (
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   
   _props: IFacilitiesPageProps
 ): JSX.Element => {
   const navigate = useNavigate();
@@ -77,7 +77,7 @@ const FacilitiesPage = (
     navigate("/admin/facilities/new");
   };
 
-  const handleDuplicateFacility = (facilityId: string): void => {
+  const handleDuplicateFacility = (_facilityId: string): void => {
     // TODO: Implement duplicate functionality
     navigate("/admin/facilities/new");
   };

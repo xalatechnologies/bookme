@@ -17,8 +17,7 @@ import { FacilityDetailBreadcrumb } from "@/components/features/facilities/compo
 import { MobileBookingPanel } from "@/components/features/facilities/components/FacilityDetail/MobileBookingPanel";
 import {
   LoadingState,
-  ErrorState,
-} from "@/components/features/facilities/components/FacilityDetail/FacilityDetailStates";
+  ErrorState} from "@/components/features/facilities/components/FacilityDetail/FacilityDetailStates";
 
 // Import the favorites store
 import { useFavoritesStore } from "@/stores/favoritesStore";
@@ -31,12 +30,11 @@ export const FacilityDetail = (): JSX.Element => {
   // Use the favorites store
   const { isFavorite, toggleFavorite, incrementUsage, updateLastVisited } = useFavoritesStore();
   
-  const [currentPattern, setCurrentPattern] = useState<RecurrencePattern>({
+  const [currentPattern] = useState<RecurrencePattern>({
     type: "weekly",
     weekdays: [],
     timeSlots: [],
-    interval: 1,
-  });
+    interval: 1});
 
   // Use hooks to fetch data
   const { facility, loading, error, notFound } = useFacility(id || "");
@@ -64,8 +62,7 @@ export const FacilityDetail = (): JSX.Element => {
       if (navigator.share) {
         await navigator.share({
           title: facility?.name || "Booknor Facility",
-          url: window.location.href,
-        });
+          url: window.location.href});
       } else {
         await navigator.clipboard.writeText(window.location.href);
         // Optional: Show a toast notification that link was copied
@@ -76,7 +73,9 @@ export const FacilityDetail = (): JSX.Element => {
         // Fallback to clipboard
         try {
           await navigator.clipboard.writeText(window.location.href);
-        } catch (clipboardError) {}
+        } catch {
+        // Silently fail - clipboard/share errors are not critical
+      }
       }
     }
   };
@@ -108,10 +107,7 @@ export const FacilityDetail = (): JSX.Element => {
     );
   }
 
-  // Handle pattern changes
-  const handlePatternApply = (pattern: RecurrencePattern): void => {
-    setCurrentPattern(pattern);
-  };
+  // Note: currentPattern and handlePatternApply are prepared for future recurring booking feature
 
   return (
     <CartProvider>
@@ -155,8 +151,7 @@ export const FacilityDetail = (): JSX.Element => {
           facilityId={facility.id}
           capacity={facility.capacity || 0}
           area={`${facility.capacity || 0} ${t("details.people", {
-            ns: "facility",
-          })}`}
+            ns: "facility"})}`}
           openingHours="08:00 - 22:00"
         />
       </div>

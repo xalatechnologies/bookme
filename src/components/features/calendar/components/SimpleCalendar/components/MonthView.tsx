@@ -21,9 +21,9 @@ export const MonthView: React.FC<MonthViewProps> = ({
   onEventClick,
   onEventHover,
   onEventRightClick,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   
   currentMonth: _currentMonth,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   
   currentYear: _currentYear
 }): JSX.Element => {
   const { t } = useTranslation('common');

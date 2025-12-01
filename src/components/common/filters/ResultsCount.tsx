@@ -35,7 +35,8 @@ export const ResultsCount = ({
   namespace = 'common',
   className = ''
 }: ResultsCountProps): JSX.Element => {
-  const { t } = useTranslation(namespace as any);
+  // Type assertion to allow dynamic namespace - validated by isValidNamespace utility
+  const { t } = useTranslation(namespace as 'common' | 'rbac' | 'forms' | 'errors' | 'validation' | 'booking' | 'bookings' | 'facility' | 'calendar' | 'admin' | 'checkout' | 'user' | 'navigation');
 
   const getText = (): string => {
     if (count === 0) {

@@ -30,7 +30,7 @@ import { ISelectedSlotsDisplayProps, ISelectedTimeSlot } from "../../types";
  */
 export const SelectedSlotsDisplay: React.FC<ISelectedSlotsDisplayProps> = ({
   selectedSlots,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   
   onRemoveSlot: _onRemoveSlot,
   onClearAll,
   isLoading = false,

@@ -4,50 +4,33 @@ import React, { useState, useMemo, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router-dom";
 import { RequireRole } from "@/components/features/auth/components/RequireRole";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
 import { Button } from "@/components/ui/button";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Switch } from "@/components/ui/switch";
-import { 
-  Search, 
-  Filter, 
-  Users, 
-  Shield, 
+import {
   Plus,
   Edit,
   Trash2,
-  UserCheck,
-  UserX,
   Mail,
   Eye,
   MoreHorizontal,
-  Check,
   X,
-  Settings,
-  UserPlus,
-  ChevronDown,
-  Clock,
-  Copy,
   Key,
   Ban,
-  AlertTriangle,
-  Info,
-  ArrowUpDown,
   User,
   Crown,
-  Briefcase,
-  PenTool,
-  Eye as EyeIcon
+  Briefcase
 } from "lucide-react";
 
 import { supabase } from '@/lib/clients/supabase';
 import type { Database } from '@/types/database';
 import { useAuth } from '@/contexts/hooks/useAuth';
 import { useRole } from '@/hooks/auth/useRole';
-import { ORG_ROLES, getAvailableRoles, normalizeRole } from '@/constants/roles';
+import { ORG_ROLES, normalizeRole } from '@/constants/roles';
 import { validateRoleChange } from '@/services/business/user.business.service';
 import type { OrgRole } from '@/constants/roles';
 
@@ -126,15 +109,7 @@ interface IUserSidePanelProps {
   readonly onResendInvitation: (userId: string) => void;
 }
 
-interface IConfirmationDialogProps {
-  readonly isOpen: boolean;
-  readonly title: string;
-  readonly message: string;
-  readonly confirmText: string;
-  readonly onConfirm: () => void;
-  readonly onCancel: () => void;
-  readonly variant?: "danger" | "warning";
-}
+
 
 // Helper functions
 const getInitials = (name: string): string => {
@@ -167,7 +142,7 @@ const formatTimeAgo = (dateString: string): string => {
   const date = new Date(dateString);
   const now = new Date();
   const diffInDays = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
-  
+
   if (diffInDays === 0) return "I dag";
   if (diffInDays === 1) return "1 dag siden";
   if (diffInDays < 7) return `${diffInDays} dager siden`;
@@ -188,14 +163,12 @@ const getLastActivity = (user: IUser): string => {
 };
 
 const getStatusColor = (status: IUser["status"]): string => {
-  return status === "active" || status === "invitation_sent" ? 
-    "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300" : 
+  return status === "active" || status === "invitation_sent" ?
+    "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300" :
     "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300";
 };
 
-const getStatusText = (status: IUser["status"]): string => {
-  return status === "active" ? "Aktiv" : status === "inactive" ? "Inaktiv" : "Invitasjon sendt";
-};
+
 
 const UserActionDropdown = ({ user, onEdit, onDeactivate, onDelete, onResendInvitation, onResetPassword }: IUserActionDropdownProps): JSX.Element => {
   const { t } = useTranslation(["admin", "common"]);
@@ -228,7 +201,7 @@ const UserActionDropdown = ({ user, onEdit, onDeactivate, onDelete, onResendInvi
       >
         <MoreHorizontal className="h-4 w-4" />
       </Button>
-      
+
       {isOpen && (
         <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 z-10">
           <div className="py-1">
@@ -485,7 +458,7 @@ const RoleModal = ({ role, isOpen, onClose, onSave, isEditing }: IRoleModalProps
     const newPermissions = checked
       ? [...formData.permissions, permissionId]
       : formData.permissions.filter(p => p !== permissionId);
-    
+
     setFormData({ ...formData, permissions: newPermissions });
   };
 
@@ -587,10 +560,9 @@ const UserRow = ({ user, onEdit, onDeactivate, onDelete, onResendInvitation, isS
   const { t } = useTranslation(["admin", "common"]);
 
   return (
-    <tr 
-      className={`border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 cursor-pointer ${
-        isSelected ? 'bg-blue-50 dark:bg-blue-900/20' : ''
-      }`}
+    <tr
+      className={`border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 cursor-pointer ${isSelected ? 'bg-blue-50 dark:bg-blue-900/20' : ''
+        }`}
       onClick={() => onRowClick(user)}
     >
       <td className="px-6 py-4">
@@ -633,7 +605,7 @@ const UserRow = ({ user, onEdit, onDeactivate, onDelete, onResendInvitation, isS
           onDeactivate={onDeactivate}
           onDelete={onDelete}
           onResendInvitation={onResendInvitation}
-          onResetPassword={() => {}}
+          onResetPassword={() => { }}
         />
       </td>
     </tr>
@@ -646,18 +618,18 @@ const RoleRow = ({ role, onEdit, onDeactivate, onViewUsers }: IRoleRowProps): JS
   const formatPermissions = (permissions: readonly string[]): string => {
     if (permissions.includes("all")) {
       // Instead of showing "All modules", show the three specific modules
-      return t('pages.users_roles.permissions.facilities') + ", " + 
-             t('pages.users_roles.permissions.bookings') + ", " + 
-             t('pages.users_roles.permissions.reports');
+      return t('pages.users_roles.permissions.facilities') + ", " +
+        t('pages.users_roles.permissions.bookings') + ", " +
+        t('pages.users_roles.permissions.reports');
     }
-    
+
     const permissionMap: Record<string, string> = {
       "facilities": t('pages.users_roles.permissions.facilities'),
       "bookings": t('pages.users_roles.permissions.bookings'),
       "reports": t('pages.users_roles.permissions.reports'),
       "users": t('pages.users_roles.table.user')
     };
-    
+
     const modules = new Set<string>();
     permissions.forEach(permission => {
       const module = permission.split(".")[0];
@@ -665,7 +637,7 @@ const RoleRow = ({ role, onEdit, onDeactivate, onViewUsers }: IRoleRowProps): JS
         modules.add(permissionMap[module]);
       }
     });
-    
+
     return modules.size > 0 ? Array.from(modules).join(", ") : t('pages.users_roles.modals.user.no_permissions');
   };
 
@@ -734,7 +706,7 @@ const UserSidePanel = ({ user, isOpen, onClose, onEdit, onDeactivate, onDelete, 
 
   return (
     <div className="fixed inset-0 z-50">
-      <div 
+      <div
         className="absolute inset-0 bg-black bg-opacity-50"
         onClick={onClose}
       ></div>
@@ -808,7 +780,7 @@ const UserSidePanel = ({ user, isOpen, onClose, onEdit, onDeactivate, onDelete, 
             <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
               <h4 className="font-medium text-gray-900 dark:text-white mb-3">Handlinger</h4>
               <div className="space-y-2">
-                <Button 
+                <Button
                   className="w-full justify-start"
                   variant="outline"
                   onClick={() => {
@@ -820,7 +792,7 @@ const UserSidePanel = ({ user, isOpen, onClose, onEdit, onDeactivate, onDelete, 
                   {t('pages.users_roles.actions.edit')}
                 </Button>
                 {user.status === "invitation_sent" && (
-                  <Button 
+                  <Button
                     className="w-full justify-start"
                     variant="outline"
                     onClick={() => {
@@ -832,7 +804,7 @@ const UserSidePanel = ({ user, isOpen, onClose, onEdit, onDeactivate, onDelete, 
                     {t('pages.users_roles.actions.resend_invitation')}
                   </Button>
                 )}
-                <Button 
+                <Button
                   className="w-full justify-start"
                   variant="outline"
                   onClick={handleDeactivate}
@@ -841,7 +813,7 @@ const UserSidePanel = ({ user, isOpen, onClose, onEdit, onDeactivate, onDelete, 
                   {t('pages.users_roles.actions.deactivate')}
                 </Button>
                 {user.status === "invitation_sent" && (
-                  <Button 
+                  <Button
                     className="w-full justify-start"
                     variant="outline"
                     onClick={() => {
@@ -916,7 +888,7 @@ const UsersRolesPage = (): JSX.Element => {
       try {
         setLoading(true);
         setError(null);
-        
+
         // First fetch ALL memberships for the current organization (we'll filter customers later)
         // This helps us debug what roles are actually in the database
         const { data: membershipsData, error: membershipsError } = await supabase
@@ -929,14 +901,14 @@ const UsersRolesPage = (): JSX.Element => {
         if (membershipsData && membershipsData.length > 0) {
           try {
             const userIds = membershipsData.map(m => m.user_id);
-            const { data, error } = await supabase
+            const { data, error: loginError } = await supabase
               .from('audit_events')
               .select('actor_id, created_at')
               .eq('action', 'user_login')
               .in('actor_id', userIds)
               .order('created_at', { ascending: false });
-            
-            if (!error && data) {
+
+            if (!loginError && data) {
               // Get the most recent login for each user
               const latestLogins = new Map<string, string>();
               data.forEach(event => {
@@ -949,9 +921,9 @@ const UsersRolesPage = (): JSX.Element => {
                 actor_id,
                 created_at
               }));
-            } else if (error) {
-              console.warn('Could not fetch last login data from audit_events (might be due to permissions):', error);
-              
+            } else if (loginError) {
+              console.warn('Could not fetch last login data from audit_events (might be due to permissions):', loginError);
+
               // Fallback to localStorage if we can't fetch from database
               const localStorageLogins = new Map<string, string>();
               userIds.forEach(userId => {
@@ -960,7 +932,7 @@ const UsersRolesPage = (): JSX.Element => {
                   localStorageLogins.set(userId, lastLogin);
                 }
               });
-              
+
               if (localStorageLogins.size > 0) {
                 lastLoginData = Array.from(localStorageLogins.entries()).map(([actor_id, created_at]) => ({
                   actor_id,
@@ -970,7 +942,7 @@ const UsersRolesPage = (): JSX.Element => {
             }
           } catch (error) {
             console.warn('Error fetching last login data:', error);
-            
+
             // Fallback to localStorage if we get an error
             const userIds = membershipsData.map(m => m.user_id);
             const localStorageLogins = new Map<string, string>();
@@ -980,7 +952,7 @@ const UsersRolesPage = (): JSX.Element => {
                 localStorageLogins.set(userId, lastLogin);
               }
             });
-            
+
             if (localStorageLogins.size > 0) {
               lastLoginData = Array.from(localStorageLogins.entries()).map(([actor_id, created_at]) => ({
                 actor_id,
@@ -999,7 +971,7 @@ const UsersRolesPage = (): JSX.Element => {
 
         console.log('Memberships fetched:', membershipsData?.length || 0);
         console.log('Memberships data:', JSON.stringify(membershipsData, null, 2));
-        
+
         // Log all unique roles found
         const uniqueRoles = new Set(membershipsData?.map(m => m.role) || []);
         console.log('Unique roles in memberships:', Array.from(uniqueRoles));
@@ -1022,7 +994,7 @@ const UsersRolesPage = (): JSX.Element => {
         // Extract user IDs from memberships
         const userIdsFromMemberships = membershipsData?.map(membership => membership.user_id) || [];
         const userIdsFromProfiles = profilesByDefaultOrg?.map(profile => profile.user_id) || [];
-        
+
         // Combine and deduplicate user IDs
         const allUserIds = Array.from(new Set([...userIdsFromMemberships, ...userIdsFromProfiles]));
 
@@ -1046,7 +1018,7 @@ const UsersRolesPage = (): JSX.Element => {
         // Combine profiles with memberships
         // Create a map of memberships for quick lookup (use original role from DB)
         const membershipMap = new Map(
-          (membershipsData || []).map(m => [m.user_id, m.role])
+          (membershipsData ?? []).map(m => [m.user_id, m.role])
         );
 
         console.log('Membership map size:', membershipMap.size);
@@ -1055,15 +1027,15 @@ const UsersRolesPage = (): JSX.Element => {
         const transformedUsers: IUser[] = (usersData as Database['public']['Tables']['profiles']['Row'][]).map(profile => {
           // Get role from membership
           let role = membershipMap.get(profile.user_id);
-          
+
           console.log(`Processing profile ${profile.user_id} (${profile.email}): role from membership = ${role}`);
-          
+
           // If user doesn't have a membership but has default_org set, 
           // try to infer role from email
           if (!role) {
             // Check if user has default_org set (they're part of the organization)
             const hasDefaultOrg = profile.default_org === currentOrgId;
-            
+
             if (hasDefaultOrg) {
               // Try to infer role from email (for users that should have memberships but don't)
               const emailLower = (profile.email || '').toLowerCase();
@@ -1088,22 +1060,22 @@ const UsersRolesPage = (): JSX.Element => {
               return null;
             }
           }
-          
+
           // Use the original role from database (don't normalize for storage, only for comparison)
           const normalizedRole = normalizeRole(role);
           console.log(`  -> Original role: ${role}, normalized: ${normalizedRole}`);
-          
+
           // Exclude customers from the users list - only show admin, owner, staff, etc.
           if (normalizedRole === 'customer') {
             console.log(`  -> Skipping: customer role`);
             return null;
           }
-          
+
           console.log(`  -> Including user with role: ${role}`);
-          
+
           // Find membership data for this user to get additional information
           const userMembership = membershipsData?.find(m => m.user_id === profile.user_id);
-          
+
           return {
             id: profile.user_id,
             name: profile.display_name || profile.email || 'Unknown User',
@@ -1156,7 +1128,7 @@ const UsersRolesPage = (): JSX.Element => {
   // Helper function to get permissions based on role
   const getPermissionsForRole = (role: string): string[] => {
     const normalizedRole = normalizeRole(role);
-    
+
     switch (normalizedRole) {
       case 'owner':
       case 'admin':
@@ -1253,14 +1225,14 @@ const UsersRolesPage = (): JSX.Element => {
         }
 
         // Update existing user
-        const { error } = await supabase
+        const { error: updateError } = await supabase
           .from('memberships')
           .update({ role: newRole as Database['public']['Enums']['org_role'] })
           .eq('user_id', userModal.user.id)
           .eq('org_id', currentOrgId);
 
-        if (error) {
-          throw new Error(error.message);
+        if (updateError) {
+          throw new Error(updateError.message);
         }
 
         // Refresh the data
@@ -1275,14 +1247,14 @@ const UsersRolesPage = (): JSX.Element => {
         if (membershipsData && membershipsData.length > 0) {
           try {
             const userIds = membershipsData.map(m => m.user_id);
-            const { data, error } = await supabase
+            const { data, error: loginError } = await supabase
               .from('audit_events')
               .select('actor_id, created_at')
               .eq('action', 'user_login')
               .in('actor_id', userIds)
               .order('created_at', { ascending: false });
-              
-            if (!error && data) {
+
+            if (!loginError && data) {
               // Get the most recent login for each user
               const latestLogins = new Map<string, string>();
               data.forEach(event => {
@@ -1295,8 +1267,8 @@ const UsersRolesPage = (): JSX.Element => {
                 actor_id,
                 created_at
               }));
-            } else if (error) {
-              console.warn('Could not fetch last login data from audit_events (might be due to permissions):', error);
+            } else if (loginError) {
+              console.warn('Could not fetch last login data from audit_events (might be due to permissions):', loginError);
             }
           } catch (error) {
             console.warn('Error fetching last login data:', error);
@@ -1311,7 +1283,7 @@ const UsersRolesPage = (): JSX.Element => {
         }
 
         // Extract user IDs from memberships
-        const userIds = membershipsData.map(membership => membership.user_id);
+        const userIds = (membershipsData ?? []).map(membership => membership.user_id);
 
         // Then fetch profiles for those users
         let usersData: Database['public']['Tables']['profiles']['Row'][] | null = [];
@@ -1329,24 +1301,24 @@ const UsersRolesPage = (): JSX.Element => {
 
         // Combine profiles with memberships
         const membershipMap = new Map(
-          (membershipsData || []).map(m => [m.user_id, m.role])
+          (membershipsData ?? []).map(m => [m.user_id, m.role])
         );
 
         const transformedUsers: IUser[] = (usersData as Database['public']['Tables']['profiles']['Row'][]).map(profile => {
           const role = membershipMap.get(profile.user_id);
-          
+
           // Skip users without a membership or with customer role
           if (!role) {
             return null;
           }
-          
+
           const normalizedRole = normalizeRole(role);
-          
+
           // Exclude customers from the users list - only show admin, owner, staff, etc.
           if (normalizedRole === 'customer') {
             return null;
           }
-          
+
           return {
             id: profile.user_id,
             name: profile.display_name || profile.email || 'Unknown User',
@@ -1354,7 +1326,7 @@ const UsersRolesPage = (): JSX.Element => {
             role: role,
             status: 'active',
             lastLogin: lastLoginMap.get(profile.user_id), // Get actual last login time
-            invitationSentAt: membershipsData.find(m => m.user_id === profile.user_id)?.created_at, // Use membership creation date as invitation sent date
+            invitationSentAt: (membershipsData ?? []).find(m => m.user_id === profile.user_id)?.created_at, // Use membership creation date as invitation sent date
             createdAt: profile.created_at,
             createdBy: 'System',
             // Set permissions based on role
@@ -1373,7 +1345,7 @@ const UsersRolesPage = (): JSX.Element => {
       }
     } catch (error: any) {
       console.error('Failed to save user:', error);
-      alert(error.message || t('pages.users_roles.confirmations.error_save'));
+      alert(error?.message || t('pages.users_roles.confirmations.error_save'));
     }
   };
 
@@ -1388,7 +1360,7 @@ const UsersRolesPage = (): JSX.Element => {
         // Create new role - this would require a roles table
         alert(t('pages.users_roles.confirmations.role_created'));
       }
-      
+
       // Refresh roles data - all available organization roles
       const orgRoles = [
         { id: ORG_ROLES.OWNER, name: t('roles.owner', 'Eier'), description: t('roles.descriptions.owner', 'Full tilgang til hele organisasjonen') },
@@ -1422,7 +1394,7 @@ const UsersRolesPage = (): JSX.Element => {
     try {
       // In a real implementation, we would update the role's status
       alert(t('pages.users_roles.confirmations.role_status_changed'));
-      
+
       // Refresh roles data - all available organization roles
       const orgRoles = [
         { id: ORG_ROLES.OWNER, name: t('roles.owner', 'Eier'), description: t('roles.descriptions.owner', 'Full tilgang til hele organisasjonen') },
@@ -1471,14 +1443,14 @@ const UsersRolesPage = (): JSX.Element => {
         }
 
         // Remove user's membership (deactivate access)
-        const { error } = await supabase
+        const { error: deleteError } = await supabase
           .from('memberships')
           .delete()
           .eq('user_id', userId)
           .eq('org_id', currentOrgId);
 
-        if (error) {
-          throw new Error(error.message);
+        if (deleteError) {
+          throw new Error(deleteError.message);
         }
 
         // Refresh the data
@@ -1494,14 +1466,14 @@ const UsersRolesPage = (): JSX.Element => {
           if (membershipsData && membershipsData.length > 0) {
             try {
               const userIds = membershipsData.map(m => m.user_id);
-              const { data, error } = await supabase
+              const { data, error: loginError } = await supabase
                 .from('audit_events')
                 .select('actor_id, created_at')
                 .eq('action', 'user_login')
                 .in('actor_id', userIds)
                 .order('created_at', { ascending: false });
-              
-              if (!error && data) {
+
+              if (!loginError && data) {
                 // Get the most recent login for each user
                 const latestLogins = new Map<string, string>();
                 data.forEach(event => {
@@ -1514,9 +1486,9 @@ const UsersRolesPage = (): JSX.Element => {
                   actor_id,
                   created_at
                 }));
-              } else if (error) {
-                console.warn('Could not fetch last login data from audit_events (might be due to permissions):', error);
-                
+              } else if (loginError) {
+                console.warn('Could not fetch last login data from audit_events (might be due to permissions):', loginError);
+
                 // Fallback to localStorage if we can't fetch from database
                 const localStorageLogins = new Map<string, string>();
                 userIds.forEach(userId => {
@@ -1525,7 +1497,7 @@ const UsersRolesPage = (): JSX.Element => {
                     localStorageLogins.set(userId, lastLogin);
                   }
                 });
-                
+
                 if (localStorageLogins.size > 0) {
                   lastLoginData = Array.from(localStorageLogins.entries()).map(([actor_id, created_at]) => ({
                     actor_id,
@@ -1535,7 +1507,7 @@ const UsersRolesPage = (): JSX.Element => {
               }
             } catch (error) {
               console.warn('Error fetching last login data:', error);
-              
+
               // Fallback to localStorage if we get an error
               const localStorageLogins = new Map<string, string>();
               membershipsData.forEach(membership => {
@@ -1544,7 +1516,7 @@ const UsersRolesPage = (): JSX.Element => {
                   localStorageLogins.set(membership.user_id, lastLogin);
                 }
               });
-              
+
               if (localStorageLogins.size > 0) {
                 lastLoginData = Array.from(localStorageLogins.entries()).map(([actor_id, created_at]) => ({
                   actor_id,
@@ -1562,7 +1534,7 @@ const UsersRolesPage = (): JSX.Element => {
           }
 
           // Extract user IDs from memberships
-          const userIds = membershipsData.map(membership => membership.user_id);
+          const userIds = (membershipsData ?? []).map(membership => membership.user_id);
 
           // Then fetch profiles for those users
           let usersData: Database['public']['Tables']['profiles']['Row'][] | null = [];
@@ -1580,7 +1552,7 @@ const UsersRolesPage = (): JSX.Element => {
 
           // Combine profiles with memberships
           const transformedUsers: IUser[] = (usersData as Database['public']['Tables']['profiles']['Row'][]).map(profile => {
-            const membership = membershipsData.find(m => m.user_id === profile.user_id);
+            const membership = (membershipsData ?? []).find(m => m.user_id === profile.user_id);
             return {
               id: profile.user_id,
               name: profile.display_name || profile.email || 'Unknown User',
@@ -1601,7 +1573,8 @@ const UsersRolesPage = (): JSX.Element => {
         alert(t('pages.users_roles.confirmations.user_deactivated'));
       } catch (error: any) {
         console.error('Failed to deactivate user:', error);
-        alert(error.message || t('pages.users_roles.confirmations.error_deactivate'));
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        alert(errorMessage || t('pages.users_roles.confirmations.error_deactivate'));
       }
     }
   };
@@ -1612,7 +1585,7 @@ const UsersRolesPage = (): JSX.Element => {
         // In a real implementation, we would delete the user's membership
         // For now, we'll just show a success message
         alert(t('pages.users_roles.confirmations.user_deleted'));
-        
+
         // Refresh the data
         if (currentOrgId) {
           // First fetch memberships for the current organization
@@ -1626,14 +1599,14 @@ const UsersRolesPage = (): JSX.Element => {
           if (membershipsData && membershipsData.length > 0) {
             try {
               const userIds = membershipsData.map(m => m.user_id);
-              const { data, error } = await supabase
+              const { data, error: loginError } = await supabase
                 .from('audit_events')
                 .select('actor_id, created_at')
                 .eq('action', 'user_login')
                 .in('actor_id', userIds)
                 .order('created_at', { ascending: false });
-              
-              if (!error && data) {
+
+              if (!loginError && data) {
                 // Get the most recent login for each user
                 const latestLogins = new Map<string, string>();
                 data.forEach(event => {
@@ -1646,9 +1619,9 @@ const UsersRolesPage = (): JSX.Element => {
                   actor_id,
                   created_at
                 }));
-              } else if (error) {
-                console.warn('Could not fetch last login data from audit_events (might be due to permissions):', error);
-                
+              } else if (loginError) {
+                console.warn('Could not fetch last login data from audit_events (might be due to permissions):', loginError);
+
                 // Fallback to localStorage if we can't fetch from database
                 const localStorageLogins = new Map<string, string>();
                 userIds.forEach(userId => {
@@ -1657,7 +1630,7 @@ const UsersRolesPage = (): JSX.Element => {
                     localStorageLogins.set(userId, lastLogin);
                   }
                 });
-                
+
                 if (localStorageLogins.size > 0) {
                   lastLoginData = Array.from(localStorageLogins.entries()).map(([actor_id, created_at]) => ({
                     actor_id,
@@ -1667,7 +1640,7 @@ const UsersRolesPage = (): JSX.Element => {
               }
             } catch (error) {
               console.warn('Error fetching last login data:', error);
-              
+
               // Fallback to localStorage if we get an error
               const localStorageLogins = new Map<string, string>();
               membershipsData.forEach(membership => {
@@ -1676,7 +1649,7 @@ const UsersRolesPage = (): JSX.Element => {
                   localStorageLogins.set(membership.user_id, lastLogin);
                 }
               });
-              
+
               if (localStorageLogins.size > 0) {
                 lastLoginData = Array.from(localStorageLogins.entries()).map(([actor_id, created_at]) => ({
                   actor_id,
@@ -1694,7 +1667,7 @@ const UsersRolesPage = (): JSX.Element => {
           }
 
           // Extract user IDs from memberships
-          const userIds = membershipsData.map(membership => membership.user_id);
+          const userIds = (membershipsData ?? []).map(membership => membership.user_id);
 
           // Then fetch profiles for those users
           let usersData: Database['public']['Tables']['profiles']['Row'][] | null = [];
@@ -1712,7 +1685,7 @@ const UsersRolesPage = (): JSX.Element => {
 
           // Combine profiles with memberships
           const transformedUsers: IUser[] = (usersData as Database['public']['Tables']['profiles']['Row'][]).map(profile => {
-            const membership = membershipsData.find(m => m.user_id === profile.user_id);
+            const membership = (membershipsData ?? []).find(m => m.user_id === profile.user_id);
             return {
               id: profile.user_id,
               name: profile.display_name || profile.email || 'Unknown User',

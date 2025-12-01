@@ -18,9 +18,8 @@ interface MobileMenuProps {
 const MobileMenu = ({
   isOpen,
   isLoggedIn,
-  setLanguage: _setLanguage,
   handleLogin,
-  handleLogout,
+
   closeMobileMenu,
 }: MobileMenuProps): JSX.Element => {
   const { t } = useTranslation(['navigation', 'common']);
@@ -81,10 +80,10 @@ const MobileMenu = ({
               </div>
               <Button variant="ghost" className="w-full justify-start" onClick={() => {
                 // Check if user has admin role
-                const isAdmin = memberships.some(membership => 
+                const isAdmin = memberships.some(membership =>
                   membership.role === 'admin' || membership.role === 'owner'
                 );
-                
+
                 if (isAdmin) {
                   window.location.href = '/admin/overview';
                 } else {
@@ -93,7 +92,7 @@ const MobileMenu = ({
                 closeMobileMenu();
               }}>
                 <User className="mr-2 h-4 w-4" />
-Min side
+                Min side
               </Button>
               <Button variant="ghost" className="w-full justify-start">
                 {t('navigation:my_bookings')}
@@ -101,9 +100,9 @@ Min side
               <Button variant="ghost" className="w-full justify-start">
                 {t('navigation:rooms')}
               </Button>
-              <Button 
-                variant="ghost" 
-                className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50" 
+              <Button
+                variant="ghost"
+                className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50"
                 onClick={async () => {
                   try {
                     await signOut();

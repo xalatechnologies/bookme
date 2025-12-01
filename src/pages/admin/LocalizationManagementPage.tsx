@@ -33,7 +33,7 @@ interface ILocalizationManagementPageProps {
 }
 
 const LocalizationManagementPage = (
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   
   _props: ILocalizationManagementPageProps
 ): JSX.Element => {
   const {

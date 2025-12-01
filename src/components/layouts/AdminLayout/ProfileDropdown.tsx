@@ -12,7 +12,7 @@ interface IProfileDropdownProps {
 }
 
 const ProfileDropdown = (
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   
   _props: IProfileDropdownProps
 ): JSX.Element => {
   const { t } = useTranslation(['common', 'navigation']);
@@ -35,8 +35,7 @@ const ProfileDropdown = (
       toast.success(t('messages.success.logout', 'Du er nå logget ut!'));
       navigate("/login-selection");
     } catch (
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      _error: unknown
+    _error: unknown
     ) {
       console.error('❌ Admin logout failed:', _error);
       toast.error(t('messages.error.logout', 'Kunne ikke logge ut. Prøv igjen.'));
@@ -58,10 +57,10 @@ const ProfileDropdown = (
     ? profile.display_name
     : user?.email || "Admin";
 
-  const userEmail = user?.email || "";
-  
+
+
   // Get avatar from localStorage (similar to user profile)
-  const userAvatar = user?.id 
+  const userAvatar = user?.id
     ? (localStorage.getItem(`avatar_${user.id}`) || "")
     : "";
 
@@ -91,11 +90,10 @@ const ProfileDropdown = (
             {userName}
           </p>
         </div>
-        
+
         {/* Dropdown Arrow */}
-        <ChevronDown className={`w-4 h-4 text-gray-500 dark:text-gray-400 transition-transform ${
-          isOpen ? "rotate-180" : ""
-        }`} />
+        <ChevronDown className={`w-4 h-4 text-gray-500 dark:text-gray-400 transition-transform ${isOpen ? "rotate-180" : ""
+          }`} />
       </button>
 
       {isOpen && (
@@ -105,7 +103,7 @@ const ProfileDropdown = (
             className="fixed inset-0 z-40"
             onClick={() => setIsOpen(false)}
           />
-          
+
           {/* Dropdown Menu */}
           <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50">
             {/* Menu Items */}

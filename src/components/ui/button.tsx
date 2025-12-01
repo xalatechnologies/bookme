@@ -5,7 +5,7 @@ import type { VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils/cn"
 import { buttonVariants } from "./variants/buttonVariants"
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+ 
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {

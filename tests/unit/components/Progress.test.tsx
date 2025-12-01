@@ -1,4 +1,5 @@
 /**
+/**
  * Progress Component Tests
  *
  * Tests for the shadcn/ui Progress component
@@ -6,25 +7,26 @@
 
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import '@testing-library/jest-dom';
 import { Progress } from '@/components/ui/progress';
 
 describe('Progress Component', () => {
   describe('Basic Rendering', () => {
     it('should render progress element', () => {
-      const { container } = render(<Progress value={50} data-testid="progress" />);
+      render(<Progress value={50} data-testid="progress" />);
 
       expect(screen.getByTestId('progress')).toBeInTheDocument();
     });
 
     it('should render as div element', () => {
-      const { container } = render(<Progress value={50} data-testid="progress" />);
+      render(<Progress value={50} data-testid="progress" />);
 
       const progress = screen.getByTestId('progress');
       expect(progress.tagName).toBe('DIV');
     });
 
     it('should have default styling classes', () => {
-      const { container } = render(<Progress value={50} data-testid="progress" />);
+      render(<Progress value={50} data-testid="progress" />);
 
       const progress = screen.getByTestId('progress');
       expect(progress).toHaveClass('relative');
@@ -36,7 +38,7 @@ describe('Progress Component', () => {
     });
 
     it('should apply custom className', () => {
-      const { container } = render(<Progress value={50} className="custom-progress" data-testid="progress" />);
+      render(<Progress value={50} className="custom-progress" data-testid="progress" />);
 
       const progress = screen.getByTestId('progress');
       expect(progress).toHaveClass('custom-progress');
@@ -45,7 +47,7 @@ describe('Progress Component', () => {
 
   describe('Progress Value', () => {
     it('should render with 0% progress by default', () => {
-      const { container } = render(<Progress data-testid="progress" />);
+      render(<Progress data-testid="progress" />);
 
       const progress = screen.getByTestId('progress');
       const indicator = progress.firstChild as HTMLElement;
@@ -53,7 +55,7 @@ describe('Progress Component', () => {
     });
 
     it('should render with specified progress value', () => {
-      const { container } = render(<Progress value={50} data-testid="progress" />);
+      render(<Progress value={50} data-testid="progress" />);
 
       const progress = screen.getByTestId('progress');
       const indicator = progress.firstChild as HTMLElement;
@@ -61,7 +63,7 @@ describe('Progress Component', () => {
     });
 
     it('should render with 100% progress', () => {
-      const { container } = render(<Progress value={100} data-testid="progress" />);
+      render(<Progress value={100} data-testid="progress" />);
 
       const progress = screen.getByTestId('progress');
       const indicator = progress.firstChild as HTMLElement;
@@ -69,7 +71,7 @@ describe('Progress Component', () => {
     });
 
     it('should render with 0% progress', () => {
-      const { container } = render(<Progress value={0} data-testid="progress" />);
+      render(<Progress value={0} data-testid="progress" />);
 
       const progress = screen.getByTestId('progress');
       const indicator = progress.firstChild as HTMLElement;
@@ -77,7 +79,7 @@ describe('Progress Component', () => {
     });
 
     it('should update progress value', () => {
-      const { container, rerender } = render(<Progress value={25} data-testid="progress" />);
+      const { rerender } = render(<Progress value={25} data-testid="progress" />);
 
       const progress = screen.getByTestId('progress');
       let indicator = progress.firstChild as HTMLElement;
@@ -92,7 +94,7 @@ describe('Progress Component', () => {
 
   describe('Max Value', () => {
     it('should use 100 as default max', () => {
-      const { container } = render(<Progress value={50} data-testid="progress" />);
+      render(<Progress value={50} data-testid="progress" />);
 
       const progress = screen.getByTestId('progress');
       const indicator = progress.firstChild as HTMLElement;
@@ -101,7 +103,7 @@ describe('Progress Component', () => {
     });
 
     it('should support custom max value', () => {
-      const { container } = render(<Progress value={25} max={50} data-testid="progress" />);
+      render(<Progress value={25} max={50} data-testid="progress" />);
 
       const progress = screen.getByTestId('progress');
       const indicator = progress.firstChild as HTMLElement;
@@ -110,7 +112,7 @@ describe('Progress Component', () => {
     });
 
     it('should calculate percentage correctly with different max', () => {
-      const { container } = render(<Progress value={1} max={10} data-testid="progress" />);
+      render(<Progress value={1} max={10} data-testid="progress" />);
 
       const progress = screen.getByTestId('progress');
       const indicator = progress.firstChild as HTMLElement;
@@ -121,7 +123,7 @@ describe('Progress Component', () => {
 
   describe('Edge Cases', () => {
     it('should handle value exceeding max', () => {
-      const { container } = render(<Progress value={150} max={100} data-testid="progress" />);
+      render(<Progress value={150} max={100} data-testid="progress" />);
 
       const progress = screen.getByTestId('progress');
       const indicator = progress.firstChild as HTMLElement;
@@ -130,7 +132,7 @@ describe('Progress Component', () => {
     });
 
     it('should handle negative value', () => {
-      const { container } = render(<Progress value={-50} data-testid="progress" />);
+      render(<Progress value={-50} data-testid="progress" />);
 
       const progress = screen.getByTestId('progress');
       const indicator = progress.firstChild as HTMLElement;
@@ -139,7 +141,7 @@ describe('Progress Component', () => {
     });
 
     it('should handle zero max', () => {
-      const { container } = render(<Progress value={50} max={0} data-testid="progress" />);
+      render(<Progress value={50} max={0} data-testid="progress" />);
 
       const progress = screen.getByTestId('progress');
       // Should not crash, handle gracefully
@@ -147,7 +149,7 @@ describe('Progress Component', () => {
     });
 
     it('should handle decimal values', () => {
-      const { container } = render(<Progress value={33.33} data-testid="progress" />);
+      render(<Progress value={33.33} data-testid="progress" />);
 
       const progress = screen.getByTestId('progress');
       const indicator = progress.firstChild as HTMLElement;
@@ -155,7 +157,7 @@ describe('Progress Component', () => {
     });
 
     it('should handle very small values', () => {
-      const { container } = render(<Progress value={0.1} data-testid="progress" />);
+      render(<Progress value={0.1} data-testid="progress" />);
 
       const progress = screen.getByTestId('progress');
       const indicator = progress.firstChild as HTMLElement;
@@ -165,7 +167,7 @@ describe('Progress Component', () => {
 
   describe('Indicator Styling', () => {
     it('should have default indicator styling', () => {
-      const { container } = render(<Progress value={50} data-testid="progress" />);
+      render(<Progress value={50} data-testid="progress" />);
 
       const progress = screen.getByTestId('progress');
       const indicator = progress.firstChild as HTMLElement;
@@ -177,7 +179,7 @@ describe('Progress Component', () => {
     });
 
     it('should have animation transition classes', () => {
-      const { container } = render(<Progress value={50} data-testid="progress" />);
+      render(<Progress value={50} data-testid="progress" />);
 
       const progress = screen.getByTestId('progress');
       const indicator = progress.firstChild as HTMLElement;
@@ -188,28 +190,28 @@ describe('Progress Component', () => {
 
   describe('Accessibility', () => {
     it('should support aria-label', () => {
-      const { container } = render(<Progress value={50} aria-label="Upload progress" data-testid="progress" />);
+      render(<Progress value={50} aria-label="Upload progress" data-testid="progress" />);
 
       const progress = screen.getByTestId('progress');
       expect(progress).toHaveAttribute('aria-label', 'Upload progress');
     });
 
     it('should support aria-valuenow', () => {
-      const { container } = render(<Progress value={50} aria-valuenow={50} data-testid="progress" />);
+      render(<Progress value={50} aria-valuenow={50} data-testid="progress" />);
 
       const progress = screen.getByTestId('progress');
       expect(progress).toHaveAttribute('aria-valuenow', '50');
     });
 
     it('should support aria-valuemin', () => {
-      const { container } = render(<Progress value={50} aria-valuemin={0} data-testid="progress" />);
+      render(<Progress value={50} aria-valuemin={0} data-testid="progress" />);
 
       const progress = screen.getByTestId('progress');
       expect(progress).toHaveAttribute('aria-valuemin', '0');
     });
 
     it('should support aria-valuemax', () => {
-      const { container } = render(<Progress value={50} aria-valuemax={100} data-testid="progress" />);
+      render(<Progress value={50} aria-valuemax={100} data-testid="progress" />);
 
       const progress = screen.getByTestId('progress');
       expect(progress).toHaveAttribute('aria-valuemax', '100');
@@ -218,20 +220,20 @@ describe('Progress Component', () => {
 
   describe('HTML Attributes', () => {
     it('should support id attribute', () => {
-      const { container } = render(<Progress value={50} id="upload-progress" data-testid="progress" />);
+      render(<Progress value={50} id="upload-progress" data-testid="progress" />);
 
       const progress = screen.getByTestId('progress');
       expect(progress).toHaveAttribute('id', 'upload-progress');
     });
 
     it('should support data attributes', () => {
-      const { container } = render(<Progress value={50} data-testid="my-progress" />);
+      render(<Progress value={50} data-testid="my-progress" />);
 
       expect(screen.getByTestId('my-progress')).toBeInTheDocument();
     });
 
     it('should support title attribute', () => {
-      const { container } = render(<Progress value={50} title="50% complete" data-testid="progress" />);
+      render(<Progress value={50} title="50% complete" data-testid="progress" />);
 
       const progress = screen.getByTestId('progress');
       expect(progress).toHaveAttribute('title', '50% complete');
@@ -258,7 +260,7 @@ describe('Progress Component', () => {
 
   describe('Use Cases', () => {
     it('should work as file upload indicator', () => {
-      const { container } = render(
+      render(
         <div>
           <label>Uploading file...</label>
           <Progress value={75} aria-label="File upload progress" data-testid="progress" />
@@ -272,7 +274,7 @@ describe('Progress Component', () => {
     });
 
     it('should work as task completion indicator', () => {
-      const { container } = render(
+      render(
         <div>
           <h3>Task Progress</h3>
           <Progress value={3} max={5} data-testid="progress" />
@@ -287,7 +289,7 @@ describe('Progress Component', () => {
     });
 
     it('should work as loading indicator', () => {
-      const { container } = render(
+      render(
         <div>
           <p>Loading...</p>
           <Progress value={100} aria-label="Loading progress" data-testid="progress" />
@@ -302,7 +304,7 @@ describe('Progress Component', () => {
 
   describe('Dynamic Updates', () => {
     it('should handle incremental updates', () => {
-      const { container, rerender } = render(<Progress value={0} data-testid="progress" />);
+      const { rerender } = render(<Progress value={0} data-testid="progress" />);
 
       const progress = screen.getByTestId('progress');
 
@@ -324,7 +326,7 @@ describe('Progress Component', () => {
     });
 
     it('should handle decremental updates', () => {
-      const { container, rerender } = render(<Progress value={100} data-testid="progress" />);
+      const { rerender } = render(<Progress value={100} data-testid="progress" />);
 
       const progress = screen.getByTestId('progress');
 
@@ -336,7 +338,7 @@ describe('Progress Component', () => {
 
   describe('Multiple Progress Bars', () => {
     it('should render multiple progress bars independently', () => {
-      const { container } = render(
+      render(
         <div>
           <Progress value={25} data-testid="progress-1" />
           <Progress value={50} data-testid="progress-2" />
@@ -354,7 +356,7 @@ describe('Progress Component', () => {
     });
 
     it('should maintain individual progress values', () => {
-      const { container } = render(
+      render(
         <div>
           <Progress value={25} data-testid="progress-1" />
           <Progress value={75} data-testid="progress-2" />
@@ -374,21 +376,21 @@ describe('Progress Component', () => {
 
   describe('Styling Variations', () => {
     it('should support custom height', () => {
-      const { container } = render(<Progress value={50} className="h-4" data-testid="progress" />);
+      render(<Progress value={50} className="h-4" data-testid="progress" />);
 
       const progress = screen.getByTestId('progress');
       expect(progress).toHaveClass('h-4');
     });
 
     it('should support custom width', () => {
-      const { container } = render(<Progress value={50} className="w-1/2" data-testid="progress" />);
+      render(<Progress value={50} className="w-1/2" data-testid="progress" />);
 
       const progress = screen.getByTestId('progress');
       expect(progress).toHaveClass('w-1/2');
     });
 
     it('should support custom colors', () => {
-      const { container } = render(<Progress value={50} className="bg-red-200" data-testid="progress" />);
+      render(<Progress value={50} className="bg-red-200" data-testid="progress" />);
 
       const progress = screen.getByTestId('progress');
       expect(progress).toHaveClass('bg-red-200');
@@ -400,7 +402,7 @@ describe('Progress Component', () => {
       const value = 50;
       const showProgress = value > 0;
 
-      const { container } = render(
+      render(
         <div>
           {showProgress && <Progress value={value} data-testid="progress" />}
         </div>
@@ -413,7 +415,7 @@ describe('Progress Component', () => {
       const value = 0;
       const showProgress = value > 0;
 
-      const { container } = render(
+      render(
         <div>
           {showProgress && <Progress value={value} data-testid="progress" />}
         </div>
@@ -425,7 +427,7 @@ describe('Progress Component', () => {
 
   describe('Percentage Calculations', () => {
     it('should calculate 25% correctly', () => {
-      const { container } = render(<Progress value={25} max={100} data-testid="progress" />);
+      render(<Progress value={25} max={100} data-testid="progress" />);
 
       const progress = screen.getByTestId('progress');
       const indicator = progress.firstChild as HTMLElement;
@@ -433,7 +435,7 @@ describe('Progress Component', () => {
     });
 
     it('should calculate 50% correctly', () => {
-      const { container } = render(<Progress value={50} max={100} data-testid="progress" />);
+      render(<Progress value={50} max={100} data-testid="progress" />);
 
       const progress = screen.getByTestId('progress');
       const indicator = progress.firstChild as HTMLElement;
@@ -441,7 +443,7 @@ describe('Progress Component', () => {
     });
 
     it('should calculate 75% correctly', () => {
-      const { container } = render(<Progress value={75} max={100} data-testid="progress" />);
+      render(<Progress value={75} max={100} data-testid="progress" />);
 
       const progress = screen.getByTestId('progress');
       const indicator = progress.firstChild as HTMLElement;
@@ -449,7 +451,7 @@ describe('Progress Component', () => {
     });
 
     it('should calculate custom max percentages correctly', () => {
-      const { container } = render(<Progress value={5} max={20} data-testid="progress" />);
+      render(<Progress value={5} max={20} data-testid="progress" />);
 
       const progress = screen.getByTestId('progress');
       const indicator = progress.firstChild as HTMLElement;

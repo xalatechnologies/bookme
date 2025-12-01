@@ -199,7 +199,10 @@
     "goToPage": "Go to page",
     "previous": "Previous",
     "next": "Next",
-    "today": "Today"
+    "today": "Today",
+    "previous_week": "Previous Week",
+    "current_week": "Current Week",
+    "next_week": "Next Week"
   },
   "breadcrumbs": {
     "home": "Home",

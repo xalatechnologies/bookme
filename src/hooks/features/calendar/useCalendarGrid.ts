@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback } from 'react';
-import { format, addDays, startOfWeek, addWeeks, subWeeks, isToday, isWeekend, isPast } from 'date-fns';
+import { addDays, startOfWeek, addWeeks, subWeeks, isToday, isWeekend, isPast } from 'date-fns';
 
 export interface CalendarDay {
   readonly date: Date;
@@ -71,15 +71,13 @@ export const useCalendarGrid = ({
         date,
         isToday: isToday(date),
         isWeekend: isWeekend(date),
-        isPast: isPast(date),
-      };
+        isPast: isPast(date)};
     });
 
     return {
       startDate: currentWeekStart,
       endDate: addDays(currentWeekStart, 6),
-      days,
-    };
+      days};
   }, [currentWeekStart]);
 
   // Navigate to previous week

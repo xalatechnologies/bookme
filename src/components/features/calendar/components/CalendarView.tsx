@@ -29,7 +29,7 @@ interface CalendarViewProps {
 }
 
 export const CalendarView: React.FC<CalendarViewProps> = ({
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   
   date: _date,
   facilityType,
   location,

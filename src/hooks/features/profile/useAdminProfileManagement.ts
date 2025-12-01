@@ -8,7 +8,6 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { useAuth } from "@/contexts/hooks";
 import { useTranslation } from 'react-i18next';
-import { avatarService } from '@/services/supabase/avatar.service';
 import { usersService } from '@/services/supabase/users.service';
 
 interface AdminProfileForm {

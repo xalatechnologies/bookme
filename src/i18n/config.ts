@@ -69,6 +69,7 @@ export const NAMESPACES = {
   USER: 'user',
   VALIDATION: 'validation',
   CALENDAR: 'calendar',
+  SUPPORT: 'support',
 } as const;
 
 // Initialize i18next

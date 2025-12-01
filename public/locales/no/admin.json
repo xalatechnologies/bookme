@@ -593,6 +593,87 @@
         "reports_export": "Eksporter rapporter"
       },
       "users_with_role": "{{count}} brukere med denne rollen"
+    },
+    "reports": {
+      "title": "Rapporter",
+      "subtitle": "Se analyser og generer rapporter",
+      "report_types": {
+        "revenue": "Inntektsrapport",
+        "revenue_description": "Analyser inntekter og finansielle tall",
+        "bookings": "Bookingrapport",
+        "bookings_description": "Følg bookingtrender og mønstre",
+        "utilization": "Utnyttelsesrapport",
+        "utilization_description": "Overvåk fasilitetsbruk og effektivitet",
+        "users": "Brukeraktivitetsrapport",
+        "users_description": "Analyser brukerengasjement og atferd"
+      },
+      "date_presets": {
+        "today": "I dag",
+        "this_week": "Denne uken",
+        "this_month": "Denne måneden",
+        "this_year": "Dette året",
+        "last_30_days": "Siste 30 dager",
+        "last_90_days": "Siste 90 dager"
+      },
+      "no_date_range": "Velg datoområde",
+      "kpi": {
+        "total_revenue": "Total inntekt",
+        "total_bookings": "Totale bookinger",
+        "average_value": "Gjennomsnittlig bookingverdi",
+        "growth_rate": "Vekstrate",
+        "confirmed": "Bekreftet",
+        "pending": "Venter",
+        "conversion_rate": "Konverteringsrate",
+        "overall_utilization": "Samlet utnyttelse",
+        "top_facilities": "Topp fasiliteter",
+        "underutilized": "Underutnyttet",
+        "total_facilities": "Totale fasiliteter",
+        "total_users": "Totale brukere",
+        "active_users": "Aktive brukere",
+        "avg_bookings_per_user": "Gj.snitt bookinger per bruker",
+        "avg_spend_per_user": "Gj.snitt forbruk per bruker",
+        "new_users": "Nye brukere",
+        "returning_users": "Tilbakevendende brukere",
+        "user_engagement": "Brukerengasjement"
+      },
+      "description": "Se analyser og generer rapporter",
+      "select_report_type": "Velg rapporttype",
+      "date_range": {
+        "title": "Datoområde"
+      },
+      "hide_filters": "Skjul filtre",
+      "show_filters": "Vis filtre",
+      "selected_period": "Valgt periode",
+      "group_by": "Grupper etter",
+      "grouping": {
+        "day": "Dag",
+        "week": "Uke",
+        "month": "Måned",
+        "year": "År"
+      },
+      "chart_title": {
+        "revenue": "Inntektsutvikling",
+        "bookings": "Bookingutvikling",
+        "utilization": "Fasilitetsutnyttelse",
+        "users": "Brukeraktivitet"
+      },
+      "chart_placeholder": "Diagramvisualisering vil bli implementert her",
+      "chart_implementation_note": "Integrasjon med diagrambibliotek venter",
+      "chart_data_available": "Data tilgjengelig",
+      "and_more": "og {{count}} flere",
+      "no_data": "Ingen data tilgjengelig",
+      "no_data_description": "Det er ingen data tilgjengelig for valgt periode",
+      "facility_details": "Fasilitetdetaljer",
+      "table": {
+        "facility": "Fasilitet",
+        "utilization": "Utnyttelse",
+        "bookings": "Bookinger",
+        "revenue": "Inntekt"
+      },
+      "actions": {
+        "download_csv": "Last ned CSV",
+        "download_pdf": "Last ned PDF"
+      }
     }
   },
   "components": {

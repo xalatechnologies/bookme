@@ -338,9 +338,7 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
-        emailRedirectTo: window.location.origin,
-      },
-    });
+        emailRedirectTo: window.location.origin}});
 
     if (error) {
       console.error('Error signing in:', error);
@@ -357,8 +355,7 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
   const signInWithPassword = useCallback(async (email: string, password: string): Promise<void> => {
     const { error } = await supabase.auth.signInWithPassword({
       email,
-      password,
-    });
+      password});
 
     if (error) {
       console.error('Error signing in with password:', error);
@@ -444,8 +441,7 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
     signInWithPassword,
     signOut,
     refreshProfile,
-    setCurrentOrg,
-  };
+    setCurrentOrg};
 
   return (
     <AuthContext.Provider value={value}>

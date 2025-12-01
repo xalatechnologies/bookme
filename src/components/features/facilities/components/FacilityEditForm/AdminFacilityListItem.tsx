@@ -26,7 +26,7 @@ interface IAdminFacilityListItemProps {
 }
 
 const AdminFacilityListItem = ({ facility, onDelete, 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   
   onToggleStatus: _onToggleStatus, onDuplicate }: IAdminFacilityListItemProps): JSX.Element => {
   const { t } = useTranslation(['admin', 'facility', 'common']);
   const translateAmenity = useAmenityTranslation();
@@ -35,9 +35,11 @@ const AdminFacilityListItem = ({ facility, onDelete,
   const translate = (key: string, options?: Record<string, unknown>): string => {
     // Handle facility namespace keys separately
     if (key.startsWith('facility:')) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       return t(key as any, options);
     }
     // For admin namespace keys, use the admin namespace
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return t(key as any, options);
   };
 
@@ -192,9 +194,9 @@ const AdminFacilityListItem = ({ facility, onDelete,
     }
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   
   const _handleImageUpload = (
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+     
     _e: React.MouseEvent
   ): void => {
     setShowImageModal(true);
@@ -344,6 +346,7 @@ const AdminFacilityListItem = ({ facility, onDelete,
               {/* Capacity */}
               <div className="flex items-center gap-1 text-gray-600 dark:text-gray-400">
                 <Users className="h-4 w-4" />
+                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                 <span className="font-medium text-sm">{translate('pages.facilities.card.capacity', { capacity: facility.capacity } as any)}</span>
               </div>
 
@@ -364,6 +367,7 @@ const AdminFacilityListItem = ({ facility, onDelete,
                       onClick={handleShowAllAmenities}
                       className="bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 border-gray-300 dark:border-gray-600 font-medium px-2 py-1 text-xs rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                     >
+                      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                       {translate('pages.facilities.card.show_more_amenities', { count: (Array.isArray(facility.amenities) ? facility.amenities : JSON.parse(facility.amenities as string)).length - 3 } as any)}
                     </button>
                   )}
@@ -429,6 +433,7 @@ const AdminFacilityListItem = ({ facility, onDelete,
           
           <p className="text-gray-700 dark:text-gray-300 mb-6" 
              dangerouslySetInnerHTML={{ 
+               /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
                __html: translate('pages.facilities.card.delete_dialog.confirm_text', { name: facility.name } as any)
              }}>
           </p>
@@ -559,7 +564,8 @@ const AdminFacilityListItem = ({ facility, onDelete,
                 {translate('pages.facilities.card.image_modal.drag_drop')}
               </span>
               <span className="text-xs text-gray-500 dark:text-gray-500">
-                {translate('pages.facilities.card.image_modal.max_size', { size: '10MB' } as any)}
+                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+              {translate('pages.facilities.card.image_modal.max_size', { size: '10MB' as any })}
               </span>
             </label>
           </div>

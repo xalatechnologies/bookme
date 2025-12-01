@@ -37,8 +37,7 @@ export const languages: Record<string, LanguageConfig> = {
     thousandsSeparator: ' ',
     currencySymbol: 'kr',
     currencyCode: 'NOK',
-    currencyPosition: 'after',
-  },
+    currencyPosition: 'after'},
   en: {
     code: 'en',
     name: 'English',
@@ -51,9 +50,7 @@ export const languages: Record<string, LanguageConfig> = {
     thousandsSeparator: ',',
     currencySymbol: 'kr',
     currencyCode: 'NOK',
-    currencyPosition: 'before',
-  },
-} as const;
+    currencyPosition: 'before'}} as const;
 
 /**
  * Default language code

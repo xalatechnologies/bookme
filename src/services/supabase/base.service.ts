@@ -20,7 +20,6 @@ import {
   handleSupabaseError,
   NotFoundError,
   ValidationError,
-  type ServiceError,
 } from './errors';
 import type { PaginatedResponse, PaginationParams } from './types';
 
@@ -86,7 +85,8 @@ export abstract class BaseService<TRow, TInsert, TUpdate> {
    */
   async getAll(select = '*'): Promise<TRow[]> {
     try {
-      let query = supabase.from(this.tableName).select(select);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      let query = supabase.from(this.tableName as any).select(select);
 
       // Exclude soft-deleted records
       if (this.softDeleteEnabled) {
@@ -123,7 +123,8 @@ export abstract class BaseService<TRow, TInsert, TUpdate> {
       const to = from + pageSize - 1;
 
       let query = supabase
-        .from(this.tableName)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        .from(this.tableName as any)
         .select(select, { count: 'exact' });
 
       // Exclude soft-deleted records
@@ -163,7 +164,8 @@ export abstract class BaseService<TRow, TInsert, TUpdate> {
   async getById(id: string, select = '*'): Promise<TRow> {
     try {
       let query = supabase
-        .from(this.tableName)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        .from(this.tableName as any)
         .select(select)
         .eq(this.idColumn, id);
 
@@ -206,7 +208,8 @@ export abstract class BaseService<TRow, TInsert, TUpdate> {
       const processedData = await this.beforeCreate(data);
 
       const { data: created, error } = await supabase
-        .from(this.tableName)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        .from(this.tableName as any)
         .insert(processedData)
         .select()
         .single();
@@ -245,7 +248,8 @@ export abstract class BaseService<TRow, TInsert, TUpdate> {
       const processedData = await this.beforeUpdate(id, data);
 
       let query = supabase
-        .from(this.tableName)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        .from(this.tableName as any)
         .update(processedData)
         .eq(this.idColumn, id);
 
@@ -287,7 +291,8 @@ export abstract class BaseService<TRow, TInsert, TUpdate> {
       if (this.softDeleteEnabled) {
         // Soft delete - set deleted_at timestamp
         const { error } = await supabase
-          .from(this.tableName)
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          .from(this.tableName as any)
           .update({ [this.deletedAtColumn]: new Date().toISOString() } as unknown as TUpdate)
           .eq(this.idColumn, id)
           .is(this.deletedAtColumn, null);
@@ -298,7 +303,8 @@ export abstract class BaseService<TRow, TInsert, TUpdate> {
       } else {
         // Hard delete
         const { error } = await supabase
-          .from(this.tableName)
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          .from(this.tableName as any)
           .delete()
           .eq(this.idColumn, id);
 
@@ -328,7 +334,8 @@ export abstract class BaseService<TRow, TInsert, TUpdate> {
 
     try {
       const { data, error } = await supabase
-        .from(this.tableName)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        .from(this.tableName as any)
         .update({ [this.deletedAtColumn]: null } as unknown as TUpdate)
         .eq(this.idColumn, id)
         .select()
@@ -357,7 +364,8 @@ export abstract class BaseService<TRow, TInsert, TUpdate> {
   async exists(id: string): Promise<boolean> {
     try {
       let query = supabase
-        .from(this.tableName)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        .from(this.tableName as any)
         .select(this.idColumn, { count: 'exact', head: true })
         .eq(this.idColumn, id);
 
@@ -386,7 +394,8 @@ export abstract class BaseService<TRow, TInsert, TUpdate> {
   async count(): Promise<number> {
     try {
       let query = supabase
-        .from(this.tableName)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        .from(this.tableName as any)
         .select('*', { count: 'exact', head: true });
 
       // Exclude soft-deleted records
@@ -414,7 +423,8 @@ export abstract class BaseService<TRow, TInsert, TUpdate> {
    * Validate data before insert
    * Override in subclass for custom validation
    */
-  protected async validateInsert(data: TInsert): Promise<void> {
+   
+  protected async validateInsert(_data: TInsert): Promise<void> {
     // Default: no validation
     // Subclasses should override this method
   }
@@ -423,7 +433,8 @@ export abstract class BaseService<TRow, TInsert, TUpdate> {
    * Validate data before update
    * Override in subclass for custom validation
    */
-  protected async validateUpdate(id: string, data: TUpdate): Promise<void> {
+   
+  protected async validateUpdate(_id: string, _data: TUpdate): Promise<void> {
     // Default: no validation
     // Subclasses should override this method
   }
@@ -440,7 +451,8 @@ export abstract class BaseService<TRow, TInsert, TUpdate> {
    * Hook called after creating a record
    * Override in subclass for side effects
    */
-  protected async afterCreate(data: TRow): Promise<void> {
+   
+  protected async afterCreate(_data: TRow): Promise<void> {
     // Default: no action
   }
 
@@ -456,7 +468,8 @@ export abstract class BaseService<TRow, TInsert, TUpdate> {
    * Hook called after updating a record
    * Override in subclass for side effects
    */
-  protected async afterUpdate(data: TRow): Promise<void> {
+   
+  protected async afterUpdate(_data: TRow): Promise<void> {
     // Default: no action
   }
 
@@ -464,7 +477,8 @@ export abstract class BaseService<TRow, TInsert, TUpdate> {
    * Hook called before deleting a record
    * Override in subclass for validation
    */
-  protected async beforeDelete(id: string): Promise<void> {
+   
+  protected async beforeDelete(_id: string): Promise<void> {
     // Default: no action
   }
 
@@ -472,7 +486,8 @@ export abstract class BaseService<TRow, TInsert, TUpdate> {
    * Hook called after deleting a record
    * Override in subclass for cleanup
    */
-  protected async afterDelete(id: string): Promise<void> {
+   
+  protected async afterDelete(_id: string): Promise<void> {
     // Default: no action
   }
 }

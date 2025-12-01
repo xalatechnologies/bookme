@@ -83,11 +83,6 @@ export const BookingCard = ({
   const { t, i18n } = useTranslation("booking");
   const statusLabel = useStatusLabel(booking.status);
 
-  const durationTranslations = {
-    hour: t("time.hour"),
-    hours: t("time.hours"),
-  };
-
   const handleCardClick = useCallback(() => {
     if (onViewDetails) {
       onViewDetails(booking);

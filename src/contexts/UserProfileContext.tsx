@@ -91,7 +91,7 @@ export const UserProfileProvider = ({ children }: { readonly children: React.Rea
       console.error('Error loading profile:', error);
       // Fallback to default profile
       let firstName = "Bruker";
-      let lastName = "";
+      const lastName = "";
       
       if (user?.email) {
         firstName = user.email.split('@')[0] || "Bruker";

@@ -194,6 +194,9 @@ export const sortBookings = (
 ): readonly BookingWithFacility[] => {
   const sorted = [...bookings].sort((a, b) => {
     let comparison = 0;
+    // Declare variables outside the switch to avoid lexical declaration errors
+    let nameA = '';
+    let nameB = '';
 
     switch (sortConfig.sortBy) {
       case 'starts_at':
@@ -212,8 +215,8 @@ export const sortBookings = (
         comparison = a.total_cents - b.total_cents;
         break;
       case 'facility_name':
-        const nameA = a.facilities?.name || '';
-        const nameB = b.facilities?.name || '';
+        nameA = a.facilities?.name || '';
+        nameB = b.facilities?.name || '';
         comparison = nameA.localeCompare(nameB);
         break;
     }

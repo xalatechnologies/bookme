@@ -53,7 +53,7 @@ const getStatusBadgeColor = (status: string): string => {
   }
 };
 
-const getStatusColor = (status: string): string => {
+const _getStatusColor = (status: string): string => {
   switch (status) {
     case "paid":
     case "completed":

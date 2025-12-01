@@ -80,9 +80,9 @@ const FacilityListItemUser = (props: IFacilityListItemUserProps): JSX.Element =>
     setTimeout(() => setIsAnimating(false), 300);
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   
   const _handleShare = (
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+     
     _e: React.MouseEvent
   ): void => {
     // Use slug if available, fallback to id

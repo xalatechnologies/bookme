@@ -20,7 +20,6 @@ import {
   X,
   Calendar,
   MapPin,
-  User,
   FileText,
 } from "lucide-react";
 import { useApprovalsManagement } from "@/hooks/features/approvals";

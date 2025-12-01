@@ -179,7 +179,7 @@ export const BookingDetailsPanel = ({
     booking.status === "pending" ||
     booking.status === "awaiting_payment" ||
     booking.status === "paid";
-  const canDelete = booking.status === "cancelled";
+  const _canDelete = booking.status === "cancelled";
   const canShare = booking.status === "paid" || booking.status === "completed";
   const canAddToCalendar =
     booking.status === "paid" || booking.status === "completed";

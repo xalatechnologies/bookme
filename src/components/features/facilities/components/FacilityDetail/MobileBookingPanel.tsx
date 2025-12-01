@@ -16,7 +16,7 @@ interface MobileBookingPanelProps {
 
 export const MobileBookingPanel: React.FC<MobileBookingPanelProps> = ({
   facilityName,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   
   facilityId: _facilityId,
   capacity,
   area,

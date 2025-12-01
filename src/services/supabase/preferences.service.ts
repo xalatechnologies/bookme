@@ -13,7 +13,7 @@
 
 import { supabase } from './client';
 import { handleSupabaseError } from './errors';
-import type { Database } from '@/types/database';
+
 
 // ============================================================================
 // Types
@@ -53,7 +53,7 @@ export class PreferencesService {
   async getByUserId(userId: string): Promise<UserPreferences | null> {
     try {
       // First, try to get notification preferences from the database
-      let notificationData: any = null;
+      let notificationData: Record<string, unknown> | null = null;
       try {
         const { data, error } = await supabase
           .from('user_notification_preferences')
@@ -64,22 +64,22 @@ export class PreferencesService {
         if (!error && data && data.length > 0) {
           notificationData = data[0]; // Take the first item
         }
-      } catch (error) {
+      } catch {
         // Ignore errors here, we'll handle them below
       }
 
       // Get language and theme from localStorage as fallback
       let language: Language = 'nb-NO';
       let theme: Theme = 'system';
-      
+
       if (typeof window !== 'undefined') {
         const storedLanguage = localStorage.getItem(`language_${userId}`);
         const storedTheme = localStorage.getItem(`theme_${userId}`);
-        
+
         if (storedLanguage && (storedLanguage === 'nb-NO' || storedLanguage === 'en-US')) {
           language = storedLanguage;
         }
-        
+
         if (storedTheme && (storedTheme === 'light' || storedTheme === 'dark' || storedTheme === 'system')) {
           theme = storedTheme;
         }
@@ -112,15 +112,15 @@ export class PreferencesService {
       // Get language and theme from localStorage as fallback
       let language: Language = 'nb-NO';
       let theme: Theme = 'system';
-      
+
       if (typeof window !== 'undefined') {
         const storedLanguage = localStorage.getItem(`language_${userId}`);
         const storedTheme = localStorage.getItem(`theme_${userId}`);
-        
+
         if (storedLanguage && (storedLanguage === 'nb-NO' || storedLanguage === 'en-US')) {
           language = storedLanguage;
         }
-        
+
         if (storedTheme && (storedTheme === 'light' || storedTheme === 'dark' || storedTheme === 'system')) {
           theme = storedTheme;
         }
@@ -163,7 +163,7 @@ export class PreferencesService {
     try {
       // First, try to get existing preferences
       const existing = await this.getByUserId(userId);
-      
+
       const now = new Date().toISOString();
       const payload = {
         user_id: userId,
@@ -199,15 +199,15 @@ export class PreferencesService {
         // Get language and theme from localStorage as fallback
         let language: Language = 'nb-NO';
         let theme: Theme = 'system';
-        
+
         if (typeof window !== 'undefined') {
           const storedLanguage = localStorage.getItem(`language_${userId}`);
           const storedTheme = localStorage.getItem(`theme_${userId}`);
-          
+
           if (storedLanguage && (storedLanguage === 'nb-NO' || storedLanguage === 'en-US')) {
             language = storedLanguage;
           }
-          
+
           if (storedTheme && (storedTheme === 'light' || storedTheme === 'dark' || storedTheme === 'system')) {
             theme = storedTheme;
           }
@@ -246,15 +246,15 @@ export class PreferencesService {
       // Get language and theme from localStorage as fallback
       let language: Language = 'nb-NO';
       let theme: Theme = 'system';
-      
+
       if (typeof window !== 'undefined') {
         const storedLanguage = localStorage.getItem(`language_${userId}`);
         const storedTheme = localStorage.getItem(`theme_${userId}`);
-        
+
         if (storedLanguage && (storedLanguage === 'nb-NO' || storedLanguage === 'en-US')) {
           language = storedLanguage;
         }
-        
+
         if (storedTheme && (storedTheme === 'light' || storedTheme === 'dark' || storedTheme === 'system')) {
           theme = storedTheme;
         }
@@ -325,7 +325,7 @@ export class PreferencesService {
 
       // Check if theme column exists in the data
       if (data && typeof data === 'object' && 'theme' in data) {
-        const theme = (data as any).theme;
+        const theme = (data as Record<string, unknown>).theme;
         if (theme && (theme === 'light' || theme === 'dark' || theme === 'system')) {
           return theme as Theme;
         }
@@ -340,7 +340,7 @@ export class PreferencesService {
       }
 
       return null;
-    } catch (error) {
+    } catch {
       // Fallback to localStorage
       if (typeof window !== 'undefined') {
         const storedTheme = localStorage.getItem(`theme_${userId}`);
@@ -373,7 +373,7 @@ export class PreferencesService {
             .from('user_notification_preferences')
             .update({ theme, updated_at: new Date().toISOString() })
             .eq('user_id', userId);
-        } catch (themeError) {
+        } catch {
           // If theme column doesn't exist, continue with localStorage only
         }
       }
@@ -383,7 +383,7 @@ export class PreferencesService {
         localStorage.setItem(`theme_${userId}`, theme);
         localStorage.setItem('theme', theme);
       }
-    } catch (error) {
+    } catch {
       // Fallback to localStorage only
       if (typeof window !== 'undefined') {
         localStorage.setItem(`theme_${userId}`, theme);
@@ -421,7 +421,7 @@ export class PreferencesService {
 
       // Check if language column exists in the data
       if (data && typeof data === 'object' && 'language' in data) {
-        const language = (data as any).language;
+        const language = (data as Record<string, unknown>).language;
         if (language && (language === 'nb-NO' || language === 'en-US')) {
           return language as Language;
         }
@@ -436,7 +436,7 @@ export class PreferencesService {
       }
 
       return null;
-    } catch (error) {
+    } catch {
       // Fallback to localStorage
       if (typeof window !== 'undefined') {
         const storedLanguage = localStorage.getItem(`language_${userId}`);
@@ -469,7 +469,7 @@ export class PreferencesService {
             .from('user_notification_preferences')
             .update({ language, updated_at: new Date().toISOString() })
             .eq('user_id', userId);
-        } catch (languageError) {
+        } catch {
           // If language column doesn't exist, continue with localStorage only
         }
       }
@@ -480,7 +480,7 @@ export class PreferencesService {
         const uiLanguage = language === 'en-US' ? 'EN' : 'NO';
         localStorage.setItem('booknor-language', uiLanguage);
       }
-    } catch (error) {
+    } catch {
       // Fallback to localStorage only
       if (typeof window !== 'undefined') {
         localStorage.setItem(`language_${userId}`, language);

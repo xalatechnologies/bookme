@@ -14,7 +14,7 @@ export const SystemMessageFilters = (
   props: ISystemMessageFiltersProps
 ): JSX.Element => {
   const { messageFilter, onFilterChange, 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+     
     unreadMessagesCount: _unreadMessagesCount } = props;
   const { t } = useTranslation("common");
 

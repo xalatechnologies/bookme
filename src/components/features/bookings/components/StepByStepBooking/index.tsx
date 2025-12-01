@@ -97,7 +97,7 @@ export interface IStepByStepBookingProps {
 
 export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
   facilityId,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   
   facilityName: _facilityName,
   zones,
   selectedZoneId,
@@ -110,12 +110,12 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
   error,
   openingHoursStart = "08:00",
   openingHoursEnd = "22:00",
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   
   calendarWeek: _calendarWeek,
   onSlotClick,
   onBulkSlotSelection,
   getAvailabilityStatus,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   
   isSlotSelected: _isSlotSelected,
 }) => {
   const { t, i18n } = useTranslation(["booking", "common"]);
@@ -265,12 +265,12 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
     (pattern: RecurrencePattern | null) => {
       const patternWithStartDate = pattern
         ? {
-            ...pattern,
-            startDate:
-              selectedSlots.length > 0
-                ? selectedSlots[selectedSlots.length - 1].date
-                : pattern.startDate,
-          }
+          ...pattern,
+          startDate:
+            selectedSlots.length > 0
+              ? selectedSlots[selectedSlots.length - 1].date
+              : pattern.startDate,
+        }
         : null;
 
       setRecurrencePattern(patternWithStartDate);
@@ -776,15 +776,14 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
                         key={step.id}
                         onClick={() => isAccessible && goToStep(step.id)}
                         disabled={!isAccessible}
-                        className={`flex flex-col items-center space-y-2 p-2 rounded-lg transition-colors ${
-                          isCurrent
+                        className={`flex flex-col items-center space-y-2 p-2 rounded-lg transition-colors ${isCurrent
                             ? "bg-blue-100 text-blue-700"
                             : isCompleted
-                            ? "bg-green-100 text-green-700"
-                            : isAccessible
-                            ? "hover:bg-gray-100 text-gray-600"
-                            : "text-gray-400 cursor-not-allowed"
-                        }`}
+                              ? "bg-green-100 text-green-700"
+                              : isAccessible
+                                ? "hover:bg-gray-100 text-gray-600"
+                                : "text-gray-400 cursor-not-allowed"
+                          }`}
                       >
                         <StepIcon className="h-5 w-5" />
                         <span className="text-xs font-medium text-center">

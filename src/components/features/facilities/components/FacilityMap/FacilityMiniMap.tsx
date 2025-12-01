@@ -35,9 +35,8 @@ const FacilityMiniMap = ({ address, lat, lng }: Props) => {
     if (!coords || !containerRef.current) return;
     if (mapRef.current) mapRef.current.remove();
 
-    // Get container dimensions
-    const { width, height } = containerRef.current.getBoundingClientRect();
-    
+
+
     const map = new mapboxgl.Map({
       container: containerId,
       style: 'mapbox://styles/mapbox/streets-v12',
@@ -45,7 +44,7 @@ const FacilityMiniMap = ({ address, lat, lng }: Props) => {
       zoom: 14,
       interactive: false
     });
-    
+
     // Create a larger black marker using SVG (increased from default size)
     const markerElement = document.createElement('div');
     markerElement.innerHTML = `
@@ -54,11 +53,11 @@ const FacilityMiniMap = ({ address, lat, lng }: Props) => {
         <path d="M12 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" fill="white"/>
       </svg>
     `;
-    
+
     new mapboxgl.Marker(markerElement)
       .setLngLat([coords.lng, coords.lat])
       .addTo(map);
-      
+
     mapRef.current = map;
 
     return () => map.remove();

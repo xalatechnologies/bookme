@@ -9,11 +9,10 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useOrganizationId } from '@/hooks/useOrganizationId';
 import { useAppUIStore } from '@/stores/appUIStore';
 import { organizationsService } from '@/services/supabase/organizations.service';
-import type { IOrganizationSettings as OrgSettings } from '@/services/business/settings.business.service';
+
 import {
   validateSettingsData,
   compareSettings,
-  getChangedFields,
   prepareSettingsForStorage,
   getDefaultSettings,
   getAvailableTimezones,
@@ -22,11 +21,6 @@ import {
   validateEmailSettings,
   validatePaymentSettings,
   type IOrganizationSettings,
-  type IEmailSettings,
-  type IPaymentSettings,
-  type INotificationSettings,
-  type ISecuritySettings,
-  type IGeneralSettings,
 } from '@/services/business/settings.business.service';
 
 export interface IUseSettingsManagementReturn {
@@ -50,12 +44,12 @@ export interface IUseSettingsManagementReturn {
   readonly availableLanguages: readonly { code: string; name: string }[];
 
   // UI Actions
-  readonly setActiveTab: (tab: any) => void;
+  readonly setActiveTab: (tab: string) => void;
   readonly openModal: (modal: keyof import('@/stores/appUIStore').ISettingsState['modals']) => void;
   readonly closeModal: (modal: keyof import('@/stores/appUIStore').ISettingsState['modals']) => void;
 
   // Settings Management
-  readonly updateSettings: (section: keyof IOrganizationSettings, data: any) => void;
+  readonly updateSettings: <K extends keyof IOrganizationSettings>(section: K, data: Partial<IOrganizationSettings[K]>) => void;
   readonly saveSettings: () => Promise<void>;
   readonly resetSettings: () => void;
   readonly discardChanges: () => void;
@@ -149,7 +143,7 @@ export const useSettingsManagement = (): IUseSettingsManagementReturn => {
    * Update settings section
    */
   const updateSettings = useCallback(
-    (section: keyof IOrganizationSettings, data: any) => {
+    <K extends keyof IOrganizationSettings>(section: K, data: Partial<IOrganizationSettings[K]>) => {
       if (!settings) return;
 
       const updatedSettings: IOrganizationSettings = {

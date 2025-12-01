@@ -10,14 +10,10 @@
 import {
   ROLE_PRIORITY,
   ROLE_INHERITANCE,
-  PLATFORM_ROLES,
-  ORG_ROLES,
-  EXTENDED_ORG_ROLES,
   normalizeRole,
-  isExtendedOrgRole,
+  isValidOrgRole,
   isPlatformRole,
   getRoleLabel,
-  type OrgRole,
   type PlatformRole,
   type ExtendedOrgRole,
   type SystemRole,
@@ -26,11 +22,9 @@ import {
 import type {
   Permission,
   PermissionMatrix,
-  PermissionMatrixEntry,
   RolePermissionMap,
   RoleComparisonResult,
   RoleValidationResult,
-  FeatureFlag,
   RoleFeatureFlags,
   PermissionScope,
   ResourceType,
@@ -529,7 +523,7 @@ export const compareRoles = (
  * @returns Validation result
  */
 export const validateRole = (role: string): RoleValidationResult => {
-  if (isExtendedOrgRole(role)) {
+  if (isValidOrgRole(role)) {
     return {
       valid: true,
       role: role as ExtendedOrgRole,
@@ -537,7 +531,7 @@ export const validateRole = (role: string): RoleValidationResult => {
   }
 
   const normalized = normalizeRole(role);
-  if (normalized) {
+  if (isValidOrgRole(normalized)) {
     return {
       valid: true,
       role: normalized,
@@ -546,7 +540,7 @@ export const validateRole = (role: string): RoleValidationResult => {
 
   // Provide suggestions for similar roles
   const suggestions: ExtendedOrgRole[] = [];
-  const lowerRole = role.toLowerCase();
+  const lowerRole = (role as string).toLowerCase();
 
   if (lowerRole.includes('admin')) {
     suggestions.push('admin');
@@ -613,8 +607,8 @@ export const getEnabledFeatures = (
   }
 
   return Object.entries(ROLE_FEATURES)
-    .filter(([_key, feature]) => hasFeatureAccess(userRole, feature.key, isPlatformAdmin))
-    .map(([_key, feature]) => feature.key);
+    .filter(([, feature]) => hasFeatureAccess(userRole, feature.key, isPlatformAdmin))
+    .map(([, feature]) => feature.key);
 };
 
 /**

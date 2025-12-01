@@ -38,8 +38,6 @@ import type { IFormattedAuditEntry } from "@/services/business/audit.business.se
  * Follows clean architecture with business logic separated into services and hooks.
  */
 const AuditLogPage = (): JSX.Element => {
-  const { t } = useTranslation("admin");
-
   const {
     // Data
     groupedLogs,
@@ -66,8 +64,6 @@ const AuditLogPage = (): JSX.Element => {
     searchTerm,
     filters,
     dateRange,
-    selectedLogId,
-    isDetailsPanelOpen,
     isExporting,
 
     // UI Actions
@@ -77,7 +73,6 @@ const AuditLogPage = (): JSX.Element => {
     toggleActionFilter,
     toggleEntityFilter,
     toggleSeverityFilter,
-    clearFilters,
     setToday,
     setYesterday,
     setLast7Days,
@@ -85,7 +80,6 @@ const AuditLogPage = (): JSX.Element => {
     setThisWeek,
     setThisMonth,
     openDetails,
-    closeDetails,
     resetFilters,
 
     // Pagination Actions
@@ -93,7 +87,6 @@ const AuditLogPage = (): JSX.Element => {
     previousPage,
     goToFirstPage,
     goToLastPage,
-    setItemsPerPage,
 
     // Export
     exportToCSV,
@@ -401,7 +394,7 @@ const AuditLogPage = (): JSX.Element => {
   };
 
   return (
-    <RequireRole roles={["org-admin", "system-admin"]}>
+    <RequireRole minRole="admin">
       <SystemPageLayout
         title="Audit Logs"
         description="Security audit trail and activity monitoring"
@@ -410,7 +403,6 @@ const AuditLogPage = (): JSX.Element => {
             label: 'Export CSV',
             icon: Download,
             onClick: exportToCSV,
-            disabled: isExporting || filteredLogs.length === 0,
           },
         ]}
       >

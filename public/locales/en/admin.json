@@ -593,6 +593,87 @@
         "reports_export": "Export reports"
       },
       "users_with_role": "{{count}} users with this role"
+    },
+    "reports": {
+      "title": "Reports",
+      "subtitle": "View analytics and generate reports",
+      "report_types": {
+        "revenue": "Revenue Report",
+        "revenue_description": "Analyze revenue and financial metrics",
+        "bookings": "Bookings Report",
+        "bookings_description": "Track booking trends and patterns",
+        "utilization": "Utilization Report",
+        "utilization_description": "Monitor facility usage and efficiency",
+        "users": "User Activity Report",
+        "users_description": "Analyze user engagement and behavior"
+      },
+      "date_presets": {
+        "today": "Today",
+        "this_week": "This Week",
+        "this_month": "This Month",
+        "this_year": "This Year",
+        "last_30_days": "Last 30 Days",
+        "last_90_days": "Last 90 Days"
+      },
+      "no_date_range": "Select date range",
+      "kpi": {
+        "total_revenue": "Total Revenue",
+        "total_bookings": "Total Bookings",
+        "average_value": "Average Booking Value",
+        "growth_rate": "Growth Rate",
+        "confirmed": "Confirmed",
+        "pending": "Pending",
+        "conversion_rate": "Conversion Rate",
+        "overall_utilization": "Overall Utilization",
+        "top_facilities": "Top Facilities",
+        "underutilized": "Underutilized",
+        "total_facilities": "Total Facilities",
+        "total_users": "Total Users",
+        "active_users": "Active Users",
+        "avg_bookings_per_user": "Avg. Bookings per User",
+        "avg_spend_per_user": "Avg. Spend per User",
+        "new_users": "New Users",
+        "returning_users": "Returning Users",
+        "user_engagement": "User Engagement"
+      },
+      "description": "View analytics and generate reports",
+      "select_report_type": "Select Report Type",
+      "date_range": {
+        "title": "Date Range"
+      },
+      "hide_filters": "Hide Filters",
+      "show_filters": "Show Filters",
+      "selected_period": "Selected Period",
+      "group_by": "Group By",
+      "grouping": {
+        "day": "Day",
+        "week": "Week",
+        "month": "Month",
+        "year": "Year"
+      },
+      "chart_title": {
+        "revenue": "Revenue Trend",
+        "bookings": "Booking Trend",
+        "utilization": "Facility Utilization",
+        "users": "User Activity"
+      },
+      "chart_placeholder": "Chart visualization will be implemented here",
+      "chart_implementation_note": "Integration with charting library pending",
+      "chart_data_available": "Data available",
+      "and_more": "and {{count}} more",
+      "no_data": "No Data Available",
+      "no_data_description": "There is no data available for the selected period",
+      "facility_details": "Facility Details",
+      "table": {
+        "facility": "Facility",
+        "utilization": "Utilization",
+        "bookings": "Bookings",
+        "revenue": "Revenue"
+      },
+      "actions": {
+        "download_csv": "Download CSV",
+        "download_pdf": "Download PDF"
+      }
     }
   },
   "components": {

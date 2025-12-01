@@ -52,8 +52,7 @@ export function useStorageMigration<T>({
   defaultValue,
   userId,
   parser = JSON.parse,
-  serializer = JSON.stringify,
-}: UseStorageMigrationOptions<T>): UseStorageMigrationReturn<T> {
+  serializer = JSON.stringify}: UseStorageMigrationOptions<T>): UseStorageMigrationReturn<T> {
   const [data, setDataState] = useState<T>(defaultValue);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
@@ -158,8 +157,7 @@ export function useStorageMigration<T>({
           if (supabaseTable && supabaseColumn && userId) {
             const payload = {
               user_id: userId,
-              [supabaseColumn]: value,
-            };
+              [supabaseColumn]: value};
 
             const { error: supabaseError } = await supabase
               .from(supabaseTable)
@@ -175,8 +173,7 @@ export function useStorageMigration<T>({
           if (supabaseTable && supabaseColumn && userId) {
             const payload: Record<string, unknown> = {
               user_id: userId,
-              [supabaseColumn]: value,
-            };
+              [supabaseColumn]: value};
 
             const { error: supabaseError } = await supabase
               .from(supabaseTable)
@@ -244,8 +241,7 @@ export function useStorageMigration<T>({
 
       const payload = {
         user_id: userId,
-        [supabaseColumn]: localData,
-      };
+        [supabaseColumn]: localData};
 
       const { error: supabaseError } = await supabase
         .from(supabaseTable)
@@ -273,6 +269,5 @@ export function useStorageMigration<T>({
     phase,
     setData,
     refresh,
-    syncWithLocalStorage,
-  };
+    syncWithLocalStorage};
 }

@@ -133,25 +133,25 @@ const Bookings = (): JSX.Element => {
   const confirmDelete = useCallback(async () => {
     try {
       // Check if the bookings are already cancelled
-      const bookingsToProcess = filteredBookings.filter(booking => 
+      const bookingsToProcess = filteredBookings.filter(booking =>
         bookingsToDelete.includes(booking.id)
       );
-      
-      const alreadyCancelled = bookingsToProcess.filter(booking => 
+
+      const alreadyCancelled = bookingsToProcess.filter(booking =>
         booking.status === 'cancelled'
       );
-      
+
       if (alreadyCancelled.length > 0) {
         // If any bookings are already cancelled, permanently delete them
         await Promise.all(
           alreadyCancelled.map(booking => deleteBookingMutation.mutateAsync(booking.id))
         );
-        
+
         // Also cancel any remaining non-cancelled bookings
-        const nonCancelled = bookingsToProcess.filter(booking => 
+        const nonCancelled = bookingsToProcess.filter(booking =>
           booking.status !== 'cancelled'
         );
-        
+
         if (nonCancelled.length > 0) {
           await Promise.all(
             nonCancelled.map(booking => cancelBookingMutation.mutateAsync({ id: booking.id }))
@@ -210,18 +210,18 @@ const Bookings = (): JSX.Element => {
       if (booking.status === 'cancelled') {
         // If already cancelled, permanently delete the booking
         await deleteBookingMutation.mutateAsync(booking.id);
-        toast.success(t('booking:messages.success.deleted' as any));
+        toast.success(t('booking:messages.success.deleted'));
       } else {
         // Otherwise, cancel the booking
         await cancelBookingMutation.mutateAsync({ id: booking.id });
-        toast.success(t('booking:messages.success.cancelled' as any));
+        toast.success(t('booking:messages.success.cancelled'));
       }
       handleCloseDetails();
       refetch();
     } catch (error) {
       console.error('Cancel/delete error:', error);
       const errorMessage = error instanceof Error ? error.message : String(error);
-      toast.error(`${t('booking:messages.error.cancel_failed' as any)} ${errorMessage}`);
+      toast.error(`${t('booking:messages.error.cancel_failed')} ${errorMessage}`);
     }
   }, [cancelBookingMutation, deleteBookingMutation, handleCloseDetails, refetch, t]);
 
@@ -281,7 +281,7 @@ END:VCALENDAR`;
     setSelectedRecurringGroup(null);
   }, []);
 
-  const handleCancelRecurringGroup = useCallback(async (groupId: string) => {
+  const handleCancelRecurringGroup = useCallback(async () => {
     // TODO: Implement cancel recurring group functionality
     toast.info(t('booking:toast.recurring_coming_soon'));
     handleCloseRecurringGroupDetails();
@@ -348,7 +348,7 @@ END:VCALENDAR`;
             className="h-12"
           >
             <Plus className="w-4 h-4" />
-            {t('user:dashboard.new_booking' as any)}
+            {t('user:dashboard.new_booking')}
           </PrimaryButton>
         </div>
       </header>
@@ -359,15 +359,14 @@ END:VCALENDAR`;
           <button
             key={option.value}
             onClick={() => handleStatusChange(option.value)}
-            className={`flex items-center gap-2 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
-              filters.status === option.value
+            className={`flex items-center gap-2 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${filters.status === option.value
                 ? option.color === "green" ? "bg-green-100 text-green-800 border border-green-200 dark:bg-green-900/30 dark:text-green-200 dark:border-green-800"
-                : option.color === "yellow" ? "bg-yellow-100 text-yellow-800 border border-yellow-200 dark:bg-yellow-900/30 dark:text-yellow-200 dark:border-yellow-800"
-                : option.color === "red" ? "bg-red-100 text-red-800 border border-red-200 dark:bg-red-900/30 dark:text-red-200 dark:border-red-800"
-                : option.color === "blue" ? "bg-blue-100 text-blue-800 border border-blue-200 dark:bg-blue-900/30 dark:text-blue-200 dark:border-blue-800"
-                : "bg-gray-100 text-gray-800 border border-gray-200 dark:bg-gray-800 dark:text-gray-200 dark:border-gray-700"
+                  : option.color === "yellow" ? "bg-yellow-100 text-yellow-800 border border-yellow-200 dark:bg-yellow-900/30 dark:text-yellow-200 dark:border-yellow-800"
+                    : option.color === "red" ? "bg-red-100 text-red-800 border border-red-200 dark:bg-red-900/30 dark:text-red-200 dark:border-red-800"
+                      : option.color === "blue" ? "bg-blue-100 text-blue-800 border border-blue-200 dark:bg-blue-900/30 dark:text-blue-200 dark:border-blue-800"
+                        : "bg-gray-100 text-gray-800 border border-gray-200 dark:bg-gray-800 dark:text-gray-200 dark:border-gray-700"
                 : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-700 dark:hover:bg-gray-700"
-            }`}
+              }`}
           >
             {option.label}
             <Badge variant="secondary" className="text-xs">
@@ -415,7 +414,7 @@ END:VCALENDAR`;
                 className="flex items-center gap-2"
               >
                 <Trash2 className="h-4 w-4" />
-                {t('booking:button_labels.cancel_selected' as any)}
+                {t('booking:button_labels.cancel_selected')}
               </Button>
             </div>
           )}
@@ -487,19 +486,19 @@ END:VCALENDAR`;
                 <p className="text-sm text-gray-600 dark:text-gray-400">
                   {(() => {
                     // Check if any of the bookings to delete are already cancelled
-                    const bookingsToProcess = filteredBookings.filter(booking => 
+                    const bookingsToProcess = filteredBookings.filter(booking =>
                       bookingsToDelete.includes(booking.id)
                     );
-                    
-                    const alreadyCancelled = bookingsToProcess.filter(booking => 
+
+                    const alreadyCancelled = bookingsToProcess.filter(booking =>
                       booking.status === 'cancelled'
                     );
-                    
+
                     if (alreadyCancelled.length > 0) {
                       // Show permanent deletion message
                       return bookingsToDelete.length === 1
-                        ? t('booking:actions.delete_permanently_message_single' as any)
-                        : t('booking:actions.delete_permanently_message_multiple' as any, { count: alreadyCancelled.length });
+                        ? t('booking:actions.delete_permanently_message_single')
+                        : t('booking:actions.delete_permanently_message_multiple', { count: alreadyCancelled.length });
                     } else {
                       // Show cancellation message
                       return bookingsToDelete.length === 1
@@ -529,7 +528,7 @@ END:VCALENDAR`;
                 type="button"
               >
                 <X className="w-4 h-4" />
-                {t('booking:button_labels.cancel' as any)}
+                {t('booking:button_labels.cancel')}
               </Button>
               <Button
                 variant="destructive"
@@ -544,19 +543,19 @@ END:VCALENDAR`;
                   : (bookingsToDelete.length > 1
                     ? t('booking:delete_confirm.cancel_all')
                     : (() => {
-                        // Check if any of the bookings to delete are already cancelled
-                        const bookingsToProcess = filteredBookings.filter(booking => 
-                          bookingsToDelete.includes(booking.id)
-                        );
-                        
-                        const alreadyCancelled = bookingsToProcess.filter(booking => 
-                          booking.status === 'cancelled'
-                        );
-                        
-                        return alreadyCancelled.length > 0
-                          ? t('booking:actions.delete_permanently' as any)
-                          : t('booking:button_labels.cancel_booking' as any);
-                      })())}
+                      // Check if any of the bookings to delete are already cancelled
+                      const bookingsToProcess = filteredBookings.filter(booking =>
+                        bookingsToDelete.includes(booking.id)
+                      );
+
+                      const alreadyCancelled = bookingsToProcess.filter(booking =>
+                        booking.status === 'cancelled'
+                      );
+
+                      return alreadyCancelled.length > 0
+                        ? t('booking:actions.delete_permanently')
+                        : t('booking:button_labels.cancel_booking');
+                    })())}
               </Button>
             </div>
           </div>

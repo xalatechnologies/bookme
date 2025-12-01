@@ -3,7 +3,7 @@
 import React from "react";
 import { Navigate } from "react-router-dom";
 import { useRole } from "@/hooks/auth/useRole";
-import type { Database } from "@/types/database";
+import type { Database } from '@/types/database';
 
 type OrgRole = Database['public']['Enums']['org_role'];
 

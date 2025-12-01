@@ -13,7 +13,7 @@ interface IUserProfileDropdownProps {
 }
 
 const UserProfileDropdown = (
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   
   _props: IUserProfileDropdownProps
 ): JSX.Element => {
   const { t } = useTranslation(['common', 'navigation']);
@@ -43,7 +43,7 @@ const UserProfileDropdown = (
       toast.success(t('common:messages.logout_success'));
       navigate("/login-selection");
     } catch (
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+       
       _error: unknown
     ) {
       console.error('❌ Logout failed:', _error);

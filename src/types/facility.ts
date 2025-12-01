@@ -1,4 +1,3 @@
-import type { Database } from '@/types/database';
 
 // Original facility type from database
 export type Facility = Database['public']['Tables']['facilities']['Row'];

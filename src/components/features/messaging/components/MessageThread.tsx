@@ -97,7 +97,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
   }, [onDelete, message.id]);
 
   const handleDownloadClick = useCallback((
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+     
     _attachment: { readonly id: string; readonly name: string; readonly type: string; readonly size: number }
   ) => {
     // Create download link from attachment data
@@ -357,7 +357,7 @@ export const MessageThread: React.FC<MessageThreadProps> = ({
       setAttachments([]);
       setReplyTo(null);
     } catch (
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+       
       _error: unknown
     ) {
       // Error handling can be added here if needed
@@ -394,21 +394,21 @@ export const MessageThread: React.FC<MessageThreadProps> = ({
   };
 
   const handleForward = (
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+     
     _message: Message
   ) => {
     // TODO: Implement message forwarding functionality
   };
 
   const handleStar = (
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+     
     _messageId: string
   ) => {
     // TODO: Implement message starring functionality
   };
 
   const handleDelete = (
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+     
     _messageId: string
   ) => {
     // TODO: Implement message deletion functionality

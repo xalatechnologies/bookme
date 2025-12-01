@@ -85,7 +85,7 @@ export const CartProvider: React.FC<{ readonly children: React.ReactNode }> = ({
       storeAddItem(itemWithPricing);
 
     } catch (
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+       
       _error: unknown
     ) {
       // Error handling can be added here if needed
@@ -106,7 +106,7 @@ export const CartProvider: React.FC<{ readonly children: React.ReactNode }> = ({
         // Future: Add notification here
       }
     } catch (
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+       
       _error: unknown
     ) {
       // Error handling can be added here if needed
@@ -123,7 +123,7 @@ export const CartProvider: React.FC<{ readonly children: React.ReactNode }> = ({
     try {
       storeUpdateItem(itemId, updates);
     } catch (
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+       
       _error: unknown
     ) {
       // Error handling can be added here if needed
@@ -142,7 +142,7 @@ export const CartProvider: React.FC<{ readonly children: React.ReactNode }> = ({
         // Future: Add notification here
       }
     } catch (
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+       
       _error: unknown
     ) {
       // Error handling can be added here if needed

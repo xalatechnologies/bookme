@@ -24,7 +24,7 @@ const FacilityCardBase = (props: IFacilityCardBaseProps): JSX.Element => {
   const { t } = useTranslation(['facility']);
   const translateFacilityType = useFacilityTypeTranslation();
   const {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+     
     id: _id,
     name,
     address,

@@ -11,10 +11,6 @@ import { useUserPreferences } from '@/hooks/features/profile/useUserPreferences'
 import { useTranslation } from "react-i18next";
 import {
   User,
-  Mail,
-  Phone,
-  MapPin,
-  Calendar,
   Edit,
   Save,
   X,
@@ -32,23 +28,19 @@ import {
   UserCog,
   Key,
   History,
-  ShieldCheck,
   Settings,
-  Monitor,
   CheckCircle,
   Sun,
   Moon,
-  Monitor as MonitorIcon,
-  FileText
+  Monitor as MonitorIcon
 } from "lucide-react";
 
 const UserProfile = (): JSX.Element => {
   const { t } = useTranslation('user');
   const { profile } = useUserProfile();
-  const { preferences: userPreferences, updateTheme, isLoading } = useUserPreferences(profile.accountId);
+  const { preferences: userPreferences, updateTheme } = useUserPreferences(profile.accountId);
   const [activeTab, setActiveTab] = useState<string>("profile");
   const [editingSection, setEditingSection] = useState<string | null>(null);
-  const [localTheme, setLocalTheme] = useState<string>('system');
 
   const {
     editingProfile,
@@ -158,7 +150,7 @@ const UserProfile = (): JSX.Element => {
               <Edit className="h-4 w-4" />
             </Button>
           </div>
-          
+
           {editingSection === "personal" && isEditing ? (
             <div className="space-y-4">
               <div className="space-y-2">
@@ -258,7 +250,7 @@ const UserProfile = (): JSX.Element => {
               <Edit className="h-4 w-4" />
             </Button>
           </div>
-          
+
           {editingSection === "contact" && isEditing ? (
             <div className="space-y-4">
               <div className="space-y-2">
@@ -490,7 +482,7 @@ const UserProfile = (): JSX.Element => {
             <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-4">
               {t('pages.profile.activity_integrations')}
             </h3>
-            
+
             <div className="space-y-6">
               <div>
                 <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-33 flex items-center gap-2">
@@ -603,7 +595,6 @@ const UserProfile = (): JSX.Element => {
                         size="sm"
                         onClick={async () => {
                           setPreferences(prev => ({ ...prev, theme: theme.value }));
-                          setLocalTheme(theme.value);
                           // Also update theme in the database
                           if (profile.accountId) {
                             await updateTheme(theme.value as 'light' | 'dark' | 'system');
@@ -811,11 +802,10 @@ const UserProfile = (): JSX.Element => {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center space-x-2 py-3 px-1 border-b-4 font-medium text-sm transition-colors ${
-                  activeTab === tab.id
-                    ? "border-blue-500 text-blue-600 dark:text-blue-400 font-semibold"
-                    : "border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-100/50 dark:text-gray-400 dark:hover:text-gray-300 dark:hover:bg-gray-800/50"
-                }`}
+                className={`flex items-center space-x-2 py-3 px-1 border-b-4 font-medium text-sm transition-colors ${activeTab === tab.id
+                  ? "border-blue-500 text-blue-600 dark:text-blue-400 font-semibold"
+                  : "border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-100/50 dark:text-gray-400 dark:hover:text-gray-300 dark:hover:bg-gray-800/50"
+                  }`}
               >
                 <Icon className="h-4 w-4" />
                 <span>{tab.label}</span>

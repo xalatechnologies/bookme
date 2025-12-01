@@ -76,8 +76,11 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({
 
   const finalVariant = variant || config.variant;
   const Icon = config.icon;
+  // Type assertion to allow dynamic translation keys
   const label: string = translationKey
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ? String(t(translationKey as any))
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     : String(t(`status.${status.toLowerCase()}` as any, status));
 
   return (

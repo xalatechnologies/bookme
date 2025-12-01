@@ -7,12 +7,12 @@
  * @module types/rbac
  */
 
-import type { Database } from './database';
+
 import type {
   OrgRole,
   PlatformRole,
   ExtendedOrgRole,
-  SystemRole,
+
 } from '@/constants/roles';
 
 /**

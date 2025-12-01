@@ -19,7 +19,7 @@ export const formatTimeSlot = (
     const date = format(dateObj, "dd. MMM", { locale });
     const time = slot.timeSlot.split('-')[0];
     return `${date} ${time}`;
-  } catch (error) {
+  } catch {
     return invalidDateLabel;
   }
 };

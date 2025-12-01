@@ -147,7 +147,7 @@ const CreateThreadModal: React.FC<CreateThreadModalProps> = ({
       setAttachments([]);
 
       onClose();
-    } catch (_error) {
+    } catch {
       toast.error("Feil ved opprettelse av meldingstråd");
     } finally {
       setIsLoading(false);
@@ -162,7 +162,7 @@ const CreateThreadModal: React.FC<CreateThreadModalProps> = ({
         const result = reader.result as string;
         resolve(result.split(',')[1]); // Remove data:type;base64, prefix
       };
-      reader.onerror = error => reject(error);
+      reader.onerror = () => { reject(new Error("Failed to read file")); };
     });
   };
 

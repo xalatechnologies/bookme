@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { X } from "lucide-react";
+
 import { useTranslation } from "react-i18next";
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
@@ -80,7 +80,6 @@ export const BaseModal: React.FC<BaseModalProps> = ({
   children,
   actions,
   size = 'md',
-  showCloseButton = true,
   closeOnOverlayClick = true,
   className,
   titleIcon

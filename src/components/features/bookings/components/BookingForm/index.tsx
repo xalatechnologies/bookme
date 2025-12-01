@@ -56,11 +56,11 @@ export interface IBookingFormProps {
 }
 
 export const BookingForm: React.FC<IBookingFormProps> = ({
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   
   facilityId: _facilityId,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   
   facilityName: _facilityName,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   
   zoneId: _zoneId,
   selectedSlots,
   onSlotsChange,

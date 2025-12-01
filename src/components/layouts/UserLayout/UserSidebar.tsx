@@ -36,7 +36,7 @@ interface IUserSidebarProps {
 }
 
 const UserSidebar = (
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   
   _props: IUserSidebarProps
 ): JSX.Element => {
   const { isCollapsed, toggleCollapse } = useSidebar();
@@ -101,6 +101,7 @@ const UserSidebar = (
             {/* Group Title */}
             {!isCollapsed && (
               <h3 className="px-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                 {t(group.titleKey as any)}
               </h3>
             )}
@@ -119,7 +120,12 @@ const UserSidebar = (
                         ? "bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 shadow-sm"
                         : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white"
                     }`}
-                    title={isCollapsed ? t(item.labelKey as any) : undefined}
+                    title={
+                      isCollapsed 
+                        ? /* eslint-disable-next-line @typescript-eslint/no-explicit-any */ 
+                          t(item.labelKey as any) 
+                        : undefined
+                    }
                   >
                     {/* Active Indicator */}
                     <div className={`absolute left-0 top-1/2 transform -translate-y-1/2 w-1 h-6 rounded-r-full transition-all duration-200 ${
@@ -133,7 +139,10 @@ const UserSidebar = (
 
                     {/* Label */}
                     {!isCollapsed && (
-                      <span className="whitespace-nowrap">{t(item.labelKey as any)}</span>
+                      <span className="whitespace-nowrap">
+                        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                        {t(item.labelKey as any)}
+                      </span>
                     )}
                   </NavLink>
                 );

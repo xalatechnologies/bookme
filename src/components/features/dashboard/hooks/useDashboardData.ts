@@ -35,7 +35,7 @@ interface IUseDashboardDataReturn {
  * @returns Dashboard data, loading state, error state, and refetch function
  */
 export const useDashboardData = (
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   
   _role: 'admin' | 'user'
 ): IUseDashboardDataReturn => {
   const [data, setData] = useState<IDashboardData | null>(null);

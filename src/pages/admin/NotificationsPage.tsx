@@ -15,7 +15,6 @@ import {
   CheckCheck,
   Trash2,
   AlertCircle,
-  Info,
   Mail,
   Calendar,
   CreditCard,
@@ -231,7 +230,7 @@ const NotificationsPage = (): JSX.Element => {
 
   if (error) {
     return (
-      <RequireRole roles={["org-admin", "system-admin"]}>
+      <RequireRole minRole="admin">
         <SystemPageLayout
           title="Notifications"
           description="Manage your notifications"
@@ -253,7 +252,7 @@ const NotificationsPage = (): JSX.Element => {
   }
 
   return (
-    <RequireRole roles={["org-admin", "system-admin"]}>
+    <RequireRole minRole="admin">
       <SystemPageLayout
         title="Notifications"
         description="View and manage your notifications"
@@ -263,7 +262,6 @@ const NotificationsPage = (): JSX.Element => {
           label: "Mark all as read",
           icon: CheckCheck,
           onClick: handleMarkAllAsRead,
-          disabled: unreadCount === 0,
         }}
       >
         {/* Statistics Cards */}

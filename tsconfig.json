@@ -41,6 +41,6 @@
     "types": ["react", "react-dom", "node"],
     "typeRoots": ["./node_modules/@types", "./src/types"]
   },
-  "include": ["src/**/*", "src/types.d.ts"],
+  "include": ["src/**/*", "src/types.d.ts", "tests/**/*"],
   "exclude": ["node_modules", "src/**/*.test.js", "src/**/*.test.ts", "src/**/*.spec.js", "src/**/*.spec.ts"]
 }

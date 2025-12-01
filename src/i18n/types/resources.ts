@@ -8,31 +8,18 @@
  */
 
 // Import translation JSON files for type inference
-import type commonEN from '../../../public/locales/en/common.json';
 import type commonNO from '../../../public/locales/no/common.json';
-import type rbacEN from '../../../public/locales/en/rbac.json';
 import type rbacNO from '../../../public/locales/no/rbac.json';
-import type formsEN from '../../../public/locales/en/forms.json';
 import type formsNO from '../../../public/locales/no/forms.json';
-import type errorsEN from '../../../public/locales/en/errors.json';
 import type errorsNO from '../../../public/locales/no/errors.json';
-import type validationEN from '../../../public/locales/en/validation.json';
 import type validationNO from '../../../public/locales/no/validation.json';
-import type bookingEN from '../../../public/locales/en/booking.json';
 import type bookingNO from '../../../public/locales/no/booking.json';
-import type bookingsEN from '../../../public/locales/en/bookings.json';
 import type bookingsNO from '../../../public/locales/no/bookings.json';
-import type facilityEN from '../../../public/locales/en/facility.json';
 import type facilityNO from '../../../public/locales/no/facility.json';
-import type calendarEN from '../../../public/locales/en/calendar.json';
 import type calendarNO from '../../../public/locales/no/calendar.json';
-import type adminEN from '../../../public/locales/en/admin.json';
 import type adminNO from '../../../public/locales/no/admin.json';
-import type checkoutEN from '../../../public/locales/en/checkout.json';
 import type checkoutNO from '../../../public/locales/no/checkout.json';
-import type userEN from '../../../public/locales/en/user.json';
 import type userNO from '../../../public/locales/no/user.json';
-import type navigationEN from '../../../public/locales/en/navigation.json';
 import type navigationNO from '../../../public/locales/no/navigation.json';
 
 /**
@@ -99,7 +86,7 @@ export interface Resources {
 /**
  * Simplified type for translation keys to avoid deep instantiation issues
  */
-export type TranslationKey<NS extends Namespaces = DefaultNamespace> = string;
+export type TranslationKey<T extends Namespaces = DefaultNamespace> = string;
 
 /**
  * Translation function parameters
@@ -160,10 +147,10 @@ export const isTranslationKey = <NS extends Namespaces>(
  * ExtractInterpolations<'Hello {{name}}, you have {{count}} messages'> = { name: string; count: number }
  */
 export type ExtractInterpolations<T extends string> = string extends T
-  ? Record<string, any>
+  ? Record<string, unknown>
   : T extends `${string}{{${infer Param}}}${infer Rest}`
   ? { [K in Param]: string | number } & ExtractInterpolations<Rest>
-  : {};
+  : Record<string, never>;
 
 /**
  * Type-safe translation function signature
@@ -174,7 +161,7 @@ export type TypedTranslationFunction = {
     options?: TranslationOptions & TranslationParams
   ): string;
 
-  <NS extends Namespaces = DefaultNamespace>(
+  <T extends Namespaces = DefaultNamespace>(
     key: string,
     defaultValue: string,
     options?: TranslationOptions & TranslationParams

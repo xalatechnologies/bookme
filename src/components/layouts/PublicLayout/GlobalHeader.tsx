@@ -7,7 +7,7 @@ import { Menu, ShoppingCart } from "lucide-react";
 
 import { useLanguage } from "@/contexts/hooks";
 import { useCart } from "@/contexts/hooks";
-import { useUserProfile } from "@/contexts/hooks";
+
 import { useAuth } from "@/contexts/hooks";
 
 import { Button } from "@/components/ui/button";
@@ -33,20 +33,16 @@ export const GlobalHeader = (): JSX.Element => {
   const { language, toggleLanguage } = useLanguage();
 
   // Get auth state from AuthContext
-  const { user, memberships, signOut } = useAuth();
+  const { user, signOut } = useAuth();
 
   // Get cart data
   const { itemCount } = useCart();
-  const { profile } = useUserProfile();
+
 
   // Use actual auth state instead of route-based detection
   const isAuthenticated = !!user;
-  
-  // Check if user has admin role in any organization
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const _isAdmin = memberships.some(membership => 
-    membership.role === 'admin' || membership.role === 'owner'
-  );
+
+
 
   // Store the user's last portal when they navigate to admin or user areas
   useEffect(() => {

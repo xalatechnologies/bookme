@@ -161,7 +161,7 @@ export const useAdminSearch = (): UseAdminSearchReturn => {
 
   // Handle result click
   const handleResultClick = useCallback((
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+     
     _result: AdminSearchResult
   ): void => {
     // In a real app, this would navigate to the result page

@@ -82,7 +82,7 @@ export const useCalendarEnhancements = (): CalendarEnhancementsState & CalendarE
   }, []);
 
   const handleEventClick = useCallback((
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+     
     _event: IBookingEvent
   ): void => {
     // This will be handled by the parent component
@@ -111,7 +111,7 @@ export const useCalendarEnhancements = (): CalendarEnhancementsState & CalendarE
       await new Promise(resolve => setTimeout(resolve, 1000));
       setLastRefresh(new Date());
     } catch (
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+       
       _error: unknown
     ) {
       // Error handling can be added here if needed

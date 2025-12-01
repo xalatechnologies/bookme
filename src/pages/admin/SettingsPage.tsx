@@ -26,10 +26,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
+
 import { useSettingsManagement } from "@/hooks/features/settings/useSettingsManagement";
-import { avatarService } from "@/services/supabase/avatar.service";
 import { useAuth } from "@/contexts/hooks";
 import { useAdminProfileManagement } from "@/hooks/features/profile/useAdminProfileManagement";
 import { useUserPreferences } from "@/hooks/features/profile/useUserPreferences";
@@ -38,35 +36,30 @@ import type { Theme } from "@/services/supabase/preferences.service";
 // Settings tab type (moved from settingsUIStore)
 type TSettingsTab = 'profile' | 'notifications' | 'email' | 'payment' | 'organization' | 'security';
 
-interface ISettingsPageProps {
-  readonly children?: never;
-}
 
-const SettingsPage = (_props: ISettingsPageProps): JSX.Element => {
+
+const SettingsPage = (): JSX.Element => {
   const { t } = useTranslation('admin');
   const [showSmtpPassword, setShowSmtpPassword] = React.useState(false);
   const [showPaymentKeys, setShowPaymentKeys] = React.useState(false);
   const [activeTab, setActiveTab] = useState<TSettingsTab>('profile');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { user, memberships } = useAuth();
-  
+
   // Use the user preferences hook
   const {
     preferences,
     isLoading: preferencesLoading,
-    error: preferencesError,
     updateLanguage,
     updateTheme,
-    updateNotifications,
   } = useUserPreferences(user?.id);
-  
+
   // Use the new admin profile management hook
   const {
     profileForm,
     isEditingPersonalInfo,
     isEditingSecurity,
     avatarPreview,
-    toast,
     handleInputChange,
     handleAvatarUpload,
     handleSavePersonalInfo,
@@ -90,7 +83,6 @@ const SettingsPage = (_props: ISettingsPageProps): JSX.Element => {
   const {
     settings,
     isLoading,
-    error,
     unsavedChanges,
     isSaving,
     saveSuccess,
@@ -99,7 +91,6 @@ const SettingsPage = (_props: ISettingsPageProps): JSX.Element => {
     availableTimezones,
     availableCurrencies,
     availableLanguages,
-    setActiveTab: _setActiveTab,
     updateSettings,
     saveSettings,
     discardChanges,
@@ -202,7 +193,7 @@ const SettingsPage = (_props: ISettingsPageProps): JSX.Element => {
                 <Select
                   value={settings.general.language}
                   onValueChange={(value) =>
-                    updateSettings("general", { language: value })
+                    updateSettings("general", { language: value as 'no' | 'en' })
                   }
                 >
                   <SelectTrigger id="language">
@@ -223,7 +214,7 @@ const SettingsPage = (_props: ISettingsPageProps): JSX.Element => {
                 <Select
                   value={settings.general.dateFormat}
                   onValueChange={(value) =>
-                    updateSettings("general", { dateFormat: value })
+                    updateSettings("general", { dateFormat: value as 'dd.mm.yyyy' | 'mm/dd/yyyy' | 'yyyy-mm-dd' })
                   }
                 >
                   <SelectTrigger id="dateFormat">
@@ -242,7 +233,7 @@ const SettingsPage = (_props: ISettingsPageProps): JSX.Element => {
                 <Select
                   value={settings.general.timeFormat}
                   onValueChange={(value) =>
-                    updateSettings("general", { timeFormat: value })
+                    updateSettings("general", { timeFormat: value as '12h' | '24h' })
                   }
                 >
                   <SelectTrigger id="timeFormat">
@@ -942,7 +933,7 @@ const SettingsPage = (_props: ISettingsPageProps): JSX.Element => {
           <Card>
             <CardContent className="p-6 flex flex-col justify-center h-full">
               <div className="flex flex-col items-center text-center">
-                <div 
+                <div
                   className="relative group mb-4 cursor-pointer"
                   onClick={() => fileInputRef.current?.click()}
                 >
@@ -971,12 +962,12 @@ const SettingsPage = (_props: ISettingsPageProps): JSX.Element => {
                   />
                 </div>
                 <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
-                  {profileForm.firstName && profileForm.lastName 
-                    ? `${profileForm.firstName} ${profileForm.lastName}` 
+                  {profileForm.firstName && profileForm.lastName
+                    ? `${profileForm.firstName} ${profileForm.lastName}`
                     : user?.email || "Admin User"}
                 </h3>
                 <p className="text-gray-600 dark:text-gray-400 text-base">
-                  {memberships.length > 0 
+                  {memberships.length > 0
                     ? memberships[0].role.charAt(0).toUpperCase() + memberships[0].role.slice(1)
                     : "User"}
                 </p>
@@ -1018,9 +1009,9 @@ const SettingsPage = (_props: ISettingsPageProps): JSX.Element => {
                     <Label htmlFor="firstName">
                       {t('pages.settings.profile.personal_info.fields.first_name')}
                     </Label>
-                    <Input 
-                      id="firstName" 
-                      placeholder="First Name" 
+                    <Input
+                      id="firstName"
+                      placeholder="First Name"
                       value={profileForm.firstName}
                       onChange={(e) => handleInputChange("firstName", e.target.value)}
                       disabled={!isEditingPersonalInfo}
@@ -1030,58 +1021,58 @@ const SettingsPage = (_props: ISettingsPageProps): JSX.Element => {
                     <Label htmlFor="lastName">
                       {t('pages.settings.profile.personal_info.fields.last_name')}
                     </Label>
-                    <Input 
-                      id="lastName" 
-                      placeholder="Last Name" 
+                    <Input
+                      id="lastName"
+                      placeholder="Last Name"
                       value={profileForm.lastName}
                       onChange={(e) => handleInputChange("lastName", e.target.value)}
                       disabled={!isEditingPersonalInfo}
                     />
                   </div>
                 </div>
-                
+
                 <div>
                   <Label htmlFor="email">
                     {t('pages.settings.profile.personal_info.fields.email')}
                   </Label>
-                  <Input 
-                    id="email" 
-                    type="email" 
-                    placeholder="email@example.com" 
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="email@example.com"
                     value={profileForm.email}
                     onChange={(e) => handleInputChange("email", e.target.value)}
                     disabled
                   />
                 </div>
-                
+
                 <div>
                   <Label htmlFor="phone">
                     {t('pages.settings.profile.personal_info.fields.phone')}
                   </Label>
-                  <Input 
-                    id="phone" 
-                    type="tel" 
-                    placeholder="+47 123 45 678" 
+                  <Input
+                    id="phone"
+                    type="tel"
+                    placeholder="+47 123 45 678"
                     value={profileForm.phone}
                     onChange={(e) => handleInputChange("phone", e.target.value)}
                     disabled={!isEditingPersonalInfo}
                   />
                 </div>
-                
+
                 <div>
                   <Label htmlFor="address">
                     {t('pages.settings.profile.personal_info.fields.address')}
                   </Label>
-                  <Input 
-                    id="address" 
-                    type="text" 
-                    placeholder="Address" 
+                  <Input
+                    id="address"
+                    type="text"
+                    placeholder="Address"
                     value={profileForm.address}
                     onChange={(e) => handleInputChange("address", e.target.value)}
                     disabled={!isEditingPersonalInfo}
                   />
                 </div>
-                
+
                 {isEditingPersonalInfo && (
                   <div className="flex justify-end gap-2 pt-4">
                     <Button variant="outline" onClick={handleCancelPersonalInfo}>
@@ -1118,8 +1109,8 @@ const SettingsPage = (_props: ISettingsPageProps): JSX.Element => {
                       <Label htmlFor="language">
                         {t('pages.settings.profile.preferences.language_label')}
                       </Label>
-                      <Select 
-                        value={preferences?.language === 'NO' ? 'nb-NO' : 'en-US'} 
+                      <Select
+                        value={preferences?.language === 'NO' ? 'nb-NO' : 'en-US'}
                         onValueChange={(value) => updateLanguage(value === 'nb-NO' ? 'NO' : 'EN')}
                         disabled={preferencesLoading}
                       >
@@ -1136,8 +1127,8 @@ const SettingsPage = (_props: ISettingsPageProps): JSX.Element => {
                       <Label htmlFor="theme">
                         {t('pages.settings.profile.preferences.theme_label')}
                       </Label>
-                      <Select 
-                        value={preferences?.theme || 'system'} 
+                      <Select
+                        value={preferences?.theme || 'system'}
                         onValueChange={(value) => updateTheme(value as Theme)}
                         disabled={preferencesLoading}
                       >
@@ -1170,8 +1161,8 @@ const SettingsPage = (_props: ISettingsPageProps): JSX.Element => {
                       <Label htmlFor="timezone">
                         {t('pages.settings.general.timezone_label')}
                       </Label>
-                      <Select 
-                        value={settings?.general.timezone || 'Europe/Oslo'} 
+                      <Select
+                        value={settings?.general.timezone || 'Europe/Oslo'}
                         onValueChange={(value) => updateSettings("general", { timezone: value })}
                         disabled={isLoading}
                       >
@@ -1194,14 +1185,14 @@ const SettingsPage = (_props: ISettingsPageProps): JSX.Element => {
                         </SelectContent>
                       </Select>
                     </div>
-                    
+
                     <div>
                       <Label htmlFor="dateFormat">
                         {t('pages.settings.general.date_format_label')}
                       </Label>
-                      <Select 
-                        value={settings?.general.dateFormat || 'dd.mm.yyyy'} 
-                        onValueChange={(value) => updateSettings("general", { dateFormat: value })}
+                      <Select
+                        value={settings?.general.dateFormat || 'dd.mm.yyyy'}
+                        onValueChange={(value) => updateSettings("general", { dateFormat: value as 'dd.mm.yyyy' | 'yyyy-mm-dd' | 'mm/dd/yyyy' })}
                         disabled={isLoading}
                       >
                         <SelectTrigger id="dateFormat">
@@ -1220,14 +1211,14 @@ const SettingsPage = (_props: ISettingsPageProps): JSX.Element => {
                         </SelectContent>
                       </Select>
                     </div>
-                    
+
                     <div>
                       <Label htmlFor="landingPage">
                         {t('pages.settings.profile.preferences.landing_page_label')}
                       </Label>
-                      <Select 
-                        value={settings?.general.landingPage || 'dashboard'} 
-                        onValueChange={(value) => updateSettings("general", { landingPage: value })}
+                      <Select
+                        value={settings?.general.landingPage || 'dashboard'}
+                        onValueChange={(value) => updateSettings("general", { landingPage: value as 'dashboard' | 'bookings' | 'messages' })}
                         disabled={isLoading}
                       >
                         <SelectTrigger id="landingPage">
@@ -1246,14 +1237,14 @@ const SettingsPage = (_props: ISettingsPageProps): JSX.Element => {
                         </SelectContent>
                       </Select>
                     </div>
-                    
+
                     <div>
                       <Label htmlFor="calendarView">
                         {t('pages.settings.profile.preferences.calendar_view_label')}
                       </Label>
-                      <Select 
-                        value={settings?.general.calendarView || 'month'} 
-                        onValueChange={(value) => updateSettings("general", { calendarView: value })}
+                      <Select
+                        value={settings?.general.calendarView || 'month'}
+                        onValueChange={(value) => updateSettings("general", { calendarView: value as 'month' | 'week' | 'day' })}
                         disabled={isLoading}
                       >
                         <SelectTrigger id="calendarView">
@@ -1362,11 +1353,10 @@ const SettingsPage = (_props: ISettingsPageProps): JSX.Element => {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center space-x-2 py-3 px-1 border-b-4 font-medium text-sm transition-colors ${
-                  activeTab === tab.id
-                    ? "border-blue-500 text-blue-600 dark:text-blue-400 font-semibold"
-                    : "border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-100/50 dark:text-gray-400 dark:hover:text-gray-300 dark:hover:bg-gray-800/50"
-                }`}
+                className={`flex items-center space-x-2 py-3 px-1 border-b-4 font-medium text-sm transition-colors ${activeTab === tab.id
+                  ? "border-blue-500 text-blue-600 dark:text-blue-400 font-semibold"
+                  : "border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-100/50 dark:text-gray-400 dark:hover:text-gray-300 dark:hover:bg-gray-800/50"
+                  }`}
               >
                 <Icon className="h-4 w-4" />
                 <span>{tab.label}</span>
@@ -1382,7 +1372,7 @@ const SettingsPage = (_props: ISettingsPageProps): JSX.Element => {
         {activeTab === "notifications" && renderNotificationSettings()}
         {activeTab === "email" && renderEmailSettings()}
         {activeTab === "payment" && renderPaymentSettings()}
-        {activeTab === "organization" && <div>Organization settings coming soon</div>}
+        {activeTab === "organization" && renderGeneralSettings()}
         {activeTab === "security" && renderSecuritySettings()}
       </div>
     </div>

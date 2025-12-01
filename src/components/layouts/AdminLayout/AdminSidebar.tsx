@@ -37,7 +37,7 @@ interface IAdminSidebarProps {
 }
 
 const AdminSidebar = (
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   
   _props: IAdminSidebarProps
 ): JSX.Element => {
   const { isCollapsed, toggleCollapse } = useSidebar();

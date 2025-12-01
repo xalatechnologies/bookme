@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { LocalizedSelect } from "@/components/common/LocalizedSelect";
-import { 
+import {
   Search,
   Filter,
   Calendar,
@@ -27,11 +27,10 @@ import {
 import { useOrgBookings, useUpdateBooking } from "@/services/supabase/bookings.service";
 import { useOrganizationId } from "@/hooks/useOrganizationId";
 import { useAuth } from "@/contexts/hooks";
-import type { LocalStorageBooking, TimeSlot as LocalStorageTimeSlot } from "@/types/localStorage";
+import type { TimeSlot as LocalStorageTimeSlot } from "@/types/localStorage";
 import type { RawBookingData } from "@/types/bookingsPage";
 import type { Database } from "@/types/database";
 
-type Booking = Database["public"]["Tables"]["bookings"]["Row"];
 type BookingUpdate = Database["public"]["Tables"]["bookings"]["Update"];
 
 interface IBooking {
@@ -139,11 +138,9 @@ const BookingKPICard = ({
 
   return (
     <Card
-      className={`${
-        colorClasses[color]
-      } border transition-all duration-200 cursor-pointer hover:shadow-md hover:scale-105 ${
-        onClick ? "hover:shadow-lg" : ""
-      }`}
+      className={`${colorClasses[color]
+        } border transition-all duration-200 cursor-pointer hover:shadow-md hover:scale-105 ${onClick ? "hover:shadow-lg" : ""
+        }`}
       onClick={onClick}
     >
       <CardContent className="p-4">
@@ -154,9 +151,8 @@ const BookingKPICard = ({
             <p className="text-xs opacity-70 mt-1">{subtext}</p>
             {trend && (
               <p
-                className={`text-xs ${
-                  trend.isPositive ? "text-green-600" : "text-red-600"
-                } mt-1`}
+                className={`text-xs ${trend.isPositive ? "text-green-600" : "text-red-600"
+                  } mt-1`}
               >
                 {trend.isPositive ? "+" : ""}
                 {trend.value}% {t("pages.dashboard.trends.since_yesterday")}
@@ -373,17 +369,15 @@ const BookingRow = ({
       </div>
 
       <Card
-        className={`relative cursor-pointer flex-1 transition-all duration-200 shadow-sm hover:shadow-md ${
-          isSelected
-            ? "bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800"
-            : `bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 ${getStatusBorderColor(
-                booking.status
-              )}`
-        } ${
-          booking.status === "pending"
+        className={`relative cursor-pointer flex-1 transition-all duration-200 shadow-sm hover:shadow-md ${isSelected
+          ? "bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800"
+          : `bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 ${getStatusBorderColor(
+            booking.status
+          )}`
+          } ${booking.status === "pending"
             ? "bg-yellow-50/30 dark:bg-yellow-900/5"
             : ""
-        }`}
+          }`}
         onClick={() => onViewDetails(booking.id)}
       >
         <div
@@ -486,14 +480,9 @@ const BookingDetailModal = ({
   onDelete,
   groupedRecurring, // Add this prop
 }: IBookingDetailModalProps): JSX.Element => {
-  const { t } = useTranslation("admin");
   if (!isOpen || !booking) return <></>;
 
-  const formatDateTime = (_date: string, _time: string): string => {
-    const dateObj = new Date(_date);
-    const formattedDate = dateObj.toLocaleDateString("nb-NO");
-    return `${formattedDate} kl. ${_time}`;
-  };
+
 
   // Try to locate all occurrences from the grouped recurring bookings if this booking is part of a recurring series
   const occurrences: {
@@ -509,7 +498,7 @@ const BookingDetailModal = ({
 
       // Find the group this booking belongs to
       let groupItems: IBooking[] | undefined;
-      for (const [groupId, items] of groupedRecurring.entries()) {
+      for (const [, items] of groupedRecurring.entries()) {
         if (items.some((item: IBooking) => item.id === booking.id)) {
           groupItems = items;
           break;
@@ -555,8 +544,7 @@ const BookingDetailModal = ({
         const bParent = b.parentBookingId;
         const bKey =
           bParent ||
-          `${b.facility || b.facilityName || ''}|${
-            b.purpose || b.description || ''
+          `${b.facility || b.facilityName || ''}|${b.purpose || b.description || ''
           }|${(() => {
             if (b.time) return b.time;
             if (b.startTime && b.endTime) return `${b.startTime}-${b.endTime}`;
@@ -585,17 +573,17 @@ const BookingDetailModal = ({
               (b.startTime && b.endTime
                 ? `${b.startTime}-${b.endTime}`
                 : (b.timeSlots && b.timeSlots[0]?.timeSlot) ||
-                  `${booking.startTime}-${booking.endTime}`);
+                `${booking.startTime}-${booking.endTime}`);
             const priceText: string = (b.price || "0 kr") as string;
             // Duration may be a string like "1 timer"
             const durationHours: number =
               typeof b.duration === "string"
                 ? parseFloat(
-                    b.duration.replace(/[^0-9.,]/g, "").replace(",", ".")
-                  ) || 1
+                  b.duration.replace(/[^0-9.,]/g, "").replace(",", ".")
+                ) || 1
                 : b.duration
-                ? b.duration / 60
-                : 1;
+                  ? b.duration / 60
+                  : 1;
             return { date, time, durationHours, priceText };
           })
           .sort(
@@ -617,23 +605,19 @@ const BookingDetailModal = ({
     });
   };
 
-  // Format date and time for display
-  const formatBookingDateTime = (dateString: string, timeString: string): string => {
-    const date = new Date(dateString);
-    return `${date.toLocaleDateString('nb-NO')} kl. ${timeString}`;
-  };
+
 
   // Generate human-readable title
   const generateTitle = (): string => {
     if (booking.isRecurring && occurrences.length > 1) {
       return `Seriebooking: ${booking.purpose} (${occurrences.length} forekomster)`;
     }
-    
+
     // Try to use purpose if it's meaningful
     if (booking.purpose && booking.purpose !== 'Booking') {
       return `${booking.purpose} i ${booking.facility}`;
     }
-    
+
     // Fallback to facility + date
     return `${booking.facility} – ${formatDate(booking.startDate)}`;
   };
@@ -698,7 +682,7 @@ const BookingDetailModal = ({
                     )} – ${new Date(dates[dates.length - 1]).toLocaleDateString(
                       "nb-NO"
                     )}`;
-                    
+
                     return (
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div>
@@ -847,7 +831,7 @@ const BookingDetailModal = ({
                   {booking.processedBy && booking.processedAt && (
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-600 dark:text-gray-400">
-                      Behandlet av:
+                        Behandlet av:
                       </span>
                       <span className="text-gray-900 dark:text-white font-medium">
                         {booking.processedBy}
@@ -934,29 +918,29 @@ const BookingsPage = (): JSX.Element => {
 
   // Get organization ID
   const orgId = useOrganizationId();
-  
+
   // Supabase hooks
   const { data: supabaseBookings = [], isLoading, error } = useOrgBookings(orgId);
   const updateBookingMutation = useUpdateBooking();
-  
+
   // Transform Supabase bookings to IBooking format
   const transformBookings = useCallback((): IBooking[] => {
     if (isLoading || error) return [];
-    
+
     return supabaseBookings.map((booking) => {
       // Extract date and time information
       const startDate = new Date(booking.starts_at);
       const endDate = new Date(booking.ends_at);
-      
+
       // Format time as HH:MM
       const formatTime = (date: Date): string => {
         return date.toTimeString().slice(0, 5);
       };
-      
+
       // Calculate duration in hours
       const durationMs = endDate.getTime() - startDate.getTime();
       const durationHours = durationMs / (1000 * 60 * 60);
-      
+
       // Map Supabase status to IBooking status
       let status: "pending" | "approved" | "rejected" | "cancelled" = "pending";
       if (booking.status === "paid" || booking.status === "completed") {
@@ -969,7 +953,7 @@ const BookingsPage = (): JSX.Element => {
       } else {
         status = "pending";
       }
-      
+
       return {
         id: booking.id,
         title: booking.facility?.name || 'Unknown Facility',
@@ -1075,44 +1059,20 @@ const BookingsPage = (): JSX.Element => {
       (b) =>
         b.status === "approved" &&
         new Date(b.processedAt || b.requestedAt || "").toDateString() ===
-          new Date().toDateString()
+        new Date().toDateString()
     ).length;
     const rejectedToday = bookings.filter(
       (b) =>
         b.status === "rejected" &&
         new Date(b.processedAt || b.requestedAt || "").toDateString() ===
-          new Date().toDateString()
+        new Date().toDateString()
     ).length;
 
     return { total, pending, approvedToday, rejectedToday };
   }, [bookings]);
 
   // Utilities for grouping/series detection used in approve/reject
-  const getGroupKeyFromIBooking = (b: IBooking): string => {
-    const timeKey = `${b.startTime}-${b.endTime}`;
-    return `${b.facility}|${b.purpose}|${timeKey}`;
-  };
 
-  const getGroupKeyFromRaw = (b: RawBookingData): string => {
-    const baseFacility = b.facility || b.facilityName;
-    const basePurpose = b.purpose || b.description;
-    let timeKey: string;
-    if (b.time) {
-      timeKey = b.time;
-    } else if (b.startTime && b.endTime) {
-      timeKey = `${b.startTime}-${b.endTime}`;
-    } else if (b.timeSlots && b.timeSlots.length > 0) {
-      const sorted = [...b.timeSlots].sort((a: LocalStorageTimeSlot, c: LocalStorageTimeSlot) =>
-        a.timeSlot.localeCompare(c.timeSlot)
-      );
-      const s = sorted[0].timeSlot.split("-")[0];
-      const e = sorted[sorted.length - 1].timeSlot.split("-")[1];
-      timeKey = `${s}-${e}`;
-    } else {
-      timeKey = "unknown";
-    }
-    return `${baseFacility}|${basePurpose}|${timeKey}`;
-  };
 
   const handleApprove = useCallback(
     (id: string): void => {
@@ -1135,7 +1095,7 @@ const BookingsPage = (): JSX.Element => {
             } as BookingUpdate,
           }
         );
-        
+
         // Close modal immediately
         setIsDetailModalOpen(false);
         setSelectedBooking(null);
@@ -1167,7 +1127,7 @@ const BookingsPage = (): JSX.Element => {
             } as BookingUpdate,
           }
         );
-        
+
         // Close modal immediately
         setIsDetailModalOpen(false);
         setSelectedBooking(null);
@@ -1186,8 +1146,8 @@ const BookingsPage = (): JSX.Element => {
     }
   };
 
-  // eslint-disableine @typescript-eslint/no-unused-vars
-  const handleDelete = (id: string): void => {
+   
+  const handleDelete = (_id: string): void => {
     // TODO: Implement deletion logic
   };
 
@@ -1320,11 +1280,10 @@ const BookingsPage = (): JSX.Element => {
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`px-3 py-2 text-sm font-medium rounded-md transition-colors ${
-                      activeTab === tab.id
-                        ? "bg-white dark:bg-gray-800 text-gray-900 dark:text-white shadow-sm"
-                        : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
-                    }`}
+                    className={`px-3 py-2 text-sm font-medium rounded-md transition-colors ${activeTab === tab.id
+                      ? "bg-white dark:bg-gray-800 text-gray-900 dark:text-white shadow-sm"
+                      : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                      }`}
                   >
                     {tab.label} ({tab.count})
                   </button>
@@ -1739,17 +1698,15 @@ const BookingsPage = (): JSX.Element => {
               ].map((workflow, index) => (
                 <div
                   key={index}
-                  className={`flex items-center justify-between p-4 border rounded-lg transition-all duration-200 cursor-pointer hover:shadow-md ${
-                    workflow.isActive
-                      ? "border-gray-200 dark:border-gray-700 hover:border-green-300 dark:hover:border-green-600"
-                      : "border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50"
-                  }`}
+                  className={`flex items-center justify-between p-4 border rounded-lg transition-all duration-200 cursor-pointer hover:shadow-md ${workflow.isActive
+                    ? "border-gray-200 dark:border-gray-700 hover:border-green-300 dark:hover:border-green-600"
+                    : "border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50"
+                    }`}
                 >
                   <div className="flex items-center space-x-3">
                     <div
-                      className={`w-3 h-3 rounded-full ${
-                        workflow.isActive ? "bg-green-500" : "bg-gray-400"
-                      }`}
+                      className={`w-3 h-3 rounded-full ${workflow.isActive ? "bg-green-500" : "bg-gray-400"
+                        }`}
                     />
                     <div>
                       <h4 className="font-medium text-gray-900 dark:text-white">

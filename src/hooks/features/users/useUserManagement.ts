@@ -28,9 +28,8 @@ import {
   type IRoleChangeValidationResult,
 } from '@/services/business/user.business.service';
 import type { OrgRole } from '@/constants/roles';
-import type { Database } from '@/types/database';
 
-type Profile = Database['public']['Tables']['profiles']['Row'];
+
 
 /**
  * Hook return interface
@@ -57,12 +56,12 @@ export interface IUseUserManagementReturn {
   readonly selectedUserIds: readonly string[];
 
   // UI Actions
-  readonly setView: (view: any) => void;
+  readonly setView: (view: string) => void;
   readonly toggleFilters: () => void;
   readonly setSearchTerm: (term: string) => void;
   readonly toggleRoleFilter: (role: OrgRole) => void;
   readonly toggleStatusFilter: (status: string) => void;
-  readonly toggleSort: (sortBy: any) => void;
+  readonly toggleSort: (sortBy: string) => void;
   readonly toggleUserSelection: (id: string) => void;
   readonly selectAllUsers: () => void;
   readonly clearSelection: () => void;
@@ -140,7 +139,6 @@ export interface IUseUserManagementReturn {
  */
 export const useUserManagement = (): IUseUserManagementReturn => {
   // Data layer - TODO: Connect to actual Supabase hooks when available
-  const orgId = useOrganizationId();
   const { user: currentUser } = useAuth();
 
   // Placeholder data layer - replace with actual hooks
@@ -157,7 +155,7 @@ export const useUserManagement = (): IUseUserManagementReturn => {
   };
 
   const updateUserMutation = {
-    mutateAsync: async (params: { id: string; data: any }): Promise<void> => {
+    mutateAsync: async (params: { id: string; data: Record<string, unknown> }): Promise<void> => {
       // TODO: Connect to actual update mutation
       console.log('Update user:', params);
     },
@@ -171,12 +169,7 @@ export const useUserManagement = (): IUseUserManagementReturn => {
     searchTerm,
     roleFilter,
     statusFilter,
-    organizationFilter,
-    sortBy,
-    sortOrder,
     selectedUserIds,
-    showUserEditor,
-    editingUserId,
   } = appUIStore.users;
 
   // Actions from appUIStore with users prefix
@@ -185,13 +178,6 @@ export const useUserManagement = (): IUseUserManagementReturn => {
   const setSearchTerm = appUIStore.setUsersSearchTerm;
   const toggleRoleFilter = appUIStore.toggleUsersRoleFilter;
   const toggleStatusFilter = appUIStore.toggleUsersStatusFilter;
-  const setOrganizationFilter = appUIStore.setUsersOrganizationFilter;
-  const toggleSort = appUIStore.toggleUsersSort;
-  const toggleUserSelection = appUIStore.toggleUsersSelection;
-  const selectAll = (ids: readonly string[]) => appUIStore.selectAllUsers(ids);
-  const clearSelection = appUIStore.clearUsersSelection;
-  const openEditor = appUIStore.openUsersEditor;
-  const closeEditor = appUIStore.closeUsersEditor;
   const resetFilters = appUIStore.resetUsersFilters;
 
   // Business logic layer - filtering and sorting

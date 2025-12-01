@@ -22,8 +22,7 @@ interface ProfileMenuProps {
 export const ProfileMenu: React.FC<ProfileMenuProps> = ({
   isLoggedIn,
   handleLogin,
-  handleLogout: _handleLogout,
-  userProfile: _userProfile
+
 }): JSX.Element => {
   const { t } = useTranslation(['common', 'navigation']);
   const navigate = useNavigate();
@@ -66,8 +65,7 @@ export const ProfileMenu: React.FC<ProfileMenuProps> = ({
       toast.success(t('common:messages.logout_success'));
       navigate("/login-selection");
     } catch (
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      _error: unknown
+    _error: unknown
     ) {
       console.error('❌ Logout failed:', _error);
       toast.error(t('common:messages.logout_failed'));
@@ -75,10 +73,7 @@ export const ProfileMenu: React.FC<ProfileMenuProps> = ({
     }
   };
 
-  const handleProfile = (): void => {
-    navigate('/user/profile');
-    setIsOpen(false);
-  };
+
 
   const toggleDropdown = (): void => {
     setIsOpen(!isOpen);
@@ -110,11 +105,10 @@ export const ProfileMenu: React.FC<ProfileMenuProps> = ({
             {user?.name || t('common:labels.user')}
           </p>
         </div>
-        
+
         {/* Dropdown Arrow */}
-        <ChevronDown className={`w-4 h-4 text-gray-500 dark:text-gray-400 transition-transform ${
-          isOpen ? "rotate-180" : ""
-        }`} />
+        <ChevronDown className={`w-4 h-4 text-gray-500 dark:text-gray-400 transition-transform ${isOpen ? "rotate-180" : ""
+          }`} />
       </button>
 
       {isOpen && (
@@ -124,7 +118,7 @@ export const ProfileMenu: React.FC<ProfileMenuProps> = ({
             className="fixed inset-0 z-40"
             onClick={() => setIsOpen(false)}
           />
-          
+
           {/* Dropdown Menu */}
           <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50">
             {/* Menu Items */}
@@ -132,10 +126,10 @@ export const ProfileMenu: React.FC<ProfileMenuProps> = ({
               <button
                 onClick={() => {
                   // Check if user has admin role
-                  const isAdmin = memberships.some(membership => 
+                  const isAdmin = memberships.some(membership =>
                     membership.role === 'admin' || membership.role === 'owner'
                   );
-                  
+
                   if (isAdmin) {
                     navigate('/admin/overview');
                   } else {
@@ -146,7 +140,7 @@ export const ProfileMenu: React.FC<ProfileMenuProps> = ({
                 className="flex items-center gap-3 w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
               >
                 <User className="w-4 h-4" />
-Min side
+                Min side
               </button>
 
               <div className="border-t border-gray-200 dark:border-gray-700 my-1" />

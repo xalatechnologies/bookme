@@ -41,7 +41,7 @@ export const useCalendarView = ({
   capacity
 }: UseCalendarViewProps): UseCalendarViewReturn => {
   const navigate = useNavigate();
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   
   const [_error] = useState<string | null>(null);
 
   // Get organization context

@@ -41,7 +41,7 @@ interface FacilityCardProps {
 export const FacilityCard = ({
   facility,
   onAddressClick,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   
   viewMode: _viewMode = "grid",
 }: FacilityCardProps): JSX.Element => {
   const { t } = useTranslation(["facility", "common"]);
@@ -254,7 +254,8 @@ export const FacilityCard = ({
                 >
                   {getFieldIcon(field.key)}
                   <span className="text-sm sm:text-base font-medium">
-                    {t(field.label as any)}: {value || booleanValue}
+                    {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                  {t(field.label as any)}: {value || booleanValue}
                     {unit && ` ${unit}`}
                   </span>
                 </div>

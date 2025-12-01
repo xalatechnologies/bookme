@@ -4,16 +4,10 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
-import { Badge } from "@/components/ui/badge";
 import {
   Heart,
-  Share2,
   Calendar,
-  Eye,
-  CheckCircle,
-  Clock,
-  XCircle
-} from "lucide-react";
+  Eye} from "lucide-react";
 import FacilityCardBase from "./FacilityCardBase";
 import { useFacilityActions } from "@/hooks/features/facilities";
 import { useAuth } from "@/contexts/hooks/useAuth";
@@ -42,7 +36,7 @@ const FacilityCardUser = (props: IFacilityCardUserProps): JSX.Element => {
     capacity,
     image,
     description,
-    availability = "available",
+    _availability = "available",
     slug
   } = props;
 
@@ -53,7 +47,7 @@ const FacilityCardUser = (props: IFacilityCardUserProps): JSX.Element => {
     handleViewDetails,
     handleBookNow,
     handleToggleFavorite,
-    handleShare
+    _handleShare
   } = useFacilityActions({
     id,
     name,
@@ -62,35 +56,7 @@ const FacilityCardUser = (props: IFacilityCardUserProps): JSX.Element => {
     slug
   });
 
-  const getAvailabilityBadge = (): JSX.Element => {
-    const availabilityConfig = {
-      available: {
-        label: t('facility:availability.available_today'),
-        className: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300",
-        icon: CheckCircle
-      },
-      busy: {
-        label: t('facility:availability.fully_booked_weekend'),
-        className: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300",
-        icon: Clock
-      },
-      full: {
-        label: t('facility:availability.fully_booked'),
-        className: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300",
-        icon: XCircle
-      }
-    };
 
-    const config = availabilityConfig[availability];
-    const Icon = config.icon;
-
-    return (
-      <Badge className={`${config.className} text-xs`}>
-        <Icon className="h-3 w-3 mr-1" />
-        {config.label}
-      </Badge>
-    );
-  };
 
   return (
     <FacilityCardBase
@@ -101,8 +67,8 @@ const FacilityCardUser = (props: IFacilityCardUserProps): JSX.Element => {
       capacity={capacity}
       amenities={[]} // Empty array to remove amenities
       image={image}
-      rating={undefined} // Remove rating
-      price={undefined} // Remove price
+      rating={undefined}
+      price={undefined}
       description={description}
     >
       {/* Top Right Actions - Positioned above hover overlay for accessibility */}
@@ -111,31 +77,20 @@ const FacilityCardUser = (props: IFacilityCardUserProps): JSX.Element => {
           <Button
             size="sm"
             variant="secondary"
-            className={`w-8 h-8 p-0 bg-white/90 hover:bg-white transition-all z-30 ${
-              isAnimating ? "scale-110" : ""
-            }`}
+            className={`w-8 h-8 p-0 bg-white/90 hover:bg-white transition-all z-30 ${isAnimating ? "scale-110" : ""
+              }`}
             onClick={handleToggleFavorite}
           >
             <Heart
-              className={`h-4 w-4 transition-colors ${
-                isFacilityFavorite
-                  ? "text-red-500 fill-current"
-                  : "text-gray-600 hover:text-red-500"
-              }`}
+              className={`h-4 w-4 transition-colors ${isFacilityFavorite
+                ? "text-red-500 fill-current"
+                : "text-gray-600 hover:text-red-500"
+                }`}
             />
           </Button>
         )}
-        
-        <Button
-          size="sm"
-          variant="secondary"
-          className="w-8 h-8 p-0 bg-white/90 hover:bg-white z-30"
-          onClick={handleShare}
-        >
-          <Share2 className="h-4 w-4 text-gray-600 hover:text-blue-600" />
-        </Button>
       </div>
-      
+
       {/* Action Buttons Overlay - Lower z-index to not interfere with top actions */}
       <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-end justify-center pb-4 opacity-0 group-hover:opacity-100 z-10">
         <div className="flex space-x-2">

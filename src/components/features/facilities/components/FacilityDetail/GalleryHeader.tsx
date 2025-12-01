@@ -78,7 +78,7 @@ export default function GalleryHeader({
         try {
           await navigator.clipboard.writeText(window.location.href);
         } catch (
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+           
           _clipboardError
         ) {
           // Silent fail

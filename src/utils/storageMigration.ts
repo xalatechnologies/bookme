@@ -11,8 +11,8 @@
  */
 
 import { supabase } from '@/lib/clients/supabase';
-import type { IStoredBooking, IBookingFilters } from '@/utils/localStorageTypes';
-import { getStoredBookings, setStoredBookings } from '@/utils/localStorageTypes';
+import type { IBookingFilters } from '@/utils/localStorageTypes';
+import { getStoredBookings } from '@/utils/localStorageTypes';
 
 /**
  * Migration phase configuration
@@ -54,8 +54,7 @@ export const migrationConfig: MigrationConfig = {
   enableLogging: import.meta.env.VITE_ENABLE_MIGRATION_LOGGING === 'true',
   validateConsistency: import.meta.env.VITE_VALIDATE_STORAGE_CONSISTENCY !== 'false',
   retryAttempts: 3,
-  retryDelayMs: 1000,
-};
+  retryDelayMs: 1000};
 
 /**
  * Get the current migration phase from config
@@ -139,8 +138,7 @@ export const validateDataConsistency = async (
     if (localBookings.length !== supabaseBookings.length) {
       logMigration('Booking count mismatch', {
         local: localBookings.length,
-        supabase: supabaseBookings.length,
-      });
+        supabase: supabaseBookings.length});
       return false;
     }
 
@@ -151,8 +149,7 @@ export const validateDataConsistency = async (
     if (missingBookings.length > 0) {
       logMigration('Found bookings in localStorage missing from Supabase', {
         count: missingBookings.length,
-        ids: missingBookings.map((b) => b.id),
-      });
+        ids: missingBookings.map((b) => b.id)});
       return false;
     }
 
@@ -174,8 +171,7 @@ export const migrateBookingsToSupabase = async (
   const result = {
     success: true,
     migrated: 0,
-    errors: [] as string[],
-  };
+    errors: [] as string[]};
 
   try {
     logMigration('Starting bookings migration to Supabase', { userId });
@@ -238,8 +234,7 @@ export const migrateBookingsToSupabase = async (
           processed_by: booking.processedBy,
           processed_at: booking.processedAt,
           is_recurring: booking.isRecurring || false,
-          parent_booking_id: booking.parentBookingId,
-        });
+          parent_booking_id: booking.parentBookingId} as any);
 
         if (error) {
           result.errors.push(`Failed to migrate booking ${booking.id}: ${error.message}`);
@@ -318,14 +313,13 @@ export const syncUserPreferences = async (
     if (phase === 'dual-write' || phase === 'supabase-only') {
       await retryWithBackoff(async () => {
         const { error } = await supabase
-          .from('user_preferences')
+          .from('user_preferences' as any)
           .upsert({
             user_id: userId,
             language: preferences.language,
             filters: preferences.filters as unknown as Record<string, unknown>,
             ui_settings: preferences.uiSettings as unknown as Record<string, unknown>,
-            updated_at: new Date().toISOString(),
-          });
+            updated_at: new Date().toISOString()});
 
         if (error) {
           throw new MigrationError(
@@ -362,8 +356,7 @@ export const getMigrationHealth = async (
     supabaseConnected: false,
     dataConsistent: false,
     localBookingsCount: 0,
-    supabaseBookingsCount: 0,
-  };
+    supabaseBookingsCount: 0};
 
   try {
     // Check local storage
@@ -398,12 +391,11 @@ export const getMigrationHealth = async (
  * Export migration utilities for testing and monitoring
  */
 export const migrationUtils = {
-  getMigrationPhase,
   validateDataConsistency,
   migrateBookingsToSupabase,
   clearLocalStorageBookings,
   syncUserPreferences,
   getMigrationHealth,
   logMigration,
-  logMigrationError,
+  logMigrationError
 };

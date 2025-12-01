@@ -37,7 +37,6 @@ import { useAuth } from "@/contexts/hooks/useAuth";
 import { GlobalHeader } from "@/components/layouts/PublicLayout/GlobalHeader";
 import { useCreateBooking } from "@/services/supabase/bookings.service";
 import { supabase } from '@/lib/clients/supabase';
-import type { Database } from '@/types/database';
 import { facilitiesService } from '@/services/supabase/facilities.service';
 
 // UI components

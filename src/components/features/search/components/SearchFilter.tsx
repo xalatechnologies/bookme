@@ -72,24 +72,24 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
   const loading = loadingTypes || loadingLocations || loadingAccessibility;
 
   // Map database values to arrays for backward compatibility
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   
   const _availableTypes = useMemo(
     () => facilityTypes?.map((item) => item.entity_key) || [],
     [facilityTypes]
   );
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   
   const _availableAreas = useMemo(
     () => locations?.map((item) => item.entity_key) || [],
     [locations]
   );
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   
   const _availableAccessibility = useMemo(
     () => accessibilityFeatures?.map((item) => item.entity_key) || [],
     [accessibilityFeatures]
   );
 
   // Helper to find label by entity_key
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   
   const _getLabel = (
     items: ReturnType<typeof useLocalizedDbValues>["data"],
     key: string

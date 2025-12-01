@@ -278,21 +278,21 @@ export const SupportTicketList: React.FC<SupportTicketListProps> = ({
   const closedTickets = filteredTickets.filter((t) => t.status === "closed");
 
   const handleEdit = (
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+     
     _ticketId: string
   ): void => {
     // TODO: Implementation would open edit dialog
   };
 
   const handleDelete = (
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+     
     _ticketId: string
   ): void => {
     // TODO: Implementation would delete ticket
   };
 
   const handleArchive = (
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+     
     _ticketId: string
   ): void => {
     // TODO: Implementation would archive ticket

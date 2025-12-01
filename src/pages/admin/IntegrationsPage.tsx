@@ -37,7 +37,7 @@ interface IIntegrationsPageProps {
 }
 
 const IntegrationsPage = (
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   
   _props: IIntegrationsPageProps
 ): JSX.Element => {
   const {

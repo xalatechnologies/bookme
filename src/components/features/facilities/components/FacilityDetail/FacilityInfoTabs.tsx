@@ -39,12 +39,12 @@ interface FacilityInfoTabsProps {
 export const FacilityInfoTabs: React.FC<FacilityInfoTabsProps> = ({
   description,
   capacity,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   
   equipment: _equipment,
   zones,
   amenities,
   area,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   
   suitableFor: _suitableFor,
   facilityId,
   facilityName,
@@ -123,9 +123,9 @@ export const FacilityInfoTabs: React.FC<FacilityInfoTabsProps> = ({
   const fieldConfigs = getFieldConfigsForFacility(facilityId);
   const visibleFields = getVisibleFields(fieldConfigs);
   const {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+     
     firstColumn: _firstColumn,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+     
     secondColumn: _secondColumn
   } = splitFieldsIntoColumns(visibleFields);
 

@@ -111,8 +111,7 @@ export const groupNotificationsByType = (
 
     return {
       ...grouped,
-      [type]: [...existing, notification],
-    };
+      [type]: [...existing, notification]};
   }, {} as INotificationGrouping);
 };
 
@@ -131,8 +130,7 @@ export const markAsRead = (
       return {
         ...notification,
         read: true,
-        readAt: now,
-      };
+        readAt: now};
     }
     return notification;
   });
@@ -152,8 +150,7 @@ export const markAllAsRead = (
       return {
         ...notification,
         read: true,
-        readAt: now,
-      };
+        readAt: now};
     }
     return notification;
   });
@@ -293,15 +290,13 @@ export const calculateNotificationStats = (
   const byPriority = {
     high: userNotifications.filter(n => n.priority === 'high').length,
     medium: userNotifications.filter(n => n.priority === 'medium').length,
-    low: userNotifications.filter(n => n.priority === 'low').length,
-  };
+    low: userNotifications.filter(n => n.priority === 'low').length};
   const byType = {
     booking: userNotifications.filter(n => n.type === 'booking').length,
     message: userNotifications.filter(n => n.type === 'message').length,
     system: userNotifications.filter(n => n.type === 'system').length,
     payment: userNotifications.filter(n => n.type === 'payment').length,
-    reminder: userNotifications.filter(n => n.type === 'reminder').length,
-  };
+    reminder: userNotifications.filter(n => n.type === 'reminder').length};
   const urgent = getUrgentNotifications(notifications, userId).length;
 
   return {
@@ -311,8 +306,7 @@ export const calculateNotificationStats = (
     byPriority,
     byType,
     urgent,
-    readPercentage: total > 0 ? Math.round((total - unread) / total * 100) : 0,
-  };
+    readPercentage: total > 0 ? Math.round((total - unread) / total * 100) : 0};
 };
 
 /**
@@ -353,8 +347,7 @@ export const validateNotificationData = (
 
   return {
     isValid: errors.length === 0,
-    errors,
-  };
+    errors};
 };
 
 /**
@@ -382,6 +375,5 @@ export const formatNotificationForDisplay = (notification: Notification) => {
     formattedReadAt: notification.readAt ? new Date(notification.readAt).toLocaleString('no-NO') : undefined,
     timeAgo,
     isUnread: !notification.read,
-    isUrgent: isUrgent(notification),
-  };
+    isUrgent: isUrgent(notification)};
 };
