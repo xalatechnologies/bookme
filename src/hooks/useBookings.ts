@@ -8,14 +8,26 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
-import type { Database } from '@/types/supabase/database.types';
+import type { Database } from '@/types/database';
 import type { IStoredBooking } from '@/utils/localStorageTypes';
-import {
-  getCurrentMigrationPhase,
-  MIGRATION_PHASES,
-  type MigrationPhase,
-  logMigrationEvent,
-} from '@/config/migrationConfig';
+// Migration configuration
+const MIGRATION_PHASES = {
+  LOCALSTORAGE_ONLY: 0,
+  READ_FALLBACK: 1,
+  WRITE_BOTH: 2,
+  SUPABASE_ONLY: 3,
+} as const;
+
+type MigrationPhase = typeof MIGRATION_PHASES[keyof typeof MIGRATION_PHASES];
+
+const getCurrentMigrationPhase = (): MigrationPhase => {
+  const phase = localStorage.getItem('migrationPhase');
+  return phase ? parseInt(phase, 10) as MigrationPhase : MIGRATION_PHASES.LOCALSTORAGE_ONLY;
+};
+
+const logMigrationEvent = (event: string, data?: Record<string, unknown>): void => {
+  console.log(`[Migration] ${event}`, data);
+};
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'http://localhost:54321';
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
@@ -24,7 +36,7 @@ const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey);
 
 export interface UseBookingsOptions {
   readonly userId?: string;
-  readonly status?: 'pending' | 'approved' | 'rejected' | 'cancelled';
+  readonly status?: 'pending' | 'awaiting_payment' | 'paid' | 'cancelled' | 'expired' | 'completed' | 'refunded';
   readonly autoSync?: boolean; // Auto-sync localStorage to Supabase on mount
 }
 
@@ -352,52 +364,43 @@ export function useBookings(options: UseBookingsOptions = {}): UseBookingsReturn
 // Mapping functions
 function mapSupabaseToStoredBooking(row: Record<string, unknown>): IStoredBooking {
   return {
-    id: row.id,
-    userId: row.user_id,
-    facilityId: row.facility_id,
-    facilityName: row.facility_name || '',
-    facilityType: row.facility_type,
-    bookingType: row.booking_type,
-    bookingDate: row.booking_date,
-    startTime: row.start_time,
-    endTime: row.end_time,
-    startDateTime: row.start_datetime,
-    endDateTime: row.end_datetime,
-    participantCount: row.participant_count,
-    participantNames: row.participant_names,
-    totalPrice: row.total_price?.toString(),
-    status: row.status,
-    purpose: row.purpose,
-    specialRequirements: row.special_requirements,
-    contactEmail: row.contact_email,
-    contactPhone: row.contact_phone,
-    createdAt: row.created_at,
-    updatedAt: row.updated_at,
+    id: String(row.id || ''),
+    facilityName: row.facility_name ? String(row.facility_name) : undefined,
+    facility: row.facility ? String(row.facility) : undefined,
+    facilityId: row.facility_id ? String(row.facility_id) : undefined,
+    startDate: row.starts_at ? String(row.starts_at) : '',
+    date: row.booking_date ? String(row.booking_date) : undefined,
+    startTime: row.start_time ? String(row.start_time) : undefined,
+    endTime: row.end_time ? String(row.end_time) : undefined,
+    time: row.time ? String(row.time) : undefined,
+    duration: typeof row.duration === 'string' || typeof row.duration === 'number' ? row.duration : undefined,
+    status: row.status as IStoredBooking['status'],
+    price: typeof row.total_cents === 'string' || typeof row.total_cents === 'number' ? row.total_cents : undefined,
+    purpose: row.purpose ? String(row.purpose) : undefined,
+    description: row.notes ? String(row.notes) : undefined,
+    contactPerson: row.contact_person ? String(row.contact_person) : undefined,
+    bookerName: row.booker_name ? String(row.booker_name) : undefined,
+    bookerEmail: row.booker_email ? String(row.booker_email) : undefined,
+    submittedAt: row.created_at ? String(row.created_at) : undefined,
+    requestedAt: row.created_at ? String(row.created_at) : undefined,
+    processedBy: row.processed_by ? String(row.processed_by) : undefined,
+    processedAt: row.updated_at ? String(row.updated_at) : undefined,
+    isRecurring: Boolean(row.is_recurring),
+    parentBookingId: row.parent_booking_id ? String(row.parent_booking_id) : undefined,
   };
 }
 
-function mapStoredBookingToSupabase(booking: IStoredBooking, userId: string): Record<string, unknown> {
+function mapStoredBookingToSupabase(booking: IStoredBooking, userId: string): Database['public']['Tables']['bookings']['Insert'] {
   return {
-    id: booking.id,
     user_id: userId,
-    facility_id: booking.facilityId,
-    facility_name: booking.facilityName,
-    facility_type: booking.facilityType,
-    booking_type: booking.bookingType,
-    booking_date: booking.bookingDate,
-    start_time: booking.startTime,
-    end_time: booking.endTime,
-    start_datetime: booking.startDateTime,
-    end_datetime: booking.endDateTime,
-    participant_count: booking.participantCount,
-    participant_names: booking.participantNames,
-    total_price: parseFloat(booking.totalPrice?.replace(/[^0-9.]/g, '') || '0'),
-    status: booking.status,
-    purpose: booking.purpose,
-    special_requirements: booking.specialRequirements,
-    contact_email: booking.contactEmail,
-    contact_phone: booking.contactPhone,
-    migrated_from_localstorage: true,
-    source: 'web',
+    facility_id: booking.facilityId || '',
+    org_id: '', // TODO: Get from context
+    starts_at: booking.startDate,
+    ends_at: booking.startDate, // TODO: Calculate from duration
+    status: booking.status === 'approved' ? 'paid' : booking.status === 'rejected' ? 'cancelled' : (booking.status || 'pending'),
+    total_cents: typeof booking.price === 'number' ? booking.price * 100 : parseFloat(String(booking.price || '0').replace(/[^0-9.]/g, '')) * 100,
+    currency: 'NOK',
+    notes: booking.description || null,
+    is_recurring: booking.isRecurring || false,
   };
 }

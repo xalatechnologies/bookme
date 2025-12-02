@@ -64,7 +64,7 @@ export interface IUseBookingManagementReturn {
   readonly setView: (view: TBookingView) => void;
   readonly toggleFilters: () => void;
   readonly setSearchTerm: (term: string) => void;
-  readonly toggleStatusFilter: (status: string) => void;
+  readonly toggleStatusFilter: (status: BookingStatus) => void;
   readonly toggleFacilityFilter: (facilityId: string) => void;
   readonly setDateRange: (range: { startDate: Date | null; endDate: Date | null }) => void;
   readonly clearDateRange: () => void;
@@ -325,7 +325,7 @@ export const useBookingManagement = (): IUseBookingManagementReturn => {
     setView,
     toggleFilters,
     setSearchTerm,
-    toggleStatusFilter,
+    toggleStatusFilter: toggleStatusFilter as (status: BookingStatus) => void,
     toggleFacilityFilter,
     setDateRange,
     clearDateRange,

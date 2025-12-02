@@ -111,7 +111,8 @@ export function useLocalizedDbValueEnhanced(
   } = useQuery({
     queryKey: localizationKeys.byType(entityType, currentLang),
     queryFn: async (): Promise<readonly LocalizedOption[]> => {
-      const query = supabase
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const query = (supabase as any)
         .from('localized_db_values')
         .select('entity_key, label, description, sort_order, metadata')
         .eq('entity_type', entityType)
@@ -130,7 +131,7 @@ export function useLocalizedDbValueEnhanced(
       }
 
       return (
-        data?.map((item) => ({
+        (data as any)?.map((item: any) => ({
           value: item.entity_key,
           label: item.label,
           description: item.description || undefined,
@@ -211,7 +212,8 @@ export function useLocalizedDbValueEnhanced(
       setIsSearching(true);
 
       try {
-        const { data, error: searchError } = await supabase.rpc(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { data, error: searchError } = await (supabase as any).rpc(
           'search_localized_values',
           {
             p_entity_type: entityType,
@@ -279,7 +281,8 @@ export function useLocalizedDbValueBatch(
         return {};
       }
 
-      const { data, error } = await supabase.rpc(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data, error } = await (supabase as any).rpc(
         'get_localized_values_batch',
         {
           p_entity_type: entityType,
@@ -293,7 +296,7 @@ export function useLocalizedDbValueBatch(
       }
 
       const result: Record<string, string> = {};
-      data?.forEach(
+      (data as any[])?.forEach(
         (item: { entity_key: string; label: string }) => {
           result[item.entity_key] = item.label;
         }
@@ -336,7 +339,8 @@ export function useLocalizedDbSingleValue(
   const { data, isLoading } = useQuery({
     queryKey: [...localizationKeys.byType(entityType, currentLang), entityKey],
     queryFn: async (): Promise<string> => {
-      const { data, error } = await supabase
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data, error } = await (supabase as any)
         .from('localized_db_values')
         .select('label')
         .eq('entity_type', entityType)
@@ -349,7 +353,7 @@ export function useLocalizedDbSingleValue(
         throw error;
       }
 
-      return data?.label || entityKey;
+      return (data as any)?.label || entityKey;
     },
     staleTime: 1000 * 60 * 60, // 1 hour
     retry: 1,
@@ -381,7 +385,8 @@ export function usePrefetchLocalizedValues(
       queryClient.prefetchQuery({
         queryKey: localizationKeys.byType(entityType, currentLang),
         queryFn: async () => {
-          const { data } = await supabase
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const { data } = await (supabase as any)
             .from('localized_db_values')
             .select('entity_key, label, description, sort_order, metadata')
             .eq('entity_type', entityType)
@@ -390,7 +395,7 @@ export function usePrefetchLocalizedValues(
             .order('sort_order', { ascending: true, nullsFirst: false });
 
           return (
-            data?.map((item) => ({
+            (data as any)?.map((item: any) => ({
               value: item.entity_key,
               label: item.label,
               description: item.description || undefined,
