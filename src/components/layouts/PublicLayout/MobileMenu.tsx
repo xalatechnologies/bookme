@@ -79,14 +79,16 @@ const MobileMenu = ({
                 </div>
               </div>
               <Button variant="ghost" className="w-full justify-start" onClick={() => {
-                // Check if user has admin role
-                const isAdmin = memberships.some(membership =>
-                  membership.role === 'admin' || membership.role === 'owner'
+                // Check if user has admin/owner/staff role
+                const isStaffOrAdmin = memberships.some(membership =>
+                  membership.role === 'admin' || membership.role === 'owner' || membership.role === 'staff'
                 );
 
-                if (isAdmin) {
+                if (isStaffOrAdmin) {
+                  // Staff/Admin/Owner go to admin portal only
                   window.location.href = '/admin/overview';
                 } else {
+                  // Customers go to user portal
                   window.location.href = '/user';
                 }
                 closeMobileMenu();
