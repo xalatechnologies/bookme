@@ -502,31 +502,51 @@ export const Checkout = (): JSX.Element => {
       );
     }
 
-    // Make consent validation less strict for testing
+    // Check all consents and provide detailed error messages
+    const missingConsents: string[] = [];
+    
     if (!consents.terms) {
-      newErrors.consents = t(
-        "checkout:errors.must_accept_terms",
-        "Du må godta vilkårene"
-      );
+      missingConsents.push(t(
+        "checkout:errors.terms_short",
+        "vilkårene"
+      ));
     }
 
     if (!consents.cancellation) {
-      newErrors.consents = t(
-        "checkout:errors.must_read_cancellation",
-        "Du må lese avbestillingsreglene"
-      );
+      missingConsents.push(t(
+        "checkout:errors.cancellation_short",
+        "avbestillingsreglene"
+      ));
     }
 
     if (!consents.privacy) {
+      missingConsents.push(t(
+        "checkout:errors.privacy_short",
+        "personvern"
+      ));
+    }
+
+    if (missingConsents.length > 0) {
       newErrors.consents = t(
-        "checkout:errors.must_accept_privacy",
-        "Du må samtykke til personvern"
+        "checkout:errors.must_accept_all",
+        `Du må godta: ${missingConsents.join(", ")}`
       );
     }
 
     setErrors(newErrors);
+    
+    // Scroll to error if validation fails
+    if (Object.keys(newErrors).length > 0) {
+      console.error('Validation failed:', newErrors);
+      // Scroll to the first error
+      setTimeout(() => {
+        const errorElement = document.querySelector('[class*="text-red"]');
+        errorElement?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 100);
+    }
+    
     return Object.keys(newErrors).length === 0;
-  }, [selectedPaymentMethod, consents]);
+  }, [selectedPaymentMethod, consents, t]);
 
   /**
    * Generate next booking number (1-99999, then restart)
