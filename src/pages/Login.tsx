@@ -24,6 +24,7 @@ export const Login = (): JSX.Element => {
   // Determine login type from query params or default to user
   const params = new URLSearchParams(location.search);
   const loginType: LoginType = (params.get("type") as LoginType) || "user";
+  const returnUrl = params.get("returnUrl") || null;
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -48,8 +49,10 @@ export const Login = (): JSX.Element => {
       const successMsg = t('login.success.loggedIn', 'Innlogget! Videresender...');
       toast.success(successMsg);
 
-      // Redirect based on login type
-      if (loginType === "admin") {
+      // Redirect to returnUrl if provided (from checkout), otherwise to default portal
+      if (returnUrl) {
+        navigate(returnUrl, { state: { fromLogin: true } });
+      } else if (loginType === "admin") {
         navigate("/admin");
       } else {
         navigate("/user");

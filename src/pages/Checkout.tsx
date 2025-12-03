@@ -1,8 +1,8 @@
 "use client";
 
 // External libraries
-import React, { useState, useMemo, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useMemo, useCallback, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
   CreditCard,
@@ -71,6 +71,7 @@ import type { ISelectedTimeSlot } from "@/components/features/bookings/types";
  */
 export const Checkout = (): JSX.Element => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useAuth();
   const { items, totalPrice, clearCart, removeItem } = useCart();
   const { profile } = useUserProfile();
@@ -78,18 +79,40 @@ export const Checkout = (): JSX.Element => {
   const createBookingMutation = useCreateBooking();
   const currentLocale = i18n.language === "en" ? "en-US" : "nb-NO";
 
-  // State management
-  const [selectedPaymentMethod, setSelectedPaymentMethod] =
-    useState<string>("");
+  // State management - Initialize from sessionStorage if available
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>(() => {
+    return sessionStorage.getItem('checkout_paymentMethod') || "";
+  });
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const [editingInfo, setEditingInfo] = useState<boolean>(false);
-  const [discountCode, setDiscountCode] = useState<string>("");
-  const [discountApplied, setDiscountApplied] = useState<boolean>(false);
-  const [addons, setAddons] = useState<Record<string, boolean>>({});
-  const [consents, setConsents] = useState({
-    terms: false,
-    cancellation: false,
-    privacy: false,
+  const [discountCode, setDiscountCode] = useState<string>(() => {
+    return sessionStorage.getItem('checkout_discountCode') || "";
+  });
+  const [discountApplied, setDiscountApplied] = useState<boolean>(() => {
+    const saved = sessionStorage.getItem('checkout_discountApplied');
+    return saved === 'true';
+  });
+  const [addons, setAddons] = useState<Record<string, boolean>>(() => {
+    const saved = sessionStorage.getItem('checkout_addons');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch {
+        return {};
+      }
+    }
+    return {};
+  });
+  const [consents, setConsents] = useState(() => {
+    const saved = sessionStorage.getItem('checkout_consents');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch {
+        return { terms: false, cancellation: false, privacy: false };
+      }
+    }
+    return { terms: false, cancellation: false, privacy: false };
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -107,17 +130,28 @@ export const Checkout = (): JSX.Element => {
   const [editingBookingDetails, setEditingBookingDetails] =
     useState<boolean>(false);
 
-  // Editable user info
-  const [userInfo, setUserInfo] = useState({
-    firstName: profile.firstName || "",
-    lastName: profile.lastName || "",
-    email: profile.email || "",
-    phone: profile.phone || "",
-    address: profile.address || "",
-    organizationName: "",
-    organizationNumber: "",
-    invoiceReference: "",
-    projectCode: "",
+  // Editable user info - Initialize from sessionStorage or profile
+  const [userInfo, setUserInfo] = useState(() => {
+    // Try to restore from sessionStorage first (for returning from login)
+    const saved = sessionStorage.getItem('checkout_userInfo');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch {
+        // Ignore parse errors and use profile data
+      }
+    }
+    return {
+      firstName: profile.firstName || "",
+      lastName: profile.lastName || "",
+      email: profile.email || "",
+      phone: profile.phone || "",
+      address: profile.address || "",
+      organizationName: "",
+      organizationNumber: "",
+      invoiceReference: "",
+      projectCode: "",
+    };
   });
 
   // Add-ons with pricing and icons
@@ -173,6 +207,71 @@ export const Checkout = (): JSX.Element => {
       ),
     },
   ];
+
+  /**
+   * Save checkout state to sessionStorage before redirecting to login
+   */
+  const saveCheckoutState = useCallback(() => {
+    try {
+      sessionStorage.setItem('checkout_userInfo', JSON.stringify(userInfo));
+      sessionStorage.setItem('checkout_paymentMethod', selectedPaymentMethod);
+      sessionStorage.setItem('checkout_discountCode', discountCode);
+      sessionStorage.setItem('checkout_discountApplied', String(discountApplied));
+      sessionStorage.setItem('checkout_addons', JSON.stringify(addons));
+      sessionStorage.setItem('checkout_consents', JSON.stringify(consents));
+    } catch (error) {
+      console.error('Failed to save checkout state:', error);
+    }
+  }, [userInfo, selectedPaymentMethod, discountCode, discountApplied, addons, consents]);
+
+  /**
+   * Clear saved checkout state from sessionStorage
+   */
+  const clearCheckoutState = useCallback(() => {
+    try {
+      sessionStorage.removeItem('checkout_userInfo');
+      sessionStorage.removeItem('checkout_paymentMethod');
+      sessionStorage.removeItem('checkout_discountCode');
+      sessionStorage.removeItem('checkout_discountApplied');
+      sessionStorage.removeItem('checkout_addons');
+      sessionStorage.removeItem('checkout_consents');
+    } catch (error) {
+      console.error('Failed to clear checkout state:', error);
+    }
+  }, []);
+
+  /**
+   * Check authentication and redirect to login if necessary
+   * This effect runs on mount and when user authentication changes
+   */
+  useEffect(() => {
+    // If user is not authenticated and has items in cart
+    if (!user && items.length > 0) {
+      // Save current checkout state
+      saveCheckoutState();
+      
+      // Redirect to login with return URL
+      navigate('/login?type=user&returnUrl=/checkout', { 
+        replace: true,
+        state: { from: location.pathname }
+      });
+    }
+    
+    // Clear saved state after successful login (only once)
+    if (user && location.state?.fromLogin) {
+      // Clear the state flag to prevent re-clearing
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [user, items.length, navigate, location, saveCheckoutState]);
+
+  /**
+   * Auto-save checkout state when it changes (for page refreshes)
+   */
+  useEffect(() => {
+    if (user) {
+      saveCheckoutState();
+    }
+  }, [user, saveCheckoutState]);
 
   /**
    * Calculate pricing with add-ons and discounts
@@ -688,6 +787,10 @@ export const Checkout = (): JSX.Element => {
 
       // Clear cart and redirect
       clearCart();
+      
+      // Clear saved checkout state after successful payment
+      clearCheckoutState();
+      
       navigate("/user/bookings?success=true");
     } catch (error) {
       console.error("Error creating bookings:", error);
@@ -702,12 +805,14 @@ export const Checkout = (): JSX.Element => {
   }, [
     validateForm,
     clearCart,
+    clearCheckoutState,
     navigate,
     selectedPaymentMethod,
     items,
     user,
     profile,
-    createBookingMutation
+    createBookingMutation,
+    t
   ]);
 
   if (items.length === 0 && !isProcessing) {
