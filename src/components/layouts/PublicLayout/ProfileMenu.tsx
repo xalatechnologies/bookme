@@ -125,14 +125,16 @@ export const ProfileMenu: React.FC<ProfileMenuProps> = ({
             <div className="py-1">
               <button
                 onClick={() => {
-                  // Check if user has admin role
-                  const isAdmin = memberships.some(membership =>
-                    membership.role === 'admin' || membership.role === 'owner'
+                  // Check if user has admin/owner/staff role
+                  const isStaffOrAdmin = memberships.some(membership =>
+                    membership.role === 'admin' || membership.role === 'owner' || membership.role === 'staff'
                   );
 
-                  if (isAdmin) {
+                  if (isStaffOrAdmin) {
+                    // Staff/Admin/Owner go to admin portal only
                     navigate('/admin/overview');
                   } else {
+                    // Customers go to user portal
                     navigate('/user');
                   }
                   setIsOpen(false);

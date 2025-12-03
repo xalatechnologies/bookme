@@ -1,8 +1,10 @@
 "use client";
 
 import React from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { RequireAuth } from "@/components/features/auth/components/ProtectedRoute";
+import { useRole } from "@/hooks/auth/useRole";
+import { useAuth } from "@/contexts/hooks/useAuth";
 import UserLayout from "@/components/layouts/UserLayout";
 import UserDashboard from "@/pages/user/UserDashboard";
 import Bookings from "@/pages/user/Bookings";
@@ -16,6 +18,26 @@ import UserHelp from "@/pages/user/UserHelp";
 import UserMessages from "@/pages/user/UserMessages";
 
 const UserRoutes = (): JSX.Element => {
+  const { currentOrgId } = useAuth();
+  const { role, loading } = useRole(currentOrgId || undefined);
+
+  // Show loading while checking role
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <p className="mt-4 text-gray-600">Laster...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Redirect admin/owner/staff to admin portal - they should not access user portal
+  if (role && (role === 'admin' || role === 'owner' || role === 'staff')) {
+    return <Navigate to="/admin/overview" replace />;
+  }
+
   return (
     <RequireAuth loginPath="/login?type=user">
       <UserLayout>

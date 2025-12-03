@@ -838,7 +838,7 @@ const UserSidePanel = ({ user, isOpen, onClose, onEdit, onDeactivate, onDelete, 
 
 const UsersRolesPage = (): JSX.Element => {
   const { t } = useTranslation(["admin", "common"]);
-  const { currentOrgId, user: currentUser } = useAuth();
+  const { currentOrgId, user: currentUser, loading: authLoading } = useAuth();
   const { role: currentUserRole } = useRole(currentOrgId || undefined);
   const [searchParams] = useSearchParams();
 
@@ -880,10 +880,23 @@ const UsersRolesPage = (): JSX.Element => {
   // Fetch users and roles from Supabase
   useEffect(() => {
     const fetchData = async () => {
-      if (!currentOrgId) {
-        setLoading(false);
+      console.log('[UsersRolesPage] fetchData triggered - authLoading:', authLoading, 'currentOrgId:', currentOrgId);
+      
+      // Wait for auth to finish loading
+      if (authLoading) {
+        console.log('[UsersRolesPage] Auth still loading, waiting...');
         return;
       }
+
+      // If auth is done loading but still no currentOrgId, keep waiting
+      // This handles the case where profile/memberships are still being fetched
+      if (!currentOrgId) {
+        console.log('[UsersRolesPage] No currentOrgId yet, keeping loading state');
+        // Don't set loading to false yet - wait for currentOrgId to be set
+        return;
+      }
+
+      console.log('[UsersRolesPage] Starting data fetch for org:', currentOrgId);
 
       try {
         setLoading(true);
@@ -1123,7 +1136,7 @@ const UsersRolesPage = (): JSX.Element => {
     };
 
     fetchData();
-  }, [currentOrgId]);
+  }, [currentOrgId, authLoading]);
 
   // Helper function to get permissions based on role
   const getPermissionsForRole = (role: string): string[] => {

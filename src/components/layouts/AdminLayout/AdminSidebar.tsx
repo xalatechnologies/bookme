@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useMemo } from "react";
 import { NavLink } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
@@ -19,12 +19,15 @@ import {
   ChevronRight
 } from "lucide-react";
 import { useSidebar } from "./useSidebar";
+import { useRole } from "@/hooks/auth/useRole";
+import { useAuth } from "@/contexts/hooks/useAuth";
 
 interface IMenuItem {
   readonly id: string;
   readonly labelKey: string;
   readonly path: string;
   readonly icon: React.ComponentType<{ className?: string }>;
+  readonly requiredRole?: 'staff' | 'admin' | 'owner'; // Minimum role required to see this item
 }
 
 interface IMenuGroup {
@@ -42,40 +45,71 @@ const AdminSidebar = (
 ): JSX.Element => {
   const { isCollapsed, toggleCollapse } = useSidebar();
   const { t } = useTranslation('navigation');
+  const { currentOrgId } = useAuth();
+  const { role } = useRole(currentOrgId || undefined);
+
+  // Helper to safely translate dynamic keys
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const translateKey = (key: string): string => t(key as any);
 
   const menuGroups: readonly IMenuGroup[] = [
     {
       titleKey: "overview",
       items: [
-        { id: "overview", labelKey: "dashboard", path: "/admin/overview", icon: LayoutDashboard },
+        { id: "overview", labelKey: "dashboard", path: "/admin/overview", icon: LayoutDashboard, requiredRole: 'staff' },
       ]
     },
     {
       titleKey: "administration",
       items: [
-        { id: "facilities", labelKey: "rooms", path: "/admin/facilities", icon: Building2 },
-        { id: "bookings", labelKey: "bookings", path: "/admin/bookings", icon: Calendar },
-        { id: "users-roles", labelKey: "users_and_roles", path: "/admin/users-roles", icon: Users },
+        { id: "facilities", labelKey: "rooms", path: "/admin/facilities", icon: Building2, requiredRole: 'admin' },
+        { id: "bookings", labelKey: "bookings", path: "/admin/bookings", icon: Calendar, requiredRole: 'staff' },
+        { id: "users-roles", labelKey: "users_and_roles", path: "/admin/users-roles", icon: Users, requiredRole: 'admin' },
       ]
     },
     {
       titleKey: "communication",
       items: [
-        { id: "messages", labelKey: "messages", path: "/admin/messages", icon: MessageCircle },
-        { id: "notifications", labelKey: "alerts", path: "/admin/notifications", icon: Bell },
+        { id: "messages", labelKey: "messages", path: "/admin/messages", icon: MessageCircle, requiredRole: 'admin' },
+        { id: "notifications", labelKey: "alerts", path: "/admin/notifications", icon: Bell, requiredRole: 'admin' },
       ]
     },
     {
       titleKey: "system",
       items: [
-        { id: "integrations", labelKey: "integrations", path: "/admin/integrations", icon: Plug },
-        { id: "reports", labelKey: "reports", path: "/admin/reports", icon: BarChart3 },
-        { id: "audit", labelKey: "audit_log", path: "/admin/audit-logs", icon: FileText },
-        { id: "data-retention", labelKey: "data_retention", path: "/admin/data-retention", icon: Trash2 },
-        { id: "localization", labelKey: "localization", path: "/admin/localization", icon: Globe },
+        { id: "integrations", labelKey: "integrations", path: "/admin/integrations", icon: Plug, requiredRole: 'admin' },
+        { id: "reports", labelKey: "reports", path: "/admin/reports", icon: BarChart3, requiredRole: 'admin' },
+        { id: "audit", labelKey: "audit_log", path: "/admin/audit-logs", icon: FileText, requiredRole: 'admin' },
+        { id: "data-retention", labelKey: "data_retention", path: "/admin/data-retention", icon: Trash2, requiredRole: 'admin' },
+        { id: "localization", labelKey: "localization", path: "/admin/localization", icon: Globe, requiredRole: 'admin' },
       ]
     }
   ];
+
+  // Role hierarchy for filtering
+  const roleHierarchy: Record<string, number> = {
+    owner: 100,
+    admin: 80,
+    staff: 60,
+    customer: 10,
+  };
+
+  // Filter menu items based on user's role
+  const filteredMenuGroups = useMemo(() => {
+    if (!role) return [];
+
+    const userRoleLevel = roleHierarchy[role] || 0;
+
+    return menuGroups
+      .map(group => ({
+        ...group,
+        items: group.items.filter(item => {
+          const requiredRoleLevel = roleHierarchy[item.requiredRole || 'staff'] || 0;
+          return userRoleLevel >= requiredRoleLevel;
+        })
+      }))
+      .filter(group => group.items.length > 0); // Only show groups that have visible items
+  }, [role]);
 
 
   return (
@@ -84,12 +118,12 @@ const AdminSidebar = (
     }`}>
       {/* Navigation Content */}
       <nav className="flex-1 p-4 pt-8 space-y-6 overflow-y-auto">
-        {menuGroups.map((group) => (
+        {filteredMenuGroups.map((group) => (
           <div key={group.titleKey} className="space-y-2">
             {/* Group Title */}
             {!isCollapsed && (
               <h3 className="px-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                {t(group.titleKey)}
+                {translateKey(group.titleKey)}
               </h3>
             )}
 
@@ -108,7 +142,7 @@ const AdminSidebar = (
                           : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white"
                       }`
                     }
-                    title={isCollapsed ? t(item.labelKey) : undefined}
+                    title={isCollapsed ? translateKey(item.labelKey) : undefined}
                   >
                     {/* Active Indicator */}
                     {({ isActive }) => (
@@ -124,7 +158,9 @@ const AdminSidebar = (
 
                         {/* Label */}
                         {!isCollapsed && (
-                          <span className="whitespace-nowrap">{t(item.labelKey)}</span>
+                          <span className="whitespace-nowrap">
+                            {translateKey(item.labelKey)}
+                          </span>
                         )}
                       </>
                     )}

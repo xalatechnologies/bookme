@@ -84,14 +84,14 @@ const AdminRoutes = (
   return (
     <Routes>
       <Route path="/" element={
-        <ProtectedRoute requiredRole="admin" unauthorizedComponent={<AdminUnauthorizedComponent />}>
+        <ProtectedRoute requiredRole="staff" unauthorizedComponent={<AdminUnauthorizedComponent />}>
           <Suspense fallback={<AdminPageLoader />}>
             <AdminLayout><Navigate to="/admin/overview" replace /></AdminLayout>
           </Suspense>
         </ProtectedRoute>
       } />
       <Route path="/overview" element={
-        <ProtectedRoute requiredRole="admin" unauthorizedComponent={<AdminUnauthorizedComponent />}>
+        <ProtectedRoute requiredRole="staff" unauthorizedComponent={<AdminUnauthorizedComponent />}>
           <Suspense fallback={<AdminPageLoader />}>
             <AdminLayout><Overview /></AdminLayout>
           </Suspense>
@@ -119,14 +119,14 @@ const AdminRoutes = (
         </ProtectedRoute>
       } />
       <Route path="/bookings" element={
-        <ProtectedRoute requiredRole="admin" unauthorizedComponent={<AdminUnauthorizedComponent />}>
+        <ProtectedRoute requiredRole="staff" unauthorizedComponent={<AdminUnauthorizedComponent />}>
           <Suspense fallback={<AdminPageLoader />}>
             <AdminLayout><BookingsPage /></AdminLayout>
           </Suspense>
         </ProtectedRoute>
       } />
       <Route path="/approvals" element={
-        <ProtectedRoute requiredRole="admin" unauthorizedComponent={<AdminUnauthorizedComponent />}>
+        <ProtectedRoute requiredRole="staff" unauthorizedComponent={<AdminUnauthorizedComponent />}>
           <Suspense fallback={<AdminPageLoader />}>
             <AdminLayout><ApprovalsPage /></AdminLayout>
           </Suspense>
