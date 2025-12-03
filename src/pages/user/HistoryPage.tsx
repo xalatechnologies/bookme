@@ -195,7 +195,7 @@ export default function HistoryPage(): JSX.Element {
 
             {/* Date Range - Vertical on mobile, horizontal on desktop */}
             <div className="flex flex-col sm:flex-row gap-2">
-              <div className="space-y-1">
+              <div className="w-full sm:w-auto space-y-1">
                 <label className="text-xs font-medium text-gray-700 dark:text-gray-300 block sm:hidden">
                   {t('pages.history.filters.from_date')}
                 </label>
@@ -208,7 +208,7 @@ export default function HistoryPage(): JSX.Element {
                   aria-label={t('pages.history.filters.from_date')}
                 />
               </div>
-              <div className="space-y-1">
+              <div className="w-full sm:w-auto space-y-1">
                 <label className="text-xs font-medium text-gray-700 dark:text-gray-300 block sm:hidden">
                   {t('pages.history.filters.to_date')}
                 </label>
