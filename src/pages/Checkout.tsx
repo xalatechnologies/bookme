@@ -569,18 +569,29 @@ export const Checkout = (): JSX.Element => {
    * Handle payment completion
    */
   const handleCompletePayment = useCallback(async (): Promise<void> => {
+    console.log('=== PAYMENT ATTEMPT STARTED ===');
+    console.log('Selected payment method:', selectedPaymentMethod);
+    console.log('Consents:', consents);
+    console.log('User info:', userInfo);
+    console.log('Cart items:', items);
+    
     // Auto-select payment method if none selected
     if (!selectedPaymentMethod) {
+      console.log('No payment method selected, auto-selecting card');
       setSelectedPaymentMethod("card");
     }
 
+    console.log('Running form validation...');
     if (!validateForm()) {
+      console.error('Form validation FAILED');
       return;
     }
+    console.log('Form validation PASSED');
 
     // User should already be logged in at this point due to redirect
     // But add a safety check just in case
     if (!user) {
+      console.error('User not logged in, redirecting to login');
       // This shouldn't happen, but if it does, save state and redirect
       saveCheckoutState();
       navigate('/login?type=user&returnUrl=/checkout', { 
@@ -589,6 +600,7 @@ export const Checkout = (): JSX.Element => {
       });
       return;
     }
+    console.log('User is logged in:', user.id);
 
     // Debug: Log cart items to see what facility IDs we have
     console.log('Cart items:', items);
