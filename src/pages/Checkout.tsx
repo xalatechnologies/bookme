@@ -460,6 +460,7 @@ export const Checkout = (): JSX.Element => {
   const validateForm = useCallback((): boolean => {
     const newErrors: Record<string, string> = {};
 
+    // Validate payment method is selected
     if (!selectedPaymentMethod) {
       newErrors.payment = t(
         "checkout:errors.select_payment_method",
@@ -467,7 +468,29 @@ export const Checkout = (): JSX.Element => {
       );
     }
 
-    // Make consent validation less strict for testing
+    // Validate user info
+    if (!userInfo.firstName || !userInfo.lastName) {
+      newErrors.userInfo = t(
+        "checkout:errors.name_required",
+        "Fornavn og etternavn er påkrevd"
+      );
+    }
+
+    if (!userInfo.email) {
+      newErrors.userInfo = t(
+        "checkout:errors.email_required",
+        "E-post er påkrevd"
+      );
+    }
+
+    if (!userInfo.phone) {
+      newErrors.userInfo = t(
+        "checkout:errors.phone_required",
+        "Telefonnummer er påkrevd"
+      );
+    }
+
+    // Validate consents
     if (!consents.terms) {
       newErrors.consents = t(
         "checkout:errors.must_accept_terms",
@@ -491,7 +514,7 @@ export const Checkout = (): JSX.Element => {
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  }, [selectedPaymentMethod, consents]);
+  }, [selectedPaymentMethod, consents, userInfo, t]);
 
   /**
    * Generate next booking number (1-99999, then restart)
@@ -794,11 +817,46 @@ export const Checkout = (): JSX.Element => {
       navigate("/user/bookings?success=true");
     } catch (error) {
       console.error("Error creating bookings:", error);
+      
+      // Provide more specific error messages
+      let errorMessage = t(
+        "checkout:errors.payment_failed",
+        "Betalingen feilet. Prøv igjen eller velg en annen metode."
+      );
+
+      if (error instanceof Error) {
+        // Check for specific error types
+        if (error.message.includes('Invalid facility ID')) {
+          errorMessage = t(
+            "checkout:errors.invalid_facility",
+            "Ugyldig lokal-ID. Vennligst prøv å legge til bookingen på nytt."
+          );
+        } else if (error.message.includes('Database connection failed')) {
+          errorMessage = t(
+            "checkout:errors.database_error",
+            "Kan ikke koble til databasen. Vennligst sjekk internettforbindelsen din."
+          );
+        } else if (error.message.includes('duplicate') || error.message.includes('already exists')) {
+          errorMessage = t(
+            "checkout:errors.duplicate_booking",
+            "Denne bookingen eksisterer allerede. Vennligst sjekk dine eksisterende bookinger."
+          );
+        } else if (error.message.includes('permission') || error.message.includes('unauthorized')) {
+          errorMessage = t(
+            "checkout:errors.permission_denied",
+            "Du har ikke tillatelse til å fullføre denne bookingen."
+          );
+        } else {
+          // Show the actual error message for debugging
+          errorMessage = `${t(
+            "checkout:errors.payment_failed",
+            "Betalingen feilet."
+          )} ${error.message}`;
+        }
+      }
+
       setErrors({
-        payment: t(
-          "checkout:errors.payment_failed",
-          "Payment failed. Please try again or choose a different method. Error: " + (error instanceof Error ? error.message : String(error))
-        ),
+        payment: errorMessage,
       });
       setIsProcessing(false);
     }
@@ -2079,6 +2137,46 @@ export const Checkout = (): JSX.Element => {
                     <div className="flex items-center text-red-600 text-sm bg-red-50 p-3 rounded-lg">
                       <AlertCircle className="h-4 w-4 mr-2" />
                       {errors.consents}
+                    </div>
+                  )}
+
+                  {/* Payment Error Display */}
+                  {errors.payment && (
+                    <div className="bg-red-50 border-2 border-red-300 rounded-lg p-4 mb-4">
+                      <div className="flex items-start">
+                        <AlertCircle className="h-6 w-6 text-red-600 mr-3 flex-shrink-0 mt-0.5" />
+                        <div>
+                          <h4 className="font-bold text-red-800 mb-1">
+                            {t(
+                              "checkout:errors.payment_error_title",
+                              "Betalingsfeil"
+                            )}
+                          </h4>
+                          <p className="text-sm text-red-700">
+                            {errors.payment}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* User Info Error Display */}
+                  {errors.userInfo && (
+                    <div className="bg-orange-50 border-2 border-orange-300 rounded-lg p-4 mb-4">
+                      <div className="flex items-start">
+                        <AlertCircle className="h-6 w-6 text-orange-600 mr-3 flex-shrink-0 mt-0.5" />
+                        <div>
+                          <h4 className="font-bold text-orange-800 mb-1">
+                            {t(
+                              "checkout:errors.missing_info_title",
+                              "Manglende informasjon"
+                            )}
+                          </h4>
+                          <p className="text-sm text-orange-700">
+                            {errors.userInfo}
+                          </p>
+                        </div>
+                      </div>
                     </div>
                   )}
 
