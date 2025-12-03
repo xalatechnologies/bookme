@@ -64,9 +64,9 @@ export default function HistoryPage(): JSX.Element {
   // Handle view booking details
   const handleViewBooking = (item: any) => {
     // Convert history item to BookingWithDetails format
-    const bookingDetails: BookingWithDetails = {
+    const bookingDetails = {
       id: item.id,
-      user_id: '', // Not needed for display
+      user_id: '',
       facility_id: item.facilityId,
       starts_at: item.start,
       ends_at: item.end,
@@ -80,6 +80,10 @@ export default function HistoryPage(): JSX.Element {
       zone_id: null,
       group_id: null,
       org_id: '',
+      price_breakdown: null,
+      processed_at: null,
+      processed_by: null,
+      recurring_booking_id: null,
       facility: {
         id: item.facilityId,
         name: item.facilityName,
@@ -87,7 +91,7 @@ export default function HistoryPage(): JSX.Element {
         created_at: '',
         updated_at: '',
       },
-    };
+    } as BookingWithDetails;
     
     setSelectedBooking(bookingDetails);
     setShowDetailsPanel(true);
@@ -188,23 +192,33 @@ export default function HistoryPage(): JSX.Element {
               </div>
             </div>
 
-            <div className="flex gap-2">
-              <Input
-                type="date"
-                placeholder={t('pages.history.filters.from_date')}
-                value={dateFrom}
-                onChange={(e) => setDateFrom(e.target.value)}
-                className="w-40"
-                aria-label={t('pages.history.filters.from_date')}
-              />
-              <Input
-                type="date"
-                placeholder={t('pages.history.filters.to_date')}
-                value={dateTo}
-                onChange={(e) => setDateTo(e.target.value)}
-                className="w-40"
-                aria-label={t('pages.history.filters.to_date')}
-              />
+            <div className="flex flex-col sm:flex-row gap-2">
+              <div className="flex flex-col sm:flex-row gap-2 items-start sm:items-center">
+                <label className="text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">
+                  {t('pages.history.filters.from_date')}:
+                </label>
+                <Input
+                  type="date"
+                  value={dateFrom}
+                  onChange={(e) => setDateFrom(e.target.value)}
+                  className="w-full sm:w-40"
+                  aria-label={t('pages.history.filters.from_date')}
+                  max={dateTo || undefined}
+                />
+              </div>
+              <div className="flex flex-col sm:flex-row gap-2 items-start sm:items-center">
+                <label className="text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">
+                  {t('pages.history.filters.to_date')}:
+                </label>
+                <Input
+                  type="date"
+                  value={dateTo}
+                  onChange={(e) => setDateTo(e.target.value)}
+                  className="w-full sm:w-40"
+                  aria-label={t('pages.history.filters.to_date')}
+                  min={dateFrom || undefined}
+                />
+              </div>
             </div>
 
             <Select value={selectedFacility} onValueChange={setSelectedFacility}>

@@ -320,11 +320,19 @@ export const useHistoryManagement = (): IUseHistoryManagementReturn => {
     // Apply date range filter
     if (dateFrom) {
       const fromDate = new Date(dateFrom);
-      filtered = filtered.filter((item) => new Date(item.start) >= fromDate);
+      fromDate.setHours(0, 0, 0, 0); // Start of the day
+      filtered = filtered.filter((item) => {
+        const itemDate = new Date(item.start);
+        return itemDate >= fromDate;
+      });
     }
     if (dateTo) {
       const toDate = new Date(dateTo);
-      filtered = filtered.filter((item) => new Date(item.start) <= toDate);
+      toDate.setHours(23, 59, 59, 999); // End of the day
+      filtered = filtered.filter((item) => {
+        const itemDate = new Date(item.start);
+        return itemDate <= toDate;
+      });
     }
 
     // Apply sorting
