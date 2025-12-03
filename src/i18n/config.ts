@@ -14,32 +14,6 @@ import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import HttpBackend from 'i18next-http-backend';
 
-// Import translation files directly for initial load to prevent flickering
-import rolesEN from '../../public/locales/en/roles.json';
-import rolesNO from '../../public/locales/no/roles.json';
-import commonEN from '../../public/locales/en/common.json';
-import commonNO from '../../public/locales/no/common.json';
-import navigationEN from '../../public/locales/en/navigation.json';
-import navigationNO from '../../public/locales/no/navigation.json';
-import authEN from '../../public/locales/en/auth.json';
-import authNO from '../../public/locales/no/auth.json';
-import bookingEN from '../../public/locales/en/booking.json';
-import bookingNO from '../../public/locales/no/booking.json';
-import bookingsEN from '../../public/locales/en/bookings.json';
-import bookingsNO from '../../public/locales/no/bookings.json';
-import facilityEN from '../../public/locales/en/facility.json';
-import facilityNO from '../../public/locales/no/facility.json';
-import calendarEN from '../../public/locales/en/calendar.json';
-import calendarNO from '../../public/locales/no/calendar.json';
-import checkoutEN from '../../public/locales/en/checkout.json';
-import checkoutNO from '../../public/locales/no/checkout.json';
-import adminEN from '../../public/locales/en/admin.json';
-import adminNO from '../../public/locales/no/admin.json';
-import userEN from '../../public/locales/en/user.json';
-import userNO from '../../public/locales/no/user.json';
-import validationEN from '../../public/locales/en/validation.json';
-import validationNO from '../../public/locales/no/validation.json';
-
 // Supported languages
 export const SUPPORTED_LANGUAGES = {
   NO: 'no', // Norwegian (Bokmål) - Default
@@ -130,7 +104,7 @@ i18n
     // React-specific options
     react: {
       // Use Suspense for async translations
-      useSuspense: true,
+      useSuspense: false,
 
       // Bind i18n instance to React context
       bindI18n: 'languageChanged loaded',
@@ -141,41 +115,6 @@ i18n
       // Trans component default namespace
       defaultTransParent: 'div',
     },
-
-    // Preload resources - critical namespaces to prevent flickering
-    resources: {
-      en: {
-        roles: rolesEN,
-        common: commonEN,
-        navigation: navigationEN,
-        auth: authEN,
-        booking: bookingEN,
-        bookings: bookingsEN,
-        facility: facilityEN,
-        calendar: calendarEN,
-        checkout: checkoutEN,
-        admin: adminEN,
-        user: userEN,
-        validation: validationEN,
-      },
-      no: {
-        roles: rolesNO,
-        common: commonNO,
-        navigation: navigationNO,
-        auth: authNO,
-        booking: bookingNO,
-        bookings: bookingsNO,
-        facility: facilityNO,
-        calendar: calendarNO,
-        checkout: checkoutNO,
-        admin: adminNO,
-        user: userNO,
-        validation: validationNO,
-      },
-    },
-
-    // Allow partial bundles - other namespaces load via HTTP backend
-    partialBundledLanguages: true,
 
     // Load all namespaces initially
     preload: Object.values(SUPPORTED_LANGUAGES),
