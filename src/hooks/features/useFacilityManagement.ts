@@ -21,6 +21,7 @@ import {
   type IFacilitySortConfig,
 } from '@/services/business/facility.business.service';
 import type { Database } from '@/types/database';
+import type { TView, TSortBy, TSortOrder } from '@/stores/facilityUIStore';
 
 type Facility = Database['public']['Tables']['facilities']['Row'];
 
@@ -48,13 +49,13 @@ export interface IUseFacilityManagementReturn {
   readonly selectedFacilityIds: readonly string[];
 
   // UI Actions
-  readonly setView: (view: any) => void;
+  readonly setView: (view: TView) => void;
   readonly toggleFilters: () => void;
   readonly setSearchTerm: (term: string) => void;
   readonly toggleStatusFilter: (status: string) => void;
   readonly toggleTypeFilter: (type: string) => void;
   readonly setCapacityRange: (range: { min: number; max: number }) => void;
-  readonly toggleSort: (sortBy: any) => void;
+  readonly toggleSort: (sortBy: TSortBy) => void;
   readonly toggleFacilitySelection: (id: string) => void;
   readonly selectAllFacilities: () => void;
   readonly clearSelection: () => void;
@@ -76,9 +77,12 @@ export interface IUseFacilityManagementReturn {
 export const useFacilityManagement = (): IUseFacilityManagementReturn => {
   // Data layer
   const orgId = useOrganizationId();
-  const { facilities, loading: isLoading, error } = useFacilities(orgId);
+  const { data: facilities, isLoading, error } = useFacilities(orgId);
   const deleteFacilityMutation = useDeleteFacility();
   const updateFacilityMutation = useUpdateFacility();
+
+  // Ensure facilities is always an array, even when undefined
+  const safeFacilities = facilities || [];
 
   // UI state layer
   const {
@@ -113,25 +117,25 @@ export const useFacilityManagement = (): IUseFacilityManagementReturn => {
       capacityRange,
     };
 
-    const filtered = filterFacilities(facilities, filters);
+    const filtered = filterFacilities(safeFacilities, filters);
 
     const sortConfig: IFacilitySortConfig = {
-      sortBy: sortBy as any,
-      sortOrder: sortOrder as any,
+      sortBy: sortBy as TSortBy,
+      sortOrder: sortOrder as TSortOrder,
     };
 
     return sortFacilities(filtered, sortConfig);
-  }, [facilities, searchTerm, statusFilter, typeFilter, capacityRange, sortBy, sortOrder]);
+  }, [safeFacilities, searchTerm, statusFilter, typeFilter, capacityRange, sortBy, sortOrder]);
 
   // Statistics
-  const stats = useMemo(() => calculateFacilityStats(facilities), [facilities]);
-  const uniqueTypes = useMemo(() => getUniqueFacilityTypes(facilities), [facilities]);
+  const stats = useMemo(() => calculateFacilityStats(safeFacilities), [safeFacilities]);
+  const uniqueTypes = useMemo(() => getUniqueFacilityTypes(safeFacilities), [safeFacilities]);
   const uniqueStatuses = useMemo(() => getUniqueFacilityStatuses(), []);
 
   // Business operations
   const deleteFacility = useCallback(
     async (id: string): Promise<void> => {
-      const facility = facilities.find((f) => f.id === id);
+      const facility = safeFacilities.find((f) => f.id === id);
       if (!facility) {
         throw new Error('Facility not found');
       }
@@ -143,12 +147,12 @@ export const useFacilityManagement = (): IUseFacilityManagementReturn => {
 
       await deleteFacilityMutation.mutateAsync(id);
     },
-    [facilities, deleteFacilityMutation]
+    [safeFacilities, deleteFacilityMutation]
   );
 
   const batchDeleteFacilities = useCallback(
     async (ids: readonly string[]): Promise<void> => {
-      const facilitiesToDelete = facilities.filter((f) => ids.includes(f.id));
+      const facilitiesToDelete = safeFacilities.filter((f) => ids.includes(f.id));
 
       const validation = canBatchDeleteFacilities(facilitiesToDelete);
       if (!validation.canDelete) {
@@ -158,14 +162,14 @@ export const useFacilityManagement = (): IUseFacilityManagementReturn => {
       await Promise.all(ids.map((id) => deleteFacilityMutation.mutateAsync(id)));
       clearSelection();
     },
-    [facilities, deleteFacilityMutation, clearSelection]
+    [safeFacilities, deleteFacilityMutation, clearSelection]
   );
 
   const updateFacilityStatus = useCallback(
     async (id: string, status: string): Promise<void> => {
-      await updateFacilityMutation.mutateAsync({
-        id,
-        data: { status },
+      await updateFacilityMutation.mutateAsync({ 
+        id, 
+        updates: { status }
       });
     },
     [updateFacilityMutation]
@@ -177,7 +181,7 @@ export const useFacilityManagement = (): IUseFacilityManagementReturn => {
         ids.map((id) =>
           updateFacilityMutation.mutateAsync({
             id,
-            data: { status },
+            updates: { status },
           })
         )
       );
@@ -192,7 +196,7 @@ export const useFacilityManagement = (): IUseFacilityManagementReturn => {
 
   return {
     // Data
-    facilities,
+    facilities: safeFacilities,
     filteredFacilities,
     isLoading,
     error,

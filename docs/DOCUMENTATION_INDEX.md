@@ -1,7 +1,7 @@
-# BookMe - Complete Documentation Index
+# Booknor - Complete Documentation Index
 
 **Last Updated**: 2025-10-28  
-**Project**: BookMe - Municipal Facility Booking System  
+**Project**: Booknor - Municipal Facility Booking System  
 **Stack**: React 19 + TypeScript + Supabase + Tailwind CSS
 
 ---

@@ -38,7 +38,6 @@ export type {
   UserProfileInsert,
   UserProfileUpdate,
   AdditionalService,
-  BookingService,
   Favorite,
   Review,
   Message,
@@ -49,10 +48,8 @@ export type {
   GroupMember,
   // Enum types
   BookingStatus,
-  FacilityStatus,
-  UserRole,
-  PaymentStatus,
-  NotificationType,
+  OrgRole as UserRole,
+  NotificationChannel as NotificationType,
   // Extended types
   BookingWithDetails,
   FacilityWithZones,
@@ -139,6 +136,7 @@ export {
   useUpdateFacility,
   useDeleteFacility,
   useSearchFacilities,
+  usePublishedFacilitiesWithCoords,
 } from './facilities.service';
 
 // Bookings
@@ -227,23 +225,6 @@ export {
   type MessageWithDetails,
 } from './messages.service';
 
-// Groups
-export {
-  groupsService,
-  groupKeys,
-  useUserGroups,
-  useGroup,
-  useUserInvitations,
-  useGroupBookings,
-  useCreateGroup,
-  useUpdateGroup,
-  useDeleteGroup,
-  useInviteUser,
-  useAcceptInvitation,
-  useUpdateMemberRole,
-  useRemoveMember,
-} from './groups.service';
-
 // Recurring Bookings
 export {
   recurringService,
@@ -299,3 +280,11 @@ export {
   useNotificationPreferences,
   useUpdateNotificationPreferences,
 } from './notifications.service';
+
+// Preferences
+export {
+  preferencesService,
+  PreferencesService,
+  type Theme,
+  type Language,
+} from './preferences.service';

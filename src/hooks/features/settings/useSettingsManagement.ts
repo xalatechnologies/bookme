@@ -8,12 +8,11 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useOrganizationId } from '@/hooks/useOrganizationId';
 import { useAppUIStore } from '@/stores/appUIStore';
-import { organizationsService, type OrganizationSettings as OrgSettings } from '@/services/supabase/organizations.service';
+import { organizationsService } from '@/services/supabase/organizations.service';
+
 import {
   validateSettingsData,
   compareSettings,
-  getChangedFields,
-  formatSettingsForDisplay,
   prepareSettingsForStorage,
   getDefaultSettings,
   getAvailableTimezones,
@@ -22,11 +21,6 @@ import {
   validateEmailSettings,
   validatePaymentSettings,
   type IOrganizationSettings,
-  type IEmailSettings,
-  type IPaymentSettings,
-  type INotificationSettings,
-  type ISecuritySettings,
-  type IGeneralSettings,
 } from '@/services/business/settings.business.service';
 
 export interface IUseSettingsManagementReturn {
@@ -50,12 +44,12 @@ export interface IUseSettingsManagementReturn {
   readonly availableLanguages: readonly { code: string; name: string }[];
 
   // UI Actions
-  readonly setActiveTab: (tab: any) => void;
-  readonly openModal: (modal: string) => void;
-  readonly closeModal: (modal: string) => void;
+  readonly setActiveTab: (tab: string) => void;
+  readonly openModal: (modal: keyof import('@/stores/appUIStore').ISettingsState['modals']) => void;
+  readonly closeModal: (modal: keyof import('@/stores/appUIStore').ISettingsState['modals']) => void;
 
   // Settings Management
-  readonly updateSettings: (section: keyof IOrganizationSettings, data: any) => void;
+  readonly updateSettings: <K extends keyof IOrganizationSettings>(section: K, data: Partial<IOrganizationSettings[K]>) => void;
   readonly saveSettings: () => Promise<void>;
   readonly resetSettings: () => void;
   readonly discardChanges: () => void;
@@ -115,26 +109,7 @@ export const useSettingsManagement = (): IUseSettingsManagementReturn => {
       setIsLoading(true);
       setError(null);
 
-      const orgSettings = await organizationsService.getOrganizationSettings(orgId);
-
-      // Convert to our settings format
-      const defaultSettings = getDefaultSettings();
-      const loadedSettings: IOrganizationSettings = {
-        general: {
-          ...defaultSettings.general,
-          ...(orgSettings.businessHours ? { businessHoursStart: '09:00', businessHoursEnd: '17:00' } : {}),
-        },
-        email: defaultSettings.email,
-        payment: {
-          ...defaultSettings.payment,
-          ...(orgSettings.paymentSettings?.currency ? { currency: orgSettings.paymentSettings.currency } : {}),
-        },
-        notifications: {
-          ...defaultSettings.notifications,
-          ...(orgSettings.notifications?.emailNotifications !== undefined ? { bookingCreated: orgSettings.notifications.emailNotifications } : {}),
-        },
-        security: defaultSettings.security,
-      };
+      const loadedSettings = await organizationsService.getOrganizationSettings(orgId);
 
       setSettings(loadedSettings);
       setOriginalSettings(loadedSettings);
@@ -168,7 +143,7 @@ export const useSettingsManagement = (): IUseSettingsManagementReturn => {
    * Update settings section
    */
   const updateSettings = useCallback(
-    (section: keyof IOrganizationSettings, data: any) => {
+    <K extends keyof IOrganizationSettings>(section: K, data: Partial<IOrganizationSettings[K]>) => {
       if (!settings) return;
 
       const updatedSettings: IOrganizationSettings = {
@@ -206,29 +181,8 @@ export const useSettingsManagement = (): IUseSettingsManagementReturn => {
       // Prepare settings for storage
       const settingsToStore = prepareSettingsForStorage(settings);
 
-      // Convert to organization settings format
-      const orgSettings: Partial<OrgSettings> = {
-        businessHours: {
-          monday: { open: settingsToStore.general.businessHoursStart, close: settingsToStore.general.businessHoursEnd },
-          tuesday: { open: settingsToStore.general.businessHoursStart, close: settingsToStore.general.businessHoursEnd },
-          wednesday: { open: settingsToStore.general.businessHoursStart, close: settingsToStore.general.businessHoursEnd },
-          thursday: { open: settingsToStore.general.businessHoursStart, close: settingsToStore.general.businessHoursEnd },
-          friday: { open: settingsToStore.general.businessHoursStart, close: settingsToStore.general.businessHoursEnd },
-        },
-        paymentSettings: {
-          currency: settingsToStore.payment.currency,
-          acceptedMethods: settingsToStore.payment.enabled ? [settingsToStore.payment.provider || ''] : [],
-        },
-        notifications: {
-          emailNotifications: settingsToStore.notifications.bookingCreated,
-          smsNotifications: false,
-          bookingConfirmation: settingsToStore.notifications.bookingCreated,
-          bookingReminders: settingsToStore.notifications.bookingModified,
-        },
-      };
-
       // Update organization settings
-      await organizationsService.updateOrganizationSettings(orgId, orgSettings);
+      await organizationsService.updateOrganizationSettings(orgId, settingsToStore);
 
       // Update original settings to reflect saved state
       setOriginalSettings(settings);

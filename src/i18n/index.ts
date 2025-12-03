@@ -31,4 +31,4 @@ export {
 export type { Language, TranslationFunction, TranslationParams } from './types';
 
 // Export the language context for LanguageToggle component compatibility
-export { useLanguage, LanguageProvider } from '@/contexts/LanguageContext';
+export { useLanguage, LanguageProvider } from "@/contexts/hooks";

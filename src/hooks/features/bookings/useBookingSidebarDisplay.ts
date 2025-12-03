@@ -51,7 +51,7 @@ export const useBookingSidebarDisplay = ({
   selectedSlots,
   recurringSlots,
   bookingType,
-  priceCalculation,
+  _priceCalculation,
 }: IUseBookingSidebarDisplayProps): IUseBookingSidebarDisplayReturn => {
   const { t, i18n } = useTranslation("booking");
 

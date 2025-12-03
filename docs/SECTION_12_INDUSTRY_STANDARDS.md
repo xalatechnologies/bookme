@@ -42,7 +42,7 @@
 - Moderate technical debt, needs refactoring
 - Production-ready with caveats
 
-**Level 3: Advanced (7-8)** - Mature application ✅ **BookMe is here**
+**Level 3: Advanced (7-8)** - Mature application ✅ **Booknor is here**
 - Clear architectural patterns, mostly consistent
 - Low technical debt, good maintainability
 - Production-ready with high confidence
@@ -52,7 +52,7 @@
 - Minimal technical debt, excellent maintainability
 - Enterprise production-ready
 
-**BookMe Assessment: Level 3+ (Advanced, trending toward Expert)**
+**Booknor Assessment: Level 3+ (Advanced, trending toward Expert)**
 
 **Justification:**
 - ✅ Clear separation of concerns (services, hooks, components)
@@ -69,36 +69,36 @@
 
 #### 12.2.1 Frontend Stack Comparison
 
-**BookMe Stack:**
+**Booknor Stack:**
 - React 19.1.1 + Vite 6.0.7 + TypeScript 5.9.3
 - Tailwind CSS 3.4.0 + Radix UI (via shadcn/ui)
 - React Router DOM 7.9.3
 
 ---
 
-##### 12.2.1.1 BookMe vs Next.js App Router
+##### 12.2.1.1 Booknor vs Next.js App Router
 
-| Category | BookMe (React + Vite) | Next.js 15 App Router | Winner |
+| Category | Booknor (React + Vite) | Next.js 15 App Router | Winner |
 |----------|------------------------|------------------------|--------|
 | **Rendering Strategy** | Client-side (SPA) | Server-side + Client-side | Next.js (for SEO) |
-| **Build Performance** | ⭐⭐⭐⭐⭐ (5.79s full build) | ⭐⭐⭐⭐ (slower builds) | BookMe |
-| **Hot Reload Speed** | ⭐⭐⭐⭐⭐ (instant HMR) | ⭐⭐⭐⭐ (fast, but slower than Vite) | BookMe |
+| **Build Performance** | ⭐⭐⭐⭐⭐ (5.79s full build) | ⭐⭐⭐⭐ (slower builds) | Booknor |
+| **Hot Reload Speed** | ⭐⭐⭐⭐⭐ (instant HMR) | ⭐⭐⭐⭐ (fast, but slower than Vite) | Booknor |
 | **Code Splitting** | ✅ Manual (React.lazy) | ✅ Automatic (every route) | Next.js |
 | **Initial Load Time** | ⚠️ Larger initial bundle | ✅ Smaller (server-rendered) | Next.js |
 | **SEO** | ❌ Limited (client-rendered) | ✅ Excellent (server-rendered) | Next.js |
 | **TypeScript Integration** | ✅ Excellent | ✅ Excellent | Tie |
-| **Learning Curve** | ⭐⭐⭐ (simpler) | ⭐⭐⭐⭐⭐ (complex) | BookMe |
-| **Hosting Complexity** | ✅ Static hosting (Netlify, Vercel) | ⚠️ Requires Node.js server | BookMe |
-| **Real-time Apps** | ✅ Excellent (WebSocket-friendly) | ⚠️ Complex (Server Components) | BookMe |
-| **Dashboard Apps** | ✅ Perfect use case | ⚠️ Overkill (no SEO needed) | BookMe |
+| **Learning Curve** | ⭐⭐⭐ (simpler) | ⭐⭐⭐⭐⭐ (complex) | Booknor |
+| **Hosting Complexity** | ✅ Static hosting (Netlify, Vercel) | ⚠️ Requires Node.js server | Booknor |
+| **Real-time Apps** | ✅ Excellent (WebSocket-friendly) | ⚠️ Complex (Server Components) | Booknor |
+| **Dashboard Apps** | ✅ Perfect use case | ⚠️ Overkill (no SEO needed) | Booknor |
 | **Bundle Size (gzipped)** | ~145 kB (main) + vendors | ~80 kB (server-rendered) | Next.js |
 
 **Score:**
-- **BookMe (React + Vite):** 8.5/10
+- **Booknor (React + Vite):** 8.5/10
 - **Next.js App Router:** 9.0/10
 
-**Recommendation for BookMe:** ✅ **Stick with React + Vite**
-- BookMe is a dashboard/booking app (no SEO requirements)
+**Recommendation for Booknor:** ✅ **Stick with React + Vite**
+- Booknor is a dashboard/booking app (no SEO requirements)
 - Real-time features benefit from SPA architecture
 - Simpler deployment (static hosting)
 - Faster development experience (HMR)
@@ -107,9 +107,9 @@
 
 ---
 
-##### 12.2.1.2 BookMe vs Remix
+##### 12.2.1.2 Booknor vs Remix
 
-| Category | BookMe (React + Vite) | Remix 2.0 | Winner |
+| Category | Booknor (React + Vite) | Remix 2.0 | Winner |
 |----------|------------------------|------------|--------|
 | **Rendering Strategy** | Client-side (SPA) | Server-side + Client-side | Remix (for forms) |
 | **Form Handling** | React Hook Form + client validation | ✅ Progressive enhancement | Remix |
@@ -117,24 +117,24 @@
 | **Error Handling** | Manual ErrorBoundary | ✅ Built-in (error boundaries per route) | Remix |
 | **Nested Routes** | Manual nesting | ✅ Automatic (file-based) | Remix |
 | **Bundle Size** | ~145 kB (main chunk) | ~60 kB (server-rendered) | Remix |
-| **Deployment** | Static hosting | Requires Node.js runtime | BookMe |
+| **Deployment** | Static hosting | Requires Node.js runtime | Booknor |
 | **TypeScript** | ✅ Excellent | ✅ Excellent | Tie |
-| **Learning Curve** | ⭐⭐⭐ (simpler) | ⭐⭐⭐⭐ (web fundamentals) | BookMe |
+| **Learning Curve** | ⭐⭐⭐ (simpler) | ⭐⭐⭐⭐ (web fundamentals) | Booknor |
 
 **Score:**
-- **BookMe (React + Vite):** 8.5/10
+- **Booknor (React + Vite):** 8.5/10
 - **Remix:** 8.5/10
 
 **Recommendation:** ✅ **React + Vite is correct choice**
 - Remix shines for form-heavy apps with progressive enhancement
-- BookMe benefits from SPA (real-time, dashboard)
+- Booknor benefits from SPA (real-time, dashboard)
 - Simpler deployment model
 
 ---
 
-##### 12.2.1.3 BookMe vs Vue 3 + Nuxt 4
+##### 12.2.1.3 Booknor vs Vue 3 + Nuxt 4
 
-| Category | BookMe (React + Vite) | Vue 3 + Nuxt 4 | Winner |
+| Category | Booknor (React + Vite) | Vue 3 + Nuxt 4 | Winner |
 |----------|------------------------|-----------------|--------|
 | **Component Model** | React (hooks + JSX) | Vue (Composition API + SFC) | Preference |
 | **Performance** | ⭐⭐⭐⭐ (Virtual DOM) | ⭐⭐⭐⭐⭐ (Proxy-based reactivity) | Vue |
@@ -146,7 +146,7 @@
 | **Developer Experience** | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | Vue |
 
 **Score:**
-- **BookMe (React + Vite):** 8.5/10
+- **Booknor (React + Vite):** 8.5/10
 - **Vue 3 + Nuxt 4:** 8.5/10
 
 **Recommendation:** ✅ **React is correct choice**
@@ -159,16 +159,16 @@
 
 #### 12.2.2 Backend Stack Comparison
 
-**BookMe Stack:**
+**Booknor Stack:**
 - Supabase (PostgreSQL + PostgREST + GoTrue + Realtime)
 - Row Level Security (RLS) for authorization
 - PostgreSQL 15 with extensions (PostGIS, pg_trgm, pg_stat_statements)
 
 ---
 
-##### 12.2.2.1 BookMe (Supabase) vs Firebase
+##### 12.2.2.1 Booknor (Supabase) vs Firebase
 
-| Category | BookMe (Supabase) | Firebase | Winner |
+| Category | Booknor (Supabase) | Firebase | Winner |
 |----------|-------------------|----------|--------|
 | **Database Type** | PostgreSQL (relational) | Firestore (NoSQL) | Supabase (for complex queries) |
 | **SQL Support** | ✅ Full SQL (PostgREST) | ❌ No SQL (NoSQL queries) | Supabase |
@@ -187,8 +187,8 @@
 - **Supabase:** 9.5/10
 - **Firebase:** 7.5/10
 
-**Recommendation for BookMe:** ✅ **Supabase is the correct choice**
-- BookMe requires complex relational data (facilities, bookings, users)
+**Recommendation for Booknor:** ✅ **Supabase is the correct choice**
+- Booknor requires complex relational data (facilities, bookings, users)
 - Geospatial queries (PostGIS for map features)
 - RLS policies for multi-tenancy
 - Open-source (no vendor lock-in)
@@ -197,9 +197,9 @@
 
 ---
 
-##### 12.2.2.2 BookMe (Supabase) vs AWS Amplify
+##### 12.2.2.2 Booknor (Supabase) vs AWS Amplify
 
-| Category | BookMe (Supabase) | AWS Amplify | Winner |
+| Category | Booknor (Supabase) | AWS Amplify | Winner |
 |----------|-------------------|-------------|--------|
 | **Database** | PostgreSQL | DynamoDB (NoSQL) | Supabase (relational) |
 | **SQL Support** | ✅ Full SQL | ❌ No SQL | Supabase |
@@ -218,15 +218,15 @@
 
 **Recommendation:** ✅ **Supabase is the correct choice**
 - Simpler setup and pricing
-- Relational database (better for BookMe)
+- Relational database (better for Booknor)
 - No vendor lock-in
 - Amplify is better for AWS-native apps
 
 ---
 
-##### 12.2.2.3 BookMe (Supabase) vs Custom Node.js + PostgreSQL
+##### 12.2.2.3 Booknor (Supabase) vs Custom Node.js + PostgreSQL
 
-| Category | BookMe (Supabase) | Custom Node.js + PostgreSQL | Winner |
+| Category | Booknor (Supabase) | Custom Node.js + PostgreSQL | Winner |
 |----------|-------------------|------------------------------|--------|
 | **Time to Market** | ✅ Instant (BaaS) | ⚠️ Weeks to build | Supabase |
 | **Authentication** | ✅ Built-in (GoTrue) | ⚠️ Custom (Passport.js, etc.) | Supabase |
@@ -243,7 +243,7 @@
 - **Supabase:** 9.0/10 (for MVPs and growing apps)
 - **Custom Node.js:** 7.5/10 (for early-stage apps) → 9.5/10 (at scale)
 
-**Recommendation for BookMe:** ✅ **Supabase is correct for MVP → Series A**
+**Recommendation for Booknor:** ✅ **Supabase is correct for MVP → Series A**
 - Fast time to market
 - Built-in auth, real-time, storage
 - PostgREST handles most API needs
@@ -258,30 +258,30 @@
 
 #### 12.2.3 State Management Comparison
 
-**BookMe Stack:**
+**Booknor Stack:**
 - Zustand 5.0.8 (client state, persisted)
 - React Context (auth, language, global UI)
 - React Query 5.90.5 (server state)
 
 ---
 
-##### 12.2.3.1 BookMe (Zustand + React Query) vs Redux Toolkit
+##### 12.2.3.1 Booknor (Zustand + React Query) vs Redux Toolkit
 
-| Category | BookMe (Zustand + RQ) | Redux Toolkit | Winner |
+| Category | Booknor (Zustand + RQ) | Redux Toolkit | Winner |
 |----------|------------------------|---------------|--------|
-| **Boilerplate** | ✅ Minimal (5-10 lines/store) | ⚠️ Moderate (20-30 lines/slice) | BookMe |
-| **Learning Curve** | ⭐⭐ (simple) | ⭐⭐⭐⭐ (complex) | BookMe |
-| **Bundle Size** | ✅ 3 kB (Zustand) + 35 kB (RQ) | ⚠️ 45 kB (Redux Toolkit) | BookMe |
+| **Boilerplate** | ✅ Minimal (5-10 lines/store) | ⚠️ Moderate (20-30 lines/slice) | Booknor |
+| **Learning Curve** | ⭐⭐ (simple) | ⭐⭐⭐⭐ (complex) | Booknor |
+| **Bundle Size** | ✅ 3 kB (Zustand) + 35 kB (RQ) | ⚠️ 45 kB (Redux Toolkit) | Booknor |
 | **Server State** | ✅ React Query (caching, refetch) | ⚠️ RTK Query (similar) | Tie |
 | **DevTools** | ✅ Built-in (Zustand DevTools) | ✅ Redux DevTools | Tie |
 | **TypeScript** | ✅ Excellent (inferred types) | ✅ Excellent | Tie |
-| **Persistence** | ✅ Built-in middleware | ⚠️ Manual (redux-persist) | BookMe |
+| **Persistence** | ✅ Built-in middleware | ⚠️ Manual (redux-persist) | Booknor |
 | **Middleware** | ✅ Simple (Zustand middleware) | ✅ Powerful (Redux middleware) | Redux |
 | **Time Travel Debugging** | ⚠️ Limited | ✅ Full time travel | Redux |
 | **Ecosystem** | ⭐⭐⭐⭐ (growing) | ⭐⭐⭐⭐⭐ (mature) | Redux |
 
 **Score:**
-- **BookMe (Zustand + React Query):** 9.5/10
+- **Booknor (Zustand + React Query):** 9.5/10
 - **Redux Toolkit:** 8.5/10
 
 **Recommendation:** ✅ **Zustand + React Query is the correct choice**
@@ -294,9 +294,9 @@
 
 ---
 
-##### 12.2.3.2 BookMe vs Jotai + React Query
+##### 12.2.3.2 Booknor vs Jotai + React Query
 
-| Category | BookMe (Zustand + RQ) | Jotai + React Query | Winner |
+| Category | Booknor (Zustand + RQ) | Jotai + React Query | Winner |
 |----------|------------------------|----------------------|--------|
 | **State Model** | Store-based (like Redux) | Atom-based (like Recoil) | Preference |
 | **Granularity** | ⚠️ Coarse (store-level) | ✅ Fine (atom-level) | Jotai |
@@ -308,7 +308,7 @@
 | **DevTools** | ✅ Built-in | ⚠️ Limited | Zustand |
 
 **Score:**
-- **BookMe (Zustand + React Query):** 9.0/10
+- **Booknor (Zustand + React Query):** 9.0/10
 - **Jotai + React Query:** 9.0/10
 
 **Recommendation:** ✅ **Zustand is correct, but Jotai is excellent alternative**
@@ -318,20 +318,20 @@
 
 ---
 
-##### 12.2.3.3 BookMe vs Recoil
+##### 12.2.3.3 Booknor vs Recoil
 
-| Category | BookMe (Zustand + RQ) | Recoil | Winner |
+| Category | Booknor (Zustand + RQ) | Recoil | Winner |
 |----------|------------------------|--------|--------|
 | **Maturity** | ✅ Stable (v5+) | ⚠️ Experimental (v0.x) | Zustand |
 | **State Model** | Store-based | Atom-based | Preference |
-| **Server State** | ✅ React Query (separate) | ⚠️ Manual (no built-in) | BookMe |
+| **Server State** | ✅ React Query (separate) | ⚠️ Manual (no built-in) | Booknor |
 | **Bundle Size** | 3 kB | 20 kB | Zustand |
 | **Learning Curve** | ⭐⭐ | ⭐⭐⭐⭐ | Zustand |
 | **Persistence** | ✅ Built-in | ⚠️ Manual | Zustand |
 | **TypeScript** | ✅ Excellent | ⚠️ Good (improving) | Zustand |
 
 **Score:**
-- **BookMe (Zustand + React Query):** 9.5/10
+- **Booknor (Zustand + React Query):** 9.5/10
 - **Recoil:** 7.0/10
 
 **Recommendation:** ✅ **Avoid Recoil (still experimental after 4+ years)**
@@ -372,7 +372,7 @@
 - ⚠️ Enable `noPropertyAccessFromIndexSignature: true`
 
 **Industry Comparison:**
-- **BookMe:** 8.5/10 (very strict)
+- **Booknor:** 8.5/10 (very strict)
 - **Typical React app:** 6.0/10 (loose mode)
 - **Industry best practice:** 9.5/10 (all strictness flags enabled)
 
@@ -414,7 +414,7 @@
 **This is stricter than 95% of React codebases in the industry.**
 
 **Industry Comparison:**
-- **BookMe:** 9.5/10 (industry-leading strictness)
+- **Booknor:** 9.5/10 (industry-leading strictness)
 - **Typical React app:** 5.0/10 (allows `any`, no return types)
 - **Google/Airbnb style guide:** 8.0/10 (good but less strict)
 
@@ -452,7 +452,7 @@ src/
 - ⚠️ Mixed naming conventions (some PascalCase, some camelCase folders)
 
 **Industry Comparison:**
-- **BookMe:** 9.0/10 (excellent structure)
+- **Booknor:** 9.0/10 (excellent structure)
 - **Typical React app:** 6.0/10 (flat structure, no patterns)
 - **Best-in-class:** 9.5/10 (barrel exports, strict naming)
 
@@ -484,7 +484,7 @@ src/
 - ⚠️ No Storybook (hard to discover components)
 
 **Industry Comparison:**
-- **BookMe:** 9.0/10 (excellent reusability)
+- **Booknor:** 9.0/10 (excellent reusability)
 - **Typical React app:** 5.0/10 (duplicated code)
 - **Design system:** 10/10 (Storybook, versioned components)
 
@@ -538,13 +538,13 @@ dist/assets/i18n-vendor.js              47.91 kB │ gzip:  15.87 kB  ✅ Good
 4. Consider lazy-loading heavy components (MapBox, Charts)
 
 **Industry Comparison:**
-- **BookMe:** 7.5/10 (acceptable but room for improvement)
+- **Booknor:** 7.5/10 (acceptable but room for improvement)
 - **Typical React app:** 6.0/10 (no code splitting)
 - **Best-in-class:** 9.0/10 (all chunks under 50 kB gzipped)
 
 **Lighthouse Performance Budget:**
 - Target: < 200 kB total JS (gzipped)
-- BookMe: ~222 kB (slightly over)
+- Booknor: ~222 kB (slightly over)
 - Grade: **B+**
 
 ---
@@ -617,7 +617,7 @@ coverage: {
 5. Run `npm run test:coverage` and track to 80%+
 
 **Industry Comparison:**
-- **BookMe:** 3.0/10 (poor coverage, excellent infrastructure)
+- **Booknor:** 3.0/10 (poor coverage, excellent infrastructure)
 - **Typical startup:** 4.0/10 (similar)
 - **Best-in-class:** 9.5/10 (90%+ coverage, all layers tested)
 
@@ -648,7 +648,7 @@ Bundle sizes:
 - ✅ Source maps generated (debugging)
 
 **Industry Comparison:**
-- **BookMe (Vite):** 5.79s for 120k LOC → **9.0/10**
+- **Booknor (Vite):** 5.79s for 120k LOC → **9.0/10**
 - **Create React App (Webpack):** ~30s for same size → 6.0/10
 - **Next.js:** ~12s for same size → 7.5/10
 
@@ -658,7 +658,7 @@ Bundle sizes:
 
 **Dev Server Metrics:**
 
-| Metric | BookMe (Vite) | Create React App | Next.js |
+| Metric | Booknor (Vite) | Create React App | Next.js |
 |--------|---------------|------------------|---------|
 | **Initial Start** | ~2s | ~10s | ~5s |
 | **Hot Module Replacement** | < 50ms | ~500ms | ~200ms |
@@ -677,7 +677,7 @@ Bundle sizes:
 
 **Lighthouse Performance Budget:**
 
-| Metric | Target | BookMe (Estimated) | Score |
+| Metric | Target | Booknor (Estimated) | Score |
 |--------|--------|-------------------|-------|
 | **First Contentful Paint (FCP)** | < 1.8s | ~1.5s | ✅ 9/10 |
 | **Largest Contentful Paint (LCP)** | < 2.5s | ~2.2s | ✅ 8/10 |
@@ -788,7 +788,7 @@ const token = session?.access_token; // JWT token
 - ⚠️ No password strength validation on frontend
 
 **Industry Comparison:**
-- **BookMe (Supabase Auth):** 9.5/10
+- **Booknor (Supabase Auth):** 9.5/10
 - **Firebase Auth:** 9.5/10
 - **Custom JWT:** 7.0/10 (high implementation risk)
 - **Session-based auth:** 6.0/10 (less secure, stateful)
@@ -828,7 +828,7 @@ owner > admin > case_handler > editor > read_only > customer
 **This is better than 99% of React apps.**
 
 **Industry Comparison:**
-- **BookMe (RLS + RBAC):** 10/10 (database-enforced)
+- **Booknor (RLS + RBAC):** 10/10 (database-enforced)
 - **Typical React app:** 4.0/10 (frontend-only auth checks)
 - **Firebase Firestore Rules:** 8.5/10 (good but less flexible)
 - **AWS IAM:** 9.0/10 (complex but powerful)
@@ -843,7 +843,7 @@ owner > admin > case_handler > editor > read_only > customer
 // React escapes by default
 <div>{userInput}</div> // ✅ Safe (escaped)
 
-// Dangerous patterns (NOT USED in BookMe)
+// Dangerous patterns (NOT USED in Booknor)
 <div dangerouslySetInnerHTML={{ __html: userInput }} /> // ❌ Unsafe
 ```
 
@@ -865,7 +865,7 @@ owner > admin > case_handler > editor > read_only > customer
 - ✅ CORS configured (Supabase restricts origins)
 
 **Industry Comparison:**
-- **BookMe:** 9.0/10 (React defaults + JWT)
+- **Booknor:** 9.0/10 (React defaults + JWT)
 - **Typical React app:** 7.0/10 (React defaults only)
 - **Server-rendered app:** 8.5/10 (CSRF tokens needed)
 
@@ -907,7 +907,7 @@ CHECK (end_time > start_time);
 - ⚠️ No SQL injection protection explained (PostgREST handles this)
 
 **Industry Comparison:**
-- **BookMe:** 8.5/10 (good validation)
+- **Booknor:** 8.5/10 (good validation)
 - **Typical React app:** 5.0/10 (frontend-only validation)
 - **Best-in-class:** 9.5/10 (frontend + backend + rate limiting)
 
@@ -939,7 +939,7 @@ found 0 vulnerabilities in 150 packages
 
 #### 12.5.6 OWASP Top 10 Compliance
 
-| OWASP Risk | BookMe Implementation | Score |
+| OWASP Risk | Booknor Implementation | Score |
 |------------|----------------------|-------|
 | **A01: Broken Access Control** | RLS + RBAC (database-enforced) | ✅ 10/10 |
 | **A02: Cryptographic Failures** | Supabase manages encryption (TLS, bcrypt) | ✅ 10/10 |
@@ -1090,7 +1090,7 @@ found 0 vulnerabilities in 150 packages
 - ✅ Optimistic updates (immediate UI feedback)
 
 **Industry Comparison:**
-- **BookMe (React Query):** 9.5/10
+- **Booknor (React Query):** 9.5/10
 - **No caching:** 2.0/10 (every render fetches)
 - **Redux + manual caching:** 6.0/10 (complex, error-prone)
 
@@ -1123,7 +1123,7 @@ found 0 vulnerabilities in 150 packages
 - ⚠️ No architecture diagram
 
 **Industry Comparison:**
-- **BookMe:** 9.0/10 (fast setup)
+- **Booknor:** 9.0/10 (fast setup)
 - **Typical MERN app:** 6.0/10 (need MongoDB, backend, etc.)
 - **Microservices app:** 3.0/10 (complex Docker setup)
 
@@ -1152,7 +1152,7 @@ found 0 vulnerabilities in 150 packages
 - ✅ Fast builds (5.79s)
 
 **Industry Comparison:**
-- **BookMe (Vite):** 10/10
+- **Booknor (Vite):** 10/10
 - **Create React App (Webpack):** 6.0/10 (slow HMR)
 - **Next.js:** 8.0/10 (fast but slower than Vite)
 
@@ -1586,18 +1586,18 @@ onTTFB(console.log);
 
 ### 12.10 Competitive Analysis
 
-#### 12.10.1 BookMe vs Calendly
+#### 12.10.1 Booknor vs Calendly
 
 **Calendly:** Meeting scheduling platform
 
-| Feature | BookMe | Calendly | Winner |
+| Feature | Booknor | Calendly | Winner |
 |---------|--------|----------|--------|
 | **Use Case** | Facility booking + management | Meeting scheduling | Different |
 | **Target Audience** | Organizations with facilities | Individuals + teams | Different |
-| **Multi-tenancy** | ✅ Org-based (advanced) | ✅ Team-based (simple) | BookMe |
-| **RBAC** | ✅ 7 roles (advanced) | ⚠️ 3 roles (basic) | BookMe |
+| **Multi-tenancy** | ✅ Org-based (advanced) | ✅ Team-based (simple) | Booknor |
+| **RBAC** | ✅ 7 roles (advanced) | ⚠️ 3 roles (basic) | Booknor |
 | **Recurring Bookings** | ✅ Weekly, monthly, custom | ✅ Weekly, monthly | Tie |
-| **Group Bookings** | ✅ Advanced (invitations, cost splitting) | ❌ No group bookings | BookMe |
+| **Group Bookings** | ✅ Advanced (invitations, cost splitting) | ❌ No group bookings | Booknor |
 | **Calendar Integration** | ⚠️ Not yet | ✅ Google, Outlook, iCal | Calendly |
 | **Payment Processing** | ⚠️ Not yet | ✅ Stripe integration | Calendly |
 | **Email Reminders** | ⚠️ Not yet | ✅ Automated reminders | Calendly |
@@ -1605,10 +1605,10 @@ onTTFB(console.log);
 | **Pricing** | TBD | $8-12/user/month | N/A |
 
 **Score:**
-- **BookMe:** 7.5/10 (excellent facility management, missing integrations)
+- **Booknor:** 7.5/10 (excellent facility management, missing integrations)
 - **Calendly:** 9.0/10 (polished, mature product)
 
-**BookMe Advantages:**
+**Booknor Advantages:**
 - Advanced RBAC (7 roles vs 3)
 - Multi-tenancy (org-based isolation)
 - Group bookings (invitations, cost splitting)
@@ -1620,18 +1620,18 @@ onTTFB(console.log);
 - Email reminders
 - Polished UI/UX
 
-**Recommendation:** BookMe is better for facility management; Calendly is better for meeting scheduling.
+**Recommendation:** Booknor is better for facility management; Calendly is better for meeting scheduling.
 
 ---
 
-#### 12.10.2 BookMe vs HubSpot CRM
+#### 12.10.2 Booknor vs HubSpot CRM
 
 **HubSpot:** CRM with booking features
 
-| Feature | BookMe | HubSpot CRM | Winner |
+| Feature | Booknor | HubSpot CRM | Winner |
 |---------|--------|-------------|--------|
 | **Core Focus** | Facility booking | CRM + Sales | Different |
-| **Booking Features** | ✅ Advanced | ⚠️ Basic (meetings only) | BookMe |
+| **Booking Features** | ✅ Advanced | ⚠️ Basic (meetings only) | Booknor |
 | **CRM Features** | ❌ None | ✅ Advanced | HubSpot |
 | **Multi-tenancy** | ✅ Org-based | ✅ Account-based | Tie |
 | **RBAC** | ✅ 7 roles | ✅ Custom roles | Tie |
@@ -1641,38 +1641,38 @@ onTTFB(console.log);
 | **Analytics** | ⚠️ Basic | ✅ Advanced | HubSpot |
 
 **Score:**
-- **BookMe:** 8.0/10 (best-in-class facility booking)
+- **Booknor:** 8.0/10 (best-in-class facility booking)
 - **HubSpot:** 9.5/10 (all-in-one CRM platform)
 
 **Recommendation:** Not direct competitors (different use cases).
 
 ---
 
-#### 12.10.3 BookMe vs Salesforce
+#### 12.10.3 Booknor vs Salesforce
 
 **Salesforce:** Enterprise CRM with booking modules
 
-| Feature | BookMe | Salesforce | Winner |
+| Feature | Booknor | Salesforce | Winner |
 |---------|--------|-----------|--------|
 | **Target Audience** | SMBs | Enterprise | Different |
-| **Booking Features** | ✅ Advanced | ⚠️ Via AppExchange | BookMe |
+| **Booking Features** | ✅ Advanced | ⚠️ Via AppExchange | Booknor |
 | **Customization** | ⚠️ Code-level | ✅ No-code (point-and-click) | Salesforce |
-| **Pricing** | TBD | $25-300/user/month | BookMe |
-| **Setup Complexity** | ⭐⭐⭐ (simple) | ⭐⭐⭐⭐⭐ (complex) | BookMe |
+| **Pricing** | TBD | $25-300/user/month | Booknor |
+| **Setup Complexity** | ⭐⭐⭐ (simple) | ⭐⭐⭐⭐⭐ (complex) | Booknor |
 | **Integrations** | ⚠️ Limited | ✅ Unlimited (AppExchange) | Salesforce |
-| **Learning Curve** | ⭐⭐⭐ | ⭐⭐⭐⭐⭐ (steep) | BookMe |
+| **Learning Curve** | ⭐⭐⭐ | ⭐⭐⭐⭐⭐ (steep) | Booknor |
 
 **Score:**
-- **BookMe:** 8.5/10 (best for SMBs)
+- **Booknor:** 8.5/10 (best for SMBs)
 - **Salesforce:** 9.5/10 (best for enterprise)
 
-**Recommendation:** BookMe targets SMBs; Salesforce targets Fortune 500.
+**Recommendation:** Booknor targets SMBs; Salesforce targets Fortune 500.
 
 ---
 
 #### 12.10.4 Feature Comparison Matrix
 
-| Feature | BookMe | Calendly | HubSpot | Salesforce |
+| Feature | Booknor | Calendly | HubSpot | Salesforce |
 |---------|--------|----------|---------|-----------|
 | **Facility Booking** | ✅ Advanced | ❌ No | ❌ No | ⚠️ Via custom |
 | **Meeting Scheduling** | ⚠️ Basic | ✅ Advanced | ✅ Good | ✅ Good |
@@ -1687,7 +1687,7 @@ onTTFB(console.log);
 | **Analytics** | ⚠️ Basic | ⚠️ Good | ✅ Advanced | ✅ Advanced |
 | **Pricing** | TBD | $8-12/user | $45-1200/mo | $25-300/user |
 
-**Conclusion:** BookMe is best-in-class for **facility booking** but needs integrations (calendar, payments, email) to compete with mature products.
+**Conclusion:** Booknor is best-in-class for **facility booking** but needs integrations (calendar, payments, email) to compete with mature products.
 
 ---
 
@@ -1775,9 +1775,9 @@ onTTFB(console.log);
 
 #### 12.11.5 TCO Comparison
 
-**BookMe (Supabase) vs Custom Build vs SaaS:**
+**Booknor (Supabase) vs Custom Build vs SaaS:**
 
-| Cost Category | BookMe (Supabase) | Custom Backend | SaaS (Calendly-like) |
+| Cost Category | Booknor (Supabase) | Custom Backend | SaaS (Calendly-like) |
 |--------------|-------------------|----------------|---------------------|
 | **Development (1 year)** | $300k (2 devs) | $500k (4 devs) | $0 (no dev) |
 | **Infrastructure (Year 1)** | $600 ($25/mo x 12 + $426/mo x 12) | $12k (AWS, DevOps) | $0 (included) |
@@ -1786,12 +1786,12 @@ onTTFB(console.log);
 
 **Conclusion:**
 - **SaaS (Calendly):** Cheapest but least flexible ($100k over 3 years)
-- **BookMe (Supabase):** Good balance ($780k over 3 years)
+- **Booknor (Supabase):** Good balance ($780k over 3 years)
 - **Custom Backend:** Most expensive but most flexible ($1.1M over 3 years)
 
 **When to choose:**
 - **SaaS:** MVP, limited customization needs
-- **BookMe (Supabase):** Series A-B, moderate customization
+- **Booknor (Supabase):** Series A-B, moderate customization
 - **Custom Backend:** Series C+, full control required
 
 ---
@@ -1923,7 +1923,7 @@ onTTFB(console.log);
 - ⚠️ Low test coverage (risk of regressions)
 
 **Industry Comparison:**
-- **BookMe:** 100 hours/month (Low-Medium)
+- **Booknor:** 100 hours/month (Low-Medium)
 - **Typical React app:** 150 hours/month (Medium)
 - **Monolithic legacy app:** 300+ hours/month (High)
 
@@ -2027,9 +2027,9 @@ onTTFB(console.log);
 
 ---
 
-#### 12.13.4 When to Choose BookMe Architecture vs Alternatives
+#### 12.13.4 When to Choose Booknor Architecture vs Alternatives
 
-**Choose BookMe Architecture (React + Vite + Supabase) when:**
+**Choose Booknor Architecture (React + Vite + Supabase) when:**
 
 ✅ Building a **dashboard/admin application**
 ✅ Need **fast time to market** (3-6 months)
@@ -2084,7 +2084,7 @@ onTTFB(console.log);
 
 **Overall Assessment:**
 
-BookMe is an **excellent, production-ready architecture** for a **SaaS startup targeting SMBs**. The codebase demonstrates **industry-leading practices** in security (RLS + RBAC), code quality (TypeScript strict mode), and developer experience (Vite + React 19).
+Booknor is an **excellent, production-ready architecture** for a **SaaS startup targeting SMBs**. The codebase demonstrates **industry-leading practices** in security (RLS + RBAC), code quality (TypeScript strict mode), and developer experience (Vite + React 19).
 
 **Critical Path to Production:**
 
@@ -2093,7 +2093,7 @@ BookMe is an **excellent, production-ready architecture** for a **SaaS startup t
 3. **Setup CI/CD pipeline** (1 week)
 4. **Split SearchField chunk** (3 days)
 
-**After these 4 tasks, BookMe is production-ready.**
+**After these 4 tasks, Booknor is production-ready.**
 
 **Long-term Success Factors:**
 

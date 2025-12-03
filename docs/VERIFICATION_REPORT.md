@@ -55,7 +55,7 @@ Network: http://10.0.40.245:3006/
 | staff@drammen.kommune.no | Staff Member | staff | Drammen Kommune | Test123! |
 | admin@drammen.kommune.no | Admin User | admin | Drammen Kommune | Test123! |
 | owner@drammen.kommune.no | Owner User | owner | Drammen Kommune | Test123! |
-| superadmin@bookme.no | Super Admin | (platform) | (none) | Test123! |
+| superadmin@booknor.no | Super Admin | (platform) | (none) | Test123! |
 
 **All users created and passwords set** ✅
 
@@ -429,7 +429,7 @@ npx supabase logs
 
 ### System Status: ✅ FULLY OPERATIONAL
 
-The BookMe application authentication and RBAC system is:
+The Booknor application authentication and RBAC system is:
 - ✅ Fully implemented
 - ✅ Tested and verified
 - ✅ Documented comprehensively

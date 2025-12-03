@@ -1,13 +1,14 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Menu, ShoppingCart } from "lucide-react";
 
-import { useLanguage } from "@/contexts/LanguageContext";
-import { useCart } from "@/contexts/CartContext";
-import { useUserProfile } from "@/contexts/UserProfileContext";
+import { useLanguage } from "@/contexts/hooks";
+import { useCart } from "@/contexts/hooks";
+
+import { useAuth } from "@/contexts/hooks";
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -31,50 +32,49 @@ export const GlobalHeader = (): JSX.Element => {
   const [cartOpen, setCartOpen] = useState(false);
   const { language, toggleLanguage } = useLanguage();
 
+  // Get auth state from AuthContext
+  const { user, signOut } = useAuth();
+
   // Get cart data
   const { itemCount } = useCart();
-  const { profile } = useUserProfile();
 
-  // Check if we're on a booking page, user pages, or checkout
-  const isBookingPage = location.pathname.includes("/book");
-  const isUserPage = location.pathname.startsWith("/user");
-  const isCheckoutPage = location.pathname === "/checkout";
-  const isAuthenticated = isBookingPage || isUserPage || isCheckoutPage;
+
+  // Use actual auth state instead of route-based detection
+  const isAuthenticated = !!user;
+
+
+
+  // Store the user's last portal when they navigate to admin or user areas
+  useEffect(() => {
+    if (isAuthenticated) {
+      if (location.pathname.startsWith("/admin")) {
+        localStorage.setItem("lastPortal", "admin");
+      } else if (location.pathname.startsWith("/user")) {
+        localStorage.setItem("lastPortal", "user");
+      }
+    }
+  }, [isAuthenticated, location.pathname]);
 
   const logout = (): void => {
     try {
-      // Clear all user data from localStorage
-      const keysToRemove = [];
-      for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        if (key && (key.startsWith("user") || key.startsWith("admin"))) {
-          keysToRemove.push(key);
-        }
-      }
-      keysToRemove.forEach((key) => localStorage.removeItem(key));
+      // Use the proper signOut function from AuthContext
+      signOut().catch((error) => {
+        console.error("❌ Admin logout failed:", error);
+      });
 
-      // Clear cart data
-      localStorage.removeItem("cart");
-      localStorage.removeItem("cartItems");
-
-      // Clear search results
-      localStorage.removeItem("searchResults");
-      localStorage.removeItem("adminSearchResults");
-
-      // Clear any other session data
-      localStorage.removeItem("sessionData");
-      localStorage.removeItem("authToken");
+      // Clear the last portal preference
+      localStorage.removeItem("lastPortal");
 
       // Show logout confirmation
       alert(t("messages.logout_success"));
 
-      // Navigate to home page
-      navigate("/");
+      // Navigate to home page with a special state to prevent redirection
+      navigate("/", { state: { justLoggedOut: true } });
     } catch (error) {
       console.error("Global logout failed:", error);
       alert(t("messages.logout_failed"));
       // Still navigate to home page even if logout fails
-      navigate("/");
+      navigate("/", { state: { justLoggedOut: true } });
     }
   };
 
@@ -89,7 +89,7 @@ export const GlobalHeader = (): JSX.Element => {
   };
 
   return (
-    <header className="bg-white dark:bg-gray-900 py-3 shadow-md sticky top-0 z-10 border-b border-gray-200 dark:border-gray-700 w-full">
+    <header className="bg-white py-3 shadow-md sticky top-0 z-50 border-b border-gray-200 w-full">
       <div className="container mx-auto px-4 max-w-7xl">
         <div className="flex justify-between items-center gap-4">
           {/* Logo (left) */}
@@ -147,15 +147,6 @@ export const GlobalHeader = (): JSX.Element => {
               isLoggedIn={isAuthenticated}
               handleLogin={handleLogin}
               handleLogout={handleLogout}
-              userProfile={
-                isAuthenticated
-                  ? {
-                      firstName: profile.firstName,
-                      lastName: profile.lastName,
-                      email: profile.email,
-                    }
-                  : undefined
-              }
             />
           </div>
         </div>
@@ -179,15 +170,6 @@ export const GlobalHeader = (): JSX.Element => {
         handleLogin={handleLogin}
         handleLogout={handleLogout}
         closeMobileMenu={() => setMobileMenuOpen(false)}
-        userProfile={
-          isAuthenticated
-            ? {
-                firstName: profile.firstName,
-                lastName: profile.lastName,
-                email: profile.email,
-              }
-            : undefined
-        }
       />
     </header>
   );

@@ -189,7 +189,26 @@
     "total_cost": "Total Cost",
     "per_hour": "per hour",
     "includes_vat": "incl. VAT",
-    "excludes_vat": "excl. VAT"
+    "excludes_vat": "excl. VAT",
+    "title": "Booking Details",
+    "unknownVenue": "Unknown venue",
+    "statusLabel": "Status:",
+    "dateLabel": "Date:",
+    "timeLabel": "Time:",
+    "durationLabel": "Duration:",
+    "totalPriceLabel": "Total Price:",
+    "notesLabel": "Notes:",
+    "bookingIdLabel": "Booking ID:",
+    "actionsLabel": "Actions:",
+    "editBooking": "Edit",
+    "cancelBooking": "Cancel",
+    "shareBooking": "Share",
+    "addToCalendar": "Add to Calendar",
+    "close": "Close",
+    "selected_slots_pricing": "Selected time slots and pricing",
+    "select_slots_pricing": "Select time slots and get pricing",
+    "recurring_slots_pricing": "Recurring time slots and pricing",
+    "select_pattern": "Time slots and pricing (select recurrence pattern)"
   },
   "pricing": {
     "base_price": "Base price",
@@ -362,91 +381,8 @@
     "recurring_slots_and_price": "Recurring time slots and pricing",
     "slots_and_price_select_pattern": "Time slots and pricing (select recurrence pattern)",
     "selected_slots_and_price": "Selected time slots and pricing",
-    "select_slots_get_price": "Select time slots and get pricing"
-  },
-  "weekdays": {
-    "sunday": "Sunday",
-    "monday": "Monday",
-    "tuesday": "Tuesday",
-    "wednesday": "Wednesday",
-    "thursday": "Thursday",
-    "friday": "Friday",
-    "saturday": "Saturday"
-  },
-  "form": {
-    "purpose_label": "Purpose of booking",
-    "purpose_placeholder": "E.g., football training, meeting, event",
-    "attendees_label": "Number of participants",
-    "activity_type_label": "Activity type",
-    "activity_type_placeholder": "Select activity type",
-    "actor_type_label": "Actor type",
-    "actor_type_placeholder": "Select actor type",
-    "additional_info_label": "Additional information",
-    "additional_info_placeholder": "Any special requests or needs"
-  },
-  "activity_types": {
-    "sport": "Sport",
-    "culture": "Culture",
-    "meeting": "Meeting",
-    "event": "Event",
-    "training": "Training"
-  },
-  "validation": {
-    "form_incomplete": "Form is not complete",
-    "fill_required_fields": "Fill in all required fields to continue",
-    "terms_required": "Terms and Conditions",
-    "accept_terms_message": "You must accept the terms and conditions to continue",
-    "processing": "Processing request...",
-    "select_weekdays": "Select weekdays",
-    "select_time_slots": "Select time slots"
-  },
-  "booking_types": {
-    "one_time_label": "Single booking",
-    "one_time_description": "One-time booking",
-    "recurring_label": "Recurring booking",
-    "recurring_description": "Fixed time that repeats",
-    "select_label": "Select {{type}}"
-  },
-  "button_labels": {
-    "add_to_cart": "Add to reservation cart",
-    "complete_booking": "Complete booking",
-    "new_booking": "New booking",
-    "cancel_selected": "Cancel selected",
-    "cancel": "Cancel",
-    "cancel_booking": "Cancel booking"
-  },
-  "delete_confirm": {
-    "title_single": "Cancel booking",
-    "title_multiple": "Cancel bookings",
-    "message_single": "Are you sure you want to cancel 1 booking?",
-    "message_multiple": "Are you sure you want to cancel {{count}} bookings?",
-    "cancel_all": "Cancel all",
-    "canceling": "Canceling...",
-    "success_single": "Booking cancelled",
-    "success_multiple": "{{count}} bookings cancelled"
-  },
-  "toast": {
-    "booking_submitted": "Booking submitted! You will receive confirmation via email once approved.",
-    "calendar_added": "Booking added to calendar!",
-    "info_copied": "Booking info copied to clipboard!",
-    "recurring_coming_soon": "Viewing recurring bookings coming soon!"
-  },
-  "details": {
-    "title": "Booking Details",
-    "unknownVenue": "Unknown venue",
-    "statusLabel": "Status:",
-    "dateLabel": "Date:",
-    "timeLabel": "Time:",
-    "durationLabel": "Duration:",
-    "totalPriceLabel": "Total Price:",
-    "notesLabel": "Notes:",
-    "bookingIdLabel": "Booking ID:",
-    "actionsLabel": "Actions:",
-    "editBooking": "Edit",
-    "cancelBooking": "Cancel",
-    "shareBooking": "Share",
-    "addToCalendar": "Add to Calendar",
-    "close": "Close"
+    "select_slots_get_price": "Select time slots and get pricing",
+    "select_slots_pricing": "Select time slots and get pricing"
   },
   "time": {
     "hour": "hour",
@@ -471,19 +407,14 @@
     },
     "actions": {
       "title": "Complete Booking",
-      "description": "Add to cart or complete now"
+      "description": "Add to cart or complete now",
+      "ready": "Ready for booking!",
+      "all_filled": "All information is filled out and the terms are accepted."
     }
   },
   "progress": {
     "title": "Booking Process",
     "step_of": "Step {{current}} of {{total}}"
-  },
-  "sidebar": {
-    "select_slots_pricing": "Select time slots and get pricing",
-    "selected_slots_and_price": "Selected time slots and pricing",
-    "recurring_slots_and_price": "Recurring time slots and pricing",
-    "slots_and_price_select_pattern": "Time slots and pricing (select recurrence pattern)",
-    "clear_all_slots": "Remove all selected time slots"
   },
   "recurrence": {
     "title": "Recurrence pattern",

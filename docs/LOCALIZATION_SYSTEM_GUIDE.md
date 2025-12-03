@@ -2,7 +2,7 @@
 
 ## Overview
 
-This guide covers the comprehensive database-driven localization system for translating database values (facility types, statuses, categories, etc.) in the BookMe application.
+This guide covers the comprehensive database-driven localization system for translating database values (facility types, statuses, categories, etc.) in the Booknor application.
 
 ## Table of Contents
 

@@ -5,7 +5,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { UserRound, ShieldCheck, Mail, Lock, AlertCircle } from "lucide-react";
 import { toast } from "react-toastify";
 
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/hooks";
 import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -174,7 +174,7 @@ export const Login = (): JSX.Element => {
                   <p>• staff@drammen.kommune.no</p>
                   <p>• admin@drammen.kommune.no</p>
                   <p>• owner@drammen.kommune.no</p>
-                  <p>• superadmin@bookme.no</p>
+                  <p>• superadmin@booknor.no</p>
                   <p className="mt-2 text-gray-500">
                     {t('login.testAccounts.password', 'Passord: password123')}
                   </p>

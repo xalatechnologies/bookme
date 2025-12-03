@@ -39,7 +39,7 @@ export interface TicketWithMessages extends SupportTicket {
 export const supportKeys = {
   all: ['support'] as const,
   lists: () => [...supportKeys.all, 'list'] as const,
-  list: (filters: Record<string, any>) => [...supportKeys.lists(), filters] as const,
+  list: (filters: Record<string, unknown>) => [...supportKeys.lists(), filters] as const,
   userTickets: (userId: string) => [...supportKeys.all, 'user', userId] as const,
   orgTickets: (orgId: string) => [...supportKeys.all, 'org', orgId] as const,
   details: () => [...supportKeys.all, 'detail'] as const,

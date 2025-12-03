@@ -7,7 +7,7 @@ This document summarizes the refactoring of search and filter components to use 
 ## Created Reusable Hooks
 
 ### 1. `useSearch` Hook
-**Location:** `/Users/ibrahimrahmani/Documents/xaheen/bookme/src/hooks/search/useSearch.ts`
+**Location:** `/Users/ibrahimrahmani/Documents/xaheen/booknor/src/hooks/search/useSearch.ts`
 
 Generic search hook with debouncing for filtering items based on a search query.
 
@@ -30,7 +30,7 @@ const { query, results, setQuery, clearQuery, hasActiveQuery } = useSearch({
 ```
 
 ### 2. `useFilters` Hook
-**Location:** `/Users/ibrahimrahmani/Documents/xaheen/bookme/src/hooks/search/useFilters.ts`
+**Location:** `/Users/ibrahimrahmani/Documents/xaheen/booknor/src/hooks/search/useFilters.ts`
 
 Generic filtering hook supporting multiple filter criteria with active filter tracking.
 
@@ -70,7 +70,7 @@ const {
 ```
 
 ### 3. `useSort` Hook
-**Location:** `/Users/ibrahimrahmani/Documents/xaheen/bookme/src/hooks/search/useSort.ts`
+**Location:** `/Users/ibrahimrahmani/Documents/xaheen/booknor/src/hooks/search/useSort.ts`
 
 Generic sorting hook with support for custom comparison functions.
 
@@ -101,7 +101,7 @@ const { sortedItems, sortConfig, setSort, toggleSort } = useSort({
 ## Created Reusable Components
 
 ### 1. `SearchInput` Component
-**Location:** `/Users/ibrahimrahmani/Documents/xaheen/bookme/src/components/common/filters/SearchInput.tsx`
+**Location:** `/Users/ibrahimrahmani/Documents/xaheen/booknor/src/components/common/filters/SearchInput.tsx`
 
 Reusable search input with icon, clear button, and i18n support.
 
@@ -124,7 +124,7 @@ Reusable search input with icon, clear button, and i18n support.
 ```
 
 ### 2. `FilterChip` Component
-**Location:** `/Users/ibrahimrahmani/Documents/xaheen/bookme/src/components/common/filters/FilterChip.tsx`
+**Location:** `/Users/ibrahimrahmani/Documents/xaheen/booknor/src/components/common/filters/FilterChip.tsx`
 
 Display active filter as a removable chip/badge.
 
@@ -145,7 +145,7 @@ Display active filter as a removable chip/badge.
 ```
 
 ### 3. `ResultsCount` Component
-**Location:** `/Users/ibrahimrahmani/Documents/xaheen/bookme/src/components/common/filters/ResultsCount.tsx`
+**Location:** `/Users/ibrahimrahmani/Documents/xaheen/booknor/src/components/common/filters/ResultsCount.tsx`
 
 Display count of filtered/search results with i18n support.
 
@@ -165,7 +165,7 @@ Display count of filtered/search results with i18n support.
 ```
 
 ### 4. `SortDropdown` Component
-**Location:** `/Users/ibrahimrahmani/Documents/xaheen/bookme/src/components/common/filters/SortDropdown.tsx`
+**Location:** `/Users/ibrahimrahmani/Documents/xaheen/booknor/src/components/common/filters/SortDropdown.tsx`
 
 Reusable dropdown for sorting options with i18n support.
 
@@ -198,7 +198,7 @@ interface SortOption {
 ```
 
 ### 5. `FilterPanel` Component
-**Location:** `/Users/ibrahimrahmani/Documents/xaheen/bookme/src/components/common/filters/FilterPanel.tsx`
+**Location:** `/Users/ibrahimrahmani/Documents/xaheen/booknor/src/components/common/filters/FilterPanel.tsx`
 
 Container component for filter controls with collapsible support.
 
@@ -227,7 +227,7 @@ Container component for filter controls with collapsible support.
 ## Refactored Components
 
 ### BookingFiltersBar
-**Location:** `/Users/ibrahimrahmani/Documents/xaheen/bookme/src/components/bookings/BookingFiltersBar.tsx`
+**Location:** `/Users/ibrahimrahmani/Documents/xaheen/booknor/src/components/bookings/BookingFiltersBar.tsx`
 
 **Changes:**
 - ✅ Migrated all hardcoded text to i18n
@@ -557,20 +557,20 @@ Potential improvements:
 ## Files Changed
 
 ### New Files Created
-- `/Users/ibrahimrahmani/Documents/xaheen/bookme/src/hooks/search/useSearch.ts`
-- `/Users/ibrahimrahmani/Documents/xaheen/bookme/src/hooks/search/useFilters.ts`
-- `/Users/ibrahimrahmani/Documents/xaheen/bookme/src/hooks/search/useSort.ts`
-- `/Users/ibrahimrahmani/Documents/xaheen/bookme/src/hooks/search/index.ts`
-- `/Users/ibrahimrahmani/Documents/xaheen/bookme/src/components/common/filters/SearchInput.tsx`
-- `/Users/ibrahimrahmani/Documents/xaheen/bookme/src/components/common/filters/FilterChip.tsx`
-- `/Users/ibrahimrahmani/Documents/xaheen/bookme/src/components/common/filters/ResultsCount.tsx`
-- `/Users/ibrahimrahmani/Documents/xaheen/bookme/src/components/common/filters/SortDropdown.tsx`
-- `/Users/ibrahimrahmani/Documents/xaheen/bookme/src/components/common/filters/FilterPanel.tsx`
-- `/Users/ibrahimrahmani/Documents/xaheen/bookme/src/components/common/filters/index.ts`
+- `/Users/ibrahimrahmani/Documents/xaheen/booknor/src/hooks/search/useSearch.ts`
+- `/Users/ibrahimrahmani/Documents/xaheen/booknor/src/hooks/search/useFilters.ts`
+- `/Users/ibrahimrahmani/Documents/xaheen/booknor/src/hooks/search/useSort.ts`
+- `/Users/ibrahimrahmani/Documents/xaheen/booknor/src/hooks/search/index.ts`
+- `/Users/ibrahimrahmani/Documents/xaheen/booknor/src/components/common/filters/SearchInput.tsx`
+- `/Users/ibrahimrahmani/Documents/xaheen/booknor/src/components/common/filters/FilterChip.tsx`
+- `/Users/ibrahimrahmani/Documents/xaheen/booknor/src/components/common/filters/ResultsCount.tsx`
+- `/Users/ibrahimrahmani/Documents/xaheen/booknor/src/components/common/filters/SortDropdown.tsx`
+- `/Users/ibrahimrahmani/Documents/xaheen/booknor/src/components/common/filters/FilterPanel.tsx`
+- `/Users/ibrahimrahmani/Documents/xaheen/booknor/src/components/common/filters/index.ts`
 
 ### Files Modified
-- `/Users/ibrahimrahmani/Documents/xaheen/bookme/src/i18n/locales/no/common.json` - Added filter translations
-- `/Users/ibrahimrahmani/Documents/xaheen/bookme/src/components/bookings/BookingFiltersBar.tsx` - Refactored with i18n and reusable components
+- `/Users/ibrahimrahmani/Documents/xaheen/booknor/src/i18n/locales/no/common.json` - Added filter translations
+- `/Users/ibrahimrahmani/Documents/xaheen/booknor/src/components/bookings/BookingFiltersBar.tsx` - Refactored with i18n and reusable components
 
 ## Conclusion
 

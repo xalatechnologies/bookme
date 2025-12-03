@@ -5,12 +5,10 @@ import React from "react";
 import { useTranslation } from 'react-i18next';
 import { format } from "date-fns";
 import { nb } from "date-fns/locale";
-import { X, Trash2, Calendar, Clock } from "lucide-react";
+import { Trash2, Calendar, Clock } from "lucide-react";
 
 // Internal libraries/utilities
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 
 // Types
 import { ISelectedSlotsDisplayProps, ISelectedTimeSlot } from "../../types";
@@ -32,44 +30,12 @@ import { ISelectedSlotsDisplayProps, ISelectedTimeSlot } from "../../types";
  */
 export const SelectedSlotsDisplay: React.FC<ISelectedSlotsDisplayProps> = ({
   selectedSlots,
-  onRemoveSlot,
+   
+  onRemoveSlot: _onRemoveSlot,
   onClearAll,
   isLoading = false,
 }): JSX.Element => {
-  const { t, i18n } = useTranslation(['booking','common']);
-  /**
-   * Format time slot for display
-   *
-   * @param slot - Selected time slot
-   * @returns Formatted string for display
-   */
-  const formatTimeSlot = (slot: ISelectedTimeSlot): string => {
-    // Ensure date is a proper Date object (handle localStorage serialization)
-    let date: Date;
-
-    if (slot.date instanceof Date) {
-      date = slot.date;
-    } else if (typeof slot.date === 'string') {
-      // Handle string dates from localStorage
-      date = new Date(slot.date);
-    } else if (typeof slot.date === 'number') {
-      // Handle timestamp numbers
-      date = new Date(slot.date);
-    } else {
-      // Fallback to current date if invalid
-      date = new Date();
-    }
-
-    // Validate the date
-    if (isNaN(date.getTime())) {
-      date = new Date(); // Fallback to current date
-    }
-
-
-    const formattedDate = format(date, "dd. MMM", { locale: nb });
-    const time = slot.timeSlot.split('-')[0]; // Get start time
-    return `${formattedDate} kl. ${time}`;
-  };
+  const { t } = useTranslation(['bookings','common']);
 
   /**
    * Get duration text for display
@@ -80,19 +46,9 @@ export const SelectedSlotsDisplay: React.FC<ISelectedSlotsDisplayProps> = ({
   const getDurationText = (duration: number): string => {
     // Convert minutes to hours
     const hours = duration / 60;
-    return hours === 1 ? t('time.hour', '1 hour') : `${hours} ${t('time.hours', 'hours')}`;
+    return hours === 1 ? `1 ${t('bookings:time.hour', 'hour')}` : `${hours} ${t('bookings:time.hours', 'hours')}`;
   };
 
-  /**
-   * Get price text for display
-   *
-   * @param slot - Selected time slot
-   * @returns Formatted price text
-   */
-  const getPriceText = (slot: ISelectedTimeSlot): string => {
-    const totalPrice = slot.pricePerHour * slot.duration;
-    return `${totalPrice} kr`;
-  };
 
   /**
    * Group time slots into packages by date and consecutive times
@@ -174,7 +130,7 @@ export const SelectedSlotsDisplay: React.FC<ISelectedSlotsDisplayProps> = ({
       <div className="text-center py-6">
         <Calendar className="h-12 w-12 text-gray-300 mx-auto mb-3" />
         <p className="text-gray-500 text-sm">
-          {t('details.select_slots_pricing', 'Velg tidspunkter og få en prisberegning')}
+          {t('booking:details.select_slots_pricing', 'Select time slots and get a price calculation')}
         </p>
       </div>
     );
@@ -187,7 +143,7 @@ export const SelectedSlotsDisplay: React.FC<ISelectedSlotsDisplayProps> = ({
       <div className="flex items-center justify-between">
         <h4 className="text-sm font-medium text-gray-700 flex items-center gap-2">
           <Calendar className="h-4 w-4" />
-          {t('details.selected_slots', 'Valgte tidspunkter')} ({selectedSlots.length})
+          {t('booking:details.selected_slots', 'Selected time slots')} ({selectedSlots.length})
         </h4>
         {selectedSlots.length > 0 && (
           <Button
@@ -198,7 +154,7 @@ export const SelectedSlotsDisplay: React.FC<ISelectedSlotsDisplayProps> = ({
             className="text-red-600 hover:text-red-700 hover:bg-red-50"
           >
             <Trash2 className="h-3 w-3 mr-1" />
-            {t('sidebar.clear_all_slots', 'Fjern alle')}
+            {t('booking:sidebar.clear_all_slots', 'Remove all selected time slots')}
           </Button>
         )}
       </div>
@@ -238,16 +194,16 @@ export const SelectedSlotsDisplay: React.FC<ISelectedSlotsDisplayProps> = ({
       {/* Summary */}
       <div className="mt-4 pt-3 border-t border-gray-200">
         <div className="flex justify-between items-center text-sm">
-          <span className="text-gray-600">{t('details.total_hours', 'Totalt antall timer:')}</span>
+          <span className="text-gray-600">{t('booking:details.total_hours', 'Total hours:')}</span>
           <span className="font-medium text-gray-900">
             {(() => {
               const totalHours = selectedSlots.reduce((total, slot) => total + slot.duration, 0) / 60;
-              return totalHours === 1 ? t('time.hour', '1 hour') : `${totalHours} ${t('time.hours', 'hours')}`;
+              return totalHours === 1 ? `1 ${t('bookings:time.hour', 'hour')}` : `${totalHours} ${t('bookings:time.hours', 'hours')}`;
             })()}
           </span>
         </div>
         <div className="flex justify-between items-center text-sm mt-1">
-          <span className="text-gray-600">{t('details.total_cost', 'Totalkostnad')}:</span>
+          <span className="text-gray-600">{t('booking:details.total_cost', 'Total cost')}:</span>
           <span className="font-semibold text-gray-900">
             {selectedSlots.reduce((total, slot) => total + (slot.pricePerHour * slot.duration), 0)} kr
           </span>

@@ -22,7 +22,6 @@ import type { Database } from "@/types/database";
 import {
   formatDate,
   formatTime,
-  formatDuration,
   formatPrice,
   getStatusColor,
   getStatusBadgeColor,
@@ -49,9 +48,9 @@ const useStatusLabel = (status: BookingStatus): string => {
     paid: t("status.paid"),
     completed: t("status.completed"),
     pending: t("status.pending"),
-    awaiting_payment: t("status.awaiting_payment"),
+    awaiting_payment: t("status.pending_payment"),
     cancelled: t("status.cancelled"),
-    expired: t("status.expired"),
+    expired: t("status.paid"),
     refunded: t("status.refunded"),
   };
 
@@ -81,13 +80,8 @@ export const BookingCard = ({
   onDelete,
   showCheckbox = true,
 }: BookingCardProps): JSX.Element => {
-  const { t } = useTranslation("booking");
+  const { t, i18n } = useTranslation("booking");
   const statusLabel = useStatusLabel(booking.status);
-
-  const durationTranslations = {
-    hour: t("card.hour"),
-    hours: t("card.hours"),
-  };
 
   const handleCardClick = useCallback(() => {
     if (onViewDetails) {
@@ -131,6 +125,29 @@ export const BookingCard = ({
     }
   }, [onSelect, booking.id]);
 
+  // Determine the appropriate delete action based on booking status
+  const getDeleteButtonProps = () => {
+    if (booking.status === 'cancelled') {
+      // If already cancelled, the action is to permanently delete
+      return {
+        ariaLabel: t("actions.delete_permanently", "Delete Permanently"),
+        title: t("actions.delete_permanently", "Delete Permanently"),
+        variant: "outline" as const,
+        iconColor: "text-red-600 border-red-600 hover:text-red-700 hover:border-red-700 hover:bg-red-50"
+      };
+    } else {
+      // If not cancelled, the action is to cancel the booking
+      return {
+        ariaLabel: t("actions.cancel", "Cancel Booking"),
+        title: t("actions.cancel", "Cancel Booking"),
+        variant: "outline" as const,
+        iconColor: "text-red-600 hover:text-red-700 hover:bg-red-50"
+      };
+    }
+  };
+
+  const deleteButtonProps = getDeleteButtonProps();
+
   return (
     <div className="flex items-start gap-4">
       {showCheckbox && (
@@ -139,9 +156,7 @@ export const BookingCard = ({
             checked={selected}
             onCheckedChange={handleCheckboxChange}
             className="mt-1"
-            aria-label={t("card.selectBooking", {
-              facility: booking.facility?.name,
-            })}
+            aria-label={`Select booking for ${booking.facility?.name || t("details.unknownVenue")}`}
           />
         </div>
       )}
@@ -161,8 +176,8 @@ export const BookingCard = ({
             <div className="flex-1 ml-2">
               {/* Header */}
               <div className="flex items-center justify-between mb-2">
-                <h3 className="font-semibold text-gray-900 text-lg">
-                  {booking.facility?.name || t("card.unknownFacility")}
+                <h3 className="font-semibold text-gray-900 dark:text-white text-lg">
+                  {booking.facility?.name || t("details.unknownVenue")}
                 </h3>
                 <Badge className={getStatusBadgeColor(booking.status)}>
                   {statusLabel}
@@ -170,7 +185,7 @@ export const BookingCard = ({
               </div>
 
               {/* Details */}
-              <div className="text-sm text-gray-600 space-y-1">
+              <div className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
                 <div className="flex flex-wrap gap-4">
                   <span className="flex items-center gap-1">
                     <Calendar className="w-3 h-3" />
@@ -181,13 +196,19 @@ export const BookingCard = ({
                     {formatTime(booking.starts_at)} -{" "}
                     {formatTime(booking.ends_at)}
                   </span>
-                  <span className="text-gray-500">
+                  <span className="text-gray-500 dark:text-gray-500">
                     (
-                    {formatDuration(
-                      booking.starts_at,
-                      booking.ends_at,
-                      durationTranslations
-                    )}
+                    {(() => {
+                      const start = new Date(booking.starts_at);
+                      const end = new Date(booking.ends_at);
+                      const hours = (end.getTime() - start.getTime()) / (1000 * 60 * 60);
+                      // Use proper language-specific formatting
+                      if (i18n.language === 'no') {
+                        return hours === 1 ? `1 time` : `${hours} timer`;
+                      } else {
+                        return hours === 1 ? `1 hour` : `${hours} hours`;
+                      }
+                    })()}
                     )
                   </span>
                 </div>
@@ -200,12 +221,12 @@ export const BookingCard = ({
                 )}
 
                 <div className="flex items-center justify-between mt-2">
-                  <span className="font-medium text-gray-900 text-base">
+                  <span className="font-medium text-gray-900 dark:text-white text-base">
                     {formatPrice(booking.total_cents)}
                   </span>
                   {booking.notes && (
-                    <span className="text-xs text-gray-500 italic">
-                      {t("card.hasNotes")}
+                    <span className="text-xs text-gray-500 dark:text-gray-500 italic">
+                      {t("details.notesLabel")}
                     </span>
                   )}
                 </div>
@@ -219,19 +240,19 @@ export const BookingCard = ({
                 size="sm"
                 onClick={handleViewClick}
                 className="h-9 w-9 p-0"
-                aria-label={t("card.viewDetails")}
-                title={t("card.viewDetails")}
+                aria-label={t("actions.view_details", "View Details")}
+                title={t("actions.view_details", "View Details")}
               >
                 <Eye className="w-4 h-4" />
               </Button>
               {onDelete && (
                 <Button
-                  variant="outline"
+                  variant={deleteButtonProps.variant}
                   size="sm"
                   onClick={handleDeleteClick}
-                  className="h-9 w-9 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
-                  aria-label={t("card.cancelBooking")}
-                  title={t("card.cancelBooking")}
+                  className={`h-9 w-9 p-0 ${deleteButtonProps.iconColor}`}
+                  aria-label={deleteButtonProps.ariaLabel}
+                  title={deleteButtonProps.title}
                 >
                   <Trash2 className="w-4 h-4" />
                 </Button>

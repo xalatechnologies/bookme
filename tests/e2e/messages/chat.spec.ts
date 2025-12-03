@@ -9,7 +9,7 @@ test.describe('Messages - Chat Interface', () => {
   });
 
   test('should display messages page', async ({ page }) => {
-    await expect(page).toHaveTitle(/Messages|Chat|BookMe/);
+    await expect(page).toHaveTitle(/Messages|Chat|Booknor/);
 
     // Should have messages header
     await expect(

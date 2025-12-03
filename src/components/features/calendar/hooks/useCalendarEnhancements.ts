@@ -81,7 +81,10 @@ export const useCalendarEnhancements = (): CalendarEnhancementsState & CalendarE
     }));
   }, []);
 
-  const handleEventClick = useCallback((event: IBookingEvent): void => {
+  const handleEventClick = useCallback((
+     
+    _event: IBookingEvent
+  ): void => {
     // This will be handled by the parent component
   }, []);
 
@@ -107,7 +110,11 @@ export const useCalendarEnhancements = (): CalendarEnhancementsState & CalendarE
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
       setLastRefresh(new Date());
-    } catch (error) {
+    } catch (
+       
+      _error: unknown
+    ) {
+      // Error handling can be added here if needed
     } finally {
       setIsLoading(false);
     }

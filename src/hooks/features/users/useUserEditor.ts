@@ -10,7 +10,7 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from "@/contexts/hooks";
 import { useOrganizationId } from '@/hooks/useOrganizationId';
 import {
   validateUserData,
@@ -177,7 +177,7 @@ export const useUserEditor = (
 
   // Placeholder mutations - replace with actual hooks
   const createUserMutation = {
-    mutateAsync: async (data: any): Promise<Profile> => {
+    mutateAsync: async (data: IUserFormData & { org_id: string }): Promise<Profile> => {
       // TODO: Connect to actual create mutation
       console.log('Create user:', data);
       return {} as Profile;
@@ -186,7 +186,7 @@ export const useUserEditor = (
   };
 
   const updateUserMutation = {
-    mutateAsync: async (params: { id: string; updates: any }): Promise<void> => {
+    mutateAsync: async (params: { id: string; updates: Partial<IUserFormData> }): Promise<void> => {
       // TODO: Connect to actual update mutation
       console.log('Update user:', params);
     },
@@ -219,7 +219,7 @@ export const useUserEditor = (
         email: user.email || '',
         display_name: user.display_name || '',
         phone: user.phone || '',
-        role: (user as any).role || 'customer', // TODO: Fix type when profile includes role
+        role: (user as IUserWithRole).role || 'customer', // TODO: Fix type when profile includes role
         avatar_url: user.avatar_url || '',
       });
     }
@@ -231,7 +231,7 @@ export const useUserEditor = (
     display_name: editedUser?.display_name,
     phone: editedUser?.phone,
     password: isNewUser ? editedUser?.password : undefined,
-  } as any);
+  });
 
   // Password validation
   const validatePasswordFn = useCallback((password: string): PasswordStrengthResult => {
@@ -409,7 +409,7 @@ export const useUserEditor = (
         email: user.email || '',
         display_name: user.display_name || '',
         phone: user.phone || '',
-        role: (user as any).role || 'customer',
+        role: (user as IUserWithRole).role || 'customer',
         avatar_url: user.avatar_url || '',
       });
       setHasUnsavedChanges(false);
@@ -422,7 +422,7 @@ export const useUserEditor = (
         email: user.email || '',
         display_name: user.display_name || '',
         phone: user.phone || '',
-        role: (user as any).role || 'customer',
+        role: (user as IUserWithRole).role || 'customer',
         avatar_url: user.avatar_url || '',
       });
       setHasUnsavedChanges(false);

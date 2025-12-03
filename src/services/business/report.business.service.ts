@@ -227,8 +227,7 @@ export const generateRevenueReport = (
       revenue,
       bookingCount: count,
       averageValue,
-      currency,
-    });
+      currency});
 
     totalRevenue += revenue;
     totalBookings += count;
@@ -251,8 +250,7 @@ export const generateRevenueReport = (
     growthRate,
     currency: filteredBookings[0]?.currency || 'NOK',
     periodStart: dateRange.startDate,
-    periodEnd: dateRange.endDate,
-  };
+    periodEnd: dateRange.endDate};
 };
 
 /**
@@ -310,8 +308,7 @@ export const generateBookingReport = (
       confirmed,
       cancelled,
       completed,
-      conversionRate,
-    });
+      conversionRate});
 
     totalPending += pending;
     totalConfirmed += confirmed;
@@ -334,12 +331,10 @@ export const generateBookingReport = (
       pending: totalPending,
       confirmed: totalConfirmed,
       cancelled: totalCancelled,
-      completed: totalCompleted,
-    },
+      completed: totalCompleted},
     averageConversionRate,
     periodStart: dateRange.startDate,
-    periodEnd: dateRange.endDate,
-  };
+    periodEnd: dateRange.endDate};
 };
 
 /**
@@ -406,8 +401,7 @@ export const generateFacilityUtilizationReport = (
       bookedHours,
       utilizationRate,
       bookingCount: bookingsForFacility.length,
-      revenue,
-    };
+      revenue};
   });
 
   // Sort by utilization rate
@@ -436,8 +430,7 @@ export const generateFacilityUtilizationReport = (
     topFacilities,
     underutilizedFacilities,
     periodStart: dateRange.startDate,
-    periodEnd: dateRange.endDate,
-  };
+    periodEnd: dateRange.endDate};
 };
 
 /**
@@ -493,8 +486,7 @@ export const generateUserActivityReport = (
       bookingCount,
       totalSpent,
       lastBooking,
-      isActive,
-    });
+      isActive});
   });
 
   // Sort by booking count
@@ -525,8 +517,7 @@ export const generateUserActivityReport = (
     averageBookingsPerUser,
     averageSpendPerUser,
     periodStart: dateRange.startDate,
-    periodEnd: dateRange.endDate,
-  };
+    periodEnd: dateRange.endDate};
 };
 
 /**
@@ -552,8 +543,7 @@ export const calculateGrowthRate = (
     previousValue,
     growthRate,
     growthAmount,
-    isPositive: growthAmount >= 0,
-  };
+    isPositive: growthAmount >= 0};
 };
 
 /**
@@ -581,8 +571,7 @@ export const formatReportData = (
       label,
       value,
       formattedValue,
-      metadata: dataPoint,
-    };
+      metadata: dataPoint};
   });
 };
 
@@ -611,8 +600,7 @@ export const exportReportToCSV = (
   return {
     headers,
     rows: stringRows,
-    filename: `${filename}-${formatDateForFilename(new Date())}.csv`,
-  };
+    filename: `${filename}-${formatDateForFilename(new Date())}.csv`};
 };
 
 /**
@@ -646,8 +634,7 @@ export const formatCurrency = (cents: number, currency: string = 'NOK'): string 
   const amount = cents / 100;
   return `${amount.toLocaleString('nb-NO', {
     minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })} ${currency}`;
+    maximumFractionDigits: 2})} ${currency}`;
 };
 
 /**
@@ -671,8 +658,7 @@ export const formatDateNorwegian = (date: Date): string => {
   return date.toLocaleDateString('nb-NO', {
     year: 'numeric',
     month: 'long',
-    day: 'numeric',
-  });
+    day: 'numeric'});
 };
 
 /**

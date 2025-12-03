@@ -54,15 +54,15 @@ export const FacilityAccordionContent: React.FC<FacilityAccordionContentProps> =
           facilityId={facility.id}
           facilityName={facility.name}
           zones={zones}
-          selectedSlots={selectedSlots}
+          selectedSlots={selectedSlots as any}
           onSlotClick={onSlotClick}
-          onBulkSlotSelection={onBulkSlotSelection}
+          onBulkSlotSelection={onBulkSlotSelection as any}
           getAvailabilityStatus={getAvailabilityStatus}
           isSlotSelected={isSlotSelected}
           isLoading={false}
-          error={null}
-          openingHoursStart={facility.openingHoursStart || "08:00"}
-          openingHoursEnd={facility.openingHoursEnd || "22:00"}
+          error={undefined}
+          openingHoursStart="08:00"
+          openingHoursEnd="22:00"
           useStepByStepBooking={true}
         />
       </AccordionContent>

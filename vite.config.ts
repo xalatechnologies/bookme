@@ -1,11 +1,21 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
+import { visualizer } from "rollup-plugin-visualizer";
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    // Bundle analyzer - generates stats.html
+    visualizer({
+      filename: 'stats.html',
+      open: false,
+      gzipSize: true,
+      brotliSize: true,
+    })
+  ],
   server: {
-    port: 3000,
+    port: 8000,
     host: true
   },
   build: {
@@ -20,6 +30,7 @@ export default defineConfig({
           'ui-vendor': ['lucide-react', 'date-fns'],
           'query-vendor': ['@tanstack/react-query'],
           'i18n-vendor': ['react-i18next', 'i18next'],
+          'map-vendor': ['mapbox-gl'],
         },
       },
     },
@@ -48,6 +59,7 @@ export default defineConfig({
       'i18next',
       'lucide-react',
       'date-fns',
+      'mapbox-gl',
     ],
   },
 });

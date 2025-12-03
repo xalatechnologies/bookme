@@ -1,4 +1,4 @@
-# i18n Implementation Guide for BookMe
+# i18n Implementation Guide for Booknor
 
 ## Table of Contents
 1. [Quick Start](#quick-start)
@@ -118,7 +118,7 @@ export const LanguageSwitcher = (): JSX.Element => {
 
   const handleLanguageChange = (languageCode: string): void => {
     i18n.changeLanguage(languageCode);
-    localStorage.setItem('bookme-language', languageCode === 'no' ? 'NO' : 'EN');
+    localStorage.setItem('booknor-language', languageCode === 'no' ? 'NO' : 'EN');
   };
 
   const currentLanguage = languages.find(lang => lang.code === i18n.language);
@@ -497,7 +497,7 @@ export const LanguageProvider = ({ children }: { children: React.ReactNode }): J
   const setLanguage = (lang: 'NO' | 'EN'): void => {
     const newLang = lang === 'NO' ? 'no' : 'en';
     i18n.changeLanguage(newLang);
-    localStorage.setItem('bookme-language', lang);
+    localStorage.setItem('booknor-language', lang);
   };
 
   const toggleLanguage = (): void => {
@@ -506,7 +506,7 @@ export const LanguageProvider = ({ children }: { children: React.ReactNode }): J
 
   // Sync with localStorage on mount
   useEffect(() => {
-    const savedLang = localStorage.getItem('bookme-language') as 'NO' | 'EN' | null;
+    const savedLang = localStorage.getItem('booknor-language') as 'NO' | 'EN' | null;
     if (savedLang) {
       setLanguage(savedLang);
     }

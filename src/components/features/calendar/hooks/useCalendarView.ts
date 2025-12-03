@@ -6,13 +6,13 @@ import { useNavigate } from 'react-router-dom';
 
 // Internal imports - Supabase services
 import { usePublishedFacilities } from '@/services/supabase/facilities.service';
-import { useFacilityZones } from '@/services/supabase/zones.service';
+import { useFacilitiesZones } from '@/services/supabase/zones.service';
 import { useOrganizationId } from '@/hooks/useOrganizationId';
 import type { Database } from '@/types/database';
-import type { Zone } from '@/types/booking';
 
 // Type aliases
 type Facility = Database['public']['Tables']['facilities']['Row'];
+type Zone = Database['public']['Tables']['zones']['Row'];
 
 interface UseCalendarViewProps {
   readonly facilityType?: string;
@@ -41,7 +41,8 @@ export const useCalendarView = ({
   capacity
 }: UseCalendarViewProps): UseCalendarViewReturn => {
   const navigate = useNavigate();
-  const [error, setError] = useState<string | null>(null);
+   
+  const [_error] = useState<string | null>(null);
 
   // Get organization context
   const orgId = useOrganizationId();
@@ -58,13 +59,20 @@ export const useCalendarView = ({
     }
 
     if (location && location !== "all") {
-      filtered = filtered.filter(f => f.area === location);
+      filtered = filtered.filter(f => f.city === location);
     }
 
     if (accessibility && accessibility !== "all") {
-      filtered = filtered.filter(f =>
-        f.accessibility_features && f.accessibility_features.includes(accessibility)
-      );
+      filtered = filtered.filter(f => {
+        const features = f.accessibility_features;
+        if (!features) return false;
+        if (Array.isArray(features)) {
+          return features.some((feature: unknown) => 
+            typeof feature === 'string' && feature.includes(accessibility)
+          );
+        }
+        return false;
+      });
     }
 
     if (capacity) {
@@ -76,27 +84,37 @@ export const useCalendarView = ({
     return filtered;
   }, [facilityType, location, accessibility, capacity, facilities]);
 
-  // Fetch zones for all filtered facilities
-  // Note: This creates multiple queries, one per facility
-  // React Query will cache and optimize these queries
+  // Fetch zones for all filtered facilities in a single query
+  const facilityIds = useMemo(() => filteredFacilities.map(f => f.id), [filteredFacilities]);
+  const { data: allZonesData = [], isLoading: zonesLoading } = useFacilitiesZones(facilityIds);
+
+  // Combine facilities with their zones
   const facilitiesWithZones = useMemo((): readonly FacilityWithZones[] => {
     const results: FacilityWithZones[] = [];
+    const zonesByFacility = new Map<string, Zone[]>();
 
+    // Group zones by facility_id
+    allZonesData.forEach(zone => {
+      const facilityId = zone.facility_id;
+      if (!zonesByFacility.has(facilityId)) {
+        zonesByFacility.set(facilityId, []);
+      }
+      zonesByFacility.get(facilityId)!.push(zone);
+    });
+
+    // Combine facilities with their zones
     filteredFacilities.forEach(facility => {
-      // Use React Query hook for each facility
-      // This will be cached and optimized by React Query
-      const { data: zones } = useFacilityZones(facility.id);
-
-      if (zones && zones.length > 0) {
+      const zones = zonesByFacility.get(facility.id) || [];
+      if (zones.length > 0) {
         results.push({
           facility,
-          zones: zones as readonly Zone[]
+          zones
         });
       }
     });
 
     return results;
-  }, [filteredFacilities]);
+  }, [filteredFacilities, allZonesData]);
 
   // Get all zones from filtered facilities
   const allZones = useMemo((): readonly Zone[] => {
@@ -105,8 +123,8 @@ export const useCalendarView = ({
 
   return {
     facilitiesWithZones,
-    isLoading,
-    error: facilitiesError?.message || error,
+    isLoading: isLoading || zonesLoading,
+    error: facilitiesError?.message || null,
     allZones,
     navigate
   };

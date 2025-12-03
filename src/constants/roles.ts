@@ -32,6 +32,12 @@ export type PlatformRole = Database['public']['Enums']['platform_role'];
 export type SystemRole = PlatformRole | OrgRole;
 
 /**
+ * Extended organization role type including all variations
+ * Used for comprehensive role checking and permissions
+ */
+export type ExtendedOrgRole = OrgRole;
+
+/**
  * Platform role constants (ENGLISH)
  */
 export const PLATFORM_ROLES = {

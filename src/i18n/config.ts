@@ -25,8 +25,22 @@ import authEN from '../../public/locales/en/auth.json';
 import authNO from '../../public/locales/no/auth.json';
 import bookingEN from '../../public/locales/en/booking.json';
 import bookingNO from '../../public/locales/no/booking.json';
+import bookingsEN from '../../public/locales/en/bookings.json';
+import bookingsNO from '../../public/locales/no/bookings.json';
 import facilityEN from '../../public/locales/en/facility.json';
 import facilityNO from '../../public/locales/no/facility.json';
+import calendarEN from '../../public/locales/en/calendar.json';
+import calendarNO from '../../public/locales/no/calendar.json';
+import checkoutEN from '../../public/locales/en/checkout.json';
+import checkoutNO from '../../public/locales/no/checkout.json';
+import adminEN from '../../public/locales/en/admin.json';
+import adminNO from '../../public/locales/no/admin.json';
+import userEN from '../../public/locales/en/user.json';
+import userNO from '../../public/locales/no/user.json';
+import validationEN from '../../public/locales/en/validation.json';
+import validationNO from '../../public/locales/no/validation.json';
+import supportEN from '../../public/locales/en/support.json';
+import supportNO from '../../public/locales/no/support.json';
 
 // Supported languages
 export const SUPPORTED_LANGUAGES = {
@@ -48,9 +62,16 @@ export const NAMESPACES = {
   COMMON: 'common',
   FACILITY: 'facility',
   BOOKING: 'booking',
+  BOOKINGS: 'bookings',
   AUTH: 'auth',
   NAVIGATION: 'navigation',
   ERRORS: 'errors',
+  CHECKOUT: 'checkout',
+  ADMIN: 'admin',
+  USER: 'user',
+  VALIDATION: 'validation',
+  CALENDAR: 'calendar',
+  SUPPORT: 'support',
 } as const;
 
 // Initialize i18next
@@ -132,7 +153,14 @@ i18n
         navigation: navigationEN,
         auth: authEN,
         booking: bookingEN,
+        bookings: bookingsEN,
         facility: facilityEN,
+        calendar: calendarEN,
+        checkout: checkoutEN,
+        admin: adminEN,
+        user: userEN,
+        validation: validationEN,
+        support: supportEN,
       },
       no: {
         roles: rolesNO,
@@ -140,7 +168,14 @@ i18n
         navigation: navigationNO,
         auth: authNO,
         booking: bookingNO,
+        bookings: bookingsNO,
         facility: facilityNO,
+        calendar: calendarNO,
+        checkout: checkoutNO,
+        admin: adminNO,
+        user: userNO,
+        validation: validationNO,
+        support: supportNO,
       },
     },
 
@@ -161,9 +196,6 @@ i18n
 
     // Return empty string for missing keys in production
     returnEmptyString: !import.meta.env.DEV,
-
-    // Reload on language change
-    reloadOnPrerender: import.meta.env.DEV,
   });
 
 // Export configured i18n instance

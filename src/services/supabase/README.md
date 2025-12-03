@@ -1,6 +1,6 @@
 # Supabase Service Layer
 
-Comprehensive, type-safe service layer for the BookMe application following SOLID principles.
+Comprehensive, type-safe service layer for the Booknor application following SOLID principles.
 
 ## Architecture Overview
 

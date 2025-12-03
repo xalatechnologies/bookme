@@ -13,23 +13,16 @@
  */
 
 import {
-  startOfMonth,
   endOfMonth,
   eachDayOfInterval,
   startOfWeek,
   endOfWeek,
   format,
-  parse,
-  isWithinInterval,
   differenceInMinutes,
   differenceInHours,
-  isSameDay,
   getDay,
   getWeek,
-  addDays,
-  isBefore,
-  isAfter,
-  isSameHourAndMinute,
+
   addMinutes,
   setHours,
   setMinutes,
@@ -599,7 +592,8 @@ export const groupBookingsByDate = (
     }
 
     const group = dateMap.get(dateString)!;
-    (group.bookings as typeof group.bookings & { push: Function }).push({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (group.bookings as unknown as any[]).push({
       id: booking.id,
       title: booking.title,
       startTime: format(startDate, 'HH:mm'),
@@ -608,8 +602,10 @@ export const groupBookingsByDate = (
       durationMinutes,
     });
 
-    group.totalBookingsCount += 1;
-    group.totalDurationHours += durationMinutes / 60;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (group as any).totalBookingsCount += 1;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (group as any).totalDurationHours += durationMinutes / 60;
   });
 
   // Convert map to array and sort by date

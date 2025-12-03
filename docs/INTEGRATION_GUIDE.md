@@ -1,4 +1,4 @@
-# BookMe Integration Guide: Connecting Frontend to Supabase Backend
+# Booknor Integration Guide: Connecting Frontend to Supabase Backend
 
 This guide explains how to integrate the Vite/React frontend with the Docker-based Supabase backend for full-stack development.
 
@@ -20,7 +20,7 @@ Ensure the Supabase backend is running:
 
 ```bash
 # Navigate to Docker project
-cd "/Volumes/Development/Xala Products/bookme"
+cd "/Volumes/Development/Xala Products/booknor"
 
 # Start Supabase services
 ./scripts/start-dev.sh
@@ -43,7 +43,7 @@ docker-compose ps
 In the current Vite/React project:
 
 ```bash
-cd ~/Documents/xaheen/bookme
+cd ~/Documents/xaheen/booknor
 
 # Install Supabase client if not already installed
 npm install @supabase/supabase-js
@@ -874,4 +874,4 @@ const prefetchNextPage = () => {
 **For more information**:
 - [Supabase Documentation](https://supabase.com/docs)
 - [React Query Documentation](https://tanstack.com/query/latest)
-- [BookMe Backend README](/Volumes/Development/Xala Products/bookme/README.md)
+- [Booknor Backend README](/Volumes/Development/Xala Products/booknor/README.md)

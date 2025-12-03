@@ -1,9 +1,9 @@
-# bookme-user-stories.md
+# booknor-user-stories.md
 
-# BookMe – Brukerhistorier for sluttbruker (leietaker)
+# Booknor – Brukerhistorier for sluttbruker (leietaker)
 
 ## Omfang og mål
-BookMe lar privatpersoner, lag/foreninger og bedrifter finne, reservere og betale for lokaler som gymsaler, møterom, kulturhus og idrettsanlegg. Dette dokumentet beskriver brukerhistorier, akseptansekriterier, kanttilfeller, feilhåndtering og sporbarhet.
+Booknor lar privatpersoner, lag/foreninger og bedrifter finne, reservere og betale for lokaler som gymsaler, møterom, kulturhus og idrettsanlegg. Dette dokumentet beskriver brukerhistorier, akseptansekriterier, kanttilfeller, feilhåndtering og sporbarhet.
 
 ## Definisjoner og antakelser
 - Rolle: Sluttbruker/leietaker (privat, lag/forening, bedrift).

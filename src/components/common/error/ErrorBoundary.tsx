@@ -24,11 +24,12 @@ import { AlertTriangle, RefreshCw, Home } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { withTranslation, WithTranslation } from 'react-i18next';
 
+// Extend WithTranslation to include errors namespace keys
 interface ErrorBoundaryProps extends WithTranslation {
   readonly children: ReactNode;
   readonly fallback?: ReactNode;
   readonly onError?: (error: Error, errorInfo: ErrorInfo) => void;
-  readonly resetKeys?: readonly any[];
+  readonly resetKeys?: readonly unknown[];
 }
 
 interface ErrorBoundaryState {
@@ -58,9 +59,7 @@ class ErrorBoundaryComponent extends Component<ErrorBoundaryProps, ErrorBoundary
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
     // Log error details
-    console.error('Error Boundary caught an error:', error);
-    console.error('Error Info:', errorInfo);
-
+    
     // Call custom error handler if provided
     this.props.onError?.(error, errorInfo);
 
@@ -115,19 +114,19 @@ class ErrorBoundaryComponent extends Component<ErrorBoundaryProps, ErrorBoundary
 
             {/* Error Title */}
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white text-center mb-4">
-              {this.props.t('errors:boundary.title')}
+              {this.props.t('boundary.title', { ns: 'errors' })}
             </h1>
 
             {/* Error Message */}
             <p className="text-gray-600 dark:text-gray-400 text-center mb-6">
-              {this.props.t('errors:boundary.message')}
+              {this.props.t('boundary.message', { ns: 'errors' })}
             </p>
 
             {/* Development Mode: Show Error Details */}
             {import.meta.env.DEV && this.state.error && (
               <div className="mb-6 p-4 bg-gray-100 dark:bg-gray-700 rounded-lg">
                 <h2 className="text-sm font-semibold text-gray-900 dark:text-white mb-2">
-                  {this.props.t('errors:boundary.devModeTitle')}
+                  {this.props.t('boundary.devModeTitle', { ns: 'errors' })}
                 </h2>
                 <p className="text-xs text-red-600 dark:text-red-400 font-mono mb-2">
                   {this.state.error.message}
@@ -135,7 +134,7 @@ class ErrorBoundaryComponent extends Component<ErrorBoundaryProps, ErrorBoundary
                 {this.state.errorInfo && (
                   <details className="text-xs text-gray-600 dark:text-gray-400">
                     <summary className="cursor-pointer font-medium mb-2">
-                      {this.props.t('errors:boundary.componentStack')}
+                      {this.props.t('boundary.componentStack', { ns: 'errors' })}
                     </summary>
                     <pre className="whitespace-pre-wrap overflow-auto max-h-40 text-xs">
                       {this.state.errorInfo.componentStack}
@@ -153,7 +152,7 @@ class ErrorBoundaryComponent extends Component<ErrorBoundaryProps, ErrorBoundary
                 variant="default"
               >
                 <RefreshCw className="w-4 h-4" />
-                {this.props.t('errors:boundary.tryAgain')}
+                {this.props.t('boundary.tryAgain', { ns: 'errors' })}
               </Button>
 
               <Button
@@ -162,7 +161,7 @@ class ErrorBoundaryComponent extends Component<ErrorBoundaryProps, ErrorBoundary
                 variant="outline"
               >
                 <Home className="w-4 h-4" />
-                {this.props.t('errors:boundary.goHome')}
+                {this.props.t('boundary.goHome', { ns: 'errors' })}
               </Button>
             </div>
           </div>
@@ -178,7 +177,7 @@ class ErrorBoundaryComponent extends Component<ErrorBoundaryProps, ErrorBoundary
  * Export ErrorBoundary with i18next translation HOC
  * Enables localized error messages based on user's selected language
  */
-export const ErrorBoundary = withTranslation()(ErrorBoundaryComponent);
+export const ErrorBoundary = withTranslation(['common', 'errors'])(ErrorBoundaryComponent);
 
 /**
  * Hook-based Error Boundary wrapper for functional components

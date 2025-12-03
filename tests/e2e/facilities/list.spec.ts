@@ -8,7 +8,7 @@ test.describe('Facilities - List View', () => {
   });
 
   test('should display facilities list page', async ({ page }) => {
-    await expect(page).toHaveTitle(/Facilities|BookMe/);
+    await expect(page).toHaveTitle(/Facilities|Booknor/);
     await expect(page.locator('h1, h2').filter({ hasText: /facilities/i })).toBeVisible();
   });
 

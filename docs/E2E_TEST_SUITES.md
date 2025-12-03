@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document provides **complete end-to-end test implementations** using Playwright for all major user flows in the BookMe application.
+This document provides **complete end-to-end test implementations** using Playwright for all major user flows in the Booknor application.
 
 ---
 

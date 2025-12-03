@@ -1,6 +1,6 @@
 import { useState, useCallback, useMemo } from 'react';
 import { useMessageStore } from '@/stores/messageStore';
-import type { MessageThread, Message } from '@/types/message';
+import type { MessageThread } from '@/types/message';
 
 /**
  * Message status filter options

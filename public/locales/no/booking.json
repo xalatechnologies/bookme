@@ -5,7 +5,7 @@
   "all_bookings": "Alle bookinger",
   "fields": {
     "booking_id": "Booking-ID",
-    "facility": "Fasilitet",
+    "facility": "Lokale",
     "zone": "Sone",
     "date": "Dato",
     "start_date": "Startdato",
@@ -15,7 +15,7 @@
     "end_time": "Sluttid",
     "duration": "Varighet",
     "participants": "Deltakere",
-    "attendees": "Oppmøtte",
+    "attendees": "Deltakere",
     "purpose": "Formål",
     "activity_type": "Aktivitetstype",
     "actor_type": "Aktørtype",
@@ -28,12 +28,12 @@
     "cost_center": "Kostnadssted",
     "reference_number": "Referansenummer",
     "internal_notes": "Interne notater",
-    "special_requests": "Spesielle forespørsler",
-    "equipment_needed": "Utstyr nødvendig",
+    "special_requests": "Spesielle ønsker",
+    "equipment_needed": "Utstyr som trengs",
     "catering": "Catering",
     "setup_type": "Oppsett",
     "price": "Pris",
-    "total_price": "Total pris",
+    "total_price": "Totalpris",
     "deposit": "Depositum",
     "payment_status": "Betalingsstatus",
     "payment_method": "Betalingsmetode",
@@ -59,20 +59,20 @@
   },
   "actor_types": {
     "private_person": "Privatperson",
-    "lag_foreninger": "Lag/Foreninger",
+    "lag_foreninger": "Lag/foreninger",
     "paraply": "Paraply",
     "private_firma": "Privat firma",
     "kommunale_enheter": "Kommunale enheter"
   },
   "status": {
-    "pending": "Ventende",
+    "pending": "Venter",
     "confirmed": "Bekreftet",
     "approved": "Godkjent",
     "rejected": "Avvist",
-    "cancelled": "Kansellert",
+    "cancelled": "Avbrutt",
     "completed": "Fullført",
-    "in_progress": "Pågående",
-    "no_show": "Ikke møtt opp",
+    "in_progress": "Pågår",
+    "no_show": "No Show",
     "checked_in": "Innsjekket",
     "checked_out": "Utsjekket",
     "pending_payment": "Venter på betaling",
@@ -86,8 +86,8 @@
     "paid": "Betalt",
     "partially_paid": "Delvis betalt",
     "refunded": "Refundert",
-    "pending": "Ventende",
-    "failed": "Mislyktes",
+    "pending": "Venter",
+    "failed": "Mislykket",
     "processing": "Behandler"
   },
   "actions": {
@@ -98,7 +98,7 @@
     "edit": "Rediger booking",
     "modify": "Endre booking",
     "cancel": "Avbryt booking",
-    "reschedule": "Ombooking",
+    "reschedule": "Ombook",
     "extend": "Forleng booking",
     "duplicate": "Dupliser",
     "check_in": "Sjekk inn",
@@ -107,16 +107,23 @@
     "approve": "Godkjenn booking",
     "reject": "Avvis booking",
     "add_to_cart": "Legg til i handlekurv",
-    "proceed_to_checkout": "Gå til kasse",
+    "proceed_to_checkout": "Gå til kassen",
     "download_confirmation": "Last ned bekreftelse",
     "send_reminder": "Send påminnelse",
     "add_to_calendar": "Legg til i kalender",
     "share": "Del booking",
     "report_issue": "Rapporter problem",
     "request_refund": "Be om refusjon",
-    "leave_review": "Skriv anmeldelse",
+    "leave_review": "Legg igjen anmeldelse",
     "clear_all": "Fjern alle valgte tidspunkter",
-    "complete_booking": "Fullfør booking"
+    "complete_booking": "Fullfør booking",
+    "complete_booking_title": "Fullfør booking",
+    "complete_booking_description": "Gjennomgå informasjonen og velg hvordan du vil fortsette.",
+    "ready_for_booking": "Klar for booking!",
+    "all_information_filled": "All informasjon er fylt ut og vilkårene er godtatt.",
+    "delete_permanently": "Slett permanent",
+    "delete_permanently_message_single": "Er du sikker på at du vil slette denne avbrutte bookingen permanent?",
+    "delete_permanently_message_multiple": "Er du sikker på at du vil slette {{count}} avbrutte bookinger permanent?"
   },
   "recurring": {
     "title": "Gjentakende booking",
@@ -126,7 +133,7 @@
     "weekly": "Ukentlig",
     "biweekly": "Annenhver uke",
     "monthly": "Månedlig",
-    "custom": "Tilpasset",
+    "custom": "Egendefinert",
     "repeat_every": "Gjenta hver",
     "repeat_on": "Gjenta på",
     "ends": "Slutter",
@@ -153,35 +160,50 @@
   },
   "filters": {
     "all": "Alle",
-    "search": "Søk bookinger...",
+    "search": "Søk i bookinger...",
     "by_status": "Etter status",
     "by_date": "Etter dato",
-    "by_facility": "Etter fasilitet",
+    "by_facility": "Etter lokale",
     "by_user": "Etter bruker",
     "upcoming": "Kommende",
     "past": "Tidligere",
     "today": "I dag",
     "this_week": "Denne uken",
     "this_month": "Denne måneden",
-    "date_range": "Datoområde",
+    "date_range": "Datointervall",
     "active": "Aktive",
     "pending_approval": "Venter på godkjenning",
     "requires_payment": "Krever betaling",
     "sort_by": "Sorter etter",
     "sort_by_date": "Dato",
     "sort_by_status": "Status",
-    "sort_by_facility": "Fasilitet",
+    "sort_by_facility": "Lokale",
     "sort_by_price": "Pris",
     "sort_newest": "Nyeste først",
     "sort_oldest": "Eldste først"
   },
   "details": {
-    "summary": "Sammendrag",
+    "title": "Bookingdetaljer",
+    "unknownVenue": "Ukjent lokale",
+    "statusLabel": "Status:",
+    "dateLabel": "Dato:",
+    "timeLabel": "Tid:",
+    "durationLabel": "Varighet:",
+    "totalPriceLabel": "Totalpris:",
+    "notesLabel": "Notater:",
+    "bookingIdLabel": "Booking-ID:",
+    "actionsLabel": "Handlinger:",
+    "editBooking": "Rediger booking",
+    "cancelBooking": "Avbryt booking",
+    "shareBooking": "Del booking",
+    "addToCalendar": "Legg til i kalender",
+    "close": "Lukk",
+    "summary": "Oppsummering",
     "booking_details": "Bookingdetaljer",
-    "facility_info": "Fasilitetsinformasjon",
-    "time_slot": "Tidsrom",
-    "time_slots": "Tidsrom",
-    "selected_slots": "Valgte tidsrom",
+    "facility_info": "Lokaleinformasjon",
+    "time_slot": "Tidspunkt",
+    "time_slots": "Tidspunkter",
+    "selected_slots": "Valgte tidspunkter",
     "pricing_breakdown": "Prisberegning",
     "customer_info": "Kundeinformasjon",
     "payment_info": "Betalingsinformasjon",
@@ -194,58 +216,51 @@
     "confirmation": "Bekreftelse",
     "duration_hours": "{{count}} time",
     "duration_hours_plural": "{{count}} timer",
-    "total_cost": "Totalkostnad",
+    "total_cost": "Total kostnad",
     "per_hour": "per time",
     "includes_vat": "inkl. MVA",
     "excludes_vat": "ekskl. MVA",
+    "select_slots_pricing": "Velg tidspunkter og få prisberegning",
     "selected_slots_pricing": "Valgte tidspunkter og prisberegning",
-    "select_slots_pricing": "Velg tidspunkter og få en prisberegning",
     "recurring_slots_pricing": "Gjentakende tidspunkter og prisberegning",
     "select_pattern": "Tidspunkter og prisberegning (velg gjentakelsesmønster)"
   },
   "pricing": {
     "base_price": "Grunnpris",
     "vat_25": "MVA (25%):",
-    "total_incl_vat": "Total inkl. MVA:",
+    "total_incl_vat": "Totalt inkl. MVA:",
     "discount": "Rabatt",
     "surcharge": "Tillegg",
-    "discount_lag_foreninger": "Rabatt - Lag/Foreninger (20%)",
+    "discount_lag_foreninger": "Rabatt - Lag/foreninger (20%)",
     "discount_paraply": "Rabatt - Paraplyorganisasjoner (30%)",
     "discount_kommunale_enheter": "Rabatt - Kommunale enheter (50%)",
     "surcharge_private_firma": "Tillegg - Privat firma (+20%)",
     "subtotal": "Delsum",
-    "total": "Total",
+    "total": "Totalt",
     "price_per_hour": "Pris per time",
-    "total_hours": "Totalt antall timer"
+    "total_hours": "Totalt timer"
   },
   "labels": {
-    "occurrences": "forekomster"
+    "occurrences": "forekomster",
+    "invalid_date": "Ugyldig dato"
   },
   "cart": {
-    "title": "Handlekurv",
-    "your_cart": "Din handlekurv",
-    "items": "Artikler",
-    "item_count": "{{count}} artikkel",
-    "item_count_plural": "{{count}} artikler",
-    "empty_cart": "Handlekurven er tom",
-    "add_more": "Legg til flere bookinger",
-    "remove": "Fjern",
-    "clear_cart": "Tøm handlekurv",
-    "subtotal": "Delsum",
-    "total": "Total",
-    "checkout": "Gå til kasse",
-    "continue_booking": "Fortsett å booke"
+    "title": "Reservasjonskurv",
+    "empty_cart": "Ingen reservasjoner",
+    "empty_message": "Velg fasiliteter og tider for å se dem her",
+    "price": "Pris",
+    "total": "Totalt",
+    "clear_cart": "Tøm kurv"
   },
-  "checkout": {
-    "title": "Kasse",
-    "review_booking": "Gjennomgå booking",
-    "payment_details": "Betalingsdetaljer",
-    "billing_info": "Faktureringsinformasjon",
-    "terms_and_conditions": "Vilkår og betingelser",
-    "accept_terms": "Jeg godtar vilkårene",
-    "complete_booking": "Fullfør booking",
-    "processing": "Behandler...",
-    "secure_checkout": "Sikker kasse"
+  "time": {
+    "hour": "1 time",
+    "hours": "{{count}} timer"
+  },
+  "button_labels": {
+    "checkout": "Gå til bestilling",
+    "cancel": "Avbryt",
+    "cancel_booking": "Avbryt booking",
+    "cancel_selected": "Avbryt valgte"
   },
   "messages": {
     "success": {
@@ -257,6 +272,7 @@
       "rejected": "Booking avvist!",
       "checked_in": "Innsjekket!",
       "checked_out": "Utsjekket!",
+      "deleted": "Booking slettet!",
       "payment_successful": "Betaling vellykket!",
       "added_to_cart": "Lagt til i handlekurv!",
       "removed_from_cart": "Fjernet fra handlekurv!",
@@ -279,6 +295,7 @@
       "maximum_duration": "Maksimal varighet overskredet",
       "advance_booking": "Forhåndsbestillingstid ikke oppfylt"
     },
+    "warning_title_text": "Denne bookingen krever godkjenning fra administrator",
     "empty": {
       "no_bookings": "Ingen bookinger funnet",
       "no_upcoming": "Ingen kommende bookinger",
@@ -300,7 +317,6 @@
       "upcoming": "Din booking starter snart"
     }
   },
-  "warning_title_text": "Denne bookingen krever godkjenning fra administrator",
   "notifications": {
     "new_booking": "Ny booking opprettet",
     "booking_confirmed": "Booking bekreftet",
@@ -323,50 +339,6 @@
     "popular_times": "Populære tider",
     "booking_rate": "Bookingrate",
     "cancellation_rate": "Avbestillingsrate"
-  },
-  "activity_types": {
-    "sport": "Sport",
-    "culture": "Kultur",
-    "meeting": "Møte",
-    "event": "Arrangement",
-    "training": "Trening"
-  },
-  "placeholders": {
-    "purpose": "F.eks. fotballtrening, møte, arrangement",
-    "activity_type": "Velg aktivitetstype",
-    "actor_type": "Velg aktør type",
-    "additional_info": "Eventuelle spesielle ønsker eller behov"
-  },
-  "steps": {
-    "calendar": {
-      "title": "Velg tidspunkter",
-      "description": "Klikk på ledige tidspunkter for å velge dem. Du kan velge flere tidspunkter samtidig."
-    },
-    "details": {
-      "title": "Fyll ut bookingdetaljer",
-      "description": "Fortell oss om arrangementet ditt så kan vi hjelpe deg med riktig booking."
-    },
-    "recurrence": {
-      "title": "Velg gjentakelsesmønster",
-      "description": "Velg hvordan ofte bookingen skal gjentas. Dette gjelder for alle valgte tidspunkter."
-    },
-    "terms": {
-      "title": "Vilkår og betingelser",
-      "description": "Les gjennom vilkårene og godta dem for å fortsette."
-    },
-    "actions": {
-      "title": "Fullfør booking",
-      "description": "Gjennomgå opplysningene og velg hvordan du vil fortsette.",
-      "ready": "Klar for booking!",
-      "all_filled": "Alle opplysninger er fylt ut og vilkårene er godtatt."
-    },
-    "progress": {
-      "title": "Bookingprosess",
-      "current": "Steg {{current}} av {{total}}",
-      "current_step": "Gjeldende steg",
-      "completed": "Fullført",
-      "upcoming": "Kommende"
-    }
   },
   "page": {
     "user_title": "Bookinger",
@@ -413,23 +385,6 @@
     "next_week": "Neste uke",
     "step_of": "Steg {{current}} av {{total}}"
   },
-  "sidebar": {
-    "title": "Bookingprosess",
-    "zone_selector": "Velg sone",
-    "booking_type": "Bookingtype",
-    "time_slots_title": "Tidspunkter",
-    "clear_all_slots": "Fjern alle valgte tidspunkter",
-    "template_for_recurrence": "Mal for gjentakelse",
-    "recurring_instances": "Gjentakende forekomster ({{count}} totalt):",
-    "and_more": "... og {{count}} til",
-    "no_slots_selected": "Velg tidspunkter og få en prisberegning",
-    "one_hour": "1 time",
-    "hours": "{{count}} timer",
-    "recurring_slots_and_price": "Gjentakende tidspunkter og prisberegning",
-    "slots_and_price_select_pattern": "Tidspunkter og prisberegning (velg gjentakelsesmønster)",
-    "selected_slots_and_price": "Valgte tidspunkter og prisberegning",
-    "select_slots_get_price": "Velg tidspunkter og få en prisberegning"
-  },
   "weekdays": {
     "sunday": "Søndag",
     "monday": "Mandag",
@@ -440,12 +395,12 @@
     "saturday": "Lørdag"
   },
   "form": {
-    "purpose_label": "Formål med bookingen",
+    "purpose_label": "Formål med booking",
     "purpose_placeholder": "F.eks. fotballtrening, møte, arrangement",
     "attendees_label": "Antall deltakere",
-    "activity_type_label": "Type aktivitet",
+    "activity_type_label": "Aktivitetstype",
     "activity_type_placeholder": "Velg aktivitetstype",
-    "actor_type_label": "Aktør type",
+    "actor_type_label": "Aktørtype",
     "actor_type_placeholder": "Velg aktør type",
     "additional_info_label": "Tilleggsinformasjon",
     "additional_info_placeholder": "Eventuelle spesielle ønsker eller behov"
@@ -458,110 +413,76 @@
     "training": "Trening"
   },
   "validation": {
-    "form_incomplete": "Skjemaet er ikke komplett",
-    "fill_required_fields": "Fyll ut alle påkrevde felt for å fortsette",
+    "form_incomplete": "Skjemaet er ikke fullstendig",
+    "fill_required_fields": "Fyll inn alle påkrevde felt for å fortsette",
     "terms_required": "Vilkår og betingelser",
-    "accept_terms_message": "Du må akseptere vilkår og betingelser for å fortsette",
+    "accept_terms_message": "Du må godta vilkårene og betingelsene for å fortsette",
     "processing": "Behandler forespørsel...",
     "select_weekdays": "Velg ukedager",
     "select_time_slots": "Velg tidspunkter",
     "purpose_required": "Formål er påkrevd",
     "min_attendees": "Minimum 1 deltaker",
     "activity_type_required": "Velg aktivitetstype",
-    "actor_type_required": "Velg aktørtype"
+    "actor_type_required": "Velg aktørtype",
+    "recurrence_type_required": "Gjentakelsestype er påkrevd",
+    "weekdays_required": "Ukedager må spesifiseres for denne gjentakelsestypen",
+    "monthly_pattern_required": "Månedsmønster må spesifiseres",
+    "monthly_weekday_required": "Månedens ukedag må spesifiseres",
+    "custom_interval_required": "Tilpasset intervall må være minst 1",
+    "end_date_after_start": "Sluttdato må være etter startdato"
   },
   "conflicts": {
     "existing_booking_title": "Eksisterende booking",
     "existing_booking_desc": "Dette tidspunktet er allerede booket",
     "maintenance_title": "Vedlikehold",
-    "maintenance_desc": "Tidspunkt utilgjengelig pga. vedlikehold",
+    "maintenance_desc": "Tidspunkt utilgjengelig på grunn av vedlikehold",
     "conflict_detected": "Bookingkonflikt oppdaget",
     "unavailable_slot": "Valgt tidspunkt er ikke tilgjengelig"
   },
   "booking_types": {
-    "one_time_label": "Enkelt booking",
-    "one_time_description": "Én gang booking",
+    "one_time_label": "Enkeltbooking",
+    "one_time_description": "Engangsbooking",
     "recurring_label": "Gjentakende booking",
     "recurring_description": "Fast tid som gjentas",
     "select_label": "Velg {{type}}"
   },
-  "button_labels": {
-    "add_to_cart": "Legg i reservasjonskurv",
-    "complete_booking": "Fullfør booking",
-    "new_booking": "Ny booking",
-    "cancel_selected": "Avlys valgte",
-    "cancel": "Avbryt",
-    "cancel_booking": "Avlys booking"
-  },
   "delete_confirm": {
-    "title_single": "Avlys booking",
-    "title_multiple": "Avlys bookinger",
-    "message_single": "Er du sikker på at du vil avlyse 1 booking?",
-    "message_multiple": "Er du sikker på at du vil avlyse {{count}} bookinger?",
-    "cancel_all": "Avlys alle",
-    "canceling": "Avlyser...",
-    "success_single": "Booking avlyst",
-    "success_multiple": "{{count}} bookinger avlyst"
+    "title_single": "Avbryt booking",
+    "title_multiple": "Avbryt bookinger",
+    "message_single": "Er du sikker på at du vil avbryte 1 booking?",
+    "message_multiple": "Er du sikker på at du vil avbryt {{count}} bookinger?",
+    "cancel_all": "Avbryt alle",
+    "canceling": "Avbryter...",
+    "success_single": "Booking avbrutt",
+    "success_multiple": "{{count}} bookinger avbrutt"
   },
   "toast": {
-    "booking_submitted": "Booking sendt! Du vil få bekreftelse på e-post når den er godkjent.",
+    "booking_submitted": "Booking sendt inn! Du vil motta bekreftelse via e-post når den er godkjent.",
     "calendar_added": "Booking lagt til i kalender!",
-    "info_copied": "Booking-info kopiert til utklippstavle!",
-    "recurring_coming_soon": "Visning av gjentakende booking kommer snart!"
-  },
-  "details": {
-    "title": "Bookingdetaljer",
-    "unknownVenue": "Ukjent lokale",
-    "statusLabel": "Status:",
-    "dateLabel": "Dato:",
-    "timeLabel": "Tidspunkt:",
-    "durationLabel": "Varighet:",
-    "totalPriceLabel": "Totalpris:",
-    "notesLabel": "Notater:",
-    "bookingIdLabel": "Booking-ID:",
-    "actionsLabel": "Handlinger:",
-    "editBooking": "Rediger",
-    "cancelBooking": "Avlys",
-    "shareBooking": "Del",
-    "addToCalendar": "Legg til kalender",
-    "close": "Lukk"
-  },
-  "time": {
-    "hour": "time",
-    "hours": "timer"
+    "info_copied": "Bookinginfo kopiert til utklippstavle!",
+    "recurring_coming_soon": "Visning av gjentakende bookinger kommer snart!"
   },
   "steps": {
     "calendar": {
       "title": "Velg tidspunkter",
       "description": "Klikk på ledige tidspunkter for å velge dem. Du kan velge flere tidspunkter samtidig."
     },
-    "recurrence": {
-      "title": "Gjentakelse",
-      "description": "Velg gjentakelsesmønster"
-    },
     "details": {
-      "title": "Bookingdetaljer",
-      "description": "Fyll ut informasjon om booking"
+      "title": "Fyll ut bookingdetaljer",
+      "description": "Fortell oss om arrangementet ditt så kan vi hjelpe deg med riktig booking."
+    },
+    "recurrence": {
+      "title": "Velg gjentakelsesmønster",
+      "description": "Velg hvordan ofte bookingen skal gjentas. Dette gjelder for alle valgte tidspunkter."
     },
     "terms": {
       "title": "Vilkår og betingelser",
-      "description": "Les og godta vilkårene"
-    },
-    "actions": {
-      "title": "Fullfør booking",
-      "description": "Legg i kurv eller fullfør nå"
+      "description": "Les gjennom vilkårene og godta dem for å fortsette."
     }
   },
   "progress": {
     "title": "Bookingprosess",
     "step_of": "Steg {{current}} av {{total}}"
-  },
-  "sidebar": {
-    "select_slots_pricing": "Velg tidspunkter og få en prisberegning",
-    "selected_slots_and_price": "Valgte tidspunkter og prisberegning",
-    "recurring_slots_and_price": "Gjentakende tidspunkter og prisberegning",
-    "slots_and_price_select_pattern": "Tidspunkter og prisberegning (velg gjentakelsesmønster)",
-    "clear_all_slots": "Fjern alle valgte tidspunkter"
   },
   "recurrence": {
     "title": "Gjentakende mønster",
@@ -585,6 +506,23 @@
     "second": "Andre",
     "third": "Tredje",
     "fourth": "Fjerde",
-    "last": "Siste"
+    "last": "Siste",
+    "recurring": "Gjentakende",
+    "single": "Enkelt booking",
+    "on": "på",
+    "every_month": "hver måned",
+    "every": "hver",
+    "day_on": "dag på",
+    "unknown_pattern": "Ukjent mønster"
+  },
+  "sidebar": {
+    "select_slots_pricing": "Velg tidspunkter og få en prisberegning",
+    "selected_slots_and_price": "Valgte tidspunkter og prisberegning",
+    "recurring_slots_and_price": "Gjentakende tidspunkter og prisberegning",
+    "slots_and_price_select_pattern": "Tidspunkter og prisberegning (velg gjentakelsesmønster)",
+    "clear_all_slots": "Fjern alle valgte tidspunkter",
+    "template_for_recurrence": "Mal for gjentakelse",
+    "recurring_instances": "Gjentakende forekomster ({{count}} totalt):",
+    "and_more": "... og {{count}} til"
   }
 }

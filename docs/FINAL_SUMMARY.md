@@ -1,8 +1,8 @@
-# BookMe Supabase Integration - Final Summary
+# Booknor Supabase Integration - Final Summary
 
 ## 🎉 Mission Accomplished!
 
-Your BookMe application now has a **complete, production-ready Supabase integration**. Here's everything that's been built:
+Your Booknor application now has a **complete, production-ready Supabase integration**. Here's everything that's been built:
 
 ---
 
@@ -187,7 +187,7 @@ const send = useSendMessage();
 ## 📁 Complete File Structure
 
 ```
-~/Documents/xaheen/bookme/
+~/Documents/xaheen/booknor/
 ├── src/
 │   ├── lib/
 │   │   ├── supabase.ts              ✅ Client config
@@ -228,11 +228,11 @@ const send = useSendMessage();
 ### Step 1: Test the Stack (5 minutes)
 ```bash
 # Terminal 1: Start Supabase
-cd "/Volumes/Development/Xala Products/bookme"
+cd "/Volumes/Development/Xala Products/booknor"
 supabase start
 
 # Terminal 2: Start Frontend
-cd ~/Documents/xaheen/bookme"
+cd ~/Documents/xaheen/booknor"
 npm run dev
 
 # Open: http://localhost:3000
@@ -539,7 +539,7 @@ Architecture supports:
 
 ## 🎊 You're Ready to Ship!
 
-Your BookMe application has:
+Your Booknor application has:
 - ✅ **Solid Foundation** - Auth, React Query, Supabase client
 - ✅ **7 Complete Services** - 70 React Query hooks ready to use
 - ✅ **Type-Safe** - 103KB of generated TypeScript types

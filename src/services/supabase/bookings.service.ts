@@ -23,6 +23,7 @@ type BookingInsert = Database['public']['Tables']['bookings']['Insert'];
 type BookingUpdate = Database['public']['Tables']['bookings']['Update'];
 type Facility = Database['public']['Tables']['facilities']['Row'];
 type Zone = Database['public']['Tables']['zones']['Row'];
+type UserProfile = Database['public']['Tables']['profiles']['Row'];
 
 /**
  * Booking with related data
@@ -30,6 +31,7 @@ type Zone = Database['public']['Tables']['zones']['Row'];
 export interface BookingWithDetails extends Booking {
   readonly facility?: Facility;
   readonly zone?: Zone | null;
+  readonly user_profile?: UserProfile | null;
 }
 
 /**
@@ -53,8 +55,7 @@ export const bookingKeys = {
   orgBookings: (orgId: string) => [...bookingKeys.lists(), 'org', orgId] as const,
   facilityBookings: (facilityId: string) => [...bookingKeys.lists(), 'facility', facilityId] as const,
   details: () => [...bookingKeys.all, 'detail'] as const,
-  detail: (id: string) => [...bookingKeys.details(), id] as const,
-};
+  detail: (id: string) => [...bookingKeys.details(), id] as const};
 
 // ============================================================================
 // Service Functions
@@ -87,7 +88,8 @@ export const bookingsService = {
    * Fetch bookings for an organization
    */
   async getOrgBookings(orgId: string): Promise<BookingWithDetails[]> {
-    const { data, error } = await supabase
+    // First get the bookings with facility information
+    const { data: bookings, error: bookingsError } = await supabase
       .from('bookings')
       .select(`
         *,
@@ -96,8 +98,34 @@ export const bookingsService = {
       .eq('facility.org_id', orgId)
       .order('starts_at', { ascending: false });
 
-    if (error) throw error;
-    return data as BookingWithDetails[];
+    if (bookingsError) throw bookingsError;
+    
+    // If no bookings, return early
+    if (!bookings || bookings.length === 0) {
+      return [];
+    }
+    
+    // Get unique user IDs from the bookings
+    const userIds = [...new Set(bookings.map(booking => booking.user_id))];
+    
+    // Get user profiles for these users
+    const { data: profiles, error: profilesError } = await supabase
+      .from('profiles')
+      .select('*')
+      .in('user_id', userIds);
+    
+    if (profilesError) throw profilesError;
+    
+    // Create a map of user profiles for quick lookup
+    const profileMap = new Map(profiles.map(profile => [profile.user_id, profile]));
+    
+    // Combine bookings with their user profiles
+    const bookingsWithProfiles = bookings.map(booking => ({
+      ...booking,
+      user_profile: profileMap.get(booking.user_id) || null
+    }));
+    
+    return bookingsWithProfiles as BookingWithDetails[];
   },
 
   /**
@@ -149,14 +177,40 @@ export const bookingsService = {
    * Create a new booking
    */
   async create(booking: BookingInsert): Promise<Booking> {
-    const { data, error } = await supabase
-      .from('bookings')
-      .insert(booking)
-      .select()
-      .single();
-
-    if (error) throw error;
-    return data;
+    console.log('Supabase client available:', !!supabase);
+    console.log('Attempting to create booking:', booking);
+    
+    // Validate that no fields contain invalid UUIDs
+    for (const [key, value] of Object.entries(booking)) {
+      if (typeof value === 'string' && value.length > 0) {
+        // Check if this might be a UUID field with an invalid value
+        if (key.includes('id') && value.length > 10 && !value.includes('-')) {
+          console.warn(`Potential invalid UUID in field ${key}:`, value);
+        }
+      }
+    }
+    
+    try {
+      console.log('Executing Supabase insert...');
+      const { data, error } = await supabase
+        .from('bookings')
+        .insert(booking)
+        .select()
+        .single();
+      
+      console.log('Supabase insert result:', { data, error });
+      
+      if (error) {
+        console.error('Supabase insert error:', error);
+        throw error;
+      }
+      
+      console.log('Booking created successfully:', data);
+      return data;
+    } catch (error) {
+      console.error('Exception in bookingsService.create:', error);
+      throw error;
+    }
   },
 
   /**
@@ -180,38 +234,56 @@ export const bookingsService = {
   async cancel(id: string, reason?: string): Promise<Booking> {
     const updates: BookingUpdate = {
       status: 'cancelled',
-      updated_at: new Date().toISOString(),
-    };
+      updated_at: new Date().toISOString()};
 
     return this.update(id, updates);
   },
 
   /**
-   * Check availability for a time slot
-   * Uses RPC function from backend
+   * Delete a booking
    */
-  async checkAvailability(params: AvailabilityParams): Promise<boolean> {
-    const { data, error } = await supabase.rpc('check_availability', {
-      p_facility_id: params.facilityId,
-      p_zone_id: params.zoneId || null,
-      p_start_time: params.startTime,
-      p_end_time: params.endTime,
-    });
+  async delete(id: string): Promise<void> {
+    // First verify the booking exists and belongs to the current user
+    const { data: booking, error: fetchError } = await supabase
+      .from('bookings')
+      .select('id, user_id, status')
+      .eq('id', id)
+      .single();
 
-    if (error) {
-      console.error('Availability check error:', error);
-      throw error;
+    if (fetchError) {
+      throw new Error(`Failed to fetch booking: ${fetchError.message}`);
     }
 
-    return data as boolean;
+    // Check if booking belongs to current user
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user || booking.user_id !== user.id) {
+      throw new Error('Not authorized to delete this booking');
+    }
+
+    // For cancelled bookings, use the specific RPC function to avoid trigger issues
+    if (booking.status === 'cancelled') {
+      const { error: rpcError } = await supabase.rpc('delete_cancelled_booking' as any, { p_booking: id });
+      if (rpcError) {
+        throw new Error(`Failed to delete cancelled booking: ${rpcError.message}`);
+      }
+      return;
+    }
+
+    // For other bookings, use the standard delete
+    const { error: deleteError } = await supabase
+      .from('bookings')
+      .delete()
+      .eq('id', id);
+
+    if (deleteError) {
+      throw new Error(`Failed to delete booking: ${deleteError.message}`);
+    }
   },
 
   /**
    * Get upcoming bookings for a user
    */
   async getUpcoming(userId: string, limit = 10): Promise<BookingWithDetails[]> {
-    const now = new Date().toISOString();
-
     const { data, error } = await supabase
       .from('bookings')
       .select(`
@@ -220,8 +292,7 @@ export const bookingsService = {
         zone:zones (*)
       `)
       .eq('user_id', userId)
-      .gte('starts_at', now)
-      .in('status', ['pending', 'awaiting_payment', 'paid'])
+      .gte('starts_at', new Date().toISOString())
       .order('starts_at', { ascending: true })
       .limit(limit);
 
@@ -233,8 +304,6 @@ export const bookingsService = {
    * Get past bookings for a user
    */
   async getPast(userId: string, limit = 20): Promise<BookingWithDetails[]> {
-    const now = new Date().toISOString();
-
     const { data, error } = await supabase
       .from('bookings')
       .select(`
@@ -243,14 +312,33 @@ export const bookingsService = {
         zone:zones (*)
       `)
       .eq('user_id', userId)
-      .lt('ends_at', now)
+      .lt('starts_at', new Date().toISOString())
       .order('starts_at', { ascending: false })
       .limit(limit);
 
     if (error) throw error;
     return data as BookingWithDetails[];
   },
-};
+
+  /**
+   * Check availability for a time slot
+   * Uses RPC function from backend
+   */
+  async checkAvailability(params: AvailabilityParams): Promise<boolean> {
+    // Using has_overlap function with negation to check availability
+    const { data, error } = await supabase.rpc('has_overlap', {
+      p_facility: params.facilityId,
+      p_starts: params.startTime,
+      p_ends: params.endTime});
+
+    if (error) {
+      console.error('Availability check error:', error);
+      throw error;
+    }
+
+    // has_overlap returns true if there's an overlap, so we negate it
+    return !data;
+  }};
 
 // ============================================================================
 // React Query Hooks
@@ -331,8 +419,7 @@ export const useBooking = (
   return useQuery({
     queryKey: bookingKeys.detail(id),
     queryFn: () => bookingsService.getById(id),
-    enabled: !!id && enabled,
-  });
+    enabled: !!id && enabled});
 };
 
 /**
@@ -346,8 +433,7 @@ export const useUpcomingBookings = (
     queryKey: [...bookingKeys.userBookings(userId), 'upcoming'],
     queryFn: () => bookingsService.getUpcoming(userId, limit),
     enabled: !!userId,
-    staleTime: 2 * 60 * 1000,
-  });
+    staleTime: 2 * 60 * 1000});
 };
 
 /**
@@ -397,7 +483,17 @@ export const useCreateBooking = (): UseMutationResult<
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: bookingsService.create,
+    mutationFn: async (booking: BookingInsert) => {
+      console.log('Creating booking with data:', booking);
+      try {
+        const result = await bookingsService.create(booking);
+        console.log('Booking created successfully:', result);
+        return result;
+      } catch (error) {
+        console.error('Error in bookingsService.create:', error);
+        throw error;
+      }
+    },
     onSuccess: (newBooking) => {
       // Invalidate all booking queries
       queryClient.invalidateQueries({ queryKey: bookingKeys.all });
@@ -405,6 +501,9 @@ export const useCreateBooking = (): UseMutationResult<
       // Add to cache
       queryClient.setQueryData(bookingKeys.detail(newBooking.id), newBooking);
     },
+    onError: (error) => {
+      console.error('useCreateBooking mutation error:', error);
+    }
   });
 };
 
@@ -423,11 +522,22 @@ export const useUpdateBooking = (): UseMutationResult<
     onSuccess: (updatedBooking, { id }) => {
       // Invalidate lists
       queryClient.invalidateQueries({ queryKey: bookingKeys.lists() });
+      
+      // Specifically invalidate user bookings lists to ensure UI updates
+      queryClient.invalidateQueries({ queryKey: bookingKeys.userBookings(updatedBooking.user_id) });
+      
+      // Also invalidate org bookings to ensure admin UI updates
+      queryClient.invalidateQueries({ 
+        predicate: (query) => {
+          return query.queryKey[0] === 'bookings' && 
+                 query.queryKey[1] === 'list' && 
+                 query.queryKey[2] === 'org';
+        }
+      });
 
       // Update cache
       queryClient.setQueryData(bookingKeys.detail(id), updatedBooking);
-    },
-  });
+    }});
 };
 
 /**
@@ -450,19 +560,76 @@ export const useUpdateBooking = (): UseMutationResult<
  * }
  * ```
  */
-export const useCancelBooking = (): UseMutationResult<Booking, Error, string> => {
+export const useCancelBooking = (): UseMutationResult<Booking, Error, { id: string; reason?: string }> => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: bookingsService.cancel,
-    onSuccess: (cancelledBooking, id) => {
+    mutationFn: ({ id, reason }) => bookingsService.cancel(id, reason),
+    onSuccess: (cancelledBooking, { id }) => {
       // Invalidate all booking queries
       queryClient.invalidateQueries({ queryKey: bookingKeys.all });
+      
+      // Specifically invalidate user bookings lists to ensure UI updates
+      queryClient.invalidateQueries({ queryKey: bookingKeys.lists() });
+      
+      // Also invalidate all user bookings queries to ensure the list updates
+      queryClient.invalidateQueries({ 
+        predicate: (query) => {
+          return query.queryKey[0] === 'bookings' && 
+                 query.queryKey[1] === 'list' && 
+                 query.queryKey[2] === 'user';
+        }
+      });
 
       // Update cache
       queryClient.setQueryData(bookingKeys.detail(id), cancelledBooking);
-    },
-  });
+    }});
+};
+
+/**
+ * Hook to delete a booking
+ *
+ * @example
+ * ```tsx
+ * function DeleteButton({ bookingId }: { bookingId: string }) {
+ *   const deleteBooking = useDeleteBooking();
+ *
+ *   const handleDelete = () => {
+ *     if (confirm('Permanently delete this booking?')) {
+ *       deleteBooking.mutate(bookingId, {
+ *         onSuccess: () => toast.success('Booking deleted'),
+ *       });
+ *     }
+ *   };
+ *
+ *   return <button onClick={handleDelete}>Delete Booking</button>;
+ * }
+ * ```
+ */
+export const useDeleteBooking = (): UseMutationResult<void, Error, string> => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: string) => bookingsService.delete(id),
+    onSuccess: (_, bookingId) => {
+      // Invalidate all booking queries
+      queryClient.invalidateQueries({ queryKey: bookingKeys.all });
+      
+      // Specifically invalidate user bookings lists to ensure UI updates
+      queryClient.invalidateQueries({ queryKey: bookingKeys.lists() });
+      
+      // Remove specific booking from cache
+      queryClient.removeQueries({ queryKey: bookingKeys.detail(bookingId) });
+      
+      // Also invalidate all user bookings queries to ensure the list updates
+      queryClient.invalidateQueries({ 
+        predicate: (query) => {
+          return query.queryKey[0] === 'bookings' && 
+                 query.queryKey[1] === 'list' && 
+                 query.queryKey[2] === 'user';
+        }
+      });
+    }});
 };
 
 /**
@@ -494,3 +661,9 @@ export const useCheckAvailability = (
     gcTime: 1 * 60 * 1000, // 1 minute
   });
 };
+
+// Helper function to validate UUID format
+function isValidUUID(uuid: string): boolean {
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  return uuidRegex.test(uuid);
+}

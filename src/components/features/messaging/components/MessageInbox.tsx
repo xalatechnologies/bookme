@@ -57,7 +57,7 @@ const ThreadCard: React.FC<{
 
   return (
     <Card
-      className={`cursor-pointer transition-colors hover:bg-muted/50 ${
+      className={`cursor-pointer transition-colors hover:bg-muted/50 dark:hover:bg-gray-800 ${
         unreadCount > 0 ? "border-l-4 border-l-primary" : ""
       }`}
       onClick={() => onSelect(thread.id)}
@@ -68,7 +68,7 @@ const ThreadCard: React.FC<{
         <div className="flex items-start justify-between">
           <div className="flex-1 space-y-2">
             <div className="flex items-center space-x-2">
-              <h3 className="font-semibold text-sm">{thread.subject}</h3>
+              <h3 className="font-semibold text-sm dark:text-white">{thread.subject}</h3>
               {unreadCount > 0 && (
                 <Badge variant="default" className="text-xs">
                   {unreadCount}
@@ -82,7 +82,7 @@ const ThreadCard: React.FC<{
               />
               <Badge
                 variant="outline"
-                className={`text-xs ${getPriorityColor(thread.priority)}`}
+                className={`text-xs ${getPriorityColor(thread.priority)} dark:bg-gray-700 dark:text-gray-300`}
               >
                 {thread.priority === "high"
                   ? "Høy"
@@ -92,11 +92,11 @@ const ThreadCard: React.FC<{
               </Badge>
             </div>
 
-            <p className="text-sm text-muted-foreground line-clamp-2">
+            <p className="text-sm text-muted-foreground line-clamp-2 dark:text-gray-400">
               {lastMessage}
             </p>
 
-            <div className="flex items-center space-x-4 text-xs text-muted-foreground">
+            <div className="flex items-center space-x-4 text-xs text-muted-foreground dark:text-gray-500">
               <span>{thread.participants.length} deltakere</span>
               <span>
                 {format(new Date(thread.lastMessageAt), "dd.MM.yyyy HH:mm")}
@@ -124,7 +124,7 @@ const ThreadCard: React.FC<{
                       e.stopPropagation();
                       onMarkResolved(thread.id);
                     }}
-                    className="h-8 w-8 p-0 text-green-600 hover:text-green-700 hover:bg-green-50"
+                    className="h-8 w-8 p-0 text-green-600 hover:text-green-700 hover:bg-green-50 dark:hover:bg-green-900/20"
                     title="Marker som løst"
                   >
                     <Check className="h-4 w-4" />
@@ -137,7 +137,7 @@ const ThreadCard: React.FC<{
                   e.stopPropagation();
                   onDelete(thread.id);
                 }}
-                className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+                className="h-8 w-8 p-0 text-destructive hover:text-destructive dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-900/20"
                 title="Slett tråd"
               >
                 <Trash2 className="h-4 w-4" />
@@ -274,14 +274,15 @@ export const MessageInbox: React.FC<MessageInboxProps> = ({
       {/* ThreadsPane - venstre trådeliste som scroller */}
       <section className="w-[420px] border-r flex flex-col min-h-0">
         {/* Sticky header for filter/søk */}
-        <header className="sticky top-0 z-10 bg-white border-b p-3 flex-shrink-0">
+        <header className="sticky top-0 z-10 bg-white border-b p-3 flex-shrink-0 dark:bg-gray-800 dark:border-gray-700">
           <div className="flex items-center justify-between">
-            <h3 className="font-semibold">Meldingstråder</h3>
+            <h3 className="font-semibold dark:text-white">Meldingstråder</h3>
             <Button
               variant="outline"
               size="sm"
               onClick={handleCreateThread}
               disabled={availableParticipants.length === 0}
+              className="dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
             >
               <Plus className="h-4 w-4 mr-2" />
               Ny melding
@@ -290,35 +291,35 @@ export const MessageInbox: React.FC<MessageInboxProps> = ({
         </header>
 
         {/* Search and filters */}
-        <div className="p-3 border-b bg-background flex-shrink-0">
+        <div className="p-3 border-b bg-background flex-shrink-0 dark:bg-gray-800 dark:border-gray-700">
           <div className="space-y-2">
             <Input
-              placeholder={t("common:placeholders.messageSearch")}
+              placeholder={t("placeholders.messageSearch")}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="h-8"
+              className="h-8 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
             />
             <div className="flex gap-2">
               <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger className="h-8 text-xs">
-                  <SelectValue placeholder={t("common:filters.status")} />
+                <SelectTrigger className="h-8 text-xs dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                  <SelectValue placeholder={t("filters.status")} />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Alle</SelectItem>
-                  <SelectItem value="active">Aktive</SelectItem>
-                  <SelectItem value="resolved">Løst</SelectItem>
-                  <SelectItem value="closed">Lukket</SelectItem>
+                <SelectContent className="dark:bg-gray-800 dark:border-gray-700">
+                  <SelectItem value="all" className="dark:text-gray-300 dark:focus:bg-gray-700">Alle</SelectItem>
+                  <SelectItem value="active" className="dark:text-gray-300 dark:focus:bg-gray-700">Aktive</SelectItem>
+                  <SelectItem value="resolved" className="dark:text-gray-300 dark:focus:bg-gray-700">Løst</SelectItem>
+                  <SelectItem value="closed" className="dark:text-gray-300 dark:focus:bg-gray-700">Lukket</SelectItem>
                 </SelectContent>
               </Select>
               <Select value={priorityFilter} onValueChange={setPriorityFilter}>
-                <SelectTrigger className="h-8 text-xs">
-                  <SelectValue placeholder={t("common:filters.priority")} />
+                <SelectTrigger className="h-8 text-xs dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                  <SelectValue placeholder={t("filters.priority")} />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Alle</SelectItem>
-                  <SelectItem value="high">Høy</SelectItem>
-                  <SelectItem value="medium">Medium</SelectItem>
-                  <SelectItem value="low">Lav</SelectItem>
+                <SelectContent className="dark:bg-gray-800 dark:border-gray-700">
+                  <SelectItem value="all" className="dark:text-gray-300 dark:focus:bg-gray-700">Alle</SelectItem>
+                  <SelectItem value="high" className="dark:text-gray-300 dark:focus:bg-gray-700">Høy</SelectItem>
+                  <SelectItem value="medium" className="dark:text-gray-300 dark:focus:bg-gray-700">Medium</SelectItem>
+                  <SelectItem value="low" className="dark:text-gray-300 dark:focus:bg-gray-700">Lav</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -348,7 +349,7 @@ export const MessageInbox: React.FC<MessageInboxProps> = ({
             />
           ))}
           {filteredThreads.length === 0 && (
-            <div className="p-4 text-center text-muted-foreground text-sm">
+            <div className="p-4 text-center text-muted-foreground text-sm dark:text-gray-400">
               Ingen meldingstråder funnet
             </div>
           )}
@@ -366,7 +367,7 @@ export const MessageInbox: React.FC<MessageInboxProps> = ({
             showHeader={true}
           />
         ) : (
-          <div className="flex items-center justify-center h-full text-muted-foreground">
+          <div className="flex items-center justify-center h-full text-muted-foreground dark:text-gray-400">
             <div className="text-center">
               <MessageCircle className="h-12 w-12 mx-auto mb-4 opacity-50" />
               <p>Velg en meldingstråd for å starte samtalen</p>

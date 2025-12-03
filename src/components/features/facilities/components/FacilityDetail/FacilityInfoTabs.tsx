@@ -3,17 +3,22 @@
 import React, { useState } from 'react';
 import { CheckCircle, XCircle, ChevronDown, ChevronRight } from 'lucide-react';
 
-import type { Zone } from '@/components/features/bookings/types';
+import type { Zone } from '@/types/booking';
 import { useTranslation } from '@/i18n';
 import { useFieldConfigStore } from '@/stores/fieldConfigStore';
+import { useFacilityAvailability } from '@/services/supabase/facilities.service';
+
+import { FacilityCalendar } from '@/components/features/calendar/components/FacilityCalendar';
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
-import { FieldRenderer } from './components/FieldRenderer';
+
 import { AmenityGrid } from './components/AmenityGrid';
 import { TabPanel } from './components/TabPanel';
 import { getVisibleFields, splitFieldsIntoColumns } from '@/utils/facility/fieldMappingUtils';
 import { hasParkingAmenity } from '@/utils/facility/amenityIconUtils';
+import { extractContactInfo, formatContactInfo } from '@/utils/facility/contactUtils';
+import { useAvailabilityCalculation } from '@/hooks/features/calendar/useAvailabilityCalculation';
 
 interface FacilityInfoTabsProps {
   readonly description: string;
@@ -21,27 +26,93 @@ interface FacilityInfoTabsProps {
   readonly equipment: readonly string[];
   readonly zones: readonly Zone[];
   readonly amenities: readonly string[];
-  readonly address: string;
   readonly area: string;
   readonly suitableFor: readonly string[];
   readonly facilityId: string;
   readonly facilityName: string;
+  readonly showBookingInterface?: boolean;
+  // Add contact fields
+  readonly contactEmail?: string | null;
+  readonly contactPhone?: string | null;
 }
 
 export const FacilityInfoTabs: React.FC<FacilityInfoTabsProps> = ({
   description,
   capacity,
-  equipment,
+   
+  equipment: _equipment,
   zones,
   amenities,
-  address,
   area,
-  suitableFor,
+   
+  suitableFor: _suitableFor,
   facilityId,
-  facilityName
+  facilityName,
+  showBookingInterface = false,
+  contactEmail,
+  contactPhone
 }): JSX.Element => {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['facility', 'common']);
   const [expandedFAQ, setExpandedFAQ] = useState<string | null>(null);
+  const { data: facilityAvailability } = useFacilityAvailability(facilityId);
+
+  // Process availability data into a more usable format
+  const openingHours = React.useMemo(() => {
+    if (!facilityAvailability) return null;
+    
+    const dayMap: { [key: number]: string } = {
+      0: 'sunday',
+      1: 'monday',
+      2: 'tuesday',
+      3: 'wednesday',
+      4: 'thursday',
+      5: 'friday',
+      6: 'saturday'
+    };
+    
+    const hours: { [key: string]: { start: string; end: string } } = {};
+    
+    facilityAvailability.forEach(item => {
+      const dayKey = dayMap[item.day_of_week];
+      if (dayKey) {
+        hours[dayKey] = {
+          start: item.starts_time.substring(0, 5), // Remove seconds
+          end: item.ends_time.substring(0, 5)     // Remove seconds
+        };
+      }
+    });
+    
+    return hours;
+  }, [facilityAvailability]);
+
+  // Get the earliest opening hour across all days
+  const getEarliestOpeningHour = React.useCallback((hours: { [key: string]: { start: string; end: string } }): string => {
+    let earliestHour = 24;
+    Object.values(hours).forEach(day => {
+      const hour = parseInt(day.start.split(':')[0]);
+      if (hour < earliestHour) {
+        earliestHour = hour;
+      }
+    });
+    return `${earliestHour.toString().padStart(2, '0')}:00`;
+  }, []);
+
+  // Get the latest closing hour across all days
+  const getLatestClosingHour = React.useCallback((hours: { [key: string]: { start: string; end: string } }): string => {
+    let latestHour = 0;
+    Object.values(hours).forEach(day => {
+      const hour = parseInt(day.end.split(':')[0]);
+      if (hour > latestHour) {
+        latestHour = hour;
+      }
+    });
+    return `${latestHour.toString().padStart(2, '0')}:00`;
+  }, []);
+
+  // Use availability calculation hook with facility availability data
+  const { getAvailabilityStatus } = useAvailabilityCalculation({
+    facilityAvailability: openingHours
+  });
 
   const toggleFAQ = (faqId: string): void => {
     setExpandedFAQ(expandedFAQ === faqId ? null : faqId);
@@ -51,55 +122,141 @@ export const FacilityInfoTabs: React.FC<FacilityInfoTabsProps> = ({
   const { getFieldConfigsForFacility } = useFieldConfigStore();
   const fieldConfigs = getFieldConfigsForFacility(facilityId);
   const visibleFields = getVisibleFields(fieldConfigs);
-  const { firstColumn, secondColumn } = splitFieldsIntoColumns(visibleFields);
+  const {
+     
+    firstColumn: _firstColumn,
+     
+    secondColumn: _secondColumn
+  } = splitFieldsIntoColumns(visibleFields);
 
   return (
-    <Tabs defaultValue="general" className="w-full">
+    <Tabs defaultValue="book" className="w-full">
       <TabsList className="grid w-full grid-cols-5">
-        <TabsTrigger value="general">{t('common:tabs.general')}</TabsTrigger>
-        <TabsTrigger value="zones">{t('common:tabs.zones')}</TabsTrigger>
-        <TabsTrigger value="facilities">{t('common:tabs.facilities')}</TabsTrigger>
-        <TabsTrigger value="rules">{t('common:tabs.rules')}</TabsTrigger>
-        <TabsTrigger value="faq">{t('common:tabs.faq')}</TabsTrigger>
+        <TabsTrigger value="book">{t('facility:actions.book')}</TabsTrigger>
+        <TabsTrigger value="general">{t('facility:details.overview')}</TabsTrigger>
+        <TabsTrigger value="zones">{t('facility:zones.title')}</TabsTrigger>
+        <TabsTrigger value="rules">{t('facility:details.policies')}</TabsTrigger>
+        <TabsTrigger value="faq">{t('common:faq.title')}</TabsTrigger>
       </TabsList>
+
+      <TabsContent value="book" className="space-y-6 mt-6">
+        <TabPanel>
+          <div>
+            {showBookingInterface && zones.length > 0 ? (
+              <FacilityCalendar
+                facilityId={facilityId}
+                facilityName={facilityName}
+                zones={zones}
+                isLoading={false}
+                error={undefined}
+                openingHoursStart={
+                  openingHours
+                    ? getEarliestOpeningHour(openingHours)
+                    : "08:00"
+                }
+                openingHoursEnd={
+                  openingHours
+                    ? getLatestClosingHour(openingHours)
+                    : "22:00"
+                }
+                useStepByStepBooking={true}
+                getAvailabilityStatus={getAvailabilityStatus}
+              />
+            ) : (
+              <div className="text-center py-12">
+                <h3 className="text-xl font-semibold mb-4">{t('facility:details.book_facility')}</h3>
+                <p className="text-gray-600">{t('facility:mobile_panel.booking_coming_soon')}</p>
+              </div>
+            )}
+          </div>
+        </TabPanel>
+      </TabsContent>
 
       <TabsContent value="general" className="space-y-6 mt-6">
         <TabPanel>
           <div>
-            <h3 className="text-xl font-semibold mb-4">{t('common:about')} {facilityName}</h3>
-            <p className="text-gray-700 leading-relaxed mb-6">{description}</p>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-4">
-                {firstColumn.map(field => (
-                  <FieldRenderer
-                    key={field.id}
-                    field={field}
-                    capacity={capacity}
-                    area={area}
-                  />
-                ))}
-              </div>
-
-              <div className="space-y-4">
-                {secondColumn.map(field => (
-                  <FieldRenderer
-                    key={field.id}
-                    field={field}
-                    capacity={capacity}
-                    area={area}
-                  />
-                ))}
-
-                {equipment.length > 0 && (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {/* Left column: Description and Capacity */}
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-xl font-semibold mb-3">{t('facility:fields.description')}</h3>
+                  <p className="text-gray-700 leading-relaxed">{description}</p>
+                </div>
+                
+                <div>
+                  <h3 className="text-xl font-semibold mb-3">{t('facility:fields.capacity')}</h3>
+                  <p className="text-gray-600">
+                    {t('facility:fields.max_allowed')}: {capacity} {t('facility:card.people')}
+                  </p>
+                </div>
+                
+                {amenities.length > 0 && (
                   <div>
-                    <span className="font-medium">{t('facility:fields.equipment')}:</span>
-                    <span className="ml-2 text-gray-600">{equipment.slice(0, 2).join(', ')}</span>
-                    {equipment.length > 2 && (
-                      <span className="text-gray-500"> +{equipment.length - 2} {t('facility:card.moreAmenities')}</span>
-                    )}
+                    <h3 className="text-xl font-semibold mb-3">{t('facility:details.facilities')}</h3>
+                    <AmenityGrid
+                      items={amenities}
+                      variant="default"
+                      emptyMessage={t('facility:amenities.no_amenities')}
+                    />
                   </div>
                 )}
+              </div>
+              
+              {/* Right column: Contact Information and Opening Hours */}
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-xl font-semibold mb-3">{t('facility:details.contact_info')}</h3>
+                  <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
+                    <div className="space-y-3">
+                      <div>
+                        <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                          {t('common:common.email', 'Email')}
+                        </p>
+                        <p className="text-gray-900 dark:text-white">
+                          {formatContactInfo(extractContactInfo(description, contactEmail, contactPhone)).email}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-500 dark:text-gray-400">{t('common:common.phone', 'Phone')}</p>
+                        <p className="text-gray-900 dark:text-white">
+                          {formatContactInfo(extractContactInfo(description, contactEmail, contactPhone)).phone}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div>
+                  <h3 className="text-xl font-semibold mb-3">{t('facility:fields.opening_hours')}</h3>
+                  <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
+                    <div className="space-y-3">
+                      <div className="flex justify-between">
+                        <span className="text-gray-600 dark:text-gray-300">{t('common:time.weekdays.monday')}-{t('common:time.weekdays.friday')}</span>
+                        <span className="font-medium">
+                          {openingHours?.monday ? 
+                            `${openingHours.monday.start.substring(0, 5)} - ${openingHours.monday.end.substring(0, 5)}` : 
+                            '08:00 - 22:00'}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600 dark:text-gray-300">{t('common:time.weekdays.saturday')}</span>
+                        <span className="font-medium">
+                          {openingHours?.saturday ? 
+                            `${openingHours.saturday.start.substring(0, 5)} - ${openingHours.saturday.end.substring(0, 5)}` : 
+                            '09:00 - 20:00'}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600 dark:text-gray-300">{t('common:time.weekdays.sunday')}</span>
+                        <span className="font-medium">
+                          {openingHours?.sunday ? 
+                            `${openingHours.sunday.start.substring(0, 5)} - ${openingHours.sunday.end.substring(0, 5)}` : 
+                            '10:00 - 18:00'}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -109,7 +266,7 @@ export const FacilityInfoTabs: React.FC<FacilityInfoTabsProps> = ({
       <TabsContent value="zones" className="space-y-6 mt-6">
         <TabPanel>
           <div>
-            <h3 className="text-xl font-semibold mb-4">{t('common:available_zones')}</h3>
+            <h3 className="text-xl font-semibold mb-4">{t('facility:zones.available_zones')}</h3>
             {zones.length > 0 ? (
               <div className="space-y-4">
                 {zones.map((zone) => (
@@ -161,32 +318,7 @@ export const FacilityInfoTabs: React.FC<FacilityInfoTabsProps> = ({
         </TabPanel>
       </TabsContent>
 
-      <TabsContent value="facilities" className="space-y-6 mt-6">
-        <TabPanel>
-          <div>
-            <h3 className="text-xl font-semibold mb-4">{t('facility:amenities.available_title')}</h3>
-            <AmenityGrid
-              items={amenities}
-              variant="default"
-              emptyMessage={t('facility:amenities.no_amenities')}
-            />
-
-            {equipment.length > 0 && (
-              <div className="mt-8">
-                <h4 className="text-lg font-semibold mb-4">{t('facility:amenities.equipment_title')}</h4>
-                <AmenityGrid items={equipment} variant="blue" />
-              </div>
-            )}
-
-            {suitableFor.length > 0 && (
-              <div className="mt-8">
-                <h4 className="text-lg font-semibold mb-4">{t('facility:amenities.suitable_for')}</h4>
-                <AmenityGrid items={suitableFor} variant="green" />
-              </div>
-            )}
-          </div>
-        </TabPanel>
-      </TabsContent>
+      
 
       <TabsContent value="rules" className="space-y-6 mt-6">
         <TabPanel>

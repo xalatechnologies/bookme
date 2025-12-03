@@ -30,7 +30,7 @@ import { useState, useEffect, useMemo, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { usePublishedFacilities } from "@/services/supabase/facilities.service";
 import { useUserBookings } from "@/services/supabase/bookings.service";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/hooks";
 
 // ============================================================================
 // Types & Interfaces
@@ -283,31 +283,51 @@ export const useDashboardManagement = (
    * First 3 facilities with recommendation reasons
    */
   const recommendedFacilities: readonly IUserFacility[] = useMemo(() => {
-    return facilities.slice(0, 3).map((facility, index) => ({
-      id: facility.id,
-      name: facility.name,
-      description: facility.description || "",
-      type: facility.facility_type || "",
-      location: facility.area || "",
-      address: facility.address || "",
-      capacity: facility.capacity || 0,
-      amenities: facility.amenities || [],
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      image: (facility.images as any)?.[0] || "/placeholder.svg",
-      rating: facility.rating || 0,
-      price: `${(facility.price_per_hour_cents || 0) / 100} kr/time`,
-      availability: "available" as const,
-      recommendationReason:
-        index === 0
-          ? t("user:recommendations.frequent_bookings")
-          : index === 1
-          ? t("user:recommendations.preferred_times")
-          : t("user:recommendations.new_in_area"),
-      isFrequentlyBooked: index === 0,
-      matchesPreferredTimes: index === 1,
-      isNewInArea: index === 2,
-      slug: facility.slug,
-    }));
+    return facilities.slice(0, 3).map((facility, index) => {
+      // Type guard for amenities - filter out non-string values
+      let amenitiesArray: string[] = [];
+      if (Array.isArray(facility.amenities)) {
+        amenitiesArray = (facility.amenities as unknown[]).filter(
+          (item): item is string => typeof item === 'string'
+        );
+      }
+      
+      // Type guard for images
+      let imagesArray: string[] = [];
+      if (Array.isArray(facility.images)) {
+        imagesArray = (facility.images as unknown[]).filter(
+          (item): item is string => typeof item === 'string'
+        );
+      }
+
+      // Access price with type assertion since it's not in the type definition
+      const facilityWithPrice = facility as typeof facility & { price_per_hour_cents?: number };
+
+      return {
+        id: facility.id,
+        name: facility.name,
+        description: facility.description || "",
+        type: facility.facility_type || "",
+        location: facility.city || "",
+        address: facility.address || "",
+        capacity: facility.capacity || 0,
+        amenities: amenitiesArray,
+        image: imagesArray[0] || "/placeholder.svg",
+        rating: 0,
+        price: `${(facilityWithPrice.price_per_hour_cents || 0) / 100} kr/time`,
+        availability: "available" as const,
+        recommendationReason:
+          index === 0
+            ? t("user:recommendations.frequent_bookings")
+            : index === 1
+            ? t("user:recommendations.preferred_times")
+            : t("user:recommendations.new_in_area"),
+        isFrequentlyBooked: index === 0,
+        matchesPreferredTimes: index === 1,
+        isNewInArea: index === 2,
+        slug: facility.slug,
+      };
+    });
   }, [facilities, t]);
 
   // ============================================================================

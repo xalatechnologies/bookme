@@ -1,6 +1,6 @@
 # 🗺️ Supabase Migration Implementation Roadmap
 
-**Project:** BookMe Supabase Integration
+**Project:** Booknor Supabase Integration
 **Total Components:** 26
 **Total Estimated Effort:** 76-94 days (50-60 with parallel work)
 **Last Updated:** October 27, 2025

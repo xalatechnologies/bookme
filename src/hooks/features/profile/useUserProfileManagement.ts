@@ -1,6 +1,9 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
-import { useUserProfile } from '@/contexts/UserProfileContext';
+import { useUserProfile } from "@/contexts/hooks";
 import { useTranslation } from 'react-i18next';
+import { avatarService } from '@/services/supabase/avatar.service';
+import { usersService } from '@/services/supabase/users.service';
+import { preferencesService } from '@/services/supabase/preferences.service';
 
 interface PasswordForm {
   readonly currentPassword: string;
@@ -62,7 +65,7 @@ interface UseUserProfileManagementReturn {
   readonly deleteConfirmation: string;
   readonly showDeleteModal: boolean;
   readonly toast: ToastState;
-  readonly fileInputRef: React.RefObject<HTMLInputElement>;
+  readonly fileInputRef: React.RefObject<HTMLInputElement | null>;
   readonly setIsEditing: (value: boolean) => void;
   readonly setDeleteConfirmation: (value: string) => void;
   readonly setShowDeleteModal: (value: boolean) => void;
@@ -154,9 +157,66 @@ export const useUserProfileManagement = (): UseUserProfileManagementReturn => {
     }
   ]);
 
-  // Sync editingProfile with profile only once when profile is loaded
+  // Load theme preference from database when component mounts
   useEffect(() => {
-    if (!hasSyncedRef.current && profile.firstName) {
+    const loadPreferences = async () => {
+      if (profile.accountId) {
+        try {
+          // Try to get theme from database using the preferences service
+          // This will fallback to localStorage if the database columns don't exist
+          const theme = await preferencesService.getThemePreference(profile.accountId);
+          if (theme && (theme === 'light' || theme === 'dark' || theme === 'system')) {
+            setPreferences(prev => ({
+              ...prev,
+              theme
+            }));
+          } else {
+            // Fallback to localStorage
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme && (savedTheme === 'light' || savedTheme === 'dark' || savedTheme === 'system')) {
+              setPreferences(prev => ({
+                ...prev,
+                theme: savedTheme
+              }));
+            }
+            
+            // Also check user-specific storage
+            const userSpecificTheme = localStorage.getItem(`theme_${profile.accountId}`);
+            if (userSpecificTheme && (userSpecificTheme === 'light' || userSpecificTheme === 'dark' || userSpecificTheme === 'system')) {
+              setPreferences(prev => ({
+                ...prev,
+                theme: userSpecificTheme
+              }));
+            }
+          }
+        } catch (error) {
+          // Fallback to localStorage if there's any error
+          const savedTheme = localStorage.getItem('theme');
+          if (savedTheme && (savedTheme === 'light' || savedTheme === 'dark' || savedTheme === 'system')) {
+            setPreferences(prev => ({
+              ...prev,
+              theme: savedTheme
+            }));
+          }
+          
+          // Also check user-specific storage
+          const userSpecificTheme = localStorage.getItem(`theme_${profile.accountId}`);
+          if (userSpecificTheme && (userSpecificTheme === 'light' || userSpecificTheme === 'dark' || userSpecificTheme === 'system')) {
+            setPreferences(prev => ({
+              ...prev,
+              theme: userSpecificTheme
+            }));
+          }
+        }
+      }
+    };
+    
+    loadPreferences();
+  }, [profile.accountId]);
+
+  // Sync editingProfile with profile when profile changes
+  useEffect(() => {
+    if (profile.firstName || profile.lastName || profile.email) {
       setEditingProfile({
         firstName: profile.firstName,
         lastName: profile.lastName,
@@ -165,9 +225,19 @@ export const useUserProfileManagement = (): UseUserProfileManagementReturn => {
         address: profile.address,
         dateOfBirth: profile.dateOfBirth
       });
+      
+      // Load avatar from Supabase Storage
+      if (profile.accountId) {
+        avatarService.getAvatarUrl(profile.accountId).then(avatarUrl => {
+          setAvatarPreview(avatarUrl);
+        }).catch(error => {
+          console.error('Error loading avatar:', error);
+        });
+      }
+      
       hasSyncedRef.current = true;
     }
-  }, [profile.firstName, profile.lastName, profile.email, profile.phone, profile.address, profile.dateOfBirth]);
+  }, [profile.firstName, profile.lastName, profile.email, profile.phone, profile.address, profile.dateOfBirth, profile.accountId, profile.avatar]);
 
   // Toast management
   const showToastMessage = useCallback((message: string): void => {
@@ -194,7 +264,6 @@ export const useUserProfileManagement = (): UseUserProfileManagementReturn => {
     const updates: Record<string, string> = { ...editingProfile };
     if (avatarPreview) {
       updates.avatar = avatarPreview;
-      setAvatarPreview(null);
     }
 
     updateProfile(updates);
@@ -214,7 +283,16 @@ export const useUserProfileManagement = (): UseUserProfileManagementReturn => {
       dateOfBirth: profile.dateOfBirth
     });
     setIsEditing(false);
-    setAvatarPreview(null);
+    
+    // Restore avatar preview to original state
+    if (profile.accountId) {
+      avatarService.getAvatarUrl(profile.accountId).then(avatarUrl => {
+        setAvatarPreview(avatarUrl);
+      }).catch(error => {
+        console.error('Error loading avatar:', error);
+      });
+    }
+    
     hasSyncedRef.current = false; // Allow sync again
   }, [profile]);
 
@@ -233,14 +311,18 @@ export const useUserProfileManagement = (): UseUserProfileManagementReturn => {
   // Handle avatar upload
   const handleAvatarUpload = useCallback((event: React.ChangeEvent<HTMLInputElement>): void => {
     const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e): void => {
-        setAvatarPreview(e.target?.result as string);
-      };
-      reader.readAsDataURL(file);
+    if (file && profile.accountId) {
+      // Upload file to Supabase Storage
+      avatarService.uploadAvatar(profile.accountId, file).then(result => {
+        setAvatarPreview(result.url);
+        updateProfile({ avatar: result.url });
+        showToastMessage(t('pages.profile.personal_info.changes_saved'));
+      }).catch(error => {
+        console.error('Error uploading avatar:', error);
+        showToastMessage(t('pages.profile.personal_info.changes_saved'));
+      });
     }
-  }, []);
+  }, [profile.accountId, updateProfile, showToastMessage, t]);
 
   // Handle delete account with GDPR logic
   const handleDeleteAccount = useCallback((): void => {

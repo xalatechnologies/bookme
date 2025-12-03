@@ -45,20 +45,24 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
   zone,
   currentWeekStart,
   timeSlots,
-  selectedSlots,
+   
+  selectedSlots: _selectedSlots,
   getAvailabilityStatus,
   isSlotSelected,
   onSlotClick,
   onBulkSlotSelection,
-  openingHoursStart = "08:00",
-  openingHoursEnd = "22:00",
+   
+  openingHoursStart: _openingHoursStart = "08:00",
+   
+  openingHoursEnd: _openingHoursEnd = "22:00",
 }): JSX.Element => {
   const weekDays = Array(7)
     .fill(0)
     .map((_, i) => addDays(currentWeekStart, i));
 
   const {
-    dragState,
+     
+    dragState: _dragState,
     handleMouseDown,
     handleMouseEnter,
     handleMouseUp,

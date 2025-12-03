@@ -233,9 +233,9 @@ export const useMessageStore = create<MessageState>()(
         templates: [
           {
             id: "template_1",
-            name: "Velkommen til BookMe",
+            name: "Velkommen til Booknor",
             category: "general",
-            content: "Hei og velkommen til BookMe! Vi er glade for at du har valgt vår tjeneste. Hvis du har spørsmål, ikke nøl med å kontakte oss.",
+            content: "Hei og velkommen til Booknor! Vi er glade for at du har valgt vår tjeneste. Hvis du har spørsmål, ikke nøl med å kontakte oss.",
             variables: ["user_name"],
             isActive: true,
             createdBy: "landlord-1",
@@ -914,4 +914,5 @@ export const useMessageStore = create<MessageState>()(
     }
   )
 );
+
 

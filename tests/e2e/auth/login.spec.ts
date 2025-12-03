@@ -6,7 +6,7 @@ test.describe('Authentication - Login Flow', () => {
   });
 
   test('should display login page', async ({ page }) => {
-    await expect(page).toHaveTitle(/BookMe/);
+    await expect(page).toHaveTitle(/Booknor/);
     await expect(page.locator('h1')).toContainText(/Sign In|Login/i);
     await expect(page.locator('input[type="email"]')).toBeVisible();
   });

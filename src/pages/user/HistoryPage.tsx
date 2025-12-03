@@ -1,8 +1,10 @@
 "use client";
 
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -17,7 +19,8 @@ import {
   RotateCcw,
   Eye,
   ChevronDown,
-  ChevronRight
+  ChevronRight,
+  Repeat
 } from "lucide-react";
 import { useHistoryManagement } from "@/hooks/features/history/useHistoryManagement";
 
@@ -26,6 +29,8 @@ import { useHistoryManagement } from "@/hooks/features/history/useHistoryManagem
  * Clean architecture: All business logic extracted to useHistoryManagement hook
  */
 export default function HistoryPage(): JSX.Element {
+  const { t } = useTranslation('user');
+  
   const {
     historyItems,
     kpis,
@@ -55,68 +60,68 @@ export default function HistoryPage(): JSX.Element {
       <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="space-y-1">
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-            Historikk
+            {t('pages.history.title')}
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
-            Se alle tidligere bookinger og last ned kvitteringer
+            {t('pages.history.subtitle')}
           </p>
         </div>
-        <Button
+        <PrimaryButton
           onClick={handleExportCsv}
           className="flex items-center gap-2"
-          aria-label="Eksporter historikk til CSV"
+          aria-label={t('pages.history.export')}
         >
           <Download className="w-4 h-4" />
-          Eksporter CSV
-        </Button>
+          {t('pages.history.export')}
+        </PrimaryButton>
       </header>
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
+        <Card className="dark:bg-gray-800">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Bookinger</p>
-                <p className="text-2xl font-bold">{kpis.totalBookings}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">{t('pages.history.kpis.bookings')}</p>
+                <p className="text-2xl font-bold dark:text-white">{kpis.totalBookings}</p>
               </div>
-              <History className="w-8 h-8 text-blue-600" />
+              <History className="w-8 h-8 text-blue-600 dark:text-blue-400" />
             </div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="dark:bg-gray-800">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Timer brukt</p>
-                <p className="text-2xl font-bold">{kpis.totalHours.toFixed(1)}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">{t('pages.history.kpis.hours_used')}</p>
+                <p className="text-2xl font-bold dark:text-white">{kpis.totalHours.toFixed(1)}</p>
               </div>
-              <Clock className="w-8 h-8 text-green-600" />
+              <Clock className="w-8 h-8 text-green-600 dark:text-green-400" />
             </div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="dark:bg-gray-800">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Sum betalt</p>
-                <p className="text-2xl font-bold">{kpis.totalSpent.toLocaleString()} kr</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">{t('pages.history.kpis.total_spent')}</p>
+                <p className="text-2xl font-bold dark:text-white">{kpis.totalSpent.toLocaleString()} kr</p>
               </div>
-              <DollarSign className="w-8 h-8 text-yellow-600" />
+              <DollarSign className="w-8 h-8 text-yellow-600 dark:text-yellow-400" />
             </div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="dark:bg-gray-800">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Avlysninger</p>
-                <p className="text-2xl font-bold">{kpis.cancellations}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">{t('pages.history.kpis.cancellations')}</p>
+                <p className="text-2xl font-bold dark:text-white">{kpis.cancellations}</p>
               </div>
-              <Calendar className="w-8 h-8 text-red-600" />
+              <Calendar className="w-8 h-8 text-red-600 dark:text-red-400" />
             </div>
           </CardContent>
         </Card>
@@ -130,11 +135,11 @@ export default function HistoryPage(): JSX.Element {
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                 <Input
-                  placeholder="Søk i historikk..."
+                  placeholder={t('pages.history.filters.search_placeholder')}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="pl-10"
-                  aria-label="Søk i historikk"
+                  aria-label={t('pages.history.filters.search_placeholder')}
                 />
               </div>
             </div>
@@ -142,28 +147,28 @@ export default function HistoryPage(): JSX.Element {
             <div className="flex gap-2">
               <Input
                 type="date"
-                placeholder="Fra dato"
+                placeholder={t('pages.history.filters.from_date')}
                 value={dateFrom}
                 onChange={(e) => setDateFrom(e.target.value)}
                 className="w-40"
-                aria-label="Fra dato"
+                aria-label={t('pages.history.filters.from_date')}
               />
               <Input
                 type="date"
-                placeholder="Til dato"
+                placeholder={t('pages.history.filters.to_date')}
                 value={dateTo}
                 onChange={(e) => setDateTo(e.target.value)}
                 className="w-40"
-                aria-label="Til dato"
+                aria-label={t('pages.history.filters.to_date')}
               />
             </div>
 
             <Select value={selectedFacility} onValueChange={setSelectedFacility}>
-              <SelectTrigger className="w-48" aria-label="Velg lokale">
-                <SelectValue placeholder="Velg lokale" />
+              <SelectTrigger className="w-48" aria-label={t('pages.history.filters.select_facility')}>
+                <SelectValue placeholder={t('pages.history.filters.select_facility')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Alle lokaler</SelectItem>
+                <SelectItem value="all">{t('pages.history.filters.all_facilities')}</SelectItem>
                 {facilities.map((facility) => (
                   <SelectItem key={facility} value={facility}>
                     {facility}
@@ -173,23 +178,23 @@ export default function HistoryPage(): JSX.Element {
             </Select>
 
             <Select value={selectedStatus} onValueChange={setSelectedStatus}>
-              <SelectTrigger className="w-48" aria-label="Velg status">
-                <SelectValue placeholder="Velg status" />
+              <SelectTrigger className="w-48" aria-label={t('pages.history.filters.select_status')}>
+                <SelectValue placeholder={t('pages.history.filters.select_status')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Alle statuser</SelectItem>
-                <SelectItem value="completed">Fullført</SelectItem>
-                <SelectItem value="cancelled">Avlyst</SelectItem>
+                <SelectItem value="all">{t('pages.history.filters.all_statuses')}</SelectItem>
+                <SelectItem value="completed">{t('pages.history.filters.completed')}</SelectItem>
+                <SelectItem value="cancelled">{t('pages.history.filters.cancelled')}</SelectItem>
               </SelectContent>
             </Select>
 
             <Select value={sortBy} onValueChange={setSortBy}>
-              <SelectTrigger className="w-48" aria-label="Sorter">
-                <SelectValue placeholder="Sorter" />
+              <SelectTrigger className="w-48" aria-label={t('pages.history.filters.sort')}>
+                <SelectValue placeholder={t('pages.history.filters.sort')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="start_desc">Nyeste først</SelectItem>
-                <SelectItem value="start_asc">Eldste først</SelectItem>
+                <SelectItem value="start_desc">{t('pages.history.filters.newest_first')}</SelectItem>
+                <SelectItem value="start_asc">{t('pages.history.filters.oldest_first')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -199,91 +204,119 @@ export default function HistoryPage(): JSX.Element {
       {/* Results */}
       <Card>
         <CardHeader>
-          <CardTitle>Bookinghistorikk</CardTitle>
+          <CardTitle>{t('pages.history.table.title')}</CardTitle>
         </CardHeader>
         <CardContent className="p-0">
           {isLoading ? (
             <div className="p-8 text-center">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-              <p className="mt-2 text-gray-600">Laster historikk...</p>
+              <p className="mt-2 text-gray-600 dark:text-gray-400">{t('pages.history.loading')}</p>
             </div>
           ) : historyItems.length === 0 ? (
             <div className="p-8 text-center">
               <History className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
-                Ingen bookinger funnet
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+                {t('pages.history.empty.title')}
               </h3>
-              <p className="text-gray-600 mb-4">
-                Prøv å endre filter eller søkekriteriene.
+              <p className="text-gray-600 dark:text-gray-400 mb-4">
+                {t('pages.history.empty.description')}
               </p>
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-                <thead className="text-left text-gray-600 bg-gray-50">
+                <thead className="text-left text-gray-600 bg-gray-50 dark:bg-gray-800 dark:text-gray-300">
                   <tr>
-                    <th className="px-4 py-3 font-medium">Dato</th>
-                    <th className="px-4 py-3 font-medium">Tid</th>
-                    <th className="px-4 py-3 font-medium">Lokale</th>
-                    <th className="px-4 py-3 font-medium">Aktivitet</th>
-                    <th className="px-4 py-3 font-medium">Varighet</th>
-                    <th className="px-4 py-3 font-medium">Status</th>
-                    <th className="px-4 py-3 font-medium">Sum</th>
-                    <th className="px-4 py-3 font-medium">Handlinger</th>
+                    <th className="px-4 py-3 font-medium">{t('pages.history.table.date')}</th>
+                    <th className="px-4 py-3 font-medium">{t('pages.history.table.time')}</th>
+                    <th className="px-4 py-3 font-medium">{t('pages.history.table.facility')}</th>
+                    <th className="px-4 py-3 font-medium">{t('pages.history.table.activity')}</th>
+                    <th className="px-4 py-3 font-medium">{t('pages.history.table.duration')}</th>
+                    <th className="px-4 py-3 font-medium">{t('pages.history.table.status')}</th>
+                    <th className="px-4 py-3 font-medium">{t('pages.history.table.total')}</th>
+                    <th className="px-4 py-3 font-medium">{t('pages.history.table.actions')}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {historyItems.map((item) => (
                     <React.Fragment key={item.id}>
                       <tr
-                        className="border-t border-gray-200 hover:bg-gray-50 cursor-pointer"
+                        className="border-t border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer"
                         onClick={() => toggleRowExpansion(item.id)}
                       >
                         <td className="px-4 py-3">
-                          {item.originalDate ?
-                            new Date(item.originalDate).toLocaleDateString("nb-NO") :
-                            (() => {
-                              // Handle date display carefully to avoid timezone issues
-                              const dateStr = item.start.split('T')[0]; // Get YYYY-MM-DD part
-                              if (dateStr.match(/^\d{4}-\d{2}-\d{2}$/)) {
-                                // Parse as local date
-                                const [year, month, day] = dateStr.split('-').map(Number);
-                                const localDate = new Date(year, month - 1, day);
-                                return localDate.toLocaleDateString("nb-NO");
-                              } else {
-                                // Fallback
-                                return new Date(item.start).toLocaleDateString("nb-NO");
+                          {item.isRecurring ? (
+                            // For recurring bookings, show the period range vertically with arrow
+                            <div className="flex flex-col items-start">
+                              <div>{item.originalDate ?
+                                new Date(item.originalDate).toLocaleDateString('nb-NO') :
+                                new Date(item.start).toLocaleDateString('nb-NO')
+                              }</div>
+                              <div className="my-1 pl-5">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                                </svg>
+                              </div>
+                              <div>{new Date(item.end).toLocaleDateString('nb-NO')}</div>
+                            </div>
+                          ) : (
+                            // For single bookings, show the single date
+                            <div className="flex items-start">
+                              {item.originalDate ?
+                                new Date(item.originalDate).toLocaleDateString('nb-NO') :
+                                (() => {
+                                  // Handle date display carefully to avoid timezone issues
+                                  const dateStr = item.start.split('T')[0]; // Get YYYY-MM-DD part
+                                  if (dateStr.match(/^\d{4}-\d{2}-\d{2}$/)) {
+                                    // Parse as local date
+                                    const [year, month, day] = dateStr.split('-').map(Number);
+                                    const localDate = new Date(year, month - 1, day);
+                                    return localDate.toLocaleDateString('nb-NO');
+                                  } else {
+                                    // Fallback
+                                    return new Date(item.start).toLocaleDateString('nb-NO');
+                                  }
+                                })()
                               }
-                            })()
-                          }
+                            </div>
+                          )}
                         </td>
                         <td className="px-4 py-3">
                           {item.startTime && item.endTime ?
                             `${item.startTime} - ${item.endTime}` :
-                            `${new Date(item.start).toLocaleTimeString("nb-NO", {
+                            `${new Date(item.start).toLocaleTimeString('nb-NO', {
                             hour: "2-digit",
                             minute: "2-digit"
-                            })} - ${new Date(item.end).toLocaleTimeString("nb-NO", {
+                            })} - ${new Date(item.end).toLocaleTimeString('nb-NO', {
                             hour: "2-digit",
                             minute: "2-digit"
                             })}`
                           }
                         </td>
                         <td className="px-4 py-3">{item.facilityName}</td>
-                        <td className="px-4 py-3">{item.purpose || item.title || 'Ikke spesifisert'}</td>
+                        <td className="px-4 py-3">
+                          <div className="flex items-center gap-2">
+                            {item.isRecurring && (
+                              <Repeat className="w-4 h-4 text-blue-500" />
+                            )}
+                            <span>{item.purpose || item.title || t('pages.history.table.activity')}</span>
+                          </div>
+                        </td>
                         <td className="px-4 py-3">
                           {item.duration ? `${item.duration.toFixed(1)} t` : '1.0 t'}
+                          {item.isRecurring && item.occurrenceCount && (
+                            <span className="text-xs text-gray-500 block">
+                              {item.occurrenceCount} forekomster
+                            </span>
+                          )}
                         </td>
                         <td className="px-4 py-3">
                           <Badge className={
-                            item.status === "confirmed"
+                            item.status === "completed"
                               ? "bg-green-100 text-green-800"
-                              : item.status === "rejected" || item.status === "cancelled"
-                              ? "bg-red-100 text-red-800"
-                              : "bg-yellow-100 text-yellow-800"
+                              : "bg-red-100 text-red-800"
                           }>
-                            {item.status === "confirmed" ? "Bekreftet" :
-                             item.status === "rejected" || item.status === "cancelled" ? "Avvist" : "Ventende"}
+                            {item.status === "completed" ? t('pages.history.status.confirmed') : t('pages.history.status.rejected')}
                           </Badge>
                         </td>
                         <td className="px-4 py-3">
@@ -297,7 +330,7 @@ export default function HistoryPage(): JSX.Element {
                               onClick={(e) => {
                                 e.stopPropagation();
                               }}
-                              aria-label="Se detaljer"
+                              aria-label={t('pages.history.table.actions')}
                             >
                               <Eye className="w-4 h-4" />
                             </Button>
@@ -308,14 +341,14 @@ export default function HistoryPage(): JSX.Element {
                                 e.stopPropagation();
                                 handleDownloadICS(item);
                               }}
-                              aria-label="Last ned kalenderoppføring"
+                              aria-label={t('pages.history.details.add_to_calendar')}
                             >
                               <Calendar className="w-4 h-4" />
                             </Button>
                             {expandedRow === item.id ? (
-                              <ChevronDown className="w-4 h-4" aria-label="Kollaps rad" />
+                              <ChevronDown className="w-4 h-4" aria-label={t('pages.history.table.actions')} />
                             ) : (
-                              <ChevronRight className="w-4 h-4" aria-label="Utvid rad" />
+                              <ChevronRight className="w-4 h-4" aria-label={t('pages.history.table.actions')} />
                             )}
                           </div>
                         </td>
@@ -323,51 +356,69 @@ export default function HistoryPage(): JSX.Element {
 
                       {/* Expanded Row Details */}
                       {expandedRow === item.id && (
-                        <tr className="border-t border-gray-200 bg-gray-50">
+                        <tr className="border-t border-gray-200 bg-gray-50 dark:bg-gray-800">
                           <td colSpan={8} className="px-4 py-4">
                             <div className="space-y-4">
-                              <div className="grid grid-cols-2 gap-4 text-sm">
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                                 <div>
-                                  <span className="text-gray-600">Opprettet:</span>
-                                  <span className="ml-2">
-                                    {new Date(item.createdAt).toLocaleDateString("nb-NO")}
+                                  <span className="text-gray-600 dark:text-gray-400">{t('pages.history.details.created_at')}:</span>
+                                  <span className="ml-2 dark:text-white">
+                                    {new Date(item.createdAt).toLocaleDateString()}
                                   </span>
                                 </div>
                                 {item.invoiceId && (
                                   <div>
-                                    <span className="text-gray-600">Faktura:</span>
-                                    <span className="ml-2">{item.invoiceId}</span>
+                                    <span className="text-gray-600 dark:text-gray-400">{t('pages.history.details.invoice_id')}:</span>
+                                    <span className="ml-2 dark:text-white">{item.invoiceId}</span>
                                   </div>
                                 )}
                                 {item.isRecurring && item.occurrenceCount && (
                                   <div>
-                                    <span className="text-gray-600">Gjentakelser:</span>
-                                    <span className="ml-2">{item.occurrenceCount} bookinger</span>
+                                    <span className="text-gray-600 dark:text-gray-400">Antall forekomster:</span>
+                                    <span className="ml-2 dark:text-white">{item.occurrenceCount}</span>
+                                  </div>
+                                )}
+                                {item.isRecurring && (
+                                  <div>
+                                    <span className="text-gray-600 dark:text-gray-400">Type:</span>
+                                    <span className="ml-2 dark:text-white">Gjentakende booking</span>
                                   </div>
                                 )}
                               </div>
 
-                              <div className="flex gap-2">
-                                <Button size="sm" variant="outline">
-                                  <FileText className="w-4 h-4 mr-2" />
-                                  Last ned kvittering
-                                </Button>
-                                <Button size="sm" variant="outline">
-                                  <RotateCcw className="w-4 h-4 mr-2" />
-                                  Rebook
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleDownloadICS(item);
-                                  }}
-                                >
-                                  <Calendar className="w-4 h-4 mr-2" />
-                                  Legg til i kalender
-                                </Button>
-                              </div>
+                              {item.isRecurring && item.occurrences && item.occurrences.length > 0 && (
+                                <div className="mt-4">
+                                  <h4 className="font-medium text-gray-900 dark:text-white mb-2">Forekomster:</h4>
+                                  <div className="max-h-40 overflow-y-auto">
+                                    <table className="w-full text-sm">
+                                      <thead>
+                                        <tr className="bg-gray-100 dark:bg-gray-700">
+                                          <th className="px-2 py-1 text-left dark:text-white">Dato</th>
+                                          <th className="px-2 py-1 text-left dark:text-white">Tid</th>
+                                          <th className="px-2 py-1 text-left dark:text-white">Status</th>
+                                        </tr>
+                                      </thead>
+                                      <tbody>
+                                        {item.occurrences.map((occurrence, idx) => (
+                                          <tr key={idx} className="border-t border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700">
+                                            <td className="px-2 py-1 dark:text-white">{new Date(occurrence.date).toLocaleDateString('nb-NO')}</td>
+                                            <td className="px-2 py-1 dark:text-white">{occurrence.time}</td>
+                                            <td className="px-2 py-1">
+                                              <Badge className={
+                                                occurrence.status === "completed"
+                                                  ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300"
+                                                  : "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300"
+                                              }>
+                                                {occurrence.status === "completed" ? t('pages.history.status.confirmed') : t('pages.history.status.rejected')}
+                                              </Badge>
+                                            </td>
+                                          </tr>
+                                        ))}
+                                      </tbody>
+                                    </table>
+                                  </div>
+                                </div>
+                              )}
                             </div>
                           </td>
                         </tr>

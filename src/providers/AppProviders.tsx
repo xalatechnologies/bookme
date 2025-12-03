@@ -24,10 +24,10 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { I18nextProvider } from 'react-i18next';
 
 import { queryClient } from '@/lib/clients/queryClient';
-import { AuthProvider } from '@/contexts/AuthContext';
-import { LanguageProvider } from '@/contexts/LanguageContext';
-import { CartProvider } from '@/contexts/CartContext';
-import { UserProfileProvider } from '@/contexts/UserProfileContext';
+import { AuthProvider } from "@/contexts/hooks";
+import { LanguageProvider } from "@/contexts/hooks";
+import { CartProvider } from "@/contexts/hooks";
+import { UserProfileProvider } from "@/contexts/hooks";
 import i18n from '@/i18n/config';
 
 interface AppProvidersProps {

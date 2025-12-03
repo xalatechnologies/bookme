@@ -211,8 +211,8 @@ export const useApprovalsManagement = (): IUseApprovalsManagementReturn => {
 
     // Apply sorting
     const sortConfig: IBookingSortConfig = {
-      sortBy: sortBy as any,
-      sortOrder,
+      sortBy: sortBy as IBookingSortConfig['sortBy'],
+      sortOrder: sortOrder as IBookingSortConfig['sortOrder'],
     };
 
     return sortBookings(filtered, sortConfig) as readonly BookingWithDetails[];

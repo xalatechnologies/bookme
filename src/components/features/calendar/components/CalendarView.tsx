@@ -1,7 +1,7 @@
 "use client";
 
 // External libraries
-import React, { useState, useCallback } from "react";
+import React, { useCallback } from "react";
 import { isSameDay } from "date-fns";
 import { useTranslation } from "react-i18next";
 
@@ -13,6 +13,7 @@ import { useAvailabilityCalculation } from "@/hooks/features/calendar/useAvailab
 import { Card } from "@/components/ui/card";
 import { ViewHeader } from "@/components/features/search/components/ViewHeader";
 import { Accordion } from "@/components/ui/accordion";
+import { PrimaryButton } from "@/components/ui/PrimaryButton";
 
 // Sibling imports
 import { FacilityAccordionContent } from "./FacilityCalendar/FacilityAccordionContent";
@@ -28,7 +29,8 @@ interface CalendarViewProps {
 }
 
 export const CalendarView: React.FC<CalendarViewProps> = ({
-  date,
+   
+  date: _date,
   facilityType,
   location,
   accessibility,
@@ -181,7 +183,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
         <Card className="p-8">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">{t("messages.loading_calendar")}</p>
+            <p className="text-gray-600">{t("loading.calendar")}</p>
           </div>
         </Card>
       </div>
@@ -205,7 +207,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
           <div className="text-center">
             <div className="text-6xl mb-4">⚠️</div>
             <h3 className="text-2xl font-bold text-gray-900 mb-2">
-              {t("messages.loading_error")}
+              {t("errors.loading_calendar")}
             </h3>
             <p className="text-gray-600">{error}</p>
           </div>
@@ -236,10 +238,10 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
             <div className="text-center">
               <div className="text-6xl mb-4">📅</div>
               <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                {t("slot_selection.no_facilities")}
+                {t("messages.no_zones_available")}
               </h3>
               <p className="text-gray-600">
-                {t("slot_selection.adjust_search")}
+                {t("messages.error_prefix")}
               </p>
             </div>
           </Card>
@@ -253,11 +255,11 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                 <div className="flex items-center justify-between">
                   <div>
                     <h4 className="font-semibold text-gray-900">
-                      {t("slot_selection.selected_slots")}:{" "}
+                      {t("time_slots.selected")}:{" "}
                       {selectedSlots.length}
                     </h4>
                     <p className="text-sm text-gray-600">
-                      {t("slot_selection.total_price")}:{" "}
+                      {t("time_slots.select")}:{" "}
                       {selectedSlots.reduce(
                         (sum, slot) => sum + slot.pricePerHour,
                         0
@@ -270,14 +272,14 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                       onClick={clearSelection}
                       className="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-md"
                     >
-                      {t("slot_selection.remove_all")}
+                      {t("time_slots.select")}
                     </button>
-                    <button
+                    <PrimaryButton
                       onClick={() => navigate("/checkout")}
-                      className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md font-medium"
+                      className="px-4 py-2 rounded-md font-medium"
                     >
-                      {t("slot_selection.go_to_order")}
-                    </button>
+                      {"Proceed to checkout"}
+                    </PrimaryButton>
                   </div>
                 </div>
               </Card>
@@ -295,7 +297,11 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                 <FacilityAccordionContent
                   key={facility.id}
                   facility={facility}
-                  selectedSlots={selectedSlots}
+                  selectedSlots={selectedSlots.map(slot => ({
+                    ...slot,
+                    facilityName: slot.facilityName || "",
+                    zoneName: slot.zoneName || ""
+                  }))}
                   onSlotClick={handleEnhancedSlotClick}
                   onBulkSlotSelection={handleEnhancedBulkSlotSelection}
                   getAvailabilityStatus={getAvailabilityStatus}

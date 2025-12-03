@@ -1,7 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { ISelectedTimeSlot } from '@/components/features/bookings/types';
 import type { RecurrencePattern } from '@/components/features/bookings/utils/recurrence';
-import { RecurrenceEngine } from '@/components/features/bookings/utils/recurrence';
 import { parseISO, isValid, getDay, addDays, addWeeks, addMonths } from 'date-fns';
 
 /**
@@ -21,7 +20,6 @@ export const useRecurringSlots = (
   facilityId: string
 ) => {
   const [recurringSlots, setRecurringSlots] = useState<ISelectedTimeSlot[]>([]);
-  const recurrenceEngine = new RecurrenceEngine();
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   /**

@@ -13,7 +13,7 @@
  */
 
 import { useQuery } from '@tanstack/react-query';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from "@/contexts/hooks";
 import { rbacService } from '@/services/supabase/rbac.service';
 import type { Database } from '@/types/database';
 
@@ -63,10 +63,13 @@ export interface UseRoleReturn {
  * Role priority mapping for comparison
  */
 const ROLE_PRIORITY: Record<OrgRole, number> = {
-  owner: 4,
-  admin: 3,
-  staff: 2,
-  customer: 1,
+  owner: 100,
+  admin: 80,
+  case_handler: 60,
+  editor: 40,
+  read_only: 20,
+  customer: 10,
+  staff: 60, // DEPRECATED - maps to case_handler level
 };
 
 /**

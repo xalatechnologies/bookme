@@ -95,11 +95,10 @@ const FileUpload: React.FC<{
       <label className="text-sm font-medium">{t("attachments.title")}</label>
 
       <div
-        className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
-          isDragOver
+        className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${isDragOver
             ? "border-primary bg-primary/5"
             : "border-muted-foreground/25 hover:border-muted-foreground/50"
-        }`}
+          }`}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
@@ -190,7 +189,7 @@ export const SupportTicketForm: React.FC<ISupportTicketFormProps> = ({
   userId,
   userName,
   userEmail,
-  userType = "tenant",
+
   relatedBookingId,
 }): JSX.Element => {
   const { t } = useTranslation(["support", "validation", "common"]);
@@ -271,7 +270,10 @@ export const SupportTicketForm: React.FC<ISupportTicketFormProps> = ({
       setFiles([]);
 
       onClose();
-    } catch (error) {
+    } catch (
+     
+    _error: unknown
+    ) {
       setError("general", t("support:messages.error.generic"));
     } finally {
       setIsSubmitting(false);

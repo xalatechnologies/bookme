@@ -7,7 +7,7 @@
 
 ## What Was Done
 
-Successfully connected the BookMe authentication flow to the Supabase auth service with email/password login for test users.
+Successfully connected the Booknor authentication flow to the Supabase auth service with email/password login for test users.
 
 ---
 
@@ -127,7 +127,7 @@ Email: owner@drammen.kommune.no
 Password: password123
 Role: Owner
 
-Email: superadmin@bookme.no
+Email: superadmin@booknor.no
 Password: password123
 Role: Platform Admin
 ```

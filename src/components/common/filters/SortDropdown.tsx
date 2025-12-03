@@ -58,7 +58,8 @@ export const SortDropdown = ({
   className = '',
   namespace = 'common'
 }: SortDropdownProps): JSX.Element => {
-  const { t } = useTranslation(namespace);
+  // Type assertion to allow dynamic namespace - validated by isValidNamespace utility
+  const { t } = useTranslation(namespace as 'common' | 'rbac' | 'forms' | 'errors' | 'validation' | 'booking' | 'bookings' | 'facility' | 'calendar' | 'admin' | 'checkout' | 'user' | 'navigation');
 
   const defaultPlaceholder = t('filters.sort_by', 'Sorter etter');
   const defaultAriaLabel = t('aria.sort_dropdown', 'Sorteringsvalg');

@@ -18,19 +18,6 @@ export interface RecurringBookingGroupProps {
   readonly onViewDetails?: (groupId: string) => void;
 }
 
-const getFrequencyLabel = (frequency: string): string => {
-  switch (frequency) {
-    case "weekly":
-      return "Ukentlig";
-    case "biweekly":
-      return "Annenhver uke";
-    case "monthly":
-      return "Månedlig";
-    default:
-      return "Gjentakende";
-  }
-};
-
 const getFrequencyColor = (frequency: string): string => {
   switch (frequency) {
     case "weekly":
@@ -76,7 +63,16 @@ export const RecurringBookingGroup = ({
   group,
   onViewDetails,
 }: RecurringBookingGroupProps): JSX.Element => {
-  const { t } = useTranslation("common");
+  const { t } = useTranslation(["booking", "common"]);
+  
+  // Get translated frequency labels
+  const frequencyLabels = {
+    weekly: t("booking:recurring.weekly", "Weekly"),
+    biweekly: t("booking:recurring.biweekly", "Biweekly"),
+    monthly: t("booking:recurring.monthly", "Monthly"),
+    default: t("booking:recurring.title", "Recurring Booking")
+  };
+  
   const handleClick = () => {
     if (onViewDetails) {
       onViewDetails(group.recurringId);
@@ -95,6 +91,20 @@ export const RecurringBookingGroup = ({
   const nextDate = nextBooking ? formatDate(nextBooking.starts_at) : null;
   const nextTime = nextBooking ? formatTime(nextBooking.starts_at) : null;
 
+  // Get frequency label
+  const getFrequencyLabel = (): string => {
+    switch (group.frequency) {
+      case "weekly":
+        return frequencyLabels.weekly;
+      case "biweekly":
+        return frequencyLabels.biweekly;
+      case "monthly":
+        return frequencyLabels.monthly;
+      default:
+        return frequencyLabels.default;
+    }
+  };
+
   return (
     <Card
       className="relative cursor-pointer hover:shadow-md transition-shadow"
@@ -108,41 +118,41 @@ export const RecurringBookingGroup = ({
             {/* Header */}
             <div className="flex items-center gap-2 mb-2">
               <Repeat className="w-4 h-4 text-purple-600 flex-shrink-0" />
-              <h3 className="font-semibold text-gray-900 text-lg">
+              <h3 className="font-semibold text-gray-900 dark:text-white text-lg">
                 {group.facilityName}
               </h3>
               <Badge className={getFrequencyColor(group.frequency)}>
-                {getFrequencyLabel(group.frequency)}
+                {getFrequencyLabel()}
               </Badge>
             </div>
 
             {/* Zone info */}
             {group.zoneName && (
-              <p className="text-sm text-gray-600 mb-2">{group.zoneName}</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">{group.zoneName}</p>
             )}
 
             {/* Summary stats */}
-            <div className="flex flex-wrap gap-4 text-sm text-gray-600 mb-3">
+            <div className="flex flex-wrap gap-4 text-sm text-gray-600 dark:text-gray-400 mb-3">
               <span className="font-medium">
-                {group.totalBookings} forekomster
+                {group.totalBookings} {t("booking:recurring.occurrences", "Occurrences")}
               </span>
-              <span className="text-green-600">
-                {group.upcomingCount} kommende
+              <span className="text-green-600 dark:text-green-400">
+                {group.upcomingCount} {t("booking:filters.upcoming", "Upcoming")}
               </span>
-              <span className="text-blue-600">
-                {group.completedCount} fullført
+              <span className="text-blue-600 dark:text-blue-400">
+                {group.completedCount} {t("booking:status.completed", "Completed")}
               </span>
             </div>
 
             {/* Next booking info */}
             {nextBooking && (
               <div className="flex flex-wrap gap-4 text-sm">
-                <span className="flex items-center gap-1 text-gray-700">
+                <span className="flex items-center gap-1 text-gray-700 dark:text-gray-300">
                   <Calendar className="w-3 h-3" />
-                  <span className="font-medium">Neste:</span>
+                  <span className="font-medium">{t("booking:recurring.next_label", "Next:")}</span>
                   {nextDate}
                 </span>
-                <span className="flex items-center gap-1 text-gray-700">
+                <span className="flex items-center gap-1 text-gray-700 dark:text-gray-300">
                   <Clock className="w-3 h-3" />
                   {nextTime}
                 </span>
@@ -150,8 +160,8 @@ export const RecurringBookingGroup = ({
             )}
 
             {!nextBooking && group.completedCount > 0 && (
-              <p className="text-sm text-gray-500 italic">
-                {t("common.all_bookings_completed")}
+              <p className="text-sm text-gray-500 dark:text-gray-500 italic">
+                {t("common.all_bookings_completed", "All bookings completed")}
               </p>
             )}
           </div>
@@ -163,8 +173,8 @@ export const RecurringBookingGroup = ({
               size="sm"
               onClick={handleViewClick}
               className="h-9 w-9 p-0"
-              aria-label="Se alle forekomster"
-              title="Se alle forekomster"
+              aria-label={t("booking:recurring.view_all_occurrences", "View all occurrences")}
+              title={t("booking:recurring.view_all_occurrences", "View all occurrences")}
             >
               <Eye className="w-4 h-4" />
             </Button>

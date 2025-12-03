@@ -41,8 +41,6 @@ export const BookingSidebar = ({
   const {
     title,
     hasSlots,
-    isRecurring,
-    currentLocale,
     shouldShowTemplate,
     shouldShowRecurringPreview,
     visibleRecurringSlots,
@@ -126,10 +124,10 @@ export const BookingSidebar = ({
                       size="sm"
                       onClick={onClearAll}
                       className="w-full text-gray-500 hover:text-red-500 hover:bg-red-50"
-                      aria-label={t('sidebar.clear_all_slots', 'Fjern alle valgte tidspunkter')}
+                      aria-label={t('booking:sidebar.clear_all_slots', 'Remove all selected time slots')}
                     >
                       <X className="h-3 w-3 mr-1" />
-                      {t('sidebar.clear_all_slots', 'Fjern alle valgte tidspunkter')}
+                      {t('booking:sidebar.clear_all_slots', 'Remove all selected time slots')}
                     </Button>
                   </div>
                 )}
@@ -138,7 +136,7 @@ export const BookingSidebar = ({
               {/* Price Calculation */}
               <div className="space-y-3 pt-4 border-t">
                 <h4 className="text-sm font-semibold text-gray-900">
-                  {t('details.pricing_breakdown', 'Prisberegning')}
+                  {t('booking:details.pricing_breakdown', 'Pricing Breakdown')}
                 </h4>
 
                 {/* Price Breakdown */}
@@ -158,7 +156,7 @@ export const BookingSidebar = ({
                 {/* Total */}
                 <div className="flex justify-between items-center pt-3 border-t">
                   <span className="text-base font-bold text-gray-900">
-                    {t('cart.total', 'Totalt')}
+                    {t('booking:cart.total', 'Total')}
                   </span>
                   <span className="text-lg font-bold text-blue-600">
                     {formatPrice(priceCalculation.totalPrice)}
@@ -169,7 +167,7 @@ export const BookingSidebar = ({
                 {priceCalculation.requiresApproval && (
                   <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
                     <p className="text-xs text-yellow-800">
-                      {t('messages.warnings.approval_required', 'Denne bookingen krever godkjenning')}
+                      {t('booking:messages.warnings.approval_required', 'This booking requires approval')}
                     </p>
                   </div>
                 )}
@@ -179,7 +177,7 @@ export const BookingSidebar = ({
             <div className="text-center py-8">
               <Calendar className="h-16 w-16 text-gray-400 mx-auto mb-4" />
               <p className="text-gray-500 text-sm">
-                {t('details.select_slots_pricing', 'Velg tidspunkter og få en prisberegning')}
+                {t('booking:details.select_slots_pricing', 'Select time slots and get a price calculation')}
               </p>
             </div>
           )}

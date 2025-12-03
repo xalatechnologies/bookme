@@ -1,5 +1,5 @@
 -- =====================================================
--- Authentication & RBAC Test Data Setup for BookMe
+-- Authentication & RBAC Test Data Setup for Booknor
 -- =====================================================
 -- This file creates test users with different roles for
 -- local development and testing.
@@ -9,7 +9,7 @@
 --   2. staff@drammen.kommune.no - Organization staff (password: password123)
 --   3. admin@drammen.kommune.no - Organization admin (password: password123)
 --   4. owner@drammen.kommune.no - Organization owner (password: password123)
---   5. superadmin@bookme.no - Platform admin (password: password123)
+--   5. superadmin@booknor.no - Platform admin (password: password123)
 --
 -- Usage (via Supabase CLI):
 --   supabase db reset  # This will run all migrations including seed data
@@ -255,7 +255,7 @@ BEGIN
     superadmin_user_id,
     'authenticated',
     'authenticated',
-    'superadmin@bookme.no',
+    'superadmin@booknor.no',
     crypt('password123', gen_salt('bf')),
     NOW(),
     NOW(),
@@ -334,7 +334,7 @@ SELECT '  Email: admin@drammen.kommune.no | Password: password123 | Role: Admin'
 UNION ALL
 SELECT '  Email: owner@drammen.kommune.no | Password: password123 | Role: Owner'
 UNION ALL
-SELECT '  Email: superadmin@bookme.no | Password: password123 | Role: Platform Admin';
+SELECT '  Email: superadmin@booknor.no | Password: password123 | Role: Platform Admin';
 
 SELECT '' AS separator;
 SELECT '=====================================' AS info;

@@ -19,7 +19,7 @@ npx supabase status
 - staff@drammen.kommune.no (Staff)
 - admin@drammen.kommune.no (Admin)
 - owner@drammen.kommune.no (Owner)
-- superadmin@bookme.no (Platform Admin)
+- superadmin@booknor.no (Platform Admin)
 
 ✅ **All passwords**: `Test123!`
 
@@ -263,7 +263,7 @@ npx supabase status
 ### 5.1 Login as Platform Admin
 
 **Steps**:
-1. Login with: `superadmin@bookme.no`
+1. Login with: `superadmin@booknor.no`
 2. Password: `Test123!`
 
 **Expected**:

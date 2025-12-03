@@ -187,16 +187,16 @@ export const BookingFiltersBar = ({
 
         {/* Active Filters Indicator */}
         {activeFiltersCount > 0 && (
-          <div className="mt-3 pt-3 border-t border-gray-200">
+          <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
             <div className="flex items-center justify-between text-sm">
-              <span className="text-gray-600">
+              <span className="text-gray-600 dark:text-gray-400">
                 {t('filters.active_filters', 'Aktive filtre')}: {activeFilterLabels.join(', ')}
               </span>
               <Button
                 variant="link"
                 size="sm"
                 onClick={onClearFilters}
-                className="text-blue-600 hover:text-blue-700 p-0 h-auto"
+                className="text-blue-600 hover:text-blue-700 p-0 h-auto dark:text-blue-400 dark:hover:text-blue-300"
               >
                 {t('filters.clearAll', 'Tilbakestill alle')}
               </Button>

@@ -13,6 +13,7 @@ import {
   useGeocodingIntegration,
   useFacilityValidation,
 } from "@/hooks/features/facilities";
+import { useFacilityImageUpload } from "@/hooks/features/facilities/useFacilityImageUpload";
 import {
   X,
   GripVertical,
@@ -35,8 +36,7 @@ export interface IFacilityEditFormProps {
 }
 
 // Mapbox public token
-const MAPBOX_TOKEN =
-  "pk.eyJ1IjoiYW1pbjA3IiwiYSI6ImNtZzlqcjNnczBmMmsycXM2cm4xYzU0OGwifQ.1Vuiv_9pPIUY478LP3yccA";
+import { MAPBOX_TOKEN } from '@/lib/clients/mapbox';
 
 /**
  * Facility Edit Form Component
@@ -73,7 +73,7 @@ export const FacilityEditForm: React.FC<IFacilityEditFormProps> = ({
   onClose,
   onUpdate,
 }): JSX.Element => {
-  const { t } = useTranslation(["facilities", "admin", "validation", "common"]);
+  const { t } = useTranslation(["admin", "facility", "common"]);
 
   const [formData, setFormData] = useState<Partial<Facility>>({ ...facility });
 
@@ -86,17 +86,25 @@ export const FacilityEditForm: React.FC<IFacilityEditFormProps> = ({
     draggedIndex,
     fileInputRef,
     handleAddImage,
-    handleFileChange,
     handleRemoveImage,
     handleDragStart,
     handleDragOver,
     handleDrop,
     setImages,
   } = useImageHandling({
-    initialImages: facility.images || [],
+    initialImages: facility.images ? (facility.images as string[]) : [],
     maxFileSize: 5 * 1024 * 1024, // 5MB
     maxImages: 10,
   });
+
+  // Custom hook: Facility image upload
+  const {
+    uploadImages,
+    isUploading: isImageUploading,
+    uploadProgress,
+    error: imageUploadError,
+    clearError: clearImageUploadError,
+  } = useFacilityImageUpload();
 
   // Custom hook: Form validation
   const { errors, validateAll, clearError, isValid } = useFacilityValidation({
@@ -141,9 +149,20 @@ export const FacilityEditForm: React.FC<IFacilityEditFormProps> = ({
   // Initialize form data when facility changes
   useEffect(() => {
     setFormData({ ...facility });
-    setImages(facility.images || []);
-    if (facility.coordinates) {
-      setCoordinates(facility.coordinates);
+    setImages(facility.images ? (facility.images as string[]) : []);
+    // Note: We're using location instead of coordinates since that's what the database has
+    if (facility.location) {
+      // Extract coordinates from location (can be string, object, or PostGIS format)
+      const location = facility.location;
+      if (typeof location === 'object' && location !== null && 'lat' in location && 'lng' in location) {
+        setCoordinates(location as { lat: number; lng: number });
+      } else if (typeof location === 'string' && location.startsWith('POINT(')) {
+        // Parse POINT(lng lat) format
+        const coords = location.slice(6, -1).split(' ');
+        if (coords.length === 2) {
+          setCoordinates({ lng: parseFloat(coords[0]), lat: parseFloat(coords[1]) });
+        }
+      }
     }
   }, [facility, setImages, setCoordinates]);
 
@@ -175,6 +194,36 @@ export const FacilityEditForm: React.FC<IFacilityEditFormProps> = ({
   );
 
   /**
+   * Handle file selection and upload to Supabase Storage
+   */
+  const handleFileUpload = useCallback(
+    async (e: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
+      const files = e.target.files;
+      if (!files || files.length === 0) return;
+
+      clearImageUploadError();
+
+      try {
+        // Upload files to Supabase Storage
+        const urls = await uploadImages(Array.from(files), facility.id);
+        
+        if (urls.length > 0) {
+          // Add uploaded image URLs to the images array
+          setImages((prev) => [...prev, ...urls]);
+        }
+      } catch (error) {
+        console.error('Error handling file upload:', error);
+      } finally {
+        // Reset file input
+        if (e.target) {
+          e.target.value = '';
+        }
+      }
+    },
+    [facility.id, uploadImages, setImages, clearImageUploadError]
+  );
+
+  /**
    * Handle form submission
    */
   const handleSubmit = useCallback(
@@ -193,12 +242,15 @@ export const FacilityEditForm: React.FC<IFacilityEditFormProps> = ({
         // Use Supabase mutation to update facility
         await updateFacilityMutation.mutateAsync({
           id: facility.id,
-          data: formData as Database['public']['Tables']['facilities']['Update'],
+          updates: formData as Database['public']['Tables']['facilities']['Update'],
         });
         onUpdate();
         onClose();
-      } catch (error) {
-        console.error("Failed to update facility:", error);
+      } catch (
+         
+        _error: unknown
+      ) {
+        // Error handling can be added here if needed
       }
     },
     [formData, validateAll, facility.id, updateFacilityMutation, onUpdate, onClose]
@@ -208,13 +260,13 @@ export const FacilityEditForm: React.FC<IFacilityEditFormProps> = ({
     <Card className="w-full max-w-md h-full flex flex-col">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-lg font-bold">
-          {t("admin:facilities.edit", "Rediger lokale")}
+          {t("admin:facilities.edit", "Edit Facility")}
         </CardTitle>
         <Button
           variant="ghost"
           size="icon"
           onClick={onClose}
-          aria-label={t("common:actions.close", "Lukk")}
+          aria-label={t("common:actions.close", "Close")}
         >
           <X className="h-4 w-4" />
         </Button>
@@ -223,9 +275,8 @@ export const FacilityEditForm: React.FC<IFacilityEditFormProps> = ({
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Name Field */}
           <FormField
-            id="name"
             name="name"
-            label={t("common:name", "Navn")}
+            label={t("common:name", "Name")}
             type="text"
             value={formData.name || ""}
             onChange={(value) => handleChange("name", String(value))}
@@ -236,9 +287,8 @@ export const FacilityEditForm: React.FC<IFacilityEditFormProps> = ({
           {/* Address Field */}
           <div className="space-y-2">
             <FormField
-              id="address"
               name="address"
-              label={t("common:address", "Adresse")}
+              label={t("common:address", "Address")}
               type="text"
               value={formData.address || ""}
               onChange={(value) => handleAddressChange(String(value))}
@@ -252,7 +302,7 @@ export const FacilityEditForm: React.FC<IFacilityEditFormProps> = ({
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                 {t(
                   "admin:facilities.fetching_coordinates",
-                  "Henter koordinater..."
+                  "Fetching coordinates..."
                 )}
               </div>
             )}
@@ -279,24 +329,51 @@ export const FacilityEditForm: React.FC<IFacilityEditFormProps> = ({
           <div className="space-y-2">
             <div className="flex justify-between items-center">
               <label className="text-sm font-medium">
-                {t("admin:facilities.images", "Bilder")}
+                {t("admin:facilities.images", "Images")}
               </label>
               <Button
                 type="button"
                 variant="outline"
                 size="sm"
                 onClick={handleAddImage}
+                disabled={isImageUploading}
               >
-                <Upload className="h-4 w-4 mr-2" />
-                {t("admin:facilities.add_image", "Legg til bilde")}
+                {isImageUploading ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    {t("admin:facilities.uploading", "Uploading...")}
+                  </>
+                ) : (
+                  <>
+                    <Upload className="h-4 w-4 mr-2" />
+                    {t("admin:facilities.add_image", "Add Image")}
+                  </>
+                )}
               </Button>
             </div>
+
+            {/* Upload progress indicator */}
+            {isImageUploading && (
+              <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+                <div
+                  className="bg-blue-600 h-2.5 rounded-full transition-all duration-300"
+                  style={{ width: `${uploadProgress}%` }}
+                ></div>
+              </div>
+            )}
+
+            {/* Upload error message */}
+            {imageUploadError && (
+              <div className="text-red-500 text-sm mt-2">
+                {imageUploadError}
+              </div>
+            )}
 
             {/* Hidden file input */}
             <input
               type="file"
               ref={fileInputRef}
-              onChange={handleFileChange}
+              onChange={handleFileUpload}
               accept="image/*"
               multiple
               className="hidden"
@@ -346,7 +423,7 @@ export const FacilityEditForm: React.FC<IFacilityEditFormProps> = ({
                       <div className="flex-1 text-sm text-gray-500 truncate">
                         {t(
                           "admin:facilities.image_number",
-                          "Bilde {{number}}",
+                          "Image {{number}}",
                           { number: index + 1 }
                         )}
                       </div>
@@ -359,7 +436,7 @@ export const FacilityEditForm: React.FC<IFacilityEditFormProps> = ({
                       onClick={() => handleRemoveImage(index)}
                       aria-label={t(
                         "admin:facilities.remove_image",
-                        "Fjern bilde {{number}}",
+                        "Remove image {{number}}",
                         { number: index + 1 }
                       )}
                     >
@@ -372,7 +449,7 @@ export const FacilityEditForm: React.FC<IFacilityEditFormProps> = ({
               <div className="text-center py-4 text-gray-500">
                 <ImageIcon className="h-8 w-8 mx-auto mb-2" />
                 <p>
-                  {t("admin:facilities.no_images", "Ingen bilder lagt til")}
+                  {t("admin:facilities.no_images", "No images added")}
                 </p>
               </div>
             )}
@@ -380,10 +457,12 @@ export const FacilityEditForm: React.FC<IFacilityEditFormProps> = ({
 
           {/* Form Actions */}
           <FormActions
-            onSubmit={handleSubmit}
+            onSubmit={() => {
+              handleSubmit(new Event('submit') as unknown as React.FormEvent);
+            }}
             onCancel={onClose}
-            submitLabel={t("common:actions.save", "Lagre endringer")}
-            cancelLabel={t("common:actions.cancel", "Avbryt")}
+            submitLabel={t("common:actions.save", "Save Changes")}
+            cancelLabel={t("common:actions.cancel", "Cancel")}
             isSubmitting={updateFacilityMutation.isPending}
             isValid={isValid}
           />

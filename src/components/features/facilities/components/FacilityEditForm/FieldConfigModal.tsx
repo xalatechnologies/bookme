@@ -37,7 +37,8 @@ export const FieldConfigModal = ({
   onClose, 
   onSave, 
   initialFields,
-  facilityId,
+   
+  facilityId: _facilityId,
   onToggleVisibility,
   onUpdateValue,
   onAddField,
@@ -70,7 +71,7 @@ export const FieldConfigModal = ({
     onUpdateValue(fieldId, value);
     setFields(prev => prev.map(field => 
       field.id === fieldId 
-        ? { ...field, value: value as any }
+        ? { ...field, value: value }
         : field
     ));
   };

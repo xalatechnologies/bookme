@@ -5,6 +5,11 @@ import { reportWebVitals } from './lib/monitoring/webVitals'
 import './index.css'
 import './styles/theme.css'
 
+// Ensure dark mode is never enabled (light mode only for now)
+// Dark mode code is preserved for future phases
+document.documentElement.classList.remove('dark');
+localStorage.removeItem('theme');
+
 const rootElement = document.getElementById('root');
 if (!rootElement) {
   throw new Error('Root element not found');

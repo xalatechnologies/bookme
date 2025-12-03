@@ -31,13 +31,16 @@ const initialNotifications: readonly INotification[] = [
     id: "3",
     type: "info",
     title: "notifications.types.system_update",
-    message: "En ny versjon av BookMe er tilgjengelig.",
+    message: "En ny versjon av Booknor er tilgjengelig.",
     timestamp: "4 timer siden",
     isRead: true
   }
 ];
 
-const NotificationBell = (_props: INotificationBellProps): JSX.Element => {
+const NotificationBell = (
+   
+  _props: INotificationBellProps
+): JSX.Element => {
   const { t } = useTranslation('common');
   const {
     isOpen,

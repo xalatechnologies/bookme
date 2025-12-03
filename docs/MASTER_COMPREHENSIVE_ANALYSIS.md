@@ -1,4 +1,4 @@
-# Master Comprehensive Analysis - BookMe Platform
+# Master Comprehensive Analysis - Booknor Platform
 
 **Date:** 2025-10-30
 **Scope:** Complete system analysis including database, architecture, code, and testing strategy
@@ -826,7 +826,7 @@ VALUES (
 INSERT INTO profiles (id, email, display_name, first_name, last_name, default_org)
 VALUES (
   '00000000-0000-0000-0000-000000000002',
-  'admin@bookme.no',
+  'admin@booknor.no',
   'Admin User',
   'Admin',
   'User',
@@ -1807,11 +1807,11 @@ CREATE POLICY "Users can view own favorites"
 
 ### 3.6 Industry Comparison: Multi-Tenancy Patterns
 
-**BookMe vs. Industry Leaders:**
+**Booknor vs. Industry Leaders:**
 
 | Platform | Pattern | Database | Isolation | Match % |
 |----------|---------|----------|-----------|---------|
-| **BookMe** | Shared DB + Shared Schema | PostgreSQL + RLS | Row-level | - |
+| **Booknor** | Shared DB + Shared Schema | PostgreSQL + RLS | Row-level | - |
 | **Salesforce** | Shared DB + Shared Schema | Oracle | Row-level | 95% ✅ |
 | **Slack** | Shared DB + Shared Schema | MySQL/Vitess | Row-level | 90% ✅ |
 | **GitHub** | Shared DB + Shared Schema | MySQL | Row-level | 90% ✅ |
@@ -1833,7 +1833,7 @@ CREATE POLICY "Users can view own favorites"
 ⚠️ **Schema Changes** - Affect all tenants simultaneously (requires careful migration strategy)
 ⚠️ **Security Risk** - RLS bugs could expose data (mitigated with comprehensive testing)
 
-**BookMe's Implementation Quality:** 95/100 (Industry-leading)
+**Booknor's Implementation Quality:** 95/100 (Industry-leading)
 
 ### 3.7 Tenant Onboarding Flow
 
@@ -2736,7 +2736,7 @@ CREATE POLICY "Minimum admin role required"
 - Some resource-level control
 - Example: Trello, Asana (basic tiers)
 
-**Level 3: Advanced (15% of SaaS platforms)** ← **BookMe is here**
+**Level 3: Advanced (15% of SaaS platforms)** ← **Booknor is here**
 - 5-7 roles with granular permissions
 - Resource-action matrix
 - Custom permission combinations
@@ -2748,9 +2748,9 @@ CREATE POLICY "Minimum admin role required"
 - Attribute-based access control (ABAC)
 - Example: Okta, Auth0, AWS IAM
 
-**BookMe RBAC Assessment:**
+**Booknor RBAC Assessment:**
 
-| Feature | BookMe | Salesforce | Linear | GitHub | Industry Avg |
+| Feature | Booknor | Salesforce | Linear | GitHub | Industry Avg |
 |---------|--------|------------|--------|--------|--------------|
 | **Number of Roles** | 7 | 8 | 6 | 7 | 5 |
 | **Permission Granularity** | Resource-Action | Resource-Action | Resource-Action | Resource-Action | Role-based |
@@ -2767,7 +2767,7 @@ CREATE POLICY "Minimum admin role required"
 - GitHub: 85% ✅
 - Industry Average: 75% ✅
 
-**BookMe RBAC Score:** 95/100 (Level 3 - Advanced)
+**Booknor RBAC Score:** 95/100 (Level 3 - Advanced)
 
 ### 4.7 Role Assignment and Management
 
@@ -3051,11 +3051,11 @@ export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
     storage: window.localStorage,
     flowType: 'pkce',
     detectSessionInUrl: true,
-    storageKey: 'bookme-auth-token',
+    storageKey: 'booknor-auth-token',
   },
   global: {
     headers: {
-      'x-application-name': 'bookme',
+      'x-application-name': 'booknor',
     },
   },
 });
@@ -3083,7 +3083,7 @@ export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
    - Parses hash fragments for tokens
    - Automatically cleans URL after extraction
 
-5. **`storageKey: 'bookme-auth-token'`**: Custom storage key
+5. **`storageKey: 'booknor-auth-token'`**: Custom storage key
    - Prevents conflicts with other apps on same domain
    - Allows multiple Supabase apps on one domain
 
@@ -3344,7 +3344,7 @@ supabase.auth.onAuthStateChange((event, session) => {
 
 ```json
 {
-  "bookme-auth-token": {
+  "booknor-auth-token": {
     "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
     "refresh_token": "v1.refresh_token_here",
     "expires_at": 1704067200,
@@ -3896,9 +3896,9 @@ const signIn = async (email: string, password: string) => {
 
 ### 5.8 Industry Comparison: Authentication
 
-#### 5.8.1 BookMe vs Auth0
+#### 5.8.1 Booknor vs Auth0
 
-| Feature | BookMe (Supabase Auth) | Auth0 |
+| Feature | Booknor (Supabase Auth) | Auth0 |
 |---------|------------------------|-------|
 | **Authentication Methods** | Email/password, magic links, OAuth (Google, GitHub) | Email/password, passwordless, OAuth, SAML, LDAP |
 | **Token Type** | JWT (self-contained) | JWT + opaque tokens |
@@ -3912,14 +3912,14 @@ const signIn = async (email: string, password: string) => {
 | **Customization** | High (direct DB access) | Medium (APIs only) |
 
 **Winner**: Depends on needs
-- **BookMe (Supabase)**: Better for cost-sensitive projects, high customization
+- **Booknor (Supabase)**: Better for cost-sensitive projects, high customization
 - **Auth0**: Better for enterprise, complex auth requirements (SAML, LDAP)
 
 ---
 
-#### 5.8.2 BookMe vs Firebase Auth
+#### 5.8.2 Booknor vs Firebase Auth
 
-| Feature | BookMe (Supabase Auth) | Firebase Auth |
+| Feature | Booknor (Supabase Auth) | Firebase Auth |
 |---------|------------------------|----------------|
 | **Authentication Methods** | Email/password, magic links, OAuth | Email/password, phone, OAuth, anonymous |
 | **Token Type** | JWT (PostgreSQL-backed) | JWT (Google-backed) |
@@ -3932,14 +3932,14 @@ const signIn = async (email: string, password: string) => {
 | **Pricing** | Free tier: 50K users | Free tier: unlimited users |
 
 **Winner**: Depends on ecosystem
-- **BookMe (Supabase)**: Better for SQL databases, RLS integration
+- **Booknor (Supabase)**: Better for SQL databases, RLS integration
 - **Firebase**: Better for offline-first apps, Google ecosystem
 
 ---
 
-#### 5.8.3 BookMe vs Okta
+#### 5.8.3 Booknor vs Okta
 
-| Feature | BookMe (Supabase Auth) | Okta |
+| Feature | Booknor (Supabase Auth) | Okta |
 |---------|------------------------|------|
 | **Target Audience** | SMBs, startups, developers | Enterprise (500+ employees) |
 | **Authentication Methods** | Email/password, OAuth | SAML, OIDC, LDAP, MFA |
@@ -3951,7 +3951,7 @@ const signIn = async (email: string, password: string) => {
 | **Customization** | High (open-source) | Low (closed API) |
 
 **Winner**: Different markets
-- **BookMe (Supabase)**: Better for startups, SMBs, cost-sensitive
+- **Booknor (Supabase)**: Better for startups, SMBs, cost-sensitive
 - **Okta**: Better for large enterprises, compliance requirements
 
 ---
@@ -5413,9 +5413,9 @@ export const useCreateCase = () => {
 
 ### 6.6 Industry Comparison: Service Architecture
 
-#### 6.6.1 BookMe vs Vercel (Next.js App Router)
+#### 6.6.1 Booknor vs Vercel (Next.js App Router)
 
-| Feature | BookMe (React + Vite) | Vercel (Next.js App Router) |
+| Feature | Booknor (React + Vite) | Vercel (Next.js App Router) |
 |---------|------------------------|------------------------------|
 | **Data Fetching** | React Query hooks | Server Components + fetch |
 | **Caching** | Client-side (React Query) | Server-side (Next.js cache) |
@@ -5426,14 +5426,14 @@ export const useCreateCase = () => {
 | **Bundle Size** | ~250 kB (Vite SPA) | ~180 kB (SSR, code splitting) |
 
 **Winner**: Depends on use case
-- **BookMe (Vite SPA)**: Better for real-time dashboards, complex client state
+- **Booknor (Vite SPA)**: Better for real-time dashboards, complex client state
 - **Next.js App Router**: Better for SEO, static content, server-heavy logic
 
 ---
 
-#### 6.6.2 BookMe vs Supabase JS Library Best Practices
+#### 6.6.2 Booknor vs Supabase JS Library Best Practices
 
-| Feature | BookMe | Supabase Docs Recommendation |
+| Feature | Booknor | Supabase Docs Recommendation |
 |---------|--------|-------------------------------|
 | **Service Layer** | ✅ Custom BaseService + lifecycle hooks | ❌ Direct supabase.from() calls in components |
 | **Error Handling** | ✅ Centralized translation | ⚠️ Manual try-catch in every component |
@@ -5441,7 +5441,7 @@ export const useCreateCase = () => {
 | **Type Safety** | ✅ Generated types from schema | ✅ Generated types from schema |
 | **Reusability** | ✅ High (services reused across hooks) | ⚠️ Low (logic duplicated in components) |
 
-**Winner**: BookMe's approach is more scalable
+**Winner**: Booknor's approach is more scalable
 - **Pros**: Centralized logic, easier testing, better separation of concerns
 - **Cons**: More boilerplate (but worth it for maintainability)
 
@@ -5727,7 +5727,7 @@ describe('Case CRUD Integration', () => {
 
 ### 7.1 State Management Overview
 
-BookMe uses a **hybrid approach** for state management:
+Booknor uses a **hybrid approach** for state management:
 
 1. **React Context API**: For global state that rarely changes (auth, theme, language)
 2. **Zustand**: For frequently-changing, shared state (cart, filters, UI state)
@@ -6399,9 +6399,9 @@ const useCases = (orgId: string) => {
 
 ### 7.5 Industry Comparison: State Management
 
-#### 7.5.1 BookMe vs Redux Toolkit
+#### 7.5.1 Booknor vs Redux Toolkit
 
-| Feature | BookMe (Zustand) | Redux Toolkit |
+| Feature | Booknor (Zustand) | Redux Toolkit |
 |---------|------------------|---------------|
 | **Boilerplate** | ✅ Minimal (1 file per store) | ⚠️ Moderate (slice + types + actions) |
 | **TypeScript Support** | ✅ Excellent (automatic type inference) | ✅ Excellent (via createSlice) |
@@ -6412,15 +6412,15 @@ const useCases = (orgId: string) => {
 | **Persistence** | ✅ persist middleware | ⚠️ Manual (redux-persist) |
 | **Server State** | ❌ Not recommended (use React Query) | ✅ RTK Query (built-in) |
 
-**Winner**: Zustand for BookMe's use case
+**Winner**: Zustand for Booknor's use case
 - **Pros**: Simpler API, smaller bundle, easier TypeScript
 - **Cons**: No built-in server state solution (but React Query is better anyway)
 
 ---
 
-#### 7.5.2 BookMe vs Jotai
+#### 7.5.2 Booknor vs Jotai
 
-| Feature | BookMe (Zustand) | Jotai |
+| Feature | Booknor (Zustand) | Jotai |
 |---------|------------------|-------|
 | **State Model** | Store-based (global stores) | Atom-based (granular atoms) |
 | **Re-render Optimization** | ✅ Manual selectors | ✅ Automatic (atom dependencies) |
@@ -6430,15 +6430,15 @@ const useCases = (orgId: string) => {
 | **DevTools** | ✅ Redux DevTools | ⚠️ Custom Jotai DevTools |
 | **Learning Curve** | ✅ Low | ⚠️ Medium (atom/selector concepts) |
 
-**Winner**: Zustand for BookMe
+**Winner**: Zustand for Booknor
 - **Pros**: More familiar API (similar to Redux), better DevTools
 - **Cons**: Jotai has better automatic re-render optimization
 
 ---
 
-#### 7.5.3 BookMe vs Recoil
+#### 7.5.3 Booknor vs Recoil
 
-| Feature | BookMe (Zustand) | Recoil |
+| Feature | Booknor (Zustand) | Recoil |
 |---------|------------------|--------|
 | **Maturity** | ✅ Stable (v4+) | ⚠️ Experimental (v0.7+) |
 | **Bundle Size** | ✅ 3.5 kB | ⚠️ 14 kB (larger) |
@@ -6447,7 +6447,7 @@ const useCases = (orgId: string) => {
 | **TypeScript** | ✅ Excellent | ⚠️ Good (but verbose) |
 | **Persistence** | ✅ persist middleware | ⚠️ Manual |
 
-**Winner**: Zustand for BookMe
+**Winner**: Zustand for Booknor
 - **Pros**: Smaller, more stable, simpler API
 - **Cons**: Recoil has better async state handling (but React Query covers this)
 
@@ -7355,9 +7355,9 @@ export const EditCaseForm = () => {
 
 ### 10.6 Industry Comparison: Routing
 
-#### 10.6.1 BookMe vs Next.js App Router
+#### 10.6.1 Booknor vs Next.js App Router
 
-| Feature | BookMe (React Router) | Next.js App Router |
+| Feature | Booknor (React Router) | Next.js App Router |
 |---------|------------------------|---------------------|
 | **Routing Type** | Client-side (SPA) | Server-side + Client-side |
 | **Code Splitting** | ✅ Manual with React.lazy() | ✅ Automatic (every route is a chunk) |
@@ -7369,14 +7369,14 @@ export const EditCaseForm = () => {
 | **SEO** | ❌ Limited (client-rendered) | ✅ Excellent (server-rendered) |
 
 **Winner**: Depends on use case
-- **BookMe (React Router)**: Better for dashboards, real-time apps
+- **Booknor (React Router)**: Better for dashboards, real-time apps
 - **Next.js App Router**: Better for marketing sites, SEO-heavy apps
 
 ---
 
-#### 10.6.2 BookMe vs TanStack Router
+#### 10.6.2 Booknor vs TanStack Router
 
-| Feature | BookMe (React Router) | TanStack Router |
+| Feature | Booknor (React Router) | TanStack Router |
 |---------|------------------------|------------------|
 | **Type Safety** | ⚠️ Manual types for params | ✅ Automatic (full type inference) |
 | **Route Definition** | JSX (`<Route>`) | TypeScript (tree structure) |
@@ -7386,7 +7386,7 @@ export const EditCaseForm = () => {
 | **File-Based Routing** | ❌ No | ✅ Optional |
 | **Maturity** | ✅ Very mature (v7+) | ⚠️ New (v1+) |
 
-**Winner**: React Router for BookMe (maturity)
+**Winner**: React Router for Booknor (maturity)
 - **Pros**: More stable, larger ecosystem, easier migration
 - **Cons**: TanStack Router has better TypeScript support
 

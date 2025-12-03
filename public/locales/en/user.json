@@ -20,7 +20,24 @@
     "quick_actions": "Quick Actions",
     "my_bookings": "My Bookings",
     "recommended_facilities": "Recommended Facilities",
-    "system_messages": "System Messages",
+    "system_messages": {
+      "title": "System Messages",
+      "booking_updated": "Booking Updated",
+      "booking_updated_desc": "Booking for {{facility}} has been updated with new times.",
+      "new_regulation": "New Regulations",
+      "new_regulation_desc": "New cancellation rules take effect from February 1st.",
+      "maintenance": "Maintenance Scheduled",
+      "maintenance_desc": "System maintenance scheduled Sunday 08:00–10:00.",
+      "booking_confirmed": "Booking Confirmed",
+      "booking_confirmed_desc": "Your booking for {{facility}} is confirmed! 🎉",
+      "mark_as_read": "Mark message \"{{title}}\" as read",
+      "unread_indicator": "Unread message indicator",
+      "categories": {
+        "system": "System",
+        "booking": "Booking",
+        "news": "News"
+      }
+    },
     "your_bookings": "Your bookings",
     "upcoming": "Upcoming",
     "past": "Past",
@@ -38,24 +55,6 @@
       "sunny": "Sunny",
       "rainy": "Rainy",
       "snowy": "Snowy"
-    },
-
-    "system_messages": {
-      "booking_updated": "Booking Updated",
-      "booking_updated_desc": "Booking for {{facility}} has been updated with new times.",
-      "new_regulation": "New Regulations",
-      "new_regulation_desc": "New cancellation rules take effect from February 1st.",
-      "maintenance": "Maintenance Scheduled",
-      "maintenance_desc": "System maintenance scheduled Sunday 08:00–10:00.",
-      "booking_confirmed": "Booking Confirmed",
-      "booking_confirmed_desc": "Your booking for {{facility}} is confirmed! 🎉",
-      "mark_as_read": "Mark message \"{{title}}\" as read",
-      "unread_indicator": "Unread message indicator",
-      "categories": {
-        "system": "System",
-        "booking": "Booking",
-        "news": "News"
-      }
     },
 
     "hero": {
@@ -324,10 +323,13 @@
 
       "personal_info": {
         "title": "Personal information",
+        "description": "Manage your personal details and contact info.",
         "edit": "Edit",
         "cancel": "Cancel",
         "save_changes": "Save changes",
         "changes_saved": "Changes saved",
+        "avatar": "Profile picture",
+        "change_photo": "Change photo",
 
         "sections": {
           "personal_details": "Personal details",
@@ -374,6 +376,7 @@
           "connect": "Connect"
         }
       },
+      "activity_integrations": "Activity & integrations",
 
       "preferences": {
         "title": "Preferences and customization",
@@ -385,6 +388,24 @@
           "theme_light": "Light",
           "theme_dark": "Dark",
           "theme_system": "System"
+        },
+
+        "additional": {
+          "title": "Additional preferences",
+          "timezone": "Timezone",
+          "date_format": "Date format",
+          "landing_page": "Default landing page",
+          "landing_options": {
+            "dashboard": "Dashboard",
+            "bookings": "Bookings",
+            "messages": "Messages"
+          },
+          "calendar_view": "Default calendar view",
+          "calendar_options": {
+            "month": "Month",
+            "week": "Week",
+            "day": "Day"
+          }
         },
 
         "notifications": {

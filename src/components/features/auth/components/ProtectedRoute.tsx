@@ -17,8 +17,9 @@
 
 import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from "@/contexts/hooks";
 import { useRole } from '@/hooks/auth/useRole';
+import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import type { Database } from '@/types/database';
 
 type OrgRole = Database['public']['Enums']['org_role'];
@@ -94,12 +95,13 @@ const DefaultUnauthorizedComponent = (): JSX.Element => {
           Please contact your administrator if you believe this is an error.
         </p>
 
-        <a
-          href="/"
-          className="inline-block h-12 px-6 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+        <PrimaryButton
+          asChild
         >
-          Go to Home
-        </a>
+          <a href="/">
+            Go to Home
+          </a>
+        </PrimaryButton>
       </div>
     </div>
   );
@@ -145,7 +147,7 @@ export const ProtectedRoute = ({
 }: ProtectedRouteProps): JSX.Element => {
   const location = useLocation();
   const { user, loading: authLoading } = useAuth();
-  const { role, loading: roleLoading, hasMinimumRole } = useRole(orgId);
+  const { loading: roleLoading, hasMinimumRole } = useRole(orgId);
 
   // Show loading state while checking authentication
   if (authLoading) {

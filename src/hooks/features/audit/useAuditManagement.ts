@@ -74,7 +74,7 @@ export interface IUseAuditManagementReturn {
   readonly isExporting: boolean;
 
   // UI Actions
-  readonly setView: (view: any) => void;
+  readonly setView: (view: string) => void;
   readonly toggleFilters: () => void;
   readonly setSearchTerm: (term: string) => void;
   readonly toggleUserFilter: (userId: string) => void;
@@ -90,7 +90,7 @@ export interface IUseAuditManagementReturn {
   readonly setLast30Days: () => void;
   readonly setThisWeek: () => void;
   readonly setThisMonth: () => void;
-  readonly toggleSort: (sortBy: any) => void;
+  readonly toggleSort: (sortBy: IAuditSortConfig['sortBy']) => void;
   readonly toggleLogSelection: (id: string) => void;
   readonly selectAllLogs: () => void;
   readonly clearSelection: () => void;
@@ -270,8 +270,8 @@ export const useAuditManagement = (): IUseAuditManagementReturn => {
 
     // Apply business logic sorting
     const sortConfig: IAuditSortConfig = {
-      sortBy: sortBy as any,
-      sortOrder: sortOrder as any,
+      sortBy: sortBy as IAuditSortConfig['sortBy'],
+      sortOrder: sortOrder as IAuditSortConfig['sortOrder'],
     };
 
     return sortAuditLogs(severityFiltered, sortConfig);

@@ -20,7 +20,24 @@
     "quick_actions": "Hurtigvalg",
     "my_bookings": "Mine bookinger",
     "recommended_facilities": "Anbefalte lokaler",
-    "system_messages": "Systemmeldinger",
+    "system_messages": {
+      "title": "Systemmeldinger",
+      "booking_updated": "Booking oppdatert",
+      "booking_updated_desc": "Booking for {{facility}} er oppdatert med nye tider.",
+      "new_regulation": "Nytt regelverk",
+      "new_regulation_desc": "Nye regler for avbestillinger trer i kraft fra 1. februar.",
+      "maintenance": "Vedlikehold planlagt",
+      "maintenance_desc": "Vedlikehold av systemet planlagt søndag 08:00–10:00.",
+      "booking_confirmed": "Booking bekreftet",
+      "booking_confirmed_desc": "Din booking for {{facility}} er bekreftet! 🎉",
+      "mark_as_read": "Merk melding \"{{title}}\" som lest",
+      "unread_indicator": "Ulest melding indikator",
+      "categories": {
+        "system": "System",
+        "booking": "Booking",
+        "news": "Nyheter"
+      }
+    },
     "your_bookings": "Dine bookinger",
     "upcoming": "Kommende",
     "past": "Tidligere",
@@ -38,24 +55,6 @@
       "sunny": "Solrikt",
       "rainy": "Regnværlig",
       "snowy": "Snøværlig"
-    },
-
-    "system_messages": {
-      "booking_updated": "Booking oppdatert",
-      "booking_updated_desc": "Booking for {{facility}} er oppdatert med nye tider.",
-      "new_regulation": "Nytt regelverk",
-      "new_regulation_desc": "Nye regler for avbestillinger trer i kraft fra 1. februar.",
-      "maintenance": "Vedlikehold planlagt",
-      "maintenance_desc": "Vedlikehold av systemet planlagt søndag 08:00–10:00.",
-      "booking_confirmed": "Booking bekreftet",
-      "booking_confirmed_desc": "Din booking for {{facility}} er bekreftet! 🎉",
-      "mark_as_read": "Merk melding \"{{title}}\" som lest",
-      "unread_indicator": "Ulest melding indikator",
-      "categories": {
-        "system": "System",
-        "booking": "Booking",
-        "news": "Nyheter"
-      }
     },
 
     "hero": {
@@ -324,10 +323,13 @@
 
       "personal_info": {
         "title": "Personlig informasjon",
+        "description": "Administrer dine personlige detaljer og kontaktinformasjon.",
         "edit": "Rediger",
         "cancel": "Avbryt",
         "save_changes": "Lagre endringer",
         "changes_saved": "Endringer lagret",
+        "avatar": "Profilbilde",
+        "change_photo": "Endre bilde",
 
         "sections": {
           "personal_details": "Personlige detaljer",
@@ -374,6 +376,7 @@
           "connect": "Tilknytt"
         }
       },
+      "activity_integrations": "Aktivitet og integrasjoner",
 
       "preferences": {
         "title": "Preferanser og tilpasning",

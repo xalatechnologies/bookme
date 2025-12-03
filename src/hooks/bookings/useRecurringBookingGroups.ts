@@ -51,6 +51,30 @@ function detectFrequency(bookings: BookingWithDetails[]): 'weekly' | 'biweekly' 
 }
 
 /**
+ * Generate a group ID for bookings that should be grouped but don't have a recurring_booking_id
+ */
+function generateGroupId(booking: BookingWithDetails): string {
+  // For bookings with recurring_booking_id, use that
+  if (booking.recurring_booking_id) {
+    return booking.recurring_booking_id;
+  }
+  
+  // For bookings marked as recurring but without a recurring_booking_id,
+  // create a group ID based on facility, purpose, and time pattern
+  if (booking.is_recurring) {
+    const facilityId = booking.facility_id || 'unknown';
+    const purpose = booking.notes || 'unknown';
+    const startTime = new Date(booking.starts_at).toTimeString().substring(0, 5);
+    const endTime = new Date(booking.ends_at).toTimeString().substring(0, 5);
+    
+    return `generated_group_${facilityId}_${purpose}_${startTime}_${endTime}`;
+  }
+  
+  // For non-recurring bookings, return the booking ID to keep them separate
+  return booking.id;
+}
+
+/**
  * Group recurring bookings together
  *
  * @example
@@ -76,15 +100,18 @@ export function useRecurringBookingGroups(
     const now = new Date();
     const groups = new Map<string, BookingWithDetails[]>();
 
-    // Group bookings by recurring_booking_id
+    // Group bookings by recurring_booking_id or generated group ID
     bookings.forEach(booking => {
-      if (!booking.recurring_booking_id) return;
-
-      const existing = groups.get(booking.recurring_booking_id);
-      if (existing) {
-        existing.push(booking);
-      } else {
-        groups.set(booking.recurring_booking_id, [booking]);
+      // Only group bookings that are marked as recurring or have a recurring_booking_id
+      if (booking.is_recurring || booking.recurring_booking_id) {
+        const groupId = generateGroupId(booking);
+        
+        const existing = groups.get(groupId);
+        if (existing) {
+          existing.push(booking);
+        } else {
+          groups.set(groupId, [booking]);
+        }
       }
     });
 
@@ -141,7 +168,7 @@ export function useHasRecurringBookings(
 ): boolean {
   return useMemo(() => {
     if (!bookings) return false;
-    return bookings.some(b => b.recurring_booking_id !== null);
+    return bookings.some(b => b.is_recurring || b.recurring_booking_id !== null);
   }, [bookings]);
 }
 
@@ -153,6 +180,6 @@ export function useStandaloneBookings(
 ): BookingWithDetails[] {
   return useMemo(() => {
     if (!bookings) return [];
-    return bookings.filter(b => !b.recurring_booking_id);
+    return bookings.filter(b => !b.is_recurring && !b.recurring_booking_id);
   }, [bookings]);
 }

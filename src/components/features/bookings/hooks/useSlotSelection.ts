@@ -2,7 +2,7 @@
 
 import { useCallback } from "react";
 import { ISelectedTimeSlot } from "@/components/features/bookings/types";
-import { RecurringTimeSlot, RecurrencePattern } from "@/components/features/bookings/utils/recurrence";
+import type { RecurrencePattern } from "@/components/features/bookings/utils/recurrence";
 import { useSlotSelectionStore } from "@/stores/slotSelectionStore";
 
 /**
@@ -29,7 +29,6 @@ export const useSlotSelection = () => {
     removeSlot,
     clearSelection,
     setSelectedSlots: setSelectedSlotsStore,
-    addRecurringSlots,
     clearRecurringSlots,
     generateRecurringSlots: generateRecurringSlotsStore,
     getAllSlots,

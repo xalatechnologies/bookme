@@ -37,7 +37,7 @@ const TEST_USERS = [
     description: 'Organization owner',
   },
   {
-    email: 'superadmin@bookme.no',
+    email: 'superadmin@booknor.no',
     password: 'Test123!',
     expectedRole: 'platform_admin',
     description: 'Platform super admin',
@@ -334,7 +334,7 @@ async function testRouteProtection() {
  */
 async function runTests() {
   log('\n╔═══════════════════════════════════════════════════════════╗', colors.cyan);
-  log('║        BookMe RBAC & Authentication Test Suite           ║', colors.cyan);
+  log('║        Booknor RBAC & Authentication Test Suite           ║', colors.cyan);
   log('╚═══════════════════════════════════════════════════════════╝', colors.cyan);
 
   const startTime = Date.now();

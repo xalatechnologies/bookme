@@ -33,14 +33,14 @@
       "@/layouts/*": ["./src/components/layouts/*"],
       "@/ui/*": ["./src/components/ui/*"],
       "@/common/*": ["./src/components/common/*"],
-      "@/shared/*": ["./src/src/shared/*"],
-      "@/assets/*": ["./src/src/assets/*"],
-      "@/stores/*": ["./src/src/stores/*"],
+      "@/shared/*": ["./src/shared/*"],
+      "@/assets/*": ["./src/assets/*"],
+      "@/stores/*": ["./src/stores/*"],
       "@/i18n/*": ["./src/i18n/*"]
     },
     "types": ["react", "react-dom", "node"],
     "typeRoots": ["./node_modules/@types", "./src/types"]
   },
-  "include": ["src/**/*", "src/types.d.ts"],
-  "exclude": ["node_modules"]
+  "include": ["src/**/*", "src/types.d.ts", "tests/**/*"],
+  "exclude": ["node_modules", "src/**/*.test.js", "src/**/*.test.ts", "src/**/*.spec.js", "src/**/*.spec.ts"]
 }

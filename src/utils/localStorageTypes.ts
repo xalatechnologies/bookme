@@ -1,5 +1,5 @@
 /**
- * Type-safe localStorage utilities for BookMe application
+ * Type-safe localStorage utilities for Booknor application
  *
  * This module provides TypeScript interfaces and helper functions for
  * safely accessing localStorage data with proper type checking and error handling.

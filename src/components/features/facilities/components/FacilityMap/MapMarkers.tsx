@@ -5,30 +5,81 @@ import React, { useEffect, useRef } from 'react';
 import mapboxgl from 'mapbox-gl';
 
 // Internal imports
-import type { Database } from '@/types/database';
-
-// Type from Supabase
-type Facility = Database['public']['Tables']['facilities']['Row'];
-
-interface FacilityLocation {
-  readonly id: string;
-  readonly name: string;
-  readonly address: string;
-  readonly lat: number;
-  readonly lng: number;
-  readonly type: string;
-  readonly capacity: number;
-  readonly pricePerHour: number;
-}
+import type { FacilityWithCoords } from '@/types/facility';
+import { geocodeAddress } from '@/lib/geocode';
 
 interface MapMarkersProps {
   readonly map: mapboxgl.Map | null;
-  readonly facilities: readonly Facility[];
-  readonly onMarkerClick?: (facility: Facility) => void;
+  readonly facilities: readonly FacilityWithCoords[];
+  readonly onMarkerClick?: (facility: FacilityWithCoords) => void;
 }
 
-interface MapMarkersReturn {
-  readonly markers: readonly mapboxgl.Marker[];
+// Helper function to extract coordinates from location data
+const extractCoordinates = (location: unknown): { lat: number | null; lng: number | null } => {
+  let lat: number | null = null;
+  let lng: number | null = null;
+  
+  try {
+    // If location is an object with lat/lng properties
+    if (location && typeof location === 'object' && !Array.isArray(location)) {
+      const locObj = location as Record<string, unknown>;
+      if ('lat' in locObj && 'lng' in locObj) {
+        lat = typeof locObj.lat === 'number' ? locObj.lat : null;
+        lng = typeof locObj.lng === 'number' ? locObj.lng : null;
+      }
+    }
+    // If location is a string in POINT format (POINT(lng lat))
+    else if (typeof location === 'string' && location.startsWith('POINT(') && location.endsWith(')')) {
+      const coords = location.slice(6, -1).split(' ');
+      if (coords.length === 2) {
+        lng = parseFloat(coords[0]);
+        lat = parseFloat(coords[1]);
+      }
+    }
+    // If location is a binary PostGIS object, we can't parse it directly
+    // In this case, we need to rely on the database to convert it to text format
+    else if (location && typeof location === 'object' && Array.isArray(location)) {
+      // This might be a binary array, we can't parse it directly
+      console.warn('Cannot parse binary PostGIS location data directly');
+    }
+  } catch (error) {
+    console.warn('Error parsing location data:', error);
+  }
+  
+  return { lat, lng };
+};
+
+// Normalize facility with coordinates, but don't save to database automatically
+const normalizeFacility = async (facility: FacilityWithCoords): Promise<FacilityWithCoords> => {
+  // If we already have coordinates, use them
+  if (Number.isFinite(facility.lat) && Number.isFinite(facility.lng)) {
+    return facility;
+  }
+  
+  // Try to extract from location_geog field if it exists
+  if (facility.location_geog) {
+    const { lat, lng } = extractCoordinates(facility.location_geog);
+    if (Number.isFinite(lat) && Number.isFinite(lng)) {
+      return { ...facility, lat, lng };
+    }
+  }
+  
+  // Fallback to geocoding if we have an address
+  if (facility.address) {
+    const result = await geocodeAddress(facility.address);
+    if (result) {
+      // Return facility with geocoded coordinates but don't save to database
+      // This prevents performance issues and database timeouts
+      return { 
+        ...facility, 
+        lat: result.lat, 
+        lng: result.lng 
+      };
+    }
+  }
+  
+  // Return facility as is if we can't geocode
+  return facility;
 }
 
 export const MapMarkers: React.FC<MapMarkersProps> = ({
@@ -38,7 +89,7 @@ export const MapMarkers: React.FC<MapMarkersProps> = ({
 }): JSX.Element => {
   const markersRef = useRef<readonly mapboxgl.Marker[]>([]);
 
-  const createMarkerElement = (facility: Facility): HTMLDivElement => {
+  const createMarkerElement = (facility: FacilityWithCoords): HTMLDivElement => {
     const markerElement = document.createElement('div');
     markerElement.className = 'custom-marker';
     // Create a location icon marker with black color, no white border, matching exactly the style used in list view (Mapbox pin)
@@ -64,10 +115,11 @@ export const MapMarkers: React.FC<MapMarkersProps> = ({
     return markerElement;
   };
 
-  const createPopupContent = (facility: Facility): string => {
+  const createPopupContent = (facility: FacilityWithCoords): string => {
     // Get the first image or use a placeholder
-    const imageUrl = facility.images && facility.images.length > 0 
-      ? facility.images[0] 
+    const images = facility.images as string[] | null;
+    const imageUrl = images && images.length > 0 
+      ? images[0] 
       : '/placeholder.svg';
       
     // Simplified popup content with only name and image, entire popup is clickable
@@ -77,11 +129,12 @@ export const MapMarkers: React.FC<MapMarkersProps> = ({
           <img src="${imageUrl}" alt="${facility.name}" style="width: 100%; height: 128px; object-fit: cover; border-radius: 4px;" onerror="this.src='/placeholder.svg'">
         </div>
         <h3 style="font-weight: bold; font-size: 16px; margin: 0;">${facility.name}</h3>
+        ${facility.address ? `<p style="margin: 4px 0 0 0; font-size: 14px; color: #666;">${facility.address}</p>` : ''}
       </div>
     `;
   };
 
-  const addMarkersToMap = (): void => {
+  const addMarkersToMap = async (): Promise<void> => {
     if (!map) return;
 
     // Clear existing markers
@@ -89,17 +142,53 @@ export const MapMarkers: React.FC<MapMarkersProps> = ({
       marker.remove();
     });
 
-    // Filter facilities to only include those with valid coordinates
-    const facilitiesWithCoordinates = facilities.filter(facility => 
-      facility.coordinates && 
-      typeof facility.coordinates.lat === 'number' && 
-      typeof facility.coordinates.lng === 'number' &&
-      !isNaN(facility.coordinates.lat) &&
-      !isNaN(facility.coordinates.lng)
+    // Normalize all facilities with geocoding fallback
+    const enrichedFacilities = await Promise.all(
+      facilities.map(normalizeFacility)
     );
 
+    // Filter facilities to only include those with valid coordinates or address for geocoding
+    const facilitiesWithCoordinates = enrichedFacilities.filter(facility => {
+      return (Number.isFinite(facility.lat) && Number.isFinite(facility.lng)) || facility.address;
+    });
+
+    // Process each facility to ensure it has coordinates
+    const markerData = await Promise.all(
+      facilitiesWithCoordinates.map(async (facility) => {
+        let lat = facility.lat;
+        let lng = facility.lng;
+        
+        // If we don't have valid coordinates but have an address, try to geocode it
+        if ((!Number.isFinite(lat) || !Number.isFinite(lng)) && facility.address) {
+          const geocoded = await geocodeAddress(facility.address);
+          if (geocoded) {
+            lat = geocoded.lat;
+            lng = geocoded.lng;
+          }
+        }
+        
+        // Return facility with coordinates if available
+        if (Number.isFinite(lat) && Number.isFinite(lng)) {
+          return {
+            facility: {...facility, lat, lng},
+            lat,
+            lng
+          };
+        }
+        // Return null for facilities that can't be geocoded
+        return null;
+      })
+    );
+
+    // Filter out null values and create markers
+    const validMarkerData = markerData.filter(Boolean) as Array<{
+      facility: FacilityWithCoords;
+      lat: number;
+      lng: number;
+    }>;
+
     // Create new markers
-    const newMarkers = facilitiesWithCoordinates.map((facility): mapboxgl.Marker => {
+    const newMarkers = validMarkerData.map(({facility, lat, lng}): mapboxgl.Marker => {
       const markerElement = createMarkerElement(facility);
       const popupContent = createPopupContent(facility);
       
@@ -113,7 +202,7 @@ export const MapMarkers: React.FC<MapMarkersProps> = ({
         element: markerElement,
         anchor: 'bottom'
       })
-        .setLngLat([facility.coordinates.lng, facility.coordinates.lat])
+        .setLngLat([lng, lat])
         .setPopup(popup)
         .addTo(map);
 

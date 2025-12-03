@@ -1,6 +1,5 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityType, ActorType } from '@/components/features/bookings/types';
 
 /**
  * Form field type

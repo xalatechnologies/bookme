@@ -1,4 +1,4 @@
-# 🚀 BookMe Testing - Quick Reference Card
+# 🚀 Booknor Testing - Quick Reference Card
 
 ## ⚡ Installation (One-Time Setup)
 

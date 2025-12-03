@@ -1,13 +1,13 @@
 # 🎨 Component Refactoring Patterns
 
-Complete guide for refactoring BookMe components to separate UI from business logic.
+Complete guide for refactoring Booknor components to separate UI from business logic.
 
 ## 📋 Table of Contents
 
 1. [Refactoring Principles](#refactoring-principles)
 2. [Component Analysis](#component-analysis)
 3. [Step-by-Step Refactoring](#step-by-step-refactoring)
-4. [Real Examples from BookMe](#real-examples-from-bookme)
+4. [Real Examples from Booknor](#real-examples-from-booknor)
 5. [Testing After Refactoring](#testing-after-refactoring)
 6. [Common Pitfalls](#common-pitfalls)
 
@@ -84,7 +84,7 @@ function FacilityList() {
 
 ## 📊 Component Analysis
 
-### Current BookMe Components (Need Refactoring)
+### Current Booknor Components (Need Refactoring)
 
 | Component | Lines | Business Logic | Priority |
 |-----------|-------|----------------|----------|
@@ -183,7 +183,7 @@ test('FacilitiesPage renders correctly', () => {
 });
 ```
 
-## 💼 Real Examples from BookMe
+## 💼 Real Examples from Booknor
 
 ### Example 1: Facilities Page Refactoring
 

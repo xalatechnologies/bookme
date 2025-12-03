@@ -4,6 +4,7 @@ import React, { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { LocalizedSelect } from "@/components/common/LocalizedSelect";
@@ -33,7 +34,7 @@ import { useReceiptActions, formatDate, formatAmount } from "@/hooks/features/re
 import type { IReceipt } from "@/hooks/features/receipts/useReceiptData";
 
 const UserReceipts = (): JSX.Element => {
-  const { t } = useTranslation("common");
+  const { t } = useTranslation("user");
   const [filterStatus, setFilterStatus] = useState<string>("all");
   const [filterYear, setFilterYear] = useState<string>("all");
   const [filterPaymentMethod, setFilterPaymentMethod] = useState<string>("all");
@@ -61,44 +62,44 @@ const UserReceipts = (): JSX.Element => {
 
   const statusFilters = useMemo(
     () => [
-      { value: "all", label: "Alle", icon: Receipt, count: statusCounts.all },
-      { value: "paid", label: "Betalt", icon: CheckCircle, count: statusCounts.paid },
-      { value: "pending", label: "Venter på betaling", icon: Clock, count: statusCounts.pending },
-      { value: "cancelled", label: "Betaling avbrutt", icon: XCircle, count: statusCounts.cancelled },
-      { value: "refunded", label: "Beløp tilbakeført", icon: CheckCircle, count: statusCounts.refunded },
+      { value: "all", label: t('pages.receipts.filters.status.all'), icon: Receipt, count: statusCounts.all },
+      { value: "paid", label: t('pages.receipts.filters.status.paid'), icon: CheckCircle, count: statusCounts.paid },
+      { value: "pending", label: t('pages.receipts.filters.status.pending'), icon: Clock, count: statusCounts.pending },
+      { value: "cancelled", label: t('pages.receipts.filters.status.cancelled'), icon: XCircle, count: statusCounts.cancelled },
+      { value: "refunded", label: t('pages.receipts.filters.status.refunded'), icon: CheckCircle, count: statusCounts.refunded },
     ],
-    [statusCounts]
+    [statusCounts, t]
   );
 
   const sortOptions = useMemo(
     () => [
-      { value: "newest", label: "Nyeste først" },
-      { value: "oldest", label: "Eldste først" },
-      { value: "amount-high", label: "Beløp høy–lav" },
-      { value: "amount-low", label: "Beløp lav–høy" },
+      { value: "newest", label: t('pages.receipts.filters.sort.newest') },
+      { value: "oldest", label: t('pages.receipts.filters.sort.oldest') },
+      { value: "amount-high", label: t('pages.receipts.filters.sort.amount_high') },
+      { value: "amount-low", label: t('pages.receipts.filters.sort.amount_low') },
     ],
-    []
+    [t]
   );
 
   const getStatusBadge = (status: IReceipt["status"]): JSX.Element => {
     const statusConfig = {
       paid: {
-        label: "Betalt",
+        label: t('pages.receipts.filters.status.paid'),
         className: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300",
         icon: CheckCircle,
       },
       pending: {
-        label: "Venter på betaling",
+        label: t('pages.receipts.filters.status.pending'),
         className: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300",
         icon: Clock,
       },
       cancelled: {
-        label: "Betaling avbrutt",
+        label: t('pages.receipts.filters.status.cancelled'),
         className: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300",
         icon: XCircle,
       },
       refunded: {
-        label: "Beløp tilbakeført",
+        label: t('pages.receipts.filters.status.refunded'),
         className: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300",
         icon: CheckCircle,
       },
@@ -141,31 +142,31 @@ const UserReceipts = (): JSX.Element => {
           <div className="flex items-center gap-2 mb-4">
             <Repeat className="h-5 w-5 text-blue-600" />
             <h4 className="font-medium text-gray-900 dark:text-white">
-              Gjentakende booking detaljer
+              {t('pages.receipts.details.recurring_title')}
             </h4>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <h5 className="font-medium text-gray-900 dark:text-white mb-2">Faktura detaljer</h5>
+              <h5 className="font-medium text-gray-900 dark:text-white mb-2">{t('pages.receipts.details.invoice_details')}</h5>
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-gray-600 dark:text-gray-400">Fakturanummer:</span>
+                  <span className="text-gray-600 dark:text-gray-400">{t('pages.receipts.details.invoice_number')}:</span>
                   <span className="text-gray-900 dark:text-white">{receipt.invoiceNumber}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600 dark:text-gray-400">Antall forekomster:</span>
+                  <span className="text-gray-600 dark:text-gray-400">{t('pages.receipts.details.occurrence_count')}:</span>
                   <span className="text-gray-900 dark:text-white">{receipt.occurrenceCount}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600 dark:text-gray-400">Totalpris:</span>
+                  <span className="text-gray-600 dark:text-gray-400">{t('pages.receipts.details.total_price')}:</span>
                   <span className="text-gray-900 dark:text-white">
                     {formatAmount(receipt.amount)}
                   </span>
                 </div>
                 {receipt.mvaAmount && (
                   <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">MVA (25%):</span>
+                    <span className="text-gray-600 dark:text-gray-400">{t('pages.receipts.details.mva')}:</span>
                     <span className="text-gray-900 dark:text-white">
                       {formatAmount(receipt.mvaAmount)}
                     </span>
@@ -175,7 +176,7 @@ const UserReceipts = (): JSX.Element => {
             </div>
 
             <div>
-              <h5 className="font-medium text-gray-900 dark:text-white mb-2">Handlinger</h5>
+              <h5 className="font-medium text-gray-900 dark:text-white mb-2">{t('pages.receipts.details.actions_title')}</h5>
               <div className="space-y-2">
                 <Button
                   size="sm"
@@ -184,7 +185,7 @@ const UserReceipts = (): JSX.Element => {
                   className="w-full justify-start"
                 >
                   <Download className="h-4 w-4 mr-2" />
-                  Last ned PDF
+                  {t('pages.receipts.details.download_pdf')}
                 </Button>
                 <Button
                   size="sm"
@@ -193,14 +194,14 @@ const UserReceipts = (): JSX.Element => {
                   className="w-full justify-start"
                 >
                   <Mail className="h-4 w-4 mr-2" />
-                  Send på e-post
+                  {t('pages.receipts.details.send_email')}
                 </Button>
               </div>
             </div>
           </div>
 
           <div className="mt-4">
-            <h5 className="font-medium text-gray-900 dark:text-white mb-2">Alle forekomster:</h5>
+            <h5 className="font-medium text-gray-900 dark:text-white mb-2">{t('pages.receipts.details.all_occurrences')}:</h5>
             <div className="space-y-2">
               {receipt.occurrences?.map((occurrence, index) => (
                 <div
@@ -213,7 +214,7 @@ const UserReceipts = (): JSX.Element => {
                     </span>
                     <div>
                       <span className="text-sm text-gray-900 dark:text-white">
-                        {new Date(occurrence.date).toLocaleDateString("nb-NO")} kl.{" "}
+                        {new Date(occurrence.date).toLocaleDateString()} kl.{" "}
                         {occurrence.time}
                       </span>
                       <div className="text-xs text-gray-500 dark:text-gray-400">
@@ -223,18 +224,18 @@ const UserReceipts = (): JSX.Element => {
                   </div>
                   <Badge
                     className={
-                      occurrence.status === "approved"
+                      occurrence.status === "paid" || occurrence.status === "completed"
                         ? "bg-green-100 text-green-800"
-                        : occurrence.status === "rejected"
+                        : occurrence.status === "cancelled" || occurrence.status === "rejected"
                         ? "bg-red-100 text-red-800"
                         : "bg-yellow-100 text-yellow-800"
                     }
                   >
-                    {occurrence.status === "approved"
-                      ? "Godkjent"
-                      : occurrence.status === "rejected"
-                      ? "Avvist"
-                      : "Ventende"}
+                    {occurrence.status === "paid" || occurrence.status === "completed"
+                      ? t('pages.receipts.status_labels.approved')
+                      : occurrence.status === "cancelled" || occurrence.status === "rejected"
+                      ? t('pages.receipts.status_labels.rejected')
+                      : t('pages.receipts.status_labels.pending')}
                   </Badge>
                 </div>
               ))}
@@ -244,23 +245,23 @@ const UserReceipts = (): JSX.Element => {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <h4 className="font-medium text-gray-900 dark:text-white mb-2">Faktura detaljer</h4>
+            <h4 className="font-medium text-gray-900 dark:text-white mb-2">{t('pages.receipts.details.invoice_details')}</h4>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
-                <span className="text-gray-600 dark:text-gray-400">Fakturanummer:</span>
+                <span className="text-gray-600 dark:text-gray-400">{t('pages.receipts.details.invoice_number')}:</span>
                 <span className="text-gray-900 dark:text-white">{receipt.invoiceNumber}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600 dark:text-gray-400">Booking-ID:</span>
+                <span className="text-gray-600 dark:text-gray-400">{t('pages.receipts.details.booking_id')}:</span>
                 <span className="text-gray-900 dark:text-white">{receipt.bookingId}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600 dark:text-gray-400">Betalt med:</span>
+                <span className="text-gray-600 dark:text-gray-400">{t('pages.receipts.card.paid_with')}:</span>
                 <span className="text-gray-900 dark:text-white">{receipt.paymentMethod}</span>
               </div>
               {receipt.mvaAmount && (
                 <div className="flex justify-between">
-                  <span className="text-gray-600 dark:text-gray-400">MVA (25%):</span>
+                  <span className="text-gray-600 dark:text-gray-400">{t('pages.receipts.details.mva')}:</span>
                   <span className="text-gray-900 dark:text-white">
                     {formatAmount(receipt.mvaAmount)}
                   </span>
@@ -268,9 +269,9 @@ const UserReceipts = (): JSX.Element => {
               )}
               {receipt.paidAt && (
                 <div className="flex justify-between">
-                  <span className="text-gray-600 dark:text-gray-400">Betalt:</span>
+                  <span className="text-gray-600 dark:text-gray-400">{t('pages.receipts.details.paid_date')}:</span>
                   <span className="text-gray-900 dark:text-white">
-                    {new Date(receipt.paidAt).toLocaleDateString("nb-NO")}
+                    {new Date(receipt.paidAt).toLocaleDateString()}
                   </span>
                 </div>
               )}
@@ -278,7 +279,7 @@ const UserReceipts = (): JSX.Element => {
           </div>
 
           <div>
-            <h4 className="font-medium text-gray-900 dark:text-white mb-2">Handlinger</h4>
+            <h4 className="font-medium text-gray-900 dark:text-white mb-2">{t('pages.receipts.details.actions_title')}</h4>
             <div className="space-y-2">
               <Button
                 size="sm"
@@ -287,7 +288,7 @@ const UserReceipts = (): JSX.Element => {
                 className="w-full justify-start"
               >
                 <Download className="h-4 w-4 mr-2" />
-                Last ned PDF
+                {t('pages.receipts.details.download_pdf')}
               </Button>
               <Button
                 size="sm"
@@ -296,7 +297,7 @@ const UserReceipts = (): JSX.Element => {
                 className="w-full justify-start"
               >
                 <Mail className="h-4 w-4 mr-2" />
-                Send på e-post
+                {t('pages.receipts.details.send_email')}
               </Button>
               <Button
                 size="sm"
@@ -305,7 +306,7 @@ const UserReceipts = (): JSX.Element => {
                 className="w-full justify-start"
               >
                 <Copy className="h-4 w-4 mr-2" />
-                Kopier fakturanummer
+                {t('pages.receipts.details.copy_invoice')}
               </Button>
             </div>
           </div>
@@ -315,7 +316,7 @@ const UserReceipts = (): JSX.Element => {
       {receipt.refundReason && (
         <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
           <h5 className="font-medium text-blue-800 dark:text-blue-300 mb-1">
-            Refunderingsinfo:
+            {t('pages.receipts.details.refund_info')}:
           </h5>
           <p className="text-sm text-blue-700 dark:text-blue-400">{receipt.refundReason}</p>
         </div>
@@ -329,23 +330,22 @@ const UserReceipts = (): JSX.Element => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-            Kvitteringer & betalinger
+            {t('pages.receipts.title')}
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
-            Oversikt over alle dine betalinger og kvitteringer
+            {t('pages.receipts.subtitle')}
           </p>
           <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
-            Alle priser vises i NOK og inkluderer MVA.
+            {t('pages.receipts.disclaimer')}
           </p>
         </div>
-        <Button
+        <PrimaryButton
           onClick={() => handleExportCSV(filteredAndSortedReceipts)}
-          variant="outline"
           className="flex items-center gap-2"
         >
           <Download className="h-4 w-4" />
-          Eksporter CSV
-        </Button>
+          {t('pages.receipts.export')}
+        </PrimaryButton>
       </div>
 
       {/* Summary Cards */}
@@ -361,14 +361,15 @@ const UserReceipts = (): JSX.Element => {
                   {formatAmount(statistics.totalAmount)}
                 </div>
                 <div className="text-sm text-gray-600 dark:text-gray-400">
-                  Totalt betalt hittil
+                  {t('pages.receipts.summary.total_paid')}
                 </div>
                 <div className="text-xs text-gray-500 dark:text-gray-500">
-                  Oppdatert per{" "}
-                  {new Date().toLocaleDateString("nb-NO", {
-                    day: "numeric",
-                    month: "long",
-                    year: "numeric",
+                  {t('pages.receipts.summary.updated_on', {
+                    date: new Date().toLocaleDateString(undefined, {
+                      day: "numeric",
+                      month: "long",
+                      year: "numeric",
+                    })
                   })}
                 </div>
               </div>
@@ -386,9 +387,9 @@ const UserReceipts = (): JSX.Element => {
                 <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
                   {statistics.paidCount}
                 </div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">Betalte bookinger</div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">{t('pages.receipts.summary.paid_bookings')}</div>
                 <div className="text-xs text-gray-500 dark:text-gray-500">
-                  Fullførte transaksjoner siste 6 måneder
+                  {t('pages.receipts.summary.completed_transactions')}
                 </div>
               </div>
             </div>
@@ -406,10 +407,10 @@ const UserReceipts = (): JSX.Element => {
                   {formatAmount(statistics.pendingAmount)}
                 </div>
                 <div className="text-sm text-gray-600 dark:text-gray-400">
-                  Sum ventende betalinger
+                  {t('pages.receipts.summary.pending_amount')}
                 </div>
                 <div className="text-xs text-gray-500 dark:text-gray-500">
-                  Avventer bekreftelse fra betalingsleverandør
+                  {t('pages.receipts.summary.awaiting_confirmation')}
                 </div>
               </div>
             </div>
@@ -426,7 +427,7 @@ const UserReceipts = (): JSX.Element => {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
               <Input
                 type="text"
-                placeholder="Søk i kvitteringer..."
+                placeholder={t('pages.receipts.filters.search_placeholder')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10"
@@ -438,7 +439,7 @@ const UserReceipts = (): JSX.Element => {
               <div className="flex items-center space-x-2">
                 <Filter className="h-4 w-4 text-gray-400" />
                 <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                  {t("common.status", "Status")}:
+                  {t('pages.receipts.filters.status_label')}:
                 </span>
                 <div className="flex space-x-1">
                   {statusFilters.map((filter) => {
@@ -467,7 +468,7 @@ const UserReceipts = (): JSX.Element => {
           <div className="flex flex-col sm:flex-row gap-4 mt-4">
             <div className="flex items-center space-x-2">
               <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                {t("filters.year", "År")}:
+                {t('pages.receipts.filters.year_label')}:
               </span>
               <LocalizedSelect
                 entityType="year"
@@ -481,7 +482,7 @@ const UserReceipts = (): JSX.Element => {
 
             <div className="flex items-center space-x-2">
               <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                {t("filters.payment_method", "Betalingsmetode")}:
+                {t('pages.receipts.filters.payment_method_label')}:
               </span>
               <LocalizedSelect
                 entityType="payment_method"
@@ -495,7 +496,7 @@ const UserReceipts = (): JSX.Element => {
 
             <div className="flex items-center space-x-2">
               <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                Sortering:
+                {t('pages.receipts.filters.sort_label')}:
               </span>
               <select
                 value={sortBy}
@@ -553,7 +554,7 @@ const UserReceipts = (): JSX.Element => {
                           </h3>
                           {receipt.isRecurring && (
                             <Badge variant="outline" className="text-blue-600 border-blue-200">
-                              {receipt.occurrenceCount} forekomster
+                              {t('pages.receipts.card.occurrences', { count: receipt.occurrenceCount })}
                             </Badge>
                           )}
                         </div>
@@ -576,7 +577,7 @@ const UserReceipts = (): JSX.Element => {
                         <div className="flex items-center space-x-2">
                           <CreditCard className="h-4 w-4 text-gray-400" />
                           <span className="text-gray-600 dark:text-gray-400">
-                            Betalt med {receipt.paymentMethod}
+                            {t('pages.receipts.card.paid_with')} {receipt.paymentMethod}
                           </span>
                         </div>
 
@@ -594,8 +595,8 @@ const UserReceipts = (): JSX.Element => {
                           {formatAmount(receipt.amount)}
                         </span>
                         <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-500">
-                          <span>Faktura: {receipt.invoiceNumber}</span>
-                          <span>Booking: {receipt.bookingId}</span>
+                          <span>{t('pages.receipts.card.invoice_label')}: {receipt.invoiceNumber}</span>
+                          <span>{t('pages.receipts.card.booking_label')}: {receipt.bookingId}</span>
                         </div>
                       </div>
                     </div>
@@ -632,7 +633,7 @@ const UserReceipts = (): JSX.Element => {
                         variant="outline"
                         onClick={() => handleCompletePayment(receipt.id)}
                         className="text-yellow-600 hover:text-yellow-700"
-                        title="Betaling avventer godkjenning. Prøv på nytt hvis dette tar mer enn 24 timer."
+                        title={t('pages.receipts.actions.payment_pending_tooltip')}
                       >
                         <ExternalLink className="h-4 w-4" />
                       </Button>
@@ -665,14 +666,14 @@ const UserReceipts = (): JSX.Element => {
             <CardContent className="p-8 text-center">
               <Receipt className="h-12 w-12 text-gray-400 mx-auto mb-4" />
               <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
-                Ingen kvitteringer funnet
+                {t('pages.receipts.empty.title')}
               </h3>
               <p className="text-gray-600 dark:text-gray-400 mb-4">
                 {filterStatus === "all"
-                  ? "Du har ingen betalinger ennå. Start med å booke et lokale."
-                  : `Du har ingen ${statusFilters
-                      .find((f) => f.value === filterStatus)
-                      ?.label.toLowerCase()} betalinger.`}
+                  ? t('pages.receipts.empty.no_payments')
+                  : t('pages.receipts.empty.no_status', { 
+                      status: statusFilters.find((f) => f.value === filterStatus)?.label.toLowerCase() || ''
+                    })}
               </p>
             </CardContent>
           </Card>
@@ -685,14 +686,14 @@ const UserReceipts = (): JSX.Element => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <BarChart3 className="h-5 w-5" />
-              Statistikk
+              {t('pages.receipts.statistics.title')}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <h4 className="font-medium text-gray-900 dark:text-white mb-3">
-                  Totalt betalt per kategori
+                  {t('pages.receipts.statistics.by_category')}
                 </h4>
                 <div className="space-y-2">
                   {Object.entries(statistics.categoryStats).map(([category, amount]) => (
@@ -709,11 +710,11 @@ const UserReceipts = (): JSX.Element => {
               </div>
 
               <div>
-                <h4 className="font-medium text-gray-900 dark:text-white mb-3">Gjennomsnitt</h4>
+                <h4 className="font-medium text-gray-900 dark:text-white mb-3">{t('pages.receipts.statistics.averages')}</h4>
                 <div className="space-y-2">
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-gray-600 dark:text-gray-400">
-                      Gjennomsnittlig bookingkostnad:
+                      {t('pages.receipts.statistics.avg_booking_cost')}:
                     </span>
                     <span className="text-sm font-medium text-gray-900 dark:text-white">
                       {formatAmount(statistics.averageAmount)}

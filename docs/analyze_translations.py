@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Translation Glossary Generator for BookMe
+Translation Glossary Generator for Booknor
 Analyzes all translation keys used in the codebase and compares against existing translation files.
 """
 
@@ -11,9 +11,9 @@ from collections import defaultdict
 from pathlib import Path
 
 # Paths
-SRC_DIR = "/Users/ibrahimrahmani/Documents/xaheen/bookme/src"
-LOCALES_DIR = "/Users/ibrahimrahmani/Documents/xaheen/bookme/public/locales"
-OUTPUT_DIR = "/Users/ibrahimrahmani/Documents/xaheen/bookme"
+SRC_DIR = "/Users/ibrahimrahmani/Documents/xaheen/booknor/src"
+LOCALES_DIR = "/Users/ibrahimrahmani/Documents/xaheen/booknor/public/locales"
+OUTPUT_DIR = "/Users/ibrahimrahmani/Documents/xaheen/booknor"
 
 # Translation key pattern: t('namespace:key.path') or t("namespace:key.path")
 KEY_PATTERN = r't\(["\']([a-zA-Z_][^"\']*:[^"\']*?)["\']\)'
@@ -177,7 +177,7 @@ def analyze_translations():
 def generate_glossary_md(results):
     """Generate the translation glossary markdown document"""
     lines = []
-    lines.append("# BookMe Translation Glossary")
+    lines.append("# Booknor Translation Glossary")
     lines.append("")
     lines.append("*Generated automatically by translation analysis tool*")
     lines.append("")

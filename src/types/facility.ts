@@ -1,14 +1,47 @@
+
+// Original facility type from database
+export type Facility = Database['public']['Tables']['facilities']['Row'];
+
+// Facility with coordinates extracted from geography column
+export type FacilityWithCoords = {
+  id: string;
+  org_id: string | null;
+  name: string;
+  address: string | null;
+  postal_code: string | null;
+  city: string | null;
+  country: string | null;
+  location_geog?: unknown; // The original geography data (optional)
+  lat: number | null;
+  lng: number | null;
+  location_geojson?: { type: string; coordinates: [number, number] } | null; // Optional
+  created_at: string;
+  updated_at: string | null;
+  description: string | null;
+  facility_type: string;
+  images: unknown;
+  capacity: number;
+  rating: number | null;
+  review_count: number;
+  status: string;
+  slug: string;
+  contact_email: string | null;
+  contact_phone: string | null;
+  accessibility_features: unknown;
+  area_description: string | null;
+  amenities: unknown;
+};
+
+// Type for location coordinates
+export interface LocationCoordinates {
+  lat: number;
+  lng: number;
+}
+
+// Type for facility filters
 export interface FacilityFilters {
-  readonly searchTerm?: string;
-  readonly facilityType?: string;
-  readonly location?: string;
-  readonly accessibility?: string;
-  readonly capacity?: readonly number[];
-  readonly date?: Date;
-  readonly priceRange?: {
-    readonly min: number;
-    readonly max: number;
-  };
-  readonly availableNow?: boolean;
-  readonly amenities?: readonly string[];
+  facilityType?: string;
+  location?: string;
+  searchTerm?: string;
+  capacity?: number[];
 }

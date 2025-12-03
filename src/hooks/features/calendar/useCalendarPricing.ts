@@ -12,7 +12,7 @@
  * @returns Pricing calculation functions
  */
 
-import { useCallback, useMemo } from "react";
+import { useCallback } from "react";
 import type { ISelectedTimeSlot } from "@/components/features/bookings/types";
 
 export interface PricingBreakdown {

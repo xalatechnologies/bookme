@@ -14,7 +14,7 @@ import {
   useUpdateBooking,
 } from '@/services/supabase/bookings.service';
 import { useOrganizationId } from '@/hooks/useOrganizationId';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from "@/contexts/hooks";
 import {
   validateBookingData,
   detectBookingConflicts,
@@ -59,7 +59,7 @@ export interface IUseBookingEditorReturn {
   readonly showSaveMessage: boolean;
 
   // Actions
-  readonly updateField: (field: keyof Booking, value: any) => void;
+  readonly updateField: (field: keyof Booking, value: Booking[keyof Booking]) => void;
   readonly updateFields: (fields: Partial<Booking>) => void;
   readonly calculatePrice: (basePrice: number, actorType: ActorType) => void;
   readonly checkConflicts: (existingBookings: readonly Booking[]) => void;
@@ -195,7 +195,7 @@ export const useBookingEditor = (
   const validation: BookingValidationResult = validateBookingData(editedBooking || {});
 
   // Actions
-  const updateField = useCallback((field: keyof Booking, value: any): void => {
+  const updateField = useCallback((field: keyof Booking, value: Booking[keyof Booking]): void => {
     setEditedBooking((prev) => {
       if (!prev) return prev;
       return { ...prev, [field]: value };

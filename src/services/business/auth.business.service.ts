@@ -8,7 +8,7 @@
  * @module services/business/auth
  */
 
-import type { OrgRole, PlatformRole, SystemRole } from '@/constants/roles';
+import type { OrgRole, SystemRole } from '@/constants/roles';
 import { ROLE_PRIORITY, ORG_ROLES, PLATFORM_ROLES } from '@/constants/roles';
 
 // ============================================================================
@@ -228,7 +228,7 @@ export const validatePasswordStrength = (password: string): PasswordStrengthResu
   }
 
   // Check for special character (optional but adds to strength)
-  const hasSpecialChar = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);
+  const hasSpecialChar = /[!@#$%^&*()_+\-=[]{};':"\\|,.<>?]/.test(password);
   if (hasSpecialChar) {
     score++;
   }
@@ -433,7 +433,7 @@ export const isSessionExpired = (
   try {
     const expirationDate = new Date(expiresAt);
     return currentTime.getTime() >= expirationDate.getTime();
-  } catch (error) {
+  } catch {
     // Invalid date format, consider as expired
     return true;
   }
@@ -461,7 +461,7 @@ export const calculateSessionExpiration = (
     const issuedDate = new Date(issuedAt);
     const expirationDate = new Date(issuedDate.getTime() + durationMs);
     return expirationDate.toISOString();
-  } catch (error) {
+  } catch {
     // Invalid date, return current time + duration
     const now = new Date();
     const expirationDate = new Date(now.getTime() + durationMs);
@@ -492,7 +492,7 @@ export const getRemainingSessionTime = (
     const remainingMs = expirationDate.getTime() - currentTime.getTime();
     if (remainingMs <= 0) return 0;
     return Math.floor(remainingMs / (60 * 1000)); // Convert to minutes
-  } catch (error) {
+  } catch {
     return 0;
   }
 };

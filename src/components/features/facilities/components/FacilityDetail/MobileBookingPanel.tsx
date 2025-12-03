@@ -16,7 +16,8 @@ interface MobileBookingPanelProps {
 
 export const MobileBookingPanel: React.FC<MobileBookingPanelProps> = ({
   facilityName,
-  facilityId,
+   
+  facilityId: _facilityId,
   capacity,
   area,
   openingHours

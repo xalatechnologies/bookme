@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { X } from "lucide-react";
+
 import { useTranslation } from "react-i18next";
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
@@ -80,7 +80,6 @@ export const BaseModal: React.FC<BaseModalProps> = ({
   children,
   actions,
   size = 'md',
-  showCloseButton = true,
   closeOnOverlayClick = true,
   className,
   titleIcon
@@ -109,15 +108,6 @@ export const BaseModal: React.FC<BaseModalProps> = ({
               {titleIcon && <span className="flex-shrink-0">{titleIcon}</span>}
               <span>{title}</span>
             </DialogTitle>
-            {showCloseButton && (
-              <button
-                onClick={onClose}
-                className="rounded-lg p-2 hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                aria-label={t('aria.close_modal')}
-              >
-                <X className="h-5 w-5 text-gray-500" />
-              </button>
-            )}
           </div>
           {description && (
             <DialogDescription id="modal-description">

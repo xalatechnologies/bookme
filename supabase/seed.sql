@@ -1,4 +1,4 @@
--- BookMe Backend Seed Data
+-- Booknor Backend Seed Data
 -- This file seeds the database with test data for development
 
 -- ============================================================================
@@ -8,7 +8,7 @@
 INSERT INTO organizations (id, name, slug, timezone, status)
 VALUES
   ('11111111-1111-1111-1111-111111111111'::uuid, 'Drammen Kommune', 'drammen-kommune', 'Europe/Oslo', 'active'),
-  ('22222222-2222-2222-2222-222222222222'::uuid, 'BookMe Demo Organization', 'bookme-demo', 'Europe/Oslo', 'active')
+  ('22222222-2222-2222-2222-222222222222'::uuid, 'Booknor Demo Organization', 'booknor-demo', 'Europe/Oslo', 'active')
 ON CONFLICT (id) DO NOTHING;
 
 -- ============================================================================
@@ -136,6 +136,7 @@ VALUES
     ]'::jsonb,
     ST_SetSRID(ST_MakePoint(10.2123, 59.7467), 4326)::geography
   )
+
 ON CONFLICT (id) DO NOTHING;
 
 -- ============================================================================

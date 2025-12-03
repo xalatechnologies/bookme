@@ -46,7 +46,7 @@ src/components/features/bookings/
 
 ### Constants.ts - Complete Breakdown (423 lines)
 
-The enhanced [constants.ts](file:///Users/ibrahimrahmani/Documents/xaheen/bookme/src/components/features/bookings/constants.ts) now includes:
+The enhanced [constants.ts](file:///Users/ibrahimrahmani/Documents/xaheen/booknor/src/components/features/bookings/constants.ts) now includes:
 
 #### 1. Core Business Logic (133 lines)
 - `BOOKING_STATUS` - All status values
@@ -271,7 +271,7 @@ setTimeout(fn, BOOKING_ANIMATIONS.DURATION.NORMAL);
 
 ## 📚 Documentation
 
-The [README.md](file:///Users/ibrahimrahmani/Documents/xaheen/bookme/src/components/features/bookings/README.md) (405 lines) includes:
+The [README.md](file:///Users/ibrahimrahmani/Documents/xaheen/booknor/src/components/features/bookings/README.md) (405 lines) includes:
 
 1. **Overview** - What this domain does
 2. **Architecture** - Folder structure

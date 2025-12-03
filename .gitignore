@@ -27,3 +27,4 @@ dist-ssr
 
 # Reference project (exclude from tracking)
 drammen-booking-portal-2/
+.env

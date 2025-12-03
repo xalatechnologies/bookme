@@ -1,4 +1,4 @@
-# BookMe Deployment Guide - Phase 1
+# Booknor Deployment Guide - Phase 1
 
 **Migration Status:** ✅ COMPLETE
 **Ready for Production:** Yes
@@ -181,11 +181,11 @@ CMD ["npm", "run", "preview"]
 
 ```bash
 # Build and run
-docker build -t bookme-frontend .
+docker build -t booknor-frontend .
 docker run -p 3000:3000 \
   -e VITE_SUPABASE_URL=your-url \
   -e VITE_SUPABASE_ANON_KEY=your-key \
-  bookme-frontend
+  booknor-frontend
 ```
 
 ---

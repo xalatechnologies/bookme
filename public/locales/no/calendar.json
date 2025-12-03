@@ -1,4 +1,18 @@
 {
+  "title": "Kalender",
+  "manage_bookings": "Administrer bookinger",
+  "actions": {
+    "refresh": "Oppdater",
+    "today": "I dag"
+  },
+  "event": {
+    "no_bookings": "Ingen bookinger",
+    "create_first_booking": "Opprett din første booking"
+  },
+  "views": {
+    "week": "Uke",
+    "day": "Dag"
+  },
   "navigation": {
     "previous_week": "Forrige uke",
     "next_week": "Neste uke",
@@ -62,5 +76,15 @@
     "conflict_description": "Bookingkonflikt",
     "click_available": "Klikk på ledige tidspunkter for å velge",
     "drag_select": "Dra for å velge flere tidspunkter"
+  },
+  "pricing": {
+    "title": "Prissammendrag",
+    "slots_selected": "Valgte tider",
+    "base_price": "Grunnpris",
+    "actor_adjustment": "Brukertype-justering",
+    "activity_adjustment": "Aktivitetsjustering",
+    "adjusted_price": "Justert pris",
+    "vat": "MVA",
+    "total": "Totalpris"
   }
 }

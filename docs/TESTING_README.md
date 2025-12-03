@@ -1,6 +1,6 @@
-# BookMe Testing Guide
+# Booknor Testing Guide
 
-Complete testing infrastructure with E2E, integration, and unit tests for the BookMe application.
+Complete testing infrastructure with E2E, integration, and unit tests for the Booknor application.
 
 ## Table of Contents
 

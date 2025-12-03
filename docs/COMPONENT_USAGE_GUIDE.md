@@ -1,4 +1,4 @@
-# BookMe Component Usage Guide
+# Booknor Component Usage Guide
 
 Complete guide for using the reusable booking components in your pages.
 

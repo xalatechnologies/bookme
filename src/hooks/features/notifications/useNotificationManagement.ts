@@ -7,7 +7,7 @@
  */
 
 import { useMemo, useCallback, useState } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from "@/contexts/hooks";
 import {
   useNotifications,
   useMarkNotificationAsRead,
@@ -25,7 +25,6 @@ import {
   calculateUnreadCountByPriority,
   getHighPriorityUnread,
   getUrgentNotifications,
-  formatNotificationForDisplay,
   type INotificationFilters,
   type INotificationSortConfig,
 } from '@/services/business/notification.business.service';

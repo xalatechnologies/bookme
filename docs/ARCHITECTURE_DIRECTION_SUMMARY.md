@@ -1,4 +1,4 @@
-# BookMe Architecture Direction - Executive Summary
+# Booknor Architecture Direction - Executive Summary
 
 **Date**: October 28, 2025  
 **Session**: 4D - Architectural Pivot  

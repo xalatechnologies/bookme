@@ -114,7 +114,16 @@
     "share": "Share Booking",
     "report_issue": "Report Issue",
     "request_refund": "Request Refund",
-    "leave_review": "Leave Review"
+    "leave_review": "Leave Review",
+    "clear_all": "Remove all selected time slots",
+    "complete_booking": "Complete Booking",
+    "complete_booking_title": "Complete Booking",
+    "complete_booking_description": "Review the information and choose how to proceed.",
+    "ready_for_booking": "Ready for booking!",
+    "all_information_filled": "All information is filled out and the terms are accepted.",
+    "delete_permanently": "Delete Permanently",
+    "delete_permanently_message_single": "Are you sure you want to permanently delete this cancelled booking?",
+    "delete_permanently_message_multiple": "Are you sure you want to permanently delete {{count}} cancelled bookings?"
   },
   "recurring": {
     "title": "Recurring Booking",
@@ -174,6 +183,21 @@
     "sort_oldest": "Oldest First"
   },
   "details": {
+    "title": "Booking Details",
+    "unknownVenue": "Unknown venue",
+    "statusLabel": "Status:",
+    "dateLabel": "Date:",
+    "timeLabel": "Time:",
+    "durationLabel": "Duration:",
+    "totalPriceLabel": "Total Price:",
+    "notesLabel": "Notes:",
+    "bookingIdLabel": "Booking ID:",
+    "actionsLabel": "Actions:",
+    "editBooking": "Edit Booking",
+    "cancelBooking": "Cancel Booking",
+    "shareBooking": "Share Booking",
+    "addToCalendar": "Add to Calendar",
+    "close": "Close",
     "summary": "Summary",
     "booking_details": "Booking Details",
     "facility_info": "Facility Information",
@@ -195,7 +219,11 @@
     "total_cost": "Total Cost",
     "per_hour": "per hour",
     "includes_vat": "incl. VAT",
-    "excludes_vat": "excl. VAT"
+    "excludes_vat": "excl. VAT",
+    "select_slots_pricing": "Select time slots and get pricing",
+    "selected_slots_pricing": "Selected time slots and pricing",
+    "recurring_slots_pricing": "Recurring time slots and pricing",
+    "select_pattern": "Time slots and pricing (select recurrence pattern)"
   },
   "pricing": {
     "base_price": "Base price",
@@ -213,33 +241,25 @@
     "total_hours": "Total hours"
   },
   "labels": {
-    "occurrences": "occurrences"
+    "invalid_date": "Invalid date"
   },
   "cart": {
-    "title": "Cart",
-    "your_cart": "Your Cart",
-    "items": "Items",
-    "item_count": "{{count}} item",
-    "item_count_plural": "{{count}} items",
+    "title": "Reservation Cart",
     "empty_cart": "Cart is empty",
-    "add_more": "Add more bookings",
-    "remove": "Remove",
-    "clear_cart": "Clear Cart",
-    "subtotal": "Subtotal",
+    "empty_message": "Select facilities and times to see them here",
+    "price": "Price",
     "total": "Total",
-    "checkout": "Checkout",
-    "continue_booking": "Continue Booking"
+    "clear_cart": "Clear Cart"
   },
-  "checkout": {
-    "title": "Checkout",
-    "review_booking": "Review Booking",
-    "payment_details": "Payment Details",
-    "billing_info": "Billing Information",
-    "terms_and_conditions": "Terms and Conditions",
-    "accept_terms": "I accept the terms",
-    "complete_booking": "Complete Booking",
-    "processing": "Processing...",
-    "secure_checkout": "Secure Checkout"
+  "time": {
+    "hour": "1 hour",
+    "hours": "{{count}} hours"
+  },
+  "button_labels": {
+    "checkout": "Proceed to checkout",
+    "cancel": "Cancel",
+    "cancel_booking": "Cancel Booking",
+    "cancel_selected": "Cancel Selected"
   },
   "messages": {
     "success": {
@@ -251,6 +271,7 @@
       "rejected": "Booking rejected!",
       "checked_in": "Checked in!",
       "checked_out": "Checked out!",
+      "deleted": "Booking deleted!",
       "payment_successful": "Payment successful!",
       "added_to_cart": "Added to cart!",
       "removed_from_cart": "Removed from cart!",
@@ -363,23 +384,6 @@
     "next_week": "Next week",
     "step_of": "Step {{current}} of {{total}}"
   },
-  "sidebar": {
-    "title": "Booking process",
-    "zone_selector": "Select zone",
-    "booking_type": "Booking type",
-    "time_slots_title": "Time slots",
-    "clear_all_slots": "Remove all selected time slots",
-    "template_for_recurrence": "Template for recurrence",
-    "recurring_instances": "Recurring instances ({{count}} total):",
-    "and_more": "... and {{count}} more",
-    "no_slots_selected": "Select time slots to see a price calculation",
-    "one_hour": "1 hour",
-    "hours": "{{count}} hours",
-    "recurring_slots_and_price": "Recurring time slots and pricing",
-    "slots_and_price_select_pattern": "Time slots and pricing (select recurrence pattern)",
-    "selected_slots_and_price": "Selected time slots and pricing",
-    "select_slots_get_price": "Select time slots and get pricing"
-  },
   "weekdays": {
     "sunday": "Sunday",
     "monday": "Monday",
@@ -418,7 +422,13 @@
     "purpose_required": "Purpose is required",
     "min_attendees": "Minimum 1 participant",
     "activity_type_required": "Select activity type",
-    "actor_type_required": "Select actor type"
+    "actor_type_required": "Select actor type",
+    "recurrence_type_required": "Recurrence type is required",
+    "weekdays_required": "Weekdays must be specified for this recurrence type",
+    "monthly_pattern_required": "Monthly pattern must be specified",
+    "monthly_weekday_required": "Monthly weekday must be specified",
+    "custom_interval_required": "Custom interval must be at least 1",
+    "end_date_after_start": "End date must be after start date"
   },
   "conflicts": {
     "existing_booking_title": "Existing booking",
@@ -434,14 +444,6 @@
     "recurring_label": "Recurring booking",
     "recurring_description": "Fixed time that repeats",
     "select_label": "Select {{type}}"
-  },
-  "button_labels": {
-    "add_to_cart": "Add to reservation cart",
-    "complete_booking": "Complete booking",
-    "new_booking": "New booking",
-    "cancel_selected": "Cancel selected",
-    "cancel": "Cancel",
-    "cancel_booking": "Cancel booking"
   },
   "delete_confirm": {
     "title_single": "Cancel booking",
@@ -459,59 +461,27 @@
     "info_copied": "Booking info copied to clipboard!",
     "recurring_coming_soon": "Viewing recurring bookings coming soon!"
   },
-  "details": {
-    "title": "Booking Details",
-    "unknownVenue": "Unknown venue",
-    "statusLabel": "Status:",
-    "dateLabel": "Date:",
-    "timeLabel": "Time:",
-    "durationLabel": "Duration:",
-    "totalPriceLabel": "Total Price:",
-    "notesLabel": "Notes:",
-    "bookingIdLabel": "Booking ID:",
-    "actionsLabel": "Actions:",
-    "editBooking": "Edit",
-    "cancelBooking": "Cancel",
-    "shareBooking": "Share",
-    "addToCalendar": "Add to Calendar",
-    "close": "Close"
-  },
-  "time": {
-    "hour": "hour",
-    "hours": "hours"
-  },
   "steps": {
     "calendar": {
-      "title": "Select Time",
-      "description": "Click on available time slots to select them. You can select multiple time slots."
-    },
-    "recurrence": {
-      "title": "Recurrence",
-      "description": "Select recurrence pattern"
+      "title": "Select Time Slots",
+      "description": "Click on available time slots to select them. You can select multiple time slots at once."
     },
     "details": {
-      "title": "Booking Details",
-      "description": "Fill in booking information"
+      "title": "Fill in Booking Details",
+      "description": "Tell us about your event so we can help you with the right booking."
+    },
+    "recurrence": {
+      "title": "Select Recurrence Pattern",
+      "description": "Select how often the booking should repeat. This applies to all selected time slots."
     },
     "terms": {
       "title": "Terms and Conditions",
-      "description": "Read and accept the terms"
-    },
-    "actions": {
-      "title": "Complete Booking",
-      "description": "Add to cart or complete now"
+      "description": "Read through the terms and accept them to continue."
     }
   },
   "progress": {
     "title": "Booking Process",
     "step_of": "Step {{current}} of {{total}}"
-  },
-  "sidebar": {
-    "select_slots_pricing": "Select time slots and get pricing",
-    "selected_slots_and_price": "Selected time slots and pricing",
-    "recurring_slots_and_price": "Recurring time slots and pricing",
-    "slots_and_price_select_pattern": "Time slots and pricing (select recurrence pattern)",
-    "clear_all_slots": "Remove all selected time slots"
   },
   "recurrence": {
     "title": "Recurrence pattern",
@@ -535,6 +505,23 @@
     "second": "Second",
     "third": "Third",
     "fourth": "Fourth",
-    "last": "Last"
+    "last": "Last",
+    "recurring": "Recurring",
+    "single": "Single booking",
+    "on": "on",
+    "every_month": "every month",
+    "every": "every",
+    "day_on": "day on",
+    "unknown_pattern": "Unknown pattern"
+  },
+  "sidebar": {
+    "select_slots_pricing": "Select time slots and get pricing",
+    "selected_slots_and_price": "Selected time slots and pricing",
+    "recurring_slots_and_price": "Recurring time slots and pricing",
+    "slots_and_price_select_pattern": "Time slots and pricing (select recurrence pattern)",
+    "clear_all_slots": "Remove all selected time slots",
+    "template_for_recurrence": "Template for recurrence",
+    "recurring_instances": "Recurring instances ({{count}} total):",
+    "and_more": "... and {{count}} more"
   }
 }

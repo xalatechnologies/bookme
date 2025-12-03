@@ -27,7 +27,7 @@ async function runMigration() {
     // Execute the migration
     console.log('⚡ Executing migration...\n');
 
-    const { data, error } = await supabase.rpc('exec_sql', {
+    const { error } = await supabase.rpc('exec_sql', {
       sql: migrationSQL
     });
 
@@ -61,8 +61,9 @@ async function runMigration() {
           } else {
             console.log(`  ✅ Success`);
           }
-        } catch (err: any) {
-          console.error(`  ❌ Exception:`, err.message);
+        } catch (err: unknown) {
+          const errorMessage = err instanceof Error ? err.message : String(err);
+          console.error(`  ❌ Exception:`, errorMessage);
         }
       }
 

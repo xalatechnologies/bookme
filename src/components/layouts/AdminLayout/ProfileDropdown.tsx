@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/hooks";
 import { toast } from "react-toastify";
 import { User, Settings, LogOut, ChevronDown } from "lucide-react";
 
@@ -11,7 +11,10 @@ interface IProfileDropdownProps {
   readonly children?: never;
 }
 
-const ProfileDropdown = (_props: IProfileDropdownProps): JSX.Element => {
+const ProfileDropdown = (
+   
+  _props: IProfileDropdownProps
+): JSX.Element => {
   const { t } = useTranslation(['common', 'navigation']);
   const { user, profile, signOut } = useAuth();
   const navigate = useNavigate();
@@ -31,8 +34,10 @@ const ProfileDropdown = (_props: IProfileDropdownProps): JSX.Element => {
       await signOut();
       toast.success(t('messages.success.logout', 'Du er nå logget ut!'));
       navigate("/login-selection");
-    } catch (error) {
-      console.error('❌ Admin logout failed:', error);
+    } catch (
+    _error: unknown
+    ) {
+      console.error('❌ Admin logout failed:', _error);
       toast.error(t('messages.error.logout', 'Kunne ikke logge ut. Prøv igjen.'));
       setIsLoggingOut(false);
     }
@@ -48,12 +53,16 @@ const ProfileDropdown = (_props: IProfileDropdownProps): JSX.Element => {
   };
 
   // Get user name from profile or email
-  const userName = profile?.first_name
-    ? `${profile.first_name} ${profile.last_name || ''}`.trim()
+  const userName = profile?.display_name
+    ? profile.display_name
     : user?.email || "Admin";
 
-  const userEmail = user?.email || "";
-  const userAvatar = profile?.avatar_url || "";
+
+
+  // Get avatar from localStorage (similar to user profile)
+  const userAvatar = user?.id
+    ? (localStorage.getItem(`avatar_${user.id}`) || "")
+    : "";
 
   return (
     <div className="relative">
@@ -75,20 +84,16 @@ const ProfileDropdown = (_props: IProfileDropdownProps): JSX.Element => {
           )}
         </div>
 
-        {/* User Info */}
+        {/* User Info - Only show name, not email */}
         <div className="hidden sm:block text-left">
           <p className="text-sm font-medium text-gray-900 dark:text-white">
             {userName}
           </p>
-          <p className="text-xs text-gray-500 dark:text-gray-400">
-            {userEmail}
-          </p>
         </div>
-        
+
         {/* Dropdown Arrow */}
-        <ChevronDown className={`w-4 h-4 text-gray-500 dark:text-gray-400 transition-transform ${
-          isOpen ? "rotate-180" : ""
-        }`} />
+        <ChevronDown className={`w-4 h-4 text-gray-500 dark:text-gray-400 transition-transform ${isOpen ? "rotate-180" : ""
+          }`} />
       </button>
 
       {isOpen && (
@@ -98,7 +103,7 @@ const ProfileDropdown = (_props: IProfileDropdownProps): JSX.Element => {
             className="fixed inset-0 z-40"
             onClick={() => setIsOpen(false)}
           />
-          
+
           {/* Dropdown Menu */}
           <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50">
             {/* Menu Items */}

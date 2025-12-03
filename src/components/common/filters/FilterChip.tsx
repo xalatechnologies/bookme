@@ -40,7 +40,8 @@ export const FilterChip = ({
   disabled = false,
   namespace = 'common'
 }: FilterChipProps): JSX.Element => {
-  const { t } = useTranslation(namespace);
+  // Type assertion to allow dynamic namespace - validated by isValidNamespace utility
+  const { t } = useTranslation(namespace as 'common' | 'rbac' | 'forms' | 'errors' | 'validation' | 'booking' | 'bookings' | 'facility' | 'calendar' | 'admin' | 'checkout' | 'user' | 'navigation');
 
   const handleRemove = useCallback((e: React.MouseEvent) => {
     e.preventDefault();

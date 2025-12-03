@@ -1,4 +1,4 @@
-# Comprehensive i18n/l10n Implementation Guide for BookMe
+# Comprehensive i18n/l10n Implementation Guide for Booknor
 
 ## Executive Summary
 
@@ -340,7 +340,7 @@ export const useNorwegianFormat = () => {
 // src/i18n/locales/nb-NO/common.json
 {
   "app": {
-    "name": "BookMe",
+    "name": "Booknor",
     "tagline": "Din komplette bookingløsning"
   },
   "navigation": {

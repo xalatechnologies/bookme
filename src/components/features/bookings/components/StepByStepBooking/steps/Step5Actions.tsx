@@ -35,10 +35,10 @@ export const Step5Actions = ({
     <div className="space-y-6">
       <div>
         <h3 className="text-lg font-semibold mb-2">
-          {t('steps.actions.title', 'Fullfør booking')}
+          {t('actions.complete_booking_title', 'Fullfør booking')}
         </h3>
         <p className="text-gray-600 text-sm">
-          {t('steps.actions.description', 'Gjennomgå opplysningene og velg hvordan du vil fortsette.')}
+          {t('actions.complete_booking_description', 'Gjennomgå opplysningene og velg hvordan du vil fortsette.')}
         </p>
       </div>
 
@@ -48,10 +48,10 @@ export const Step5Actions = ({
             <div className="text-center">
               <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
               <h4 className="text-lg font-semibold mb-2">
-                {t('steps.actions.ready', 'Klar for booking!')}
+                {t('actions.ready_for_booking', 'Klar for booking!')}
               </h4>
               <p className="text-gray-600 text-sm">
-                {t('steps.actions.all_filled', 'Alle opplysninger er fylt ut og vilkårene er godtatt.')}
+                {t('actions.all_information_filled', 'Alle opplysninger er fylt ut og vilkårene er godtatt.')}
               </p>
             </div>
 

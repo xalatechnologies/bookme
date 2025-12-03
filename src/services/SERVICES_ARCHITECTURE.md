@@ -1,8 +1,8 @@
-# BookMe Service Layer Architecture
+# Booknor Service Layer Architecture
 
 ## Overview
 
-Comprehensive, type-safe service layer following SOLID principles for the BookMe facility booking platform.
+Comprehensive, type-safe service layer following SOLID principles for the Booknor facility booking platform.
 
 ## Architecture Principles
 
@@ -503,7 +503,7 @@ try {
 
 ## Summary
 
-The BookMe service layer provides:
+The Booknor service layer provides:
 
 - **Type Safety**: 100% TypeScript with no `any` types
 - **SOLID Design**: Maintainable and extensible architecture

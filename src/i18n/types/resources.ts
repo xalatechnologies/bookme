@@ -8,15 +8,20 @@
  */
 
 // Import translation JSON files for type inference
-import type commonNo from '../../../public/locales/no/common.json';
-import type rbacNo from '../../../public/locales/no/rbac.json';
-import type formsNo from '../../../public/locales/no/forms.json';
-import type errorsNo from '../../../public/locales/no/errors.json';
-import type validationNo from '../../../public/locales/no/validation.json';
-import type bookingNo from '../../../public/locales/no/booking.json';
-import type facilityNo from '../../../public/locales/no/facility.json';
-import type calendarNo from '../../../public/locales/no/calendar.json';
-import type adminNo from '../../../public/locales/no/admin.json';
+import type commonNO from '../../../public/locales/no/common.json';
+import type rbacNO from '../../../public/locales/no/rbac.json';
+import type formsNO from '../../../public/locales/no/forms.json';
+import type errorsNO from '../../../public/locales/no/errors.json';
+import type validationNO from '../../../public/locales/no/validation.json';
+import type bookingNO from '../../../public/locales/no/booking.json';
+import type bookingsNO from '../../../public/locales/no/bookings.json';
+import type facilityNO from '../../../public/locales/no/facility.json';
+import type calendarNO from '../../../public/locales/no/calendar.json';
+import type adminNO from '../../../public/locales/no/admin.json';
+import type checkoutNO from '../../../public/locales/no/checkout.json';
+import type userNO from '../../../public/locales/no/user.json';
+import type navigationNO from '../../../public/locales/no/navigation.json';
+import type supportNO from '../../../public/locales/no/support.json';
 
 /**
  * Default namespace for translations
@@ -33,78 +38,59 @@ export type Namespaces =
   | 'errors'
   | 'validation'
   | 'booking'
+  | 'bookings'
   | 'facility'
   | 'calendar'
-  | 'admin';
+  | 'admin'
+  | 'checkout'
+  | 'user'
+  | 'navigation'
+  | 'support';
 
 /**
  * Resource type for each namespace
  */
 export interface NamespaceResources {
-  common: typeof commonNo;
-  rbac: typeof rbacNo;
-  forms: typeof formsNo;
-  errors: typeof errorsNo;
-  validation: typeof validationNo;
-  booking: typeof bookingNo;
-  facility: typeof facilityNo;
-  calendar: typeof calendarNo;
-  admin: typeof adminNo;
+  common: typeof commonNO;
+  rbac: typeof rbacNO;
+  forms: typeof formsNO;
+  errors: typeof errorsNO;
+  validation: typeof validationNO;
+  booking: typeof bookingNO;
+  bookings: typeof bookingsNO;
+  facility: typeof facilityNO;
+  calendar: typeof calendarNO;
+  admin: typeof adminNO;
+  checkout: typeof checkoutNO;
+  user: typeof userNO;
+  navigation: typeof navigationNO;
+  support: typeof supportNO;
 }
 
 /**
  * Resource type for each language
  */
 export interface Resources {
-  common: typeof commonNo;
-  rbac: typeof rbacNo;
-  forms: typeof formsNo;
-  errors: typeof errorsNo;
-  validation: typeof validationNo;
-  booking: typeof bookingNo;
-  facility: typeof facilityNo;
-  calendar: typeof calendarNo;
-  admin: typeof adminNo;
+  common: typeof commonNO;
+  rbac: typeof rbacNO;
+  forms: typeof formsNO;
+  errors: typeof errorsNO;
+  validation: typeof validationNO;
+  booking: typeof bookingNO;
+  bookings: typeof bookingsNO;
+  facility: typeof facilityNO;
+  calendar: typeof calendarNO;
+  admin: typeof adminNO;
+  checkout: typeof checkoutNO;
+  user: typeof userNO;
+  navigation: typeof navigationNO;
+  support: typeof supportNO;
 }
 
 /**
- * Utility type for creating dot notation paths from nested objects
- *
- * @example
- * DotNotation<{ a: { b: { c: string } } }> = 'a' | 'a.b' | 'a.b.c'
+ * Simplified type for translation keys to avoid deep instantiation issues
  */
-export type DotNotation<T, P extends string = ''> = T extends object
-  ? {
-      [K in keyof T]: K extends string
-        ? T[K] extends object
-          ? DotNotation<T[K], P extends '' ? K : `${P}.${K}`> | (P extends '' ? K : `${P}.${K}`)
-          : P extends ''
-          ? K
-          : `${P}.${K}`
-        : never;
-    }[keyof T]
-  : never;
-
-/**
- * Type-safe translation key for a specific namespace
- *
- * @example
- * TranslationKey<'common'> = 'actions.save' | 'actions.cancel' | ...
- */
-export type TranslationKey<NS extends Namespaces = DefaultNamespace> =
-  NS extends keyof Resources ? DotNotation<Resources[NS]> : never;
-
-/**
- * Get the type of a translation value for a specific key
- */
-export type TranslationValue<
-  NS extends Namespaces,
-  K extends TranslationKey<NS>
-> = NS extends keyof Resources
-  ? K extends keyof Resources[NS]
-    ? Resources[NS][K]
-    : never
-  : never;
+export type TranslationKey<T extends Namespaces = DefaultNamespace> = string;
 
 /**
  * Translation function parameters
@@ -143,7 +129,7 @@ declare module 'i18next' {
  * Type guard to check if a string is a valid namespace
  */
 export const isNamespace = (value: string): value is Namespaces => {
-  return ['common', 'rbac', 'forms', 'errors', 'validation', 'booking', 'facility', 'calendar', 'admin'].includes(value);
+  return ['common', 'rbac', 'forms', 'errors', 'validation', 'booking', 'bookings', 'facility', 'calendar', 'admin', 'checkout', 'user', 'navigation', 'support'].includes(value);
 };
 
 /**
@@ -165,10 +151,10 @@ export const isTranslationKey = <NS extends Namespaces>(
  * ExtractInterpolations<'Hello {{name}}, you have {{count}} messages'> = { name: string; count: number }
  */
 export type ExtractInterpolations<T extends string> = string extends T
-  ? Record<string, any>
+  ? Record<string, unknown>
   : T extends `${string}{{${infer Param}}}${infer Rest}`
   ? { [K in Param]: string | number } & ExtractInterpolations<Rest>
-  : {};
+  : Record<string, never>;
 
 /**
  * Type-safe translation function signature
@@ -179,7 +165,7 @@ export type TypedTranslationFunction = {
     options?: TranslationOptions & TranslationParams
   ): string;
 
-  <NS extends Namespaces = DefaultNamespace>(
+  <T extends Namespaces = DefaultNamespace>(
     key: string,
     defaultValue: string,
     options?: TranslationOptions & TranslationParams

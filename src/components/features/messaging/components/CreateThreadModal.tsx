@@ -45,8 +45,8 @@ const CreateThreadModal: React.FC<CreateThreadModalProps> = ({
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   // Get available participants and facilities based on active bookings
-  const availableParticipants: Participant[] = getAvailableParticipants(currentUserId, currentUserType);
-  const bookedFacilities = getBookedFacilities(currentUserId, currentUserType);
+  const availableParticipants: Participant[] = Array.from(getAvailableParticipants(currentUserId, currentUserType));
+  const bookedFacilities = Array.from(getBookedFacilities(currentUserId, currentUserType));
 
   // Show message if no participants or facilities available
   if (availableParticipants.length === 0 || bookedFacilities.length === 0) {
@@ -60,7 +60,7 @@ const CreateThreadModal: React.FC<CreateThreadModalProps> = ({
           </CardHeader>
           <CardContent className="text-center space-y-4">
             <p className="text-muted-foreground">
-              {currentUserType === 'tenant' 
+              {currentUserType === 'tenant'
                 ? t('messages.noBookingsYetTenant')
                 : t('messages.noBookingsYetLandlord')
               }
@@ -77,7 +77,7 @@ const CreateThreadModal: React.FC<CreateThreadModalProps> = ({
               {currentUserType === 'tenant' && (
                 <Button onClick={() => {
                   onClose();
-                  window.location.href = '/user/facilities';
+                  window.location.href = '/facilities';
                 }}>
                   Utforsk lokaler
                 </Button>
@@ -120,7 +120,7 @@ const CreateThreadModal: React.FC<CreateThreadModalProps> = ({
         return;
       }
 
-      const threadId = createThread({
+      createThread({
         subject: subject.trim(),
         participants: [
           { id: currentUserId, name: currentUserName, type: currentUserType },
@@ -137,7 +137,7 @@ const CreateThreadModal: React.FC<CreateThreadModalProps> = ({
       });
 
       toast.success(currentUserType === 'tenant' ? 'Melding sendt til utleier!' : 'Melding sendt til leietaker!');
-      
+
       // Reset form
       setSubject("");
       setContent("");
@@ -145,9 +145,9 @@ const CreateThreadModal: React.FC<CreateThreadModalProps> = ({
       setSelectedFacility("");
       setPriority("medium");
       setAttachments([]);
-      
+
       onClose();
-    } catch (error) {
+    } catch {
       toast.error("Feil ved opprettelse av meldingstråd");
     } finally {
       setIsLoading(false);
@@ -162,13 +162,17 @@ const CreateThreadModal: React.FC<CreateThreadModalProps> = ({
         const result = reader.result as string;
         resolve(result.split(',')[1]); // Remove data:type;base64, prefix
       };
-      reader.onerror = error => reject(error);
+      reader.onerror = () => { reject(new Error("Failed to read file")); };
     });
   };
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
-    setAttachments(prev => [...prev, ...files]);
+    setAttachments(prev => {
+      const newFiles = [...prev];
+      files.forEach(file => newFiles.push(file));
+      return newFiles;
+    });
   };
 
   const removeAttachment = (index: number) => {
@@ -193,7 +197,7 @@ const CreateThreadModal: React.FC<CreateThreadModalProps> = ({
             <X className="h-4 w-4" />
           </Button>
         </CardHeader>
-        
+
         <CardContent className="space-y-6 overflow-y-auto flex-1 min-h-0">
           {/* Subject */}
           <div className="space-y-2">
@@ -202,7 +206,7 @@ const CreateThreadModal: React.FC<CreateThreadModalProps> = ({
               id="subject"
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
-              placeholder={t('common:placeholders.threadSubject')}
+              placeholder={t('placeholders.threadSubject')}
               maxLength={100}
             />
             <p className="text-xs text-muted-foreground">
@@ -244,7 +248,7 @@ const CreateThreadModal: React.FC<CreateThreadModalProps> = ({
             <Label htmlFor="facility">{t('filters.facility')} *</Label>
             <Select value={selectedFacility} onValueChange={setSelectedFacility}>
               <SelectTrigger>
-                <SelectValue placeholder={t('common:placeholders.selectVenue')} />
+                <SelectValue placeholder={t('placeholders.selectVenue')} />
               </SelectTrigger>
               <SelectContent>
                 {bookedFacilities.map((facility) => (
@@ -375,8 +379,8 @@ const CreateThreadModal: React.FC<CreateThreadModalProps> = ({
           <Button variant="outline" onClick={onClose} disabled={isLoading}>
             {t('messages.cancel')}
           </Button>
-          <Button 
-            onClick={handleSubmit} 
+          <Button
+            onClick={handleSubmit}
             disabled={isLoading || !subject.trim() || !content.trim() || !selectedParticipant}
           >
             {isLoading ? (

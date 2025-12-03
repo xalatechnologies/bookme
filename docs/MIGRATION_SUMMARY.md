@@ -1,4 +1,4 @@
-# BookMe Supabase Migration Summary
+# Booknor Supabase Migration Summary
 
 **Date:** October 2025
 **Phase:** Phase 1 - Bookings Page Complete
@@ -8,7 +8,7 @@
 
 ## Executive Summary
 
-Successfully migrated the BookMe application from localStorage-based mock data to a production-ready Supabase backend with PostgreSQL database. The migration includes:
+Successfully migrated the Booknor application from localStorage-based mock data to a production-ready Supabase backend with PostgreSQL database. The migration includes:
 
 - ✅ Complete database schema with proper relationships
 - ✅ 28 seed records for testing (organizations, facilities, zones, services)

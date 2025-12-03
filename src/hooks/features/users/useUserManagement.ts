@@ -10,7 +10,7 @@
 
 import { useMemo, useCallback } from 'react';
 import { useOrganizationId } from '@/hooks/useOrganizationId';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from "@/contexts/hooks";
 import { useAppUIStore } from '@/stores/appUIStore';
 import {
   filterUsers,
@@ -28,9 +28,8 @@ import {
   type IRoleChangeValidationResult,
 } from '@/services/business/user.business.service';
 import type { OrgRole } from '@/constants/roles';
-import type { Database } from '@/types/database';
 
-type Profile = Database['public']['Tables']['profiles']['Row'];
+
 
 /**
  * Hook return interface
@@ -57,12 +56,12 @@ export interface IUseUserManagementReturn {
   readonly selectedUserIds: readonly string[];
 
   // UI Actions
-  readonly setView: (view: any) => void;
+  readonly setView: (view: string) => void;
   readonly toggleFilters: () => void;
   readonly setSearchTerm: (term: string) => void;
   readonly toggleRoleFilter: (role: OrgRole) => void;
   readonly toggleStatusFilter: (status: string) => void;
-  readonly toggleSort: (sortBy: any) => void;
+  readonly toggleSort: (sortBy: string) => void;
   readonly toggleUserSelection: (id: string) => void;
   readonly selectAllUsers: () => void;
   readonly clearSelection: () => void;
@@ -140,7 +139,6 @@ export interface IUseUserManagementReturn {
  */
 export const useUserManagement = (): IUseUserManagementReturn => {
   // Data layer - TODO: Connect to actual Supabase hooks when available
-  const orgId = useOrganizationId();
   const { user: currentUser } = useAuth();
 
   // Placeholder data layer - replace with actual hooks
@@ -157,7 +155,7 @@ export const useUserManagement = (): IUseUserManagementReturn => {
   };
 
   const updateUserMutation = {
-    mutateAsync: async (params: { id: string; data: any }): Promise<void> => {
+    mutateAsync: async (params: { id: string; data: Record<string, unknown> }): Promise<void> => {
       // TODO: Connect to actual update mutation
       console.log('Update user:', params);
     },
@@ -171,12 +169,9 @@ export const useUserManagement = (): IUseUserManagementReturn => {
     searchTerm,
     roleFilter,
     statusFilter,
-    organizationFilter,
     sortBy,
     sortOrder,
     selectedUserIds,
-    showUserEditor,
-    editingUserId,
   } = appUIStore.users;
 
   // Actions from appUIStore with users prefix
@@ -185,28 +180,25 @@ export const useUserManagement = (): IUseUserManagementReturn => {
   const setSearchTerm = appUIStore.setUsersSearchTerm;
   const toggleRoleFilter = appUIStore.toggleUsersRoleFilter;
   const toggleStatusFilter = appUIStore.toggleUsersStatusFilter;
-  const setOrganizationFilter = appUIStore.setUsersOrganizationFilter;
-  const toggleSort = appUIStore.toggleUsersSort;
-  const toggleUserSelection = appUIStore.toggleUsersSelection;
-  const selectAll = (ids: readonly string[]) => appUIStore.selectAllUsers(ids);
-  const clearSelection = appUIStore.clearUsersSelection;
-  const openEditor = appUIStore.openUsersEditor;
-  const closeEditor = appUIStore.closeUsersEditor;
   const resetFilters = appUIStore.resetUsersFilters;
+  const toggleSort = appUIStore.toggleUsersSort || (() => {});
+  const toggleUserSelection = appUIStore.toggleUsersSelection || (() => {});
+  const clearSelection = appUIStore.clearUsersSelection || (() => {});
+  const selectAll = appUIStore.selectAllUsers || (() => {});
 
   // Business logic layer - filtering and sorting
   const filteredUsers = useMemo(() => {
     const filters: IUserFilters = {
       searchTerm,
-      roleFilter,
+      roleFilter: roleFilter as readonly OrgRole[],
       statusFilter: statusFilter as readonly ('active' | 'inactive' | 'suspended')[],
     };
 
     const filtered = filterUsers(users, filters);
 
     const sortConfig: IUserSortConfig = {
-      sortBy: sortBy as any,
-      sortOrder: sortOrder as any,
+      sortBy: sortBy as IUserSortConfig['sortBy'],
+      sortOrder: sortOrder as IUserSortConfig['sortOrder'],
     };
 
     return sortUsers(filtered, sortConfig);
@@ -234,7 +226,7 @@ export const useUserManagement = (): IUseUserManagementReturn => {
       const ownsFacilities = false;
 
       return canDeleteUser(
-        user.id,
+        user.user_id,
         currentUser.id,
         user.role,
         isLastOwner,
@@ -256,7 +248,7 @@ export const useUserManagement = (): IUseUserManagementReturn => {
 
       const isLastOwner = user.role === 'owner' && stats.byRole.owner === 1;
 
-      return canSuspendUser(user.id, currentUser.id, user.role, isLastOwner);
+      return canSuspendUser(user.user_id, currentUser.id, user.role, isLastOwner);
     },
     [currentUser, stats]
   );
@@ -272,7 +264,7 @@ export const useUserManagement = (): IUseUserManagementReturn => {
 
       return validateRoleChange(
         currentUser.role as OrgRole,
-        targetUser.id,
+        targetUser.user_id,
         currentUser.id,
         newRole
       );
@@ -283,7 +275,7 @@ export const useUserManagement = (): IUseUserManagementReturn => {
   // Business operations
   const deleteUserFn = useCallback(
     async (id: string): Promise<void> => {
-      const user = users.find((u) => u.id === id);
+      const user = users.find((u) => u.user_id === id);
       if (!user) {
         throw new Error('User not found');
       }
@@ -307,7 +299,7 @@ export const useUserManagement = (): IUseUserManagementReturn => {
 
   const batchDeleteUsers = useCallback(
     async (ids: readonly string[]): Promise<void> => {
-      const usersToDelete = users.filter((u) => ids.includes(u.id));
+      const usersToDelete = users.filter((u) => ids.includes(u.user_id));
 
       // Validate each user
       for (const user of usersToDelete) {
@@ -332,7 +324,7 @@ export const useUserManagement = (): IUseUserManagementReturn => {
 
   const updateUserRoleFn = useCallback(
     async (id: string, role: OrgRole): Promise<void> => {
-      const user = users.find((u) => u.id === id);
+      const user = users.find((u) => u.user_id === id);
       if (!user) {
         throw new Error('User not found');
       }
@@ -352,7 +344,7 @@ export const useUserManagement = (): IUseUserManagementReturn => {
 
   const batchUpdateRole = useCallback(
     async (ids: readonly string[], role: OrgRole): Promise<void> => {
-      const usersToUpdate = users.filter((u) => ids.includes(u.id));
+      const usersToUpdate = users.filter((u) => ids.includes(u.user_id));
 
       // Validate each user
       for (const user of usersToUpdate) {
@@ -379,7 +371,7 @@ export const useUserManagement = (): IUseUserManagementReturn => {
 
   const suspendUserFn = useCallback(
     async (id: string): Promise<void> => {
-      const user = users.find((u) => u.id === id);
+      const user = users.find((u) => u.user_id === id);
       if (!user) {
         throw new Error('User not found');
       }
@@ -408,7 +400,7 @@ export const useUserManagement = (): IUseUserManagementReturn => {
   );
 
   const selectAllUsersFn = useCallback(() => {
-    selectAll(filteredUsers.map((u) => u.id));
+    selectAll(filteredUsers.map((u) => u.user_id));
   }, [filteredUsers, selectAll]);
 
   return {
@@ -426,7 +418,7 @@ export const useUserManagement = (): IUseUserManagementReturn => {
     view,
     showFilters,
     searchTerm,
-    roleFilter,
+    roleFilter: roleFilter as readonly OrgRole[],
     statusFilter: statusFilter as readonly string[],
     sortBy,
     sortOrder,

@@ -6,7 +6,6 @@ import { RequireRole } from "@/components/features/auth/components/RequireRole";
 import SystemPageLayout from "@/components/layouts/AdminLayout/SystemPageLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import {
   BarChart3,
   TrendingUp,
@@ -247,7 +246,7 @@ const ReportsPage = (): JSX.Element => {
 
     if (reportType === "bookings" && bookingReport) {
       const total = bookingReport.totalBookings;
-      const { pending, confirmed, cancelled, completed } = bookingReport.statusBreakdown;
+      const { pending, confirmed } = bookingReport.statusBreakdown;
 
       return (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -473,7 +472,7 @@ const ReportsPage = (): JSX.Element => {
   };
 
   return (
-    <RequireRole roles={["org-admin", "system-admin", "facility-manager"]}>
+    <RequireRole minRole="admin">
       <SystemPageLayout
         title={t("pages.reports.title")}
         description={t("pages.reports.description")}

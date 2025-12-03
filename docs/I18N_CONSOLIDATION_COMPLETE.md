@@ -342,7 +342,7 @@ return <h1>{t('login.admin.title', 'Administrator Login')}</h1>;
 #### Login Pages
 ```
 ✅ http://localhost:3006/login-selection
-   - Title: "Velkommen til BookMe Portal" (NO) / "Welcome to BookMe Portal" (EN)
+   - Title: "Velkommen til Booknor Portal" (NO) / "Welcome to Booknor Portal" (EN)
    - User card: "Bruker" / "User"
    - Admin card: "Administrator" / "Administrator"
    - Buttons: "Fortsett som..." / "Continue as..."
@@ -508,4 +508,4 @@ t('invalid.key'); // ❌ TypeScript error
 
 **Document Version**: 1.0
 **Last Updated**: October 27, 2025
-**Author**: BookMe Development Team
+**Author**: Booknor Development Team

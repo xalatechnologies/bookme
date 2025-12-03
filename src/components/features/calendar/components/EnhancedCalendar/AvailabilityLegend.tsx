@@ -28,30 +28,36 @@ import { IAvailabilityLegendProps } from "../../types";
  */
 export const AvailabilityLegend: React.FC<IAvailabilityLegendProps> = ({
   showConflictInfo = true,
-  showHolidayInfo = true,
+   
+  showHolidayInfo: _showHolidayInfo = true,
 }) => {
-  const { t } = useTranslation('common');
-  const legendItems = [
+  const { t } = useTranslation('calendar');
+  const legendItems: Array<{
+    status: "available" | "booked" | "selected" | "unavailable" | "conflict";
+    label: string;
+    description: string;
+    className: string;
+  }> = [
     {
-      status: "available" as const,
+      status: "available",
       label: t('availability_legend.available_label'),
       description: t('availability_legend.available_description'),
       className: "bg-green-100 text-green-800 border-green-200",
     },
     {
-      status: "booked" as const,
+      status: "booked",
       label: t('availability_legend.busy_label'),
       description: t('availability_legend.busy_description'),
       className: "bg-red-100 text-red-800 border-red-200",
     },
     {
-      status: "selected" as const,
+      status: "selected",
       label: t('availability_legend.selected_label'),
       description: t('availability_legend.selected_description'),
       className: "bg-blue-100 text-blue-800 border-blue-200",
     },
     {
-      status: "unavailable" as const,
+      status: "unavailable",
       label: t('availability_legend.unavailable_label'),
       description: t('availability_legend.unavailable_description'),
       className: "bg-gray-100 text-gray-600 border-gray-200",
@@ -60,7 +66,7 @@ export const AvailabilityLegend: React.FC<IAvailabilityLegendProps> = ({
 
   if (showConflictInfo) {
     legendItems.push({
-      status: "conflict" as const,
+      status: "conflict",
       label: t('availability_legend.conflict_label'),
       description: t('availability_legend.conflict_description'),
       className: "bg-orange-100 text-orange-800 border-orange-200",

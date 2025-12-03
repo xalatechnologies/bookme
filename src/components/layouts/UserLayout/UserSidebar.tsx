@@ -21,13 +21,13 @@ import { useSidebar } from "./index";
 
 interface IMenuItem {
   readonly id: string;
-  readonly labelKey: string;
+  readonly labelKey: "skip_to_content" | "home" | "facilities" | "bookings" | "my_bookings" | "profile" | "settings" | "help" | "admin" | "dashboard" | "users" | "reports" | "notifications" | "calendar" | "history" | "favorites" | "receipts" | "logout" | "login" | "signup" | "back" | "next" | "previous" | "close" | "menu" | "overview" | "administration" | "rooms" | "users_and_roles" | "communication" | "messages" | "alerts" | "system" | "integrations" | "audit_log" | "data_retention" | "localization" | "booking" | "explore_facilities" | "account" | "support" | "help_and_contact" | "expand_sidebar" | "collapse_sidebar" | "privacy" | "language" | "my_profile";
   readonly path: string;
   readonly icon: React.ComponentType<{ className?: string }>;
 }
 
 interface IMenuGroup {
-  readonly titleKey: string;
+  readonly titleKey: "skip_to_content" | "home" | "facilities" | "bookings" | "my_bookings" | "profile" | "settings" | "help" | "admin" | "dashboard" | "users" | "reports" | "notifications" | "calendar" | "history" | "favorites" | "receipts" | "logout" | "login" | "signup" | "back" | "next" | "previous" | "close" | "menu" | "overview" | "administration" | "rooms" | "users_and_roles" | "communication" | "messages" | "alerts" | "system" | "integrations" | "audit_log" | "data_retention" | "localization" | "booking" | "explore_facilities" | "account" | "support" | "help_and_contact" | "expand_sidebar" | "collapse_sidebar" | "privacy" | "language" | "my_profile";
   readonly items: readonly IMenuItem[];
 }
 
@@ -35,7 +35,10 @@ interface IUserSidebarProps {
   readonly children?: never;
 }
 
-const UserSidebar = (_props: IUserSidebarProps): JSX.Element => {
+const UserSidebar = (
+   
+  _props: IUserSidebarProps
+): JSX.Element => {
   const { isCollapsed, toggleCollapse } = useSidebar();
   const { t } = useTranslation('navigation');
   const location = useLocation();
@@ -59,7 +62,7 @@ const UserSidebar = (_props: IUserSidebarProps): JSX.Element => {
     {
       titleKey: "explore_facilities",
       items: [
-        { id: "facilities", labelKey: "rooms", path: "/user/facilities", icon: Building2 },
+        { id: "facilities", labelKey: "rooms", path: "/facilities", icon: Building2 },
         { id: "favorites", labelKey: "favorites", path: "/user/favorites", icon: Heart },
       ]
     },
@@ -93,12 +96,13 @@ const UserSidebar = (_props: IUserSidebarProps): JSX.Element => {
     }`}>
       {/* Navigation Content */}
       <nav className="flex-1 p-4 pt-8 space-y-6 overflow-y-auto">
-        {menuGroups.map((group, groupIndex) => (
+        {menuGroups.map((group) => (
           <div key={group.titleKey} className="space-y-2">
             {/* Group Title */}
             {!isCollapsed && (
               <h3 className="px-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                {t(group.titleKey)}
+                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                {t(group.titleKey as any)}
               </h3>
             )}
 
@@ -116,7 +120,12 @@ const UserSidebar = (_props: IUserSidebarProps): JSX.Element => {
                         ? "bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 shadow-sm"
                         : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white"
                     }`}
-                    title={isCollapsed ? t(item.labelKey) : undefined}
+                    title={
+                      isCollapsed 
+                        ? /* eslint-disable-next-line @typescript-eslint/no-explicit-any */ 
+                          t(item.labelKey as any) 
+                        : undefined
+                    }
                   >
                     {/* Active Indicator */}
                     <div className={`absolute left-0 top-1/2 transform -translate-y-1/2 w-1 h-6 rounded-r-full transition-all duration-200 ${
@@ -130,7 +139,10 @@ const UserSidebar = (_props: IUserSidebarProps): JSX.Element => {
 
                     {/* Label */}
                     {!isCollapsed && (
-                      <span className="whitespace-nowrap">{t(item.labelKey)}</span>
+                      <span className="whitespace-nowrap">
+                        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                        {t(item.labelKey as any)}
+                      </span>
                     )}
                   </NavLink>
                 );

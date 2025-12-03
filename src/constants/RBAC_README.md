@@ -403,4 +403,4 @@ CREATE TABLE role_permissions (
 
 ## License
 
-Part of the BookMe application - internal use only.
+Part of the Booknor application - internal use only.

@@ -1,0 +1,661 @@
+
+> booknor@0.0.0 lint
+> eslint .
+
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/components/common/metrics/KPICard.tsx
+  120:11  error  't' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/components/common/modals/BaseModal.tsx
+   4:10  error  'X' is defined but never used                         @typescript-eslint/no-unused-vars
+  83:3   error  'showCloseButton' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  88:11  error  't' is assigned a value but never used                @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/components/features/bookings/components/BookingCard/BookingDetailsPanel.tsx
+  182:9   error  'canDelete' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  192:50  error  Unexpected any. Specify a different type        @typescript-eslint/no-explicit-any
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/components/features/bookings/components/BookingCard/RecurringBookingGroupDetails.tsx
+  56:7  error  'getStatusColor' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/components/features/bookings/components/BookingCard/index.tsx
+  86:9  error  'durationTranslations' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/components/features/bookings/components/RecurringBookingModal/RecurrencePatternSelector.tsx
+  170:6  warning  React Hook React.useEffect has a missing dependency: 'onPatternChange'. Either include it or remove the dependency array. If 'onPatternChange' changes too often, find the parent component that defines it and wrap that definition in useCallback  react-hooks/exhaustive-deps
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/components/features/calendar/components/FacilityCalendar/index.tsx
+  222:6  warning  React Hook useMemo has a missing dependency: 'selectedZone'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/components/features/facilities/components/FacilityCard/FacilityCardUser.tsx
+   7:10  error  'Badge' is defined but never used                  @typescript-eslint/no-unused-vars
+  10:3   error  'Share2' is defined but never used                 @typescript-eslint/no-unused-vars
+  13:3   error  'CheckCircle' is defined but never used            @typescript-eslint/no-unused-vars
+  14:3   error  'Clock' is defined but never used                  @typescript-eslint/no-unused-vars
+  15:3   error  'XCircle' is defined but never used                @typescript-eslint/no-unused-vars
+  45:5   error  'availability' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  56:5   error  'handleShare' is assigned a value but never used   @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/components/features/facilities/components/FacilityMap/MapContainer.tsx
+  118:6  warning  React Hook useEffect has a missing dependency: 'initializeMap'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/components/features/facilities/components/FacilityMap/MapMarkers.tsx
+  217:6  warning  React Hook useEffect has a missing dependency: 'addMarkersToMap'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/components/features/messaging/components/MessageThread.tsx
+  306:6  warning  React Hook useEffect has a missing dependency: 'thread'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/components/layouts/AdminLayout/index.tsx
+  47:10  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/components/layouts/UserLayout/index.tsx
+  50:10  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/contexts/AuthContext.tsx
+  301:44  error    Unexpected any. Specify a different type                                                                             @typescript-eslint/no-explicit-any
+  302:52  error    Unexpected any. Specify a different type                                                                             @typescript-eslint/no-explicit-any
+  331:6   warning  React Hook useEffect has a missing dependency: 'recordLoginEvent'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/contexts/UserProfileContext.tsx
+  124:6   warning  React Hook useEffect has a missing dependency: 'loadProfile'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  136:25  error    Unexpected any. Specify a different type                                                                        @typescript-eslint/no-explicit-any
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/hooks/features/audit/useAuditManagement.ts
+  229:9  warning  The 'selectAll' function makes the dependencies of useCallback Hook (at line 352) change on every render. Move it inside the useCallback callback. Alternatively, wrap the definition of 'selectAll' in its own useCallback() Hook        react-hooks/exhaustive-deps
+  236:9  warning  The 'startExport' function makes the dependencies of useCallback Hook (at line 334) change on every render. Move it inside the useCallback callback. Alternatively, wrap the definition of 'startExport' in its own useCallback() Hook    react-hooks/exhaustive-deps
+  237:9  warning  The 'finishExport' function makes the dependencies of useCallback Hook (at line 334) change on every render. Move it inside the useCallback callback. Alternatively, wrap the definition of 'finishExport' in its own useCallback() Hook  react-hooks/exhaustive-deps
+  243:9  warning  The 'goToLast' function makes the dependencies of useCallback Hook (at line 356) change on every render. Move it inside the useCallback callback. Alternatively, wrap the definition of 'goToLast' in its own useCallback() Hook          react-hooks/exhaustive-deps
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/hooks/features/bookings/useBookingSidebarDisplay.ts
+  54:3  error  '_priceCalculation' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/hooks/features/calendar/useCalendarGrid.ts
+  2:10  error  'format' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/hooks/features/calendar/useCalendarGridDragSelection.ts
+  4:10  error  'format' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/hooks/features/calendar/useDateNavigation.ts
+   3:15  error    'SupportedLanguage' is defined but never used                                                                                                                                                                                                     @typescript-eslint/no-unused-vars
+  50:9   warning  The 'getCurrentLocale' function makes the dependencies of useCallback Hook (at line 161) change on every render. Move it inside the useCallback callback. Alternatively, wrap the definition of 'getCurrentLocale' in its own useCallback() Hook  react-hooks/exhaustive-deps
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/hooks/features/calendar/useDragSlotSelection.ts
+  151:3  error  'cancelDrag' is defined but never used       @typescript-eslint/no-unused-vars
+  152:3  error  'isSlotInPreview' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/hooks/features/dashboard/useDashboardManagement.ts
+  441:42  error  '_id' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/hooks/features/facilities/useFacilityImageUpload.ts
+  71:17  error  'data' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/hooks/features/favorites/useUserFavoritesManagement.ts
+   92:34  error  'facilityId' is defined but never used    @typescript-eslint/no-unused-vars
+  117:24  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  118:29  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  132:36  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  214:33  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/hooks/features/integrations/useIntegrationsManagement.ts
+  12:20  error  'useEffect' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/hooks/features/localization/useLocalizationManagement.ts
+   12:20  error  'useEffect' is defined but never used               @typescript-eslint/no-unused-vars
+   15:3   error  'LocalizedDbValue' is defined but never used        @typescript-eslint/no-unused-vars
+   16:3   error  'LocalizedEntityType' is defined but never used     @typescript-eslint/no-unused-vars
+   17:3   error  'LocalizedValueFormData' is defined but never used  @typescript-eslint/no-unused-vars
+  157:11  error  'i18n' is assigned a value but never used           @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/hooks/features/messages/useMessageManagement.ts
+  159:11  error    'threadsData' is assigned a value but never used                                                                                                                                    @typescript-eslint/no-unused-vars
+  167:9   warning  The 'messages' array makes the dependencies of useMemo Hook (at line 229) change on every render. To fix this, wrap the initialization of 'messages' in its own useMemo() Hook      react-hooks/exhaustive-deps
+  167:9   warning  The 'messages' array makes the dependencies of useMemo Hook (at line 239) change on every render. To fix this, wrap the initialization of 'messages' in its own useMemo() Hook      react-hooks/exhaustive-deps
+  167:9   warning  The 'messages' array makes the dependencies of useMemo Hook (at line 244) change on every render. To fix this, wrap the initialization of 'messages' in its own useMemo() Hook      react-hooks/exhaustive-deps
+  167:9   warning  The 'messages' array makes the dependencies of useMemo Hook (at line 249) change on every render. To fix this, wrap the initialization of 'messages' in its own useMemo() Hook      react-hooks/exhaustive-deps
+  167:9   warning  The 'messages' array makes the dependencies of useCallback Hook (at line 257) change on every render. To fix this, wrap the initialization of 'messages' in its own useMemo() Hook  react-hooks/exhaustive-deps
+  167:9   warning  The 'messages' array makes the dependencies of useCallback Hook (at line 286) change on every render. To fix this, wrap the initialization of 'messages' in its own useMemo() Hook  react-hooks/exhaustive-deps
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/hooks/features/notifications/useNotificationManagement.ts
+  21:3  error  'prioritizeNotifications' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/hooks/features/profile/useAdminProfileManagement.ts
+   11:10  error  'avatarService' is defined but never used  @typescript-eslint/no-unused-vars
+  149:25  error  Unexpected any. Specify a different type   @typescript-eslint/no-explicit-any
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/hooks/features/profile/useUserPreferences.ts
+  156:42  error  'theme' is defined but never used         @typescript-eslint/no-unused-vars
+  196:25  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/hooks/features/profile/useUserProfileManagement.ts
+    5:10  error  'usersService' is defined but never used  @typescript-eslint/no-unused-vars
+  192:18  error  'error' is defined but never used         @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/hooks/features/receipts/useReceiptActions.ts
+  149:42  error  'receiptId' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/hooks/features/receipts/useReceiptData.ts
+  65:7  error  'parsePrice' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/hooks/features/reports/useReportsManagement.ts
+  19:3  error  'calculateGrowthRate' is defined but never used  @typescript-eslint/no-unused-vars
+  38:6  error  'Booking' is defined but never used              @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/hooks/features/useFacilityManagement.ts
+  85:9  warning  The 'safeFacilities' logical expression could make the dependencies of useMemo Hook (at line 128) change on every render. To fix this, wrap the initialization of 'safeFacilities' in its own useMemo() Hook      react-hooks/exhaustive-deps
+  85:9  warning  The 'safeFacilities' logical expression could make the dependencies of useMemo Hook (at line 131) change on every render. To fix this, wrap the initialization of 'safeFacilities' in its own useMemo() Hook      react-hooks/exhaustive-deps
+  85:9  warning  The 'safeFacilities' logical expression could make the dependencies of useMemo Hook (at line 132) change on every render. To fix this, wrap the initialization of 'safeFacilities' in its own useMemo() Hook      react-hooks/exhaustive-deps
+  85:9  warning  The 'safeFacilities' logical expression could make the dependencies of useCallback Hook (at line 150) change on every render. To fix this, wrap the initialization of 'safeFacilities' in its own useMemo() Hook  react-hooks/exhaustive-deps
+  85:9  warning  The 'safeFacilities' logical expression could make the dependencies of useCallback Hook (at line 165) change on every render. To fix this, wrap the initialization of 'safeFacilities' in its own useMemo() Hook  react-hooks/exhaustive-deps
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/hooks/features/users/useUserEditor.ts
+  179:9   warning  The 'createUserMutation' object makes the dependencies of useCallback Hook (at line 380) change on every render. To fix this, wrap the initialization of 'createUserMutation' in its own useMemo() Hook  react-hooks/exhaustive-deps
+  188:9   warning  The 'updateUserMutation' object makes the dependencies of useCallback Hook (at line 380) change on every render. To fix this, wrap the initialization of 'updateUserMutation' in its own useMemo() Hook  react-hooks/exhaustive-deps
+  360:17  error    'password' is assigned a value but never used                                                                                                                                                            @typescript-eslint/no-unused-vars
+  360:27  error    'confirmPassword' is assigned a value but never used                                                                                                                                                     @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/hooks/features/users/useUserManagement.ts
+   12:10  error    'useOrganizationId' is defined but never used                                                                                                                                                                                                       @typescript-eslint/no-unused-vars
+  145:9   warning  The 'users' array makes the dependencies of useMemo Hook (at line 202) change on every render. To fix this, wrap the initialization of 'users' in its own useMemo() Hook                                                                            react-hooks/exhaustive-deps
+  145:9   warning  The 'users' array makes the dependencies of useMemo Hook (at line 203) change on every render. To fix this, wrap the initialization of 'users' in its own useMemo() Hook                                                                            react-hooks/exhaustive-deps
+  145:9   warning  The 'users' array makes the dependencies of useCallback Hook (at line 291) change on every render. To fix this, wrap the initialization of 'users' in its own useMemo() Hook                                                                        react-hooks/exhaustive-deps
+  145:9   warning  The 'users' array makes the dependencies of useCallback Hook (at line 336) change on every render. To fix this, wrap the initialization of 'users' in its own useMemo() Hook                                                                        react-hooks/exhaustive-deps
+  145:9   warning  The 'users' array makes the dependencies of useCallback Hook (at line 383) change on every render. To fix this, wrap the initialization of 'users' in its own useMemo() Hook                                                                        react-hooks/exhaustive-deps
+  150:9   warning  The 'deleteUserMutation' object makes the dependencies of useCallback Hook (at line 291) change on every render. To fix this, wrap the initialization of 'deleteUserMutation' in its own useMemo() Hook                                             react-hooks/exhaustive-deps
+  157:9   warning  The 'updateUserMutation' object makes the dependencies of useCallback Hook (at line 336) change on every render. To fix this, wrap the initialization of 'updateUserMutation' in its own useMemo() Hook                                             react-hooks/exhaustive-deps
+  157:9   warning  The 'updateUserMutation' object makes the dependencies of useCallback Hook (at line 383) change on every render. To fix this, wrap the initialization of 'updateUserMutation' in its own useMemo() Hook                                             react-hooks/exhaustive-deps
+  157:9   warning  The 'updateUserMutation' object makes the dependencies of useCallback Hook (at line 393) change on every render. To fix this, wrap the initialization of 'updateUserMutation' in its own useMemo() Hook                                             react-hooks/exhaustive-deps
+  199:6   warning  React Hook useMemo has unnecessary dependencies: 'sortBy' and 'sortOrder'. Either exclude them or remove the dependency array. Outer scope values like 'sortBy' aren't valid dependencies because mutating them doesn't re-render the component     react-hooks/exhaustive-deps
+  316:5   warning  React Hook useCallback has an unnecessary dependency: 'clearSelection'. Either exclude it or remove the dependency array. Outer scope values like 'clearSelection' aren't valid dependencies because mutating them doesn't re-render the component  react-hooks/exhaustive-deps
+  363:5   warning  React Hook useCallback has an unnecessary dependency: 'clearSelection'. Either exclude it or remove the dependency array. Outer scope values like 'clearSelection' aren't valid dependencies because mutating them doesn't re-render the component  react-hooks/exhaustive-deps
+  398:6   warning  React Hook useCallback has an unnecessary dependency: 'selectAll'. Either exclude it or remove the dependency array. Outer scope values like 'selectAll' aren't valid dependencies because mutating them doesn't re-render the component            react-hooks/exhaustive-deps
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/hooks/features/users/useUserPermissions.ts
+  234:29  error  'path' is defined but never used                          @typescript-eslint/no-unused-vars
+  308:9   error  'hasReadOnlyAccessFn' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/hooks/features/zones/useZoneManagement.ts
+  32:8  error  'ZoneUtilizationStats' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/hooks/shared/useBookings.ts
+  22:8  error  'MigrationPhase' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/hooks/shared/useDraftBooking.ts
+  14:8  error  'MigrationPhase' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/hooks/shared/useFormValidation.ts
+  143:23  error  '_' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/hooks/shared/useOfflineStatus.ts
+  42:6   warning  React Hook useEffect has a missing dependency: 'syncOfflineActions'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  95:14  error    'error' is defined but never used                                                                                      @typescript-eslint/no-unused-vars
+  95:21  error    Empty block statement                                                                                                  no-empty
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/hooks/shared/useUserPreferences.ts
+  15:8  error  'MigrationPhase' is defined but never used  @typescript-eslint/no-unused-vars
+  16:3  error  'MigrationError' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/hooks/useOrganizationId.ts
+  44:6  warning  React Hook useMemo has an unnecessary dependency: 'user'. Either exclude it or remove the dependency array  react-hooks/exhaustive-deps
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/hooks/useReviews.ts
+  35:28  error  'facilityId' is defined but never used           @typescript-eslint/no-unused-vars
+  37:19  error  'setLoading' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/hooks/useStorageMigration.ts
+   86:67  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   88:56  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  112:65  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  113:54  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  166:34  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  183:34  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  252:28  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/i18n/config/languages.ts
+  87:38  error  'code' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/i18n/types/resources.ts
+   89:28  error  'T' is defined but never used          @typescript-eslint/no-unused-vars
+  136:3   error  'namespace' is defined but never used  @typescript-eslint/no-unused-vars
+  164:4   error  'T' is defined but never used          @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/pages/Checkout.tsx
+  213:6   warning  React Hook useMemo has a missing dependency: 'availableAddons'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  293:5   warning  React Hook useCallback has a missing dependency: 't'. Either include it or remove the dependency array            react-hooks/exhaustive-deps
+  309:6   warning  React Hook useCallback has a missing dependency: 't'. Either include it or remove the dependency array            react-hooks/exhaustive-deps
+  395:6   warning  React Hook useCallback has a missing dependency: 't'. Either include it or remove the dependency array            react-hooks/exhaustive-deps
+  400:9   error    'getNextBookingNumber' is assigned a value but never used                                                         @typescript-eslint/no-unused-vars
+  471:21  error    'test' is assigned a value but never used                                                                         @typescript-eslint/no-unused-vars
+  526:21  error    'duration' is assigned a value but never used                                                                     @typescript-eslint/no-unused-vars
+  702:6   warning  React Hook useCallback has a missing dependency: 't'. Either include it or remove the dependency array            react-hooks/exhaustive-deps
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/pages/admin/ApprovalsPage.tsx
+   23:3   error  'User' is defined but never used    @typescript-eslint/no-unused-vars
+  597:24  error  '_props' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/pages/admin/AuditLogPage.tsx
+  41:11  error  't' is assigned a value but never used                   @typescript-eslint/no-unused-vars
+  69:5   error  'selectedLogId' is assigned a value but never used       @typescript-eslint/no-unused-vars
+  70:5   error  'isDetailsPanelOpen' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  80:5   error  'clearFilters' is assigned a value but never used        @typescript-eslint/no-unused-vars
+  88:5   error  'closeDetails' is assigned a value but never used        @typescript-eslint/no-unused-vars
+  96:5   error  'setItemsPerPage' is assigned a value but never used     @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/pages/admin/FacilitiesPage.tsx
+   80:36  error  'facilityId' is defined but never used    @typescript-eslint/no-unused-vars
+  282:55  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  293:59  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  304:61  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  550:49  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/pages/admin/NotificationsPage.tsx
+  18:3  error  'Info' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/pages/admin/ReportsPage.tsx
+    9:10  error  'Badge' is defined but never used               @typescript-eslint/no-unused-vars
+  250:35  error  'cancelled' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  250:46  error  'completed' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/pages/admin/UsersRolesPage.tsx
+  1117:21  error    Unexpected any. Specify a different type                                                              @typescript-eslint/no-explicit-any
+  1126:6   warning  React Hook useEffect has a missing dependency: 't'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  1346:21  error    Unexpected any. Specify a different type                                                              @typescript-eslint/no-explicit-any
+  1352:33  error    'roleData' is defined but never used                                                                  @typescript-eslint/no-unused-vars
+  1427:41  error    'userId' is defined but never used                                                                    @typescript-eslint/no-unused-vars
+  1574:23  error    Unexpected any. Specify a different type                                                              @typescript-eslint/no-explicit-any
+  1581:35  error    'userId' is defined but never used                                                                    @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/pages/facilities/[id].tsx
+    8:15  error  'Database' is defined but never used                     @typescript-eslint/no-unused-vars
+   34:10  error  'currentPattern' is assigned a value but never used      @typescript-eslint/no-unused-vars
+   79:18  error  'clipboardError' is defined but never used               @typescript-eslint/no-unused-vars
+   79:34  error  Empty block statement                                    no-empty
+  112:9   error  'handlePatternApply' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/pages/facilities/[id]/book.tsx
+  13:15  error  'Database' is defined but never used                     @typescript-eslint/no-unused-vars
+  43:10  error  'currentPattern' is assigned a value but never used      @typescript-eslint/no-unused-vars
+  49:11  error  't' is assigned a value but never used                   @typescript-eslint/no-unused-vars
+  87:18  error  'clipboardError' is defined but never used               @typescript-eslint/no-unused-vars
+  87:34  error  Empty block statement                                    no-empty
+  97:9   error  'handlePatternApply' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/pages/user/HistoryPage.tsx
+  18:3  error  'FileText' is defined but never used   @typescript-eslint/no-unused-vars
+  19:3  error  'RotateCcw' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/pages/user/UserFavorites.tsx
+  49:5  error  'formatDate' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/pages/user/UserHelp.tsx
+   72:9   error  'categories' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  274:22  error  'ticketData' is defined but never used           @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/pages/user/UserNotifications.tsx
+  30:5  error  'preferences' is assigned a value but never used                  @typescript-eslint/no-unused-vars
+  41:5  error  'saveNotificationPreferences' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  45:5  error  'saveNotificationTemplates' is assigned a value but never used    @typescript-eslint/no-unused-vars
+  46:5  error  'toggleTemplateExpansion' is assigned a value but never used      @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/services/business/audit.business.service.ts
+  691:12  error  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/services/business/facility.business.service.ts
+  112:35  error  'facility' is defined but never used    @typescript-eslint/no-unused-vars
+  122:3   error  'facilities' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/services/business/message.business.service.ts
+  9:24  error  'MessageThread' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/services/business/notification.business.service.ts
+  88:9  error  Unexpected lexical declaration in case block  no-case-declarations
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/services/business/payment.business.service.ts
+  128:3  error  'hoursBeforeBooking' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/services/business/report.business.service.ts
+  12:6  error  'BookingStatus' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/services/business/settings.business.service.ts
+   11:6   error  'Organization' is defined but never used  @typescript-eslint/no-unused-vars
+  263:46  error  'settings' is defined but never used      @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/services/business/support.business.service.ts
+  11:3  error  'SupportTicketFilter' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/services/business/user.business.service.ts
+  188:9  error  Unexpected lexical declaration in case block  no-case-declarations
+  189:9  error  Unexpected lexical declaration in case block  no-case-declarations
+  193:9  error  Unexpected lexical declaration in case block  no-case-declarations
+  194:9  error  Unexpected lexical declaration in case block  no-case-declarations
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/services/business/zone.business.service.ts
+  494:9  error  'startMinutes' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/services/calendar.service.ts
+  103:12  error  'error' is defined but never used                                       @typescript-eslint/no-unused-vars
+  142:7   error  'convertRecurringOccurrenceToEvent' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/services/supabase/auth.service.ts
+  214:14  error  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/services/supabase/avatar.service.ts
+  15:10  error  'handleSupabaseError' is defined but never used  @typescript-eslint/no-unused-vars
+  16:15  error  'Database' is defined but never used             @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/services/supabase/bookings.service.ts
+  235:28  error  'reason' is defined but never used        @typescript-eslint/no-unused-vars
+  267:84  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  675:10  error  'isValidUUID' is defined but never used   @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/services/supabase/facilities.service.ts
+  129:7   error  'convertToFacilityWithCoords' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  131:23  error  Unexpected any. Specify a different type                          @typescript-eslint/no-explicit-any
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/services/supabase/favorites.service.ts
+  20:6  error  'FavoriteInsert' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/services/supabase/notifications.service.ts
+  27:6  error  'NotificationUpdate' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/services/supabase/organizations.service.ts
+   17:31  error  'NotFoundError' is defined but never used      @typescript-eslint/no-unused-vars
+   23:3   error  'Facility' is defined but never used           @typescript-eslint/no-unused-vars
+   24:3   error  'PaginatedResponse' is defined but never used  @typescript-eslint/no-unused-vars
+  247:14  error  'error' is defined but never used              @typescript-eslint/no-unused-vars
+  342:33  error  'id' is defined but never used                 @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/services/supabase/rbac.service.ts
+   22:6   error  'Profile' is defined but never used  @typescript-eslint/no-unused-vars
+  166:25  error  'userId' is defined but never used   @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/services/supabase/recurring.service.ts
+  371:17  error  '_' is defined but never used   @typescript-eslint/no-unused-vars
+  371:20  error  'id' is defined but never used  @typescript-eslint/no-unused-vars
+  385:17  error  '_' is defined but never used   @typescript-eslint/no-unused-vars
+  385:20  error  'id' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/services/supabase/reviews.service.ts
+   24:3   error  'UserProfile' is defined but never used  @typescript-eslint/no-unused-vars
+   25:3   error  'Facility' is defined but never used     @typescript-eslint/no-unused-vars
+  392:14  error  'error' is defined but never used        @typescript-eslint/no-unused-vars
+  426:14  error  'error' is defined but never used        @typescript-eslint/no-unused-vars
+  437:47  error  'userId' is defined but never used       @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/services/supabase/users.service.ts
+   24:3   error  'Organization' is defined but never used  @typescript-eslint/no-unused-vars
+  268:24  error  'params' is defined but never used        @typescript-eslint/no-unused-vars
+  308:28  error  'userId' is defined but never used        @typescript-eslint/no-unused-vars
+  323:5   error  'preferences' is defined but never used   @typescript-eslint/no-unused-vars
+  352:13  error  'now' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  388:25  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  408:16  error  'columnError' is defined but never used   @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/stores/appUIStore.ts
+  602:16  error  'state' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/stores/calendarUIStore.ts
+  23:11  error  'ITimeRange' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/stores/cartStore.ts
+  4:48  error  'StateStorage' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/stores/messageStore.ts
+  901:19  error  'importData' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  903:20  error  'error' is defined but never used                @typescript-eslint/no-unused-vars
+  903:27  error  Empty block statement                            no-empty
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/stores/recurringBookingStore.ts
+   73:25  error  'timeSlot' is defined but never used          @typescript-eslint/no-unused-vars
+  142:7   error  Unexpected lexical declaration in case block  no-case-declarations
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/stores/supportStore.ts
+  284:19  error  Unexpected lexical declaration in case block     no-case-declarations
+  289:19  error  Unexpected lexical declaration in case block     no-case-declarations
+  623:19  error  'importData' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  625:20  error  'error' is defined but never used                @typescript-eslint/no-unused-vars
+  625:27  error  Empty block statement                            no-empty
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/types.d.ts
+  8:5  warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-empty-object-type')
+
+/Users/aminismail/Documents/GitHub/bookme-1/src/utils/storageMigration.ts
+  242:14  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  321:39  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/aminismail/Documents/GitHub/bookme-1/tests/e2e/auth/authentication-flow.spec.ts
+  17:24  error  'Page' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/tests/e2e/auth/login.spec.ts
+  85:69  error  'context' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/tests/e2e/bookings/create-booking-complete-flow.spec.ts
+  66:16  error  'navigateToStep' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/tests/e2e/bookings/create.spec.ts
+  87:28  error  Unnecessary escape character: \/  no-useless-escape
+
+/Users/aminismail/Documents/GitHub/bookme-1/tests/e2e/bookings/manage.spec.ts
+  228:13  error  'initialDate' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/tests/e2e/facilities/detail.spec.ts
+   6:7   error  'facilityId' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  50:50  error  Unnecessary escape character: \/                 no-useless-escape
+
+/Users/aminismail/Documents/GitHub/bookme-1/tests/e2e/facilities/list.spec.ts
+  97:13  error  'initialTitle' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/tests/e2e/notifications/bell.spec.ts
+  365:72  error  'context' is defined but never used                @typescript-eslint/no-unused-vars
+  370:11  error  'bellIcon' is assigned a value but never used      @typescript-eslint/no-unused-vars
+  376:7   error  'initialCount' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/tests/e2e/user/complete-booking-flow.spec.ts
+  3:10  error  'newBookingData' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/tests/integration/bookings/booking-creation-flow.test.tsx
+   2:10  error  'render' is defined but never used                @typescript-eslint/no-unused-vars
+   2:18  error  'screen' is defined but never used                @typescript-eslint/no-unused-vars
+   2:26  error  'waitFor' is defined but never used               @typescript-eslint/no-unused-vars
+   3:8   error  'userEvent' is defined but never used             @typescript-eslint/no-unused-vars
+   4:23  error  'QueryClientProvider' is defined but never used   @typescript-eslint/no-unused-vars
+  80:7   error  'queryClient' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/tests/integration/migration.test.tsx
+   13:10  error  'renderHook' is defined but never used              @typescript-eslint/no-unused-vars
+   13:22  error  'waitFor' is defined but never used                 @typescript-eslint/no-unused-vars
+  121:7   error  'createWrapper' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  215:13  error  'updated' is assigned a value but never used        @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/tests/integration/services/facilities-integration.test.ts
+    2:10  error  'supabase' is defined but never used          @typescript-eslint/no-unused-vars
+  233:13  error  'results' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/tests/setup/vitest-setup.ts
+  46:6  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  54:6  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/aminismail/Documents/GitHub/bookme-1/tests/test-utils.tsx
+   10:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+   53:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+   61:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+   78:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+   88:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  101:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  112:1   error  This rule can't verify that `export *` only exports components                                                                  react-refresh/only-export-components
+  113:26  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+/Users/aminismail/Documents/GitHub/bookme-1/tests/unit/components/Accordion.test.tsx
+   72:15  error  'container' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  135:15  error  'container' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/tests/unit/components/Alert.test.tsx
+   20:15  error  'container' is assigned a value but never used  @typescript-eslint/no-unused-vars
+   91:15  error  'container' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  123:15  error  'container' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/tests/unit/components/Avatar.test.tsx
+  9:26  error  'waitFor' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/tests/unit/components/Badge.test.tsx
+   20:15  error  'container' is assigned a value but never used                             @typescript-eslint/no-unused-vars
+  323:22  error  Unexpected constant truthiness on the left-hand side of a `&&` expression  no-constant-binary-expression
+
+/Users/aminismail/Documents/GitHub/bookme-1/tests/unit/components/BookingCard.test.tsx
+   16:26  error  'within' is defined but never used               @typescript-eslint/no-unused-vars
+  321:13  error  'viewButton' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  350:26  error  Unexpected any. Specify a different type         @typescript-eslint/no-explicit-any
+  351:34  error  Unexpected any. Specify a different type         @typescript-eslint/no-explicit-any
+  352:29  error  Unexpected any. Specify a different type         @typescript-eslint/no-explicit-any
+  353:24  error  Unexpected any. Specify a different type         @typescript-eslint/no-explicit-any
+
+/Users/aminismail/Documents/GitHub/bookme-1/tests/unit/components/BookingForm.test.tsx
+  31:22  error  'options' is defined but never used       @typescript-eslint/no-unused-vars
+  31:32  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/aminismail/Documents/GitHub/bookme-1/tests/unit/components/Calendar.test.tsx
+  210:15  error  'container' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/tests/unit/components/Card.test.tsx
+  370:15  error  'container' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/tests/unit/components/Checkbox.test.tsx
+  444:63  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/aminismail/Documents/GitHub/bookme-1/tests/unit/components/Command.test.tsx
+   43:15  error  'container' is assigned a value but never used  @typescript-eslint/no-unused-vars
+   57:15  error  'container' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  130:15  error  'container' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  142:15  error  'container' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  656:15  error  'container' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  672:15  error  'container' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/tests/unit/components/DataCard.test.tsx
+   12:10  error  'Calendar' is defined but never used            @typescript-eslint/no-unused-vars
+   12:26  error  'Mail' is defined but never used                @typescript-eslint/no-unused-vars
+  242:15  error  'container' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/tests/unit/components/DropdownMenu.test.tsx
+  795:13  error  'user' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/tests/unit/components/EmptyState.test.tsx
+   44:15  error  'container' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  177:15  error  'container' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/tests/unit/components/FacilityCard.test.tsx
+   18:26  error  'waitFor' is defined but never used              @typescript-eslint/no-unused-vars
+   29:22  error  'options' is defined but never used              @typescript-eslint/no-unused-vars
+   29:32  error  Unexpected any. Specify a different type         @typescript-eslint/no-explicit-any
+   52:28  error  Unexpected any. Specify a different type         @typescript-eslint/no-explicit-any
+  320:13  error  'bookButton' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  405:30  error  Unexpected any. Specify a different type         @typescript-eslint/no-explicit-any
+  406:28  error  Unexpected any. Specify a different type         @typescript-eslint/no-explicit-any
+  407:25  error  Unexpected any. Specify a different type         @typescript-eslint/no-explicit-any
+
+/Users/aminismail/Documents/GitHub/bookme-1/tests/unit/components/FacilityDetailLayout.test.tsx
+   32:50  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   38:70  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   50:56  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   60:39  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   68:45  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  392:63  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  401:64  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/aminismail/Documents/GitHub/bookme-1/tests/unit/components/KPICard.test.tsx
+   12:20  error  'TrendingUp' is defined but never used              @typescript-eslint/no-unused-vars
+   17:31  error  Unexpected any. Specify a different type            @typescript-eslint/no-explicit-any
+  100:15  error  'container' is assigned a value but never used      @typescript-eslint/no-unused-vars
+  114:13  error  'iconContainer' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  605:15  error  'container' is assigned a value but never used      @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/tests/unit/components/LoadingState.test.tsx
+  67:69  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/aminismail/Documents/GitHub/bookme-1/tests/unit/components/LocalizedSelect.test.tsx
+  712:13  error  'user' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  715:31  error  Unexpected any. Specify a different type   @typescript-eslint/no-explicit-any
+
+/Users/aminismail/Documents/GitHub/bookme-1/tests/unit/components/LocalizedSelectEnhanced.test.tsx
+  10:8   error  'userEvent' is defined but never used     @typescript-eslint/no-unused-vars
+  44:63  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/aminismail/Documents/GitHub/bookme-1/tests/unit/components/ScrollArea.test.tsx
+   59:15  error  'container' is assigned a value but never used  @typescript-eslint/no-unused-vars
+   71:15  error  'container' is assigned a value but never used  @typescript-eslint/no-unused-vars
+   85:15  error  'container' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  160:15  error  'container' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  172:15  error  'container' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  184:15  error  'container' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  196:15  error  'container' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  321:15  error  'container' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  451:15  error  'container' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  552:15  error  'container' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  564:15  error  'container' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  576:15  error  'container' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/tests/unit/components/ScrollToTop.test.tsx
+  308:48  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  318:34  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/aminismail/Documents/GitHub/bookme-1/tests/unit/components/SearchField.test.tsx
+  166:15  error  'container' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/tests/unit/components/Separator.test.tsx
+   14:15  error  'container' is assigned a value but never used  @typescript-eslint/no-unused-vars
+   20:15  error  'container' is assigned a value but never used  @typescript-eslint/no-unused-vars
+   28:15  error  'container' is assigned a value but never used  @typescript-eslint/no-unused-vars
+   37:15  error  'container' is assigned a value but never used  @typescript-eslint/no-unused-vars
+   46:15  error  'container' is assigned a value but never used  @typescript-eslint/no-unused-vars
+   55:15  error  'container' is assigned a value but never used  @typescript-eslint/no-unused-vars
+   66:15  error  'container' is assigned a value but never used  @typescript-eslint/no-unused-vars
+   74:15  error  'container' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  110:15  error  'container' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  304:15  error  'container' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/tests/unit/components/StepByStepBooking.test.tsx
+   20:35  error  'within' is defined but never used     @typescript-eslint/no-unused-vars
+   63:24  error  'formatStr' is defined but never used  @typescript-eslint/no-unused-vars
+  105:29  error  'zoneId' is defined but never used     @typescript-eslint/no-unused-vars
+  105:45  error  'date' is defined but never used       @typescript-eslint/no-unused-vars
+  105:57  error  'timeSlot' is defined but never used   @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/tests/unit/components/Switch.test.tsx
+  412:63  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/aminismail/Documents/GitHub/bookme-1/tests/unit/components/Toggle.test.tsx
+  441:63  error  Unexpected any. Specify a different type        @typescript-eslint/no-explicit-any
+  517:15  error  'container' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/tests/unit/hooks/useBookingFilters.test.ts
+  1:32  error  'vi' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/tests/unit/hooks/useBookings.test.tsx
+  525:15  error  'data' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/tests/unit/hooks/useDraftBooking.test.tsx
+   13:10  error  'renderHook' is defined but never used              @typescript-eslint/no-unused-vars
+   13:22  error  'waitFor' is defined but never used                 @typescript-eslint/no-unused-vars
+   13:31  error  'act' is defined but never used                     @typescript-eslint/no-unused-vars
+   92:7   error  'createWrapper' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  141:13  error  'debounceMs' is assigned a value but never used     @typescript-eslint/no-unused-vars
+  567:15  error  'parsed' is assigned a value but never used         @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/tests/unit/hooks/useUserPreferences.test.tsx
+   10:10  error  'renderHook' is defined but never used              @typescript-eslint/no-unused-vars
+   10:22  error  'waitFor' is defined but never used                 @typescript-eslint/no-unused-vars
+   10:31  error  'act' is defined but never used                     @typescript-eslint/no-unused-vars
+   76:7   error  'createWrapper' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  144:13  error  'mockSupabase' is assigned a value but never used   @typescript-eslint/no-unused-vars
+  172:15  error  'retrieved' is assigned a value but never used      @typescript-eslint/no-unused-vars
+  210:13  error  'mockSupabase' is assigned a value but never used   @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/tests/unit/services/facilities-coords.test.ts
+  2:10  error  'facilitiesService' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/aminismail/Documents/GitHub/bookme-1/tests/unit/utils/storageMigration.test.ts
+  503:13  error  'localBooking' is assigned a value but never used     @typescript-eslint/no-unused-vars
+  504:13  error  'supabaseBooking' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  527:16  error  'error' is defined but never used                     @typescript-eslint/no-unused-vars
+
+✖ 377 problems (330 errors, 47 warnings)
+  0 errors and 1 warning potentially fixable with the `--fix` option.
+

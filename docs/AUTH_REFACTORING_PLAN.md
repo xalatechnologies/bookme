@@ -438,7 +438,7 @@ Expected:
 
 ### Test 5: Platform Admin
 ```
-Login: superadmin@bookme.no
+Login: superadmin@booknor.no
 Expected:
 ✅ Can access everything
 ✅ Platform-wide controls

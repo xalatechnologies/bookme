@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { useUserBookings } from "@/services/supabase/bookings.service";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/hooks";
 import type { BookingWithDetails } from "@/services/supabase/bookings.service";
 
 interface IReceipt {
@@ -101,19 +101,33 @@ const groupRecurringBookings = (
   const single: BookingWithDetails[] = [];
 
   bookings.forEach((booking) => {
-    // Use parent_booking_id or create a grouping key
-    const parentKey =
-      booking.parent_booking_id ||
-      `${booking.facility?.name || booking.zone?.name}-${booking.purpose}-${
-        booking.starts_at ? new Date(booking.starts_at).toTimeString().slice(0, 5) : ""
-      }`;
-
-    if (booking.is_recurring || booking.parent_booking_id) {
-      if (!grouped.has(parentKey)) {
-        grouped.set(parentKey, []);
+    // For recurring bookings, we need to group them
+    // If they have a recurring_booking_id, use that as the key
+    // Otherwise, create a synthetic key for recurring bookings without an explicit ID
+    // Group by facility, purpose, day of week, and time pattern
+    if (booking.is_recurring) {
+      let key: string;
+      if (booking.recurring_booking_id) {
+        // Use the recurring booking ID as the grouping key
+        key = booking.recurring_booking_id;
+      } else {
+        // Create a synthetic key for recurring bookings without an explicit ID
+        // Group by facility, purpose, day of week, and time pattern
+        const startDate = new Date(booking.starts_at);
+        const endDate = new Date(booking.ends_at);
+        const timePattern = `${startDate.getHours()}:${startDate.getMinutes()}-${endDate.getHours()}:${endDate.getMinutes()}`;
+        const dayOfWeek = startDate.getDay(); // 0 = Sunday, 1 = Monday, etc.
+        
+        // Create a unique key based on the recurring pattern
+        key = `recurring-${booking.facility_id}-${booking.notes || 'no-purpose'}-${dayOfWeek}-${timePattern}`;
       }
-      grouped.get(parentKey)!.push(booking);
+      
+      if (!grouped.has(key)) {
+        grouped.set(key, []);
+      }
+      grouped.get(key)!.push(booking);
     } else {
+      // This is a single booking
       single.push(booking);
     }
   });
@@ -122,7 +136,8 @@ const groupRecurringBookings = (
 };
 
 const createSingleReceipt = (booking: BookingWithDetails, index: number): IReceipt => {
-  const amount = parsePrice(booking.total_price);
+  // Use total_cents and convert to NOK (cents to kroner)
+  const amount = booking.total_cents ? booking.total_cents / 100 : 0;
   const mvaAmount = amount * 0.25; // 25% VAT
   const facilityName = getFacilityName(booking);
   const status = mapStatus(booking.status);
@@ -146,7 +161,7 @@ const createSingleReceipt = (booking: BookingWithDetails, index: number): IRecei
     bookingId: booking.id,
     location: facilityName,
     duration,
-    purpose: booking.purpose || "Ikke spesifisert",
+    purpose: booking.notes || "Ikke spesifisert",
     invoiceNumber: `INV-${new Date().getFullYear()}-${String(index + 1).padStart(3, "0")}`,
     paidAt: status === "paid" && booking.updated_at ? booking.updated_at : undefined,
     cancelledAt: status === "cancelled" && booking.updated_at ? booking.updated_at : undefined,
@@ -154,8 +169,7 @@ const createSingleReceipt = (booking: BookingWithDetails, index: number): IRecei
     category: getCategory(facilityName),
     mvaAmount,
     refundReason: status === "cancelled" ? "Avvist av administrator" : undefined,
-    isRecurring: false,
-  };
+    isRecurring: false};
 };
 
 const createRecurringReceipt = (
@@ -166,8 +180,8 @@ const createRecurringReceipt = (
   const first = bookings[0];
   const facilityName = getFacilityName(first);
 
-  // Calculate total amount for all occurrences
-  const totalAmount = bookings.reduce((sum, booking) => sum + parsePrice(booking.total_price), 0);
+  // Calculate total amount for all occurrences (convert from cents to NOK)
+  const totalAmount = bookings.reduce((sum, booking) => sum + (booking.total_cents ? booking.total_cents / 100 : 0), 0);
   const mvaAmount = totalAmount * 0.25; // 25% VAT
 
   // Determine group status
@@ -190,7 +204,7 @@ const createRecurringReceipt = (
     bookingId: parentKey,
     location: facilityName,
     duration: `${bookings.length} occurrences`,
-    purpose: first.purpose || "Ikke spesifisert",
+    purpose: first.notes || "Ikke spesifisert",
     invoiceNumber: `INV-${new Date().getFullYear()}-${String(index + 1).padStart(3, "0")}`,
     paidAt: groupStatus === "paid" ? first.updated_at || new Date().toISOString() : undefined,
     cancelledAt: groupStatus === "cancelled" ? first.updated_at || new Date().toISOString() : undefined,
@@ -205,9 +219,8 @@ const createRecurringReceipt = (
       date: booking.starts_at ? new Date(booking.starts_at).toISOString().split("T")[0] : "",
       time: booking.starts_at ? new Date(booking.starts_at).toTimeString().slice(0, 5) : "",
       status: booking.status,
-      amount: parsePrice(booking.total_price),
-    })),
-  };
+      amount: booking.total_cents ? booking.total_cents / 100 : 0, // Convert from cents to NOK
+    }))};
 };
 
 const transformBookingsToReceipts = (
@@ -294,8 +307,7 @@ const calculateStatistics = (
     pendingAmount,
     paidCount,
     categoryStats,
-    averageAmount,
-  };
+    averageAmount};
 };
 
 const getStatusCounts = (receipts: ReadonlyArray<IReceipt>) => {
@@ -304,8 +316,7 @@ const getStatusCounts = (receipts: ReadonlyArray<IReceipt>) => {
     paid: receipts.filter((r) => r.status === "paid").length,
     pending: receipts.filter((r) => r.status === "pending").length,
     cancelled: receipts.filter((r) => r.status === "cancelled").length,
-    refunded: receipts.filter((r) => r.status === "refunded").length,
-  };
+    refunded: receipts.filter((r) => r.status === "refunded").length};
 };
 
 export const useReceiptData = (filters: FilterOptions): UseReceiptDataReturn => {
@@ -332,8 +343,7 @@ export const useReceiptData = (filters: FilterOptions): UseReceiptDataReturn => 
     filteredAndSortedReceipts,
     statistics,
     statusCounts,
-    isLoading,
-  };
+    isLoading};
 };
 
 export type { IReceipt, FilterOptions, ReceiptStatistics };

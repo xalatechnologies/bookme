@@ -86,9 +86,9 @@ export const LocalizedSelectEnhanced: React.FC<LocalizedSelectProps> = ({
   searchable = false,
 }): JSX.Element => {
   const { t } = useTranslation('common');
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm] = useState('');
 
-  const { options, loading, error, search, isSearching } =
+  const { options, loading, error } =
     useLocalizedDbValueEnhanced(entityType, {
       searchEnabled: searchable,
     });
@@ -224,7 +224,7 @@ const SearchableSelect: React.FC<SearchableSelectProps> = ({
           role="combobox"
           aria-expanded={open}
           aria-label={ariaLabel}
-          disabled={disabled || loading}
+          disabled={disabled || loading || false}
           className={cn(
             'min-h-12 w-full justify-between text-left font-normal',
             !value && 'text-muted-foreground',
@@ -437,7 +437,7 @@ export const LocalizedMultiSelect: React.FC<LocalizedMultiSelectProps> = ({
               {filteredOptions.map((option) => {
                 const isSelected = value.includes(option.value);
                 const isMaxReached =
-                  maxSelections && value.length >= maxSelections && !isSelected;
+                  !!(maxSelections && maxSelections > 0 && value.length >= maxSelections && !isSelected);
 
                 return (
                   <CommandItem

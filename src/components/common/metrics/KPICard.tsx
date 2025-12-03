@@ -91,8 +91,7 @@ const formatValue = (
         style: "currency",
         currency: "NOK",
         minimumFractionDigits: 0,
-        maximumFractionDigits: 0,
-      }).format(value);
+        maximumFractionDigits: 0}).format(value);
     case "percentage":
       return `${value}%`;
     case "number":
@@ -115,8 +114,7 @@ export const KPICard: React.FC<KPICardProps> = ({
   onClick,
   className = "",
   size = "md",
-  loading = false,
-}) => {
+  loading = false}) => {
   const { t, i18n } = useTranslation("common");
 
   // Size configurations
@@ -128,8 +126,7 @@ export const KPICard: React.FC<KPICardProps> = ({
       titleSize: "text-xs",
       valueSize: "text-2xl",
       descriptionSize: "text-xs",
-      trendSize: "text-xs",
-    },
+      trendSize: "text-xs"},
     md: {
       padding: "p-6",
       iconSize: "w-6 h-6",
@@ -137,8 +134,7 @@ export const KPICard: React.FC<KPICardProps> = ({
       titleSize: "text-sm",
       valueSize: "text-4xl",
       descriptionSize: "text-sm",
-      trendSize: "text-sm",
-    },
+      trendSize: "text-sm"},
     lg: {
       padding: "p-8",
       iconSize: "w-7 h-7",
@@ -146,9 +142,7 @@ export const KPICard: React.FC<KPICardProps> = ({
       titleSize: "text-base",
       valueSize: "text-5xl",
       descriptionSize: "text-base",
-      trendSize: "text-base",
-    },
-  };
+      trendSize: "text-base"}};
 
   const config = sizeConfig[size];
 
@@ -161,39 +155,32 @@ export const KPICard: React.FC<KPICardProps> = ({
       border:
         "border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600",
       iconBg: "bg-blue-100 dark:bg-blue-800",
-      icon: "text-blue-600 dark:text-blue-400",
-    },
+      icon: "text-blue-600 dark:text-blue-400"},
     green: {
       border:
         "border-gray-200 dark:border-gray-700 hover:border-green-300 dark:hover:border-green-600",
       iconBg: "bg-green-100 dark:bg-green-800",
-      icon: "text-green-600 dark:text-green-400",
-    },
+      icon: "text-green-600 dark:text-green-400"},
     yellow: {
       border:
         "border-gray-200 dark:border-gray-700 hover:border-yellow-300 dark:hover:border-yellow-600",
       iconBg: "bg-yellow-100 dark:bg-yellow-800",
-      icon: "text-yellow-600 dark:text-yellow-400",
-    },
+      icon: "text-yellow-600 dark:text-yellow-400"},
     red: {
       border:
         "border-gray-200 dark:border-gray-700 hover:border-red-300 dark:hover:border-red-600",
       iconBg: "bg-red-100 dark:bg-red-800",
-      icon: "text-red-600 dark:text-red-400",
-    },
+      icon: "text-red-600 dark:text-red-400"},
     purple: {
       border:
         "border-gray-200 dark:border-gray-700 hover:border-purple-300 dark:hover:border-purple-600",
       iconBg: "bg-purple-100 dark:bg-purple-800",
-      icon: "text-purple-600 dark:text-purple-400",
-    },
+      icon: "text-purple-600 dark:text-purple-400"},
     gray: {
       border:
         "border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600",
       iconBg: "bg-gray-100 dark:bg-gray-700",
-      icon: "text-gray-600 dark:text-gray-400",
-    },
-  };
+      icon: "text-gray-600 dark:text-gray-400"}};
 
   const colors = colorConfig[color];
 
@@ -290,7 +277,7 @@ export const KPICard: React.FC<KPICardProps> = ({
       `}
       role={onClick ? "button" : undefined}
       tabIndex={onClick ? 0 : undefined}
-      aria-label={onClick ? t("kpi.navigate_to", { title }) : undefined}
+      aria-label={onClick ? `Navigate to ${title}` : undefined}
     >
       <div className="flex items-start justify-between">
         <div className="flex-1">

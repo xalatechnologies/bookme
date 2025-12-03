@@ -346,4 +346,4 @@ The i18n system is now:
 
 **Generated**: October 27, 2025
 **Author**: Claude (AI Assistant)
-**Project**: BookMe - Facility Booking System
+**Project**: Booknor - Facility Booking System

@@ -1,4 +1,4 @@
-# Comprehensive Testing Strategy - BookMe Platform
+# Comprehensive Testing Strategy - Booknor Platform
 
 **Date:** October 30, 2025
 **Status:** In Progress
@@ -22,7 +22,7 @@
 
 ## Overview
 
-This document outlines the comprehensive testing strategy for the BookMe platform. The platform has **144 components** (121 feature + 23 UI) that require thorough testing to ensure quality, reliability, and maintainability.
+This document outlines the comprehensive testing strategy for the Booknor platform. The platform has **144 components** (121 feature + 23 UI) that require thorough testing to ensure quality, reliability, and maintainability.
 
 ### Testing Tools
 
@@ -183,8 +183,8 @@ This document outlines the comprehensive testing strategy for the BookMe platfor
 #### Facility Components (14 components)
 - [x] `FacilityCard/FacilityCardUser.tsx` ✅ **DONE**
 - [ ] `FacilityDetail/FacilityDetailLayout.tsx` ⚠️ **CRITICAL**
-- [ ] `FacilityDetail/FacilityDetailHeader.tsx`
-- [ ] `FacilityDetail/FacilityDetailCalendar.tsx`
+<!-- - [ ] `FacilityDetail/FacilityDetailHeader.tsx` (REMOVED - Unused component) -->
+<!-- - [ ] `FacilityDetail/FacilityDetailCalendar.tsx` (REMOVED - Unused component) -->
 - [ ] `FacilitySearch/FacilityGrid.tsx`
 - [ ] `FacilitySearch/FacilityList.tsx`
 - [ ] `FacilitySearch/FilterBar.tsx`
@@ -385,7 +385,7 @@ npm test BookingForm.test.tsx -- --watch
 
 2. **Complete Facility Component Tests**
    - [ ] FacilityDetailLayout
-   - [ ] FacilityDetailHeader
+   <!-- - [ ] FacilityDetailHeader (REMOVED - Unused component) -->
    - [ ] FacilityGrid/List
    - **Estimated:** 80+ tests, 2-3 days
 

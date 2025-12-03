@@ -57,7 +57,7 @@
 ### 1. Start Supabase (if not running)
 
 ```bash
-cd "/Volumes/Development/Xala Products/bookme"
+cd "/Volumes/Development/Xala Products/booknor"
 supabase start
 ```
 
@@ -73,7 +73,7 @@ VITE_USE_SUPABASE=true
 ### 3. Start Frontend
 
 ```bash
-cd ~/Documents/xaheen/bookme
+cd ~/Documents/xaheen/booknor
 npm run dev
 ```
 
@@ -260,8 +260,8 @@ npm run dev
 
 **Solution:** Regenerate types:
 ```bash
-cd "/Volumes/Development/Xala Products/bookme"
-npx supabase gen types typescript --local > ~/Documents/xaheen/bookme/src/types/database.ts
+cd "/Volumes/Development/Xala Products/booknor"
+npx supabase gen types typescript --local > ~/Documents/xaheen/booknor/src/types/database.ts
 ```
 
 ### Issue: "Missing environment variable"
@@ -272,7 +272,7 @@ npx supabase gen types typescript --local > ~/Documents/xaheen/bookme/src/types/
 
 **Solution:** Start Supabase:
 ```bash
-cd "/Volumes/Development/Xala Products/bookme"
+cd "/Volumes/Development/Xala Products/booknor"
 supabase start
 ```
 

@@ -668,10 +668,10 @@ async function migrateUserData(userId: string) {
 
 1. **Apply SQL Migrations**:
 ```bash
-cd "/Volumes/Development/Xala Products/bookme"
-psql -d bookme -f ~/Documents/xaheen/bookme/supabase/migrations/20250128_001_user_preferences.sql
-psql -d bookme -f ~/Documents/xaheen/bookme/supabase/migrations/20250128_002_draft_bookings.sql
-psql -d bookme -f ~/Documents/xaheen/bookme/supabase/migrations/20250128_003_booking_schema_mapping.sql
+cd "/Volumes/Development/Xala Products/booknor"
+psql -d booknor -f ~/Documents/xaheen/booknor/supabase/migrations/20250128_001_user_preferences.sql
+psql -d booknor -f ~/Documents/xaheen/booknor/supabase/migrations/20250128_002_draft_bookings.sql
+psql -d booknor -f ~/Documents/xaheen/booknor/supabase/migrations/20250128_003_booking_schema_mapping.sql
 ```
 
 2. **Configure Environment Variables**:

@@ -1,4 +1,4 @@
-# BookMe localStorage Quick Reference
+# Booknor localStorage Quick Reference
 
 ## Storage Keys Overview
 
@@ -20,7 +20,7 @@ facility-store                   → Facilities data
 ```
 pendingBookings                  → Bookings awaiting approval
 processedBookings                → Approved/completed bookings
-bookme-language                  → User language (NO/EN)
+booknor-language                  → User language (NO/EN)
 favorites-view-mode              → View preference (grid/list)
 lastBookingNumber                → Sequential booking ID counter
 adminUsers                       → Admin user list
@@ -43,7 +43,7 @@ systemEvents                     → System event logs
 - **Type:** `LocalStorageBooking[]`
 
 ### User Preferences
-- **Language:** `LanguageContext.tsx` → `bookme-language`
+- **Language:** `LanguageContext.tsx` → `booknor-language`
 - **Favorites View:** `UserFavorites.tsx` → `favorites-view-mode`
 - **Settings:** `UserSettings.tsx` → `userSettings`
 
@@ -72,7 +72,7 @@ systemEvents                     → System event logs
 ### Well-Typed (Ready)
 ✅ All Zustand stores
 ✅ pendingBookings / processedBookings
-✅ bookme-language
+✅ booknor-language
 
 ### Needs Types (Priority)
 ⚠️ Admin keys (adminUsers, adminRoles)
@@ -86,7 +86,7 @@ systemEvents                     → System event logs
 - Update existing helpers
 
 ### Phase 2: Centralize Access
-- Create `BookMeStorage` utility class
+- Create `BooknorStorage` utility class
 - Migrate all direct access to use it
 
 ### Phase 3: Zustand Migration

@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useTimeSlotGrouping } from "@/hooks/features/bookings";
 import type { ISelectedTimeSlot } from "@/components/features/bookings/types";
+import type { IDatePackage } from "@/hooks/features/bookings/useTimeSlotGrouping";
 
 export interface ITimeSlotDisplayProps {
   readonly slots: readonly ISelectedTimeSlot[];
@@ -38,12 +39,13 @@ export const TimeSlotDisplay: React.FC<ITimeSlotDisplayProps> = ({
   slots,
   recurringSlots = [],
   bookingType,
-  onRemoveSlot,
+   
+  onRemoveSlot: _onRemoveSlot,
   onClearAll,
   showClearButton = true,
   maxPreviewSlots = 5,
 }): JSX.Element => {
-  const { t } = useTranslation(["bookings"]);
+  const { t } = useTranslation("bookings");
   const { groupedSlots } = useTimeSlotGrouping(slots);
   const { groupedSlots: groupedRecurringSlots } = useTimeSlotGrouping(recurringSlots);
 
@@ -62,7 +64,7 @@ export const TimeSlotDisplay: React.FC<ITimeSlotDisplayProps> = ({
   ): JSX.Element => {
     const durationHours = group.totalDuration / 60;
     const durationText =
-      durationHours === 1 ? "1 time" : `${durationHours} timer`;
+      durationHours === 1 ? `1 ${t('time.hour', 'time')}` : `${durationHours} ${t('time.hours', 'timer')}`;
 
     return (
       <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg border border-blue-200">
@@ -80,7 +82,7 @@ export const TimeSlotDisplay: React.FC<ITimeSlotDisplayProps> = ({
         </div>
         {isRecurring && (
           <Badge variant="secondary" className="text-xs ml-2">
-            Gjentakende
+            {t('recurrence.recurring', 'Gjentakende')}
           </Badge>
         )}
       </div>
@@ -91,11 +93,7 @@ export const TimeSlotDisplay: React.FC<ITimeSlotDisplayProps> = ({
    * Render date package
    */
   const renderDatePackage = (
-    datePackage: {
-      readonly date: string;
-      readonly dateFormatted: string;
-      readonly groups: readonly any[];
-    },
+    datePackage: IDatePackage,
     isRecurring: boolean = false
   ): JSX.Element => {
     return (
@@ -106,8 +104,8 @@ export const TimeSlotDisplay: React.FC<ITimeSlotDisplayProps> = ({
             {datePackage.dateFormatted}
           </span>
         </div>
-        {datePackage.groups.map((group, groupIndex) => (
-          <div key={`${datePackage.date}-${groupIndex}`}>
+        {datePackage.groups.map((group, index) => (
+          <div key={`${datePackage.date}-${index}`}>
             {renderSlotGroup(group, isRecurring)}
           </div>
         ))}
@@ -118,12 +116,12 @@ export const TimeSlotDisplay: React.FC<ITimeSlotDisplayProps> = ({
   return (
     <div className="space-y-4">
       {/* Template slots for recurring bookings */}
-      {bookingType === "recurring" && recurringSlots.length > 0 && (
+      {bookingType === "recurring" && slots.length > 0 && (
         <div className="space-y-2">
           <div className="text-xs text-blue-600 font-medium mb-2">
-            Mal for gjentakelse
+            {t('sidebar.template_for_recurrence', 'Mal for gjentakelse')}
           </div>
-          {groupedSlots
+          {[...groupedSlots]
             .sort((a, b) => {
               const ad = new Date(a.date);
               const bd = new Date(b.date);
@@ -134,7 +132,7 @@ export const TimeSlotDisplay: React.FC<ITimeSlotDisplayProps> = ({
       )}
 
       {/* One-time booking slots */}
-      {bookingType === "one-time" && (
+      {bookingType === "one-time" && slots.length > 0 && (
         <div className="space-y-2">
           {groupedSlots.map((datePackage) =>
             renderDatePackage(datePackage, false)
@@ -146,14 +144,14 @@ export const TimeSlotDisplay: React.FC<ITimeSlotDisplayProps> = ({
       {bookingType === "recurring" && recurringSlots.length > 0 && (
         <div className="space-y-2">
           <div className="text-xs font-medium text-gray-600 mb-2">
-            Gjentakende forekomster ({recurringSlots.length} totalt):
+            {t('sidebar.recurring_instances', 'Gjentakende forekomster ({{count}} totalt):', { count: recurringSlots.length })}
           </div>
           {groupedRecurringSlots
             .slice(0, maxPreviewSlots)
             .map((datePackage) => renderDatePackage(datePackage, true))}
           {recurringSlots.length > maxPreviewSlots && (
             <div className="text-xs text-gray-500 text-center py-1">
-              ... og {recurringSlots.length - maxPreviewSlots} til
+              {t('sidebar.and_more', '... og {{count}} til', { count: recurringSlots.length - maxPreviewSlots })}
             </div>
           )}
         </div>
@@ -169,9 +167,10 @@ export const TimeSlotDisplay: React.FC<ITimeSlotDisplayProps> = ({
               size="sm"
               onClick={onClearAll}
               className="w-full text-gray-500 hover:text-red-500 hover:bg-red-50"
+              aria-label={t('sidebar.clear_all_slots', 'Fjern alle valgte tidspunkter')}
             >
               <X className="h-3 w-3 mr-1" />
-              Fjern alle valgte tidspunkter
+              {t('sidebar.clear_all_slots', 'Fjern alle valgte tidspunkter')}
             </Button>
           </div>
         )}

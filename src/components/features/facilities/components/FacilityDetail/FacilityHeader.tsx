@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useFacilityTypeTranslation } from "@/hooks/shared/useFacilityTypeTranslation";
 
 interface FacilityHeaderProps {
   readonly name: string;
@@ -26,13 +27,17 @@ export const FacilityHeader = ({
   onToggleFavorite
 }: FacilityHeaderProps): JSX.Element => {
   const { t } = useTranslation('common');
+  const translateFacilityType = useFacilityTypeTranslation();
 
   return (
     <div>
       <div className="flex items-center gap-3 mb-3">
-        <Badge variant="outline" className="bg-[#1e3a8a] bg-opacity-10 text-[#1e3a8a] border-[#1e3a8a]">
-          {type}
-        </Badge>
+        {/* Type Badge - only render if type is not empty */}
+        {type && (
+          <Badge variant="outline" className="bg-[#1e3a8a] bg-opacity-10 text-[#1e3a8a] border-[#1e3a8a]">
+            {translateFacilityType(type)}
+          </Badge>
+        )}
       </div>
 
       {/* Title with Like and Share buttons */}
@@ -53,7 +58,7 @@ export const FacilityHeader = ({
           >
             <Heart className={`h-4 w-4 mr-2 ${isFavorited ? 'fill-red-500 text-red-500' : ''}`} />
             <span className="text-sm font-medium">
-              {isFavorited ? t('actions.liked') : t('actions.like')}
+              {isFavorited ? t('actions.like') : t('actions.like')}
             </span>
           </Button>
 

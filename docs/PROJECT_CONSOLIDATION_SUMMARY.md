@@ -1,14 +1,14 @@
 # Project Consolidation Summary
 
 **Date**: October 27, 2025
-**Project**: BookMe Portal
+**Project**: Booknor Portal
 **Scope**: Backend consolidation and RBAC testing
 
 ---
 
 ## Overview
 
-Successfully consolidated the BookMe project from a dual-repository structure (separate backend) to a **single Supabase-powered React application**. All authentication and role-based access control has been tested and verified working.
+Successfully consolidated the Booknor project from a dual-repository structure (separate backend) to a **single Supabase-powered React application**. All authentication and role-based access control has been tested and verified working.
 
 ---
 
@@ -31,7 +31,7 @@ Successfully consolidated the BookMe project from a dual-repository structure (s
 
 **Before**:
 ```
-bookme/
+booknor/
 ├── frontend/ (React app)
 ├── backend/  (Supabase + Docker)
 └── (two separate projects)
@@ -39,7 +39,7 @@ bookme/
 
 **After**:
 ```
-bookme/
+booknor/
 ├── src/         (React app)
 ├── supabase/    (migrations, config)
 └── (single unified project)
@@ -94,7 +94,7 @@ Comprehensive testing completed for all user types:
 | **Staff** | staff@drammen.kommune.no | ✅ PASS | Can manage facilities & all bookings |
 | **Admin** | admin@drammen.kommune.no | ✅ PASS | Full organization management |
 | **Owner** | owner@drammen.kommune.no | ✅ PASS | Complete organization control |
-| **Platform Admin** | superadmin@bookme.no | ✅ PASS | Platform-wide access |
+| **Platform Admin** | superadmin@booknor.no | ✅ PASS | Platform-wide access |
 
 ### Test Scripts Created
 
@@ -395,7 +395,7 @@ npx supabase gen types typescript --local > src/types/database.ts
 
 ✅ **Project consolidation complete!**
 
-The BookMe project is now a **single, unified Supabase-powered React application** with:
+The Booknor project is now a **single, unified Supabase-powered React application** with:
 - Simplified architecture
 - Comprehensive documentation
 - Verified authentication and authorization

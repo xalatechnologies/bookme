@@ -28,8 +28,6 @@ export const ViewHeader: React.FC<ViewHeaderProps> = ({
         return t('viewModes.list');
       case "map":
         return t('viewModes.map');
-      case "calendar":
-        return t('common.calendar', 'Kalender');
       default:
         return t('viewModes.grid');
     }

@@ -1,4 +1,4 @@
-# BookMe Refactoring: Quick Reference Guide
+# Booknor Refactoring: Quick Reference Guide
 
 ## TL;DR - What Needs to Change
 

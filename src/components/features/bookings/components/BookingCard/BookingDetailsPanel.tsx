@@ -85,13 +85,17 @@ const DurationLabel = ({
   startsAt: string;
   endsAt: string;
 }): JSX.Element => {
-  const { t } = useTranslation("booking");
+  const { i18n } = useTranslation("booking");
   const start = new Date(startsAt);
   const end = new Date(endsAt);
   const hours = (end.getTime() - start.getTime()) / (1000 * 60 * 60);
-  const label =
-    hours === 1 ? `1 ${t("time.hour")}` : `${hours} ${t("time.hours")}`;
-  return <>{label}</>;
+  
+  // Use proper language-specific formatting
+  if (i18n.language === 'no') {
+    return <>{hours === 1 ? `1 time` : `${hours} timer`}</>;
+  } else {
+    return <>{hours === 1 ? `1 hour` : `${hours} hours`}</>;
+  }
 };
 
 const formatPrice = (cents: number): string => {
@@ -175,9 +179,32 @@ export const BookingDetailsPanel = ({
     booking.status === "pending" ||
     booking.status === "awaiting_payment" ||
     booking.status === "paid";
+  const _canDelete = booking.status === "cancelled";
   const canShare = booking.status === "paid" || booking.status === "completed";
   const canAddToCalendar =
     booking.status === "paid" || booking.status === "completed";
+
+  // Determine the appropriate cancel/delete action based on booking status
+  const getCancelDeleteButtonProps = () => {
+    if (booking.status === 'cancelled') {
+      // If already cancelled, the action is to permanently delete
+      return {
+        label: t("actions.delete_permanently" as any),
+        iconColor: "text-red-600 border-red-600 hover:text-red-700 hover:border-red-700 hover:bg-red-50"
+      };
+    } else if (canCancel) {
+      // If not cancelled but can be cancelled, the action is to cancel the booking
+      return {
+        label: t("details.cancelBooking"),
+        iconColor: "text-red-600 hover:text-red-700 hover:bg-red-50"
+      };
+    } else {
+      // If neither can cancel nor delete
+      return null;
+    }
+  };
+
+  const cancelDeleteButtonProps = getCancelDeleteButtonProps();
 
   return (
     <div
@@ -327,15 +354,15 @@ export const BookingDetailsPanel = ({
                 </Button>
               )}
 
-              {canCancel && onCancel && (
+              {cancelDeleteButtonProps && onCancel && (
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={handleCancel}
-                  className="flex items-center justify-center gap-2 text-red-600 hover:text-red-700 hover:bg-red-50"
+                  className={`flex items-center justify-center gap-2 ${cancelDeleteButtonProps.iconColor}`}
                 >
                   <Trash2 className="w-4 h-4" />
-                  {t("details.cancelBooking")}
+                  {cancelDeleteButtonProps.label}
                 </Button>
               )}
 

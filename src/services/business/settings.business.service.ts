@@ -60,6 +60,8 @@ export interface IGeneralSettings {
   readonly currency: string;
   readonly businessHoursStart: string;
   readonly businessHoursEnd: string;
+  readonly landingPage?: 'dashboard' | 'bookings' | 'messages';
+  readonly calendarView?: 'month' | 'week' | 'day';
 }
 
 export interface IOrganizationSettings {
@@ -82,6 +84,8 @@ export const getDefaultSettings = (): IOrganizationSettings => ({
     currency: 'NOK',
     businessHoursStart: '09:00',
     businessHoursEnd: '17:00',
+    landingPage: 'dashboard',
+    calendarView: 'month'
   },
   email: {
     enabled: false,

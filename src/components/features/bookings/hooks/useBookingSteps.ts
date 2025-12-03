@@ -1,6 +1,6 @@
 import { useState, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { IBookingFormData, BookingType } from '@/components/features/bookings/types';
+import { IBookingFormData } from '@/components/features/bookings/types';
 import type { RecurrencePattern } from '@/components/features/bookings/utils/recurrence';
 
 /**
@@ -39,7 +39,7 @@ export const useBookingSteps = (
   selectedSlotsCount: number,
   recurrencePattern: RecurrencePattern | null
 ) => {
-  const { t } = useTranslation('bookings');
+  const { t } = useTranslation('booking');
   const [currentStep, setCurrentStep] = useState<BookingStep>('calendar');
 
   /**

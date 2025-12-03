@@ -14,7 +14,7 @@
 2. ✅ **Staff Member** (staff@drammen.kommune.no)
 3. ✅ **Organization Admin** (admin@drammen.kommune.no)
 4. ✅ **Organization Owner** (owner@drammen.kommune.no)
-5. ✅ **Platform Super Admin** (superadmin@bookme.no)
+5. ✅ **Platform Super Admin** (superadmin@booknor.no)
 
 ---
 
@@ -132,7 +132,7 @@
 
 ---
 
-### 5. Platform Super Admin (superadmin@bookme.no)
+### 5. Platform Super Admin (superadmin@booknor.no)
 
 **Role**: `platform_admin`
 **Organization**: None (platform-level)
@@ -218,7 +218,7 @@ All test users use the same password: `Test123!`
 | staff@drammen.kommune.no | staff | Test123! | Drammen Kommune |
 | admin@drammen.kommune.no | admin | Test123! | Drammen Kommune |
 | owner@drammen.kommune.no | owner | Test123! | Drammen Kommune |
-| superadmin@bookme.no | platform_admin | Test123! | (None) |
+| superadmin@booknor.no | platform_admin | Test123! | (None) |
 
 ---
 

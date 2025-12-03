@@ -14,7 +14,7 @@ import {
   type BookingWithDetails,
 } from '@/services/supabase/bookings.service';
 import { useOrganizationId } from '@/hooks/useOrganizationId';
-import { useBookingUIStore } from '@/stores/bookingUIStore';
+import { useBookingUIStore, type TBookingView, type TBookingSortBy } from '@/stores/bookingUIStore';
 import {
   filterBookings,
   sortBookings,
@@ -34,6 +34,7 @@ import type { Database } from '@/types/database';
 
 type Booking = Database['public']['Tables']['bookings']['Row'];
 type BookingUpdate = Database['public']['Tables']['bookings']['Update'];
+type BookingStatus = Database['public']['Enums']['booking_status'];
 
 export interface IUseBookingManagementReturn {
   // Data
@@ -60,14 +61,14 @@ export interface IUseBookingManagementReturn {
   readonly calendarDate: Date;
 
   // UI Actions
-  readonly setView: (view: any) => void;
+  readonly setView: (view: TBookingView) => void;
   readonly toggleFilters: () => void;
   readonly setSearchTerm: (term: string) => void;
-  readonly toggleStatusFilter: (status: string) => void;
+  readonly toggleStatusFilter: (status: BookingStatus) => void;
   readonly toggleFacilityFilter: (facilityId: string) => void;
   readonly setDateRange: (range: { startDate: Date | null; endDate: Date | null }) => void;
   readonly clearDateRange: () => void;
-  readonly toggleSort: (sortBy: any) => void;
+  readonly toggleSort: (sortBy: TBookingSortBy) => void;
   readonly toggleBookingSelection: (id: string) => void;
   readonly selectAllBookings: () => void;
   readonly clearSelection: () => void;
@@ -191,7 +192,7 @@ export const useBookingManagement = (): IUseBookingManagementReturn => {
     // Apply business logic filters
     const filters: IBookingFilters = {
       searchTerm,
-      statusFilter: statusFilter as any[],
+      statusFilter: statusFilter as readonly BookingStatus[],
       facilityIds: facilityFilter,
       dateRange: dateRange.startDate && dateRange.endDate
         ? {
@@ -205,8 +206,8 @@ export const useBookingManagement = (): IUseBookingManagementReturn => {
 
     // Apply business logic sorting
     const sortConfig: IBookingSortConfig = {
-      sortBy: sortBy as any,
-      sortOrder: sortOrder as any,
+      sortBy: sortBy as IBookingSortConfig['sortBy'],
+      sortOrder: sortOrder as IBookingSortConfig['sortOrder'],
     };
 
     return sortBookings(filtered, sortConfig) as readonly BookingWithDetails[];
@@ -241,7 +242,7 @@ export const useBookingManagement = (): IUseBookingManagementReturn => {
         throw new Error(validation.reason || 'Cannot cancel booking');
       }
 
-      await cancelBookingMutation.mutateAsync(id);
+      await cancelBookingMutation.mutateAsync({ id });
     },
     [bookings, cancelBookingMutation]
   );
@@ -261,7 +262,7 @@ export const useBookingManagement = (): IUseBookingManagementReturn => {
       }
 
       // Cancel all bookings
-      await Promise.all(ids.map((id) => cancelBookingMutation.mutateAsync(id)));
+      await Promise.all(ids.map((id) => cancelBookingMutation.mutateAsync({ id })));
       clearSelection();
     },
     [bookings, cancelBookingMutation, clearSelection]
@@ -271,7 +272,7 @@ export const useBookingManagement = (): IUseBookingManagementReturn => {
     async (id: string, status: string): Promise<void> => {
       await updateBookingMutation.mutateAsync({
         id,
-        updates: { status: status as any },
+        updates: { status: status as BookingStatus },
       });
     },
     [updateBookingMutation]
@@ -283,7 +284,7 @@ export const useBookingManagement = (): IUseBookingManagementReturn => {
         ids.map((id) =>
           updateBookingMutation.mutateAsync({
             id,
-            updates: { status: status as any },
+            updates: { status: status as BookingStatus },
           })
         )
       );
@@ -324,7 +325,7 @@ export const useBookingManagement = (): IUseBookingManagementReturn => {
     setView,
     toggleFilters,
     setSearchTerm,
-    toggleStatusFilter,
+    toggleStatusFilter: toggleStatusFilter as (status: BookingStatus) => void,
     toggleFacilityFilter,
     setDateRange,
     clearDateRange,

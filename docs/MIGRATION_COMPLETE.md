@@ -14,7 +14,7 @@ All required database migrations have been successfully created to align the Sup
 - Implementation priority recommendations
 
 ### 2. Database Migrations Created ✅
-**Location**: `/Volumes/Development/Xala Products/bookme/supabase/migrations/`
+**Location**: `/Volumes/Development/Xala Products/booknor/supabase/migrations/`
 
 **8 Production-Ready SQL Migrations**:
 1. `20231026000001_add_zones.sql` - Zones/areas within facilities
@@ -37,7 +37,7 @@ All required database migrations have been successfully created to align the Sup
 - ~2,500 lines of SQL code
 
 ### 3. Testing Script ✅
-**File**: `/Volumes/Development/Xala Products/bookme/scripts/test-new-migrations.sh`
+**File**: `/Volumes/Development/Xala Products/booknor/scripts/test-new-migrations.sh`
 - Automated migration testing
 - Error detection and reporting
 - Success/failure summary
@@ -61,7 +61,7 @@ All required database migrations have been successfully created to align the Sup
 ### Step 1: Start Docker Supabase Backend
 
 ```bash
-cd "/Volumes/Development/Xala Products/bookme"
+cd "/Volumes/Development/Xala Products/booknor"
 
 # Start all services
 ./scripts/start-dev.sh
@@ -265,13 +265,13 @@ Each migration can be rolled back independently if needed:
 
 ## Files Reference
 
-### In Frontend Project (`~/Documents/xaheen/bookme/`)
+### In Frontend Project (`~/Documents/xaheen/booknor/`)
 - `CLAUDE.md` - Updated with Docker/Supabase info
 - `INTEGRATION_GUIDE.md` - Frontend integration steps
 - `SCHEMA_GAP_ANALYSIS.md` - Gap analysis and specs
 - `MIGRATION_COMPLETE.md` - This file
 
-### In Docker Project (`/Volumes/Development/Xala Products/bookme/`)
+### In Docker Project (`/Volumes/Development/Xala Products/booknor/`)
 - `supabase/migrations/20231026000001_add_zones.sql`
 - `supabase/migrations/20231026000002_enhance_facilities.sql`
 - `supabase/migrations/20231026000003_add_additional_services.sql`
@@ -289,7 +289,7 @@ Each migration can be rolled back independently if needed:
 
 1. **Test Migrations**:
    ```bash
-   cd "/Volumes/Development/Xala Products/bookme"
+   cd "/Volumes/Development/Xala Products/booknor"
    ./scripts/test-new-migrations.sh
    ```
 

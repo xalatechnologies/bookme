@@ -6,8 +6,31 @@
  */
 
 import React from 'react';
-import { Wifi, Car, Camera, Volume2, CheckCircle } from 'lucide-react';
+import { 
+  Wifi, 
+  Car, 
+  Camera, 
+  Volume2, 
+  CheckCircle,
+  Monitor,
+  Utensils,
+  Coffee,
+  Lock,
+  ShowerHead,
+  Waves,
+  Users,
+  Tent,
+  Home,
+  Wrench,
+  Shield,
+  Briefcase,
+  Video,
+  Lightbulb,
+  Circle,
+  Volleyball
+} from 'lucide-react';
 import { getAmenityIconType, type AmenityIconType } from '@/utils/facility/amenityIconUtils';
+import { useAmenityTranslation } from '@/hooks/shared/useAmenityTranslation';
 
 interface AmenityGridProps {
   readonly items: readonly string[];
@@ -44,14 +67,65 @@ const getVariantClasses = (variant: 'default' | 'blue' | 'green'): { readonly co
  */
 const getIconElement = (iconType: AmenityIconType): JSX.Element => {
   switch (iconType) {
+    // Technology & Media
     case 'wifi':
       return <Wifi className="h-4 w-4" />;
-    case 'car':
-      return <Car className="h-4 w-4" />;
+    case 'projector':
+      return <Monitor className="h-4 w-4" />;
     case 'camera':
       return <Camera className="h-4 w-4" />;
-    case 'volume':
+    case 'sound':
       return <Volume2 className="h-4 w-4" />;
+    case 'screen':
+      return <Monitor className="h-4 w-4" />;
+    case 'whiteboard':
+      return <Monitor className="h-4 w-4" />;
+    case 'video':
+      return <Video className="h-4 w-4" />;
+    
+    // Facilities & Infrastructure
+    case 'car':
+      return <Car className="h-4 w-4" />;
+    case 'toilet':
+      return <Users className="h-4 w-4" />;
+    case 'kitchen':
+      return <Utensils className="h-4 w-4" />;
+    case 'cafeteria':
+      return <Coffee className="h-4 w-4" />;
+    case 'locker':
+      return <Lock className="h-4 w-4" />;
+    case 'shower':
+      return <ShowerHead className="h-4 w-4" />;
+    case 'light':
+      return <Lightbulb className="h-4 w-4" />;
+    
+    // Sports & Activities
+    case 'football':
+      return <Circle className="h-4 w-4" />;
+    case 'basketball':
+      return <Circle className="h-4 w-4" />;
+    case 'volleyball':
+      return <Volleyball className="h-4 w-4" />;
+    case 'pool':
+      return <Waves className="h-4 w-4" />;
+    case 'tribune':
+      return <Users className="h-4 w-4" />;
+    case 'stage':
+      return <Tent className="h-4 w-4" />;
+    case 'grass':
+      return <Home className="h-4 w-4" />;
+    case 'indoor':
+      return <Home className="h-4 w-4" />;
+    
+    // Safety & Equipment
+    case 'equipment':
+      return <Wrench className="h-4 w-4" />;
+    case 'safety':
+      return <Shield className="h-4 w-4" />;
+    case 'professional':
+      return <Briefcase className="h-4 w-4" />;
+    
+    // Default
     case 'check':
     default:
       return <CheckCircle className="h-4 w-4" />;
@@ -66,6 +140,8 @@ export const AmenityGrid: React.FC<AmenityGridProps> = ({
   variant = 'default',
   emptyMessage
 }): JSX.Element | null => {
+  const translateAmenity = useAmenityTranslation();
+  
   // If no items and no empty message, don't render anything
   if (items.length === 0 && !emptyMessage) {
     return null;
@@ -92,7 +168,7 @@ export const AmenityGrid: React.FC<AmenityGridProps> = ({
             <div className={`${classes.icon} mr-3`}>
               {getIconElement(iconType)}
             </div>
-            <span className="text-gray-700">{item}</span>
+            <span className="text-gray-700">{translateAmenity(item)}</span>
           </div>
         );
       })}

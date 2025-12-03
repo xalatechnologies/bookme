@@ -12,6 +12,8 @@ module.exports = {
     "@typescript-eslint/no-explicit-any": "error",
     "@typescript-eslint/consistent-type-definitions": ["error", "interface"],
     "@typescript-eslint/array-type": ["error", { default: "readonly-array" }],
+    "no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_", "caughtErrorsIgnorePattern": "^_" }],
     "no-restricted-syntax": ["error", { selector: "TSEnumDeclaration", message: "Use string unions instead of enums" }]
   },
   ignorePatterns: ["dist", "node_modules"]

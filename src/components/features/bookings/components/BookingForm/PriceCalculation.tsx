@@ -127,7 +127,7 @@ export const PriceCalculation: React.FC<IPriceCalculationProps> = ({
       requiresApproval,
       totalOccurrences: allSlots.length,
     };
-  }, [selectedSlots, recurringSlots, actorType, activityType, bookingType]);
+  }, [selectedSlots, recurringSlots, actorType, activityType, bookingType, t, getActorDescription, getActivityDescription, getActorMultiplier, getActivityAdjustment]);
 
   if (bookingType === 'recurring' ? recurringSlots.length === 0 : selectedSlots.length === 0) {
     return null;

@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { useOrganizationId } from "@/hooks/useOrganizationId";
@@ -42,7 +43,7 @@ import type { IUseDashboardManagementReturn } from "@/hooks/features/dashboard/u
 /**
  * Get current day of week localized
  */
-const getDayOfWeek = (t: (key: string) => string): string => {
+const getDayOfWeek = (): string => {
   const dayIndex = new Date().getDay();
   const dayKeys = [
     "sunday",
@@ -53,7 +54,7 @@ const getDayOfWeek = (t: (key: string) => string): string => {
     "friday",
     "saturday",
   ];
-  return t(`user:dashboard.days.${dayKeys[dayIndex]}`);
+  return dayKeys[dayIndex];
 };
 
 /**
@@ -181,7 +182,7 @@ const UserDashboard = (): JSX.Element => {
   // ============================================================================
 
   const handleNewBooking = (): void => {
-    navigate("/user/facilities");
+    navigate("/facilities");
   };
 
   const handleViewFacility = (facilityId: string): void => {
@@ -216,7 +217,7 @@ const UserDashboard = (): JSX.Element => {
               <div className="flex items-center gap-3 mb-3">
                 <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
                   {t("user:dashboard.greeting", {
-                    dayOfWeek: getDayOfWeek(t),
+                    dayOfWeek: t(`user:dashboard.days.${getDayOfWeek()}` as "user:dashboard.days.sunday" | "user:dashboard.days.monday" | "user:dashboard.days.tuesday" | "user:dashboard.days.wednesday" | "user:dashboard.days.thursday" | "user:dashboard.days.friday" | "user:dashboard.days.saturday"),
                     name: dashboard.user.name,
                   })}{" "}
                   👋
@@ -270,14 +271,13 @@ const UserDashboard = (): JSX.Element => {
               </p>
             </div>
             <div className="ml-6">
-              <Button
+              <PrimaryButton
                 onClick={handleNewBooking}
-                className="bg-blue-600 hover:bg-blue-700 text-lg px-6 py-3 shadow-lg"
                 size="lg"
               >
                 <Plus className="h-5 w-5 mr-2" />
                 {t("user:dashboard.new_booking")}
-              </Button>
+              </PrimaryButton>
             </div>
           </div>
         </CardContent>
@@ -379,26 +379,10 @@ const UserDashboard = (): JSX.Element => {
                   address={facility.address}
                   type={facility.type}
                   capacity={facility.capacity}
-                  amenities={facility.amenities}
                   image={facility.image}
-                  rating={facility.rating}
-                  price={facility.price}
                   description={facility.description}
                   availability={facility.availability}
                 />
-
-                {/*
-                  Recommendation Badge Overlay
-                  Positioned with high z-index (z-40) to appear above the card content
-                  but below the heart/share buttons (z-30) for proper layering
-                */}
-                {facility.recommendationReason && (
-                  <div className="absolute top-2 left-2 z-40">
-                    <Badge className="bg-blue-600 text-white text-xs px-2 py-1">
-                      {facility.recommendationReason}
-                    </Badge>
-                  </div>
-                )}
               </div>
             ))}
           </div>
@@ -411,7 +395,7 @@ const UserDashboard = (): JSX.Element => {
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2">
               <Bell className="h-5 w-5" />
-              {t("user:dashboard.system_messages")}
+              {t("user:dashboard.system_messages.title")}
               {dashboard.unreadMessagesCount > 0 && (
                 <Badge className="bg-red-500 text-white">
                   {dashboard.unreadMessagesCount}

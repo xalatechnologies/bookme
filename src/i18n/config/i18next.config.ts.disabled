@@ -89,7 +89,7 @@ i18n
     detection: {
       order: ['localStorage', 'navigator', 'htmlTag'],
       caches: ['localStorage'],
-      lookupLocalStorage: 'bookme-language',
+      lookupLocalStorage: 'booknor-language',
       convertDetectedLanguage: (lng: string) => {
         // Convert NO/EN to no/en for consistency
         const lower = lng.toLowerCase();

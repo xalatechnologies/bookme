@@ -9,7 +9,7 @@ test.describe('Support - Ticket Management', () => {
   });
 
   test('should display support tickets page', async ({ page }) => {
-    await expect(page).toHaveTitle(/Support|Help|BookMe/);
+    await expect(page).toHaveTitle(/Support|Help|Booknor/);
 
     // Should have support header
     await expect(

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import type { IBookingEvent } from '@/types/calendar';
 
 interface DayViewProps {
@@ -16,6 +17,8 @@ export const DayView: React.FC<DayViewProps> = ({
   onEventHover,
   onEventRightClick
 }): JSX.Element => {
+  const { i18n } = useTranslation('common');
+
   // Filter events for the current day
   const getDayEvents = (hour: number): readonly IBookingEvent[] => {
     return events.filter((event) => {
@@ -44,18 +47,13 @@ export const DayView: React.FC<DayViewProps> = ({
     });
   };
 
+  // Get the current locale based on i18n language
+  const getCurrentLocale = (): string => {
+    return i18n.language === 'no' ? 'nb-NO' : 'en-US';
+  };
+
   return (
     <div className="bg-white dark:bg-gray-800">
-      <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-        <div className="text-lg font-semibold text-gray-900 dark:text-white">
-          {currentDate.toLocaleDateString('no-NO', {
-            weekday: 'long',
-            day: 'numeric',
-            month: 'long'
-          })}
-        </div>
-      </div>
-
       {/* Time slots for day view */}
       <div className="max-h-96 overflow-y-auto">
         {Array.from({ length: 24 }, (_, hour) => {
@@ -118,12 +116,12 @@ export const DayView: React.FC<DayViewProps> = ({
                     >
                       <div className="font-medium">{event.title}</div>
                       <div className="text-gray-600 dark:text-gray-400 text-xs">
-                        {new Date(event.start).toLocaleTimeString('no-NO', {
+                        {new Date(event.start).toLocaleTimeString(getCurrentLocale(), {
                           hour: '2-digit',
                           minute: '2-digit'
                         })}{' '}
                         -{' '}
-                        {new Date(event.end).toLocaleTimeString('no-NO', {
+                        {new Date(event.end).toLocaleTimeString(getCurrentLocale(), {
                           hour: '2-digit',
                           minute: '2-digit'
                         })}

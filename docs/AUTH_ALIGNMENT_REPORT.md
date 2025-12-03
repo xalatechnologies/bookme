@@ -10,7 +10,7 @@
 
 ### Critical Finding: Dual Authentication Systems
 
-The BookMe application currently operates with **TWO SEPARATE AUTHENTICATION CONTEXTS**:
+The Booknor application currently operates with **TWO SEPARATE AUTHENTICATION CONTEXTS**:
 
 1. **AdminAuthContext** (Mock) - Used by admin panel
 2. **AuthContext** (Real) - Used by user panel

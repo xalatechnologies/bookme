@@ -1,8 +1,30 @@
 "use client";
 
 import { create } from "zustand";
-import { devtools, persist } from "zustand/middleware";
+import { devtools, persist, createJSONStorage, StateStorage } from "zustand/middleware";
 import { ICartItem, ICartState } from "@/types/cart";
+
+/**
+ * Custom replacer function for JSON serialization
+ * Converts Date objects to ISO strings with a special marker
+ */
+const replacer = (_key: string, value: unknown): unknown => {
+  if (value instanceof Date) {
+    return { __type: 'Date', value: value.toISOString() };
+  }
+  return value;
+};
+
+/**
+ * Custom reviver function for JSON deserialization
+ * Converts ISO strings back to Date objects
+ */
+const reviver = (_key: string, value: unknown): unknown => {
+  if (value && typeof value === 'object' && value !== null && '__type' in value && value.__type === 'Date' && 'value' in value && typeof value.value === 'string') {
+    return new Date(value.value);
+  }
+  return value;
+};
 
 /**
  * Cart store using Zustand with persistence
@@ -159,11 +181,11 @@ export const useCartStore = create<ICartState>()(
         },
 
         /**
-         * Get items by booking type
-         * Filters items based on specified booking type
+         * Get items by type
+         * Filters items by booking type
          * 
          * @param type - Booking type to filter by
-         * @returns Array of filtered cart items
+         * @returns Array of cart items with specified type
          */
         getItemsByType: (type: 'one-time' | 'recurring'): readonly ICartItem[] => {
           return get().items.filter(item => item.bookingType === type);
@@ -172,6 +194,7 @@ export const useCartStore = create<ICartState>()(
       {
         name: "cart-store", // localStorage key
         version: 1, // Version for migration if needed
+        storage: createJSONStorage(() => localStorage, { replacer, reviver }),
       }
     ),
     {

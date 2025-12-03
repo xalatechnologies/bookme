@@ -62,21 +62,21 @@ export function RecurrencePatternSelector({
   );
 
   const weekdays = [
-    { id: 0, name: t('common:time.weekdays.sunday'), short: t('common:time.weekdays.sunday').substring(0, 3) },
     { id: 1, name: t('common:time.weekdays.monday'), short: t('common:time.weekdays.monday').substring(0, 3) },
     { id: 2, name: t('common:time.weekdays.tuesday'), short: t('common:time.weekdays.tuesday').substring(0, 3) },
     { id: 3, name: t('common:time.weekdays.wednesday'), short: t('common:time.weekdays.wednesday').substring(0, 3) },
     { id: 4, name: t('common:time.weekdays.thursday'), short: t('common:time.weekdays.thursday').substring(0, 3) },
     { id: 5, name: t('common:time.weekdays.friday'), short: t('common:time.weekdays.friday').substring(0, 3) },
-    { id: 6, name: t('common:time.weekdays.saturday'), short: t('common:time.weekdays.saturday').substring(0, 3) }
+    { id: 6, name: t('common:time.weekdays.saturday'), short: t('common:time.weekdays.saturday').substring(0, 3) },
+    { id: 0, name: t('common:time.weekdays.sunday'), short: t('common:time.weekdays.sunday').substring(0, 3) }
   ];
 
   const monthlyPatterns = [
-    { id: 'first', label: t('booking:recurrence.first', 'Første') },
-    { id: 'second', label: t('booking:recurrence.second', 'Andre') },
-    { id: 'third', label: t('booking:recurrence.third', 'Tredje') },
-    { id: 'fourth', label: t('booking:recurrence.fourth', 'Fjerde') },
-    { id: 'last', label: t('booking:recurrence.last', 'Siste') }
+    { id: 'first', label: t('booking:recurrence.first', 'First') },
+    { id: 'second', label: t('booking:recurrence.second', 'Second') },
+    { id: 'third', label: t('booking:recurrence.third', 'Third') },
+    { id: 'fourth', label: t('booking:recurrence.fourth', 'Fourth') },
+    { id: 'last', label: t('booking:recurrence.last', 'Last') }
   ];
 
 
@@ -169,27 +169,27 @@ export function RecurrencePatternSelector({
     onPatternChange(localPattern);
   }, [localPattern]); // Remove onPatternChange from dependencies to prevent infinite loop
 
-  const validation = recurrenceEngine.validatePattern(localPattern);
+  const validation = recurrenceEngine.validatePattern(localPattern, t);
 
   return (
     <Card>
       <CardHeader>
         <CardTitle className="text-lg font-semibold text-gray-900">
-          {t('booking:recurrence.title', 'Gjentakende mønster')}
+          {t('booking:recurrence.title', 'Recurrence pattern')}
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Pattern Type Selection */}
         <div>
           <Label className="text-sm font-medium text-gray-700 mb-3 block">
-            {t('booking:recurrence.select_pattern', 'Velg mønster')}
+            {t('booking:recurrence.select_pattern', 'Choose pattern')}
           </Label>
           <div className="grid grid-cols-2 gap-3">
               {[
-              { id: 'weekly', label: t('booking:recurrence.weekly', 'Ukentlig'), description: t('booking:recurrence.weekly_desc', 'Hver uke') },
-              { id: 'biweekly', label: t('booking:recurrence.biweekly', 'Annenhver uke'), description: t('booking:recurrence.biweekly_desc', 'Hver 2. uke') },
-              { id: 'monthly', label: t('booking:recurrence.monthly', 'Månedlig'), description: t('booking:recurrence.monthly_desc', 'Hver måned') },
-              { id: 'custom', label: t('booking:recurrence.custom', 'Egendefinert'), description: t('booking:recurrence.custom_desc', 'Tilpasset intervall') }
+              { id: 'weekly', label: t('booking:recurrence.weekly', 'Weekly'), description: t('booking:recurrence.weekly_desc', 'Every week') },
+              { id: 'biweekly', label: t('booking:recurrence.biweekly', 'Every other week'), description: t('booking:recurrence.biweekly_desc', 'Every 2nd week') },
+              { id: 'monthly', label: t('booking:recurrence.monthly', 'Monthly'), description: t('booking:recurrence.monthly_desc', 'Every month') },
+              { id: 'custom', label: t('booking:recurrence.custom', 'Custom'), description: t('booking:recurrence.custom_desc', 'Custom interval') }
             ].map((type) => (
               <Button
                 key={type.id}
@@ -211,7 +211,7 @@ export function RecurrencePatternSelector({
         {localPattern && (localPattern.type === 'weekly' || localPattern.type === 'biweekly' || localPattern.type === 'custom') && (
           <div>
             <Label className="text-sm font-medium text-gray-700 mb-3 block">
-              {t('booking:recurrence.select_days', 'Velg dager')}
+              {t('booking:recurrence.select_days', 'Select days')}
             </Label>
             <div className="grid grid-cols-7 gap-2">
               {weekdays.map((weekday) => (
@@ -239,7 +239,7 @@ export function RecurrencePatternSelector({
           <div className="space-y-4">
             <div>
               <Label className="text-sm font-medium text-gray-700 mb-2 block">
-                {t('booking:recurrence.which_week', 'Hvilken uke i måneden')}
+                {t('booking:recurrence.which_week', 'Which week of the month')}
               </Label>
               <Select
                 value={localPattern.monthlyPattern || 'first'}
@@ -247,7 +247,7 @@ export function RecurrencePatternSelector({
                 disabled={disabled}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder={t('common:placeholders.selectWeek', 'Velg uke')} />
+                  <SelectValue placeholder={t('common:placeholders.selectWeek', 'Select week')} />
                 </SelectTrigger>
                 <SelectContent>
                   {monthlyPatterns.map((pattern) => (
@@ -261,7 +261,7 @@ export function RecurrencePatternSelector({
 
             <div>
               <Label className="text-sm font-medium text-gray-700 mb-2 block">
-                {t('booking:recurrence.which_day', 'Hvilken dag')}
+                {t('booking:recurrence.which_day', 'Which day')}
               </Label>
               <Select
                 value={localPattern.monthlyWeekday?.toString() || '1'}
@@ -269,7 +269,7 @@ export function RecurrencePatternSelector({
                 disabled={disabled}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder={t('common:placeholders.selectDay', 'Velg dag')} />
+                  <SelectValue placeholder={t('common:placeholders.selectDay', 'Select day')} />
                 </SelectTrigger>
                 <SelectContent>
                   {weekdays.map((weekday) => (
@@ -287,7 +287,7 @@ export function RecurrencePatternSelector({
         {localPattern && localPattern.type === 'custom' && (
           <div>
             <Label className="text-sm font-medium text-gray-700 mb-2 block">
-              {t('booking:recurrence.interval_days', 'Intervall (dager)')}
+              {t('booking:recurrence.interval_days', 'Interval (days)')}
             </Label>
             <Input
               type="number"
@@ -303,7 +303,7 @@ export function RecurrencePatternSelector({
         {/* End Date Selection */}
         <div>
           <Label className="text-sm font-medium text-gray-700 mb-2 block">
-            {t('common:placeholders.selectEndDate', 'Sluttdato (valgfri)')}
+            {t('common:placeholders.selectEndDate', 'End date (optional)')}
           </Label>
           <Input
             type="date"
@@ -319,14 +319,14 @@ export function RecurrencePatternSelector({
             disabled={disabled}
             className="w-full"
             min={format(new Date(), 'yyyy-MM-dd')}
-            placeholder={t('common:placeholders.selectEndDate', 'Velg sluttdato')}
+            placeholder={t('common:placeholders.selectEndDate', 'Select end date')}
           />
         </div>
 
         {/* Max Occurrences */}
         <div>
           <Label className="text-sm font-medium text-gray-700 mb-2 block">
-            {t('booking:recurrence.max_occurrences', 'Maks antall forekomster (valgfri)')}
+            {t('booking:recurrence.max_occurrences', 'Max occurrences (optional)')}
           </Label>
             <Input
             type="number"
@@ -344,7 +344,7 @@ export function RecurrencePatternSelector({
         {localPattern && (
           <div className="p-3 bg-gray-100 rounded-lg">
             <p className="text-sm text-gray-900">
-              <strong>{t('booking:recurrence.pattern', 'Mønster')}:</strong> {recurrenceEngine.getPatternDescription(localPattern)}
+              <strong>{t('booking:recurrence.pattern', 'Pattern')}:</strong> {recurrenceEngine.getPatternDescription(localPattern, t)}
             </p>
           </div>
         )}
@@ -352,7 +352,7 @@ export function RecurrencePatternSelector({
         {/* Validation Errors */}
         {!validation.isValid && (
           <div className="p-3 bg-red-50 rounded-lg">
-            <p className="text-sm text-red-800 font-medium mb-2">{t('booking:recurrence.errors_title', 'Feil i mønster:')}</p>
+            <p className="text-sm text-red-800 font-medium mb-2">{t('booking:recurrence.errors_title', 'Pattern error:')}</p>
             <ul className="text-sm text-red-700 space-y-1">
               {validation.errors.map((error, index) => (
                 <li key={index}>• {error}</li>

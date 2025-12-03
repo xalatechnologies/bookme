@@ -2,15 +2,13 @@
 
 // External imports
 import React, { useMemo } from 'react';
-import type { Database } from '@/types/database';
+import type { FacilityWithCoords, FacilityFilters } from '@/types/facility';
 
 // Internal imports
-import { usePublishedFacilities, useFacilities } from '@/services/supabase/facilities.service';
+import { usePublishedFacilitiesWithCoords, useFacilitiesWithCoords } from '@/services/supabase/facilities.service';
 import { useOrganizationId } from '@/hooks/useOrganizationId';
 import { useMapOverlay } from '@/hooks/features/facilities';
-import { FacilityFilters } from '@/types/facility';
-
-type Facility = Database['public']['Tables']['facilities']['Row'];
+import { MAPBOX_TOKEN } from '@/lib/clients/mapbox';
 
 // Sibling imports
 import { Card } from '@/components/ui/card';
@@ -26,11 +24,8 @@ interface MapViewProps {
   readonly setViewMode: (mode: "grid" | "map" | "list") => void;
   readonly showAllFacilities?: boolean; // New prop to show all facilities in admin
   readonly showHeader?: boolean; // New prop to control header visibility
-  readonly onMarkerClick?: (facility: Facility) => void; // New prop for handling marker clicks
+  readonly onMarkerClick?: (facility: FacilityWithCoords) => void; // New prop for handling marker clicks
 }
-
-// Mapbox public token provided by user
-const DEFAULT_MAPBOX_TOKEN = 'pk.eyJ1IjoiYW1pbjA3IiwiYSI6ImNtZzlqcjNnczBmMmsycXM2cm4xYzU0OGwifQ.1Vuiv_9pPIUY478LP3yccA';
 
 export const MapView: React.FC<MapViewProps> = ({
   facilityType,
@@ -53,9 +48,9 @@ export const MapView: React.FC<MapViewProps> = ({
   } = useMapOverlay();
 
   const orgId = useOrganizationId();
-  // Use all facilities if showAllFacilities is true, otherwise use published only
-  const { data: publishedFacilities = [], isLoading: loadingPublished } = usePublishedFacilities(orgId, !showAllFacilities);
-  const { data: allFacilities = [], isLoading: loadingAll } = useFacilities(orgId, showAllFacilities);
+  // Use facilities with coordinates for map display
+  const { data: publishedFacilities = [], isLoading: loadingPublished } = usePublishedFacilitiesWithCoords(orgId);
+  const { data: allFacilities = [], isLoading: loadingAll } = useFacilitiesWithCoords(orgId, showAllFacilities);
 
   const facilities = showAllFacilities ? allFacilities : publishedFacilities;
   const isLoading = showAllFacilities ? loadingAll : loadingPublished;
@@ -73,7 +68,10 @@ export const MapView: React.FC<MapViewProps> = ({
       filtered = filtered.filter(f => f.facility_type === filters.facilityType);
     }
     if (filters.location) {
-      filtered = filtered.filter(f => f.area === filters.location || f.address?.includes(filters.location));
+      // Filter by address since there's no area field in the database
+      filtered = filtered.filter(f =>
+        f.address && f.address.toLowerCase().includes(filters.location!.toLowerCase())
+      );
     }
     return filtered;
   }, [facilities, filters.facilityType, filters.location]);
@@ -81,7 +79,7 @@ export const MapView: React.FC<MapViewProps> = ({
   return (
     <div className="max-w-7xl mx-auto px-4 my-[12px]">
       {showHeader && (
-        <ViewHeader 
+        <ViewHeader
           facilityCount={filteredFacilities.length}
           isLoading={isLoading}
           viewMode={viewMode}
@@ -121,8 +119,8 @@ export const MapView: React.FC<MapViewProps> = ({
                   <Button onClick={handleRetry} className="w-full">
                     Prøv igjen
                   </Button>
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     onClick={(): void => setViewMode('grid')}
                     className="w-full"
                   >
@@ -136,16 +134,19 @@ export const MapView: React.FC<MapViewProps> = ({
           <MapContainer
             onMapLoad={handleMapLoad}
             onMapError={handleMapError}
-            onLoadingChange={setIsLoading}
-            mapboxToken={DEFAULT_MAPBOX_TOKEN}
+            onLoadingChange={() => {}} // We're not using this in MapContainer
+            mapboxToken={MAPBOX_TOKEN}
           />
-          {isInitialized && (
+          {isInitialized && map && (
             <MapMarkers
               map={map}
               facilities={filteredFacilities}
-              onMarkerClick={(facility) => handleMarkerClickInternal(facility, onMarkerClick)}
+              onMarkerClick={(facility) => {
+                handleMarkerClickInternal(facility, onMarkerClick);
+              }}
             />
           )}
+
         </Card>
       )}
     </div>

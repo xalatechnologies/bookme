@@ -2,7 +2,7 @@
 
 ## Overview
 
-This guide documents the gradual migration strategy from localStorage to Supabase for the BookMe application. The migration is designed to be **zero-downtime** and **zero-data-loss**, with three distinct phases that can be controlled via environment variables.
+This guide documents the gradual migration strategy from localStorage to Supabase for the Booknor application. The migration is designed to be **zero-downtime** and **zero-data-loss**, with three distinct phases that can be controlled via environment variables.
 
 ## Architecture
 

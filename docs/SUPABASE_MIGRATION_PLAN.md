@@ -219,8 +219,8 @@ export const queryClient = new QueryClient({
 
 **Generate from Supabase:**
 ```bash
-cd "/Volumes/Development/Xala Products/bookme"
-npx supabase gen types typescript --local > ~/Documents/xaheen/bookme/src/types/database.ts
+cd "/Volumes/Development/Xala Products/booknor"
+npx supabase gen types typescript --local > ~/Documents/xaheen/booknor/src/types/database.ts
 ```
 
 ---

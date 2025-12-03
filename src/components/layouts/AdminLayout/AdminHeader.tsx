@@ -2,9 +2,10 @@
 
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage } from "@/contexts/hooks";
 import { Logo } from "@/components/layouts/PublicLayout/Logo";
 import { LanguageToggle } from "@/components/layouts/PublicLayout/LanguageToggle";
+// ThemeToggle removed - dark mode disabled
 import SearchField from "@/components/features/search/components/AdminSearchField";
 import NotificationBell from "@/components/layouts/AdminLayout/NotificationBell";
 import ProfileDropdown from "@/components/layouts/AdminLayout/ProfileDropdown";
@@ -14,10 +15,10 @@ const AdminHeader = (): JSX.Element => {
   const { language, toggleLanguage } = useLanguage();
 
   return (
-    <header className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
+    <header className="flex items-center justify-between p-4 border-b border-gray-200 bg-white">
       {/* Skip to content link */}
       <a href="#main-content" className="skip-to-content">
-        {t("skip_to_content")}
+        {t("accessibility.skipToContent")}
       </a>
 
       {/* Logo */}

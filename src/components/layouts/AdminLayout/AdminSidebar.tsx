@@ -7,7 +7,6 @@ import {
   LayoutDashboard,
   Building2,
   Calendar,
-  CheckCircle,
   Users,
   Bell,
   MessageCircle,
@@ -19,7 +18,7 @@ import {
   ChevronLeft,
   ChevronRight
 } from "lucide-react";
-import { useSidebar } from "./index";
+import { useSidebar } from "./useSidebar";
 
 interface IMenuItem {
   readonly id: string;
@@ -37,7 +36,10 @@ interface IAdminSidebarProps {
   readonly children?: never;
 }
 
-const AdminSidebar = (_props: IAdminSidebarProps): JSX.Element => {
+const AdminSidebar = (
+   
+  _props: IAdminSidebarProps
+): JSX.Element => {
   const { isCollapsed, toggleCollapse } = useSidebar();
   const { t } = useTranslation('navigation');
 
@@ -82,7 +84,7 @@ const AdminSidebar = (_props: IAdminSidebarProps): JSX.Element => {
     }`}>
       {/* Navigation Content */}
       <nav className="flex-1 p-4 pt-8 space-y-6 overflow-y-auto">
-        {menuGroups.map((group, groupIndex) => (
+        {menuGroups.map((group) => (
           <div key={group.titleKey} className="space-y-2">
             {/* Group Title */}
             {!isCollapsed && (

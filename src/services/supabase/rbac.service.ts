@@ -1,7 +1,7 @@
 /**
  * Role-Based Access Control (RBAC) Service
  *
- * Provides role and permission checking utilities for the BookMe application.
+ * Provides role and permission checking utilities for the Booknor application.
  * Integrates with Supabase RLS policies and helper functions.
  *
  * Features:

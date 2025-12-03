@@ -1,6 +1,16 @@
 {
   "title": "Facilities",
   "subtitle": "Explore and book available facilities",
+  "facilityTypes": {
+    "all": "All Facilities",
+    "idrettshall": "Sports Hall",
+    "kulturhus": "Cultural Center",
+    "møterom": "Meeting Room",
+    "fotballbane": "Football Field",
+    "svømmehall": "Swimming Pool",
+    "tennisbane": "Tennis Court"
+  },
+  "searchFacilities": "Search facilities...",
   "fields": {
     "name": "Name",
     "description": "Description",
@@ -50,6 +60,7 @@
     "cancellation_policy": "Cancellation policy",
     "min_booking_duration": "Min. booking duration",
     "max_booking_duration": "Max. booking duration",
+    "max_allowed": "Max allowed",
     "advance_booking_days": "Advance booking (days)",
     "popular": "Popular",
     "featured": "Featured",
@@ -193,7 +204,18 @@
     "facilities": "Facilities",
     "book_facility": "Book this facility",
     "per_hour": "per hour",
-    "people": "people"
+    "people": "people",
+    "average_rating": "Average rating",
+    "rating": "Rating",
+    "no_rating": "No rating yet",
+    "total_area": "Total area",
+    "service_hours": "Service hours",
+    "property_type": "Property Type",
+    "amenities": "Amenities",
+    "experience": "Experience",
+    "spots": "Spots",
+    "used": "Used",
+    "no_address": "No address available"
   },
   "messages": {
     "success": {
@@ -270,7 +292,7 @@
     "book_now": "Book now"
   },
   "share": {
-    "check_out": "Check out {{name}} on BookMe - {{type}} with capacity for {{capacity}} people",
+    "check_out": "Check out {{name}} on Booknor - {{type}} with capacity for {{capacity}} people",
     "facility_shared": "Facility shared!",
     "link_copied": "Link copied to clipboard!",
     "share_failed": "Could not share facility. Try again."
@@ -397,6 +419,7 @@
     "image_number": "Image {{number}}",
     "remove_image": "Remove image {{number}}",
     "no_images": "No images added",
+    "uploading": "Uploading...",
     "fetching_coordinates": "Fetching coordinates...",
     "geocode_errors": {
       "geocode_failed": "Could not find address in Mapbox",

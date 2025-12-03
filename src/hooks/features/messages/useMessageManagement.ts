@@ -12,7 +12,7 @@
 
 import { useMemo, useCallback } from 'react';
 import { useMessageUIStore, type TMessageView, type TMessageSortBy } from '@/stores/messageUIStore';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from "@/contexts/hooks";
 import { useUserThreads } from '@/services/supabase/messages.service';
 import {
   filterMessages,

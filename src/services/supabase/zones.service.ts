@@ -35,10 +35,10 @@ export const zoneKeys = {
   all: ['zones'] as const,
   lists: () => [...zoneKeys.all, 'list'] as const,
   facilityZones: (facilityId: string) => [...zoneKeys.lists(), 'facility', facilityId] as const,
+  facilitiesZones: (facilityIds: readonly string[]) => [...zoneKeys.lists(), 'facilities', ...facilityIds.sort()] as const,
   details: () => [...zoneKeys.all, 'detail'] as const,
   detail: (id: string) => [...zoneKeys.details(), id] as const,
-  withAvailability: (id: string) => [...zoneKeys.detail(id), 'availability'] as const,
-};
+  withAvailability: (id: string) => [...zoneKeys.detail(id), 'availability'] as const};
 
 // ============================================================================
 // Service Functions
@@ -53,6 +53,23 @@ export const zonesService = {
       .from('zones')
       .select('*')
       .eq('facility_id', facilityId)
+      .eq('status', 'active')
+      .order('name', { ascending: true });
+
+    if (error) throw error;
+    return data;
+  },
+
+  /**
+   * Fetch zones for multiple facilities
+   */
+  async getByFacilities(facilityIds: readonly string[]): Promise<Zone[]> {
+    if (facilityIds.length === 0) return [];
+    
+    const { data, error } = await supabase
+      .from('zones')
+      .select('*')
+      .in('facility_id', facilityIds)
       .eq('status', 'active')
       .order('name', { ascending: true });
 
@@ -143,8 +160,7 @@ export const zonesService = {
     const { data, error } = await supabase.rpc('is_zone_available', {
       p_zone_id: zoneId,
       p_start_time: startTime,
-      p_end_time: endTime,
-    });
+      p_end_time: endTime});
 
     if (error) {
       console.error('Zone availability check error:', error);
@@ -168,8 +184,7 @@ export const zonesService = {
 
     if (error) throw error;
     return data;
-  },
-};
+  }};
 
 // ============================================================================
 // React Query Hooks
@@ -208,6 +223,21 @@ export const useFacilityZones = (
 };
 
 /**
+ * Hook to fetch zones for multiple facilities
+ */
+export const useFacilitiesZones = (
+  facilityIds: readonly string[],
+  enabled = true
+): UseQueryResult<Zone[], Error> => {
+  return useQuery({
+    queryKey: zoneKeys.facilitiesZones(facilityIds),
+    queryFn: () => zonesService.getByFacilities(facilityIds),
+    enabled: facilityIds.length > 0 && enabled,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+};
+
+/**
  * Hook to fetch a single zone
  */
 export const useZone = (
@@ -217,8 +247,7 @@ export const useZone = (
   return useQuery({
     queryKey: zoneKeys.detail(id),
     queryFn: () => zonesService.getById(id),
-    enabled: !!id && enabled,
-  });
+    enabled: !!id && enabled});
 };
 
 /**
@@ -253,8 +282,7 @@ export const useZoneWithAvailability = (
   return useQuery({
     queryKey: zoneKeys.withAvailability(id),
     queryFn: () => zonesService.getWithAvailability(id),
-    enabled: !!id && enabled,
-  });
+    enabled: !!id && enabled});
 };
 
 /**
@@ -283,13 +311,11 @@ export const useCreateZone = (): UseMutationResult<Zone, Error, ZoneInsert> => {
     onSuccess: (newZone) => {
       // Invalidate facility zones list
       queryClient.invalidateQueries({
-        queryKey: zoneKeys.facilityZones(newZone.facility_id),
-      });
+        queryKey: zoneKeys.facilityZones(newZone.facility_id)});
 
       // Add to cache
       queryClient.setQueryData(zoneKeys.detail(newZone.id), newZone);
-    },
-  });
+    }});
 };
 
 /**
@@ -307,14 +333,12 @@ export const useUpdateZone = (): UseMutationResult<
     onSuccess: (updatedZone, { id }) => {
       // Invalidate lists
       queryClient.invalidateQueries({
-        queryKey: zoneKeys.facilityZones(updatedZone.facility_id),
-      });
+        queryKey: zoneKeys.facilityZones(updatedZone.facility_id)});
 
       // Update cache
       queryClient.setQueryData(zoneKeys.detail(id), updatedZone);
       queryClient.invalidateQueries({ queryKey: zoneKeys.withAvailability(id) });
-    },
-  });
+    }});
 };
 
 /**
@@ -331,8 +355,7 @@ export const useDeleteZone = (): UseMutationResult<void, Error, string> => {
 
       // Remove from cache
       queryClient.removeQueries({ queryKey: zoneKeys.detail(id) });
-    },
-  });
+    }});
 };
 
 /**

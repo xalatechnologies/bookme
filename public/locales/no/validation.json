@@ -1,21 +1,23 @@
 {
-  "required": "Dette feltet er påkrevd",
-  "email": "Vennligst oppgi en gyldig e-postadresse",
-  "url": "Vennligst oppgi en gyldig URL",
-  "date": "Vennligst oppgi en gyldig dato",
-  "time": "Vennligst oppgi et gyldig tidspunkt",
-  "number": "Vennligst oppgi et gyldig tall",
-  "integer": "Vennligst oppgi et heltall",
-  "positive": "Verdien må være positiv",
-  "negative": "Verdien må være negativ",
-  "decimal": "Vennligst oppgi et desimaltall",
-  "phone": "Vennligst oppgi et gyldig telefonnummer",
-  "postalCode": "Vennligst oppgi et gyldig postnummer",
-  "creditCard": "Vennligst oppgi et gyldig kortnummer",
-  "pattern": "Verdien samsvarer ikke med det påkrevde mønsteret",
-  "alphanumeric": "Kun bokstaver og tall er tillatt",
-  "letters": "Kun bokstaver er tillatt",
-  "digits": "Kun tall er tillatt",
+  "field": {
+    "required": "Dette feltet er påkrevd",
+    "email": "Vennligst oppgi en gyldig e-postadresse",
+    "url": "Vennligst oppgi en gyldig URL",
+    "date": "Vennligst oppgi en gyldig dato",
+    "time": "Vennligst oppgi et gyldig tidspunkt",
+    "number": "Vennligst oppgi et gyldig tall",
+    "integer": "Vennligst oppgi et heltall",
+    "positive": "Verdien må være positiv",
+    "negative": "Verdien må være negativ",
+    "decimal": "Vennligst oppgi et desimaltall",
+    "phone": "Vennligst oppgi et gyldig telefonnummer",
+    "postalCode": "Vennligst oppgi et gyldig postnummer",
+    "creditCard": "Vennligst oppgi et gyldig kortnummer",
+    "pattern": "Verdien samsvarer ikke med det påkrevde mønsteret",
+    "alphanumeric": "Kun bokstaver og tall er tillatt",
+    "letters": "Kun bokstaver er tillatt",
+    "digits": "Kun tall er tillatt"
+  },
   "string": {
     "min": "Må være minst {{min}} tegn",
     "max": "Må være maksimalt {{max}} tegn",
@@ -106,5 +108,8 @@
     "invalid": "Ugyldig verdi",
     "required": "Påkrevd",
     "optional": "Valgfritt"
-  }
+  },
+  "name_required": "Navn er påkrevd",
+  "name_min_length": "Navn må være minst 3 tegn",
+  "address_required": "Adresse er påkrevd"
 }

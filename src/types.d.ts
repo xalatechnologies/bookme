@@ -1,17 +1,19 @@
-/// <reference types="react" />
-/// <reference types="react-dom" />
-
-import React from 'react';
+import 'react';
+import 'react-dom';
 
 declare global {
   namespace JSX {
-    interface Element extends React.ReactElement<any, any> { }
-    interface ElementClass extends React.Component<any> {
+    // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+    interface Element extends React.ReactElement { }
+     
+    interface ElementClass extends React.Component {
       render(): React.ReactNode
     }
-    interface ElementAttributesProperty { props: {} }
-    interface ElementChildrenAttribute { children: {} }
+    interface ElementAttributesProperty { props: Record<string, unknown> }
+    interface ElementChildrenAttribute { children: Record<string, unknown> }
+    // eslint-disable-next-line @typescript-eslint/no-empty-object-type
     interface IntrinsicAttributes extends React.Attributes { }
+    // eslint-disable-next-line @typescript-eslint/no-empty-object-type
     interface IntrinsicClassAttributes<T> extends React.ClassAttributes<T> { }
   }
 }

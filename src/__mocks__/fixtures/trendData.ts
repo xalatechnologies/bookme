@@ -22,6 +22,7 @@ export const topFacilitiesData = [
   { day: "Uke 7", value: 42 }
 ];
 
+// Keep the trendCards array for backward compatibility, but it's no longer used in the Overview component
 export const trendCards = [
   {
     title: "Bookinger siste 7 dager",

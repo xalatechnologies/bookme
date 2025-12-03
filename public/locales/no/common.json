@@ -4,6 +4,7 @@
     "cancel": "Avbryt",
     "delete": "Slett",
     "edit": "Rediger",
+    "done": "Ferdig",
     "view": "Vis",
     "add": "Legg til",
     "remove": "Fjern",
@@ -38,6 +39,8 @@
     "collapse": "Kollaps",
     "more": "Mer",
     "less": "Mindre",
+    "show_all": "Vis alle",
+    "show_less": "Vis færre",
     "loading": "Laster...",
     "processing": "Behandler...",
     "book": "Book",
@@ -99,12 +102,13 @@
     "currency": "Valuta",
     "date": "Dato",
     "time": "Tid",
-    "dateTime": "Dato og tid",
+    "dateTime": "Dato & Tid",
     "from": "Fra",
     "to": "Til",
     "between": "Mellom",
     "and": "og",
     "or": "eller",
+    "at": "kl",
     "all": "Alle",
     "none": "Ingen",
     "other": "Annet",
@@ -126,15 +130,15 @@
     "attachment": "Vedlegg",
     "attachments": "Vedlegg",
     "characters": "tegn",
-    "total": "Total",
+    "total": "Totalt",
     "subtotal": "Delsum",
-    "tax": "MVA",
+    "tax": "Avgift",
     "discount": "Rabatt",
     "shipping": "Frakt",
     "payment": "Betaling",
     "invoice": "Faktura",
     "receipt": "Kvittering",
-    "order": "Bestilling",
+    "order": "Ordre",
     "orderNumber": "Ordrenummer",
     "reference": "Referanse",
     "id": "ID",
@@ -147,7 +151,7 @@
     "forgotPassword": "Glemt passord?",
     "signIn": "Logg inn",
     "signOut": "Logg ut",
-    "signUp": "Registrer deg",
+    "signUp": "Registrer",
     "register": "Registrer",
     "login": "Logg inn",
     "logout": "Logg ut",
@@ -159,21 +163,27 @@
     "dashboard": "Dashbord",
     "home": "Hjem",
     "help": "Hjelp",
-    "support": "Support",
+    "support": "Støtte",
     "documentation": "Dokumentasjon",
-    "faq": "Ofte stilte spørsmål",
+    "faq": "FAQ",
     "contactUs": "Kontakt oss",
-    "about": "Om oss",
+    "about": "Om",
     "termsOfService": "Vilkår for bruk",
-    "privacyPolicy": "Personvernerklæring",
+    "privacyPolicy": "Personvern",
     "cookiePolicy": "Informasjonskapsler",
     "loading": "Laster...",
     "select_option": "Velg et alternativ",
-    "no_options": "Ingen alternativer tilgjengelige",
+    "no_options": "Ingen tilgjengelige alternativer",
     "system_messages": "Systemmeldinger",
-    "view_details": "Se detaljer",
+    "view_details": "Vis detaljer",
     "all_bookings_completed": "Alle bookinger fullført",
-    "status": "Status"
+    "calendar": "Kalender",
+    "read_more": "Les mer",
+    "read_less": "Les mindre"
+  },
+  "charts": {
+    "trend": "Trendgraf",
+    "chart_title": "{{title}} - {{period}}"
   },
   "navigation": {
     "menu": "Meny",
@@ -188,7 +198,11 @@
     "showing": "Viser {{from}} til {{to}} av {{total}}",
     "goToPage": "Gå til side",
     "previous": "Forrige",
-    "next": "Neste"
+    "next": "Neste",
+    "today": "I dag",
+    "previous_week": "Forrige uke",
+    "current_week": "Denne uken",
+    "next_week": "Neste uke"
   },
   "breadcrumbs": {
     "home": "Hjem",
@@ -201,6 +215,7 @@
     "search_admin": "Søk i admin...",
     "search_venues": "Søk etter lokaler...",
     "search_bookings": "Søk på lokale eller booking ID...",
+    "search_label": "Søk",
     "no_results": "Ingen resultater funnet",
     "found_results": "Fant {{count}} resultater for \"{{query}}\"",
     "recent_searches": "Nylige søk",
@@ -217,8 +232,11 @@
   "filters": {
     "title": "Filtre",
     "apply": "Bruk filtre",
-    "clear": "Tøm filtre",
+    "clear": "Tøm",
     "clearAll": "Tilbakestill alle",
+    "clear_filters": "Tøm filtre",
+    "clear_all": "Tøm alle",
+    "clear_all_filters": "Tøm alle filtre",
     "active_filters": "Aktive filtre",
     "results_count": "{{count}} resultater",
     "results_filtered": "{{count}} av {{total}} resultater",
@@ -232,7 +250,10 @@
     "select_facility": "Velg lokale",
     "date_period": "Tidsperiode",
     "status": "Status",
-    "priority": "Prioritet"
+    "priority": "Prioritet",
+    "search_placeholder": "Søk...",
+    "filter_button": "Filtrer",
+    "facilities": "Lokaler"
   },
   "sort": {
     "relevance": "Relevans",
@@ -282,7 +303,6 @@
     "hour": "time",
     "hours": "timer",
     "day": "dag",
-    "days": "dager",
     "week": "uke",
     "weeks": "uker",
     "month": "måned",
@@ -330,6 +350,15 @@
       "friday": "Fredag",
       "saturday": "Lørdag",
       "sunday": "Søndag"
+    },
+    "days": {
+      "mon": "Man",
+      "tue": "Tir",
+      "wed": "Ons",
+      "thu": "Tor",
+      "fri": "Fre",
+      "sat": "Lør",
+      "sun": "Søn"
     }
   },
   "messages": {
@@ -413,7 +442,7 @@
     "fieldKey": "F.eks. 'floorNumber'"
   },
   "aria": {
-    "logo": "BookMe logo",
+    "logo": "Booknor logo",
     "go_to_home": "Gå til forsiden",
     "search": "Søk",
     "search_input": "Søkefelt",
@@ -428,7 +457,8 @@
     "close_modal": "Lukk modal",
     "open_menu": "Åpne meny",
     "close_menu": "Lukk meny",
-    "remove_filter": "Fjern {{label}} filter"
+    "remove_filter": "Fjern {{label}} filter",
+    "calendar": "Åpne kalender"
   },
   "accessibility": {
     "skipToContent": "Hopp til innhold",
@@ -493,6 +523,10 @@
     "list": "Liste visning",
     "map": "Kart"
   },
+  "views": {
+    "week": "Uke",
+    "day": "Dag"
+  },
   "facilities": {
     "count": "lokaler",
     "loading": "Laster...",
@@ -550,5 +584,9 @@
     "conflict_description": "Tidspunktet har en bookingkonflikt",
     "click_available": "Klikk på ledige tidspunkter for å velge",
     "drag_select": "Dra for å velge flere tidspunkter"
+  },
+  "permissions": {
+    "access_denied": "Ingen tilgang",
+    "insufficient_permissions": "Utilstrekkelige tillatelser for å få tilgang til {{domain}}.{{permission}}"
   }
 }

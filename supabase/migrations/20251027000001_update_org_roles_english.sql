@@ -1,7 +1,7 @@
 -- =====================================================
 -- Role System Update - Phase 1: Add Enum Values Only
 -- =====================================================
--- Author: BookMe Development Team
+-- Author: Booknor Development Team
 -- Date: October 27, 2025
 -- Purpose: Add new English role names to org_role enum
 --          Data migration and tables in subsequent migration

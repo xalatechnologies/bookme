@@ -13,7 +13,7 @@
  *
  * Usage:
  * ```tsx
- * import { useAuth } from '@/contexts/AuthContext';
+ * import { useAuth } from '@/contexts/hooks/useAuth';
  *
  * function MyComponent() {
  *   const { user, session, loading, signIn, signOut } = useAuth();
@@ -26,15 +26,16 @@
  * ```
  */
 
-import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import React, { createContext, useEffect, useState, useCallback } from 'react';
 import { supabase } from '@/lib/clients/supabase';
 import type { User, Session } from '@supabase/supabase-js';
 import type { Database } from '@/types/database';
+import { useFavoritesStore } from '@/stores/favoritesStore';
 
 type Profile = Database['public']['Tables']['profiles']['Row'];
 type Membership = Database['public']['Tables']['memberships']['Row'];
 
-interface AuthContextValue {
+export interface AuthContextValue {
   /** Current authenticated user */
   readonly user: User | null;
 
@@ -69,7 +70,8 @@ interface AuthContextValue {
   readonly setCurrentOrg: (orgId: string) => Promise<void>;
 }
 
-const AuthContext = createContext<AuthContextValue | undefined>(undefined);
+// eslint-disable-next-line react-refresh/only-export-components
+export const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 interface AuthProviderProps {
   readonly children: React.ReactNode;
@@ -129,6 +131,39 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
   }, []);
 
   /**
+   * Record user login event
+   */
+  const recordLoginEvent = useCallback(async (userId: string, orgId?: string | null): Promise<void> => {
+    try {
+      // Try to record login event in audit_events table
+      const { error } = await supabase
+        .from('audit_events')
+        .insert({
+          action: 'user_login',
+          actor_id: userId,
+          entity: 'user',
+          entity_id: userId,
+          org_id: orgId || undefined, // Include org_id if available
+          details: { login_method: 'auth_state_change' },
+          created_at: new Date().toISOString()
+        });
+
+      if (error) {
+        console.warn('Could not record login event (might be due to permissions):', error);
+        // If we can't record the event in the database, store it in localStorage as a fallback
+        localStorage.setItem(`last_login_${userId}`, new Date().toISOString());
+      } else {
+        // Also store in localStorage as a backup
+        localStorage.setItem(`last_login_${userId}`, new Date().toISOString());
+      }
+    } catch (error) {
+      console.warn('Error recording login event:', error);
+      // If we can't record the event, store it in localStorage as a fallback
+      localStorage.setItem(`last_login_${userId}`, new Date().toISOString());
+    }
+  }, []);
+
+  /**
    * Fetch user's organization memberships
    */
   const fetchMemberships = useCallback(async (userId: string): Promise<void> => {
@@ -179,10 +214,21 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
 
           // Fetch profile and memberships if user is authenticated
           if (initialSession?.user) {
-            await Promise.all([
-              fetchProfile(initialSession.user.id),
-              fetchMemberships(initialSession.user.id),
-            ]);
+            // Set user ID in favorites store
+            useFavoritesStore.getState().setUserId(initialSession.user.id);
+            
+            // Load user's favorites
+            await useFavoritesStore.getState().loadFavorites(initialSession.user.id);
+            
+            // Fetch profile and memberships to get org ID
+            try {
+              await Promise.all([
+                fetchProfile(initialSession.user.id),
+                fetchMemberships(initialSession.user.id),
+              ]);
+            } catch (error) {
+              console.error('Error fetching profile/memberships:', error);
+            }
           }
 
           setLoading(false);
@@ -207,18 +253,67 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
    */
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, newSession) => {
+      async (event, newSession) => {
         setSession(newSession);
         setUser(newSession?.user ?? null);
 
         if (newSession?.user) {
-          // Fetch profile and memberships for new user (non-blocking)
-          Promise.all([
-            fetchProfile(newSession.user.id),
-            fetchMemberships(newSession.user.id),
-          ]).catch((error) => {
+          // Set user ID in favorites store
+          useFavoritesStore.getState().setUserId(newSession.user.id);
+          
+          // Load user's favorites
+          await useFavoritesStore.getState().loadFavorites(newSession.user.id);
+          
+          // Fetch profile and memberships first to get org ID
+          try {
+            const [profileData, membershipsData] = await Promise.all([
+              new Promise((resolve, reject) => {
+                supabase
+                  .from('profiles')
+                  .select('*')
+                  .eq('user_id', newSession.user.id)
+                  .single()
+                  .then(({ data, error }) => {
+                    if (error) {
+                      reject(error);
+                    } else {
+                      setProfile(data);
+                      resolve(data);
+                    }
+                  });
+              }),
+              new Promise((resolve, reject) => {
+                supabase
+                  .from('memberships')
+                  .select('*')
+                  .eq('user_id', newSession.user.id)
+                  .then(({ data, error }) => {
+                    if (error) {
+                      reject(error);
+                    } else {
+                      setMemberships(data);
+                      resolve(data);
+                    }
+                  });
+              })
+            ]);
+            
+            // Set current org ID from profile or first membership
+            const profile = profileData as any;
+            const memberships = membershipsData as any;
+            let orgId = profile.default_org || null;
+            if (!orgId && memberships.length > 0) {
+              orgId = memberships[0].org_id;
+              setCurrentOrgId(orgId);
+            }
+            
+            // Now record login event with organization ID if available
+            await recordLoginEvent(newSession.user.id, orgId);
+          } catch (error) {
             console.error('Error fetching profile/memberships:', error);
-          });
+            // Still record login event even if we can't fetch profile/memberships
+            await recordLoginEvent(newSession.user.id, null);
+          }
         } else {
           // Clear profile and memberships on logout
           setProfile(null);
@@ -243,9 +338,7 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
-        emailRedirectTo: window.location.origin,
-      },
-    });
+        emailRedirectTo: window.location.origin}});
 
     if (error) {
       console.error('Error signing in:', error);
@@ -260,10 +353,9 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
    * Sign in with email and password
    */
   const signInWithPassword = useCallback(async (email: string, password: string): Promise<void> => {
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const { error } = await supabase.auth.signInWithPassword({
       email,
-      password,
-    });
+      password});
 
     if (error) {
       console.error('Error signing in with password:', error);
@@ -285,9 +377,10 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
         console.error('Error signing out:', error);
         throw error;
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       // If session is already missing, that's fine - just clear local state
-      if (error?.message !== 'Auth session missing!') {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      if (errorMessage !== 'Auth session missing!') {
         console.error('Error signing out:', error);
         throw error;
       }
@@ -298,6 +391,9 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
       setProfile(null);
       setMemberships([]);
       setCurrentOrgId(null);
+      
+      // Clear favorites when user logs out
+      useFavoritesStore.getState().clearAllFavorites();
     }
   }, []);
 
@@ -345,70 +441,11 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
     signInWithPassword,
     signOut,
     refreshProfile,
-    setCurrentOrg,
-  };
+    setCurrentOrg};
 
   return (
     <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );
-};
-
-/**
- * Hook to use auth context
- *
- * @throws {Error} If used outside of AuthProvider
- *
- * @example
- * ```tsx
- * function MyComponent() {
- *   const { user, signOut } = useAuth();
- *
- *   return (
- *     <div>
- *       <p>Logged in as: {user?.email}</p>
- *       <button onClick={signOut}>Sign Out</button>
- *     </div>
- *   );
- * }
- * ```
- */
-export const useAuth = (): AuthContextValue => {
-  const context = useContext(AuthContext);
-
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-
-  return context;
-};
-
-/**
- * Hook to require authentication
- * Redirects to login if not authenticated
- *
- * @example
- * ```tsx
- * function ProtectedPage() {
- *   const { user, loading } = useRequireAuth();
- *
- *   if (loading) return <LoadingSpinner />;
- *
- *   return <div>Protected content for {user.email}</div>;
- * }
- * ```
- */
-export const useRequireAuth = (): Omit<AuthContextValue, 'signIn'> => {
-  const auth = useAuth();
-
-  useEffect(() => {
-    if (!auth.loading && !auth.user) {
-      // Redirect to login page
-      // TODO: Implement redirect logic
-      console.warn('User not authenticated, redirect to login');
-    }
-  }, [auth.loading, auth.user]);
-
-  return auth;
 };

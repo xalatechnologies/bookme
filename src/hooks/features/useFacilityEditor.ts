@@ -17,6 +17,8 @@ import { validateFacilityData } from '@/services/business/facility.business.serv
 import type { Database } from '@/types/database';
 
 type Facility = Database['public']['Tables']['facilities']['Row'];
+type FacilityInsert = Database['public']['Tables']['facilities']['Insert'];
+type FacilityUpdate = Database['public']['Tables']['facilities']['Update'];
 
 export interface IUseFacilityEditorOptions {
   readonly facilityId?: string;
@@ -42,7 +44,7 @@ export interface IUseFacilityEditorReturn {
   readonly showSaveMessage: boolean;
 
   // Actions
-  readonly updateField: (field: keyof Facility, value: any) => void;
+  readonly updateField: (field: keyof Facility, value: Facility[keyof Facility]) => void;
   readonly updateFields: (fields: Partial<Facility>) => void;
   readonly save: () => Promise<void>;
   readonly cancel: () => void;
@@ -85,7 +87,7 @@ export const useFacilityEditor = (
         capacity: 0,
         amenities: [],
         images: [],
-        location: { lat: 59.744, lng: 10.204 } as any,
+        location: { lat: 59.744, lng: 10.204 } as Facility['location'],
         rating: 0,
         review_count: 0,
         area_description: '',
@@ -103,7 +105,7 @@ export const useFacilityEditor = (
   const validation = validateFacilityData(editedFacility || {});
 
   // Actions
-  const updateField = useCallback((field: keyof Facility, value: any): void => {
+  const updateField = useCallback((field: keyof Facility, value: Facility[keyof Facility]): void => {
     setEditedFacility((prev) => {
       if (!prev) return prev;
       return { ...prev, [field]: value };
@@ -131,7 +133,7 @@ export const useFacilityEditor = (
     try {
       if (isNewFacility) {
         // Create new facility
-        const newFacility = await createFacilityMutation.mutateAsync(editedFacility as any);
+        const newFacility = await createFacilityMutation.mutateAsync(editedFacility as FacilityInsert);
         setHasUnsavedChanges(false);
         setShowSaveMessage(true);
         setTimeout(() => setShowSaveMessage(false), 3000);
@@ -145,7 +147,7 @@ export const useFacilityEditor = (
         // Update existing facility
         await updateFacilityMutation.mutateAsync({
           id: facilityId,
-          data: editedFacility as any,
+          data: editedFacility as FacilityUpdate,
         });
         setHasUnsavedChanges(false);
         setShowSaveMessage(true);

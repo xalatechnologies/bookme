@@ -117,21 +117,10 @@ const UserFavorites = (): JSX.Element => {
             address={facility.address}
             type={facility.type}
             capacity={facility.capacity}
-            amenities={facility.amenities}
             image={facility.image}
-            rating={facility.rating}
-            price={facility.price}
             description={facility.description}
             availability={facility.availability}
-            isFavorite={facility.isFavorite}
           />
-
-          <div className="mt-2 text-xs text-gray-500 dark:text-gray-500 text-center">
-            {t('pages.favorites.added_at', { date: formatDate(facility.addedAt) })}
-            {facility.usageCount && facility.usageCount > 0 && (
-              <span className="ml-2">• {t('pages.favorites.visits', { count: facility.usageCount })}</span>
-            )}
-          </div>
         </div>
       ))}
     </div>
@@ -152,25 +141,11 @@ const UserFavorites = (): JSX.Element => {
             address={facility.address}
             type={facility.type}
             capacity={facility.capacity}
-            amenities={facility.amenities}
             image={facility.image}
-            rating={facility.rating}
-            price={facility.price}
             description={facility.description}
-            availability={facility.availability}
-            isFavorite={facility.isFavorite}
-            coordinates={facility.coordinates}
+            lat={facility.coordinates?.lat}
+            lng={facility.coordinates?.lng}
           />
-
-          <div className="mt-2 text-xs text-gray-500 dark:text-gray-500 text-center">
-            {t('pages.favorites.added_at', { date: formatDate(facility.addedAt) })}
-            {facility.usageCount && facility.usageCount > 0 && (
-              <span className="ml-2">• {t('pages.favorites.visits', { count: facility.usageCount })}</span>
-            )}
-            {facility.lastVisited && (
-              <span className="ml-2">• {t('pages.favorites.last_visited', { date: formatDate(facility.lastVisited) })}</span>
-            )}
-          </div>
         </div>
       ))}
     </div>
@@ -226,7 +201,7 @@ const UserFavorites = (): JSX.Element => {
               </span>
               <select
                 value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as any)}
+                onChange={(e) => setSortBy(e.target.value as "recently-added" | "last-visited" | "most-used" | "highest-rated" | "name" | "price-low" | "price-high")}
                 className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-800"
               >
                 {sortOptions.map((option) => (
@@ -394,7 +369,7 @@ const UserFavorites = (): JSX.Element => {
               }
             </p>
             {!hasActiveFilters && (
-              <Button onClick={() => window.location.href = '/user/facilities'}>
+              <Button onClick={() => window.location.href = '/facilities'}>
                 <BookOpen className="h-4 w-4 mr-2" />
                 {t('pages.favorites.empty.explore_facilities')}
                 <ArrowRight className="h-4 w-4 ml-2" />

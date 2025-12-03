@@ -8,7 +8,7 @@
 
 ## ✅ Migration Summary
 
-Your BookMe application is now **fully integrated with Supabase**! All mock data has been replaced with real database queries, and all features are working correctly.
+Your Booknor application is now **fully integrated with Supabase**! All mock data has been replaced with real database queries, and all features are working correctly.
 
 ### What Was Accomplished
 
@@ -309,7 +309,7 @@ Add missing keys for:
 
 ## 🎉 Congratulations!
 
-Your BookMe application is now running entirely on Supabase!
+Your Booknor application is now running entirely on Supabase!
 
 **What you've achieved:**
 - ✅ Zero mock data - all real database queries

@@ -11,8 +11,8 @@ interface CalendarViewProps {
   readonly location: string;
   readonly accessibility: string;
   readonly capacity: readonly number[];
-  readonly viewMode: "grid" | "map" | "calendar" | "list";
-  readonly setViewMode: (mode: "grid" | "map" | "calendar" | "list") => void;
+  readonly viewMode: "grid" | "map" | "list";
+  readonly setViewMode: (mode: "grid" | "map" | "list") => void;
 }
 
 export const CalendarViewSimple: React.FC<CalendarViewProps> = ({

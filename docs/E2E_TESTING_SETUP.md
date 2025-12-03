@@ -2,7 +2,7 @@
 
 ## Overview
 
-This guide provides **complete end-to-end testing setup** using Playwright for the BookMe application with Supabase backend.
+This guide provides **complete end-to-end testing setup** using Playwright for the Booknor application with Supabase backend.
 
 **Technology Stack:**
 - **Playwright** - E2E testing framework
@@ -48,7 +48,7 @@ npm install -D @faker-js/faker
 ## Project Structure
 
 ```
-bookme/
+booknor/
 ├── tests/
 │   ├── e2e/                          # Playwright E2E tests
 │   │   ├── auth/

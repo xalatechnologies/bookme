@@ -1,6 +1,6 @@
 # Service Layer Quick Reference
 
-Quick reference guide for using the BookMe service layer.
+Quick reference guide for using the Booknor service layer.
 
 ## Import Patterns
 

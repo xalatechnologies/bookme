@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document provides a **complete testing strategy** for the BookMe application covering E2E, integration, and unit testing with Playwright, Vitest, and React Testing Library.
+This document provides a **complete testing strategy** for the Booknor application covering E2E, integration, and unit testing with Playwright, Vitest, and React Testing Library.
 
 ---
 

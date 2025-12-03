@@ -1,9 +1,10 @@
 "use client";
 
 import React from "react";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage } from "@/contexts/hooks";
 import { Logo } from "@/components/layouts/PublicLayout/Logo";
 import { LanguageToggle } from "@/components/layouts/PublicLayout/LanguageToggle";
+// ThemeToggle removed - dark mode disabled
 import UserSearchField from "@/components/features/search/components/UserSearchField";
 import UserNotificationBell from "@/components/layouts/UserLayout/UserNotificationBell";
 import UserProfileDropdown from "@/components/layouts/UserLayout/UserProfileDropdown";
@@ -12,11 +13,14 @@ interface IUserHeaderProps {
   readonly children?: never;
 }
 
-const UserHeader = (_props: IUserHeaderProps): JSX.Element => {
+const UserHeader = (
+   
+  _props: IUserHeaderProps
+): JSX.Element => {
   const { language, toggleLanguage } = useLanguage();
 
   return (
-    <header className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
+    <header className="flex items-center justify-between p-4 border-b border-gray-200 bg-white">
       {/* Logo */}
       <Logo />
 

@@ -1,10 +1,10 @@
-# BookMe Portal
+# Booknor Portal
 
 En moderne plattform for fasilitetsreservasjon og booking utviklet av Xala Technologies. Bygget med React, TypeScript, Tailwind CSS, og **Supabase** som backend, og følger strenge kodestandarder for enterprise-utvikling.
 
 ## Oversikt
 
-BookMe Portal er en omfattende **Supabase-powered React application** for fasilitetsadministrasjon og booking som gjør det mulig for organisasjoner å effektivt administrere sine lokaler og la brukere gjøre reservasjoner. Applikasjonen har et moderne, responsivt design med flerspråkstøtte (norsk primær, engelsk sekundær) og tilbyr både administrative og brukerrettede funksjoner.
+Booknor Portal er en omfattende **Supabase-powered React application** for fasilitetsadministrasjon og booking som gjør det mulig for organisasjoner å effektivt administrere sine lokaler og la brukere gjøre reservasjoner. Applikasjonen har et moderne, responsivt design med flerspråkstøtte (norsk primær, engelsk sekundær) og tilbyr både administrative og brukerrettede funksjoner.
 
 ### Arkitektur
 - **Frontend**: React + TypeScript + Vite + TailwindCSS
@@ -58,7 +58,7 @@ BookMe Portal er en omfattende **Supabase-powered React application** for fasili
 
 ### Prerequisites
 - Node.js (v18+)
-- Docker Desktop (for local Supabase)
+- Node.js 18+ with npm
 - npm
 
 ### Installation
@@ -67,7 +67,7 @@ BookMe Portal er en omfattende **Supabase-powered React application** for fasili
 # 1. Install dependencies
 npm install
 
-# 2. Start Supabase (Docker must be running)
+# 2. Configure Supabase Cloud connection
 npx supabase start
 
 # 3. Setup test users
@@ -164,7 +164,7 @@ src/
 ```bash
 # Klon repository
 git clone <repository-url>
-cd bookme-1
+cd booknor-1
 
 # Installer avhengigheter
 npm install
@@ -330,7 +330,7 @@ const MinKomponent = (): JSX.Element => {
 
 ## Kartintegrasjon
 
-BookMe Portal har omfattende kartintegrasjon med Mapbox:
+Booknor Portal har omfattende kartintegrasjon med Mapbox:
 
 ### Funksjoner
 - **Interaktive kart**: Fullverdige kart med zoom, panorering og navigasjonskontroller
@@ -456,7 +456,7 @@ Applikasjonen støtter miljøspesifikk konfigurasjon gjennom miljøvariabler:
 ```bash
 # Eksempel miljøvariabler
 VITE_MAPBOX_TOKEN=din_mapbox_token_her
-VITE_API_BASE_URL=https://api.bookme.com
+VITE_API_BASE_URL=https://api.booknor.com
 VITE_ENVIRONMENT=production
 ```
 
@@ -543,5 +543,5 @@ For teknisk support, funksjonsforespørsler eller utviklingshenvendelser:
 
 ---
 
-**BookMe Portal** - Profesjonell fasilitetsreservasjonsplattform av Xala Technologies
+**Booknor Portal** - Profesjonell fasilitetsreservasjonsplattform av Xala Technologies
 *Bygget med moderne webteknologier og enterprise-standarder*

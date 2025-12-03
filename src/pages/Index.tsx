@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useSearchParams } from "react-router-dom";
 
 import { FacilityFilters } from "@/types/facility";
@@ -9,16 +10,27 @@ import { GlobalHeader } from "@/components/layouts/PublicLayout/GlobalHeader";
 import SearchFilter from "@/components/features/search/components/SearchFilter";
 import { FacilityList } from "@/components/features/facilities/components/FacilitySearch/FacilityList";
 import { MapView } from "@/components/features/facilities/components/FacilityMap/MapView";
+import { useAuth } from "@/contexts/hooks";
 
 export const Index = (): JSX.Element => {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const [date, setDate] = useState<Date>();
   const [facilityType, setFacilityType] = useState<string>("all");
-  const [location, setLocation] = useState<string>("all");
+  const [selectedLocation, setSelectedLocation] = useState<string>("all");
   const [viewMode, setViewMode] = useState<"grid" | "map" | "list">("grid");
   const [accessibility, setAccessibility] = useState<string>("all");
   const [capacity, setCapacity] = useState<number[]>([0, 200]);
   const [searchTerm, setSearchTerm] = useState<string>("");
+
+  // Get auth state
+  const { user, memberships } = useAuth();
+  
+  // Check if user has admin role
+  const isAdmin = memberships.some(membership => 
+    membership.role === 'admin' || membership.role === 'owner'
+  );
 
   // Advanced filter states
   const [priceRange, setPriceRange] = useState<number[]>([0, 5000]);
@@ -27,6 +39,31 @@ export const Index = (): JSX.Element => {
   const [hasParking, setHasParking] = useState<boolean>(false);
   const [hasWifi, setHasWifi] = useState<boolean>(false);
   const [allowsPhotography, setAllowsPhotography] = useState<boolean>(false);
+
+  // Redirect authenticated users to their last portal only when they explicitly navigate to root
+  // and only if they didn't come from a portal (to allow navigation back to homepage)
+  // Also don't redirect if they just logged out
+  useEffect(() => {
+    // Only redirect if user is authenticated and they're accessing the root path directly
+    // Don't redirect if they're already on the main page and just want to stay
+    // Also don't redirect if they came from a portal (indicated by referrer or navigation state)
+    // Also don't redirect if they just logged out
+    if (user && location.pathname === "/" && !location.state?.fromPortal && !location.state?.justLoggedOut) {
+      // Check if user has a preferred portal stored
+      const lastPortal = localStorage.getItem("lastPortal");
+      
+      if (lastPortal === "admin" && isAdmin) {
+        // Redirect admin users to admin portal
+        navigate("/admin/overview", { replace: true });
+      } else if (lastPortal === "user" || !isAdmin) {
+        // Redirect regular users or those who last visited user portal to user portal
+        navigate("/user", { replace: true });
+      } else if (isAdmin) {
+        // Default for admin users who have no preference
+        navigate("/admin/overview", { replace: true });
+      }
+    }
+  }, [user, isAdmin, navigate, location.pathname, location.state]);
 
   // Initialize state from URL parameters
   useEffect(() => {
@@ -37,7 +74,7 @@ export const Index = (): JSX.Element => {
     const urlViewMode = searchParams.get('viewMode');
     const urlSearchTerm = searchParams.get('searchTerm');
     if (urlFacilityType) setFacilityType(urlFacilityType);
-    if (urlLocation) setLocation(urlLocation);
+    if (urlLocation) setSelectedLocation(urlLocation);
     if (urlAccessibility) setAccessibility(urlAccessibility);
     if (urlCapacity) {
       const capacityArray = urlCapacity.split(',').map(Number);
@@ -65,8 +102,8 @@ export const Index = (): JSX.Element => {
     ...(facilityType && facilityType !== "all" ? {
       facilityType
     } : {}),
-    ...(location && location !== "all" ? {
-      location
+    ...(selectedLocation && selectedLocation !== "all" ? {
+      location: selectedLocation
     } : {}),
     ...(accessibility && accessibility !== "all" ? {
       accessibility
@@ -94,7 +131,7 @@ export const Index = (): JSX.Element => {
   const renderContent = () => {
     switch (viewMode) {
       case "map":
-        return <MapView facilityType={facilityType} location={location} viewMode={viewMode} setViewMode={setViewMode} />;
+        return <MapView facilityType={facilityType} location={selectedLocation} viewMode={viewMode} setViewMode={setViewMode} />;
       case "list":
       case "grid":
         return (
@@ -126,8 +163,8 @@ export const Index = (): JSX.Element => {
           setDate={setDate} 
           facilityType={facilityType} 
           setFacilityType={setFacilityType} 
-          location={location} 
-          setLocation={setLocation} 
+          location={selectedLocation} 
+          setLocation={setSelectedLocation} 
           viewMode={viewMode} 
           setViewMode={setViewMode} 
           accessibility={accessibility} 

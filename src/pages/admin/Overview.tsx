@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Plus, Home, Calendar, AlertTriangle, User } from "lucide-react";
+import { Plus, Home, Calendar, AlertTriangle, User, BarChart3, Star } from "lucide-react";
 import {
   ApprovalQueue,
   RecentEvents,
@@ -15,7 +15,7 @@ import {
 } from "@/components/features/dashboard/admin";
 import { useDashboardData } from "@/components/features/dashboard/hooks";
 import { useStatistics } from "@/hooks/useStatistics";
-import { trendCards } from "@/__mocks__/fixtures/trendData";
+import { bookingTrendData, topFacilitiesData } from "@/__mocks__/fixtures/trendData";
 import {
   IKPICard,
   IApprovalRequest,
@@ -26,6 +26,7 @@ import {
 import { useFacilities } from "@/services/supabase/facilities.service";
 import { useOrganizationId } from "@/hooks/useOrganizationId";
 import { useRecurringBookingStore } from "@/stores/recurringBookingStore";
+import { PrimaryButton } from "@/components/ui/PrimaryButton";
 
 /**
  * Admin Overview Dashboard Component
@@ -47,10 +48,10 @@ import { useRecurringBookingStore } from "@/stores/recurringBookingStore";
  */
 const Overview = (): JSX.Element => {
   const navigate = useNavigate();
-  const { t } = useTranslation("common");
+  const { t } = useTranslation("admin");
 
   const orgId = useOrganizationId();
-  const { facilities, loading: facilitiesLoading } = useFacilities(orgId);
+  const { data: facilities, isLoading: facilitiesLoading } = useFacilities(orgId);
   const { bookings } = useRecurringBookingStore();
 
   // Use custom hooks for data management (SOLID: Dependency Inversion)
@@ -74,9 +75,9 @@ const Overview = (): JSX.Element => {
     const updatedKpiCards: IKPICard[] = [
       {
         id: "total-facilities",
-        title: t("admin:dashboard.kpi.total_facilities"),
+        title: t("pages.dashboard.kpi.total_facilities"),
         value: dashboardData.facilities,
-        description: t("admin:dashboard.kpi.active_facilities"),
+        description: t("pages.dashboard.kpi.active_facilities"),
         trend: {
           direction: "up",
           percentage:
@@ -87,7 +88,7 @@ const Overview = (): JSX.Element => {
                     100
                 )
               : 0,
-          period: t("admin:dashboard.kpi.active_percentage"),
+          period: t("pages.dashboard.kpi.active_percentage"),
         },
         icon: Home,
         color: "blue",
@@ -95,13 +96,13 @@ const Overview = (): JSX.Element => {
       },
       {
         id: "today-bookings",
-        title: t("admin:dashboard.kpi.today_bookings"),
+        title: t("pages.dashboard.kpi.today_bookings"),
         value: dashboardData.todayBookings,
-        description: t("admin:dashboard.kpi.bookings_received"),
+        description: t("pages.dashboard.kpi.bookings_received"),
         trend: {
           direction: "up",
           percentage: dashboardData.todayBookings > 0 ? 10 : 0,
-          period: t("admin:dashboard.trends.since_yesterday"),
+          period: t("pages.dashboard.trends.since_yesterday"),
         },
         icon: Calendar,
         color: "green",
@@ -109,13 +110,13 @@ const Overview = (): JSX.Element => {
       },
       {
         id: "pending-approvals",
-        title: t("admin:dashboard.kpi.pending_approvals"),
+        title: t("pages.dashboard.kpi.pending_approvals"),
         value: dashboardData.pendingApprovals,
-        description: t("admin:dashboard.kpi.requires_attention"),
+        description: t("pages.dashboard.kpi.requires_attention"),
         trend: {
           direction: "down",
           percentage: dashboardData.pendingApprovals > 0 ? 25 : 0,
-          period: t("admin:dashboard.trends.since_yesterday"),
+          period: t("pages.dashboard.trends.since_yesterday"),
         },
         icon: AlertTriangle,
         color: "yellow",
@@ -123,13 +124,13 @@ const Overview = (): JSX.Element => {
       },
       {
         id: "active-users",
-        title: t("admin:dashboard.kpi.active_users"),
+        title: t("pages.dashboard.kpi.active_users"),
         value: dashboardData.activeUsers,
-        description: t("admin:dashboard.kpi.unique_users"),
+        description: t("pages.dashboard.kpi.unique_users"),
         trend: {
           direction: "up",
           percentage: statistics.activeUsersGrowth,
-          period: t("admin:dashboard.trends.last_30_days_period"),
+          period: t("pages.dashboard.trends.last_30_days_period"),
         },
         icon: User,
         color: "purple",
@@ -225,12 +226,12 @@ const Overview = (): JSX.Element => {
       realSystemAlerts.push({
         id: "draft-facilities",
         type: "warning",
-        title: t("admin:dashboard.alerts.draft_facilities"),
-        message: t("admin:dashboard.alerts.facilities_waiting", {
+        title: t("pages.dashboard.alerts_section.draft_facilities"),
+        message: t("pages.dashboard.alerts_section.facilities_waiting", {
           count: dashboardData.draftFacilities,
         }),
         timestamp: "2 timer siden",
-        action: t("admin:dashboard.alerts.see_details"),
+        action: t("pages.dashboard.alerts_section.see_details"),
       });
     }
 
@@ -239,8 +240,8 @@ const Overview = (): JSX.Element => {
       realSystemAlerts.push({
         id: "cancelled-bookings",
         type: "info",
-        title: t("admin:dashboard.alerts.cancelled_bookings"),
-        message: t("admin:dashboard.alerts.bookings_cancelled", {
+        title: t("pages.dashboard.alerts_section.cancelled_bookings"),
+        message: t("pages.dashboard.alerts_section.bookings_cancelled", {
           count: dashboardData.cancelledBookings,
         }),
         timestamp: "4 timer siden",
@@ -252,8 +253,8 @@ const Overview = (): JSX.Element => {
       realSystemAlerts.push({
         id: "system-ok",
         type: "success",
-        title: t("admin:dashboard.alerts.system_status"),
-        message: t("admin:dashboard.alerts.all_systems_normal"),
+        title: t("pages.dashboard.alerts_section.system_status"),
+        message: t("pages.dashboard.alerts_section.all_systems_normal"),
         timestamp: "1 time siden",
       });
     }
@@ -272,7 +273,7 @@ const Overview = (): JSX.Element => {
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
           <p className="text-gray-600 dark:text-gray-400">
-            {t("admin:dashboard.loading_stats")}
+            {t("pages.dashboard.loading_stats")}
           </p>
         </div>
       </div>
@@ -285,7 +286,7 @@ const Overview = (): JSX.Element => {
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
           <p className="text-red-600 dark:text-red-400 mb-4">
-            {t("admin:dashboard.error_loading")}
+            {t("pages.dashboard.error_loading")}
           </p>
           <p className="text-gray-600 dark:text-gray-400">{error.message}</p>
         </div>
@@ -299,21 +300,20 @@ const Overview = (): JSX.Element => {
       <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="space-y-1">
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-            {t("admin:dashboard.overview")}
+            {t("pages.dashboard.overview")}
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
-            {t("admin:dashboard.welcome")}
+            {t("pages.dashboard.welcome")}
           </p>
         </div>
         <div className="flex gap-3">
-          <button
+          <PrimaryButton
             onClick={handleNewFacility}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
-            aria-label={t("admin:dashboard.new_facility")}
+            aria-label={t("pages.dashboard.new_facility")}
           >
             <Plus className="w-4 h-4" aria-hidden="true" />
-            {t("admin:dashboard.new_facility")}
-          </button>
+            {t("pages.dashboard.new_facility")}
+          </PrimaryButton>
         </div>
       </header>
 
@@ -323,7 +323,7 @@ const Overview = (): JSX.Element => {
       {/* KPI Cards Section */}
       <section className="space-y-4">
         <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-          {t("admin:dashboard.key_metrics")}
+          {t("pages.dashboard.key_metrics")}
         </h2>
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {realKpiCards.map((card) => (
@@ -334,19 +334,22 @@ const Overview = (): JSX.Element => {
 
       {/* Trend Cards */}
       <section className="space-y-4">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-          {t("admin:dashboard.trends")}
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
+          {t("pages.dashboard.trends_dashboard")}
         </h2>
         <div className="grid gap-6 lg:grid-cols-2">
-          {trendCards.map((trendCard, index) => (
-            <TrendCard
-              key={index}
-              title={trendCard.title}
-              data={trendCard.data}
-              icon={trendCard.icon}
-              color={trendCard.color}
-            />
-          ))}
+          <TrendCard
+            title={t("pages.dashboard.trends.booking_last_7_days")}
+            data={bookingTrendData}
+            icon={BarChart3}
+            color="blue"
+          />
+          <TrendCard
+            title={t("pages.dashboard.trends.top_facilities_month")}
+            data={topFacilitiesData}
+            icon={Star}
+            color="green"
+          />
         </div>
       </section>
 

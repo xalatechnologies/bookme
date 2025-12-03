@@ -514,4 +514,4 @@ Create a spreadsheet or project board to track:
 
 **Document Version**: 1.0
 **Last Updated**: October 27, 2025
-**Author**: BookMe Development Team
+**Author**: Booknor Development Team

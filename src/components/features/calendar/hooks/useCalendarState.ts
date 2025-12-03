@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { addDays, addMonths, startOfWeek, startOfMonth } from 'date-fns';
+import { addDays, addMonths } from 'date-fns';
 
 export type CalendarView = 'day' | 'week' | 'month';
 

@@ -24,8 +24,9 @@ import type { ISelectedTimeSlot } from '@/components/features/bookings/types';
 /**
  * Availability calculation hook props
  */
-interface UseAvailabilityCalculationProps {
+export interface UseAvailabilityCalculationProps {
   readonly selectedSlots?: readonly ISelectedTimeSlot[];
+  readonly facilityAvailability?: { readonly [key: string]: { readonly start: string; readonly end: string } } | null;
 }
 
 /**
@@ -63,7 +64,8 @@ interface UseAvailabilityCalculationReturn {
  * @returns Availability calculation functions and state
  */
 export const useAvailabilityCalculation = ({
-  selectedSlots = []
+  selectedSlots = [],
+  facilityAvailability
 }: UseAvailabilityCalculationProps = {}): UseAvailabilityCalculationReturn => {
   const { t } = useTranslation('calendar');
 
@@ -146,6 +148,40 @@ export const useAvailabilityCalculation = ({
    */
   const calculateMockAvailability = useCallback(
     (zoneId: string, date: Date, timeSlot: string): AvailabilityStatus => {
+      // If facility availability data is provided, check if the slot is within opening hours
+      if (facilityAvailability) {
+        const dayOfWeek = date.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+        const dayMap: { [key: number]: string } = {
+          1: 'monday',
+          2: 'tuesday',
+          3: 'wednesday',
+          4: 'thursday',
+          5: 'friday',
+          6: 'saturday',
+          0: 'sunday'
+        };
+        
+        const dayKey = dayMap[dayOfWeek];
+        const availability = facilityAvailability[dayKey];
+        
+        // If no availability data for this day, mark as unavailable
+        if (!availability) {
+          return { status: 'unavailable' };
+        }
+        
+        // Parse the time slot and availability times
+        const [slotStart, slotEnd] = timeSlot.split('-');
+        const slotStartMinutes = parseInt(slotStart.split(':')[0]) * 60 + parseInt(slotStart.split(':')[1]);
+        const slotEndMinutes = parseInt(slotEnd.split(':')[0]) * 60 + parseInt(slotEnd.split(':')[1]);
+        const availStartMinutes = parseInt(availability.start.split(':')[0]) * 60 + parseInt(availability.start.split(':')[1]);
+        const availEndMinutes = parseInt(availability.end.split(':')[0]) * 60 + parseInt(availability.end.split(':')[1]);
+        
+        // Check if the slot is within facility opening hours
+        if (slotStartMinutes < availStartMinutes || slotEndMinutes > availEndMinutes) {
+          return { status: 'unavailable' };
+        }
+      }
+      
       // Use local date components to avoid timezone issues
       const year = date.getFullYear();
       const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -162,15 +198,16 @@ export const useAvailabilityCalculation = ({
 
       // Make about 20% of slots busy
       if (Math.abs(hash) % 5 === 0) {
+        const [startTime, endTime] = timeSlot.split('-');
         return {
           status: 'busy',
           conflict: {
             id: `conflict-${hash}`,
             type: 'booking',
-            title: t('slot_selection.existing_booking'),
-            startTime: timeSlot.split('-')[0],
-            endTime: timeSlot.split('-')[1],
-            description: t('slot_selection.time_not_available'),
+            title: t('availability.booked'),
+            startTime,
+            endTime,
+            description: t('time_slots.no_slots'),
           },
         };
       }
@@ -184,7 +221,7 @@ export const useAvailabilityCalculation = ({
 
       return { status: 'available' };
     },
-    [t, parseTimeSlot]
+    [t, parseTimeSlot, facilityAvailability]
   );
 
   /**
@@ -194,15 +231,16 @@ export const useAvailabilityCalculation = ({
     (zoneId: string, date: Date, timeSlot: string): AvailabilityStatus => {
       // Check if slot conflicts with already selected slots
       if (checkSelectedSlotConflict(zoneId, date, timeSlot)) {
+        const [startTime, endTime] = timeSlot.split('-');
         return {
           status: 'busy',
           conflict: {
             id: `selected-${zoneId}-${timeSlot}`,
             type: 'booking',
-            title: t('slot_selection.already_selected'),
-            startTime: timeSlot.split('-')[0],
-            endTime: timeSlot.split('-')[1],
-            description: t('slot_selection.remove_to_select_again'),
+            title: t('slot_status.selected'),
+            startTime,
+            endTime,
+            description: t('slot_status.selected'),
           },
         };
       }

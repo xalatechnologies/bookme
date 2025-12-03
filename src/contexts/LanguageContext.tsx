@@ -1,18 +1,19 @@
 "use client";
 
-import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
+import React, { createContext, useState, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { Language } from '@/i18n/types';
 import { changeLanguage as changeI18nLanguage, getCurrentLanguage } from '@/i18n/config';
 
-interface LanguageContextType {
+export interface LanguageContextType {
   readonly language: Language;
   readonly setLanguage: (language: Language) => void;
   readonly toggleLanguage: () => void;
 }
 
-const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
+// eslint-disable-next-line react-refresh/only-export-components
+export const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 interface LanguageProviderProps {
   readonly children: React.ReactNode;
@@ -35,7 +36,7 @@ export const LanguageProvider = ({ children }: LanguageProviderProps): JSX.Eleme
     await changeI18nLanguage(i18nLang as 'no' | 'en');
 
     // Store in localStorage (keeping existing key for compatibility)
-    localStorage.setItem('bookme-language', newLanguage);
+    localStorage.setItem('booknor-language', newLanguage);
   }, []);
 
   const toggleLanguage = useCallback((): void => {
@@ -60,7 +61,7 @@ export const LanguageProvider = ({ children }: LanguageProviderProps): JSX.Eleme
 
   // Load language from localStorage on mount
   useEffect(() => {
-    const savedLanguage = localStorage.getItem('bookme-language') as Language;
+    const savedLanguage = localStorage.getItem('booknor-language') as Language;
     if (savedLanguage && (savedLanguage === 'NO' || savedLanguage === 'EN')) {
       void setLanguage(savedLanguage);
     }
@@ -77,12 +78,4 @@ export const LanguageProvider = ({ children }: LanguageProviderProps): JSX.Eleme
       {children}
     </LanguageContext.Provider>
   );
-};
-
-export const useLanguage = (): LanguageContextType => {
-  const context = useContext(LanguageContext);
-  if (context === undefined) {
-    throw new Error('useLanguage must be used within a LanguageProvider');
-  }
-  return context;
 };

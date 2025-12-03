@@ -495,7 +495,7 @@ import BookingCard from '@/components/features/bookings/components/BookingCard';
 ### 5.3 Visual Architecture Diagram
 
 ```markdown
-# BookMe Architecture Overview
+# Booknor Architecture Overview
 
 ## Feature Domains
 

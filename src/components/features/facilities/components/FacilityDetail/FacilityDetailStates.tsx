@@ -9,9 +9,7 @@ import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
-interface LoadingStateProps {}
-
-export const LoadingState: React.FC<LoadingStateProps> = ({}): JSX.Element => {
+export const LoadingState: React.FC = (): JSX.Element => {
   const { t } = useTranslation('common');
 
   return (
@@ -52,9 +50,9 @@ export const ErrorState: React.FC<ErrorStateProps> = ({ error, notFound = false 
             </div>
 
             <div className="space-y-2">
-              <h1 className="text-2xl font-bold text-gray-900">{t('errors.facility_not_found')}</h1>
+              <h1 className="text-2xl font-bold text-gray-900">{t('messages.facility_not_found')}</h1>
               <p className="text-gray-600">
-                {t('errors.facility_not_found_desc')}
+                {t('messages.facility_not_found_desc')}
               </p>
             </div>
 
@@ -90,9 +88,9 @@ export const ErrorState: React.FC<ErrorStateProps> = ({ error, notFound = false 
           </div>
 
           <div className="space-y-2">
-            <h1 className="text-2xl font-bold text-gray-900">{t('errors.something_went_wrong')}</h1>
+            <h1 className="text-2xl font-bold text-gray-900">{t('messages.error')}</h1>
             <p className="text-gray-600">
-              {error || t('errors.load_facility_error')}
+              {error || t('messages.loadingFailed', { item: t('facilities.count') })}
             </p>
           </div>
 

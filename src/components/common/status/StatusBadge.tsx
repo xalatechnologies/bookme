@@ -76,9 +76,12 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({
 
   const finalVariant = variant || config.variant;
   const Icon = config.icon;
-  const label = translationKey
-    ? t(translationKey)
-    : t(`statuses.${status.toLowerCase()}`, status);
+  // Type assertion to allow dynamic translation keys
+  const label: string = translationKey
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ? String(t(translationKey as any))
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    : String(t(`status.${status.toLowerCase()}` as any, status));
 
   return (
     <Badge className={`${variantStyles[finalVariant]} ${className}`}>
@@ -91,12 +94,12 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({
 // Convenience exports for common use cases
 export const BookingStatusBadge: React.FC<{ readonly status: string }> = ({
   status,
-}) => <StatusBadge status={status} translationKey={`statuses.${status}`} />;
+}) => <StatusBadge status={status} translationKey={`status.${status}`} />;
 
 export const PaymentStatusBadge: React.FC<{ readonly status: string }> = ({
   status,
-}) => <StatusBadge status={status} translationKey={`statuses.${status}`} />;
+}) => <StatusBadge status={status} translationKey={`status.${status}`} />;
 
 export const UserStatusBadge: React.FC<{ readonly status: string }> = ({
   status,
-}) => <StatusBadge status={status} translationKey={`statuses.${status}`} />;
+}) => <StatusBadge status={status} translationKey={`status.${status}`} />;

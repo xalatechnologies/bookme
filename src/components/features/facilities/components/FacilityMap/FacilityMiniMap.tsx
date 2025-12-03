@@ -1,80 +1,77 @@
-"use client";
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { mapboxgl } from '@/lib/clients/mapbox';
+import { geocodeAddress } from '@/lib/geocode';
 
-// External imports
-import React, { useState } from 'react';
-import { MapPin } from 'lucide-react';
+type Props = {
+  address?: string | null;
+  lat?: number | null;
+  lng?: number | null;
+  // Removed fixed height and width props to make the map responsive to its container
+};
 
-// Internal imports
-import type { Database } from '@/types/database';
+// Updated the component to make the map fill its container
+const FacilityMiniMap = ({ address, lat, lng }: Props) => {
+  const containerId = useMemo(
+    () => `mini-map-${(address || (lat !== undefined && lng !== undefined ? `${lat}-${lng}` : String(Math.random()))).replace(/\s+/g, '-')}`,
+    [address, lat, lng]
+  );
+  const mapRef = useRef<mapboxgl.Map | null>(null);
+  const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(
+    Number.isFinite(lat) && Number.isFinite(lng) ? { lat: lat!, lng: lng! } : null
+  );
+  const containerRef = useRef<HTMLDivElement>(null);
 
-type Facility = Database['public']['Tables']['facilities']['Row'];
+  useEffect(() => {
+    let dead = false;
+    if (!coords && address) {
+      geocodeAddress(address).then(r => {
+        if (!dead && r) setCoords({ lat: r.lat, lng: r.lng });
+      });
+    }
+    return () => { dead = true; };
+  }, [address, coords]);
 
-interface FacilityMiniMapProps {
-  readonly facility: Facility;
-  readonly mapboxToken: string;
-}
+  useEffect(() => {
+    if (!coords || !containerRef.current) return;
+    if (mapRef.current) mapRef.current.remove();
 
-export const FacilityMiniMap: React.FC<FacilityMiniMapProps> = ({
-  facility,
-  mapboxToken
-}): JSX.Element => {
-  const [imageLoaded, setImageLoaded] = useState<boolean>(false);
-  const [imageError, setImageError] = useState<boolean>(false);
 
-  // Generate static map URL using Mapbox Static Images API
-  // Use a larger size to ensure good quality at different heights
-  const staticMapUrl = `https://api.mapbox.com/styles/v1/mapbox/streets-v12/static/pin-s+000000(${facility.coordinates.lng},${facility.coordinates.lat})/${facility.coordinates.lng},${facility.coordinates.lat},14,0/400x400@2x?access_token=${mapboxToken}`;
 
-  const handleImageLoad = (): void => {
-    setImageLoaded(true);
-  };
+    const map = new mapboxgl.Map({
+      container: containerId,
+      style: 'mapbox://styles/mapbox/streets-v12',
+      center: [coords.lng, coords.lat],
+      zoom: 14,
+      interactive: false
+    });
 
-  const handleImageError = (): void => {
-    setImageError(true);
-    setImageLoaded(true);
-  };
+    // Create a larger black marker using SVG (increased from default size)
+    const markerElement = document.createElement('div');
+    markerElement.innerHTML = `
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="black"/>
+        <path d="M12 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" fill="white"/>
+      </svg>
+    `;
 
-  if (imageError) {
-    return (
-      <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
-        <div className="text-center">
-          <MapPin className="h-8 w-8 text-gray-800 mx-auto mb-2" />
-          <p className="text-xs text-gray-600 font-medium">{facility.name}</p>
-          <p className="text-xs text-gray-500 truncate px-2">{facility.address}</p>
-        </div>
-      </div>
-    );
-  }
+    new mapboxgl.Marker(markerElement)
+      .setLngLat([coords.lng, coords.lat])
+      .addTo(map);
+
+    mapRef.current = map;
+
+    return () => map.remove();
+  }, [containerId, coords]);
 
   return (
-    <div className="relative w-full h-full">
-      {/* Loading state */}
-      {!imageLoaded && (
-        <div className="absolute inset-0 flex items-center justify-center bg-gray-100 z-10">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mx-auto mb-2"></div>
-            <p className="text-xs text-gray-500">Laster kart...</p>
-          </div>
-        </div>
-      )}
-
-      {/* Static map image */}
-      <img
-        src={staticMapUrl}
-        alt={`Kart for ${facility.name}`}
-        className={`w-full h-full object-cover transition-opacity duration-300 ${
-          imageLoaded ? 'opacity-100' : 'opacity-0'
-        }`}
-        onLoad={handleImageLoad}
-        onError={handleImageError}
-        loading="lazy"
-      />
-
-      {/* Overlay to show facility name on hover */}
-      <div className="absolute bottom-2 left-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-        <p className="font-medium truncate">{facility.name}</p>
-        <p className="text-gray-300 truncate">{facility.address}</p>
-      </div>
-    </div>
+    <div
+      ref={containerRef}
+      id={containerId}
+      className="w-full h-full rounded-md overflow-hidden border"
+    />
   );
 };
+
+// Export both default and named for compatibility
+export default FacilityMiniMap;
+export { FacilityMiniMap };

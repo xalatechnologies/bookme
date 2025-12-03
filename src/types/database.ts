@@ -460,6 +460,8 @@ export type Database = {
           notes: string | null
           org_id: string
           price_breakdown: Json | null
+          processed_at: string | null
+          processed_by: string | null
           recurring_booking_id: string | null
           starts_at: string
           status: Database["public"]["Enums"]["booking_status"]
@@ -479,6 +481,8 @@ export type Database = {
           notes?: string | null
           org_id: string
           price_breakdown?: Json | null
+          processed_at?: string | null
+          processed_by?: string | null
           recurring_booking_id?: string | null
           starts_at: string
           status?: Database["public"]["Enums"]["booking_status"]
@@ -498,6 +502,8 @@ export type Database = {
           notes?: string | null
           org_id?: string
           price_breakdown?: Json | null
+          processed_at?: string | null
+          processed_by?: string | null
           recurring_booking_id?: string | null
           starts_at?: string
           status?: Database["public"]["Enums"]["booking_status"]
@@ -589,6 +595,8 @@ export type Database = {
           area_description: string | null
           capacity: number
           city: string | null
+          contact_email: string | null
+          contact_phone: string | null
           country: string | null
           created_at: string
           description: string | null
@@ -612,6 +620,8 @@ export type Database = {
           area_description?: string | null
           capacity: number
           city?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
           country?: string | null
           created_at?: string
           description?: string | null
@@ -635,6 +645,8 @@ export type Database = {
           area_description?: string | null
           capacity?: number
           city?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
           country?: string | null
           created_at?: string
           description?: string | null
@@ -1448,6 +1460,7 @@ export type Database = {
           created_at: string
           default_org: string | null
           display_name: string | null
+          email: string | null
           phone: string | null
           updated_at: string
           user_id: string
@@ -1456,6 +1469,7 @@ export type Database = {
           created_at?: string
           default_org?: string | null
           display_name?: string | null
+          email?: string | null
           phone?: string | null
           updated_at?: string
           user_id: string
@@ -1464,6 +1478,7 @@ export type Database = {
           created_at?: string
           default_org?: string | null
           display_name?: string | null
+          email?: string | null
           phone?: string | null
           updated_at?: string
           user_id?: string

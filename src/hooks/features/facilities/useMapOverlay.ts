@@ -1,8 +1,6 @@
 import { useState, useCallback } from 'react';
 import mapboxgl from 'mapbox-gl';
-import type { Database } from '@/types/database';
-
-type Facility = Database['public']['Tables']['facilities']['Row'];
+import type { FacilityWithCoords } from '@/types/facility';
 
 interface UseMapOverlayReturn {
   readonly map: mapboxgl.Map | null;
@@ -14,7 +12,7 @@ interface UseMapOverlayReturn {
   readonly handleMapLoad: (mapInstance: mapboxgl.Map) => void;
   readonly handleMapError: (errorMessage: string) => void;
   readonly handleRetry: () => void;
-  readonly handleMarkerClick: (facility: Facility, onMarkerClick?: (facility: Facility) => void) => void;
+  readonly handleMarkerClick: (facility: FacilityWithCoords, onMarkerClick?: (facility: FacilityWithCoords) => void) => void;
 }
 
 /**
@@ -53,7 +51,16 @@ export const useMapOverlay = (): UseMapOverlayReturn => {
    * @param errorMessage - The error message to display
    */
   const handleMapError = useCallback((errorMessage: string): void => {
-    console.error('Map error:', errorMessage);
+    // Only log errors that are likely to affect functionality
+    // Suppress less critical errors to reduce console noise
+    if (errorMessage.includes('Invalid Mapbox access token') || 
+        errorMessage.includes('Network error') || 
+        errorMessage.includes('error occurred')) {
+      console.error('Map error:', errorMessage);
+    } else {
+      // Log non-critical errors as warnings instead
+      console.warn('Map warning:', errorMessage);
+    }
     setError(errorMessage);
     setIsInitialized(false);
   }, []);
@@ -78,8 +85,8 @@ export const useMapOverlay = (): UseMapOverlayReturn => {
    * @param onMarkerClick - Optional custom click handler
    */
   const handleMarkerClick = useCallback((
-    facility: Facility,
-    onMarkerClick?: (facility: Facility) => void
+    facility: FacilityWithCoords,
+    onMarkerClick?: (facility: FacilityWithCoords) => void
   ): void => {
     if (onMarkerClick) {
       onMarkerClick(facility);

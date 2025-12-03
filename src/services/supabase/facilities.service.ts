@@ -2,7 +2,6 @@
  * Facilities Service
  *
  * Handles all facility-related operations with Supabase backend.
- * Provides CRUD operations and React Query hooks for facilities.
  *
  * Features:
  * - Type-safe operations with generated database types
@@ -10,20 +9,6 @@
  * - Support for zones and availability
  * - Organization-scoped queries
  * - Optimistic updates
- *
- * Usage:
- * ```tsx
- * import { useFacilities, useCreateFacility } from '@/services/supabase/facilities.service';
- *
- * function FacilityList() {
- *   const { data: facilities, isLoading } = useFacilities(orgId);
- *   const createFacility = useCreateFacility();
- *
- *   if (isLoading) return <Loading />;
- *
- *   return <div>{facilities?.map(f => <FacilityCard key={f.id} facility={f} />)}</div>;
- * }
- * ```
  */
 
 import { supabase } from '@/lib/clients/supabase';
@@ -44,6 +29,44 @@ export interface FacilityWithZones extends Facility {
 }
 
 /**
+ * Facility with extracted coordinates
+ */
+export interface FacilityWithCoords extends Facility {
+  lat: number | null;
+  lng: number | null;
+}
+
+// Type for facilities with location text from RPC functions
+type FacilityWithLocationText = {
+  id: string;
+  name: string;
+  facility_type: string;
+  address: string | null;
+  capacity: number;
+  images: Database['public']['Tables']['facilities']['Row']['images'];
+  location_text: string;
+  org_id: string | null;
+  lat: number;
+  lng: number;
+  location_geojson: unknown;
+  created_at: string;
+  updated_at: string | null;
+  description: string | null;
+  rating: number | null;
+  review_count: number;
+  status: string;
+  slug: string;
+  contact_email: string | null;
+  contact_phone: string | null;
+  accessibility_features: Database['public']['Tables']['facilities']['Row']['accessibility_features'];
+  area_description: string | null;
+  amenities: Database['public']['Tables']['facilities']['Row']['amenities'];
+  postal_code: string | null;
+  city: string | null;
+  country: string | null;
+};
+
+/**
  * Query keys for React Query
  * Consistent key structure for caching and invalidation
  */
@@ -55,6 +78,104 @@ export const facilityKeys = {
   detail: (id: string) => [...facilityKeys.details(), id] as const,
   withZones: (id: string) => [...facilityKeys.detail(id), 'zones'] as const,
   published: (orgId: string) => [...facilityKeys.list(orgId), 'published'] as const,
+  publishedWithLocationText: (orgId: string) => [...facilityKeys.list(orgId), 'published', 'with-location-text'] as const,
+  detailWithLocationText: (id: string) => [...facilityKeys.details(), id, 'with-location-text'] as const,
+  publishedWithCoords: (orgId: string) => [...facilityKeys.list(orgId), 'published', 'with-coords'] as const,
+};
+
+// Helper function to extract coordinates from location data
+const extractCoordinates = (location: unknown): { lat: number | null; lng: number | null } => {
+  let lat: number | null = null;
+  let lng: number | null = null;
+  
+  try {
+    // If location is an object with lat/lng properties
+    if (location && typeof location === 'object' && !Array.isArray(location)) {
+      const locObj = location as Record<string, unknown>;
+      if ('lat' in locObj && 'lng' in locObj) {
+        lat = typeof locObj.lat === 'number' ? locObj.lat : null;
+        lng = typeof locObj.lng === 'number' ? locObj.lng : null;
+      }
+    }
+    // If location is a string in POINT format (POINT(lng lat))
+    else if (typeof location === 'string' && location.startsWith('POINT(') && location.endsWith(')')) {
+      const coords = location.slice(6, -1).split(' ');
+      if (coords.length === 2) {
+        lng = parseFloat(coords[0]);
+        lat = parseFloat(coords[1]);
+      }
+    }
+    // If location is a binary PostGIS object, we can't parse it directly
+    // In this case, we need to rely on the database to convert it to text format
+    else if (location && typeof location === 'object' && Array.isArray(location)) {
+      // This might be a binary array, we can't parse it directly
+      console.warn('Cannot parse binary PostGIS location data directly');
+    }
+    // Log when location data is missing or invalid
+    else if (location === null || location === undefined) {
+      console.debug('Location data is null or undefined');
+    }
+    else {
+      console.debug('Unexpected location data format:', typeof location, location);
+    }
+  } catch (error) {
+    console.warn('Error parsing location data:', error);
+  }
+  
+  return { lat, lng };
+};
+
+// Helper function to convert FacilityWithLocationText to FacilityWithCoords
+const convertToFacilityWithCoords = (facility: FacilityWithLocationText): FacilityWithCoords => {
+  // Create a base facility object with all properties from FacilityWithLocationText
+  const baseFacility: any = {
+    id: facility.id,
+    org_id: facility.org_id,
+    name: facility.name,
+    address: facility.address,
+    postal_code: facility.postal_code,
+    city: facility.city,
+    country: facility.country,
+    location: facility.location_text,
+    location_geog: facility.location_text,
+    location_geojson: facility.location_geojson,
+    created_at: facility.created_at,
+    updated_at: facility.updated_at,
+    description: facility.description,
+    facility_type: facility.facility_type,
+    images: facility.images,
+    capacity: facility.capacity,
+    rating: facility.rating,
+    review_count: facility.review_count,
+    status: facility.status,
+    slug: facility.slug,
+    contact_email: facility.contact_email,
+    contact_phone: facility.contact_phone,
+    accessibility_features: facility.accessibility_features,
+    area_description: facility.area_description,
+    amenities: facility.amenities,
+  };
+  
+  // Add lat/lng properties
+  const facilityWithCoords: FacilityWithCoords = {
+    ...baseFacility,
+    lat: facility.lat,
+    lng: facility.lng
+  };
+  
+  return facilityWithCoords;
+};
+
+// Helper function to add coordinates to facilities (fallback method)
+const addCoordinatesToFacilities = (facilities: Facility[]): FacilityWithCoords[] => {
+  return facilities.map(facility => {
+    const { lat, lng } = extractCoordinates(facility.location);
+    return {
+      ...facility,
+      lat,
+      lng
+    };
+  });
 };
 
 // ============================================================================
@@ -96,6 +217,50 @@ export const facilitiesService = {
 
     if (error) throw error;
     return data;
+  },
+
+  /**
+   * Fetch all facilities for an organization with coordinates extracted
+   * Uses RPC function to get coordinates directly from database
+   * @param orgId - Organization ID
+   * @returns Array of facilities with coordinates
+   */
+  async getAllWithCoords(orgId: string): Promise<FacilityWithCoords[]> {
+    // Always use client-side extraction as primary method to ensure all facilities are returned
+    // The RPC function was filtering out facilities without location data
+    const facilities = await this.getAll(orgId);
+    return addCoordinatesToFacilities(facilities);
+  },
+
+  /**
+   * Fetch only published facilities (for public view) with coordinates extracted
+   * Uses RPC function to get coordinates directly from database
+   * @param orgId - Organization ID
+   * @returns Array of published facilities with coordinates
+   */
+  async getPublishedWithCoords(orgId: string): Promise<FacilityWithCoords[]> {
+    // Always use client-side extraction as primary method to ensure all facilities are returned
+    // The RPC function was filtering out facilities without location data
+    const facilities = await this.getPublished(orgId);
+    return addCoordinatesToFacilities(facilities);
+  },
+
+  /**
+   * Save coordinates for a facility
+   * @param id - Facility ID
+   * @param lat - Latitude
+   * @param lng - Longitude
+   * @returns Promise with update result
+   */
+  async saveCoords(id: string, lat: number, lng: number): Promise<void> {
+    const { error } = await supabase
+      .from('facilities')
+      .update({
+        location: `SRID=4326;POINT(${lng} ${lat})`
+      })
+      .eq('id', id);
+
+    if (error) throw error;
   },
 
   /**
@@ -218,6 +383,83 @@ export const facilitiesService = {
     if (error) throw error;
     return data;
   },
+
+  /**
+   * Fetch facility availability
+   * @param facilityId - Facility ID
+   * @returns Array of availability records
+   */
+  async getAvailability(facilityId: string): Promise<Database['public']['Tables']['facility_availability']['Row'][]> {
+    const { data, error } = await supabase
+      .from('facility_availability')
+      .select('*')
+      .eq('facility_id', facilityId)
+      .order('day_of_week');
+
+    if (error) throw error;
+    return data;
+  },
+
+  /**
+   * Update facility availability
+   * @param facilityId - Facility ID
+   * @param availability - Array of availability records
+   */
+  async updateAvailability(facilityId: string, availability: Database['public']['Tables']['facility_availability']['Row'][]): Promise<void> {
+    // First delete existing availability for this facility
+    const { error: deleteError } = await supabase
+      .from('facility_availability')
+      .delete()
+      .eq('facility_id', facilityId);
+
+    if (deleteError) throw deleteError;
+
+    // Then insert new availability records
+    if (availability.length > 0) {
+      const { error: insertError } = await supabase
+        .from('facility_availability')
+        .insert(availability.map(item => ({
+          ...item,
+          facility_id: facilityId
+        })));
+
+      if (insertError) throw insertError;
+    }
+  },
+
+  /**
+   * Fetch published facilities with location converted to text format
+   * @param orgId - Organization ID
+   * @returns Array of facilities with location as text
+   */
+  async getPublishedWithLocationText(orgId: string): Promise<Facility[]> {
+    try {
+      // First try to get facilities with regular query
+      const facilities = await this.getPublished(orgId);
+      
+      // Log some facility data to see what we're working with
+      if (facilities.length > 0) {
+        console.log('Sample facility location data:', facilities[0].id, facilities[0].name, facilities[0].location);
+      }
+      
+      // Return facilities as is - the MapMarkers component will handle conversion
+      return facilities;
+    } catch (error) {
+      console.error('Error in getPublishedWithLocationText:', error);
+      return [];
+    }
+  },
+
+  /**
+   * Fetch a single facility with location converted to text format
+   * @param id - Facility ID
+   * @returns Facility with location as text
+   */
+  async getByIdWithLocationText(id: string): Promise<Facility> {
+    // For now, just return the regular facility
+    return await this.getById(id);
+  },
+
 };
 
 // ============================================================================
@@ -269,6 +511,60 @@ export const usePublishedFacilities = (
     queryFn: () => facilitiesService.getPublished(orgId),
     enabled: !!orgId,
     staleTime: 10 * 60 * 1000, // 10 minutes (public data changes less frequently)
+  });
+};
+
+/**
+ * Hook to fetch all facilities for an organization with coordinates
+ *
+ * @param orgId - Organization ID
+ * @param enabled - Whether to enable the query (default: true if orgId exists)
+ * @returns React Query result with facilities array including coordinates
+ */
+export const useFacilitiesWithCoords = (
+  orgId: string,
+  enabled = true
+): UseQueryResult<FacilityWithCoords[], Error> => {
+  return useQuery({
+    queryKey: facilityKeys.list(orgId),
+    queryFn: () => facilitiesService.getAllWithCoords(orgId),
+    enabled: !!orgId && enabled,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+};
+
+/**
+ * Hook to fetch published facilities with coordinates
+ *
+ * @param orgId - Organization ID
+ * @returns React Query result with published facilities including coordinates
+ */
+export const usePublishedFacilitiesWithCoords = (
+  orgId: string
+): UseQueryResult<FacilityWithCoords[], Error> => {
+  return useQuery({
+    queryKey: facilityKeys.publishedWithCoords(orgId),
+    queryFn: () => facilitiesService.getPublishedWithCoords(orgId),
+    enabled: !!orgId,
+    staleTime: 10 * 60 * 1000, // 10 minutes (public data changes less frequently)
+  });
+};
+
+/**
+ * Hook to save coordinates for a facility
+ *
+ * @returns Mutation object
+ */
+export const useSaveCoords = (): UseMutationResult<void, Error, { id: string; lat: number; lng: number }> => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, lat, lng }) => facilitiesService.saveCoords(id, lat, lng),
+    onSuccess: (_, { id }) => {
+      // Invalidate facility queries to refresh data
+      queryClient.invalidateQueries({ queryKey: facilityKeys.detail(id) });
+      queryClient.invalidateQueries({ queryKey: facilityKeys.lists() });
+    },
   });
 };
 
@@ -366,6 +662,24 @@ export const useFacilityWithZones = (
 };
 
 /**
+ * Hook to fetch facility availability
+ *
+ * @param facilityId - Facility ID
+ * @param enabled - Whether to enable the query (default: true if facilityId exists)
+ * @returns React Query result with availability array
+ */
+export const useFacilityAvailability = (
+  facilityId: string,
+  enabled = true
+): UseQueryResult<Database['public']['Tables']['facility_availability']['Row'][], Error> => {
+  return useQuery({
+    queryKey: [...facilityKeys.detail(facilityId), 'availability'],
+    queryFn: () => facilitiesService.getAvailability(facilityId),
+    enabled: !!facilityId && enabled,
+  });
+};
+
+/**
  * Hook to create a facility
  *
  * @returns Mutation object with mutate function
@@ -459,6 +773,30 @@ export const useUpdateFacility = (): UseMutationResult<
 };
 
 /**
+ * Hook to update facility availability
+ *
+ * @returns Mutation object
+ */
+export const useUpdateFacilityAvailability = (): UseMutationResult<
+  void,
+  Error,
+  { facilityId: string; availability: Database['public']['Tables']['facility_availability']['Row'][] }
+> => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ facilityId, availability }) => 
+      facilitiesService.updateAvailability(facilityId, availability),
+    onSuccess: (_, { facilityId }) => {
+      // Invalidate availability cache
+      queryClient.invalidateQueries({ 
+        queryKey: [...facilityKeys.detail(facilityId), 'availability'] 
+      });
+    },
+  });
+};
+
+/**
  * Hook to delete a facility
  *
  * @returns Mutation object
@@ -514,7 +852,7 @@ export const useSearchFacilities = (
   return useQuery({
     queryKey: [...facilityKeys.list(orgId), 'search', query],
     queryFn: () => facilitiesService.search(orgId, query),
-    enabled: !!orgId && !!query && query.length >= 2 && enabled,
+    enabled: !!orgId && !!query && enabled,
     staleTime: 2 * 60 * 1000, // 2 minutes
   });
 };

@@ -2,6 +2,8 @@
 
 import React, { Suspense, lazy } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
+import { ProtectedRoute } from "@/components/features/auth/components/ProtectedRoute";
+import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import AdminLayout from "@/components/layouts/AdminLayout";
 
 // Lazy load admin pages for better performance
@@ -20,6 +22,50 @@ const DeletionPlanPage = lazy(() => import("@/pages/admin/DeletionPlanPage"));
 const AdminMessages = lazy(() => import("@/pages/admin/AdminMessages"));
 const LocalizationManagementPage = lazy(() => import("@/pages/admin/LocalizationManagementPage"));
 
+// Custom unauthorized component for admin portal
+const AdminUnauthorizedComponent = (): JSX.Element => {
+  return (
+    <div className="flex items-center justify-center min-h-screen bg-gray-50">
+      <div className="max-w-md p-8 bg-white rounded-xl shadow-lg text-center">
+        <div className="flex justify-center mb-4">
+          <div className="h-16 w-16 rounded-full bg-red-100 flex items-center justify-center">
+            <svg
+              className="h-8 w-8 text-red-600"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+              />
+            </svg>
+          </div>
+        </div>
+
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">
+          Access Forbidden
+        </h2>
+
+        <p className="text-gray-600 mb-6">
+          This area is restricted to staff and administrative personnel only. 
+          You do not have permission to access the admin portal.
+        </p>
+
+        <PrimaryButton
+          asChild
+        >
+          <a href="/">
+            Go to Home
+          </a>
+        </PrimaryButton>
+      </div>
+    </div>
+  );
+};
+
 // Loading component
 const AdminPageLoader = (): JSX.Element => (
   <div className="flex items-center justify-center h-64">
@@ -31,28 +77,125 @@ interface IAdminRoutesProps {
   readonly children?: never;
 }
 
-const AdminRoutes = (_props: IAdminRoutesProps): JSX.Element => {
+const AdminRoutes = (
+   
+  _props: IAdminRoutesProps
+): JSX.Element => {
   return (
-    <Suspense fallback={<AdminPageLoader />}>
-      <Routes>
-        <Route path="/" element={<AdminLayout><Navigate to="/admin/overview" replace /></AdminLayout>} />
-        <Route path="/overview" element={<AdminLayout><Overview /></AdminLayout>} />
-        <Route path="/facilities" element={<AdminLayout><FacilitiesPage /></AdminLayout>} />
-        <Route path="/facilities/new" element={<AdminLayout><FacilityEditPage /></AdminLayout>} />
-        <Route path="/facilities/:id/edit" element={<AdminLayout><FacilityEditPage /></AdminLayout>} />
-        <Route path="/bookings" element={<AdminLayout><BookingsPage /></AdminLayout>} />
-        <Route path="/approvals" element={<AdminLayout><ApprovalsPage /></AdminLayout>} />
-        <Route path="/users-roles" element={<AdminLayout><UsersRolesPage /></AdminLayout>} />
-        <Route path="/notifications" element={<AdminLayout><NotificationsPage /></AdminLayout>} />
-        <Route path="/integrations" element={<AdminLayout><IntegrationsPage /></AdminLayout>} />
-        <Route path="/reports" element={<AdminLayout><ReportsPage /></AdminLayout>} />
-        <Route path="/audit-logs" element={<AdminLayout><AuditLogPage /></AdminLayout>} />
-        <Route path="/data-retention" element={<AdminLayout><DeletionPlanPage /></AdminLayout>} />
-        <Route path="/messages" element={<AdminLayout><AdminMessages /></AdminLayout>} />
-        <Route path="/settings" element={<AdminLayout><SettingsPage /></AdminLayout>} />
-        <Route path="/localization" element={<AdminLayout><LocalizationManagementPage /></AdminLayout>} />
-      </Routes>
-    </Suspense>
+    <Routes>
+      <Route path="/" element={
+        <ProtectedRoute requiredRole="admin" unauthorizedComponent={<AdminUnauthorizedComponent />}>
+          <Suspense fallback={<AdminPageLoader />}>
+            <AdminLayout><Navigate to="/admin/overview" replace /></AdminLayout>
+          </Suspense>
+        </ProtectedRoute>
+      } />
+      <Route path="/overview" element={
+        <ProtectedRoute requiredRole="admin" unauthorizedComponent={<AdminUnauthorizedComponent />}>
+          <Suspense fallback={<AdminPageLoader />}>
+            <AdminLayout><Overview /></AdminLayout>
+          </Suspense>
+        </ProtectedRoute>
+      } />
+      <Route path="/facilities" element={
+        <ProtectedRoute requiredRole="admin" unauthorizedComponent={<AdminUnauthorizedComponent />}>
+          <Suspense fallback={<AdminPageLoader />}>
+            <AdminLayout><FacilitiesPage /></AdminLayout>
+          </Suspense>
+        </ProtectedRoute>
+      } />
+      <Route path="/facilities/new" element={
+        <ProtectedRoute requiredRole="admin" unauthorizedComponent={<AdminUnauthorizedComponent />}>
+          <Suspense fallback={<AdminPageLoader />}>
+            <AdminLayout><FacilityEditPage /></AdminLayout>
+          </Suspense>
+        </ProtectedRoute>
+      } />
+      <Route path="/facilities/:id/edit" element={
+        <ProtectedRoute requiredRole="admin" unauthorizedComponent={<AdminUnauthorizedComponent />}>
+          <Suspense fallback={<AdminPageLoader />}>
+            <AdminLayout><FacilityEditPage /></AdminLayout>
+          </Suspense>
+        </ProtectedRoute>
+      } />
+      <Route path="/bookings" element={
+        <ProtectedRoute requiredRole="admin" unauthorizedComponent={<AdminUnauthorizedComponent />}>
+          <Suspense fallback={<AdminPageLoader />}>
+            <AdminLayout><BookingsPage /></AdminLayout>
+          </Suspense>
+        </ProtectedRoute>
+      } />
+      <Route path="/approvals" element={
+        <ProtectedRoute requiredRole="admin" unauthorizedComponent={<AdminUnauthorizedComponent />}>
+          <Suspense fallback={<AdminPageLoader />}>
+            <AdminLayout><ApprovalsPage /></AdminLayout>
+          </Suspense>
+        </ProtectedRoute>
+      } />
+      <Route path="/users-roles" element={
+        <ProtectedRoute requiredRole="admin" unauthorizedComponent={<AdminUnauthorizedComponent />}>
+          <Suspense fallback={<AdminPageLoader />}>
+            <AdminLayout><UsersRolesPage /></AdminLayout>
+          </Suspense>
+        </ProtectedRoute>
+      } />
+      <Route path="/notifications" element={
+        <ProtectedRoute requiredRole="admin" unauthorizedComponent={<AdminUnauthorizedComponent />}>
+          <Suspense fallback={<AdminPageLoader />}>
+            <AdminLayout><NotificationsPage /></AdminLayout>
+          </Suspense>
+        </ProtectedRoute>
+      } />
+      <Route path="/integrations" element={
+        <ProtectedRoute requiredRole="admin" unauthorizedComponent={<AdminUnauthorizedComponent />}>
+          <Suspense fallback={<AdminPageLoader />}>
+            <AdminLayout><IntegrationsPage /></AdminLayout>
+          </Suspense>
+        </ProtectedRoute>
+      } />
+      <Route path="/reports" element={
+        <ProtectedRoute requiredRole="admin" unauthorizedComponent={<AdminUnauthorizedComponent />}>
+          <Suspense fallback={<AdminPageLoader />}>
+            <AdminLayout><ReportsPage /></AdminLayout>
+          </Suspense>
+        </ProtectedRoute>
+      } />
+      <Route path="/audit-logs" element={
+        <ProtectedRoute requiredRole="admin" unauthorizedComponent={<AdminUnauthorizedComponent />}>
+          <Suspense fallback={<AdminPageLoader />}>
+            <AdminLayout><AuditLogPage /></AdminLayout>
+          </Suspense>
+        </ProtectedRoute>
+      } />
+      <Route path="/data-retention" element={
+        <ProtectedRoute requiredRole="admin" unauthorizedComponent={<AdminUnauthorizedComponent />}>
+          <Suspense fallback={<AdminPageLoader />}>
+            <AdminLayout><DeletionPlanPage /></AdminLayout>
+          </Suspense>
+        </ProtectedRoute>
+      } />
+      <Route path="/messages" element={
+        <ProtectedRoute requiredRole="admin" unauthorizedComponent={<AdminUnauthorizedComponent />}>
+          <Suspense fallback={<AdminPageLoader />}>
+            <AdminLayout><AdminMessages /></AdminLayout>
+          </Suspense>
+        </ProtectedRoute>
+      } />
+      <Route path="/settings" element={
+        <ProtectedRoute requiredRole="admin" unauthorizedComponent={<AdminUnauthorizedComponent />}>
+          <Suspense fallback={<AdminPageLoader />}>
+            <AdminLayout><SettingsPage /></AdminLayout>
+          </Suspense>
+        </ProtectedRoute>
+      } />
+      <Route path="/localization" element={
+        <ProtectedRoute requiredRole="admin" unauthorizedComponent={<AdminUnauthorizedComponent />}>
+          <Suspense fallback={<AdminPageLoader />}>
+            <AdminLayout><LocalizationManagementPage /></AdminLayout>
+          </Suspense>
+        </ProtectedRoute>
+      } />
+    </Routes>
   );
 };
 

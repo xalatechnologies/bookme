@@ -63,7 +63,7 @@ export const FormActions: React.FC<IFormActionsProps> = ({
 
       {onSubmit && (
         <Button
-          type={onSubmit ? 'button' : 'submit'}
+          type="submit"
           variant={submitVariant}
           onClick={onSubmit}
           disabled={isSubmitting || !isValid}

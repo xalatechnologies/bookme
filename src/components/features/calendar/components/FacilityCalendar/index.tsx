@@ -1,7 +1,7 @@
 "use client";
 
 // External libraries
-import React, { useState, useMemo, useEffect, useCallback } from "react";
+import React, { useState, useMemo, useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import {
   addDays,
@@ -29,6 +29,7 @@ import { BookingFormPanel } from "./components/BookingFormPanel";
 import {
   ISelectedTimeSlot,
   IZone,
+  IBookingFormData,
   BookingType,
 } from "@/components/features/bookings/types";
 import type { RecurrencePattern } from "@/components/features/bookings/utils/recurrence";
@@ -97,8 +98,10 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
   onBulkSlotSelection: externalOnBulkSlotSelection,
   getAvailabilityStatus: externalGetAvailabilityStatus,
   isSlotSelected: externalIsSlotSelected,
-  onAddToCart: externalOnAddToCart,
-  onCompleteBooking: externalOnCompleteBooking,
+   
+  onAddToCart: _externalOnAddToCart,
+   
+  onCompleteBooking: _externalOnCompleteBooking,
   openingHoursStart = "08:00",
   openingHoursEnd = "22:00",
   useStepByStepBooking = false,
@@ -115,18 +118,22 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
 
   // Custom hooks
   const { checkIfHoliday, getHolidayName } = useHolidayCalculation();
-  const { calculatePricing, formatPrice } = useCalendarPricing();
+  const { calculatePricing, 
+     
+    formatPrice: _formatPrice } = useCalendarPricing();
   const {
     pattern: recurrencePattern,
     setPattern: setRecurrencePattern,
     generateRecurringSlots,
-    clearPattern: clearRecurrencePattern,
+     
+    clearPattern: _clearRecurrencePattern,
   } = useRecurrenceHandler();
 
   // Slot selection hook
   const {
     selectedSlots: internalSelectedSlots,
-    recurringSlots,
+     
+    recurringSlots: _recurringSlots,
     handleSlotClick: internalHandleSlotClick,
     handleBulkSlotSelection: internalHandleBulkSlotSelection,
     clearSelection: internalClearSelection,
@@ -148,7 +155,7 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
     facilityName,
     selectedZone,
     recurrencePattern,
-    t,
+    t: t as unknown as (key: string) => string,
   });
 
   // Use external props if available, otherwise use internal state
@@ -285,16 +292,7 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
    * Handle add to cart
    */
   const handleAddToCart = useCallback(
-    (bookingData: {
-      readonly purpose: string;
-      readonly attendees: number;
-      readonly activityType: string;
-      readonly additionalInfo: string;
-      readonly actorType: string;
-      readonly bookingType: BookingType;
-      readonly recurrencePattern?: RecurrencePattern | null;
-      readonly recurringSlots?: readonly ISelectedTimeSlot[];
-    }): void => {
+    (bookingData: IBookingFormData): void => {
       const slotsToUse =
         bookingData.recurringSlots && bookingData.recurringSlots.length > 0
           ? bookingData.recurringSlots
@@ -307,7 +305,16 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
       );
 
       coordinatedAddToCart(
-        bookingData,
+        {
+          purpose: bookingData.purpose,
+          attendees: bookingData.attendees,
+          activityType: bookingData.activityType,
+          additionalInfo: bookingData.additionalInfo || "",
+          actorType: bookingData.actorType,
+          bookingType: bookingData.bookingType,
+          recurrencePattern: bookingData.recurrencePattern,
+          recurringSlots: bookingData.recurringSlots,
+        },
         allSelectedSlots,
         pricing,
         clearSelection,
@@ -324,9 +331,9 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
   );
 
   /**
-   * Handle complete booking
+   * Handle add to cart for BookingFormPanel (without termsAccepted)
    */
-  const handleCompleteBooking = useCallback(
+  const handleAddToCartForPanel = useCallback(
     (bookingData: {
       readonly purpose: string;
       readonly attendees: number;
@@ -337,6 +344,19 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
       readonly recurrencePattern?: RecurrencePattern | null;
       readonly recurringSlots?: readonly ISelectedTimeSlot[];
     }): void => {
+      handleAddToCart({
+        ...bookingData,
+        termsAccepted: false,
+      } as IBookingFormData);
+    },
+    [handleAddToCart]
+  );
+
+  /**
+   * Handle complete booking
+   */
+  const handleCompleteBooking = useCallback(
+    (bookingData: IBookingFormData): void => {
       const slotsToUse =
         bookingData.recurringSlots && bookingData.recurringSlots.length > 0
           ? bookingData.recurringSlots
@@ -349,7 +369,16 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
       );
 
       coordinatedCompleteBooking(
-        bookingData,
+        {
+          purpose: bookingData.purpose,
+          attendees: bookingData.attendees,
+          activityType: bookingData.activityType,
+          additionalInfo: bookingData.additionalInfo || "",
+          actorType: bookingData.actorType,
+          bookingType: bookingData.bookingType,
+          recurrencePattern: bookingData.recurrencePattern,
+          recurringSlots: bookingData.recurringSlots,
+        },
         allSelectedSlots,
         pricing,
         clearSelection,
@@ -363,6 +392,28 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
       clearSelection,
       clearRecurringSlots,
     ]
+  );
+
+  /**
+   * Handle complete booking for BookingFormPanel (without termsAccepted)
+   */
+  const handleCompleteBookingForPanel = useCallback(
+    (bookingData: {
+      readonly purpose: string;
+      readonly attendees: number;
+      readonly activityType: string;
+      readonly additionalInfo: string;
+      readonly actorType: string;
+      readonly bookingType: BookingType;
+      readonly recurrencePattern?: RecurrencePattern | null;
+      readonly recurringSlots?: readonly ISelectedTimeSlot[];
+    }): void => {
+      handleCompleteBooking({
+        ...bookingData,
+        termsAccepted: false,
+      } as IBookingFormData);
+    },
+    [handleCompleteBooking]
   );
 
   /**
@@ -478,7 +529,10 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
             error={error}
             openingHoursStart={openingHoursStart}
             openingHoursEnd={openingHoursEnd}
-            calendarWeek={calendarWeek}
+            calendarWeek={{
+              start: calendarWeek.startDate,
+              end: calendarWeek.endDate
+            }}
             onSlotClick={handleSlotClickWithZone}
             onBulkSlotSelection={handleBulkSelectWithZone}
             getAvailabilityStatus={externalGetAvailabilityStatus}
@@ -507,10 +561,10 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
                 currentWeekStart={currentWeekStart}
                 onPreviousWeek={handlePreviousWeek}
                 onNextWeek={handleNextWeek}
-                selectedSlots={allSelectedSlots}
+                selectedSlots={selectedSlots}
                 onSlotClick={handleSlotClickWithZone}
                 onBulkSelect={handleBulkSelectWithZone}
-                pricePerHour={selectedZone.pricePerHour}
+                pricePerHour={selectedZone?.pricePerHour || 0}
                 isLoading={isLoading}
                 error={error}
                 getAvailabilityStatus={externalGetAvailabilityStatus}
@@ -528,8 +582,8 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
                 zoneId={selectedZone.id}
                 selectedSlots={allSelectedSlots}
                 onSlotsChange={handleSlotsChange}
-                onAddToCart={handleAddToCart}
-                onCompleteBooking={handleCompleteBooking}
+                onAddToCart={handleAddToCartForPanel}
+                onCompleteBooking={handleCompleteBookingForPanel}
                 isLoading={isLoading}
                 error={error}
                 bookingType="one-time"

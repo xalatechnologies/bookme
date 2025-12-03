@@ -8,7 +8,7 @@ import { useTranslation } from "react-i18next";
 import type { Database } from "@/types/database";
 import { useFieldConfigStore } from "@/stores/fieldConfigStore";
 
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
   getFieldUnit,
@@ -16,6 +16,11 @@ import {
   copyToClipboard,
 } from "@/components/features/facilities/utils/formatters";
 import { useAmenityTranslation } from "@/hooks/shared";
+import { useFacilityTypeTranslation } from "@/hooks/shared/useFacilityTypeTranslation";
+import { useAuth } from "@/contexts/hooks/useAuth";
+
+// Import the favorites store
+import { useFavoritesStore } from "@/stores/favoritesStore";
 
 type Facility = Database['public']['Tables']['facilities']['Row'];
 
@@ -36,27 +41,33 @@ interface FacilityCardProps {
 export const FacilityCard = ({
   facility,
   onAddressClick,
-  viewMode = "grid",
+   
+  viewMode: _viewMode = "grid",
 }: FacilityCardProps): JSX.Element => {
   const { t } = useTranslation(["facility", "common"]);
+  const { user } = useAuth();
   const translateAmenity = useAmenityTranslation();
+  const translateFacilityType = useFacilityTypeTranslation();
   const navigate = useNavigate();
-  const [isFavorited, setIsFavorited] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+
+  // Use the favorites store instead of local state
+  const { isFavorite, toggleFavorite } = useFavoritesStore();
+  const isFavorited = isFavorite(facility.id);
 
   const { getFieldConfigsForFacility } = useFieldConfigStore();
   const fieldConfigs = getFieldConfigsForFacility(facility.id);
 
   const handleCardClick = (): void => {
     // Use slug for SEO-friendly URLs, fallback to id for backward compatibility
-    const facilityPath = (facility as any).slug || facility.id;
+    const facilityPath = facility.slug || facility.id;
     navigate(`/facilities/${facilityPath}`);
   };
 
   const handleShare = async (e: React.MouseEvent): Promise<void> => {
     e.stopPropagation();
     try {
-      const facilityPath = (facility as any).slug || facility.id;
+      const facilityPath = facility.slug || facility.id;
       const shareUrl = generateShareUrl(`/facilities/${facilityPath}`);
 
       if (navigator.share) {
@@ -70,7 +81,7 @@ export const FacilityCard = ({
     } catch (error) {
       if (error instanceof Error && error.name !== "AbortError") {
         try {
-          const facilityPath = (facility as any).slug || facility.id;
+          const facilityPath = facility.slug || facility.id;
           const shareUrl = generateShareUrl(`/facilities/${facilityPath}`);
           await copyToClipboard(shareUrl);
         } catch (clipboardError) {
@@ -80,18 +91,18 @@ export const FacilityCard = ({
     }
   };
 
-  const handleFavorite = (e: React.MouseEvent): void => {
+  const handleFavorite = async (e: React.MouseEvent): Promise<void> => {
     e.stopPropagation();
-    setIsFavorited(!isFavorited);
+    if (user) {
+      await toggleFavorite(facility.id);
+    }
   };
 
   const getFieldValue = (fieldKey: string): string | number => {
     const valueMap: Record<string, string | number> = {
       capacity: facility.capacity || 0,
-      area: facility.area || "",
-      pricePerHour: facility.pricePerHour || 0,
       rating: facility.rating || 0,
-      reviewCount: facility.reviewCount || 0,
+      reviewCount: facility.review_count || 0,
     };
     return valueMap[fieldKey] || "";
   };
@@ -139,24 +150,26 @@ export const FacilityCard = ({
       {/* Image Section */}
       <div className="relative h-48 sm:h-56 md:h-64 overflow-hidden">
         <img
-          src={facility.images[0] || "/placeholder.svg"}
+          src={(facility.images && Array.isArray(facility.images) && facility.images.length > 0 ? facility.images[0] as string : "/placeholder.svg")}
           alt={facility.name}
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
         />
 
-        {/* Overlay buttons */}
+        {/* Overlay buttons - only show favorite button when user is logged in */}
         <div className="absolute top-2 sm:top-3 md:top-4 right-2 sm:right-3 md:right-4 flex gap-1 sm:gap-2">
-          <button
-            onClick={handleFavorite}
-            className="p-1.5 sm:p-2 rounded-full bg-white/90 backdrop-blur-sm shadow-lg hover:bg-white transition-colors"
-            aria-label={t("facility:card.addToFavorites")}
-          >
-            <Heart
-              className={`h-3 w-3 sm:h-4 sm:w-4 ${
-                isFavorited ? "fill-red-500 text-red-500" : "text-gray-600"
-              }`}
-            />
-          </button>
+          {user && (
+            <button
+              onClick={handleFavorite}
+              className="p-1.5 sm:p-2 rounded-full bg-white/90 backdrop-blur-sm shadow-lg hover:bg-white transition-colors"
+              aria-label={t("facility:card.addToFavorites")}
+            >
+              <Heart
+                className={`h-3 w-3 sm:h-4 sm:w-4 ${
+                  isFavorited ? "fill-red-500 text-red-500" : "text-gray-600"
+                }`}
+              />
+            </button>
+          )}
           <button
             onClick={handleShare}
             className="p-1.5 sm:p-2 rounded-full bg-white/90 backdrop-blur-sm shadow-lg hover:bg-white transition-colors"
@@ -169,7 +182,7 @@ export const FacilityCard = ({
         {/* Type badge */}
         <div className="absolute top-2 sm:top-3 md:top-4 left-2 sm:left-3 md:left-4">
           <Badge className="bg-blue-600 text-white font-medium px-2 py-1 text-xs sm:text-sm">
-            {facility.type}
+            {translateFacilityType(facility.facility_type || '')}
           </Badge>
         </div>
       </div>
@@ -198,14 +211,14 @@ export const FacilityCard = ({
         </p>
 
         {/* Amenities Tags */}
-        {facility.amenities.length > 0 && (
+        {facility.amenities && Array.isArray(facility.amenities) && facility.amenities.length > 0 && (
           <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-4 sm:mb-5">
             {facility.amenities.slice(0, 3).map((amenity, index) => (
               <Badge
                 key={index}
                 className="bg-blue-50 text-blue-700 border-blue-200 font-medium px-2 py-1 text-xs sm:text-sm hover:bg-blue-100 transition-colors"
               >
-                {translateAmenity(amenity)}
+                {translateAmenity(amenity as string)}
               </Badge>
             ))}
             {facility.amenities.length > 3 && (
@@ -241,7 +254,8 @@ export const FacilityCard = ({
                 >
                   {getFieldIcon(field.key)}
                   <span className="text-sm sm:text-base font-medium">
-                    {t(field.label)}: {value || booleanValue}
+                    {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                  {t(field.label as any)}: {value || booleanValue}
                     {unit && ` ${unit}`}
                   </span>
                 </div>

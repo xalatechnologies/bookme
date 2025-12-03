@@ -8,14 +8,14 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { createClient } from '@supabase/supabase-js';
-import type { Database } from '@/types/supabase/database.types';
+import type { Database } from '@/types/database';
 import {
   getCurrentMigrationPhase,
   MIGRATION_PHASES,
   type MigrationPhase,
   logMigrationEvent,
-  defaultMigrationConfig,
-} from '@/config/migrationConfig';
+  defaultMigrationConfig
+} from '@/components/config/migrationConfig';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'http://localhost:54321';
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
@@ -52,8 +52,7 @@ export function useStorageMigration<T>({
   defaultValue,
   userId,
   parser = JSON.parse,
-  serializer = JSON.stringify,
-}: UseStorageMigrationOptions<T>): UseStorageMigrationReturn<T> {
+  serializer = JSON.stringify}: UseStorageMigrationOptions<T>): UseStorageMigrationReturn<T> {
   const [data, setDataState] = useState<T>(defaultValue);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
@@ -83,9 +82,9 @@ export function useStorageMigration<T>({
 
               if (supabaseError) throw supabaseError;
 
-              if (supabaseData && supabaseData[supabaseColumn]) {
+              if (supabaseData && (supabaseData as Record<string, any>)[supabaseColumn]) {
                 logMigrationEvent('readData:supabase', { success: true });
-                return supabaseData[supabaseColumn] as T;
+                return (supabaseData as Record<string, any>)[supabaseColumn] as T;
               }
             } catch (supabaseError) {
               logMigrationEvent('readData:supabase:fallback', { error: supabaseError });
@@ -109,8 +108,8 @@ export function useStorageMigration<T>({
 
             if (supabaseError) throw supabaseError;
 
-            if (supabaseData && supabaseData[supabaseColumn]) {
-              return supabaseData[supabaseColumn] as T;
+            if (supabaseData && (supabaseData as Record<string, any>)[supabaseColumn]) {
+              return (supabaseData as Record<string, any>)[supabaseColumn] as T;
             }
           }
 
@@ -156,19 +155,15 @@ export function useStorageMigration<T>({
           localStorage.setItem(localStorageKey, serializer(value));
 
           if (supabaseTable && supabaseColumn && userId) {
-            const payload: Record<string, unknown> = {
+            const payload = {
               user_id: userId,
-              [supabaseColumn]: value,
-            };
+              [supabaseColumn]: value};
 
             const { error: supabaseError } = await supabase
               .from(supabaseTable)
-              .upsert(payload);
+              .upsert(payload as any);
 
-            if (supabaseError) {
-              logMigrationEvent('writeData:supabase:error', { error: supabaseError });
-              throw supabaseError;
-            }
+            if (supabaseError) throw supabaseError;
           }
           break;
         }
@@ -178,12 +173,11 @@ export function useStorageMigration<T>({
           if (supabaseTable && supabaseColumn && userId) {
             const payload: Record<string, unknown> = {
               user_id: userId,
-              [supabaseColumn]: value,
-            };
+              [supabaseColumn]: value};
 
             const { error: supabaseError } = await supabase
               .from(supabaseTable)
-              .upsert(payload);
+              .upsert(payload as any);
 
             if (supabaseError) throw supabaseError;
 
@@ -245,14 +239,13 @@ export function useStorageMigration<T>({
 
       const localData = parser(stored);
 
-      const payload: Record<string, unknown> = {
+      const payload = {
         user_id: userId,
-        [supabaseColumn]: localData,
-      };
+        [supabaseColumn]: localData};
 
       const { error: supabaseError } = await supabase
         .from(supabaseTable)
-        .upsert(payload);
+        .upsert(payload as any);
 
       if (supabaseError) throw supabaseError;
 
@@ -276,6 +269,5 @@ export function useStorageMigration<T>({
     phase,
     setData,
     refresh,
-    syncWithLocalStorage,
-  };
+    syncWithLocalStorage};
 }

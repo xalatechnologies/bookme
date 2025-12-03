@@ -39,7 +39,6 @@ function normalizeFacilityType(rawType: string): string {
     'Fotballbane': 'fotballbane',
     'Svømmehall': 'svømmehall',
     'Tennisbane': 'tennisbane',
-    'Hall': 'hall',
   };
 
   return typeMap[rawType] || rawType.toLowerCase().replace(/\s+/g, '-');
@@ -112,7 +111,7 @@ async function seedOrganizations() {
   console.log('🏢 Checking organizations...');
 
   // Try to get existing organization first
-  const { data: existing, error: fetchError } = await supabase
+  const { data: existing } = await supabase
     .from('organizations')
     .select('id, slug')
     .eq('slug', 'drammen-kommune')
@@ -284,7 +283,7 @@ async function seedFacilities(orgId: string) {
     },
   ];
 
-  const { data, error } = await supabase
+  const { error } = await supabase
     .from('facilities')
     .upsert(facilities, { onConflict: 'id' });
 
@@ -375,7 +374,7 @@ async function seedZones(orgId: string) {
     },
   ];
 
-  const { data, error } = await supabase
+  const { error } = await supabase
     .from('zones')
     .upsert(zones, { onConflict: 'id' });
 
@@ -459,7 +458,7 @@ async function seedAdditionalServices(orgId: string) {
     },
   ];
 
-  const { data, error } = await supabase
+  const { error } = await supabase
     .from('additional_services')
     .upsert(services, { onConflict: 'id' });
 

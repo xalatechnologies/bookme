@@ -22,7 +22,7 @@ declare module 'react-i18next' {
 
   interface TFunction {
     // Add custom formatter support
-    (key: string, options?: { format?: string; [key: string]: any }): string;
+    (key: string, options?: { format?: string; [key: string]: unknown }): string;
   }
 }
 

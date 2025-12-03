@@ -63,24 +63,31 @@ export const useLocalizedDbValue = (entityType: string) => {
       setLoading(true);
       setError(null);
 
+      interface LocalizedDbValueRow {
+        readonly entity_key: string;
+        readonly label: string;
+        readonly description: string | null;
+        readonly sort_order: number | null;
+        readonly metadata: Record<string, unknown> | null;
+      }
+
       const { data, error: fetchError } = await supabase
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .from('localized_db_values' as any)
+        .from('localized_db_values')
         .select('entity_key, label, description, sort_order, metadata')
         .eq('entity_type', entityType)
         .eq('language_code', currentLang)
         .eq('is_active', true)
-        .order('sort_order', { ascending: true, nullsFirst: false });
+        .order('sort_order', { ascending: true, nullsFirst: false })
+        .returns<LocalizedDbValueRow[]>();
 
       if (fetchError) throw fetchError;
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const formattedOptions: LocalizedOption[] = (data || []).map((item: any) => ({
+      const formattedOptions: LocalizedOption[] = (data ?? []).map((item) => ({
         value: item.entity_key,
         label: item.label,
         description: item.description || undefined,
         sort_order: item.sort_order || undefined,
-        metadata: item.metadata as Record<string, unknown> || undefined,
+        metadata: item.metadata || undefined,
       }));
 
       // Update cache
