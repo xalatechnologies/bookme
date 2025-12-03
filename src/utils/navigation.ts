@@ -95,15 +95,9 @@ export const CUSTOMER_NAVIGATION: IRoleNavigation = {
         },
         {
           id: "history",
-          labelKey: "history",
+          labelKey: "history_and_receipts",
           path: "/user/history",
           icon: History,
-        },
-        {
-          id: "receipts",
-          labelKey: "receipts",
-          path: "/user/receipts",
-          icon: Receipt,
         },
       ],
     },
