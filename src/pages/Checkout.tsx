@@ -273,14 +273,20 @@ export const Checkout = (): JSX.Element => {
   }, [user, saveCheckoutState]);
 
   /**
-   * Update user info when profile changes (after login or profile load)
+   * Update user info when profile loads (after login or profile refresh)
+   * Always auto-fill from profile unless user has manually edited fields
    */
   useEffect(() => {
-    // Only update if we don't have saved data from sessionStorage
-    const hasSavedData = sessionStorage.getItem('checkout_userInfo');
+    // Check if this is a fresh load (not returning from login with saved state)
+    const hasSavedState = sessionStorage.getItem('checkout_userInfo');
     
-    if (user && !hasSavedData) {
-      // Use profile data if available, otherwise use auth user data
+    // Only auto-fill if:
+    // 1. User is logged in
+    // 2. Profile data is available
+    // 3. Either no saved state OR coming back from login (location.state.fromLogin)
+    if (user && profile.email && (!hasSavedState || location.state?.fromLogin)) {
+      console.log('Auto-filling user info from profile:', profile);
+      
       const updatedInfo = {
         firstName: profile.firstName || user.user_metadata?.firstName || "",
         lastName: profile.lastName || user.user_metadata?.lastName || "",
@@ -294,8 +300,13 @@ export const Checkout = (): JSX.Element => {
       };
       
       setUserInfo(updatedInfo);
+      
+      // Clear the fromLogin flag after auto-fill
+      if (location.state?.fromLogin) {
+        navigate(location.pathname, { replace: true, state: {} });
+      }
     }
-  }, [profile, user]);
+  }, [profile, user, location.state, navigate, location.pathname]);
 
   /**
    * Calculate pricing with add-ons and discounts
@@ -956,6 +967,10 @@ export const Checkout = (): JSX.Element => {
                       size="sm"
                       onClick={(e) => {
                         e.stopPropagation();
+                        // Clear saved state when user manually edits
+                        if (!editingInfo) {
+                          sessionStorage.removeItem('checkout_userInfo');
+                        }
                         setEditingInfo(!editingInfo);
                       }}
                     >
