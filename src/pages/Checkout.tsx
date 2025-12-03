@@ -1,8 +1,8 @@
 "use client";
 
 // External libraries
-import React, { useState, useMemo, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useMemo, useCallback, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
   CreditCard,
@@ -71,6 +71,7 @@ import type { ISelectedTimeSlot } from "@/components/features/bookings/types";
  */
 export const Checkout = (): JSX.Element => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useAuth();
   const { items, totalPrice, clearCart, removeItem } = useCart();
   const { profile } = useUserProfile();
@@ -78,18 +79,39 @@ export const Checkout = (): JSX.Element => {
   const createBookingMutation = useCreateBooking();
   const currentLocale = i18n.language === "en" ? "en-US" : "nb-NO";
 
-  // State management
-  const [selectedPaymentMethod, setSelectedPaymentMethod] =
-    useState<string>("");
+  // State management - Initialize from sessionStorage for returning users
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>(() => {
+    return sessionStorage.getItem('checkout_paymentMethod') || "";
+  });
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const [editingInfo, setEditingInfo] = useState<boolean>(false);
-  const [discountCode, setDiscountCode] = useState<string>("");
-  const [discountApplied, setDiscountApplied] = useState<boolean>(false);
-  const [addons, setAddons] = useState<Record<string, boolean>>({});
-  const [consents, setConsents] = useState({
-    terms: false,
-    cancellation: false,
-    privacy: false,
+  const [discountCode, setDiscountCode] = useState<string>(() => {
+    return sessionStorage.getItem('checkout_discountCode') || "";
+  });
+  const [discountApplied, setDiscountApplied] = useState<boolean>(() => {
+    return sessionStorage.getItem('checkout_discountApplied') === 'true';
+  });
+  const [addons, setAddons] = useState<Record<string, boolean>>(() => {
+    const saved = sessionStorage.getItem('checkout_addons');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch {
+        return {};
+      }
+    }
+    return {};
+  });
+  const [consents, setConsents] = useState(() => {
+    const saved = sessionStorage.getItem('checkout_consents');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch {
+        return { terms: false, cancellation: false, privacy: false };
+      }
+    }
+    return { terms: false, cancellation: false, privacy: false };
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -107,17 +129,28 @@ export const Checkout = (): JSX.Element => {
   const [editingBookingDetails, setEditingBookingDetails] =
     useState<boolean>(false);
 
-  // Editable user info
-  const [userInfo, setUserInfo] = useState({
-    firstName: profile.firstName || "",
-    lastName: profile.lastName || "",
-    email: profile.email || "",
-    phone: profile.phone || "",
-    address: profile.address || "",
-    organizationName: "",
-    organizationNumber: "",
-    invoiceReference: "",
-    projectCode: "",
+  // Editable user info - Initialize from sessionStorage or profile
+  const [userInfo, setUserInfo] = useState(() => {
+    // Try to restore from sessionStorage first (for returning from login)
+    const saved = sessionStorage.getItem('checkout_userInfo');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch {
+        // Ignore parse errors and use profile data
+      }
+    }
+    return {
+      firstName: profile.firstName || "",
+      lastName: profile.lastName || "",
+      email: profile.email || "",
+      phone: profile.phone || "",
+      address: profile.address || "",
+      organizationName: "",
+      organizationNumber: "",
+      invoiceReference: "",
+      projectCode: "",
+    };
   });
 
   // Add-ons with pricing and icons
@@ -173,6 +206,107 @@ export const Checkout = (): JSX.Element => {
       ),
     },
   ];
+
+  /**
+   * Save checkout state to sessionStorage before redirecting to login
+   */
+  const saveCheckoutState = useCallback(() => {
+    try {
+      sessionStorage.setItem('checkout_userInfo', JSON.stringify(userInfo));
+      sessionStorage.setItem('checkout_paymentMethod', selectedPaymentMethod);
+      sessionStorage.setItem('checkout_discountCode', discountCode);
+      sessionStorage.setItem('checkout_discountApplied', String(discountApplied));
+      sessionStorage.setItem('checkout_addons', JSON.stringify(addons));
+      sessionStorage.setItem('checkout_consents', JSON.stringify(consents));
+    } catch (error) {
+      console.error('Failed to save checkout state:', error);
+    }
+  }, [userInfo, selectedPaymentMethod, discountCode, discountApplied, addons, consents]);
+
+  /**
+   * Clear saved checkout state from sessionStorage
+   */
+  const clearCheckoutState = useCallback(() => {
+    try {
+      sessionStorage.removeItem('checkout_userInfo');
+      sessionStorage.removeItem('checkout_paymentMethod');
+      sessionStorage.removeItem('checkout_discountCode');
+      sessionStorage.removeItem('checkout_discountApplied');
+      sessionStorage.removeItem('checkout_addons');
+      sessionStorage.removeItem('checkout_consents');
+    } catch (error) {
+      console.error('Failed to clear checkout state:', error);
+    }
+  }, []);
+
+  /**
+   * Check authentication and redirect to login if necessary
+   * This effect runs on mount and when user authentication changes
+   */
+  useEffect(() => {
+    // If user is not authenticated and has items in cart
+    if (!user && items.length > 0) {
+      // Save current checkout state
+      saveCheckoutState();
+      
+      // Redirect to login with return URL
+      navigate('/login?type=user&returnUrl=/checkout', { 
+        replace: true,
+        state: { from: location.pathname }
+      });
+    }
+    
+    // Clear saved state after successful login (only once)
+    if (user && location.state?.fromLogin) {
+      // Clear the state flag to prevent re-clearing
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [user, items.length, navigate, location, saveCheckoutState]);
+
+  /**
+   * Auto-save checkout state when it changes (for page refreshes)
+   */
+  useEffect(() => {
+    if (user) {
+      saveCheckoutState();
+    }
+  }, [user, saveCheckoutState]);
+
+  /**
+   * Update user info when profile loads (after login or profile refresh)
+   * Always auto-fill from profile unless user has manually edited fields
+   */
+  useEffect(() => {
+    // Check if this is a fresh load (not returning from login with saved state)
+    const hasSavedState = sessionStorage.getItem('checkout_userInfo');
+    
+    // Only auto-fill if:
+    // 1. User is logged in
+    // 2. Profile data is available
+    // 3. Either no saved state OR coming back from login (location.state.fromLogin)
+    if (user && profile.email && (!hasSavedState || location.state?.fromLogin)) {
+      console.log('Auto-filling user info from profile:', profile);
+      
+      const updatedInfo = {
+        firstName: profile.firstName || user.user_metadata?.firstName || "",
+        lastName: profile.lastName || user.user_metadata?.lastName || "",
+        email: user.email || profile.email || "",
+        phone: profile.phone || user.user_metadata?.phone || "",
+        address: profile.address || user.user_metadata?.address || "",
+        organizationName: "",
+        organizationNumber: "",
+        invoiceReference: "",
+        projectCode: "",
+      };
+      
+      setUserInfo(updatedInfo);
+      
+      // Clear the fromLogin flag after auto-fill
+      if (location.state?.fromLogin) {
+        navigate(location.pathname, { replace: true, state: {} });
+      }
+    }
+  }, [profile, user, location.state, navigate, location.pathname]);
 
   /**
    * Calculate pricing with add-ons and discounts
@@ -368,31 +502,51 @@ export const Checkout = (): JSX.Element => {
       );
     }
 
-    // Make consent validation less strict for testing
+    // Check all consents and provide detailed error messages
+    const missingConsents: string[] = [];
+    
     if (!consents.terms) {
-      newErrors.consents = t(
-        "checkout:errors.must_accept_terms",
-        "Du må godta vilkårene"
-      );
+      missingConsents.push(t(
+        "checkout:errors.terms_short",
+        "vilkårene"
+      ));
     }
 
     if (!consents.cancellation) {
-      newErrors.consents = t(
-        "checkout:errors.must_read_cancellation",
-        "Du må lese avbestillingsreglene"
-      );
+      missingConsents.push(t(
+        "checkout:errors.cancellation_short",
+        "avbestillingsreglene"
+      ));
     }
 
     if (!consents.privacy) {
+      missingConsents.push(t(
+        "checkout:errors.privacy_short",
+        "personvern"
+      ));
+    }
+
+    if (missingConsents.length > 0) {
       newErrors.consents = t(
-        "checkout:errors.must_accept_privacy",
-        "Du må samtykke til personvern"
+        "checkout:errors.must_accept_all",
+        `Du må godta: ${missingConsents.join(", ")}`
       );
     }
 
     setErrors(newErrors);
+    
+    // Scroll to error if validation fails
+    if (Object.keys(newErrors).length > 0) {
+      console.error('Validation failed:', newErrors);
+      // Scroll to the first error
+      setTimeout(() => {
+        const errorElement = document.querySelector('[class*="text-red"]');
+        errorElement?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 100);
+    }
+    
     return Object.keys(newErrors).length === 0;
-  }, [selectedPaymentMethod, consents]);
+  }, [selectedPaymentMethod, consents, t]);
 
   /**
    * Generate next booking number (1-99999, then restart)
@@ -415,24 +569,38 @@ export const Checkout = (): JSX.Element => {
    * Handle payment completion
    */
   const handleCompletePayment = useCallback(async (): Promise<void> => {
+    console.log('=== PAYMENT ATTEMPT STARTED ===');
+    console.log('Selected payment method:', selectedPaymentMethod);
+    console.log('Consents:', consents);
+    console.log('User info:', userInfo);
+    console.log('Cart items:', items);
+    
     // Auto-select payment method if none selected
     if (!selectedPaymentMethod) {
+      console.log('No payment method selected, auto-selecting card');
       setSelectedPaymentMethod("card");
     }
 
+    console.log('Running form validation...');
     if (!validateForm()) {
+      console.error('Form validation FAILED');
       return;
     }
+    console.log('Form validation PASSED');
 
+    // User should already be logged in at this point due to redirect
+    // But add a safety check just in case
     if (!user) {
-      setErrors({
-        payment: t(
-          "checkout:errors.user_required",
-          "You must be logged in to complete a booking"
-        ),
+      console.error('User not logged in, redirecting to login');
+      // This shouldn't happen, but if it does, save state and redirect
+      saveCheckoutState();
+      navigate('/login?type=user&returnUrl=/checkout', { 
+        replace: true,
+        state: { from: location.pathname }
       });
       return;
     }
+    console.log('User is logged in:', user.id);
 
     // Debug: Log cart items to see what facility IDs we have
     console.log('Cart items:', items);
@@ -686,6 +854,9 @@ export const Checkout = (): JSX.Element => {
       const results = await Promise.all(bookingPromises.flat());
       console.log('All bookings created successfully:', results);
 
+      // Clear saved checkout state after successful payment
+      clearCheckoutState();
+      
       // Clear cart and redirect
       clearCart();
       navigate("/user/bookings?success=true");
@@ -828,6 +999,10 @@ export const Checkout = (): JSX.Element => {
                       size="sm"
                       onClick={(e) => {
                         e.stopPropagation();
+                        // Clear saved state when user manually edits
+                        if (!editingInfo) {
+                          sessionStorage.removeItem('checkout_userInfo');
+                        }
                         setEditingInfo(!editingInfo);
                       }}
                     >

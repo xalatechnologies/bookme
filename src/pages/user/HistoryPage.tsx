@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -23,6 +23,8 @@ import {
   Repeat
 } from "lucide-react";
 import { useHistoryManagement } from "@/hooks/features/history/useHistoryManagement";
+import { BookingDetailsPanel } from "@/components/features/bookings/components/BookingCard/BookingDetailsPanel";
+import type { BookingWithDetails } from "@/services/supabase/bookings.service";
 
 /**
  * History page component - displays user's booking history with filters and export options
@@ -30,6 +32,10 @@ import { useHistoryManagement } from "@/hooks/features/history/useHistoryManagem
  */
 export default function HistoryPage(): JSX.Element {
   const { t } = useTranslation('user');
+  
+  // Local state for details panel
+  const [selectedBooking, setSelectedBooking] = useState<BookingWithDetails | null>(null);
+  const [showDetailsPanel, setShowDetailsPanel] = useState<boolean>(false);
   
   const {
     historyItems,
@@ -51,8 +57,50 @@ export default function HistoryPage(): JSX.Element {
     setSortBy,
     toggleRowExpansion,
     handleExportCsv,
-    handleDownloadICS
+    handleDownloadICS,
+    handleDownloadReceipt
   } = useHistoryManagement();
+
+  // Handle view booking details
+  const handleViewBooking = (item: any) => {
+    // Convert history item to BookingWithDetails format
+    const bookingDetails = {
+      id: item.id,
+      user_id: '',
+      facility_id: item.facilityId,
+      starts_at: item.start,
+      ends_at: item.end,
+      total_cents: Math.round((item.totalPriceNok || 0) * 100),
+      status: item.status === 'completed' ? 'paid' : 'cancelled',
+      notes: item.purpose || item.title,
+      created_at: item.createdAt,
+      updated_at: item.createdAt,
+      currency: 'NOK',
+      is_recurring: item.isRecurring || false,
+      zone_id: null,
+      group_id: null,
+      org_id: '',
+      price_breakdown: null,
+      processed_at: null,
+      processed_by: null,
+      recurring_booking_id: null,
+      facility: {
+        id: item.facilityId,
+        name: item.facilityName,
+        org_id: '',
+        created_at: '',
+        updated_at: '',
+      },
+    } as BookingWithDetails;
+    
+    setSelectedBooking(bookingDetails);
+    setShowDetailsPanel(true);
+  };
+
+  const handleCloseDetails = () => {
+    setShowDetailsPanel(false);
+    setSelectedBooking(null);
+  };
 
   return (
     <div className="space-y-6">
@@ -131,6 +179,7 @@ export default function HistoryPage(): JSX.Element {
       <Card>
         <CardContent className="p-4">
           <div className="flex flex-col lg:flex-row gap-4">
+            {/* Search */}
             <div className="flex-1">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
@@ -144,27 +193,38 @@ export default function HistoryPage(): JSX.Element {
               </div>
             </div>
 
-            <div className="flex gap-2">
-              <Input
-                type="date"
-                placeholder={t('pages.history.filters.from_date')}
-                value={dateFrom}
-                onChange={(e) => setDateFrom(e.target.value)}
-                className="w-40"
-                aria-label={t('pages.history.filters.from_date')}
-              />
-              <Input
-                type="date"
-                placeholder={t('pages.history.filters.to_date')}
-                value={dateTo}
-                onChange={(e) => setDateTo(e.target.value)}
-                className="w-40"
-                aria-label={t('pages.history.filters.to_date')}
-              />
+            {/* Date Range - Vertical on mobile, horizontal on desktop */}
+            <div className="flex flex-col sm:flex-row gap-2">
+              <div className="w-full sm:w-auto space-y-1">
+                <label className="text-xs font-medium text-gray-700 dark:text-gray-300 block sm:hidden">
+                  {t('pages.history.filters.from_date')}
+                </label>
+                <Input
+                  type="date"
+                  value={dateFrom}
+                  onChange={(e) => setDateFrom(e.target.value)}
+                  className="w-full sm:w-40"
+                  max={dateTo || undefined}
+                  aria-label={t('pages.history.filters.from_date')}
+                />
+              </div>
+              <div className="w-full sm:w-auto space-y-1">
+                <label className="text-xs font-medium text-gray-700 dark:text-gray-300 block sm:hidden">
+                  {t('pages.history.filters.to_date')}
+                </label>
+                <Input
+                  type="date"
+                  value={dateTo}
+                  onChange={(e) => setDateTo(e.target.value)}
+                  className="w-full sm:w-40"
+                  min={dateFrom || undefined}
+                  aria-label={t('pages.history.filters.to_date')}
+                />
+              </div>
             </div>
 
             <Select value={selectedFacility} onValueChange={setSelectedFacility}>
-              <SelectTrigger className="w-48" aria-label={t('pages.history.filters.select_facility')}>
+              <SelectTrigger className="w-full lg:w-48" aria-label={t('pages.history.filters.select_facility')}>
                 <SelectValue placeholder={t('pages.history.filters.select_facility')} />
               </SelectTrigger>
               <SelectContent>
@@ -178,7 +238,7 @@ export default function HistoryPage(): JSX.Element {
             </Select>
 
             <Select value={selectedStatus} onValueChange={setSelectedStatus}>
-              <SelectTrigger className="w-48" aria-label={t('pages.history.filters.select_status')}>
+              <SelectTrigger className="w-full lg:w-48" aria-label={t('pages.history.filters.select_status')}>
                 <SelectValue placeholder={t('pages.history.filters.select_status')} />
               </SelectTrigger>
               <SelectContent>
@@ -189,7 +249,7 @@ export default function HistoryPage(): JSX.Element {
             </Select>
 
             <Select value={sortBy} onValueChange={setSortBy}>
-              <SelectTrigger className="w-48" aria-label={t('pages.history.filters.sort')}>
+              <SelectTrigger className="w-full lg:w-48" aria-label={t('pages.history.filters.sort')}>
                 <SelectValue placeholder={t('pages.history.filters.sort')} />
               </SelectTrigger>
               <SelectContent>
@@ -329,10 +389,24 @@ export default function HistoryPage(): JSX.Element {
                               size="sm"
                               onClick={(e) => {
                                 e.stopPropagation();
+                                handleViewBooking(item);
                               }}
                               aria-label={t('pages.history.table.actions')}
+                              title="Se detaljer"
                             >
                               <Eye className="w-4 h-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDownloadReceipt(item);
+                              }}
+                              aria-label="Last ned kvittering"
+                              title="Last ned kvittering"
+                            >
+                              <FileText className="w-4 h-4" />
                             </Button>
                             <Button
                               variant="ghost"
@@ -431,6 +505,14 @@ export default function HistoryPage(): JSX.Element {
           )}
         </CardContent>
       </Card>
+
+      {/* Booking Details Panel */}
+      {showDetailsPanel && selectedBooking && (
+        <BookingDetailsPanel
+          booking={selectedBooking}
+          onClose={handleCloseDetails}
+        />
+      )}
     </div>
   );
 }

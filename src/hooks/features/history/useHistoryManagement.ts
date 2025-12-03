@@ -62,6 +62,7 @@ export interface IUseHistoryManagementReturn {
   readonly toggleRowExpansion: (id: string) => void;
   readonly handleExportCsv: () => Promise<void>;
   readonly handleDownloadICS: (item: IExtendedHistoryItem) => void;
+  readonly handleDownloadReceipt: (item: IExtendedHistoryItem) => void;
 }
 
 /**
@@ -319,11 +320,19 @@ export const useHistoryManagement = (): IUseHistoryManagementReturn => {
     // Apply date range filter
     if (dateFrom) {
       const fromDate = new Date(dateFrom);
-      filtered = filtered.filter((item) => new Date(item.start) >= fromDate);
+      fromDate.setHours(0, 0, 0, 0); // Start of the day
+      filtered = filtered.filter((item) => {
+        const itemDate = new Date(item.start);
+        return itemDate >= fromDate;
+      });
     }
     if (dateTo) {
       const toDate = new Date(dateTo);
-      filtered = filtered.filter((item) => new Date(item.start) <= toDate);
+      toDate.setHours(23, 59, 59, 999); // End of the day
+      filtered = filtered.filter((item) => {
+        const itemDate = new Date(item.start);
+        return itemDate <= toDate;
+      });
     }
 
     // Apply sorting
@@ -403,6 +412,54 @@ export const useHistoryManagement = (): IUseHistoryManagementReturn => {
   }, []);
 
   /**
+   * Download receipt PDF for a booking
+   */
+  const handleDownloadReceipt = useCallback((item: IExtendedHistoryItem): void => {
+    try {
+      // Create receipt content
+      const receiptContent = `
+==============================================
+               KVITTERING / RECEIPT
+==============================================
+
+Booking ID: ${item.id}
+Dato: ${new Date(item.start).toLocaleDateString('nb-NO')}
+Tid: ${item.startTime || 'N/A'} - ${item.endTime || 'N/A'}
+
+Lokale: ${item.facilityName}
+Formål: ${item.purpose || 'Ikke spesifisert'}
+Varighet: ${item.duration?.toFixed(1) || '1.0'} timer
+
+Status: ${item.status === 'completed' ? 'Bekreftet' : 'Kansellert'}
+Sum: ${item.totalPriceNok?.toLocaleString('nb-NO') || '0'} kr
+${item.invoiceId ? `Faktura ID: ${item.invoiceId}` : ''}
+
+${item.isRecurring ? `Type: Gjentakende booking\nAntall forekomster: ${item.occurrenceCount || 0}\n` : ''}
+
+Opprettet: ${new Date(item.createdAt).toLocaleDateString('nb-NO')}
+
+==============================================
+              Takk for din bestilling!
+              Thank you for your booking!
+==============================================
+      `;
+
+      // Create blob and download
+      const blob = new Blob([receiptContent], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `kvittering-${item.id}-${new Date(item.start).toISOString().split('T')[0]}.txt`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error downloading receipt:', error);
+    }
+  }, []);
+
+  /**
    * Toggle row expansion for detailed view
    */
   const toggleRowExpansion = useCallback((itemId: string): void => {
@@ -430,5 +487,6 @@ export const useHistoryManagement = (): IUseHistoryManagementReturn => {
     toggleRowExpansion,
     handleExportCsv,
     handleDownloadICS,
+    handleDownloadReceipt,
   };
 };
