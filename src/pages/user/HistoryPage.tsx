@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -23,6 +23,8 @@ import {
   Repeat
 } from "lucide-react";
 import { useHistoryManagement } from "@/hooks/features/history/useHistoryManagement";
+import { BookingDetailsPanel } from "@/components/features/bookings/components/BookingCard/BookingDetailsPanel";
+import type { BookingWithDetails } from "@/services/supabase/bookings.service";
 
 /**
  * History page component - displays user's booking history with filters and export options
@@ -30,6 +32,10 @@ import { useHistoryManagement } from "@/hooks/features/history/useHistoryManagem
  */
 export default function HistoryPage(): JSX.Element {
   const { t } = useTranslation('user');
+  
+  // Local state for details panel
+  const [selectedBooking, setSelectedBooking] = useState<BookingWithDetails | null>(null);
+  const [showDetailsPanel, setShowDetailsPanel] = useState<boolean>(false);
   
   const {
     historyItems,
@@ -54,6 +60,43 @@ export default function HistoryPage(): JSX.Element {
     handleDownloadICS,
     handleDownloadReceipt
   } = useHistoryManagement();
+
+  // Handle view booking details
+  const handleViewBooking = (item: any) => {
+    // Convert history item to BookingWithDetails format
+    const bookingDetails: BookingWithDetails = {
+      id: item.id,
+      user_id: '', // Not needed for display
+      facility_id: item.facilityId,
+      starts_at: item.start,
+      ends_at: item.end,
+      total_cents: Math.round((item.totalPriceNok || 0) * 100),
+      status: item.status === 'completed' ? 'paid' : 'cancelled',
+      notes: item.purpose || item.title,
+      created_at: item.createdAt,
+      updated_at: item.createdAt,
+      currency: 'NOK',
+      is_recurring: item.isRecurring || false,
+      zone_id: null,
+      group_id: null,
+      org_id: '',
+      facility: {
+        id: item.facilityId,
+        name: item.facilityName,
+        org_id: '',
+        created_at: '',
+        updated_at: '',
+      },
+    };
+    
+    setSelectedBooking(bookingDetails);
+    setShowDetailsPanel(true);
+  };
+
+  const handleCloseDetails = () => {
+    setShowDetailsPanel(false);
+    setSelectedBooking(null);
+  };
 
   return (
     <div className="space-y-6">
@@ -330,8 +373,10 @@ export default function HistoryPage(): JSX.Element {
                               size="sm"
                               onClick={(e) => {
                                 e.stopPropagation();
+                                handleViewBooking(item);
                               }}
                               aria-label={t('pages.history.table.actions')}
+                              title="Se detaljer"
                             >
                               <Eye className="w-4 h-4" />
                             </Button>
@@ -444,6 +489,14 @@ export default function HistoryPage(): JSX.Element {
           )}
         </CardContent>
       </Card>
+
+      {/* Booking Details Panel */}
+      {showDetailsPanel && selectedBooking && (
+        <BookingDetailsPanel
+          booking={selectedBooking}
+          onClose={handleCloseDetails}
+        />
+      )}
     </div>
   );
 }
