@@ -274,6 +274,25 @@ export const Checkout = (): JSX.Element => {
   }, [user, saveCheckoutState]);
 
   /**
+   * Update user info when profile changes (after login or profile load)
+   */
+  useEffect(() => {
+    // Only update if we don't have saved data from sessionStorage
+    const hasSavedData = sessionStorage.getItem('checkout_userInfo');
+    
+    if (profile && !hasSavedData) {
+      setUserInfo((prev) => ({
+        ...prev,
+        firstName: profile.firstName || prev.firstName,
+        lastName: profile.lastName || prev.lastName,
+        email: profile.email || prev.email,
+        phone: profile.phone || prev.phone,
+        address: profile.address || prev.address,
+      }));
+    }
+  }, [profile]);
+
+  /**
    * Calculate pricing with add-ons and discounts
    * Uses existing cart pricing (which already includes VAT) and adds add-ons
    */
@@ -468,26 +487,27 @@ export const Checkout = (): JSX.Element => {
       );
     }
 
-    // Validate user info
-    if (!userInfo.firstName || !userInfo.lastName) {
-      newErrors.userInfo = t(
-        "checkout:errors.name_required",
-        "Fornavn og etternavn er påkrevd"
-      );
+    // Validate user info - only show error if truly empty
+    const missingFields: string[] = [];
+    
+    if (!userInfo.firstName?.trim()) {
+      missingFields.push(t("checkout:fields.first_name", "Fornavn"));
+    }
+    if (!userInfo.lastName?.trim()) {
+      missingFields.push(t("checkout:fields.last_name", "Etternavn"));
+    }
+    if (!userInfo.email?.trim()) {
+      missingFields.push(t("checkout:fields.email", "E-post"));
+    }
+    if (!userInfo.phone?.trim()) {
+      missingFields.push(t("checkout:fields.phone", "Telefon"));
     }
 
-    if (!userInfo.email) {
-      newErrors.userInfo = t(
-        "checkout:errors.email_required",
-        "E-post er påkrevd"
-      );
-    }
-
-    if (!userInfo.phone) {
-      newErrors.userInfo = t(
-        "checkout:errors.phone_required",
-        "Telefonnummer er påkrevd"
-      );
+    if (missingFields.length > 0) {
+      newErrors.userInfo = `${t(
+        "checkout:errors.required_fields",
+        "Følgende felt er påkrevd"
+      )}: ${missingFields.join(", ")}`;
     }
 
     // Validate consents
