@@ -178,8 +178,9 @@ export default function HistoryPage(): JSX.Element {
       {/* Filters */}
       <Card>
         <CardContent className="p-4">
-          <div className="flex flex-col lg:flex-row gap-4">
-            <div className="flex-1">
+          <div className="flex flex-col gap-4">
+            {/* Search */}
+            <div className="w-full">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                 <Input
@@ -192,69 +193,71 @@ export default function HistoryPage(): JSX.Element {
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-2">
-              <div className="flex flex-col sm:flex-row gap-2 items-start sm:items-center">
-                <label className="text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">
-                  {t('pages.history.filters.from_date')}:
+            {/* Date Range */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="space-y-1">
+                <label className="text-xs font-medium text-gray-700 dark:text-gray-300">
+                  {t('pages.history.filters.from_date')}
                 </label>
                 <Input
                   type="date"
                   value={dateFrom}
                   onChange={(e) => setDateFrom(e.target.value)}
-                  className="w-full sm:w-40"
-                  aria-label={t('pages.history.filters.from_date')}
+                  className="w-full"
                   max={dateTo || undefined}
                 />
               </div>
-              <div className="flex flex-col sm:flex-row gap-2 items-start sm:items-center">
-                <label className="text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">
-                  {t('pages.history.filters.to_date')}:
+              <div className="space-y-1">
+                <label className="text-xs font-medium text-gray-700 dark:text-gray-300">
+                  {t('pages.history.filters.to_date')}
                 </label>
                 <Input
                   type="date"
                   value={dateTo}
                   onChange={(e) => setDateTo(e.target.value)}
-                  className="w-full sm:w-40"
-                  aria-label={t('pages.history.filters.to_date')}
+                  className="w-full"
                   min={dateFrom || undefined}
                 />
               </div>
             </div>
 
-            <Select value={selectedFacility} onValueChange={setSelectedFacility}>
-              <SelectTrigger className="w-48" aria-label={t('pages.history.filters.select_facility')}>
-                <SelectValue placeholder={t('pages.history.filters.select_facility')} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">{t('pages.history.filters.all_facilities')}</SelectItem>
-                {facilities.map((facility) => (
-                  <SelectItem key={facility} value={facility}>
-                    {facility}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            {/* Filters Row */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <Select value={selectedFacility} onValueChange={setSelectedFacility}>
+                <SelectTrigger aria-label={t('pages.history.filters.select_facility')}>
+                  <SelectValue placeholder={t('pages.history.filters.select_facility')} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">{t('pages.history.filters.all_facilities')}</SelectItem>
+                  {facilities.map((facility) => (
+                    <SelectItem key={facility} value={facility}>
+                      {facility}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
 
-            <Select value={selectedStatus} onValueChange={setSelectedStatus}>
-              <SelectTrigger className="w-48" aria-label={t('pages.history.filters.select_status')}>
-                <SelectValue placeholder={t('pages.history.filters.select_status')} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">{t('pages.history.filters.all_statuses')}</SelectItem>
-                <SelectItem value="completed">{t('pages.history.filters.completed')}</SelectItem>
-                <SelectItem value="cancelled">{t('pages.history.filters.cancelled')}</SelectItem>
-              </SelectContent>
-            </Select>
+              <Select value={selectedStatus} onValueChange={setSelectedStatus}>
+                <SelectTrigger aria-label={t('pages.history.filters.select_status')}>
+                  <SelectValue placeholder={t('pages.history.filters.select_status')} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">{t('pages.history.filters.all_statuses')}</SelectItem>
+                  <SelectItem value="completed">{t('pages.history.filters.completed')}</SelectItem>
+                  <SelectItem value="cancelled">{t('pages.history.filters.cancelled')}</SelectItem>
+                </SelectContent>
+              </Select>
 
-            <Select value={sortBy} onValueChange={setSortBy}>
-              <SelectTrigger className="w-48" aria-label={t('pages.history.filters.sort')}>
-                <SelectValue placeholder={t('pages.history.filters.sort')} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="start_desc">{t('pages.history.filters.newest_first')}</SelectItem>
-                <SelectItem value="start_asc">{t('pages.history.filters.oldest_first')}</SelectItem>
-              </SelectContent>
-            </Select>
+              <Select value={sortBy} onValueChange={setSortBy}>
+                <SelectTrigger aria-label={t('pages.history.filters.sort')}>
+                  <SelectValue placeholder={t('pages.history.filters.sort')} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="start_desc">{t('pages.history.filters.newest_first')}</SelectItem>
+                  <SelectItem value="start_asc">{t('pages.history.filters.oldest_first')}</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
         </CardContent>
       </Card>
