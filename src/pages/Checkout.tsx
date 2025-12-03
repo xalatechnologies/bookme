@@ -277,20 +277,32 @@ export const Checkout = (): JSX.Element => {
    * Update user info when profile changes (after login or profile load)
    */
   useEffect(() => {
+    // Debug: Log profile data
+    console.log('Profile data:', profile);
+    console.log('User data:', user);
+    
     // Only update if we don't have saved data from sessionStorage
     const hasSavedData = sessionStorage.getItem('checkout_userInfo');
+    console.log('Has saved checkout data:', hasSavedData);
     
-    if (profile && !hasSavedData) {
-      setUserInfo((prev) => ({
-        ...prev,
-        firstName: profile.firstName || prev.firstName,
-        lastName: profile.lastName || prev.lastName,
-        email: profile.email || prev.email,
-        phone: profile.phone || prev.phone,
-        address: profile.address || prev.address,
-      }));
+    if (user && !hasSavedData) {
+      // Use profile data if available, otherwise use auth user data
+      const updatedInfo = {
+        firstName: profile.firstName || user.user_metadata?.firstName || "",
+        lastName: profile.lastName || user.user_metadata?.lastName || "",
+        email: user.email || profile.email || "",
+        phone: profile.phone || user.user_metadata?.phone || "",
+        address: profile.address || user.user_metadata?.address || "",
+        organizationName: "",
+        organizationNumber: "",
+        invoiceReference: "",
+        projectCode: "",
+      };
+      
+      console.log('Updating userInfo with:', updatedInfo);
+      setUserInfo(updatedInfo);
     }
-  }, [profile]);
+  }, [profile, user]);
 
   /**
    * Calculate pricing with add-ons and discounts
