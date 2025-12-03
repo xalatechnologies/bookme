@@ -304,6 +304,10 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
             let orgId = profile.default_org || null;
             if (!orgId && memberships.length > 0) {
               orgId = memberships[0].org_id;
+            }
+            
+            // Always set the orgId (whether from profile or membership)
+            if (orgId) {
               setCurrentOrgId(orgId);
             }
             
