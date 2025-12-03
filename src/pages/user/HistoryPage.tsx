@@ -342,8 +342,8 @@ export default function HistoryPage(): JSX.Element {
                                 e.stopPropagation();
                                 handleDownloadReceipt(item);
                               }}
-                              aria-label={t('pages.history.actions.download_receipt')}
-                              title={t('pages.history.actions.download_receipt')}
+                              aria-label="Last ned kvittering"
+                              title="Last ned kvittering"
                             >
                               <FileText className="w-4 h-4" />
                             </Button>
