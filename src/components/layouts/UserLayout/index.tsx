@@ -66,10 +66,9 @@ const UserLayout = ({ children }: IUserLayoutProps): JSX.Element => {
 
           {/* Main content - Responsive spacing */}
           <main
-            className={`
-              mt-[73px] flex-1 flex flex-col min-h-[calc(100vh-73px)] transition-all duration-300
-              lg:${ isCollapsed ? "ml-16" : "ml-64" }
-            `}
+            className={`mt-[73px] flex-1 flex flex-col min-h-[calc(100vh-73px)] transition-all duration-300 ${
+              isCollapsed ? "lg:ml-16" : "lg:ml-64"
+            }`}
           >
             <div className="p-4 sm:p-6 overflow-hidden">
               {children}
