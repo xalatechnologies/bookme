@@ -7,6 +7,7 @@ import type { Zone } from '@/types/booking';
 import { useTranslation } from '@/i18n';
 import { useFieldConfigStore } from '@/stores/fieldConfigStore';
 import { useFacilityAvailability } from '@/services/supabase/facilities.service';
+import { useFacilityRules } from '@/services/supabase/facilityRules.service';
 
 import { FacilityCalendar } from '@/components/features/calendar/components/FacilityCalendar';
 
@@ -113,6 +114,9 @@ export const FacilityInfoTabs: React.FC<FacilityInfoTabsProps> = ({
   const { getAvailabilityStatus } = useAvailabilityCalculation({
     facilityAvailability: openingHours
   });
+
+  // Fetch facility rules
+  const { data: facilityRules = [], isLoading: rulesLoading } = useFacilityRules(facilityId);
 
   const toggleFAQ = (faqId: string): void => {
     setExpandedFAQ(expandedFAQ === faqId ? null : faqId);
@@ -324,39 +328,92 @@ export const FacilityInfoTabs: React.FC<FacilityInfoTabsProps> = ({
         <TabPanel>
           <div>
             <h3 className="text-xl font-semibold mb-4">{t('facility:rules.title')}</h3>
-            <div className="space-y-4">
-              <div className="flex items-start">
-                <CheckCircle className="h-5 w-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
-                <div>
-                  <p className="font-medium">{t('facility:rules.noSmoking')}</p>
-                  <p className="text-gray-600 text-sm">{t('common:rules.smoking_not_allowed')}</p>
-                </div>
+            
+            {rulesLoading && (
+              <div className="text-center py-8 text-gray-500">
+                Laster...
               </div>
+            )}
 
-              <div className="flex items-start">
-                <CheckCircle className="h-5 w-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
-                <div>
-                  <p className="font-medium">{t('facility:rules.cleanupRequired')}</p>
-                  <p className="text-gray-600 text-sm">{t('common:rules.cleanup_required_desc')}</p>
+            {!rulesLoading && facilityRules.length === 0 && (
+              <div className="space-y-4">
+                {/* Default rules when no custom rules exist */}
+                <div className="flex items-start">
+                  <CheckCircle className="h-5 w-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="font-medium">{t('facility:rules.noSmoking')}</p>
+                    <p className="text-gray-600 text-sm">{t('common:rules.smoking_not_allowed')}</p>
+                  </div>
                 </div>
-              </div>
 
-              <div className="flex items-start">
-                <XCircle className="h-5 w-5 text-red-500 mr-3 mt-0.5 flex-shrink-0" />
-                <div>
-                  <p className="font-medium">{t('common:rules.noise_after_hours')}</p>
-                  <p className="text-gray-600 text-sm">{t('common:rules.noise_after_hours_desc')}</p>
+                <div className="flex items-start">
+                  <CheckCircle className="h-5 w-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="font-medium">{t('facility:rules.cleanupRequired')}</p>
+                    <p className="text-gray-600 text-sm">{t('common:rules.cleanup_required_desc')}</p>
+                  </div>
                 </div>
-              </div>
 
-              <div className="flex items-start">
-                <CheckCircle className="h-5 w-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
-                <div>
-                  <p className="font-medium">{t('common:rules.cancellation')}</p>
-                  <p className="text-gray-600 text-sm">{t('common:rules.cancellation_desc')}</p>
+                <div className="flex items-start">
+                  <XCircle className="h-5 w-5 text-red-500 mr-3 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="font-medium">{t('common:rules.noise_after_hours')}</p>
+                    <p className="text-gray-600 text-sm">{t('common:rules.noise_after_hours_desc')}</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start">
+                  <CheckCircle className="h-5 w-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="font-medium">{t('common:rules.cancellation')}</p>
+                    <p className="text-gray-600 text-sm">{t('common:rules.cancellation_desc')}</p>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
+
+            {!rulesLoading && facilityRules.length > 0 && (
+              <div className="space-y-4">
+                {facilityRules.map((rule) => {
+                  // Determine icon based on rule type
+                  const Icon = rule.rule_type === 'safety' || rule.rule_type === 'cancellation'
+                    ? XCircle
+                    : CheckCircle;
+                  const iconColor = rule.rule_type === 'safety' || rule.rule_type === 'cancellation'
+                    ? 'text-red-500'
+                    : 'text-green-500';
+
+                  // Map rule types to readable labels
+                  const ruleTypeLabels: Record<string, string> = {
+                    booking: t('facility:rules.type.booking', 'Booking'),
+                    safety: t('facility:rules.type.safety', 'Sikkerhet'),
+                    general: t('facility:rules.type.general', 'Generelt'),
+                    cancellation: t('facility:rules.type.cancellation', 'Kansellering'),
+                  };
+
+                  return (
+                    <div key={rule.id} className="flex items-start">
+                      <Icon className={`h-5 w-5 ${iconColor} mr-3 mt-0.5 flex-shrink-0`} />
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <p className="font-medium text-gray-900 dark:text-white">
+                            {rule.rule_text}
+                          </p>
+                          {rule.is_required && (
+                            <span className="text-xs bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 px-2 py-0.5 rounded">
+                              {t('common:required', 'Påkrevd')}
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-gray-600 dark:text-gray-400 text-sm">
+                          {ruleTypeLabels[rule.rule_type] || rule.rule_type}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </TabPanel>
       </TabsContent>

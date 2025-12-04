@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Save, X, ArrowLeft, Eye, MapPin, Plus, Trash2, Check, X as XIcon } from "lucide-react";
 import type { Database } from "@/types/database";
 import { useUpdateFacility, useCreateFacility, useFacilityAvailability, useUpdateFacilityAvailability } from "@/services/supabase/facilities.service";
+import { useFacilityRules, useCreateFacilityRule, useUpdateFacilityRule, useDeleteFacilityRule, type FacilityRule } from "@/services/supabase/facilityRules.service";
 import { useFacility } from "@/components/features/facilities/hooks/useFacility";
 import { useOrganizationId } from "@/hooks/useOrganizationId";
 import { useFieldConfigStore } from "@/stores/fieldConfigStore";
@@ -123,6 +124,18 @@ const FacilityEditPage = (): JSX.Element => {
     phone: ''
   });
 
+  // Fetch facility rules
+  const { data: facilityRules = [], isLoading: rulesLoading } = useFacilityRules(editedFacility?.id || '', !!editedFacility?.id);
+  const createRuleMutation = useCreateFacilityRule();
+  const updateRuleMutation = useUpdateFacilityRule();
+  const deleteRuleMutation = useDeleteFacilityRule();
+
+  // Debounce timer for rule updates
+  const ruleUpdateTimers = useRef<{ [key: string]: NodeJS.Timeout }>({});
+
+  // Local state for rule text inputs (to avoid lag)
+  const [ruleTexts, setRuleTexts] = useState<{ [key: string]: string }>({});
+
   // Helper function to create new facility template
   const createNewFacilityTemplate = useCallback((): Partial<Facility> => ({
     name: "",
@@ -188,6 +201,29 @@ const FacilityEditPage = (): JSX.Element => {
       });
     }
   }, [id, supabaseFacility, editedFacility, fieldConfigs, navigate, updateFieldValue, orgId, createNewFacilityTemplate]);
+
+  // Cleanup debounce timers on unmount
+  useEffect(() => {
+    return () => {
+      // Clear all pending timers when component unmounts
+      Object.values(ruleUpdateTimers.current).forEach(timer => clearTimeout(timer));
+    };
+  }, []);
+
+  // Initialize local rule text state when rules load
+  useEffect(() => {
+    if (facilityRules.length > 0) {
+      const textMap: { [key: string]: string } = {};
+      facilityRules.forEach(rule => {
+        if (!ruleTexts[rule.id]) {
+          textMap[rule.id] = rule.rule_text;
+        }
+      });
+      if (Object.keys(textMap).length > 0) {
+        setRuleTexts(prev => ({ ...prev, ...textMap }));
+      }
+    }
+  }, [facilityRules]); // Simplified dependency
 
   // If we're using a slug and the facility hasn't loaded yet, don't show "not found" immediately
   const isUsingSlug = id && !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
@@ -743,6 +779,84 @@ const FacilityEditPage = (): JSX.Element => {
     setFaqItems(faqItems.filter((faq: IFaqItem): boolean => faq.id !== faqId));
     // Removed updating lastUpdated as it's not part of the facility type
     setHasUnsavedChanges(true);
+  };
+
+  // Rule management functions
+  const addRule = (): void => {
+    if (!editedFacility?.id) {
+      toast.error('Lagre lokalet først før du legger til regler');
+      return;
+    }
+
+    const maxSortOrder = facilityRules.length > 0
+      ? Math.max(...facilityRules.map(r => r.sort_order))
+      : -1;
+
+    createRuleMutation.mutate({
+      facility_id: editedFacility.id,
+      rule_text: 'Ny regel...',
+      rule_type: 'booking',
+      is_required: true,
+      sort_order: maxSortOrder + 1,
+    }, {
+      onSuccess: () => {
+        toast.success('Regel lagt til');
+      },
+      onError: (error) => {
+        console.error('Error creating rule:', error);
+        toast.error('Kunne ikke legge til regel');
+      },
+    });
+  };
+
+  const updateRule = (ruleId: string, updates: Partial<FacilityRule>): void => {
+    // Clear existing timer for this rule
+    if (ruleUpdateTimers.current[ruleId]) {
+      clearTimeout(ruleUpdateTimers.current[ruleId]);
+    }
+
+    // Set new timer to update after 500ms of no typing
+    ruleUpdateTimers.current[ruleId] = setTimeout(() => {
+      updateRuleMutation.mutate({
+        id: ruleId,
+        updates,
+      }, {
+        onSuccess: () => {
+          // Silent success - no toast for better UX
+        },
+        onError: (error) => {
+          console.error('Error updating rule:', error);
+          toast.error('Kunne ikke oppdatere regel');
+        },
+      });
+    }, 500); // Wait 500ms after user stops typing
+  };
+
+  const handleRuleTextChange = (ruleId: string, newText: string): void => {
+    // Update local state immediately for responsive UI
+    setRuleTexts(prev => ({
+      ...prev,
+      [ruleId]: newText
+    }));
+    // Debounce the database update
+    updateRule(ruleId, { rule_text: newText });
+  };
+
+  const deleteRule = (ruleId: string): void => {
+    if (!editedFacility?.id) return;
+
+    deleteRuleMutation.mutate({
+      id: ruleId,
+      facilityId: editedFacility.id,
+    }, {
+      onSuccess: () => {
+        toast.success('Regel slettet');
+      },
+      onError: (error) => {
+        console.error('Error deleting rule:', error);
+        toast.error('Kunne ikke slette regel');
+      },
+    });
   };
 
   const handleTagAdd = (newTag: string): void => {
@@ -1381,21 +1495,81 @@ const FacilityEditPage = (): JSX.Element => {
 
               <TabsContent value="rules" className="space-y-6 mt-6">
                 <div>
-                  <h3 className="text-xl font-semibold mb-4">Regler</h3>
-
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Bookingregler
-                      </label>
-                      <textarea
-                        value={editedFacility.description || ""}
-                        className="w-full min-h-[200px] px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                        placeholder="Skriv bookingregler her..."
-                        onChange={(e) => handleInputChange("description", e.target.value)}
-                      />
-                    </div>
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-xl font-semibold">Regler</h3>
+                    <Button onClick={addRule} size="sm" disabled={!editedFacility?.id}>
+                      <Plus className="w-4 h-4 mr-2" />
+                      Legg til regel
+                    </Button>
                   </div>
+
+                  {!editedFacility?.id && (
+                    <div className="text-center py-8 text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 rounded-md">
+                      Lagre lokalet først for å legge til regler.
+                    </div>
+                  )}
+
+                  {editedFacility?.id && rulesLoading && (
+                    <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                      Laster regler...
+                    </div>
+                  )}
+
+                  {editedFacility?.id && !rulesLoading && facilityRules.length === 0 && (
+                    <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                      Ingen regler definert. Legg til en regel for å begynne.
+                    </div>
+                  )}
+
+                  {editedFacility?.id && !rulesLoading && facilityRules.length > 0 && (
+                    <div className="space-y-4">
+                      {facilityRules.map((rule) => (
+                        <Card key={rule.id}>
+                          <CardContent className="p-4">
+                            <div className="flex items-start justify-between mb-3">
+                              <div className="flex-1 space-y-3">
+                                <div className="flex items-center gap-3">
+                                  <select
+                                    value={rule.rule_type}
+                                    onChange={(e) => updateRule(rule.id, { rule_type: e.target.value as FacilityRule['rule_type'] })}
+                                    className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm"
+                                  >
+                                    <option value="booking">Booking</option>
+                                    <option value="safety">Sikkerhet</option>
+                                    <option value="general">Generelt</option>
+                                    <option value="cancellation">Kansellering</option>
+                                  </select>
+                                  <label className="flex items-center gap-2 text-sm">
+                                    <input
+                                      type="checkbox"
+                                      checked={rule.is_required}
+                                      onChange={(e) => updateRule(rule.id, { is_required: e.target.checked })}
+                                      className="rounded border-gray-300 dark:border-gray-600"
+                                    />
+                                    <span className="text-gray-700 dark:text-gray-300">Påkrevd</span>
+                                  </label>
+                                </div>
+                                <textarea
+                                  value={ruleTexts[rule.id] ?? rule.rule_text}
+                                  onChange={(e) => handleRuleTextChange(rule.id, e.target.value)}
+                                  className="w-full min-h-[80px] px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                                  placeholder="Skriv regeltekst her..."
+                                />
+                              </div>
+                              <Button
+                                onClick={() => deleteRule(rule.id)}
+                                variant="ghost"
+                                size="sm"
+                                className="text-red-600 hover:text-red-700 ml-4"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </TabsContent>
 
