@@ -140,7 +140,7 @@ const AdminRoutes = (
         </ProtectedRoute>
       } />
       <Route path="/notifications" element={
-        <ProtectedRoute requiredRole="admin" loginPath="/login-selection" unauthorizedComponent={<AdminUnauthorizedComponent />}>
+        <ProtectedRoute requiredRole="staff" loginPath="/login-selection" unauthorizedComponent={<AdminUnauthorizedComponent />}>
           <Suspense fallback={<AdminPageLoader />}>
             <AdminLayout><NotificationsPage /></AdminLayout>
           </Suspense>
@@ -154,7 +154,7 @@ const AdminRoutes = (
         </ProtectedRoute>
       } />
       <Route path="/reports" element={
-        <ProtectedRoute requiredRole="admin" loginPath="/login-selection" unauthorizedComponent={<AdminUnauthorizedComponent />}>
+        <ProtectedRoute requiredRole="staff" loginPath="/login-selection" unauthorizedComponent={<AdminUnauthorizedComponent />}>
           <Suspense fallback={<AdminPageLoader />}>
             <AdminLayout><ReportsPage /></AdminLayout>
           </Suspense>
@@ -175,7 +175,7 @@ const AdminRoutes = (
         </ProtectedRoute>
       } />
       <Route path="/messages" element={
-        <ProtectedRoute requiredRole="admin" loginPath="/login-selection" unauthorizedComponent={<AdminUnauthorizedComponent />}>
+        <ProtectedRoute requiredRole="staff" loginPath="/login-selection" unauthorizedComponent={<AdminUnauthorizedComponent />}>
           <Suspense fallback={<AdminPageLoader />}>
             <AdminLayout><AdminMessages /></AdminLayout>
           </Suspense>

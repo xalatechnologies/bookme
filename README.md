@@ -83,7 +83,17 @@ npm run dev
 - Email: `test.user@drammen.kommune.no`
 - Password: `Test123!`
 
-For complete setup instructions, see [DEVELOPMENT_SETUP.md](./DEVELOPMENT_SETUP.md)
+For complete setup instructions, see [DEVELOPMENT_SETUP.md](./docs/DEVELOPMENT_SETUP.md)
+
+## 📚 Documentation
+
+Comprehensive documentation is available in the `/docs` directory:
+- **[Documentation Index](./docs/README.md)** - Complete documentation overview
+- **[Quick Start Guide](./docs/guides/QUICK_START_REGLER.md)** - Get started in 5 minutes
+- **[Facility Rules Setup](./docs/features/FACILITY_RULES_SETUP.md)** - Facility rules system
+- **[Troubleshooting](./docs/guides/TROUBLESHOOTING_REGLER.md)** - Common issues and solutions
+
+For more detailed documentation, visit the [docs folder](./docs/).
 
 ---
 

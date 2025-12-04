@@ -28,3 +28,9 @@ dist-ssr
 # Reference project (exclude from tracking)
 drammen-booking-portal-2/
 .env
+
+# Reports and analysis files
+docs/reports/
+*.log
+stats.html
+eslint-report.json

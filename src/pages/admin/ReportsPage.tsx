@@ -472,7 +472,7 @@ const ReportsPage = (): JSX.Element => {
   };
 
   return (
-    <RequireRole minRole="admin">
+    <RequireRole minRole="staff">
       <SystemPageLayout
         title={t("pages.reports.title")}
         description={t("pages.reports.description")}

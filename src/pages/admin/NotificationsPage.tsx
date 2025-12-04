@@ -230,7 +230,7 @@ const NotificationsPage = (): JSX.Element => {
 
   if (error) {
     return (
-      <RequireRole minRole="admin">
+      <RequireRole minRole="staff">
         <SystemPageLayout
           title="Notifications"
           description="Manage your notifications"
@@ -252,7 +252,7 @@ const NotificationsPage = (): JSX.Element => {
   }
 
   return (
-    <RequireRole minRole="admin">
+    <RequireRole minRole="staff">
       <SystemPageLayout
         title="Notifications"
         description="View and manage your notifications"
