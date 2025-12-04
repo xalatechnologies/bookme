@@ -39,7 +39,7 @@ const UserLayout = ({ children }: IUserLayoutProps): JSX.Element => {
           {/* Mobile Overlay */}
           {isMobileMenuOpen && (
             <div
-              className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+              className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"
               onClick={closeMobileMenu}
               aria-hidden="true"
             />
@@ -48,7 +48,7 @@ const UserLayout = ({ children }: IUserLayoutProps): JSX.Element => {
           {/* Sidebar - Desktop: Fixed, Mobile: Drawer */}
           <aside
             className={`
-              fixed top-[73px] bottom-0 z-40 transition-transform duration-300 ease-in-out
+              fixed top-[73px] bottom-0 z-40 lg:z-10 transition-transform duration-300 ease-in-out
               lg:translate-x-0
               ${
                 isMobileMenuOpen
