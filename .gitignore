@@ -7,30 +7,54 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Dependencies
 node_modules
+
+# Build outputs
 dist
 dist-ssr
+build
+*.tsbuildinfo
+
+# Test outputs
+test-results
+playwright-report
+coverage
+.nyc_output
+
+# Cache
+.cache
+.parcel-cache
+.eslintcache
+
+# Environment variables
+.env
+.env.local
+.env.*.local
 *.local
 
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
+!.vscode/settings.json
 .idea
-.DS_Store
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
-.env
-.env.local
+*.swp
+*~
+
+# OS
+.DS_Store
+Thumbs.db
 
 # Reference project (exclude from tracking)
 drammen-booking-portal-2/
-.env
 
 # Reports and analysis files
 docs/reports/
-*.log
 stats.html
 eslint-report.json
+lint-output.txt
