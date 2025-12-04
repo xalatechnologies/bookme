@@ -208,14 +208,14 @@ const UserDashboard = (): JSX.Element => {
   // ============================================================================
 
   return (
-    <div className="space-y-8">
-      {/* Dynamic Hero Section */}
+    <div className="space-y-6 sm:space-y-8">
+      {/* Dynamic Hero Section - Mobile Optimized */}
       <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-blue-200 dark:border-blue-800 shadow-lg">
-        <CardContent className="p-6">
-          <div className="flex items-center justify-between">
+        <CardContent className="p-4 sm:p-6">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
             <div className="flex-1">
-              <div className="flex items-center gap-3 mb-3">
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-3">
+                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
                   {t("user:dashboard.greeting", {
                     dayOfWeek: t(`user:dashboard.days.${getDayOfWeek()}` as "user:dashboard.days.sunday" | "user:dashboard.days.monday" | "user:dashboard.days.tuesday" | "user:dashboard.days.wednesday" | "user:dashboard.days.thursday" | "user:dashboard.days.friday" | "user:dashboard.days.saturday"),
                     name: dashboard.user.name,
@@ -223,7 +223,7 @@ const UserDashboard = (): JSX.Element => {
                   👋
                 </h1>
                 {dashboard.weather && (
-                  <div className="flex items-center gap-2 px-3 py-1 bg-white/50 dark:bg-gray-800/50 rounded-full">
+                  <div className="flex items-center gap-2 px-3 py-1 bg-white/50 dark:bg-gray-800/50 rounded-full w-fit">
                     {getWeatherIcon(dashboard.weather.condition)}
                     <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
                       {dashboard.weather.temperature}°C
@@ -231,7 +231,7 @@ const UserDashboard = (): JSX.Element => {
                   </div>
                 )}
               </div>
-              <p className="text-gray-600 dark:text-gray-400 mb-3">
+              <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mb-3">
                 {dashboard.weather &&
                   `${t("user:dashboard.weather_in_city", {
                     description: dashboard.weather.description,
@@ -242,10 +242,10 @@ const UserDashboard = (): JSX.Element => {
               {/* Progress Bar */}
               <div className="mb-4">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  <span className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">
                     {t("user:dashboard.monthly_bookings")}
                   </span>
-                  <span className="text-sm text-gray-500 dark:text-gray-400">
+                  <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
                     {dashboard.user.totalBookings} {t("user:dashboard.of")}{" "}
                     {dashboard.user.monthlyBookingLimit}
                   </span>
@@ -260,7 +260,7 @@ const UserDashboard = (): JSX.Element => {
                 />
               </div>
 
-              <p className="text-sm text-blue-600 dark:text-blue-400">
+              <p className="text-xs sm:text-sm text-blue-600 dark:text-blue-400">
                 {dashboard.user.nextBooking
                   ? t("user:dashboard.next_booking", {
                       facility: dashboard.user.nextBooking.facility,
@@ -270,10 +270,11 @@ const UserDashboard = (): JSX.Element => {
                   : t("user:dashboard.no_upcoming_bookings")}
               </p>
             </div>
-            <div className="ml-6">
+            <div className="w-full lg:w-auto lg:ml-6">
               <PrimaryButton
                 onClick={handleNewBooking}
                 size="lg"
+                className="w-full lg:w-auto"
               >
                 <Plus className="h-5 w-5 mr-2" />
                 {t("user:dashboard.new_booking")}
@@ -286,30 +287,30 @@ const UserDashboard = (): JSX.Element => {
       {/* Quick Actions */}
       <Card className="shadow-sm">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
             <Settings className="h-5 w-5" />
             {t("user:dashboard.quick_actions")}
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
             {quickActions.map((action) => {
               const IconComponent = action.icon;
               return (
                 <Button
                   key={action.id}
                   variant="outline"
-                  className="h-auto p-4 flex flex-col items-center gap-2 hover:shadow-md transition-shadow"
+                  className="h-auto p-3 sm:p-4 flex flex-col items-center gap-2 hover:shadow-md transition-shadow"
                   onClick={() => navigate(action.path)}
                 >
                   <div
                     className={`p-2 rounded-full ${action.color} text-white`}
                   >
-                    <IconComponent className="h-5 w-5" />
+                    <IconComponent className="h-4 w-4 sm:h-5 sm:w-5" />
                   </div>
                   <div className="text-center">
-                    <div className="font-medium text-sm">{action.title}</div>
-                    <div className="text-xs text-gray-500 dark:text-gray-400">
+                    <div className="font-medium text-xs sm:text-sm">{action.title}</div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400 hidden sm:block">
                       {action.description}
                     </div>
                   </div>
