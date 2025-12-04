@@ -3,6 +3,8 @@ import { createContext, useContext } from "react";
 export interface ISidebarContext {
   readonly isCollapsed: boolean;
   readonly toggleCollapse: () => void;
+  readonly isMobileMenuOpen: boolean;
+  readonly toggleMobileMenu: () => void;
 }
 
 export const SidebarContext = createContext<ISidebarContext | undefined>(undefined);

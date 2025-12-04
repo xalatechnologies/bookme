@@ -33,11 +33,11 @@ interface IMenuGroup {
 
 interface IUserSidebarProps {
   readonly children?: never;
+  readonly onMobileMenuItemClick?: () => void;
 }
 
 const UserSidebar = (
-   
-  _props: IUserSidebarProps
+  { onMobileMenuItemClick }: IUserSidebarProps
 ): JSX.Element => {
   const { isCollapsed, toggleCollapse } = useSidebar();
   const { t } = useTranslation('navigation');
@@ -115,6 +115,7 @@ const UserSidebar = (
                   <NavLink
                     key={item.id}
                     to={item.path}
+                    onClick={() => onMobileMenuItemClick?.()}
                     className={`group flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
                       active
                         ? "bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 shadow-sm"
@@ -152,8 +153,8 @@ const UserSidebar = (
         ))}
       </nav>
 
-      {/* Collapse Toggle Button */}
-      <div className="p-4 border-t border-gray-200 dark:border-gray-700">
+      {/* Collapse Toggle Button - Desktop Only */}
+      <div className="hidden lg:block p-4 border-t border-gray-200 dark:border-gray-700">
         <button
           onClick={toggleCollapse}
           className="w-full flex items-center justify-center p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
