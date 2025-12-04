@@ -4,35 +4,95 @@ Welcome to the BookMe documentation. This directory contains all project documen
 
 ## 📁 Documentation Structure
 
-### `/features` - Feature Documentation
-Documentation for specific features and implementations:
-- **[FACILITY_RULES_SETUP.md](features/FACILITY_RULES_SETUP.md)** - Technical setup guide for facility rules system
-- **[PERFORMANCE_FIX_REGLER.md](features/PERFORMANCE_FIX_REGLER.md)** - Performance optimization for rules text input
+### Core Directories
 
-### `/guides` - User & Developer Guides
-Step-by-step guides for users and developers:
-- **[QUICK_START_REGLER.md](guides/QUICK_START_REGLER.md)** - Quick start guide for facility rules (5 minutes)
-- **[REGLER_SYSTEM_NORSK.md](guides/REGLER_SYSTEM_NORSK.md)** - Complete Norwegian guide for rules system
-- **[TROUBLESHOOTING_REGLER.md](guides/TROUBLESHOOTING_REGLER.md)** - Troubleshooting guide for facility rules
+#### `/architecture` - Architecture & Design (18 files)
+System architecture, design decisions, and technical patterns:
+- **Authentication & Authorization** - Auth system architecture
+- **State Management** - State management patterns
+- **Clean Architecture** - Clean architecture guides
+- **RBAC Integration** - Role-based access control
+- **Hooks Architecture** - React hooks patterns
 
-### `/archive` - Historical Documentation
-Archived documentation from previous development sessions:
-- **CODEBASE_ANALYSIS_REPORT.md** - Initial codebase analysis
-- **FIXES_DOCUMENTATION.md** - Historical bug fixes
-- **LINT_FIX_SUMMARY.md** - Linting fixes summary
-- **Agent_plan.md** - Original agent planning document
+#### `/guides` - User & Developer Guides (19 files)
+Practical guides for using and developing the system:
+- **[QUICK_START_REGLER.md](guides/QUICK_START_REGLER.md)** - Quick start (5 minutes)
+- **[REGLER_SYSTEM_NORSK.md](guides/REGLER_SYSTEM_NORSK.md)** - Norwegian user guide
+- **[TROUBLESHOOTING_REGLER.md](guides/TROUBLESHOOTING_REGLER.md)** - Troubleshooting guide
+- **Installation & Setup** - Development environment setup
+- **Integration Guides** - Third-party integrations
+- **Best Practices** - Accessibility, performance, security
 
-### `/adr` - Architecture Decision Records
-Documents explaining architectural decisions made in the project.
+#### `/features` - Feature Documentation (2 files)
+Specific feature implementations:
+- **[FACILITY_RULES_SETUP.md](features/FACILITY_RULES_SETUP.md)** - Facility rules system
+- **[PERFORMANCE_FIX_REGLER.md](features/PERFORMANCE_FIX_REGLER.md)** - Performance optimizations
 
-### `/facility-editing-fixes` - Facility Editing Documentation
-Specific documentation related to facility editing features and fixes.
+#### `/testing` - Testing Documentation (19 files)
+Comprehensive testing guides and strategies:
+- **Testing Strategies** - Unit, integration, E2E testing
+- **Test Setup** - Testing infrastructure and configuration
+- **Manual Testing** - Manual test checklists
+- **Test Results** - Historical test reports
 
-### `/runbooks` - Operational Runbooks
-Step-by-step procedures for common operational tasks.
+#### `/i18n` - Internationalization (23 files)
+Internationalization and translation documentation:
+- **Implementation Guides** - i18n system architecture
+- **Translation Glossary** - Complete translation reference
+- **Localization Guides** - Setting up translations
+- **Missing Translations** - Translation gap analysis
 
-### `/v2` - Version 2 Documentation
-Documentation specific to version 2 of the application.
+#### `/migration` - Migration Guides (26 files)
+Data and system migration documentation:
+- **Storage Migration** - localStorage to Supabase
+- **Component Migration** - Component refactoring guides
+- **Database Migration** - Schema and data migrations
+- **Supabase Integration** - Backend migration guides
+
+#### `/refactoring` - Refactoring Documentation (25 files)
+Code refactoring patterns and progress:
+- **Component Refactoring** - Component modernization
+- **Architecture Refactoring** - System-wide improvements
+- **Pattern Examples** - Refactoring examples and patterns
+- **Progress Reports** - Historical refactoring status
+
+#### `/sessions` - Development Sessions (20 files)
+Historical development session documentation:
+- **Phase Documentation** - Project phases 1-7
+- **Session Summaries** - Development session notes
+- **Milestone Reports** - Key development milestones
+
+#### `/analysis` - Code Analysis (14 files)
+Codebase analysis and audit reports:
+- **Codebase Analysis** - Code quality audits
+- **Architecture Audits** - System architecture reviews
+- **Validation Reports** - Technical validation
+- **Gap Analysis** - Feature and schema gaps
+
+#### `/planning` - Planning & Strategy (6 files)
+Project planning and strategic documentation:
+- **Implementation Plans** - Feature implementation roadmaps
+- **Roadmaps** - Project development roadmaps
+- **Strategy Documents** - Technical strategy guides
+
+#### `/deployment` - Deployment Guides (3 files)
+Deployment and CI/CD documentation:
+- **Deployment Procedures** - Production deployment
+- **CI/CD Configuration** - Automated pipelines
+- **Pre-deployment Checklists** - Deployment verification
+
+#### `/archive` - Historical Documentation (35+ files)
+Archived documentation from previous development:
+- Historical bug fixes and improvements
+- Completed refactoring summaries
+- Old planning documents
+- Previous analysis reports
+
+#### `/reports` - Analysis Reports
+Automatically generated reports (gitignored):
+- ESLint reports
+- Bundle analysis
+- Performance metrics
 
 ## 📚 Key Documentation Files
 
