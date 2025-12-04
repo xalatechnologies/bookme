@@ -70,15 +70,15 @@ const AdminSidebar = (
     {
       titleKey: "communication",
       items: [
-        { id: "messages", labelKey: "messages", path: "/admin/messages", icon: MessageCircle, requiredRole: 'admin' },
-        { id: "notifications", labelKey: "alerts", path: "/admin/notifications", icon: Bell, requiredRole: 'admin' },
+        { id: "messages", labelKey: "messages", path: "/admin/messages", icon: MessageCircle, requiredRole: 'staff' },
+        { id: "notifications", labelKey: "alerts", path: "/admin/notifications", icon: Bell, requiredRole: 'staff' },
       ]
     },
     {
       titleKey: "system",
       items: [
+        { id: "reports", labelKey: "reports", path: "/admin/reports", icon: BarChart3, requiredRole: 'staff' },
         { id: "integrations", labelKey: "integrations", path: "/admin/integrations", icon: Plug, requiredRole: 'admin' },
-        { id: "reports", labelKey: "reports", path: "/admin/reports", icon: BarChart3, requiredRole: 'admin' },
         { id: "audit", labelKey: "audit_log", path: "/admin/audit-logs", icon: FileText, requiredRole: 'admin' },
         { id: "data-retention", labelKey: "data_retention", path: "/admin/data-retention", icon: Trash2, requiredRole: 'admin' },
         { id: "localization", labelKey: "localization", path: "/admin/localization", icon: Globe, requiredRole: 'admin' },
