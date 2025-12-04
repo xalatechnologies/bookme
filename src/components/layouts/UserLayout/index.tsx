@@ -36,7 +36,7 @@ const UserLayout = ({ children }: IUserLayoutProps): JSX.Element => {
             <UserHeader />
           </header>
 
-          {/* Mobile Overlay */}
+          {/* Mobile Overlay - Only shown when mobile menu is open */}
           {isMobileMenuOpen && (
             <div
               className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"
@@ -45,15 +45,19 @@ const UserLayout = ({ children }: IUserLayoutProps): JSX.Element => {
             />
           )}
 
-          {/* Sidebar - Desktop: Fixed, Mobile: Drawer */}
+          {/* Desktop Sidebar - Hidden on mobile */}
+          <aside className="hidden lg:block fixed top-[73px] left-0 bottom-0 z-10">
+            <UserSidebar onMobileMenuItemClick={closeMobileMenu} />
+          </aside>
+
+          {/* Mobile Drawer - Only visible on mobile */}
           <aside
             className={`
-              fixed top-[73px] bottom-0 z-40 lg:z-10 transition-transform duration-300 ease-in-out
-              lg:translate-x-0
+              lg:hidden fixed top-[73px] bottom-0 left-0 z-40 transition-transform duration-300 ease-in-out
               ${
                 isMobileMenuOpen
                   ? "translate-x-0"
-                  : "-translate-x-full lg:translate-x-0"
+                  : "-translate-x-full"
               }
             `}
           >
