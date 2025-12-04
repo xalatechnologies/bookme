@@ -1,4 +1,13 @@
 # Booknor Portal
+# 🏢 BookMe - Modern Facility Booking Platform
+
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?logo=typescript)](https://www.typescriptlang.org/)
+[![React](https://img.shields.io/badge/React-19.1.1-61dafb?logo=react)](https://react.dev/)
+[![Vite](https://img.shields.io/badge/Vite-5.0-646cff?logo=vite)](https://vitejs.dev/)
+[![Supabase](https://img.shields.io/badge/Supabase-Enabled-3ecf8e?logo=supabase)](https://supabase.com/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
+[![Code of Conduct](https://img.shields.io/badge/Code%20of%20Conduct-Contributor%20Covenant-purple.svg)](CODE_OF_CONDUCT.md)
 
 En moderne plattform for fasilitetsreservasjon og booking utviklet av Xala Technologies. Bygget med React, TypeScript, Tailwind CSS, og **Supabase** som backend, og følger strenge kodestandarder for enterprise-utvikling.
 
