@@ -31,6 +31,7 @@ import { useTranslation } from "react-i18next";
 import { usePublishedFacilities } from "@/services/supabase/facilities.service";
 import { useUserBookings } from "@/services/supabase/bookings.service";
 import { useAuth } from "@/contexts/hooks";
+import { useUserProfile } from "@/contexts/hooks";
 
 // ============================================================================
 // Types & Interfaces
@@ -137,6 +138,7 @@ export const useDashboardManagement = (
 ): IUseDashboardManagementReturn => {
   const { t } = useTranslation(["common", "user", "booking"]);
   const { user: authUser } = useAuth();
+  const { profile } = useUserProfile();
 
   // State management
   const [bookingFilter, setBookingFilter] = useState<string>("all");
@@ -177,8 +179,13 @@ export const useDashboardManagement = (
 
       const nextBooking = upcomingBookings[0];
 
+      // Get user's full name from profile
+      const userName = profile.firstName && profile.lastName
+        ? `${profile.firstName} ${profile.lastName}`
+        : profile.firstName || profile.lastName || profile.email?.split('@')[0] || t("user:dashboard.default_username");
+
       return {
-        name: t("user:dashboard.default_username"),
+        name: userName,
         totalBookings: bookingsData.length,
         monthlyBookingLimit: 5,
         nextBooking: nextBooking
@@ -206,7 +213,7 @@ export const useDashboardManagement = (
         nextBooking: null,
       };
     }
-  }, [bookingsData, t]);
+  }, [bookingsData, t, profile]);
 
   // ============================================================================
   // Bookings Loading

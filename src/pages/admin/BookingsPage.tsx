@@ -521,76 +521,10 @@ const BookingDetailModal = ({
           );
       }
 
-      // Fallback to localStorage if needed (for backward compatibility)
-      const rawPending = JSON.parse(
-        localStorage.getItem("pendingBookings") || "[]"
-      );
-      const rawProcessed = JSON.parse(
-        localStorage.getItem("processedBookings") || "[]"
-      );
-      const all = [...rawPending, ...rawProcessed];
-
-      // Determine grouping key
-      const parentId = booking.parentBookingId;
-      const isRecurringLocal = booking.isRecurring || !!parentId;
-      if (!isRecurringLocal) return [];
-
-      const groupKey =
-        parentId ||
-        `${booking.facility}|${booking.purpose}|${booking.startTime}-${booking.endTime}`;
-
-      // Filter same group
-      const series = all.filter((b: RawBookingData) => {
-        const bParent = b.parentBookingId;
-        const bKey =
-          bParent ||
-          `${b.facility || b.facilityName || ''}|${b.purpose || b.description || ''
-          }|${(() => {
-            if (b.time) return b.time;
-            if (b.startTime && b.endTime) return `${b.startTime}-${b.endTime}`;
-            if (b.timeSlots && b.timeSlots.length > 0) {
-              const sorted = [...b.timeSlots].sort((a: LocalStorageTimeSlot, c: LocalStorageTimeSlot) =>
-                a.timeSlot.localeCompare(c.timeSlot)
-              );
-              const s = sorted[0].timeSlot.split("-")[0] || '';
-              const e = sorted[sorted.length - 1].timeSlot.split("-")[1] || '';
-              return `${s}-${e}`;
-            }
-            return `${booking.startTime}-${booking.endTime}`;
-          })()}`;
-        return (
-          (bParent && groupKey === bParent) || (!bParent && bKey === groupKey)
-        );
-      });
-
-      return (
-        series
-          .map((b: RawBookingData) => {
-            const date: string =
-              (b.date || b.startDate || new Date().toISOString().slice(0, 10)) as string;
-            const time: string =
-              b.time ||
-              (b.startTime && b.endTime
-                ? `${b.startTime}-${b.endTime}`
-                : (b.timeSlots && b.timeSlots[0]?.timeSlot) ||
-                `${booking.startTime}-${booking.endTime}`);
-            const priceText: string = (b.price || "0 kr") as string;
-            // Duration may be a string like "1 timer"
-            const durationHours: number =
-              typeof b.duration === "string"
-                ? parseFloat(
-                  b.duration.replace(/[^0-9.,]/g, "").replace(",", ".")
-                ) || 1
-                : b.duration
-                  ? b.duration / 60
-                  : 1;
-            return { date, time, durationHours, priceText };
-          })
-          .sort(
-            (a: { date: string }, b: { date: string }) =>
-              new Date(a.date).getTime() - new Date(b.date).getTime()
-          )
-      );
+      // No group found - return empty array
+      // Note: All booking data now comes from the database via useBookings hook
+      // localStorage fallback has been removed
+      return [];
     } catch {
       return [];
     }

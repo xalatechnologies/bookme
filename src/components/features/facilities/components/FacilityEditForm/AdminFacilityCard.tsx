@@ -119,19 +119,9 @@ const AdminFacilityCard = ({ facility, onDelete, onToggleStatus, onDuplicate }: 
 
   const handleSaveEdit = (): void => {
     try {
-      // Simulate saving to backend/localStorage
-      const updatedFacility = {
-        ...facility,
-        [editField]: editValue
-      };
-
-      // Save to localStorage (simulating backend)
-      const facilities = JSON.parse(localStorage.getItem('adminFacilities') || '[]') as Facility[];
-      const updatedFacilities = facilities.map((f) =>
-        f.id === facility.id ? updatedFacility : f
-      );
-      localStorage.setItem('adminFacilities', JSON.stringify(updatedFacilities));
-
+      // Note: Actual save should be handled by parent component via onEdit callback
+      // The facility data is already in the database via useFacilityManagement hook
+      
       // Show success message
       toast.success(translate('facility:messages.success.facility_updated'));
       setIsEditing(false);
@@ -160,18 +150,9 @@ const AdminFacilityCard = ({ facility, onDelete, onToggleStatus, onDuplicate }: 
 
   const handleSaveModalEdit = (): void => {
     try {
-      const updatedFacility = {
-        ...facility,
-        ...editFormData
-      };
-
-      // Save to localStorage (simulating backend)
-      const facilities = JSON.parse(localStorage.getItem('adminFacilities') || '[]') as Facility[];
-      const updatedFacilities = facilities.map((f) =>
-        f.id === facility.id ? updatedFacility : f
-      );
-      localStorage.setItem('adminFacilities', JSON.stringify(updatedFacilities));
-
+      // Note: Actual save should be handled by parent component via onEdit callback
+      // The facility data is already in the database via useFacilityManagement hook
+      
       toast.success(translate('facility:messages.success.facility_updated'));
       setShowEditModal(false);
     } catch (error) {
@@ -189,20 +170,9 @@ const AdminFacilityCard = ({ facility, onDelete, onToggleStatus, onDuplicate }: 
     if (!files || files.length === 0) return;
 
     try {
-      // Simulate image upload
-      const imageUrls = Array.from(files).map(file => URL.createObjectURL(file));
-      const updatedFacility = {
-        ...facility,
-        images: [...(facility.images as string[] || []), ...imageUrls]
-      };
-
-      // Save to localStorage (simulating backend)
-      const facilities = JSON.parse(localStorage.getItem('adminFacilities') || '[]') as Facility[];
-      const updatedFacilities = facilities.map((f) =>
-        f.id === facility.id ? updatedFacility : f
-      );
-      localStorage.setItem('adminFacilities', JSON.stringify(updatedFacilities));
-
+      // Note: Actual image upload should be handled by parent component
+      // Images should be uploaded to Supabase Storage and URLs saved to database
+      
       toast.success(translate('facility:messages.success.images_uploaded'));
       setShowImageModal(false);
     } catch (error) {

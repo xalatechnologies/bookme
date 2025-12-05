@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useSearchParams } from "react-router-dom";
+import { supabase } from '@/lib/clients/supabase';
 
 import { FacilityFilters } from "@/types/facility";
 
@@ -49,19 +50,40 @@ export const Index = (): JSX.Element => {
     // Also don't redirect if they came from a portal (indicated by referrer or navigation state)
     // Also don't redirect if they just logged out
     if (user && location.pathname === "/" && !location.state?.fromPortal && !location.state?.justLoggedOut) {
-      // Check if user has a preferred portal stored
-      const lastPortal = localStorage.getItem("lastPortal");
+      // Load portal preference from database instead of localStorage
+      const loadPortalPreference = async () => {
+        try {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const { data } = await (supabase as any)
+            .from('profiles')
+            .select('preferred_portal')
+            .eq('id', user.id)
+            .single();
+          
+          const lastPortal = data?.preferred_portal;
+          
+          if (lastPortal === "admin" && isAdmin) {
+            // Redirect admin users to admin portal
+            navigate("/admin/overview", { replace: true });
+          } else if (lastPortal === "user" || !isAdmin) {
+            // Redirect regular users or those who last visited user portal to user portal
+            navigate("/user", { replace: true });
+          } else if (isAdmin) {
+            // Default for admin users who have no preference
+            navigate("/admin/overview", { replace: true });
+          }
+        } catch (error) {
+          console.error('Failed to load portal preference:', error);
+          // Fallback to default behavior
+          if (isAdmin) {
+            navigate("/admin/overview", { replace: true });
+          } else {
+            navigate("/user", { replace: true });
+          }
+        }
+      };
       
-      if (lastPortal === "admin" && isAdmin) {
-        // Redirect admin users to admin portal
-        navigate("/admin/overview", { replace: true });
-      } else if (lastPortal === "user" || !isAdmin) {
-        // Redirect regular users or those who last visited user portal to user portal
-        navigate("/user", { replace: true });
-      } else if (isAdmin) {
-        // Default for admin users who have no preference
-        navigate("/admin/overview", { replace: true });
-      }
+      void loadPortalPreference();
     }
   }, [user, isAdmin, navigate, location.pathname, location.state]);
 
@@ -131,7 +153,7 @@ export const Index = (): JSX.Element => {
   const renderContent = () => {
     switch (viewMode) {
       case "map":
-        return <MapView facilityType={facilityType} location={selectedLocation} viewMode={viewMode} setViewMode={setViewMode} />;
+        return <MapView facilityType={facilityType} location={selectedLocation} viewMode={viewMode} setViewMode={setViewMode} filters={filters} />;
       case "list":
       case "grid":
         return (

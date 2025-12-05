@@ -150,16 +150,17 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
 
       if (error) {
         console.warn('Could not record login event (might be due to permissions):', error);
-        // If we can't record the event in the database, store it in localStorage as a fallback
-        localStorage.setItem(`last_login_${userId}`, new Date().toISOString());
-      } else {
-        // Also store in localStorage as a backup
-        localStorage.setItem(`last_login_${userId}`, new Date().toISOString());
       }
+      
+      // Update last_login_at in profiles table
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await (supabase as any)
+        .from('profiles')
+        .update({ last_login_at: new Date().toISOString() })
+        .eq('id', userId);
+        
     } catch (error) {
       console.warn('Error recording login event:', error);
-      // If we can't record the event, store it in localStorage as a fallback
-      localStorage.setItem(`last_login_${userId}`, new Date().toISOString());
     }
   }, []);
 

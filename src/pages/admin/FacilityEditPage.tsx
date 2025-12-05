@@ -6,6 +6,7 @@ import { Save, X, ArrowLeft, Eye, MapPin, Plus, Trash2, Check, X as XIcon } from
 import type { Database } from "@/types/database";
 import { useUpdateFacility, useCreateFacility, useFacilityAvailability, useUpdateFacilityAvailability } from "@/services/supabase/facilities.service";
 import { useFacilityRules, useCreateFacilityRule, useUpdateFacilityRule, useDeleteFacilityRule, type FacilityRule } from "@/services/supabase/facilityRules.service";
+import { useFacilityZones, useCreateZone, useUpdateZone, useDeleteZone } from "@/services/supabase/zones.service";
 import { useFacility } from "@/components/features/facilities/hooks/useFacility";
 import { useOrganizationId } from "@/hooks/useOrganizationId";
 import { useFieldConfigStore } from "@/stores/fieldConfigStore";
@@ -18,7 +19,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FieldConfigModal } from "@/components/features/facilities/components/FacilityEditForm/FieldConfigModal";
 import { ConfirmationModal } from "@/components/common/modals/ConfirmationModal";
 import { Zone } from "@/types/booking";
-import { useZoneStore } from "@/stores/zoneStore";
 import { extractContactInfo, cleanDescription, formatContactInfo } from "@/utils/facility/contactUtils";
 import { toast } from "react-toastify";
 import { MAPBOX_TOKEN } from '@/lib/clients/mapbox';
@@ -107,7 +107,11 @@ const FacilityEditPage = (): JSX.Element => {
   // Helper function to generate timestamp
 
 
-  const { addZone: storeAddZone, updateZone: storeUpdateZone, deleteZone: storeDeleteZone, getZonesForFacility: storeGetZonesForFacility } = useZoneStore();
+  // Use zone mutations
+  const createZoneMutation = useCreateZone();
+  const updateZoneMutation = useUpdateZone();
+  const deleteZoneMutation = useDeleteZone();
+  
   const [faqItems, setFaqItems] = useState<readonly IFaqItem[]>([]);
   const [openingHours, setOpeningHours] = useState<IOpeningHoursMap>({
     monday: { start: "08:00", end: "22:00" },
@@ -129,6 +133,9 @@ const FacilityEditPage = (): JSX.Element => {
   const createRuleMutation = useCreateFacilityRule();
   const updateRuleMutation = useUpdateFacilityRule();
   const deleteRuleMutation = useDeleteFacilityRule();
+
+  // Fetch facility zones from database
+  const { data: dbZones = [], isLoading: zonesLoading } = useFacilityZones(editedFacility?.id || '', !!editedFacility?.id);
 
   // Debounce timer for rule updates
   const ruleUpdateTimers = useRef<{ [key: string]: NodeJS.Timeout }>({});
@@ -717,42 +724,73 @@ const FacilityEditPage = (): JSX.Element => {
   };
 
   const addZone = (): void => {
-    const facilityId = editedFacility?.id || "new";
+    if (!editedFacility?.id) {
+      toast.error('Lagre lokalet først før du legger til soner');
+      return;
+    }
 
-    const newZone: Zone = {
-      id: Date.now().toString(),
-      name: "Navn på ny sone...",
-      facilityId: facilityId,
+    if (!orgId) {
+      toast.error('Organisasjons-ID mangler');
+      return;
+    }
+
+    createZoneMutation.mutate({
+      facility_id: editedFacility.id,
+      org_id: orgId,
+      name: 'Ny sone',
+      description: '',
       capacity: 0,
-      pricePerHour: 0,
-      area: 0,
-      description: "",
-      amenities: [],
-      availability: {
-        monday: { start: "08:00", end: "22:00" },
-        tuesday: { start: "08:00", end: "22:00" },
-        wednesday: { start: "08:00", end: "22:00" },
-        thursday: { start: "08:00", end: "22:00" },
-        friday: { start: "08:00", end: "22:00" },
-        saturday: { start: "09:00", end: "20:00" },
-        sunday: { start: "10:00", end: "18:00" }
-      }
-    };
-    storeAddZone(newZone);
-    // Removed updating lastUpdated as it's not part of the facility type
-    setHasUnsavedChanges(true);
+      price_per_hour_cents: 0,
+      area_sqm: 0,
+      status: 'active',
+    }, {
+      onSuccess: () => {
+        toast.success('Sone lagt til');
+      },
+      onError: (error) => {
+        console.error('Error creating zone:', error);
+        toast.error('Kunne ikke legge til sone');
+      },
+    });
   };
 
-  const updateZone = (zoneId: string, field: keyof Zone, value: string | number | string[]): void => {
-    storeUpdateZone(zoneId, { [field]: value });
-    // Removed updating lastUpdated as it's not part of the facility type
-    setHasUnsavedChanges(true);
+  const updateZone = (zoneId: string, field: string, value: string | number): void => {
+    // Map frontend field names to database field names
+    let dbField = field;
+    let dbValue: string | number | null = value;
+    
+    if (field === 'area') {
+      dbField = 'area_sqm';
+    } else if (field === 'pricePerHour') {
+      dbField = 'price_per_hour_cents';
+      // Value is already in cents from the input onChange handler
+      dbValue = typeof value === 'number' ? value : parseFloat(value as string) || 0;
+    }
+
+    updateZoneMutation.mutate({
+      id: zoneId,
+      updates: { [dbField]: dbValue },
+    }, {
+      onSuccess: () => {
+        // Silent success for better UX during typing
+      },
+      onError: (error) => {
+        console.error('Error updating zone:', error);
+        toast.error('Kunne ikke oppdatere sone');
+      },
+    });
   };
 
   const deleteZone = (zoneId: string): void => {
-    storeDeleteZone(zoneId);
-    // Removed updating lastUpdated as it's not part of the facility type
-    setHasUnsavedChanges(true);
+    deleteZoneMutation.mutate(zoneId, {
+      onSuccess: () => {
+        toast.success('Sone slettet');
+      },
+      onError: (error) => {
+        console.error('Error deleting zone:', error);
+        toast.error('Kunne ikke slette sone');
+      },
+    });
   };
 
   const addFaqItem = (): void => {
@@ -1400,21 +1438,33 @@ const FacilityEditPage = (): JSX.Element => {
                 <div>
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="text-xl font-semibold">Soner</h3>
-                    <Button onClick={addZone} size="sm">
+                    <Button onClick={addZone} size="sm" disabled={!editedFacility?.id}>
                       <Plus className="w-4 h-4 mr-2" />
                       Legg til sone
                     </Button>
                   </div>
 
-                  {(() => {
-                    const facilityZones = storeGetZonesForFacility(editedFacility?.id || "");
-                    return facilityZones.length === 0 ? (
-                      <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-                        Ingen soner definert. Legg til en sone for å begynne.
-                      </div>
-                    ) : (
-                      <div className="space-y-4">
-                        {facilityZones.map((zone) => (
+                  {!editedFacility?.id && (
+                    <div className="text-center py-8 text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 rounded-md">
+                      Lagre lokalet først for å legge til soner.
+                    </div>
+                  )}
+
+                  {editedFacility?.id && zonesLoading && (
+                    <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                      Laster soner...
+                    </div>
+                  )}
+
+                  {editedFacility?.id && !zonesLoading && dbZones.length === 0 && (
+                    <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                      Ingen soner definert. Legg til en sone for å begynne.
+                    </div>
+                  )}
+
+                  {editedFacility?.id && !zonesLoading && dbZones.length > 0 && (
+                    <div className="space-y-4">
+                      {dbZones.map((zone) => (
                           <Card key={zone.id}>
                             <CardContent className="p-4">
                               <div className="flex items-center justify-between mb-3">
@@ -1458,8 +1508,8 @@ const FacilityEditPage = (): JSX.Element => {
                                   <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Pris per time</label>
                                   <Input
                                     type="number"
-                                    value={zone.pricePerHour}
-                                    onChange={(e) => updateZone(zone.id, "pricePerHour", parseInt(e.target.value) || 0)}
+                                    value={zone.price_per_hour_cents}
+                                    onChange={(e) => updateZone(zone.id, "pricePerHour", parseFloat(e.target.value) || 0)}
                                     className="mt-1"
                                     placeholder="Pris per time"
                                   />
@@ -1471,7 +1521,7 @@ const FacilityEditPage = (): JSX.Element => {
                                   <div className="relative mt-1">
                                     <Input
                                       type="number"
-                                      value={zone.area || 0}
+                                      value={zone.area_sqm || 0}
                                       onChange={(e) => updateZone(zone.id, "area", parseInt(e.target.value) || 0)}
                                       className="pr-8"
                                       placeholder="0"
@@ -1486,8 +1536,8 @@ const FacilityEditPage = (): JSX.Element => {
                           </Card>
                         ))}
                       </div>
-                    );
-                  })()}
+                    )
+                  }
                 </div>
               </TabsContent>
 

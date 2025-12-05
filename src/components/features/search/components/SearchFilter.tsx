@@ -65,11 +65,11 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
     useLocalizedDbValues("facility_type");
   const { data: locations, isLoading: loadingLocations } =
     useLocalizedDbValues("location");
-  const { data: accessibilityFeatures, isLoading: loadingAccessibility } =
-    useLocalizedDbValues("accessibility");
+  const { data: amenitiesData, isLoading: loadingAmenities } =
+    useLocalizedDbValues("amenity");
   const { data: capacityRanges } = useLocalizedDbValues("capacity_range");
 
-  const loading = loadingTypes || loadingLocations || loadingAccessibility;
+  const loading = loadingTypes || loadingLocations || loadingAmenities;
 
   // Map database values to arrays for backward compatibility
    
@@ -83,9 +83,9 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
     [locations]
   );
    
-  const _availableAccessibility = useMemo(
-    () => accessibilityFeatures?.map((item) => item.entity_key) || [],
-    [accessibilityFeatures]
+  const _availableAmenities = useMemo(
+    () => amenitiesData?.map((item) => item.entity_key) || [],
+    [amenitiesData]
   );
 
   // Helper to find label by entity_key
@@ -247,7 +247,7 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
               </Select>
             </div>
 
-            {/* Accessibility */}
+            {/* Amenities */}
             <div className="flex-1">
               <Select
                 value={accessibility}
@@ -273,13 +273,13 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
                   <SelectItem value="all" className="text-sm md:text-base">
                     {t("searchFilters.accessibility.all")}
                   </SelectItem>
-                  {accessibilityFeatures?.map((feature) => (
+                  {amenitiesData?.map((amenity) => (
                     <SelectItem
-                      key={feature.entity_key}
-                      value={feature.entity_key}
+                      key={amenity.entity_key}
+                      value={amenity.entity_key}
                       className="text-sm md:text-base"
                     >
-                      {feature.label}
+                      {amenity.label}
                     </SelectItem>
                   ))}
                 </SelectContent>

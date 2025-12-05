@@ -70,15 +70,8 @@ const SettingsPage = (): JSX.Element => {
     setIsEditingSecurity
   } = useAdminProfileManagement();
 
-  // Load avatar from localStorage when component mounts
-  useEffect(() => {
-    if (user?.id) {
-      const storedAvatar = localStorage.getItem(`avatar_${user.id}`);
-      if (storedAvatar) {
-        // We don't need to set avatarPreview here since it's handled by the hook
-      }
-    }
-  }, [user?.id]);
+  // Avatar is now loaded from profile (database) via useAdminProfileManagement hook
+  // No need for separate localStorage loading
 
   const {
     settings,
@@ -938,9 +931,9 @@ const SettingsPage = (): JSX.Element => {
                   onClick={() => fileInputRef.current?.click()}
                 >
                   <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-gray-100 dark:border-gray-800 mx-auto">
-                    {avatarPreview || (user?.id && localStorage.getItem(`avatar_${user.id}`)) ? (
+                    {avatarPreview ? (
                       <img
-                        src={avatarPreview || (user?.id ? localStorage.getItem(`avatar_${user.id}`) : '') || undefined}
+                        src={avatarPreview}
                         alt="Profile"
                         className="w-full h-full object-cover"
                       />
