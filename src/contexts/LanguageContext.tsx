@@ -2,6 +2,7 @@
 
 import React, { createContext, useState, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { supabase } from '@/lib/clients/supabase';
 
 import type { Language } from '@/i18n/types';
 import { changeLanguage as changeI18nLanguage, getCurrentLanguage } from '@/i18n/config';
@@ -35,8 +36,19 @@ export const LanguageProvider = ({ children }: LanguageProviderProps): JSX.Eleme
     const i18nLang = newLanguage === 'NO' ? 'no' : 'en';
     await changeI18nLanguage(i18nLang as 'no' | 'en');
 
-    // Store in localStorage (keeping existing key for compatibility)
-    localStorage.setItem('booknor-language', newLanguage);
+    // Save to database
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        await (supabase as any)
+          .from('profiles')
+          .update({ language: i18nLang })
+          .eq('id', user.id);
+      }
+    } catch (error) {
+      console.error('Failed to save language preference:', error);
+    }
   }, []);
 
   const toggleLanguage = useCallback((): void => {
@@ -59,12 +71,30 @@ export const LanguageProvider = ({ children }: LanguageProviderProps): JSX.Eleme
     };
   }, [i18n, language]);
 
-  // Load language from localStorage on mount
+  // Load language from database on mount
   useEffect(() => {
-    const savedLanguage = localStorage.getItem('booknor-language') as Language;
-    if (savedLanguage && (savedLanguage === 'NO' || savedLanguage === 'EN')) {
-      void setLanguage(savedLanguage);
-    }
+    const loadLanguagePreference = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const { data } = await (supabase as any)
+            .from('profiles')
+            .select('language')
+            .eq('id', user.id)
+            .single();
+          
+          if (data?.language) {
+            const savedLang: Language = data.language === 'no' ? 'NO' : 'EN';
+            void setLanguage(savedLang);
+          }
+        }
+      } catch (error) {
+        console.error('Failed to load language preference:', error);
+      }
+    };
+    
+    void loadLanguagePreference();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const value: LanguageContextType = {

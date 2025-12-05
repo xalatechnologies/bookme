@@ -9,6 +9,7 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 import { useAuth } from "@/contexts/hooks";
 import { useTranslation } from 'react-i18next';
 import { usersService } from '@/services/supabase/users.service';
+import { supabase } from '@/lib/clients/supabase';
 
 interface AdminProfileForm {
   readonly firstName: string;
@@ -53,15 +54,16 @@ export const useAdminProfileManagement = (): UseAdminProfileManagementReturn => 
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [toast, setToast] = useState<ToastState>({ show: false, message: "" });
 
-  // Load avatar from localStorage on initialization
+  // Load avatar from profile (database) on initialization
   useEffect(() => {
-    if (user?.id) {
-      const storedAvatar = localStorage.getItem(`avatar_${user.id}`);
-      if (storedAvatar) {
-        setAvatarPreview(storedAvatar);
+    if (profile) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const dbAvatar = (profile as any)?.avatar_url;
+      if (dbAvatar) {
+        setAvatarPreview(dbAvatar);
       }
     }
-  }, [user?.id]);
+  }, [profile]);
 
   // Local editing state
   const [profileForm, setProfileForm] = useState<AdminProfileForm>({
@@ -125,14 +127,24 @@ export const useAdminProfileManagement = (): UseAdminProfileManagementReturn => 
     if (file && user?.id) {
       // Convert file to data URL and update profile
       const reader = new FileReader();
-      reader.onload = (e) => {
+      reader.onload = async (e) => {
         const dataUrl = e.target?.result as string;
         if (dataUrl) {
           setAvatarPreview(dataUrl);
-          // Save to localStorage
-          const storageKey = `avatar_${user.id}`;
-          localStorage.setItem(storageKey, dataUrl);
-          showToastMessage(t('pages.settings.changes_saved'));
+          
+          // Save to database instead of localStorage
+          try {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            await (supabase as any)
+              .from('profiles')
+              .update({ avatar_url: dataUrl })
+              .eq('id', user.id);
+            
+            showToastMessage(t('pages.settings.changes_saved'));
+          } catch (error) {
+            console.error('Failed to save avatar:', error);
+            showToastMessage(t('pages.settings.save_failed'));
+          }
         }
       };
       reader.readAsDataURL(file);
@@ -191,14 +203,15 @@ export const useAdminProfileManagement = (): UseAdminProfileManagementReturn => 
     });
     setIsEditingPersonalInfo(false);
     
-    // Restore avatar preview to original state
-    if (user?.id) {
-      const storedAvatar = localStorage.getItem(`avatar_${user.id}`);
-      setAvatarPreview(storedAvatar);
+    // Restore avatar preview from profile (database)
+    if (profile) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const dbAvatar = (profile as any)?.avatar_url;
+      setAvatarPreview(dbAvatar || null);
     }
     
     hasSyncedRef.current = false; // Allow sync again
-  }, [profile?.display_name, profile?.phone, user?.email, user?.id]);
+  }, [profile?.display_name, profile?.phone, user?.email, profile]);
 
   // Handle cancel editing for security
   const handleCancelSecurity = useCallback((): void => {

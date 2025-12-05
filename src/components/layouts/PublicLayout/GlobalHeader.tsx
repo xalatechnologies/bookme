@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Menu, ShoppingCart } from "lucide-react";
+import { supabase } from '@/lib/clients/supabase';
 
 import { useLanguage } from "@/contexts/hooks";
 import { useCart } from "@/contexts/hooks";
@@ -46,14 +47,26 @@ export const GlobalHeader = (): JSX.Element => {
 
   // Store the user's last portal when they navigate to admin or user areas
   useEffect(() => {
-    if (isAuthenticated) {
-      if (location.pathname.startsWith("/admin")) {
-        localStorage.setItem("lastPortal", "admin");
-      } else if (location.pathname.startsWith("/user")) {
-        localStorage.setItem("lastPortal", "user");
+    if (isAuthenticated && user) {
+      const portal = location.pathname.startsWith("/admin") ? "admin" : 
+                     location.pathname.startsWith("/user") ? "user" : null;
+      
+      if (portal) {
+        // Save to database instead of localStorage
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (supabase as any)
+          .from('profiles')
+          .update({ preferred_portal: portal })
+          .eq('id', user.id)
+          .then(() => {
+            // Success - portal preference saved to database
+          })
+          .catch((error: Error) => {
+            console.error('Failed to save portal preference:', error);
+          });
       }
     }
-  }, [isAuthenticated, location.pathname]);
+  }, [isAuthenticated, user, location.pathname]);
 
   const logout = (): void => {
     try {
@@ -62,8 +75,8 @@ export const GlobalHeader = (): JSX.Element => {
         console.error("❌ Admin logout failed:", error);
       });
 
-      // Clear the last portal preference
-      localStorage.removeItem("lastPortal");
+      // Portal preference is now stored in database (profiles.preferred_portal)
+      // No need to clear localStorage
 
       // Show logout confirmation
       alert(t("messages.logout_success"));

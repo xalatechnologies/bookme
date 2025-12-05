@@ -57,12 +57,9 @@ const ProfileDropdown = (
     ? profile.display_name
     : user?.email || "Admin";
 
-
-
-  // Get avatar from localStorage (similar to user profile)
-  const userAvatar = user?.id
-    ? (localStorage.getItem(`avatar_${user.id}`) || "")
-    : "";
+  // Get avatar from profile (database) instead of localStorage
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const userAvatar = (profile as any)?.avatar_url || "";
 
   return (
     <div className="relative">
