@@ -116,12 +116,12 @@ export const UserProfileProvider = ({ children }: { readonly children: React.Rea
     }
   };
 
-  // Load profile when user is available
+  // Load profile when user is available or authProfile changes
   useEffect(() => {
     if (user?.id && !authLoading) {
       loadProfile();
     }
-  }, [user?.id, authLoading, refreshCounter]);
+  }, [user?.id, authLoading, refreshCounter, authProfile]);
 
   const refreshProfile = async (): Promise<void> => {
     setRefreshCounter(prev => prev + 1);
