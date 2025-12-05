@@ -134,7 +134,7 @@ export const MapView: React.FC<MapViewProps> = ({
       );
     }
     
-    // Filter by amenities
+    // Filter by amenities (this is separate from individual amenities filter below)
     if (activeFilters.amenities && activeFilters.amenities.length > 0) {
       filtered = filtered.filter(f => {
         const facilityAmenities = Array.isArray(f.amenities) 
@@ -150,17 +150,27 @@ export const MapView: React.FC<MapViewProps> = ({
       });
     }
     
-    // Filter by accessibility
-    if (activeFilters.accessibility) {
+    // Filter by single amenity (using accessibility field temporarily)
+    if (activeFilters.accessibility && activeFilters.accessibility !== 'all') {
       filtered = filtered.filter(f => {
-        const features = f.accessibility_features;
-        if (!features) return false;
-        if (Array.isArray(features)) {
-          return features.some((feature: any) => 
-            typeof feature === 'string' && feature.includes(activeFilters.accessibility!)
-          );
+        if (!f.amenities || !Array.isArray(f.amenities)) {
+          return false;
         }
-        return false;
+        
+        const amenityKey = activeFilters.accessibility!.toLowerCase();
+        
+        // Check if any facility amenity matches the selected amenity
+        return (f.amenities as any[]).some((amenity: any) => {
+          if (typeof amenity !== 'string') return false;
+          
+          // Match by key (e.g., 'wifi', 'parking')
+          if (amenity.toLowerCase() === amenityKey) {
+            return true;
+          }
+          
+          // Also match by partial name (e.g., 'WiFi' contains 'wifi')
+          return amenity.toLowerCase().includes(amenityKey);
+        });
       });
     }
     

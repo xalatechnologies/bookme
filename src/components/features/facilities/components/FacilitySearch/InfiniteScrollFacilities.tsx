@@ -90,6 +90,30 @@ export const InfiniteScrollFacilities: React.FC<InfiniteScrollFacilitiesProps> =
       );
     }
 
+    // Filter by amenity (using accessibility field temporarily)
+    if (filters.accessibility && filters.accessibility !== 'all') {
+      filtered = filtered.filter(facility => {
+        if (!facility.amenities || !Array.isArray(facility.amenities)) {
+          return false;
+        }
+        
+        const amenityKey = filters.accessibility!.toLowerCase();
+        
+        // Check if any facility amenity matches the selected amenity
+        return facility.amenities.some((amenity: any) => {
+          if (typeof amenity !== 'string') return false;
+          
+          // Match by key (e.g., 'wifi', 'parking')
+          if (amenity.toLowerCase() === amenityKey) {
+            return true;
+          }
+          
+          // Also match by partial name (e.g., 'WiFi' contains 'wifi')
+          return amenity.toLowerCase().includes(amenityKey);
+        });
+      });
+    }
+
     return filtered;
   }, [facilities, filters]);
 
