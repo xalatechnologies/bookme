@@ -131,7 +131,7 @@ export const Index = (): JSX.Element => {
   const renderContent = () => {
     switch (viewMode) {
       case "map":
-        return <MapView facilityType={facilityType} location={selectedLocation} viewMode={viewMode} setViewMode={setViewMode} />;
+        return <MapView facilityType={facilityType} location={selectedLocation} viewMode={viewMode} setViewMode={setViewMode} filters={filters} />;
       case "list":
       case "grid":
         return (

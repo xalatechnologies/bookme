@@ -1,4 +1,6 @@
 
+import type { Database } from './database';
+
 // Original facility type from database
 export type Facility = Database['public']['Tables']['facilities']['Row'];
 
@@ -44,4 +46,9 @@ export interface FacilityFilters {
   location?: string;
   searchTerm?: string;
   capacity?: number[];
+  accessibility?: string;
+  amenities?: string[];
+  date?: Date;
+  priceRange?: { min: number; max: number };
+  availableNow?: boolean;
 }

@@ -88,13 +88,14 @@ export const MapMarkers: React.FC<MapMarkersProps> = ({
   onMarkerClick
 }): JSX.Element => {
   const markersRef = useRef<readonly mapboxgl.Marker[]>([]);
+  const isUpdatingRef = useRef<boolean>(false);
 
   const createMarkerElement = (facility: FacilityWithCoords): HTMLDivElement => {
     const markerElement = document.createElement('div');
     markerElement.className = 'custom-marker';
-    // Create a location icon marker with black color, no white border, matching exactly the style used in list view (Mapbox pin)
+    
     markerElement.innerHTML = `
-      <div class="text-gray-800 cursor-pointer hover:text-black transition-colors" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));">
+      <div class="cursor-pointer transition-all hover:scale-110" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));">
         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="#000000">
           <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
           <circle cx="12" cy="9" r="2" fill="white"/>
@@ -135,12 +136,27 @@ export const MapMarkers: React.FC<MapMarkersProps> = ({
   };
 
   const addMarkersToMap = async (): Promise<void> => {
-    if (!map) return;
+    if (!map || isUpdatingRef.current) return;
+    
+    isUpdatingRef.current = true;
 
-    // Clear existing markers
-    markersRef.current.forEach((marker): void => {
-      marker.remove();
+    console.log('[MapMarkers] Adding markers. Facilities count:', facilities.length);
+    console.log('[MapMarkers] Current markers before clear:', markersRef.current.length);
+
+    // Clear existing markers more aggressively
+    markersRef.current.forEach((marker, index): void => {
+      try {
+        marker.remove();
+        console.log(`[MapMarkers] Removed marker ${index}`);
+      } catch (e) {
+        console.error(`[MapMarkers] Error removing marker ${index}:`, e);
+      }
     });
+    
+    // Clear the array immediately
+    markersRef.current = [];
+    
+    console.log('[MapMarkers] Markers cleared');
 
     // Normalize all facilities with geocoding fallback
     const enrichedFacilities = await Promise.all(
@@ -210,6 +226,15 @@ export const MapMarkers: React.FC<MapMarkersProps> = ({
     });
 
     markersRef.current = newMarkers;
+    console.log('[MapMarkers] New markers added:', newMarkers.length);
+    
+    // Force map to update/repaint
+    if (map) {
+      map.resize();
+      map.triggerRepaint();
+    }
+    
+    isUpdatingRef.current = false;
   };
 
   useEffect((): void => {

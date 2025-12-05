@@ -25,6 +25,7 @@ interface MapViewProps {
   readonly showAllFacilities?: boolean; // New prop to show all facilities in admin
   readonly showHeader?: boolean; // New prop to control header visibility
   readonly onMarkerClick?: (facility: FacilityWithCoords) => void; // New prop for handling marker clicks
+  readonly filters?: FacilityFilters; // Optional filters object for advanced filtering
 }
 
 export const MapView: React.FC<MapViewProps> = ({
@@ -34,7 +35,8 @@ export const MapView: React.FC<MapViewProps> = ({
   setViewMode,
   showAllFacilities = false, // Default to false for backward compatibility
   showHeader = true, // Default to true for backward compatibility
-  onMarkerClick // New prop for handling marker clicks
+  onMarkerClick, // New prop for handling marker clicks
+  filters // Accept filters prop
 }): JSX.Element => {
   // Use map overlay hook
   const {
@@ -55,26 +57,83 @@ export const MapView: React.FC<MapViewProps> = ({
   const facilities = showAllFacilities ? allFacilities : publishedFacilities;
   const isLoading = showAllFacilities ? loadingAll : loadingPublished;
 
-  // Create filters from props
-  const filters: FacilityFilters = {
-    facilityType: facilityType !== "all" ? facilityType : undefined,
-    location: location !== "all" ? location : undefined,
-  };
-
   // Filter facilities based on current filters
   const filteredFacilities = useMemo(() => {
     let filtered = [...facilities];
-    if (filters.facilityType) {
-      filtered = filtered.filter(f => f.facility_type === filters.facilityType);
+    
+    // ALWAYS use filters prop if provided, regardless of whether it's empty
+    // This ensures we respect when NO filters are active (show all)
+    const activeFilters = filters;
+    
+    // Only apply filtering if filters object has actual filter properties
+    const hasActiveFilters = activeFilters && Object.keys(activeFilters).length > 0;
+    
+    if (!hasActiveFilters) {
+      // No filters active - show all facilities
+      return filtered;
     }
-    if (filters.location) {
-      // Filter by address since there's no area field in the database
+    
+    // Filter by facility type
+    if (activeFilters.facilityType) {
+      filtered = filtered.filter(f => f.facility_type === activeFilters.facilityType);
+    }
+    
+    // Filter by location/address
+    if (activeFilters.location) {
       filtered = filtered.filter(f =>
-        f.address && f.address.toLowerCase().includes(filters.location!.toLowerCase())
+        f.address && f.address.toLowerCase().includes(activeFilters.location!.toLowerCase())
       );
     }
+    
+    // Filter by search term
+    if (activeFilters.searchTerm) {
+      const searchLower = activeFilters.searchTerm.toLowerCase();
+      filtered = filtered.filter(f =>
+        f.name.toLowerCase().includes(searchLower) ||
+        (f.description && f.description.toLowerCase().includes(searchLower)) ||
+        (f.address && f.address.toLowerCase().includes(searchLower))
+      );
+    }
+    
+    // Filter by capacity range
+    if (activeFilters.capacity && activeFilters.capacity.length === 2) {
+      filtered = filtered.filter(f =>
+        f.capacity && f.capacity >= activeFilters.capacity![0] && f.capacity <= activeFilters.capacity![1]
+      );
+    }
+    
+    // Filter by amenities
+    if (activeFilters.amenities && activeFilters.amenities.length > 0) {
+      filtered = filtered.filter(f => {
+        const facilityAmenities = Array.isArray(f.amenities) 
+          ? f.amenities 
+          : typeof f.amenities === 'object' && f.amenities !== null
+            ? Object.values(f.amenities)
+            : [];
+        return activeFilters.amenities!.every(amenity =>
+          facilityAmenities.some((a: any) => 
+            typeof a === 'string' && a.toLowerCase().includes(amenity.toLowerCase())
+          )
+        );
+      });
+    }
+    
+    // Filter by accessibility
+    if (activeFilters.accessibility) {
+      filtered = filtered.filter(f => {
+        const features = f.accessibility_features;
+        if (!features) return false;
+        if (Array.isArray(features)) {
+          return features.some((feature: any) => 
+            typeof feature === 'string' && feature.includes(activeFilters.accessibility!)
+          );
+        }
+        return false;
+      });
+    }
+    
     return filtered;
-  }, [facilities, filters.facilityType, filters.location]);
+  }, [facilities, filters]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 my-[12px]">
