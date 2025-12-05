@@ -80,9 +80,41 @@ export const MapView: React.FC<MapViewProps> = ({
     
     // Filter by location/address
     if (activeFilters.location) {
-      filtered = filtered.filter(f =>
-        f.address && f.address.toLowerCase().includes(activeFilters.location!.toLowerCase())
-      );
+      filtered = filtered.filter(f => {
+        const locationKey = activeFilters.location!.toLowerCase();
+        
+        // Map database entity_key to searchable terms
+        let searchTerm = locationKey;
+        
+        // Special mappings for multi-word location keys
+        if (locationKey === 'drammen_sentrum') {
+          searchTerm = 'drammen';
+        } else if (locationKey.includes('_')) {
+          searchTerm = locationKey.split('_')[0];
+        }
+        
+        // Check address
+        if (f.address && f.address.toLowerCase().includes(searchTerm)) {
+          return true;
+        }
+        
+        // Check area_description
+        if ((f as any).area_description && (f as any).area_description.toLowerCase().includes(searchTerm)) {
+          return true;
+        }
+        
+        // Check if facility name contains the search term
+        if (f.name && f.name.toLowerCase().includes(searchTerm)) {
+          return true;
+        }
+        
+        // Also check if facility name starts with the search term
+        if (f.name && f.name.toLowerCase().startsWith(searchTerm)) {
+          return true;
+        }
+        
+        return false;
+      });
     }
     
     // Filter by search term

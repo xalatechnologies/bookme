@@ -28,7 +28,7 @@ INSERT INTO localized_db_values (entity_type, entity_key, language_code, label, 
 ('location', 'drammen_sentrum', 'en', 'Drammen City Center', 'Central Drammen area', 1, true),
 ('location', 'strømsø', 'en', 'Strømsø', 'Strømsø neighborhood', 2, true),
 ('location', 'bragernes', 'en', 'Bragernes', 'Bragernes neighborhood', 3, true),
-('location', 'spiralen', 'en', 'Spiralen', 'Spiralen area', 4, true),
+('location', 'fjell', 'en', 'Fjell', 'Fjell area', 4, true),
 ('location', 'konnerud', 'en', 'Konnerud', 'Konnerud neighborhood', 5, true),
 ('location', 'åssiden', 'en', 'Åssiden', 'Åssiden neighborhood', 6, true),
 
@@ -36,7 +36,7 @@ INSERT INTO localized_db_values (entity_type, entity_key, language_code, label, 
 ('location', 'drammen_sentrum', 'no', 'Drammen Sentrum', 'Sentrum i Drammen', 1, true),
 ('location', 'strømsø', 'no', 'Strømsø', 'Strømsø område', 2, true),
 ('location', 'bragernes', 'no', 'Bragernes', 'Bragernes område', 3, true),
-('location', 'spiralen', 'no', 'Spiralen', 'Spiralen område', 4, true),
+('location', 'fjell', 'no', 'Fjell', 'Fjell område', 4, true),
 ('location', 'konnerud', 'no', 'Konnerud', 'Konnerud område', 5, true),
 ('location', 'åssiden', 'no', 'Åssiden', 'Åssiden område', 6, true)
 ON CONFLICT (entity_type, entity_key, language_code) DO UPDATE

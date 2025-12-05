@@ -44,10 +44,44 @@ export const InfiniteScrollFacilities: React.FC<InfiniteScrollFacilitiesProps> =
     }
 
     if (filters.location && filters.location !== 'all') {
-      filtered = filtered.filter(facility =>
-        (facility.address && facility.address.toLowerCase().includes(filters.location!.toLowerCase())) ||
-        (facility.area_description && facility.area_description.toLowerCase().includes(filters.location!.toLowerCase()))
-      );
+      filtered = filtered.filter(facility => {
+        const locationKey = filters.location!.toLowerCase();
+        
+        // Map database entity_key to searchable terms
+        // Extract the main word from keys like "drammen_sentrum" -> "drammen"
+        // or use the full key for single-word locations
+        let searchTerm = locationKey;
+        
+        // Special mappings for multi-word location keys
+        if (locationKey === 'drammen_sentrum') {
+          searchTerm = 'drammen'; // Will match "Drammen Idrettshall", "Drammen Svømmehall"
+        } else if (locationKey.includes('_')) {
+          // For other keys with underscores, use the first part
+          searchTerm = locationKey.split('_')[0];
+        }
+        
+        // Check address
+        if (facility.address && facility.address.toLowerCase().includes(searchTerm)) {
+          return true;
+        }
+        
+        // Check area_description
+        if (facility.area_description && facility.area_description.toLowerCase().includes(searchTerm)) {
+          return true;
+        }
+        
+        // Check if facility name contains the search term
+        if (facility.name && facility.name.toLowerCase().includes(searchTerm)) {
+          return true;
+        }
+        
+        // Also check if facility name starts with the search term
+        if (facility.name && facility.name.toLowerCase().startsWith(searchTerm)) {
+          return true;
+        }
+        
+        return false;
+      });
     }
 
     if (filters.capacity && (filters.capacity[0] > 0 || filters.capacity[1] < 200)) {
