@@ -69,7 +69,7 @@ const UserProfileDropdown = (
         aria-label={t('common:aria.profile_menu')}
       >
         {/* Avatar */}
-        <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center overflow-hidden">
+        <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center overflow-hidden border border-gray-200">
           {user?.avatar ? (
             <img
               src={user.avatar}
@@ -77,7 +77,7 @@ const UserProfileDropdown = (
               className="w-full h-full object-cover"
             />
           ) : (
-            <User className="w-5 h-5 text-white" />
+            <User className="w-5 h-5 text-gray-500" />
           )}
         </div>
 
