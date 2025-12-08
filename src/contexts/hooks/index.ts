@@ -18,6 +18,5 @@ export { useLanguage } from './useLanguage';
 
 // Re-export providers for convenience
 export { AuthProvider } from '../AuthContext';
-export { CartProvider } from '../CartContext';
 export { UserProfileProvider } from '../UserProfileContext';
 export { LanguageProvider } from '../LanguageContext';

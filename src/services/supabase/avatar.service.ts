@@ -133,7 +133,23 @@ export class AvatarService {
    */
   async getAvatarUrl(userId: string): Promise<string | null> {
     try {
-      // Try to get from Supabase Storage first
+      // First, try to get from database (profiles.avatar_url)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data: profileData, error: profileError } = await (supabase as any)
+        .from('profiles')
+        .select('avatar_url')
+        .eq('user_id', userId)
+        .single();
+      
+      if (!profileError && profileData?.avatar_url) {
+        return profileData.avatar_url;
+      }
+    } catch (error) {
+      console.warn('Failed to get avatar from database:', error);
+    }
+    
+    try {
+      // Try to get from Supabase Storage
       const { data, error } = await supabase.storage
         .from('avatars')
         .list('avatars', {
@@ -152,7 +168,7 @@ export class AvatarService {
       console.warn('Failed to get avatar from Supabase Storage:', error);
     }
 
-    // Fallback to localStorage
+    // Fallback to localStorage (deprecated)
     try {
       const storageKey = `avatar_${userId}`;
       return localStorage.getItem(storageKey);

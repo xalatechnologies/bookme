@@ -134,11 +134,24 @@ export const useAdminProfileManagement = (): UseAdminProfileManagementReturn => 
           
           // Save to database instead of localStorage
           try {
+            console.log('Saving avatar to database for user:', user.id);
+            
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            await (supabase as any)
+            const { data, error } = await (supabase as any)
               .from('profiles')
               .update({ avatar_url: dataUrl })
-              .eq('id', user.id);
+              .eq('user_id', user.id)  // Changed from 'id' to 'user_id'
+              .select();
+            
+            if (error) {
+              console.error('Database error saving avatar:', error);
+              throw error;
+            }
+            
+            console.log('Avatar saved successfully:', data);
+            
+            // Refresh profile data so the avatar appears in header
+            await refreshProfile();
             
             showToastMessage(t('pages.settings.changes_saved'));
           } catch (error) {
@@ -149,7 +162,7 @@ export const useAdminProfileManagement = (): UseAdminProfileManagementReturn => 
       };
       reader.readAsDataURL(file);
     }
-  }, [user?.id, showToastMessage, t]);
+  }, [user?.id, refreshProfile, showToastMessage, t]);
 
   // Handle save profile for personal info
   const handleSavePersonalInfo = useCallback(async (): Promise<void> => {

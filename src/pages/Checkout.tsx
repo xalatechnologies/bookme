@@ -102,7 +102,7 @@ export const Checkout = (): JSX.Element => {
     }
     return {};
   });
-  const [consents, setConsents] = useState(() => {
+  const [consents, setConsents] = useState<{ terms: boolean; cancellation: boolean; privacy: boolean }>(() => {
     const saved = sessionStorage.getItem('checkout_consents');
     if (saved) {
       try {
@@ -129,8 +129,21 @@ export const Checkout = (): JSX.Element => {
   const [editingBookingDetails, setEditingBookingDetails] =
     useState<boolean>(false);
 
+  // User info type
+  type UserInfo = {
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone: string;
+    address: string;
+    organizationName: string;
+    organizationNumber: string;
+    invoiceReference: string;
+    projectCode: string;
+  };
+
   // Editable user info - Initialize from sessionStorage or profile
-  const [userInfo, setUserInfo] = useState(() => {
+  const [userInfo, setUserInfo] = useState<UserInfo>(() => {
     // Try to restore from sessionStorage first (for returning from login)
     const saved = sessionStorage.getItem('checkout_userInfo');
     if (saved) {
@@ -456,7 +469,7 @@ export const Checkout = (): JSX.Element => {
    * Handle consent change
    */
   const handleConsentChange = useCallback((consent: keyof typeof consents) => {
-    setConsents((prev) => ({
+    setConsents((prev: { terms: boolean; cancellation: boolean; privacy: boolean }) => ({
       ...prev,
       [consent]: !prev[consent],
     }));
@@ -1020,7 +1033,7 @@ export const Checkout = (): JSX.Element => {
                           id="firstName"
                           value={userInfo.firstName}
                           onChange={(e) =>
-                            setUserInfo((prev) => ({
+                            setUserInfo((prev: typeof userInfo) => ({
                               ...prev,
                               firstName: e.target.value,
                             }))
@@ -1035,7 +1048,7 @@ export const Checkout = (): JSX.Element => {
                           id="lastName"
                           value={userInfo.lastName}
                           onChange={(e) =>
-                            setUserInfo((prev) => ({
+                            setUserInfo((prev: typeof userInfo) => ({
                               ...prev,
                               lastName: e.target.value,
                             }))
@@ -1051,7 +1064,7 @@ export const Checkout = (): JSX.Element => {
                           type="email"
                           value={userInfo.email}
                           onChange={(e) =>
-                            setUserInfo((prev) => ({
+                            setUserInfo((prev: typeof userInfo) => ({
                               ...prev,
                               email: e.target.value,
                             }))
@@ -1066,7 +1079,7 @@ export const Checkout = (): JSX.Element => {
                           id="phone"
                           value={userInfo.phone}
                           onChange={(e) =>
-                            setUserInfo((prev) => ({
+                            setUserInfo((prev: typeof userInfo) => ({
                               ...prev,
                               phone: e.target.value,
                             }))
@@ -1081,7 +1094,7 @@ export const Checkout = (): JSX.Element => {
                           id="address"
                           value={userInfo.address}
                           onChange={(e) =>
-                            setUserInfo((prev) => ({
+                            setUserInfo((prev: typeof userInfo) => ({
                               ...prev,
                               address: e.target.value,
                             }))
@@ -1613,7 +1626,7 @@ export const Checkout = (): JSX.Element => {
                             id="orgName"
                             value={userInfo.organizationName}
                             onChange={(e) =>
-                              setUserInfo((prev) => ({
+                              setUserInfo((prev: UserInfo) => ({
                                 ...prev,
                                 organizationName: e.target.value,
                               }))
@@ -1631,7 +1644,7 @@ export const Checkout = (): JSX.Element => {
                             id="orgNumber"
                             value={userInfo.organizationNumber}
                             onChange={(e) =>
-                              setUserInfo((prev) => ({
+                              setUserInfo((prev: UserInfo) => ({
                                 ...prev,
                                 organizationNumber: e.target.value,
                               }))
@@ -1646,7 +1659,7 @@ export const Checkout = (): JSX.Element => {
                             id="invoiceRef"
                             value={userInfo.invoiceReference}
                             onChange={(e) =>
-                              setUserInfo((prev) => ({
+                              setUserInfo((prev: UserInfo) => ({
                                 ...prev,
                                 invoiceReference: e.target.value,
                               }))
@@ -1661,7 +1674,7 @@ export const Checkout = (): JSX.Element => {
                             id="projectCode"
                             value={userInfo.projectCode}
                             onChange={(e) =>
-                              setUserInfo((prev) => ({
+                              setUserInfo((prev: UserInfo) => ({
                                 ...prev,
                                 projectCode: e.target.value,
                               }))
