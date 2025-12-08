@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 import { useAuth } from "@/contexts/hooks";
 import { useUserProfile } from "@/contexts/hooks";
 import { toast } from "react-toastify";
+import { Button } from "@/components/ui/button";
 
 interface ProfileMenuProps {
   readonly isLoggedIn: boolean;
@@ -39,15 +40,16 @@ export const ProfileMenu: React.FC<ProfileMenuProps> = ({
 
   if (!isLoggedIn) {
     return (
-      <button
-        className="flex items-center gap-2 h-10 px-3 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+      <Button
+        variant="secondary"
+        className="flex items-center gap-2 h-10 px-3 rounded-lg"
         onClick={handleLogin}
       >
         <LogOut className="h-5 w-5 text-gray-700" />
         <span className="text-sm font-medium text-gray-700">
           {t("actions.login")}
         </span>
-      </button>
+      </Button>
     );
   }
 
@@ -81,7 +83,8 @@ export const ProfileMenu: React.FC<ProfileMenuProps> = ({
 
   return (
     <div className="relative">
-      <button
+      <Button
+        variant="ghost"
         onClick={toggleDropdown}
         className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
         aria-label={t('common:aria.profile_menu')}
@@ -109,7 +112,7 @@ export const ProfileMenu: React.FC<ProfileMenuProps> = ({
         {/* Dropdown Arrow */}
         <ChevronDown className={`w-4 h-4 text-gray-500 dark:text-gray-400 transition-transform ${isOpen ? "rotate-180" : ""
           }`} />
-      </button>
+      </Button>
 
       {isOpen && (
         <>
@@ -123,7 +126,8 @@ export const ProfileMenu: React.FC<ProfileMenuProps> = ({
           <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50">
             {/* Menu Items */}
             <div className="py-1">
-              <button
+              <Button
+                variant="ghost"
                 onClick={() => {
                   // Check if user has admin/owner/staff role
                   const isStaffOrAdmin = memberships.some(membership =>
@@ -139,18 +143,19 @@ export const ProfileMenu: React.FC<ProfileMenuProps> = ({
                   }
                   setIsOpen(false);
                 }}
-                className="flex items-center gap-3 w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                className="flex items-center gap-3 w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors justify-start"
               >
                 <User className="w-4 h-4" />
                 Min side
-              </button>
+              </Button>
 
               <div className="border-t border-gray-200 dark:border-gray-700 my-1" />
 
-              <button
+              <Button
+                variant="ghost"
                 onClick={handleLogout}
                 disabled={isLoggingOut}
-                className="flex items-center gap-3 w-full px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center gap-3 w-full px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed justify-start"
               >
                 {isLoggingOut ? (
                   <>
@@ -163,7 +168,7 @@ export const ProfileMenu: React.FC<ProfileMenuProps> = ({
                     {t('navigation:logout')}
                   </>
                 )}
-              </button>
+              </Button>
             </div>
           </div>
         </>

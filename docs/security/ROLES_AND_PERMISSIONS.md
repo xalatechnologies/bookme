@@ -1,326 +1,183 @@
 # Roles and Permissions
 
-This document describes the role-based access control (RBAC) system in Booknor, including role definitions, permissions, and implementation details.
+**Version**: 1.0.0  
+**Last Updated**: 2024-12-08  
+**Status**: Production Ready
+
+---
 
 ## Overview
 
-Booknor uses a hierarchical role system with both **platform roles** and **organization roles**. Each role has specific permissions that determine what actions users can perform and what resources they can access.
+This document describes the role-based access control (RBAC) system used in BookMe. The system implements a hierarchical role structure with four distinct roles, each granting different levels of access to system features.
 
-## Role Types
-
-### Platform Roles
-
-Platform roles apply across the entire system:
-
-| Role | Description | Use Case |
-|------|-------------|----------|
-| `platform_admin` | Full system access across all organizations | System administrators, support staff |
-| `user` | Standard platform user | Default role for all authenticated users |
-
-### Organization Roles
-
-Organization roles are scoped to specific organizations:
-
-| Role | Priority | Description | Norwegian Label |
-|------|----------|-------------|-----------------|
-| `owner` | 100 | Full control over the organization | Eier |
-| `admin` | 80 | Administrative access to the organization | Administrator |
-| `case_handler` | 60 | Main operational role for handling bookings | Saksbehandler |
-| `editor` | 40 | Content management role | Redaktør |
-| `read_only` | 20 | View-only access | Lesetilgang |
-| `customer` | 10 | Standard customer access | Kunde |
-| `staff` | 60 | **DEPRECATED** - Mapped to `case_handler` | Ansatt (utgått) |
-
-> **Note**: The `staff` role is deprecated and automatically mapped to `case_handler` for backwards compatibility.
+---
 
 ## Role Hierarchy
 
-Roles are organized in a hierarchy where higher-priority roles inherit permissions from lower-priority roles:
+The roles are organized in a hierarchy where higher-level roles inherit all permissions of lower-level roles:
 
 ```
-owner (100)
-  ├─ admin (80)
-  │   ├─ case_handler (60)
-  │   │   └─ read_only (20)
-  │   │       └─ customer (10)
-  │   └─ editor (40)
-  │       └─ read_only (20)
-  │           └─ customer (10)
-  └─ [inherits all permissions]
+Owner (Highest)
+ ↓
+Admin
+ ↓
+Staff
+ ↓
+Customer (Lowest)
 ```
 
-### Role Inheritance
+### Role Descriptions
 
-- **Owner**: Inherits permissions from all other roles
-- **Admin**: Inherits permissions from `case_handler`, `editor`, `read_only`, and `customer`
-- **Case Handler**: Inherits permissions from `read_only` and `customer`
-- **Editor**: Inherits permissions from `read_only` and `customer`
-- **Read Only**: Inherits permissions from `customer`
-- **Customer**: No inherited permissions (base role)
+| Role | Description | Typical Users |
+|------|-------------|---------------|
+| **Owner** | Organization owner with full administrative rights | Business owners, facility managers |
+| **Admin** | Administrative user with most system permissions | Office administrators, system managers |
+| **Staff** | Operational user with day-to-day permissions | Receptionists, service staff |
+| **Customer** | End-user with limited access | Booking customers, clients |
 
-## Permissions by Role
+---
 
-### Owner
+## Menu Access Rights
 
-**Full organization control** - Can perform all actions:
+### Admin Dashboard Menu Structure
 
-- ✅ Manage all settings, members, facilities, bookings, and billing
-- ✅ Create, read, update, and delete all resources
-- ✅ Assign any role to members
-- ✅ Access all reports and analytics
-- ✅ View and export audit logs
-- ✅ Manage integrations and system settings
+#### Overview Section
+| Menu Item | Path | Required Role | Description |
+|-----------|------|---------------|-------------|
+| Dashboard | /admin/overview | Staff | Main administrative dashboard |
 
-### Admin
+#### Administration Section
+| Menu Item | Path | Required Role | Description |
+|-----------|------|---------------|-------------|
+| Rooms/Facilities | /admin/facilities | Admin | Manage facilities and zones |
+| Bookings | /admin/bookings | Staff | View and manage bookings |
+| Users & Roles | /admin/users-roles | Admin | Manage organization users and roles |
 
-**Administrative access** - Can manage most aspects except organization deletion:
+#### Communication Section
+| Menu Item | Path | Required Role | Description |
+|-----------|------|---------------|-------------|
+| Messages | /admin/messages | Staff | Internal messaging system |
+| Alerts | /admin/notifications | Staff | System notifications and alerts |
 
-- ✅ Manage members, facilities, bookings
-- ✅ Create, read, update, and delete most resources
-- ✅ Assign roles (except `owner`)
-- ✅ Access reports and analytics
-- ✅ View and export audit logs
-- ✅ Manage integrations
-- ❌ Delete organization
-- ❌ Modify billing settings (read-only)
+#### System Section
+| Menu Item | Path | Required Role | Description |
+|-----------|------|---------------|-------------|
+| Reports | /admin/reports | Admin | System analytics and reporting |
+| Integrations | /admin/integrations | Admin | Third-party integrations |
+| Audit Log | /admin/audit-logs | Admin | System activity logs |
+| Data Retention | /admin/data-retention | Admin | Data cleanup policies |
+| Localization | /admin/localization | Admin | Language and translation settings |
 
-### Case Handler (Saksbehandler)
+---
 
-**Main operational role** - Handles bookings and customer requests:
+## CRUD Operations by Role
 
-- ✅ Create, read, update, and delete bookings
-- ✅ Approve/reject booking requests
-- ✅ Manage availability and blackouts
-- ✅ Handle customer support tickets
-- ✅ View facilities and zones (read-only)
-- ✅ View reports
-- ❌ Manage facilities or users
-- ❌ Access system settings
+### Facilities Management
+| Operation | Customer | Staff | Admin | Owner |
+|-----------|----------|-------|-------|-------|
+| View facilities | ✓ | ✓ | ✓ | ✓ |
+| Create facility | ✗ | ✗ | ✓ | ✓ |
+| Edit facility | ✗ | ✗ | ✓ | ✓ |
+| Delete facility | ✗ | ✗ | ✗ | ✓ |
+| Manage zones | ✗ | ✗ | ✓ | ✓ |
 
-### Editor (Redaktør)
+### Bookings Management
+| Operation | Customer | Staff | Admin | Owner |
+|-----------|----------|-------|-------|-------|
+| View own bookings | ✓ | ✓ | ✓ | ✓ |
+| Create booking | ✓ | ✓ | ✓ | ✓ |
+| Edit any booking | ✗ | ✓ | ✓ | ✓ |
+| Cancel any booking | ✗ | ✓ | ✓ | ✓ |
+| Delete booking | ✗ | ✓ | ✓ | ✓ |
+| Bulk operations | ✗ | ✗ | ✓ | ✓ |
 
-**Content management** - Manages facility content:
+### User Management
+| Operation | Customer | Staff | Admin | Owner |
+|-----------|----------|-------|-------|-------|
+| View profile | ✓ | ✓ | ✓ | ✓ |
+| Edit profile | ✓ | ✓ | ✓ | ✓ |
+| View users | ✗ | ✗ | ✓ | ✓ |
+| Invite users | ✗ | ✗ | ✓ | ✓ |
+| Edit user roles | ✗ | ✗ | ✗ | ✓ |
+| Delete users | ✗ | ✗ | ✗ | ✓ |
 
-- ✅ Create, read, update, and delete facilities
-- ✅ Upload and manage media
-- ✅ Manage tags and categories
-- ✅ Edit facility descriptions
-- ✅ Manage availability rules
-- ✅ View bookings (read-only)
-- ❌ Handle bookings or approvals
-- ❌ Manage users
+### System Configuration
+| Operation | Customer | Staff | Admin | Owner |
+|-----------|----------|-------|-------|-------|
+| View settings | ✗ | ✗ | ✓ | ✓ |
+| Edit basic settings | ✗ | ✗ | ✓ | ✓ |
+| Configure integrations | ✗ | ✗ | ✗ | ✓ |
+| Manage permissions | ✗ | ✗ | ✗ | ✓ |
+| System maintenance | ✗ | ✗ | ✗ | ✓ |
 
-### Read Only (Lesetilgang)
+---
 
-**View-only access** - Can view but not modify:
+## Role Matching with RLS Policies
 
-- ✅ View facilities, bookings, and reports
-- ✅ View availability rules and pricing
-- ✅ Create support tickets
-- ❌ Modify any resources
-- ❌ Access billing or audit logs
+The role-based access control is reinforced by Row Level Security (RLS) policies in the database:
 
-### Customer (Kunde)
+### Organizations Table
+- **Owner/Admin**: Can view and manage all organization data
+- **Staff**: Can only view organization data for their assigned organization
+- **Customer**: Limited to their own user data within organizations
 
-**Standard customer access** - End-user permissions:
+### Facilities Table
+- **Owner/Admin**: Full CRUD access to all facilities in their organization
+- **Staff**: Read access to facilities, limited write access
+- **Customer**: Read-only access to published facilities
 
-- ✅ View facilities and availability
-- ✅ Create and manage own bookings
-- ✅ Create reviews
-- ✅ Manage own profile
-- ✅ Create support tickets
-- ❌ Access admin features
-- ❌ View other users' data
+### Bookings Table
+- **Owner/Admin**: Full access to all bookings in their organization
+- **Staff**: Access to bookings for facilities they manage
+- **Customer**: Access only to their own bookings
 
-## Admin Portal Access
+### Users Table
+- **Owner/Admin**: Access to all users in their organization
+- **Staff**: Limited access to user information
+- **Customer**: Access only to their own profile
 
-### Access Requirements
-
-To access the admin portal (`/admin/*`), users must have one of the following roles:
-
-- `owner`
-- `admin`
-- `case_handler` (staff)
-
-### Route Protection
-
-All admin routes are protected using the `ProtectedRoute` component with role requirements:
-
-```typescript
-<ProtectedRoute 
-  requiredRole="staff" 
-  loginPath="/login-selection"
-  unauthorizedComponent={<AdminUnauthorizedComponent />}
->
-  <AdminLayout><OverviewPage /></AdminLayout>
-</ProtectedRoute>
-```
-
-### Navigation Visibility
-
-The admin sidebar dynamically shows/hides menu items based on the user's role:
-
-| Menu Item | Required Role | Visible To |
-|-----------|---------------|------------|
-| Dashboard | `staff` | staff, admin, owner |
-| Facilities | `admin` | admin, owner |
-| Bookings | `staff` | staff, admin, owner |
-| Users & Roles | `admin` | admin, owner |
-| Messages | `staff` | staff, admin, owner |
-| Notifications | `staff` | staff, admin, owner |
-| Reports | `staff` | staff, admin, owner |
-| Integrations | `admin` | admin, owner |
-| Audit Log | `admin` | admin, owner |
-| Data Retention | `admin` | admin, owner |
-| Localization | `admin` | admin, owner |
+---
 
 ## Implementation Details
 
-### Role Constants
+### Role Assignment
+Roles are assigned through the membership system where each user can have different roles in different organizations.
 
-Role definitions are centralized in `src/constants/roles.ts`:
+### Permission Checking
+Permissions are checked at multiple levels:
+1. **Frontend**: Menu items and routes are filtered based on user role
+2. **Backend Services**: Business logic validates user permissions
+3. **Database**: RLS policies enforce data access restrictions
 
-```typescript
-export const ORG_ROLES = {
-  OWNER: 'owner',
-  ADMIN: 'admin',
-  CASE_HANDLER: 'case_handler',
-  EDITOR: 'editor',
-  READ_ONLY: 'read_only',
-  CUSTOMER: 'customer',
-  STAFF: 'staff', // DEPRECATED
-} as const;
-```
+### Role Inheritance
+Higher roles automatically inherit all permissions of lower roles:
+- Owner inherits Admin, Staff, and Customer permissions
+- Admin inherits Staff and Customer permissions
+- Staff inherits Customer permissions
 
-### Role Checking Functions
-
-The system provides several utility functions for role checking:
-
-```typescript
-// Check minimum role requirement
-hasMinimumRole(userRole, requiredRole): boolean
-
-// Check exact role match
-hasExactRole(userRole, targetRole): boolean
-
-// Check any of multiple roles
-hasAnyRole(userRole, roles): boolean
-
-// Check if user can perform action on resource
-canPerformAction(userRole, resource, action): boolean
-```
-
-### Protected Routes
-
-Routes are protected using the `ProtectedRoute` component:
-
-```typescript
-import { ProtectedRoute } from '@/components/features/auth/components/ProtectedRoute';
-
-// Require authentication only
-<ProtectedRoute>
-  <DashboardPage />
-</ProtectedRoute>
-
-// Require specific role
-<ProtectedRoute requiredRole="admin">
-  <AdminPanel />
-</ProtectedRoute>
-```
-
-### Role-Based UI
-
-UI elements can be conditionally rendered based on roles:
-
-```typescript
-import { useRole } from '@/hooks/auth/useRole';
-
-function MyComponent() {
-  const { role, hasMinimumRole } = useRole();
-  
-  return (
-    <>
-      {hasMinimumRole('admin') && (
-        <AdminButton />
-      )}
-    </>
-  );
-}
-```
+---
 
 ## Security Considerations
 
-### Row Level Security (RLS)
+### Defense in Depth
+The system implements multiple layers of security:
+1. **UI Layer**: Role-based menu filtering
+2. **Service Layer**: Permission validation in business logic
+3. **Data Layer**: Database-level RLS enforcement
 
-All database queries are protected by Supabase RLS policies that enforce role-based access:
+### Audit Trail
+All role changes and administrative actions are logged for security auditing.
 
-- Policies check the user's role in the `memberships` table
-- Organization-scoped data is filtered by `org_id`
-- User-scoped data is filtered by `user_id`
+### Least Privilege Principle
+Users are granted the minimum permissions necessary to perform their duties.
 
-### Client-Side vs Server-Side
+---
 
-- **Client-side role checks**: Used for UI visibility and navigation
-- **Server-side enforcement**: RLS policies provide the actual security boundary
-- **Never rely solely on client-side checks** for security-critical operations
+## Version History
 
-### Role Assignment
+- **v1.0.0** (2024-12-08): Initial roles and permissions documentation
 
-- Only `owner` and `admin` roles can assign roles to other users
-- Users cannot assign a role higher than or equal to their own (except `owner`)
-- Role changes are logged in the audit log
+---
 
-## Migration Notes
-
-### Deprecated `staff` Role
-
-The `staff` role has been deprecated in favor of more specific roles:
-
-- **`staff` → `case_handler`**: For operational staff handling bookings
-- **`staff` → `editor`**: For content management staff
-
-Existing `staff` users are automatically mapped to `case_handler` via the compatibility layer in `src/constants/roles.ts`.
-
-## Testing Role-Based Access
-
-### Manual Testing
-
-Test with different user roles:
-
-1. **Owner**: Should see all menu items and have full access
-2. **Admin**: Should see most items except organization deletion
-3. **Case Handler**: Should see operational items (bookings, messages, reports)
-4. **Editor**: Should see content management items
-5. **Read Only**: Should see view-only access
-6. **Customer**: Should not access admin portal
-
-### Automated Testing
-
-Role-based access should be tested in integration tests:
-
-```typescript
-describe('Admin Portal Access', () => {
-  it('allows staff to access bookings page', () => {
-    // Test implementation
-  });
-  
-  it('prevents customers from accessing admin portal', () => {
-    // Test implementation
-  });
-});
-```
-
-## Related Documentation
-
-- [State Management](../dev/STATE_MANAGEMENT.md)
-- [Entity Model](../data/ENTITY_MODEL.md)
-- [Security Model](./SECURITY_MODEL.md)
-- [Role Redesign Plan](../features/ROLE_REDESIGN_PLAN_ENGLISH.md)
-
-## References
-
-- Role constants: `src/constants/roles.ts`
-- Role utilities: `src/shared/utils/role.ts`
-- Protected routes: `src/components/features/auth/components/ProtectedRoute.tsx`
-- Admin routes: `src/pages/AdminRoutes.tsx`
-- Admin sidebar: `src/components/layouts/AdminLayout/AdminSidebar.tsx`
+**Maintained By**: BookMe Security Team  
+**Questions**: Contact security@bookme.example.com

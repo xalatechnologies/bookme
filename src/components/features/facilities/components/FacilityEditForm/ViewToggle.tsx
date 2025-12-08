@@ -2,6 +2,7 @@
 
 import React from "react";
 import { Grid3X3, List, Map } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 type TView = "grid" | "list" | "map";
 
@@ -24,19 +25,21 @@ const ViewToggle = ({ currentView, onViewChange }: IViewToggleProps): JSX.Elemen
         const isActive = currentView === view.id;
         
         return (
-          <button
+          <Button
             key={view.id}
             onClick={() => onViewChange(view.id)}
+            variant={isActive ? "default" : "ghost"}
+            size="sm"
             className={`px-3 py-2 rounded-none border-0 text-sm font-medium transition-all duration-200 ${
               isActive
-                ? 'bg-slate-700 dark:bg-slate-600 text-white shadow-sm'
-                : 'text-gray-600 dark:text-gray-400 hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-slate-700 dark:hover:text-slate-300'
+                ? 'shadow-sm'
+                : 'text-gray-600 dark:text-gray-400 hover:text-slate-700 dark:hover:text-slate-300'
             }`}
             aria-label={view.label}
             title={view.label}
           >
             <IconComponent className="h-4 w-4" />
-          </button>
+          </Button>
         );
       })}
     </div>

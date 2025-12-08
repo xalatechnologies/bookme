@@ -63,11 +63,11 @@ Alle oppgaver under skal utføres, verifiseres og krysses av.
 ## C1. Juster AdminSidebar
 Følgende menyelementer skal være **admin-only**:
 
-- [ ] Integrations  
-- [ ] Reports  
-- [ ] Audit Log  
-- [ ] Data Retention  
-- [ ] Localization  
+- [x] Integrations  
+- [x] Reports  
+- [x] Audit Log  
+- [x] Data Retention  
+- [x] Localization  
 
 Sjekk at `requiredRole` settes til `"admin"` for alle ovenfor.
 
@@ -75,25 +75,25 @@ Sjekk at `requiredRole` settes til `"admin"` for alle ovenfor.
 Opprett fil: `docs/security/ROLES_AND_PERMISSIONS.md`
 
 Innhold som skal inkluderes:
-- [ ] Rolleliste: owner, admin, staff, customer
-- [ ] Tilgangstabell for menyer (admin vs staff)
-- [ ] Hvilke CRUD-operasjoner hver rolle kan gjøre
-- [ ] Hvordan roller matcher RLS-policyer
+- [x] Rolleliste: owner, admin, staff, customer
+- [x] Tilgangstabell for menyer (admin vs staff)
+- [x] Hvilke CRUD-operasjoner hver rolle kan gjøre
+- [x] Hvordan roller matcher RLS-policyer
 
 ## C3. Oppdater ProtectedRoute
-- [ ] Sørg for at ProtectedRoute samsvarer med adminsider/rollene
-- [ ] Test manuelt:
-  - [ ] Staff får ikke se admin-only moduler  
-  - [ ] Customer får kun user-dashboard  
-  - [ ] Admin får tilgang til alt relevant  
+- [x] Sørg for at ProtectedRoute samsvarer med adminsider/rollene
+- [x] Test manuelt:
+  - [x] Staff får ikke se admin-only moduler  
+  - [x] Customer får kun user-dashboard  
+  - [x] Admin får tilgang til alt relevant  
 
 ---
 
 # D. RLS-stramming i Supabase
 
 ## D1. Stram `organizations` policy
-- [ ] Finn nåværende policy `using (true)`
-- [ ] Erstatt med scoped policy:
+- [x] Finn nåværende policy `using (true)`
+- [x] Erstatt med scoped policy:
 
 create policy org_read_scoped on organizations
 for select using (
@@ -106,49 +106,49 @@ and m.user_id = auth.uid()
 );
 
 
-- [ ] Test at kun medlemmer kan lese egne org-data
+- [x] Test at kun medlemmer kan lese egne org-data
 
 ## D2. Stram `tags` policy
-- [ ] Finn policy som tillater fri lesing  
-- [ ] Bytt ut med org-scope-basert policy  
-- [ ] Verifiser at tags kun synliggjøres for riktig tenant
+- [x] Finn policy som tillater fri lesing  
+- [x] Bytt ut med org-scope-basert policy  
+- [x] Verifiser at tags kun synliggjøres for riktig tenant
 
 ## D3. Oppdater sikkerhetsdokumentasjon
 Opprett fil: `docs/security/SECURITY_MODEL.md`
 
 Skal inneholde:
-- [ ] Forklaring av multi-tenant-modellen  
-- [ ] Oversikt over RLS-policyer  
-- [ ] Hvordan roller + memberships begrenser tilgang  
-- [ ] Liste over strammete policies  
+- [x] Forklaring av multi-tenant-modellen  
+- [x] Oversikt over RLS-policyer  
+- [x] Hvordan roller + memberships begrenser tilgang  
+- [x] Liste over strammete policies  
 
 ---
 
 # E. Endelig verifisering
 
 ## E1. Sjekk at ingen Supabase-kall finnes i UI-laget
-- [ ] Ingen `supabase.from` eller `supabase.auth` i:
-  - [ ] pages/
-  - [ ] layouts/
-  - [ ] UI-komponenter  
+- [x] Ingen `supabase.from` eller `supabase.auth` i:
+  - [x] pages/
+  - [x] layouts/
+  - [x] UI-komponenter  
 
 ## E2. Knapper er konsistente
-- [ ] Alle knapper følger design-system
-- [ ] Ingen rå knapper gjenglemt
+- [x] Alle knapper følger design-system
+- [x] Ingen rå knapper gjenglemt
 
 ## E3. Roller fungerer riktig
-- [ ] Staff ser ikke admin-moduler
-- [ ] Admin ser full meny
-- [ ] Kunde ser kun bruker-funksjoner
+- [x] Staff ser ikke admin-moduler
+- [x] Admin ser full meny
+- [x] Kunde ser kun bruker-funksjoner
 
 ## E4. RLS-policyer fungerer korrekt
-- [ ] Kun autoriserte users ser egne org-data
-- [ ] Tags og metadata er tenant-isolerte
+- [x] Kun autoriserte users ser egne org-data
+- [x] Tags og metadata er tenant-isolerte
 
 ## E5. Dokumentasjon oppdatert
-- [ ] DESIGN_SYSTEM.md oppdatert
-- [ ] ROLES_AND_PERMISSIONS.md opprettet
-- [ ] SECURITY_MODEL.md opprettet
+- [x] DESIGN_SYSTEM.md oppdatert
+- [x] ROLES_AND_PERMISSIONS.md opprettet
+- [x] SECURITY_MODEL.md opprettet
 
 ---
 

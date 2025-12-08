@@ -255,8 +255,9 @@ export const TimeSlotGrid: React.FC<ICalendarGridProps> = ({
 
                 return (
                   <div key={dayIndex} className="relative">
-                    <button
-                      className={`w-full h-8 rounded border transition-all duration-200 text-sm select-none ${getSlotClasses(
+                    <Button
+                      variant="ghost"
+                      className={`w-full h-8 rounded border transition-all duration-200 text-sm select-none p-0 ${getSlotClasses(
                         status,
                         isInPreview
                       )} ${
@@ -294,7 +295,7 @@ export const TimeSlotGrid: React.FC<ICalendarGridProps> = ({
                           <span className="text-sm text-blue-800 ml-1">◯</span>
                         )}
                       </div>
-                    </button>
+                    </Button>
                   </div>
                 );
               })}

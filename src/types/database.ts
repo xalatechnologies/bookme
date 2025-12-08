@@ -3356,7 +3356,7 @@ export type Database = {
         | "refunded"
       group_role: "owner" | "admin" | "member"
       notification_channel: "email" | "sms" | "none"
-      org_role: "owner" | "admin" | "staff" | "customer" | "case_handler" | "editor" | "read_only"
+      org_role: "owner" | "admin" | "staff" | "customer"
       platform_role: "platform_admin" | "user"
       recurrence_frequency:
         | "daily"
@@ -3535,7 +3535,7 @@ export const Constants = {
       ],
       group_role: ["owner", "admin", "member"],
       notification_channel: ["email", "sms", "none"],
-      org_role: ["owner", "admin", "staff", "customer", "case_handler", "editor", "read_only"],
+      org_role: ["owner", "admin", "staff", "customer"],
       platform_role: ["platform_admin", "user"],
       recurrence_frequency: [
         "daily",
