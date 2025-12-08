@@ -4,12 +4,11 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Menu, ShoppingCart } from "lucide-react";
-import { supabase } from '@/lib/clients/supabase';
 
 import { useLanguage } from "@/contexts/hooks";
 import { useCart } from "@/contexts/hooks";
-
 import { useAuth } from "@/contexts/hooks";
+import { usePortalPreference } from "@/hooks/features/portal/usePortalPreference";
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -35,6 +34,7 @@ export const GlobalHeader = (): JSX.Element => {
 
   // Get auth state from AuthContext
   const { user, signOut } = useAuth();
+  const { savePortalPreference } = usePortalPreference();
 
   // Get cart data
   const { itemCount } = useCart();
@@ -53,20 +53,10 @@ export const GlobalHeader = (): JSX.Element => {
       
       if (portal) {
         // Save to database instead of localStorage
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (supabase as any)
-          .from('profiles')
-          .update({ preferred_portal: portal })
-          .eq('id', user.id)
-          .then(() => {
-            // Success - portal preference saved to database
-          })
-          .catch((error: Error) => {
-            console.error('Failed to save portal preference:', error);
-          });
+        void savePortalPreference(user.id, portal);
       }
     }
-  }, [isAuthenticated, user, location.pathname]);
+  }, [isAuthenticated, user, location.pathname, savePortalPreference]);
 
   const logout = (): void => {
     try {
