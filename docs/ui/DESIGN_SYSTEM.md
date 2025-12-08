@@ -1,6 +1,6 @@
 # BookMe Design System
 
-**Version**: 1.0.0  
+**Version**: 1.0.1  
 **Last Updated**: 2024-12-08  
 **Status**: Light Mode Only (Production Ready)
 
@@ -86,11 +86,22 @@ import { Button } from '@/components/ui/button';
 <Button variant="destructive">Close</Button> {/* Should be secondary/ghost */}
 ```
 
-### Button State Guidelines
+### Button Usage Guidelines
 
-- **Loading**: Use `disabled` prop and show loading spinner
-- **Disabled**: Use `disabled` prop, button becomes non-interactive and visually muted
-- **Focus**: Automatic focus ring via CSS (`focus-visible:ring-2`)
+#### CTA (Call-to-Action) Buttons
+- Use `variant="primary"` for primary actions that advance the user journey
+- Examples: "Book Now", "Save Changes", "Submit Form", "Continue"
+- Should be the most prominent button in a group
+
+#### Secondary Action Buttons
+- Use `variant="secondary"` or `variant="outline"` for supporting actions
+- Examples: "Cancel", "Back", "Edit", "View Details"
+- Should be visually subordinate to primary actions
+
+#### Icon Buttons
+- Use `variant="ghost"` with `size="icon"` for icon-only actions
+- Examples: Close dialogs, favorite toggles, share actions
+- Should have clear aria-labels for accessibility
 
 ---
 
@@ -659,6 +670,7 @@ All components are fully typed and documented inline.
 
 ### Version History
 
+- **v1.0.1** (2024-12-08): Added button usage guidelines and CTA definitions
 - **v1.0.0** (2024-12-08): Initial design system documentation, light mode only
 
 ---

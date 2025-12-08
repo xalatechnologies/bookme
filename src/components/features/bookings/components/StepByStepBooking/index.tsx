@@ -772,10 +772,11 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
                       steps.findIndex((s) => s.id === currentStep);
 
                     return (
-                      <button
+                      <Button
                         key={step.id}
                         onClick={() => isAccessible && goToStep(step.id)}
                         disabled={!isAccessible}
+                        variant="ghost"
                         className={`flex flex-col items-center space-y-2 p-2 rounded-lg transition-colors ${isCurrent
                             ? "bg-blue-100 text-blue-700"
                             : isCompleted
@@ -789,7 +790,7 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
                         <span className="text-xs font-medium text-center">
                           {step.title}
                         </span>
-                      </button>
+                      </Button>
                     );
                   })}
                 </div>

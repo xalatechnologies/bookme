@@ -399,16 +399,18 @@ export const LocalizedMultiSelect: React.FC<LocalizedMultiSelectProps> = ({
                   className="mr-1 rounded-sm px-2 py-0.5 text-xs"
                 >
                   {label}
-                  <button
+                  <Button
                     type="button"
                     onClick={(e) => {
                       e.stopPropagation();
                       handleRemove(value[index]);
                     }}
-                    className="ml-1 rounded-full outline-none ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                    variant="ghost"
+                    size="icon"
+                    className="ml-1 rounded-full outline-none ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2 p-0 h-auto w-auto"
                   >
                     <X className="h-3 w-3" />
-                  </button>
+                  </Button>
                 </Badge>
               ))
             ) : (

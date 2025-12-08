@@ -12,6 +12,7 @@ import { useFacilityRules } from '@/services/supabase/facilityRules.service';
 import { FacilityCalendar } from '@/components/features/calendar/components/FacilityCalendar';
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Button } from '@/components/ui/button';
 
 
 import { AmenityGrid } from './components/AmenityGrid';
@@ -424,8 +425,9 @@ export const FacilityInfoTabs: React.FC<FacilityInfoTabsProps> = ({
             <h3 className="text-xl font-semibold mb-4">{t('common:faq.title')}</h3>
             <div className="space-y-4">
               <div className="border border-gray-200 dark:border-gray-700 rounded-lg">
-                <button
+                <Button
                   onClick={() => toggleFAQ('booking-time')}
+                  variant="ghost"
                   className="w-full p-4 text-left flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
                   aria-label={t('common:faq.booking_time')}
                   aria-expanded={expandedFAQ === 'booking-time'}
@@ -438,7 +440,7 @@ export const FacilityInfoTabs: React.FC<FacilityInfoTabsProps> = ({
                   ) : (
                     <ChevronRight className="h-5 w-5 text-gray-400" />
                   )}
-                </button>
+                </Button>
                 {expandedFAQ === 'booking-time' && (
                   <div className="px-4 pb-4">
                     <p className="text-gray-600 dark:text-gray-400">
@@ -449,8 +451,9 @@ export const FacilityInfoTabs: React.FC<FacilityInfoTabsProps> = ({
               </div>
 
               <div className="border border-gray-200 dark:border-gray-700 rounded-lg">
-                <button
+                <Button
                   onClick={() => toggleFAQ('cancellation')}
+                  variant="ghost"
                   className="w-full p-4 text-left flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
                   aria-label={t('common:faq.cancellation')}
                   aria-expanded={expandedFAQ === 'cancellation'}
@@ -463,7 +466,7 @@ export const FacilityInfoTabs: React.FC<FacilityInfoTabsProps> = ({
                   ) : (
                     <ChevronRight className="h-5 w-5 text-gray-400" />
                   )}
-                </button>
+                </Button>
                 {expandedFAQ === 'cancellation' && (
                   <div className="px-4 pb-4">
                     <p className="text-gray-600 dark:text-gray-400">
@@ -474,8 +477,9 @@ export const FacilityInfoTabs: React.FC<FacilityInfoTabsProps> = ({
               </div>
 
               <div className="border border-gray-200 dark:border-gray-700 rounded-lg">
-                <button
+                <Button
                   onClick={() => toggleFAQ('parking')}
+                  variant="ghost"
                   className="w-full p-4 text-left flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
                   aria-label={t('common:faq.parking')}
                   aria-expanded={expandedFAQ === 'parking'}
@@ -488,7 +492,7 @@ export const FacilityInfoTabs: React.FC<FacilityInfoTabsProps> = ({
                   ) : (
                     <ChevronRight className="h-5 w-5 text-gray-400" />
                   )}
-                </button>
+                </Button>
                 {expandedFAQ === 'parking' && (
                   <div className="px-4 pb-4">
                     <p className="text-gray-600 dark:text-gray-400">
@@ -501,8 +505,9 @@ export const FacilityInfoTabs: React.FC<FacilityInfoTabsProps> = ({
               </div>
 
               <div className="border border-gray-200 dark:border-gray-700 rounded-lg">
-                <button
+                <Button
                   onClick={() => toggleFAQ('food-drinks')}
+                  variant="ghost"
                   className="w-full p-4 text-left flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
                   aria-label={t('common:faq.food_drinks')}
                   aria-expanded={expandedFAQ === 'food-drinks'}
@@ -515,7 +520,7 @@ export const FacilityInfoTabs: React.FC<FacilityInfoTabsProps> = ({
                   ) : (
                     <ChevronRight className="h-5 w-5 text-gray-400" />
                   )}
-                </button>
+                </Button>
                 {expandedFAQ === 'food-drinks' && (
                   <div className="px-4 pb-4">
                     <p className="text-gray-600 dark:text-gray-400">

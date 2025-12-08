@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import { CheckCircle, User } from "lucide-react";
 import { IApprovalRequest } from "@/types/admin";
 import { usePriorityHelpers } from "../hooks/usePriorityHelpers";
+import { Button } from "@/components/ui/button";
 
 interface IApprovalQueueProps {
   readonly requests: readonly IApprovalRequest[];
@@ -29,13 +30,14 @@ export const ApprovalQueue = ({
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
             {t("pages.dashboard.approvals.title")}
           </h3>
-          <button
+          <Button
             onClick={handleViewAll}
-            className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium"
+            variant="link"
+            className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium p-0 h-auto"
             aria-label={t("pages.dashboard.approvals.view_all")}
           >
             {t("pages.dashboard.approvals.view_all")}
-          </button>
+          </Button>
         </div>
         <div className="text-center py-8">
           <CheckCircle className="w-12 h-12 text-green-500 mx-auto mb-3" />
@@ -56,12 +58,13 @@ export const ApprovalQueue = ({
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
           {t("pages.dashboard.approvals.title")}
         </h3>
-        <button
+        <Button
           onClick={handleViewAll}
-          className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium"
+          variant="link"
+          className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium p-0 h-auto"
         >
           {t("pages.dashboard.approvals.view_all")}
-        </button>
+        </Button>
       </div>
 
       <div className="space-y-3">

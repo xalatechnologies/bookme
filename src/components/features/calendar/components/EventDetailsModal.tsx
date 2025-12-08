@@ -3,6 +3,7 @@
 import React from "react";
 import type { IBookingEventWithMeta } from "@/types/calendar";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
+import { Button } from "@/components/ui/button";
 
 interface IEventDetailsModalProps {
   readonly event: IBookingEventWithMeta;
@@ -28,15 +29,17 @@ export const EventDetailsModal = ({
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
               {event.title}
             </h2>
-            <button
+            <Button
               onClick={onClose}
               aria-label={t('pages.calendar.actions.close')}
+              variant="ghost"
+              size="icon"
               className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
-            </button>
+            </Button>
           </div>
 
           {/* Event Details */}
@@ -89,20 +92,22 @@ export const EventDetailsModal = ({
             >
               {t('pages.calendar.actions.edit')}
             </PrimaryButton>
-            <button
+            <Button
               onClick={() => onDelete(event)}
               aria-label={t('pages.calendar.actions.delete')}
-              className="flex-1 h-12 px-4 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors shadow-md"
+              variant="destructive"
+              className="flex-1 h-12 px-4 font-medium rounded-lg shadow-md"
             >
               {t('pages.calendar.actions.delete')}
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={onClose}
               aria-label={t('pages.calendar.actions.close')}
-              className="flex-1 h-12 px-4 border-2 border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800 transition-colors"
+              variant="outline"
+              className="flex-1 h-12 px-4 font-medium rounded-lg"
             >
               {t('pages.calendar.actions.close')}
-            </button>
+            </Button>
           </div>
         </div>
       </div>

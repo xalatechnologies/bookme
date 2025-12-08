@@ -14,6 +14,7 @@ import { useCalendarGridDragSelection } from "@/hooks/features/calendar/useCalen
 
 // Sibling imports
 import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 interface CalendarGridProps {
   readonly zone: Zone;
@@ -111,8 +112,9 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
     const startTime = timeSlot.split("-")[0];
 
     return (
-      <button
+      <Button
         key={dayIndex}
+        variant="ghost"
         className={`w-full h-8 rounded border transition-all duration-200 text-sm select-none ${statusStyle} ${
           status === "available" ? "transform hover:scale-105" : ""
         }`}
@@ -147,7 +149,7 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
             <span className="text-sm text-blue-800 ml-1">◯</span>
           )}
         </div>
-      </button>
+      </Button>
     );
   };
 

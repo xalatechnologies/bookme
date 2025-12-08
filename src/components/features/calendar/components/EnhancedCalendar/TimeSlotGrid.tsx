@@ -10,6 +10,7 @@ import { useTranslation } from "react-i18next";
 import { useDragSelection } from "../../hooks";
 import { useAvailabilityStatus } from "@/components/features/bookings/hooks";
 import { useDragSlotSelection } from "@/hooks/features/calendar";
+import { Button } from "@/components/ui/button";
 
 // Types
 import { ICalendarGridProps, TimeSlotStatus } from "../../types";

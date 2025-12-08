@@ -68,10 +68,16 @@ export const useDragSelection = () => {
     zoneId: string,
     date: Date,
     timeSlot: string,
-    event: React.MouseEvent
+    event: React.MouseEvent | React.TouchEvent
   ): void => {
-    event.preventDefault();
-    dragStartRef.current = { x: event.clientX, y: event.clientY };
+    if ('clientX' in event && 'clientY' in event) {
+      event.preventDefault();
+      dragStartRef.current = { x: event.clientX, y: event.clientY };
+    } else {
+      // For touch events, we don't have client coordinates in the same way
+      event.preventDefault();
+      dragStartRef.current = { x: 0, y: 0 }; // Default values for touch
+    }
     
     setDragState({
       isDragging: true,

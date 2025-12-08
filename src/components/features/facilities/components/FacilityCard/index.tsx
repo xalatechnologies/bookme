@@ -10,6 +10,7 @@ import { useFieldConfigStore } from "@/stores/fieldConfigStore";
 
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   getFieldUnit,
   generateShareUrl,
@@ -158,25 +159,29 @@ export const FacilityCard = ({
         {/* Overlay buttons - only show favorite button when user is logged in */}
         <div className="absolute top-2 sm:top-3 md:top-4 right-2 sm:right-3 md:right-4 flex gap-1 sm:gap-2">
           {user && (
-            <button
+            <Button
               onClick={handleFavorite}
-              className="p-1.5 sm:p-2 rounded-full bg-white/90 backdrop-blur-sm shadow-lg hover:bg-white transition-colors"
               aria-label={t("facility:card.addToFavorites")}
+              variant="secondary"
+              size="icon"
+              className="p-1.5 sm:p-2 rounded-full bg-white/90 backdrop-blur-sm shadow-lg hover:bg-white transition-colors"
             >
               <Heart
                 className={`h-3 w-3 sm:h-4 sm:w-4 ${
                   isFavorited ? "fill-red-500 text-red-500" : "text-gray-600"
                 }`}
               />
-            </button>
+            </Button>
           )}
-          <button
+          <Button
             onClick={handleShare}
-            className="p-1.5 sm:p-2 rounded-full bg-white/90 backdrop-blur-sm shadow-lg hover:bg-white transition-colors"
             aria-label={t("facility:card.shareFacility")}
+            variant="secondary"
+            size="icon"
+            className="p-1.5 sm:p-2 rounded-full bg-white/90 backdrop-blur-sm shadow-lg hover:bg-white transition-colors"
           >
             <Share2 className="h-3 w-3 sm:h-4 sm:w-4 text-gray-600" />
-          </button>
+          </Button>
         </div>
 
         {/* Type badge */}

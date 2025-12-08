@@ -10,6 +10,7 @@ import { useFieldConfigStore } from "@/stores/fieldConfigStore";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { FacilityMiniMap } from "@/components/features/facilities/components/FacilityMap/FacilityMiniMap";
 import { useAmenityTranslation } from "@/hooks/shared";
 import { useFacilityTypeTranslation } from "@/hooks/shared/useFacilityTypeTranslation";
@@ -217,8 +218,10 @@ export const FacilityListItem: React.FC<FacilityListItemProps> = ({
 
               {/* Action Buttons - aligned to the right */}
               <div className="flex gap-2 ml-4 opacity-0 group-hover:opacity-100 transition-all duration-300 flex-shrink-0">
-                <button
+                <Button
                   onClick={handleFavorite}
+                  variant="ghost"
+                  size="icon"
                   className="h-9 w-9 p-0 hover:bg-gray-100 rounded-full focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 flex items-center justify-center"
                   aria-label={
                     isFavorited
@@ -233,14 +236,16 @@ export const FacilityListItem: React.FC<FacilityListItemProps> = ({
                         : "text-gray-400"
                     }`}
                   />
-                </button>
-                <button
+                </Button>
+                <Button
                   onClick={handleShare}
+                  variant="ghost"
+                  size="icon"
                   className="h-9 w-9 p-0 hover:bg-gray-100 rounded-full focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 flex items-center justify-center"
                   aria-label={t("facility:card.shareFacility")}
                 >
                   <Share2 className="h-4 w-4 text-gray-400" />
-                </button>
+                </Button>
               </div>
             </div>
           </div>

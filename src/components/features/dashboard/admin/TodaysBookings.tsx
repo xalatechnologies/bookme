@@ -15,6 +15,7 @@ import { useTranslation } from "react-i18next";
 import { Clock, User } from "lucide-react";
 import { ITodaysBooking } from "@/types/admin";
 import { StatusBadge } from "@/components/common/status/StatusBadge";
+import { Button } from "@/components/ui/button";
 
 interface ITodaysBookingsProps {
   readonly bookings: readonly ITodaysBooking[];
@@ -46,13 +47,14 @@ export const TodaysBookings = ({
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
             {t("pages.dashboard.todays_bookings.title")}
           </h3>
-          <button
+          <Button
             onClick={handleViewAll}
-            className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium"
+            variant="link"
+            className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium p-0 h-auto"
             aria-label={t("pages.dashboard.todays_bookings.view_all")}
           >
             {t("pages.dashboard.todays_bookings.view_all")}
-          </button>
+          </Button>
         </div>
         <div className="text-center py-8">
           <Clock className="w-12 h-12 text-gray-400 mx-auto mb-3" />
@@ -73,13 +75,14 @@ export const TodaysBookings = ({
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
           {t("pages.dashboard.todays_bookings.title")}
         </h3>
-        <button
+        <Button
           onClick={handleViewAll}
-          className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium"
+          variant="link"
+          className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium p-0 h-auto"
           aria-label={t("pages.dashboard.todays_bookings.view_all")}
         >
           {t("pages.dashboard.todays_bookings.view_all")}
-        </button>
+        </Button>
       </div>
 
       <div className="space-y-3">

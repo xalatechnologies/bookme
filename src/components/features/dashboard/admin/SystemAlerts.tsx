@@ -6,6 +6,7 @@ import {
   CheckCircle,
   ExternalLink,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { ISystemAlert } from "@/types/admin";
 import { useAlertHelpers } from "../hooks/useAlertHelpers";
 
@@ -66,13 +67,15 @@ export const SystemAlerts = ({ alerts }: ISystemAlertsProps): JSX.Element => {
                     {alert.timestamp}
                   </span>
                   {alert.action && (
-                    <button
-                      className="flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium"
+                    <Button
+                      variant="link"
+                      size="sm"
+                      className="flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium p-0 h-auto"
                       aria-label={alert.action}
                     >
                       {alert.action}
                       <ExternalLink className="w-3 h-3" />
-                    </button>
+                    </Button>
                   )}
                 </div>
               </div>

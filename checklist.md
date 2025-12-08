@@ -37,24 +37,24 @@ Alle oppgaver under skal utføres, verifiseres og krysses av.
 # B. Standardisering av knapper (UI-system)
 
 ## B1. Oppdag alle rå `<button>`
-- [ ] Globale søk etter `<button` i prosjektet
-- [ ] Lag liste over filer som bruker rå knapper
-- [ ] Bekreft alle filene før refaktorering
+- [x] Globale søk etter `<button` i prosjektet
+- [x] Lag liste over filer som bruker rå knapper
+- [x] Bekreft alle filene før refaktorering
 
 ## B2. Erstatt med UI-designsystemet
-- [ ] Alle primære handlinger bruker `Button` variant="primary"
-- [ ] Alle sekundære handlinger bruker `Button` variant="secondary" eller "ghost"
-- [ ] Alle ikonhandlinger bruker `Button` variant="ghost" size="icon"
-- [ ] Ingen hardkodede Tailwind-farger (`bg-blue-500` etc.) i knapper
-- [ ] Alle knapper er tilgjengelige og har riktig focus-ring
+- [x] Alle primære handlinger bruker `Button` variant="primary"
+- [x] Alle sekundære handlinger bruker `Button` variant="secondary" eller "ghost"
+- [x] Alle ikonhandlinger bruker `Button` variant="ghost" size="icon"
+- [x] Ingen hardkodede Tailwind-farger (`bg-blue-500` etc.) i knapper
+- [x] Alle knapper er tilgjengelige og har riktig focus-ring
 
 ## B3. Oppdater dokumentasjon
-- [ ] Oppdater `docs/ui/DESIGN_SYSTEM.md`
-- [ ] Legg inn:
-  - [ ] Liste over knappevarianter
-  - [ ] Liste over størrelser
-  - [ ] Eksempler på riktig og feil bruk  
-  - [ ] Kort regel for hva som er CTA og sekundær handling
+- [x] Oppdater `docs/ui/DESIGN_SYSTEM.md`
+- [x] Legg inn:
+  - [x] Liste over knappevarianter
+  - [x] Liste over størrelser
+  - [x] Eksempler på riktig og feil bruk  
+  - [x] Kort regel for hva som er CTA og sekundær handling
 
 ---
 
