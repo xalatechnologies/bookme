@@ -9,7 +9,6 @@ import { useTranslation } from "react-i18next";
 import type { RecurrencePattern } from "@/components/features/bookings/utils/recurrence";
 import { useFacility } from "@/components/features/facilities/hooks";
 import { useZones } from "@/components/features/facilities/hooks";
-import { CartProvider } from "@/contexts/hooks";
 import type { Database, Json } from "@/types/database";
 import { GlobalHeader } from "@/components/layouts/PublicLayout/GlobalHeader";
 import { FacilityDetailLayout } from "@/components/features/facilities/components/FacilityDetail/FacilityDetailLayout";
@@ -102,41 +101,39 @@ export const FacilityBooking = (): JSX.Element => {
   }
 
   return (
-    <CartProvider>
-      <div className="min-h-screen bg-white flex flex-col">
-        <GlobalHeader />
+    <div className="min-h-screen bg-white flex flex-col">
+      <GlobalHeader />
 
-        {/* Breadcrumb Navigation */}
-        <FacilityDetailBreadcrumb
-          facilityName={facility.name}
-          showBookingPage={true}
+      {/* Breadcrumb Navigation */}
+      <FacilityDetailBreadcrumb
+        facilityName={facility.name}
+        showBookingPage={true}
+      />
+
+      {/* Main Content */}
+      <div className="flex-grow pb-20 lg:pb-0">
+        <FacilityDetailLayout
+          facility={facility}
+          zones={zones.map(zone => ({
+            id: zone.id,
+            name: zone.name,
+            facility_id: facility.id,
+            capacity: zone.capacity,
+            price_per_hour_cents: zone.pricePerHour * 100,
+            area_sqm: zone.area || null,
+            description: zone.description || null,
+            amenities: zone.amenities as Json,
+            status: 'active',
+            org_id: facility.org_id,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          }))}
+          onShare={handleShare}
+          isFavorited={isFavorited}
+          onToggleFavorite={() => setIsFavorited(!isFavorited)}
         />
-
-        {/* Main Content */}
-        <div className="flex-grow pb-20 lg:pb-0">
-          <FacilityDetailLayout
-            facility={facility}
-            zones={zones.map(zone => ({
-              id: zone.id,
-              name: zone.name,
-              facility_id: facility.id,
-              capacity: zone.capacity,
-              price_per_hour_cents: zone.pricePerHour * 100,
-              area_sqm: zone.area || null,
-              description: zone.description || null,
-              amenities: zone.amenities as Json,
-              status: 'active',
-              org_id: facility.org_id,
-              created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString()
-            }))}
-            onShare={handleShare}
-            isFavorited={isFavorited}
-            onToggleFavorite={() => setIsFavorited(!isFavorited)}
-          />
-        </div>
       </div>
-    </CartProvider>
+    </div>
   );
 };
 

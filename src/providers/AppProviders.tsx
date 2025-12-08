@@ -26,7 +26,6 @@ import { I18nextProvider } from 'react-i18next';
 import { queryClient } from '@/lib/clients/queryClient';
 import { AuthProvider } from "@/contexts/hooks";
 import { LanguageProvider } from "@/contexts/hooks";
-import { CartProvider } from "@/contexts/hooks";
 import { UserProfileProvider } from "@/contexts/hooks";
 import i18n from '@/i18n/config';
 
@@ -42,8 +41,9 @@ interface AppProvidersProps {
  * 2. I18nextProvider - Translations (needed for UI text)
  * 3. AuthProvider - Authentication (needed for protected resources)
  * 4. LanguageProvider - Language switching (depends on i18n)
- * 5. CartProvider - Shopping cart state
- * 6. UserProfileProvider - User profile management
+ * 5. UserProfileProvider - User profile management
+ * 
+ * Note: Cart state is managed via Zustand store (no provider needed)
  */
 export const AppProviders: React.FC<AppProvidersProps> = ({ children }) => {
   return (
@@ -51,11 +51,9 @@ export const AppProviders: React.FC<AppProvidersProps> = ({ children }) => {
       <I18nextProvider i18n={i18n}>
         <AuthProvider>
           <LanguageProvider>
-            <CartProvider>
-              <UserProfileProvider>
-                {children}
-              </UserProfileProvider>
-            </CartProvider>
+            <UserProfileProvider>
+              {children}
+            </UserProfileProvider>
           </LanguageProvider>
         </AuthProvider>
       </I18nextProvider>

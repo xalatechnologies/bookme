@@ -3,6 +3,7 @@ import { Calendar, Clock, MapPin, DollarSign } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/common/status/StatusBadge";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import type { IBookingEvent } from "@/types/calendar";
@@ -94,9 +95,13 @@ export const EventTooltip: React.FC<EventTooltipProps> = ({
             <PrimaryButton className="flex-1 px-3 py-1.5 text-sm rounded">
               {t("common.view_details")}
             </PrimaryButton>
-            <button className="flex-1 px-3 py-1.5 text-sm border border-gray-300 text-gray-700 rounded hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800 transition-colors">
+            <Button 
+              variant="outline" 
+              size="sm"
+              className="flex-1"
+            >
               {t("actions.edit")}
-            </button>
+            </Button>
           </div>
         </div>
       </CardContent>

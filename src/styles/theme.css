@@ -1,26 +1,62 @@
+/**
+ * BookMe Theme Stylesheet
+ * 
+ * Current Mode: Light Mode Only
+ * Dark mode infrastructure exists but is disabled for production.
+ * See DESIGN_SYSTEM.md for dark mode implementation guide.
+ */
+
 :root {
+  /* Brand Colors */
   --background: 0 0% 100%;
   --foreground: 224 71% 4%;
+  
+  /* Surface Colors */
   --card: 0 0% 100%;
   --card-foreground: 224 71% 4%;
   --popover: 0 0% 100%;
   --popover-foreground: 224 71% 4%;
+  
+  /* Interactive Colors */
   --primary: 221 83% 53%;
   --primary-foreground: 210 40% 98%;
   --secondary: 220 14% 96%;
   --secondary-foreground: 222 47% 11%;
+  
+  /* Semantic Colors */
   --muted: 220 14% 96%;
   --muted-foreground: 220 9% 46%;
   --accent: 220 14% 96%;
   --accent-foreground: 222 47% 11%;
   --destructive: 0 72% 51%;
   --destructive-foreground: 210 40% 98%;
+  
+  /* Borders & Inputs */
   --border: 220 13% 91%;
   --input: 220 13% 91%;
   --ring: 221 83% 53%;
+  
+  /* Layout Tokens */
+  --background-page: var(--background);
+  --background-card: var(--card);
+  --background-muted: var(--muted);
+  
+  /* Shape */
   --radius: 0.5rem;
 }
 
+/* 
+ * Dark Mode (Disabled - Future Implementation)
+ * 
+ * The following dark mode styles are preserved for future implementation.
+ * To enable dark mode:
+ * 1. Remove dark mode disabling logic from main.tsx
+ * 2. Implement useTheme hook
+ * 3. Add ThemeToggle component
+ * 4. Test all components in dark mode
+ * 
+ * Uncomment when ready to implement:
+ *
 .dark {
   --background: 224 71% 4%;
   --foreground: 213 31% 91%;
@@ -42,6 +78,7 @@
   --input: 215 27% 20%;
   --ring: 224 71% 4%;
 }
+*/
 
 html { 
   color-scheme: light dark; 

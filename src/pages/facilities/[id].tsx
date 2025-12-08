@@ -9,7 +9,6 @@ import type { Database, Json } from "@/types/database";
 
 import { useFacility } from "@/components/features/facilities/hooks";
 import { useZones } from "@/components/features/facilities/hooks";
-import { CartProvider } from "@/contexts/hooks";
 import { GlobalHeader } from "@/components/layouts/PublicLayout/GlobalHeader";
 import { FacilityDetailLayout } from "@/components/features/facilities/components/FacilityDetail/FacilityDetailLayout";
 import { FacilityDetailBreadcrumb } from "@/components/features/facilities/components/FacilityDetail/FacilityDetailBreadcrumb";
@@ -110,52 +109,50 @@ export const FacilityDetail = (): JSX.Element => {
   // Note: currentPattern and handlePatternApply are prepared for future recurring booking feature
 
   return (
-    <CartProvider>
-      <div className="min-h-screen bg-white flex flex-col">
-        <GlobalHeader />
+    <div className="min-h-screen bg-white flex flex-col">
+      <GlobalHeader />
 
-        {/* Breadcrumb Navigation */}
-        <div className="relative z-10">
-          <FacilityDetailBreadcrumb facilityName={facility.name} />
-        </div>
-
-        {/* Main Content */}
-        <div className="flex-grow pb-20 lg:pb-0 relative z-0">
-          <FacilityDetailLayout
-            facility={facility}
-            zones={zones.map(zone => ({
-              id: zone.id,
-              name: zone.name,
-              facility_id: facility.id,
-              capacity: zone.capacity,
-              price_per_hour_cents: zone.pricePerHour * 100,
-              area_sqm: zone.area || null,
-              description: zone.description || null,
-              amenities: zone.amenities as Json,
-              status: 'active',
-              org_id: facility.org_id,
-              created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString()
-            }))}
-            onShare={handleShare}
-            isFavorited={isFavorited}
-            onToggleFavorite={handleToggleFavorite}
-          />
-
-          {/* Calendar is now integrated in the tabs */}
-        </div>
-
-        {/* Mobile Booking Panel */}
-        <MobileBookingPanel
-          facilityName={facility.name}
-          facilityId={facility.id}
-          capacity={facility.capacity || 0}
-          area={`${facility.capacity || 0} ${t("details.people", {
-            ns: "facility"})}`}
-          openingHours="08:00 - 22:00"
-        />
+      {/* Breadcrumb Navigation */}
+      <div className="relative z-10">
+        <FacilityDetailBreadcrumb facilityName={facility.name} />
       </div>
-    </CartProvider>
+
+      {/* Main Content */}
+      <div className="flex-grow pb-20 lg:pb-0 relative z-0">
+        <FacilityDetailLayout
+          facility={facility}
+          zones={zones.map(zone => ({
+            id: zone.id,
+            name: zone.name,
+            facility_id: facility.id,
+            capacity: zone.capacity,
+            price_per_hour_cents: zone.pricePerHour * 100,
+            area_sqm: zone.area || null,
+            description: zone.description || null,
+            amenities: zone.amenities as Json,
+            status: 'active',
+            org_id: facility.org_id,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          }))}
+          onShare={handleShare}
+          isFavorited={isFavorited}
+          onToggleFavorite={handleToggleFavorite}
+        />
+
+        {/* Calendar is now integrated in the tabs */}
+      </div>
+
+      {/* Mobile Booking Panel */}
+      <MobileBookingPanel
+        facilityName={facility.name}
+        facilityId={facility.id}
+        capacity={facility.capacity || 0}
+        area={`${facility.capacity || 0} ${t("details.people", {
+          ns: "facility"})}`}
+        openingHours="08:00 - 22:00"
+      />
+    </div>
   );
 };
 
