@@ -81,6 +81,25 @@ Deployment and CI/CD documentation:
 - **CI/CD Configuration** - Automated pipelines
 - **Pre-deployment Checklists** - Deployment verification
 
+#### `/dev` - Development Documentation (5 files)
+Developer-focused documentation:
+- **[STATE_MANAGEMENT.md](dev/STATE_MANAGEMENT.md)** - State management architecture
+- **[CI_SETUP.md](dev/CI_SETUP.md)** - CI/CD setup guide
+- **Development Workflows** - Development best practices
+
+#### `/data` - Data Model Documentation (1 file)
+Database and data model documentation:
+- **[ENTITY_MODEL.md](data/ENTITY_MODEL.md)** - Entity relationship model
+
+#### `/security` - Security Documentation (2 files)
+Security architecture and guidelines:
+- **[ROLES_AND_PERMISSIONS.md](security/ROLES_AND_PERMISSIONS.md)** - Role-based access control
+- **[SECURITY_MODEL.md](security/SECURITY_MODEL.md)** - Security architecture and best practices
+
+#### `/adr` - Architecture Decision Records (3 files)
+Architectural decisions and rationale:
+- **[ADR_STATE_AND_SERVICE_LAYER.md](adr/ADR_STATE_AND_SERVICE_LAYER.md)** - State and service layer decisions
+
 #### `/archive` - Historical Documentation (35+ files)
 Archived documentation from previous development:
 - Historical bug fixes and improvements

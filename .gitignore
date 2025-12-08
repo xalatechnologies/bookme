@@ -59,3 +59,9 @@ docs/reports/
 stats.html
 eslint-report.json
 lint-output.txt
+
+# AI-specific directories
+.qoder/
+.cursor/
+.aider*
+.gemini/
