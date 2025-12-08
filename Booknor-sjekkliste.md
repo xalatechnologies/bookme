@@ -155,42 +155,42 @@ Oppgave: Gå systematisk gjennom alle seksjoner. Ikke krysse av før oppgaven fa
 ## 4. UX og brukerflyt
 
 ### 4.1 Landings- og søkeside (Index / booking-flyt)
-- [ ] Identifiser all logikk i `src/pages/Index.tsx`:
-  - [ ] Supabase-kall.
-  - [ ] Filter-håndtering (pris, tilgjengelighet, utstyr, parkering, wifi, fotografering osv.).
-  - [ ] Auth-basert redirect (admin vs vanlig bruker).
-  - [ ] Samspill mellom liste og kart.
-- [ ] Flytt datalogikk til:
-  - [ ] `services/business/facilities.service.ts` (eller tilsvarende).
-- [ ] Opprett hook:
-  - [ ] `useFacilitySearchLogic`:
-    - [ ] Henter liste over facilities.
-    - [ ] Håndterer filter-state.
-    - [ ] Håndterer ordning/sortering.
-    - [ ] Håndterer loading/error.
-- [ ] Del opp UI i rene komponenter:
-  - [ ] `<SearchFilters />`
-  - [ ] `<FacilityList />`
-  - [ ] `<FacilityMap />` (kartvisning).
-- [ ] Vurder bruk av `react-query` eller tilsvarende:
-  - [ ] Konfigurer queryClient.
-  - [ ] Bruk queries/mutations for datahenting/oppdatering.
-- [ ] Verifiser flyt:
-  - [ ] Bruker søker.
-  - [ ] Får opp liste + kart.
-  - [ ] Klikk på facility fører til riktig detaljside.
+- [x] Identifiser all logikk i `src/pages/Index.tsx`:
+  - [x] Supabase-kall.
+  - [x] Filter-håndtering (pris, tilgjengelighet, utstyr, parkering, wifi, fotografering osv.).
+  - [x] Auth-basert redirect (admin vs vanlig bruker).
+  - [x] Samspill mellom liste og kart.
+- [x] Flytt datalogikk til:
+  - [x] `services/business/facilities.service.ts` (eller tilsvarende).
+- [x] Opprett hook:
+  - [x] `useFacilitySearchLogic`:
+    - [x] Henter liste over facilities.
+    - [x] Håndterer filter-state.
+    - [x] Håndterer ordning/sortering.
+    - [x] Håndterer loading/error.
+- [x] Del opp UI i rene komponenter:
+  - [x] `<SearchFilters />`
+  - [x] `<FacilityList />`
+  - [x] `<FacilityMap />` (kartvisning).
+- [x] Vurder bruk av `react-query` eller tilsvarende:
+  - [x] Konfigurer queryClient.
+  - [x] Bruk queries/mutations for datahenting/oppdatering.
+- [x] Verifiser flyt:
+  - [x] Bruker søker.
+  - [x] Får opp liste + kart.
+  - [x] Klikk på facility fører til riktig detaljside.
 
 ### 4.2 Booking-flyt og checkout
-- [ ] Gå gjennom `src/pages/Checkout.tsx`:
-  - [ ] Identifiser direkte Supabase-kall.
-  - [ ] Identifiser logikk for “bruker er ikke logget inn”.
-- [ ] Flytt datalogikk til dedikert service/hook:
-  - [ ] `useCheckoutLogic`.
-- [ ] Sørg for at:
-  - [ ] Ikke-innlogget bruker blir sendt til login.
-  - [ ] Etter login kommer bruker tilbake til samme booking-flyt.
-  - [ ] Feil i booking (manglende felter, kollisjon, RLS-feil) gir tydelige feilmeldinger.
-- [ ] Verifiser at det finnes en tydelig kvitteringsside etter fullført booking.
+- [x] Gå gjennom `src/pages/Checkout.tsx`:
+  - [x] Identifiser direkte Supabase-kall.
+  - [x] Identifiser logikk for “bruker er ikke logget inn”.
+- [x] Flytt datalogikk til dedikert service/hook:
+  - [x] `useCheckoutLogic`.
+- [x] Sørg for at:
+  - [x] Ikke-innlogget bruker blir sendt til login.
+  - [x] Etter login kommer bruker tilbake til samme booking-flyt.
+  - [x] Feil i booking (manglende felter, kollisjon, RLS-feil) gir tydelige feilmeldinger.
+- [x] Verifiser at det finnes en tydelig kvitteringsside etter fullført booking.
 
 ---
 

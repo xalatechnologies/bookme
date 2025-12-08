@@ -6,11 +6,12 @@ import { GlobalHeader } from "@/components/layouts/PublicLayout/GlobalHeader";
 import SearchFilter from "@/components/features/search/components/SearchFilter";
 import { FacilityList } from "@/components/features/facilities/components/FacilitySearch/FacilityList";
 import { MapView } from "@/components/features/facilities/components/FacilityMap/MapView";
-import { useIndexPageLogic } from "@/hooks/features/search/useIndexPageLogic";
+import { useFacilitySearchLogic } from "@/hooks/features/search/useFacilitySearchLogic";
 
 export const Index = (): JSX.Element => {
-  // Use the hook to manage all page logic
+  // Use the hook to manage all page logic including data fetching
   const {
+    // State
     date,
     setDate,
     facilityType,
@@ -37,9 +38,13 @@ export const Index = (): JSX.Element => {
     setHasWifi,
     allowsPhotography,
     setAllowsPhotography,
+
+    // Computed
     filters,
-  } = useIndexPageLogic();
-  
+    facilities,
+    isLoading
+  } = useFacilitySearchLogic();
+
   const renderContent = () => {
     switch (viewMode) {
       case "map":
@@ -48,13 +53,25 @@ export const Index = (): JSX.Element => {
       case "grid":
         return (
           <div className="max-w-7xl mx-auto px-4 my-[12px]">
-            <FacilityList filters={filters} viewMode={viewMode} setViewMode={setViewMode} />
+            <FacilityList
+              filters={filters}
+              viewMode={viewMode}
+              setViewMode={setViewMode}
+              facilities={facilities}
+              isLoading={isLoading}
+            />
           </div>
         );
       default:
         return (
           <div className="max-w-7xl mx-auto px-4 my-[12px]">
-            <FacilityList filters={filters} viewMode="grid" setViewMode={setViewMode} />
+            <FacilityList
+              filters={filters}
+              viewMode="grid"
+              setViewMode={setViewMode}
+              facilities={facilities}
+              isLoading={isLoading}
+            />
           </div>
         );
     }
@@ -70,33 +87,33 @@ export const Index = (): JSX.Element => {
       {/* Sticky Header and Search Filter combined */}
       <div className="sticky top-0 z-50 w-full">
         <GlobalHeader />
-        <SearchFilter 
-          date={date} 
-          setDate={setDate} 
-          facilityType={facilityType} 
-          setFacilityType={setFacilityType} 
-          location={selectedLocation} 
-          setLocation={setSelectedLocation} 
-          viewMode={viewMode} 
-          setViewMode={setViewMode} 
-          accessibility={accessibility} 
-          setAccessibility={setAccessibility} 
-          capacity={capacity} 
-          setCapacity={setCapacity} 
-          searchTerm={searchTerm} 
-          setSearchTerm={setSearchTerm} 
-          priceRange={priceRange} 
-          setPriceRange={setPriceRange} 
-          availableNow={availableNow} 
-          setAvailableNow={setAvailableNow} 
-          hasEquipment={hasEquipment} 
-          setHasEquipment={setHasEquipment} 
-          hasParking={hasParking} 
-          setHasParking={setHasParking} 
-          hasWifi={hasWifi} 
-          setHasWifi={setHasWifi} 
-          allowsPhotography={allowsPhotography} 
-          setAllowsPhotography={setAllowsPhotography} 
+        <SearchFilter
+          date={date}
+          setDate={setDate}
+          facilityType={facilityType}
+          setFacilityType={setFacilityType}
+          location={selectedLocation}
+          setLocation={setSelectedLocation}
+          viewMode={viewMode}
+          setViewMode={setViewMode}
+          accessibility={accessibility}
+          setAccessibility={setAccessibility}
+          capacity={capacity}
+          setCapacity={setCapacity}
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          priceRange={priceRange}
+          setPriceRange={setPriceRange}
+          availableNow={availableNow}
+          setAvailableNow={setAvailableNow}
+          hasEquipment={hasEquipment}
+          setHasEquipment={setHasEquipment}
+          hasParking={hasParking}
+          setHasParking={setHasParking}
+          hasWifi={hasWifi}
+          setHasWifi={setHasWifi}
+          allowsPhotography={allowsPhotography}
+          setAllowsPhotography={setAllowsPhotography}
         />
       </div>
 
