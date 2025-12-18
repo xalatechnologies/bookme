@@ -49,6 +49,11 @@ vi.mock('lucide-react', () => ({
   Trash2: () => <div data-testid="trash-icon" />,
   Building: () => <div data-testid="building-icon" />,
   Check: () => <div data-testid="check-icon" />,
+  MoreVertical: () => <div data-testid="more-vertical-icon" />,
+  EyeOff: () => <div data-testid="eye-off-icon" />,
+  Paperclip: () => <div data-testid="paperclip-icon" />,
+  Smile: () => <div data-testid="smile-icon" />,
+  Send: () => <div data-testid="send-icon" />,
 }));
 
 // Mock UI components
@@ -110,11 +115,35 @@ vi.mock('./CreateThreadModal', () => ({
   default: () => <div data-testid="create-thread-modal">Create Thread Modal</div>,
 }));
 
+// Mock the useUserProfile hook
+vi.mock('@/contexts/hooks/useUserProfile', () => ({
+  useUserProfile: () => ({
+    profile: {
+      firstName: 'John',
+      lastName: 'Doe',
+      email: 'john.doe@example.com',
+      phone: '+1234567890',
+      address: '123 Main St',
+      dateOfBirth: '1990-01-01',
+      avatar: '/avatar.jpg',
+      role: 'Bruker',
+      accountCreated: '2023-01-01T00:00:00Z',
+      lastActive: '2023-06-15T10:30:00Z',
+      accountId: 'user1',
+      subscriptionType: 'Gratisbruker'
+    },
+    updateProfile: vi.fn(),
+    isLoading: false,
+    refreshProfile: vi.fn(),
+  }),
+}));
+
 // Mock the message store
 const mockGetUserThreads = vi.fn();
 const mockGetMessagesByThread = vi.fn();
 const mockGetAvailableParticipants = vi.fn();
 const mockGetBookedFacilities = vi.fn();
+const mockGetThreadById = vi.fn();
 const mockUpdateThread = vi.fn();
 const mockDeleteThread = vi.fn();
 
@@ -124,6 +153,7 @@ vi.mock('@/stores/messageStore', () => ({
     getMessagesByThread: mockGetMessagesByThread,
     getAvailableParticipants: mockGetAvailableParticipants,
     getBookedFacilities: mockGetBookedFacilities,
+    getThreadById: mockGetThreadById,
     updateThread: mockUpdateThread,
     deleteThread: mockDeleteThread,
   }),
@@ -188,6 +218,9 @@ describe('MessageInbox Component', () => {
     mockGetBookedFacilities.mockReturnValue([
       { id: 'facility1', name: 'Conference Room A', bookingId: 'booking1' },
     ]);
+    mockGetThreadById.mockImplementation((threadId) => {
+      return mockThreads.find(thread => thread.id === threadId);
+    });
   });
 
   describe('Thread List Display', () => {
