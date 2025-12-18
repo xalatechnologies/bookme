@@ -504,8 +504,9 @@ const ReportsPage = (): JSX.Element => {
                 const isActive = reportType === type.value;
 
                 return (
-                  <button
+                  <Button
                     key={type.value}
+                    variant="ghost"
                     onClick={() => setReportType(type.value)}
                     className={`p-4 border-2 rounded-lg transition-all hover:shadow-lg ${
                       isActive
@@ -537,7 +538,7 @@ const ReportsPage = (): JSX.Element => {
                         </p>
                       </div>
                     </div>
-                  </button>
+                  </Button>
                 );
               })}
             </div>

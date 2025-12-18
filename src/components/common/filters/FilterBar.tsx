@@ -129,13 +129,15 @@ export const FilterBar: React.FC<FilterBarProps> = ({
               {selectedValues[group.id]?.length > 0 && (
                 <>
                   <div className="border-t border-gray-200 dark:border-gray-700" />
-                  <button
+                  <Button
                     onClick={() => handleClearFilter(group.id)}
+                    variant="ghost"
+                    size="sm"
                     className="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center gap-2"
                   >
                     <X className="h-3 w-3" />
                     {t("actions.clear", "Clear")}
-                  </button>
+                  </Button>
                 </>
               )}
             </div>
@@ -169,12 +171,14 @@ export const FilterBar: React.FC<FilterBarProps> = ({
                   className="flex items-center gap-1"
                 >
                   {option?.label || value}
-                  <button
+                  <Button
                     onClick={() => handleToggleFilter(group.id, value)}
-                    className="ml-1 hover:text-red-600"
+                    variant="ghost"
+                    size="icon"
+                    className="ml-1 hover:text-red-600 p-0 h-auto w-auto"
                   >
                     <X className="h-3 w-3" />
-                  </button>
+                  </Button>
                 </Badge>
               );
             })

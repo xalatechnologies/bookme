@@ -368,13 +368,13 @@ describe('BookingStatusBadge Component', () => {
   it('should render booking status badge', () => {
     render(<BookingStatusBadge status="approved" />);
 
-    expect(screen.getByText('statuses.approved')).toBeInTheDocument();
+    expect(screen.getByText('status.approved')).toBeInTheDocument();
   });
 
   it('should use correct translation key pattern', () => {
     render(<BookingStatusBadge status="pending" />);
 
-    expect(screen.getByText('statuses.pending')).toBeInTheDocument();
+    expect(screen.getByText('status.pending')).toBeInTheDocument();
   });
 
   it('should render with icon', () => {
@@ -396,13 +396,13 @@ describe('PaymentStatusBadge Component', () => {
   it('should render payment status badge', () => {
     render(<PaymentStatusBadge status="paid" />);
 
-    expect(screen.getByText('statuses.paid')).toBeInTheDocument();
+    expect(screen.getByText('status.paid')).toBeInTheDocument();
   });
 
   it('should use correct translation key pattern', () => {
     render(<PaymentStatusBadge status="unpaid" />);
 
-    expect(screen.getByText('statuses.unpaid')).toBeInTheDocument();
+    expect(screen.getByText('status.unpaid')).toBeInTheDocument();
   });
 
   it('should render with icon', () => {
@@ -424,13 +424,13 @@ describe('UserStatusBadge Component', () => {
   it('should render user status badge', () => {
     render(<UserStatusBadge status="active" />);
 
-    expect(screen.getByText('statuses.active')).toBeInTheDocument();
+    expect(screen.getByText('status.active')).toBeInTheDocument();
   });
 
   it('should use correct translation key pattern', () => {
     render(<UserStatusBadge status="inactive" />);
 
-    expect(screen.getByText('statuses.inactive')).toBeInTheDocument();
+    expect(screen.getByText('status.inactive')).toBeInTheDocument();
   });
 
   it('should render with icon', () => {

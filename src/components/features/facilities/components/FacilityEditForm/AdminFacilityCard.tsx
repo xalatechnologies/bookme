@@ -250,13 +250,14 @@ const AdminFacilityCard = ({ facility, onDelete, onToggleStatus, onDuplicate }: 
           {/* Add image button for missing images */}
           {!(facility.images && (facility.images as string[])[0]) && (
             <div className="absolute inset-0 bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
-              <button
+              <Button
                 onClick={handleImageUpload}
+                variant="ghost"
                 className="flex flex-col items-center gap-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
               >
                 <Plus className="w-8 h-8" />
                 <span className="text-sm font-medium">{translate('pages.facilities.card.add_image')}</span>
-              </button>
+              </Button>
             </div>
           )}
         </div>
@@ -316,23 +317,25 @@ const AdminFacilityCard = ({ facility, onDelete, onToggleStatus, onDuplicate }: 
           {facility.amenities && (facility.amenities as string[]).length > 0 && (
             <div className="flex flex-wrap gap-2 mb-5">
               {(facility.amenities as string[]).slice(0, 3).map((amenity, index) => (
-                <button
+                <Button
                   key={index}
                   onClick={(e) => handleTagClick(amenity, e)}
+                  variant="secondary"
                   className="bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800 font-medium px-3 py-1 text-sm rounded-md hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors"
                   aria-label={`${translateAmenity(amenity)} - ${translate('pages.facilities.card.edit')}`}
                 >
                   {translateAmenity(amenity)}
-                </button>
+                </Button>
               ))}
               {(facility.amenities as string[]).length > 3 && (
-                <button
+                <Button
                   onClick={handleShowAllAmenities}
+                  variant="outline"
                   className="bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 border-gray-300 dark:border-gray-600 font-medium px-3 py-1 text-sm rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                   aria-label={translate('pages.facilities.card.show_more_amenities', { count: (facility.amenities as string[]).length - 3 })}
                 >
                   {translate('pages.facilities.card.show_more_amenities', { count: (facility.amenities as string[]).length - 3 })}
-                </button>
+                </Button>
               )}
             </div>
           )}

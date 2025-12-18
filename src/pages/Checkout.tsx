@@ -1,9 +1,8 @@
 "use client";
 
 // External libraries
-import React, { useState, useMemo, useCallback, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import { useTranslation } from "react-i18next";
+import React from "react";
+import { useNavigate } from "react-router-dom";
 import {
   CreditCard,
   Smartphone,
@@ -16,28 +15,14 @@ import {
   Calendar,
   User,
   Edit3,
-  Plus,
-  Lock,
   FileText,
-  AlertCircle,
-  Check,
-  Info,
-  ExternalLink,
-  Users,
-  Settings,
   ChevronRight,
   Loader2,
-  Trash2,
 } from "lucide-react";
 
 // Internal libraries/utilities
-import { useCart } from "@/contexts/hooks";
-import { useUserProfile } from "@/contexts/hooks";
-import { useAuth } from "@/contexts/hooks/useAuth";
 import { GlobalHeader } from "@/components/layouts/PublicLayout/GlobalHeader";
-import { useCreateBooking } from "@/services/supabase/bookings.service";
-import { supabase } from '@/lib/clients/supabase';
-import { facilitiesService } from '@/services/supabase/facilities.service';
+import { useCheckoutLogic, availableAddons } from "@/hooks/features/checkout/useCheckoutLogic";
 
 // UI components
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -49,9 +34,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-
-// Types
-import type { ISelectedTimeSlot } from "@/components/features/bookings/types";
 
 /**
  * Professional checkout page component
@@ -71,822 +53,43 @@ import type { ISelectedTimeSlot } from "@/components/features/bookings/types";
  */
 export const Checkout = (): JSX.Element => {
   const navigate = useNavigate();
-  const location = useLocation();
-  const { user } = useAuth();
-  const { items, totalPrice, clearCart, removeItem } = useCart();
-  const { profile } = useUserProfile();
-  const { t, i18n } = useTranslation(["common", "checkout", "bookings"]);
-  const createBookingMutation = useCreateBooking();
-  const currentLocale = i18n.language === "en" ? "en-US" : "nb-NO";
 
-  // State management - Initialize from sessionStorage for returning users
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>(() => {
-    return sessionStorage.getItem('checkout_paymentMethod') || "";
-  });
-  const [isProcessing, setIsProcessing] = useState<boolean>(false);
-  const [editingInfo, setEditingInfo] = useState<boolean>(false);
-  const [discountCode, setDiscountCode] = useState<string>(() => {
-    return sessionStorage.getItem('checkout_discountCode') || "";
-  });
-  const [discountApplied, setDiscountApplied] = useState<boolean>(() => {
-    return sessionStorage.getItem('checkout_discountApplied') === 'true';
-  });
-  const [addons, setAddons] = useState<Record<string, boolean>>(() => {
-    const saved = sessionStorage.getItem('checkout_addons');
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch {
-        return {};
-      }
-    }
-    return {};
-  });
-  const [consents, setConsents] = useState<{ terms: boolean; cancellation: boolean; privacy: boolean }>(() => {
-    const saved = sessionStorage.getItem('checkout_consents');
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch {
-        return { terms: false, cancellation: false, privacy: false };
-      }
-    }
-    return { terms: false, cancellation: false, privacy: false };
-  });
-  const [errors, setErrors] = useState<Record<string, string>>({});
-
-  // Collapsible sections state
-  const [expandedSections, setExpandedSections] = useState<
-    Record<string, boolean>
-  >({
-    userInfo: true,
-    bookingDetails: true,
-    addons: false,
-    paymentMethods: true,
-  });
-
-  // Booking details editing state
-  const [editingBookingDetails, setEditingBookingDetails] =
-    useState<boolean>(false);
-
-  // User info type
-  type UserInfo = {
-    firstName: string;
-    lastName: string;
-    email: string;
-    phone: string;
-    address: string;
-    organizationName: string;
-    organizationNumber: string;
-    invoiceReference: string;
-    projectCode: string;
-  };
-
-  // Editable user info - Initialize from sessionStorage or profile
-  const [userInfo, setUserInfo] = useState<UserInfo>(() => {
-    // Try to restore from sessionStorage first (for returning from login)
-    const saved = sessionStorage.getItem('checkout_userInfo');
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch {
-        // Ignore parse errors and use profile data
-      }
-    }
-    return {
-      firstName: profile.firstName || "",
-      lastName: profile.lastName || "",
-      email: profile.email || "",
-      phone: profile.phone || "",
-      address: profile.address || "",
-      organizationName: "",
-      organizationNumber: "",
-      invoiceReference: "",
-      projectCode: "",
-    };
-  });
-
-  // Add-ons with pricing and icons
-  const availableAddons = [
-    {
-      id: "extra-time",
-      name: t("checkout:addons.extra_time.name", "Ekstra tid"),
-      price: 200,
-      description: t("checkout:addons.extra_time.description", "Per 30 min"),
-      icon: Clock,
-      details: t(
-        "checkout:addons.extra_time.details",
-        "Forleng bookingen med 30 minutter"
-      ),
-    },
-    {
-      id: "equipment",
-      name: t("checkout:addons.equipment.name", "Utstyr"),
-      price: 150,
-      description: t(
-        "checkout:addons.equipment.description",
-        "Ballnett, musikkanlegg"
-      ),
-      icon: Settings,
-      details: t(
-        "checkout:addons.equipment.details",
-        "Inkluderer ballnett, musikkanlegg og annet utstyr"
-      ),
-    },
-    {
-      id: "janitor",
-      name: t("checkout:addons.janitor.name", "Vaktmesterhjelp"),
-      price: 300,
-      description: t("checkout:addons.janitor.description", "Rigg/nedrigg"),
-      icon: Users,
-      details: t(
-        "checkout:addons.janitor.details",
-        "Hjelp med oppsett og nedrigg av utstyr"
-      ),
-    },
-    {
-      id: "security",
-      name: t("checkout:addons.security.name", "Sikkerhet"),
-      price: 500,
-      description: t(
-        "checkout:addons.security.description",
-        "Vaktmester på stedet"
-      ),
-      icon: Shield,
-      details: t(
-        "checkout:addons.security.details",
-        "Vaktmester til stede under hele arrangementet"
-      ),
-    },
-  ];
-
-  /**
-   * Save checkout state to sessionStorage before redirecting to login
-   */
-  const saveCheckoutState = useCallback(() => {
-    try {
-      sessionStorage.setItem('checkout_userInfo', JSON.stringify(userInfo));
-      sessionStorage.setItem('checkout_paymentMethod', selectedPaymentMethod);
-      sessionStorage.setItem('checkout_discountCode', discountCode);
-      sessionStorage.setItem('checkout_discountApplied', String(discountApplied));
-      sessionStorage.setItem('checkout_addons', JSON.stringify(addons));
-      sessionStorage.setItem('checkout_consents', JSON.stringify(consents));
-    } catch (error) {
-      console.error('Failed to save checkout state:', error);
-    }
-  }, [userInfo, selectedPaymentMethod, discountCode, discountApplied, addons, consents]);
-
-  /**
-   * Clear saved checkout state from sessionStorage
-   */
-  const clearCheckoutState = useCallback(() => {
-    try {
-      sessionStorage.removeItem('checkout_userInfo');
-      sessionStorage.removeItem('checkout_paymentMethod');
-      sessionStorage.removeItem('checkout_discountCode');
-      sessionStorage.removeItem('checkout_discountApplied');
-      sessionStorage.removeItem('checkout_addons');
-      sessionStorage.removeItem('checkout_consents');
-    } catch (error) {
-      console.error('Failed to clear checkout state:', error);
-    }
-  }, []);
-
-  /**
-   * Check authentication and redirect to login if necessary
-   * This effect runs on mount and when user authentication changes
-   */
-  useEffect(() => {
-    // If user is not authenticated and has items in cart
-    if (!user && items.length > 0) {
-      // Save current checkout state
-      saveCheckoutState();
-      
-      // Redirect to login with return URL
-      navigate('/login?type=user&returnUrl=/checkout', { 
-        replace: true,
-        state: { from: location.pathname }
-      });
-    }
-    
-    // Clear saved state after successful login (only once)
-    if (user && location.state?.fromLogin) {
-      // Clear the state flag to prevent re-clearing
-      navigate(location.pathname, { replace: true, state: {} });
-    }
-  }, [user, items.length, navigate, location, saveCheckoutState]);
-
-  /**
-   * Auto-save checkout state when it changes (for page refreshes)
-   */
-  useEffect(() => {
-    if (user) {
-      saveCheckoutState();
-    }
-  }, [user, saveCheckoutState]);
-
-  /**
-   * Update user info when profile loads (after login or profile refresh)
-   * Always auto-fill from profile unless user has manually edited fields
-   */
-  useEffect(() => {
-    // Check if this is a fresh load (not returning from login with saved state)
-    const hasSavedState = sessionStorage.getItem('checkout_userInfo');
-    
-    // Only auto-fill if:
-    // 1. User is logged in
-    // 2. Profile data is available
-    // 3. Either no saved state OR coming back from login (location.state.fromLogin)
-    if (user && profile.email && (!hasSavedState || location.state?.fromLogin)) {
-      console.log('Auto-filling user info from profile:', profile);
-      
-      const updatedInfo = {
-        firstName: profile.firstName || user.user_metadata?.firstName || "",
-        lastName: profile.lastName || user.user_metadata?.lastName || "",
-        email: user.email || profile.email || "",
-        phone: profile.phone || user.user_metadata?.phone || "",
-        address: profile.address || user.user_metadata?.address || "",
-        organizationName: "",
-        organizationNumber: "",
-        invoiceReference: "",
-        projectCode: "",
-      };
-      
-      setUserInfo(updatedInfo);
-      
-      // Clear the fromLogin flag after auto-fill
-      if (location.state?.fromLogin) {
-        navigate(location.pathname, { replace: true, state: {} });
-      }
-    }
-  }, [profile, user, location.state, navigate, location.pathname]);
-
-  /**
-   * Calculate pricing with add-ons and discounts
-   * Uses existing cart pricing (which already includes VAT) and adds add-ons
-   */
-  const pricing = useMemo(() => {
-    // totalPrice from cart already includes VAT, so we need to extract it
-    const totalWithVat = totalPrice;
-    const vatAmount = Math.round(totalWithVat * 0.2); // 20% of total = 25% VAT
-    const basePriceExcludingVat = totalWithVat - vatAmount;
-
-    const addonPrice = Object.entries(addons).reduce(
-      (total, [id, selected]) => {
-        if (selected) {
-          const addon = availableAddons.find((a) => a.id === id);
-          return total + (addon?.price || 0);
-        }
-        return total;
-      },
-      0
-    );
-
-    const addonPriceWithVat = Math.round(addonPrice * 1.25); // Add VAT to add-ons
-    const subtotal = totalWithVat + addonPriceWithVat;
-    const discountAmount = discountApplied ? Math.round(subtotal * 0.1) : 0; // 10% discount
-    const finalTotal = subtotal - discountAmount;
-
-    return {
-      basePriceExcludingVat,
-      basePriceWithVat: totalWithVat,
-      addonPrice,
-      addonPriceWithVat,
-      subtotal,
-      discountAmount,
-      vatAmount: vatAmount + Math.round(addonPrice * 0.25), // VAT from base + add-ons
-      total: finalTotal,
-    };
-  }, [totalPrice, addons, discountApplied]);
-
-  /**
-   * Format date for display
-   */
-  const formatDate = useCallback(
-    (date: Date | string | number): string => {
-      try {
-        let dateObj: Date;
-
-        if (date instanceof Date) {
-          dateObj = date;
-        } else if (typeof date === "string") {
-          dateObj = new Date(date);
-        } else if (typeof date === "number") {
-          dateObj = new Date(date);
-        } else {
-          return "Ugyldig dato";
-        }
-
-        if (isNaN(dateObj.getTime())) {
-          return t("checkout:labels.invalid_date", "Ugyldig dato");
-        }
-
-        return new Intl.DateTimeFormat(currentLocale, {
-          day: "numeric",
-          month: "long",
-          year: "numeric",
-        }).format(dateObj);
-      } catch (error) {
-        void error; // Error handled by returning fallback message
-        return t("checkout:labels.invalid_date", "Ugyldig dato");
-      }
-    },
-    [currentLocale, t]
-  );
-
-  /**
-   * Format time for display
-   */
-  const formatTime = useCallback(
-    (timeSlot: string): string => {
-      if (!timeSlot || typeof timeSlot !== "string") {
-        return t("checkout:labels.invalid_time", "Ugyldig tid");
-      }
-      return timeSlot.replace("-", " - ");
-    },
-    [t]
-  );
-
-  /**
-   * Calculate time range for multiple time slots
-   *
-   * @param timeSlots - Array of time slots
-   * @returns Formatted time range string
-   */
-  const calculateTimeRange = useCallback(
-    (timeSlots: readonly ISelectedTimeSlot[]): string => {
-      if (!timeSlots || timeSlots.length === 0) {
-        return t("checkout:labels.no_time", "Ingen tid");
-      }
-
-      if (timeSlots.length === 1) {
-        return formatTime(timeSlots[0].timeSlot);
-      }
-
-      // For multiple slots, calculate the total time range
-      // Sort slots by time to ensure correct order
-      const sortedSlots = [...timeSlots].sort((a, b) => {
-        const timeA = a.timeSlot.split("-")[0];
-        const timeB = b.timeSlot.split("-")[0];
-        return timeA.localeCompare(timeB);
-      });
-
-      const startTime = sortedSlots[0].timeSlot.split("-")[0];
-      const lastSlot = sortedSlots[sortedSlots.length - 1];
-      const endTime = lastSlot.timeSlot.split("-")[1];
-
-      return `${startTime} - ${endTime}`;
-    },
-    [formatTime]
-  );
-
-  /**
-   * Handle discount code application
-   */
-  const handleDiscountCode = useCallback(() => {
-    if (discountCode.toLowerCase() === "welcome10") {
-      setDiscountApplied(true);
-      setErrors((prev) => ({ ...prev, discount: "" }));
-    } else {
-      setErrors((prev) => ({
-        ...prev,
-        discount: t("checkout:errors.invalid_discount", "Ugyldig rabattkode"),
-      }));
-    }
-  }, [discountCode]);
-
-  /**
-   * Handle addon toggle
-   */
-  const toggleAddon = useCallback((addonId: string) => {
-    setAddons((prev) => ({
-      ...prev,
-      [addonId]: !prev[addonId],
-    }));
-  }, []);
-
-  /**
-   * Handle consent change
-   */
-  const handleConsentChange = useCallback((consent: keyof typeof consents) => {
-    setConsents((prev: { terms: boolean; cancellation: boolean; privacy: boolean }) => ({
-      ...prev,
-      [consent]: !prev[consent],
-    }));
-  }, []);
-
-  /**
-   * Toggle section expansion
-   */
-  const toggleSection = useCallback((section: string) => {
-    setExpandedSections((prev) => ({
-      ...prev,
-      [section]: !prev[section],
-    }));
-  }, []);
-
-  /**
-   * Handle booking details edit
-   */
-  const handleBookingDetailsEdit = useCallback(() => {
-    setEditingBookingDetails(!editingBookingDetails);
-  }, [editingBookingDetails]);
-
-  /**
-   * Handle booking details save
-   */
-  const handleBookingDetailsSave = useCallback(() => {
-    // TODO: Implement save functionality when backend is available
-    setEditingBookingDetails(false);
-    // For now, just show a success message
-    // toast.success("Bookingdetaljer oppdatert!");
-  }, []);
-
-  /**
-   * Validate form before payment
-   */
-  const validateForm = useCallback((): boolean => {
-    const newErrors: Record<string, string> = {};
-
-    if (!selectedPaymentMethod) {
-      newErrors.payment = t(
-        "checkout:errors.select_payment_method",
-        "Velg en betalingsmetode"
-      );
-    }
-
-    // Check all consents and provide detailed error messages
-    const missingConsents: string[] = [];
-    
-    if (!consents.terms) {
-      missingConsents.push(t(
-        "checkout:errors.terms_short",
-        "vilkårene"
-      ));
-    }
-
-    if (!consents.cancellation) {
-      missingConsents.push(t(
-        "checkout:errors.cancellation_short",
-        "avbestillingsreglene"
-      ));
-    }
-
-    if (!consents.privacy) {
-      missingConsents.push(t(
-        "checkout:errors.privacy_short",
-        "personvern"
-      ));
-    }
-
-    if (missingConsents.length > 0) {
-      newErrors.consents = t(
-        "checkout:errors.must_accept_all",
-        `Du må godta: ${missingConsents.join(", ")}`
-      );
-    }
-
-    setErrors(newErrors);
-    
-    // Scroll to error if validation fails
-    if (Object.keys(newErrors).length > 0) {
-      console.error('Validation failed:', newErrors);
-      // Scroll to the first error
-      setTimeout(() => {
-        const errorElement = document.querySelector('[class*="text-red"]');
-        errorElement?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }, 100);
-    }
-    
-    return Object.keys(newErrors).length === 0;
-  }, [selectedPaymentMethod, consents, t]);
-
-  /**
-   * Note: Booking numbers are now auto-generated by the database
-   * using the bookings table's auto-incrementing ID or a sequence
-   * This function is deprecated and kept only for backwards compatibility
-   */
-  const getNextBookingNumber = useCallback((): number => {
-    // Booking numbers are now handled by the database
-    // Return a placeholder value
-    return 0;
-  }, []);
-
-  /**
-   * Handle payment completion
-   */
-  const handleCompletePayment = useCallback(async (): Promise<void> => {
-    console.log('=== PAYMENT ATTEMPT STARTED ===');
-    console.log('Selected payment method:', selectedPaymentMethod);
-    console.log('Consents:', consents);
-    console.log('User info:', userInfo);
-    console.log('Cart items:', items);
-    
-    // Auto-select payment method if none selected
-    if (!selectedPaymentMethod) {
-      console.log('No payment method selected, auto-selecting card');
-      setSelectedPaymentMethod("card");
-    }
-
-    console.log('Running form validation...');
-    if (!validateForm()) {
-      console.error('Form validation FAILED');
-      return;
-    }
-    console.log('Form validation PASSED');
-
-    // User should already be logged in at this point due to redirect
-    // But add a safety check just in case
-    if (!user) {
-      console.error('User not logged in, redirecting to login');
-      // This shouldn't happen, but if it does, save state and redirect
-      saveCheckoutState();
-      navigate('/login?type=user&returnUrl=/checkout', { 
-        replace: true,
-        state: { from: location.pathname }
-      });
-      return;
-    }
-    console.log('User is logged in:', user.id);
-
-    // Debug: Log cart items to see what facility IDs we have
-    console.log('Cart items:', items);
-    items.forEach((item, index) => {
-      console.log(`Item ${index}:`, {
-        id: item.id,
-        facilityId: item.facilityId,
-        facilityIdType: typeof item.facilityId,
-        facilityIdLength: typeof item.facilityId === 'string' ? item.facilityId.length : 'N/A',
-        facilityName: item.facilityName,
-        timeSlots: item.timeSlots
-      });
-      
-      // Check for invalid IDs
-      if (item.id && typeof item.id === 'string' && item.id.length > 10 && !item.id.includes('-')) {
-        console.warn('Potential invalid ID in cart item:', item.id);
-      }
-    });
-
-    // Check user authentication status
-    console.log('Current user:', user);
-    console.log('User ID:', user?.id);
-    
-    // Check Supabase session
-    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-    console.log('Current session:', session);
-    if (sessionError) {
-      console.error('Session error:', sessionError);
-    }
-
-    setIsProcessing(true);
-
-    try {
-      // Test Supabase connection first
-      console.log('Testing Supabase connection...');
-      const { data: test, error: testError } = await supabase
-        .from('facilities')
-        .select('id')
-        .limit(1);
-      
-      if (testError) {
-        console.error('Supabase connection test failed:', testError);
-        throw new Error(`Database connection failed: ${testError.message}`);
-      }
-      console.log('Supabase connection test successful');
-      
-      // Create actual bookings in the database
-      const bookingPromises = items.map(async (item) => {
-        // Validate that facilityId is a proper UUID
-        if (!item.facilityId || typeof item.facilityId !== 'string' || item.facilityId.length !== 36) {
-          console.error('Invalid facility ID:', item.facilityId);
-          throw new Error(`Invalid facility ID: ${item.facilityId}. Expected a valid UUID.`);
-        }
-
-        // Fetch facility details to get the correct org_id
-        let orgId = "00000000-0000-0000-0000-000000000000";
-        try {
-          console.log('Fetching facility details for:', item.facilityId);
-          const facility = await facilitiesService.getById(item.facilityId);
-          console.log('Facility details:', facility);
-          orgId = facility.org_id || orgId;
-        } catch (facilityError) {
-          console.warn('Failed to fetch facility details, using default org_id:', facilityError);
-        }
-
-        // For recurring bookings, create one booking per time slot
-        if (
-          item.bookingType === "recurring" &&
-          item.timeSlots &&
-          item.timeSlots.length > 0
-        ) {
-          return Promise.all(
-            item.timeSlots.map(async (slot) => {
-              // Normalize date to YYYY-MM-DD
-              const d =
-                typeof slot.date === "string"
-                  ? new Date(slot.date)
-                  : (slot.date as Date);
-              const bookingDate = `${d.getFullYear()}-${String(
-                d.getMonth() + 1
-              ).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-
-              // Parse time slot
-              const [startTime, endTime] = slot.timeSlot.split("-");
-
-              // Calculate start and end datetime
-              const startDateTime = new Date(`${bookingDate}T${startTime.trim()}:00`);
-              const endDateTime = new Date(`${bookingDate}T${endTime.trim()}:00`);
-
-              // Calculate duration in minutes
-              const duration = slot.duration ?? 60;
-
-              // Log the booking data before creating
-              const bookingData = {
-                user_id: user.id,
-                facility_id: item.facilityId,
-                starts_at: startDateTime.toISOString(),
-                ends_at: endDateTime.toISOString(),
-                total_cents: Math.round(item.pricing?.finalPrice / (item.timeSlots.length || 1) * 100),
-                status: "pending" as const,
-                notes: item.purpose || "Booking",
-                is_recurring: true,
-                // Explicitly set group_id to null to avoid any accidental assignment
-                group_id: null,
-                org_id: orgId,
-                currency: "NOK",
-                // Fix zone_id - ensure it's either a valid UUID or null
-                zone_id: item.zoneId && typeof item.zoneId === 'string' && item.zoneId.length === 36 ? item.zoneId : null,
-              };
-              
-              // Check for invalid IDs in booking data
-              for (const [key, value] of Object.entries(bookingData)) {
-                if (typeof value === 'string' && value.length > 10 && !value.includes('-') && key.includes('id')) {
-                  console.warn(`Invalid ID detected in booking data field ${key}:`, value);
-                }
-              }
-              
-              console.log('Creating recurring booking:', bookingData);
-              
-              // Create booking in database
-              return createBookingMutation.mutateAsync(bookingData);
-            })
-          );
-        }
-
-        // For single bookings, create one booking
-        if (item.timeSlots && item.timeSlots.length > 0) {
-          // Validate facilityId again
-          if (!item.facilityId || typeof item.facilityId !== 'string' || item.facilityId.length !== 36) {
-            console.error('Invalid facility ID:', item.facilityId);
-            throw new Error(`Invalid facility ID: ${item.facilityId}. Expected a valid UUID.`);
-          }
-
-          // Use the first time slot for single bookings
-          const slot = item.timeSlots[0];
-          
-          // Normalize date to YYYY-MM-DD
-          const d =
-            typeof slot.date === "string"
-              ? new Date(slot.date)
-              : (slot.date as Date);
-          const bookingDate = `${d.getFullYear()}-${String(
-            d.getMonth() + 1
-          ).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-
-          // Calculate total duration for all time slots in minutes
-          const totalDurationMinutes = item.timeSlots.reduce(
-            (total, s) => total + (s.duration ?? 60),
-            0
-          );
-
-          // For single bookings with multiple time slots, we'll use the first time slot
-          // and calculate the end time based on total duration
-          const [startTime] = slot.timeSlot.split("-");
-
-          // Calculate start and end datetime
-          const startDateTime = new Date(`${bookingDate}T${startTime.trim()}:00`);
-          
-          // Calculate end time based on total duration
-          const endDateTime = new Date(startDateTime.getTime() + (totalDurationMinutes * 60 * 1000));
-
-          // Log the booking data before creating
-          const bookingData = {
-            user_id: user.id,
-            facility_id: item.facilityId,
-            starts_at: startDateTime.toISOString(),
-            ends_at: endDateTime.toISOString(),
-            total_cents: Math.round(item.pricing?.finalPrice * 100),
-            status: "pending" as const,
-            notes: item.purpose || "Booking",
-            is_recurring: false,
-            // Explicitly set group_id to null to avoid any accidental assignment
-            group_id: null,
-            org_id: orgId,
-            currency: "NOK",
-            // Fix zone_id - ensure it's either a valid UUID or null
-            zone_id: item.zoneId && typeof item.zoneId === 'string' && item.zoneId.length === 36 ? item.zoneId : null,
-          };
-          
-          // Check for invalid IDs in booking data
-          for (const [key, value] of Object.entries(bookingData)) {
-            if (typeof value === 'string' && value.length > 10 && !value.includes('-') && key.includes('id')) {
-              console.warn(`Invalid ID detected in booking data field ${key}:`, value);
-            }
-          }
-          
-          console.log('Creating single booking:', bookingData);
-
-          // Create booking in database
-          return createBookingMutation.mutateAsync(bookingData);
-        }
-
-        // Fallback for bookings without time slots
-        // Validate facilityId again
-        if (!item.facilityId || typeof item.facilityId !== 'string' || item.facilityId.length !== 36) {
-          console.error('Invalid facility ID:', item.facilityId);
-          throw new Error(`Invalid facility ID: ${item.facilityId}. Expected a valid UUID.`);
-        }
-
-        // Fetch facility details to get the correct org_id (fallback case)
-        let fallbackOrgId = "00000000-0000-0000-0000-000000000000";
-        try {
-          console.log('Fetching facility details for fallback case:', item.facilityId);
-          const facility = await facilitiesService.getById(item.facilityId);
-          console.log('Facility details (fallback):', facility);
-          fallbackOrgId = facility.org_id || fallbackOrgId;
-        } catch (facilityError) {
-          console.warn('Failed to fetch facility details for fallback, using default org_id:', facilityError);
-        }
-
-        const today = new Date();
-        const bookingDate = `${today.getFullYear()}-${String(
-          today.getMonth() + 1
-        ).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
-
-        const startDateTime = new Date(`${bookingDate}T12:00:00`);
-        const endDateTime = new Date(`${bookingDate}T13:00:00`);
-
-        // Log the booking data before creating
-        const bookingData = {
-          user_id: user.id,
-          facility_id: item.facilityId,
-          starts_at: startDateTime.toISOString(),
-          ends_at: endDateTime.toISOString(),
-          total_cents: Math.round(item.pricing?.finalPrice * 100),
-          status: "pending" as const,
-          notes: item.purpose || "Booking",
-          is_recurring: false,
-          // Explicitly set group_id to null to avoid any accidental assignment
-          group_id: null,
-          org_id: fallbackOrgId,
-          currency: "NOK",
-          // Fix zone_id - ensure it's either a valid UUID or null
-          zone_id: item.zoneId && typeof item.zoneId === 'string' && item.zoneId.length === 36 ? item.zoneId : null,
-        };
-        
-        // Check for invalid IDs in booking data
-        for (const [key, value] of Object.entries(bookingData)) {
-          if (typeof value === 'string' && value.length > 10 && !value.includes('-') && key.includes('id')) {
-            console.warn(`Invalid ID detected in booking data field ${key}:`, value);
-          }
-        }
-        
-        console.log('Creating fallback booking:', bookingData);
-
-        return createBookingMutation.mutateAsync(bookingData);
-      });
-
-      // Wait for all bookings to be created
-      console.log('Waiting for all bookings to be created...');
-      const results = await Promise.all(bookingPromises.flat());
-      console.log('All bookings created successfully:', results);
-
-      // Clear saved checkout state after successful payment
-      clearCheckoutState();
-      
-      // Clear cart and redirect
-      clearCart();
-      navigate("/user/bookings?success=true");
-    } catch (error) {
-      console.error("Error creating bookings:", error);
-      setErrors({
-        payment: t(
-          "checkout:errors.payment_failed",
-          "Payment failed. Please try again or choose a different method. Error: " + (error instanceof Error ? error.message : String(error))
-        ),
-      });
-      setIsProcessing(false);
-    }
-  }, [
-    validateForm,
-    clearCart,
-    navigate,
+  const {
+    // State
     selectedPaymentMethod,
+    setSelectedPaymentMethod,
+    isProcessing,
+    editingInfo,
+    setEditingInfo,
+    discountCode,
+    setDiscountCode,
+    discountApplied,
+    addons,
+    consents,
+    errors,
+    expandedSections,
+    editingBookingDetails,
+    userInfo,
+    setUserInfo,
+
+    // Actions
+    handleDiscountCode,
+    toggleAddon,
+    handleConsentChange,
+    toggleSection,
+    handleBookingDetailsEdit,
+    handleBookingDetailsSave,
+    handleCompletePayment,
+
+    // Computed
+    pricing,
+    formatDate,
+    calculateTimeRange,
+
+    // Data
     items,
-    user,
-    profile,
-    createBookingMutation
-  ]);
+    t
+  } = useCheckoutLogic();
 
   if (items.length === 0 && !isProcessing) {
     return (
@@ -984,9 +187,8 @@ export const Checkout = (): JSX.Element => {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center">
                     <ChevronRight
-                      className={`h-5 w-5 mr-3 text-gray-500 transition-transform duration-200 ${
-                        expandedSections.userInfo ? "rotate-90" : ""
-                      }`}
+                      className={`h-5 w-5 mr-3 text-gray-500 transition-transform duration-200 ${expandedSections.userInfo ? "rotate-90" : ""
+                        }`}
                     />
                     <div>
                       <CardTitle className="text-lg">
@@ -1137,9 +339,8 @@ export const Checkout = (): JSX.Element => {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center">
                     <ChevronRight
-                      className={`h-5 w-5 mr-3 text-gray-500 transition-transform duration-200 ${
-                        expandedSections.bookingDetails ? "rotate-90" : ""
-                      }`}
+                      className={`h-5 w-5 mr-3 text-gray-500 transition-transform duration-200 ${expandedSections.bookingDetails ? "rotate-90" : ""
+                        }`}
                     />
                     <div>
                       <CardTitle className="text-lg">
@@ -1316,16 +517,16 @@ export const Checkout = (): JSX.Element => {
                               <span>
                                 {item.timeSlots && item.timeSlots.length > 0
                                   ? (() => {
-                                      const totalHours =
-                                        item.timeSlots.reduce(
-                                          (total, slot) =>
-                                            total + (slot.duration ?? 60),
-                                          0
-                                        ) / 60;
-                                      return totalHours === 1
-                                        ? `1 time`
-                                        : `${totalHours} timer`;
-                                    })()
+                                    const totalHours =
+                                      item.timeSlots.reduce(
+                                        (total, slot) =>
+                                          total + (slot.duration ?? 60),
+                                        0
+                                      ) / 60;
+                                    return totalHours === 1
+                                      ? `1 time`
+                                      : `${totalHours} timer`;
+                                  })()
                                   : `0 timer`}
                               </span>
                             </div>
@@ -1417,9 +618,8 @@ export const Checkout = (): JSX.Element => {
               >
                 <div className="flex items-center">
                   <ChevronRight
-                    className={`h-5 w-5 mr-3 text-gray-500 transition-transform duration-200 ${
-                      expandedSections.paymentMethods ? "rotate-90" : ""
-                    }`}
+                    className={`h-5 w-5 mr-3 text-gray-500 transition-transform duration-200 ${expandedSections.paymentMethods ? "rotate-90" : ""
+                      }`}
                   />
                   <div>
                     <CardTitle className="text-lg flex items-center">
@@ -1443,11 +643,10 @@ export const Checkout = (): JSX.Element => {
                   >
                     {/* Credit Card */}
                     <div
-                      className={`flex items-start space-x-4 p-5 border-2 rounded-xl transition-all duration-200 ${
-                        selectedPaymentMethod === "card"
+                      className={`flex items-start space-x-4 p-5 border-2 rounded-xl transition-all duration-200 ${selectedPaymentMethod === "card"
                           ? "border-blue-500 bg-blue-50 shadow-md"
                           : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
-                      }`}
+                        }`}
                     >
                       <RadioGroupItem value="card" id="card" className="mt-1" />
                       <div className="flex-1">
@@ -1496,11 +695,10 @@ export const Checkout = (): JSX.Element => {
 
                     {/* Mobile Payment */}
                     <div
-                      className={`flex items-start space-x-4 p-5 border-2 rounded-xl transition-all duration-200 ${
-                        selectedPaymentMethod === "mobile"
+                      className={`flex items-start space-x-4 p-5 border-2 rounded-xl transition-all duration-200 ${selectedPaymentMethod === "mobile"
                           ? "border-blue-500 bg-blue-50 shadow-md"
                           : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
-                      }`}
+                        }`}
                     >
                       <RadioGroupItem
                         value="mobile"
@@ -1552,11 +750,10 @@ export const Checkout = (): JSX.Element => {
 
                     {/* Invoice/EHF */}
                     <div
-                      className={`flex items-start space-x-4 p-5 border-2 rounded-xl transition-all duration-200 ${
-                        selectedPaymentMethod === "invoice"
+                      className={`flex items-start space-x-4 p-5 border-2 rounded-xl transition-all duration-200 ${selectedPaymentMethod === "invoice"
                           ? "border-blue-500 bg-blue-50 shadow-md"
                           : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
-                      }`}
+                        }`}
                     >
                       <RadioGroupItem
                         value="invoice"
@@ -1597,637 +794,278 @@ export const Checkout = (): JSX.Element => {
                           <div className="flex items-center text-xs text-gray-500">
                             <FileText className="h-3 w-3 mr-1" />
                             <span>
-                              {t(
-                                "checkout:payment.ehf_supported",
-                                "EHF støttet"
-                              )}
+                              GDPR
                             </span>
                           </div>
                         </div>
                       </div>
                     </div>
                   </RadioGroup>
-
-                  {/* EHF Fields */}
-                  {selectedPaymentMethod === "invoice" && (
-                    <div className="mt-4 p-4 bg-blue-50 rounded-lg space-y-4">
-                      <h4 className="font-medium text-blue-900">
-                        {t("checkout:invoice.title", "Fakturaopplysninger")}
-                      </h4>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                          <Label htmlFor="orgName">
-                            {t(
-                              "checkout:invoice.org_name",
-                              "Organisasjonsnavn"
-                            )}
-                          </Label>
-                          <Input
-                            id="orgName"
-                            value={userInfo.organizationName}
-                            onChange={(e) =>
-                              setUserInfo((prev: UserInfo) => ({
-                                ...prev,
-                                organizationName: e.target.value,
-                              }))
-                            }
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor="orgNumber">
-                            {t(
-                              "checkout:invoice.org_number",
-                              "Organisasjonsnummer"
-                            )}
-                          </Label>
-                          <Input
-                            id="orgNumber"
-                            value={userInfo.organizationNumber}
-                            onChange={(e) =>
-                              setUserInfo((prev: UserInfo) => ({
-                                ...prev,
-                                organizationNumber: e.target.value,
-                              }))
-                            }
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor="invoiceRef">
-                            {t("checkout:invoice.reference", "Referanse")}
-                          </Label>
-                          <Input
-                            id="invoiceRef"
-                            value={userInfo.invoiceReference}
-                            onChange={(e) =>
-                              setUserInfo((prev: UserInfo) => ({
-                                ...prev,
-                                invoiceReference: e.target.value,
-                              }))
-                            }
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor="projectCode">
-                            {t("checkout:invoice.project_code", "Prosjektkode")}
-                          </Label>
-                          <Input
-                            id="projectCode"
-                            value={userInfo.projectCode}
-                            onChange={(e) =>
-                              setUserInfo((prev: UserInfo) => ({
-                                ...prev,
-                                projectCode: e.target.value,
-                              }))
-                            }
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
                   {errors.payment && (
-                    <div className="flex items-center text-red-600 text-sm">
-                      <AlertCircle className="h-4 w-4 mr-2" />
+                    <p className="text-red-500 text-sm mt-2">
                       {errors.payment}
-                    </div>
-                  )}
-                </CardContent>
-              )}
-            </Card>
-
-            {/* Enhanced Add-ons */}
-            <Card>
-              <CardHeader
-                className="cursor-pointer hover:bg-gray-50 transition-colors"
-                onClick={() => toggleSection("addons")}
-              >
-                <div className="flex items-center">
-                  <ChevronRight
-                    className={`h-5 w-5 mr-3 text-gray-500 transition-transform duration-200 ${
-                      expandedSections.addons ? "rotate-90" : ""
-                    }`}
-                  />
-                  <div>
-                    <CardTitle className="text-lg flex items-center">
-                      <Plus className="h-5 w-5 mr-2 text-blue-600" />
-                      {t("checkout:sections.addons", "Tillegg")}
-                    </CardTitle>
-                    <p className="text-sm text-gray-600 mt-1">
-                      {t(
-                        "checkout:sections.addons_desc",
-                        "Legg til ekstra tjenester for din booking"
-                      )}
                     </p>
-                  </div>
-                </div>
-              </CardHeader>
-              {expandedSections.addons && (
-                <CardContent className="space-y-4">
-                  {availableAddons.map((addon) => {
-                    const IconComponent = addon.icon;
-                    const isSelected = addons[addon.id] || false;
-
-                    return (
-                      <div
-                        key={addon.id}
-                        className={`flex items-center justify-between p-4 border-2 rounded-xl transition-all duration-200 ${
-                          isSelected
-                            ? "border-blue-500 bg-blue-50 shadow-md"
-                            : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
-                        }`}
-                      >
-                        <div className="flex items-center space-x-4">
-                          <Checkbox
-                            id={addon.id}
-                            checked={isSelected}
-                            onCheckedChange={() => toggleAddon(addon.id)}
-                            className="h-5 w-5"
-                          />
-                          <div className="flex items-center space-x-3">
-                            <div
-                              className={`p-2 rounded-lg ${
-                                isSelected ? "bg-blue-100" : "bg-gray-100"
-                              }`}
-                            >
-                              <IconComponent
-                                className={`h-5 w-5 ${
-                                  isSelected ? "text-blue-600" : "text-gray-600"
-                                }`}
-                              />
-                            </div>
-                            <div>
-                              <Label
-                                htmlFor={addon.id}
-                                className="font-semibold cursor-pointer text-base"
-                              >
-                                {addon.name}
-                              </Label>
-                              <p className="text-sm text-gray-600">
-                                {addon.description}
-                              </p>
-                              <div className="flex items-center mt-1">
-                                <Info className="h-3 w-3 text-gray-400 mr-1" />
-                                <span className="text-xs text-gray-500">
-                                  {addon.details}
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <span className="text-lg font-bold text-blue-600">
-                            {addon.price} kr
-                          </span>
-                          {isSelected && (
-                            <div className="flex items-center text-green-600 text-xs mt-1">
-                              <Check className="h-3 w-3 mr-1" />
-                              {t("checkout:labels.selected", "Valgt")}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    );
-                  })}
+                  )}
                 </CardContent>
               )}
             </Card>
           </div>
 
-          {/* Right Column: Enhanced Sticky Pricing Summary */}
-          <div className="lg:col-span-1 order-1 lg:order-2">
-            <div className="sticky top-20 lg:block hidden">
-              <Card className="shadow-lg border-2">
-                <CardHeader className="bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-t-lg">
-                  <CardTitle className="text-xl flex items-center">
-                    <CreditCard className="h-6 w-6 mr-2" />
-                    {t("checkout:pricing.title", "Prisoversikt")}
+          {/* Right Column: Order Summary */}
+          <div className="order-1 lg:order-2">
+            <div className="sticky top-24 space-y-6">
+              <Card className="shadow-lg border-blue-100 overflow-hidden">
+                <div className="bg-gradient-to-r from-blue-600 to-blue-700 p-4 text-white">
+                  <CardTitle className="text-lg flex items-center">
+                    <CheckCircle className="h-5 w-5 mr-2" />
+                    {t("checkout:summary.title", "Din bestilling")}
                   </CardTitle>
-                  <p className="text-blue-100 text-sm">
-                    {t(
-                      "checkout:pricing.note",
-                      "Du blir ikke belastet før bestillingen er bekreftet"
-                    )}
-                  </p>
-                </CardHeader>
-                <CardContent className="space-y-4 p-6">
-                  {/* Booking Type Breakdown */}
-                  {items.map((item) => (
-                    <div key={item.id} className="space-y-2">
-                      <div className="flex justify-between items-center py-2">
-                        <span className="text-gray-700 font-medium">
-                          {item.bookingType === "recurring"
-                            ? t("checkout:labels.recurring", "Gjentakende")
-                            : t("checkout:labels.single", "Enkelt")}
-                        </span>
-                        <div className="flex items-center space-x-2">
-                          <Badge variant="outline" className="text-xs">
-                            {item.facilityName}
-                          </Badge>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => removeItem(item.id)}
-                            className="h-6 w-6 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
+                </div>
+                <CardContent className="p-6 space-y-6">
+                  {/* Price Breakdown */}
+                  <div className="space-y-3">
+                    <div className="flex justify-between text-sm text-gray-600">
+                      <span>
+                        {t("checkout:summary.subtotal", "Leiepris")} (
+                        {t("checkout:summary.ex_vat", "eks. mva")})
+                      </span>
+                      <span>
+                        {pricing.basePriceExcludingVat.toLocaleString()} kr
+                      </span>
+                    </div>
+
+                    {/* Add-ons List */}
+                    {Object.entries(addons).map(([id, selected]) => {
+                      if (selected) {
+                        const addon = availableAddons.find((a) => a.id === id);
+                        return (
+                          <div
+                            key={id}
+                            className="flex justify-between text-sm text-blue-600"
                           >
-                            <Trash2 className="h-3 w-3" />
-                          </Button>
-                        </div>
-                      </div>
+                            <span>
+                              + {addon ? t(addon.translationKey + ".name", addon.name) : id}
+                            </span>
+                            <span>{addon?.price} kr</span>
+                          </div>
+                        );
+                      }
+                      return null;
+                    })}
 
-                      {/* Price breakdown for this booking */}
-                      <div className="ml-4 space-y-1 text-sm">
-                        <div className="flex justify-between items-center">
-                          <span className="text-gray-600">
-                            {t(
-                              "checkout:pricing.price_ex_vat",
-                              "Pris (ekskl. MVA)"
-                            )}
-                          </span>
-                          <span className="font-medium">
-                            {(() => {
-                              // Calculate price excluding VAT for this specific item
-                              const itemPriceWithVat =
-                                item.pricing?.finalPrice || 0;
-                              const itemVatAmount = Math.round(
-                                itemPriceWithVat * 0.2
-                              ); // 20% of total = 25% VAT
-                              const itemPriceExcludingVat =
-                                itemPriceWithVat - itemVatAmount;
-                              return `${itemPriceExcludingVat.toLocaleString(
-                                "nb-NO"
-                              )} kr`;
-                            })()}
-                          </span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-gray-600">
-                            {t("checkout:pricing.vat_25", "MVA (25%)")}
-                          </span>
-                          <span className="font-medium">
-                            {(() => {
-                              // Calculate VAT for this specific item
-                              const itemPriceWithVat =
-                                item.pricing?.finalPrice || 0;
-                              const itemVatAmount = Math.round(
-                                itemPriceWithVat * 0.2
-                              ); // 20% of total = 25% VAT
-                              return `${itemVatAmount.toLocaleString(
-                                "nb-NO"
-                              )} kr`;
-                            })()}
-                          </span>
-                        </div>
+                    {discountApplied && (
+                      <div className="flex justify-between text-sm text-green-600 font-medium">
+                        <span>
+                          {t("checkout:summary.discount", "Rabatt (10%)")}
+                        </span>
+                        <span>-{pricing.discountAmount} kr</span>
                       </div>
+                    )}
+
+                    <Separator />
+
+                    <div className="flex justify-between text-sm text-gray-500">
+                      <span>{t("checkout:summary.vat", "MVA (25%)")}</span>
+                      <span>{pricing.vatAmount.toLocaleString()} kr</span>
                     </div>
-                  ))}
 
-                  {/* Add-ons detailed breakdown */}
-                  {pricing.addonPrice > 0 && (
-                    <div className="space-y-2 border-t pt-4">
-                      <div className="flex justify-between items-center py-2">
-                        <span className="text-gray-700 font-medium">
-                          {t(
-                            "checkout:pricing.addons_title",
-                            "Tillegg utstyr/tjenester"
-                          )}
+                    <div className="flex justify-between items-end pt-2">
+                      <span className="font-bold text-lg text-gray-900">
+                        {t("checkout:summary.total", "Totalt å betale")}
+                      </span>
+                      <div className="text-right">
+                        <span className="block font-bold text-2xl text-blue-600">
+                          {pricing.total.toLocaleString()} kr
+                        </span>
+                        <span className="text-xs text-gray-500">
+                          {t("checkout:summary.inc_vat", "inkl. mva")}
                         </span>
                       </div>
-
-                      <div className="ml-4 space-y-1 text-sm">
-                        {Object.entries(addons).map(([id, selected]) => {
-                          if (!selected) return null;
-                          const addon = availableAddons.find(
-                            (a) => a.id === id
-                          );
-                          if (!addon) return null;
-
-                          return (
-                            <div
-                              key={id}
-                              className="flex justify-between items-center"
-                            >
-                              <span className="text-gray-600">
-                                {addon.name}
-                              </span>
-                              <div className="flex items-center space-x-2">
-                                <div className="text-right">
-                                  <div className="font-medium">
-                                    {addon.price.toLocaleString(currentLocale)}{" "}
-                                    kr (
-                                    {t("checkout:pricing.ex_vat", "ekskl. MVA")}
-                                    )
-                                  </div>
-                                  <div className="text-xs text-gray-500">
-                                    +
-                                    {(addon.price * 0.25).toLocaleString(
-                                      currentLocale
-                                    )}{" "}
-                                    kr {t("checkout:pricing.vat", "MVA")}
-                                  </div>
-                                </div>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => toggleAddon(id)}
-                                  className="h-6 w-6 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
-                                >
-                                  <Trash2 className="h-3 w-3" />
-                                </Button>
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
                     </div>
-                  )}
+                  </div>
 
                   {/* Discount Code */}
-                  <div className="space-y-3">
+                  <div className="pt-4 border-t">
+                    <Label
+                      htmlFor="discount"
+                      className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2 block"
+                    >
+                      {t("checkout:fields.discount_code", "Rabattkode")}
+                    </Label>
                     <div className="flex space-x-2">
                       <Input
-                        placeholder={t("checkout:pricing.discount_code_placeholder", "Rabattkode")}
+                        id="discount"
+                        placeholder={t(
+                          "checkout:placeholders.discount_code",
+                          "Skriv inn kode"
+                        )}
                         value={discountCode}
                         onChange={(e) => setDiscountCode(e.target.value)}
-                        className="flex-1 border-2 focus:border-blue-500"
+                        className="h-9 text-sm"
                       />
                       <Button
                         variant="outline"
                         size="sm"
                         onClick={handleDiscountCode}
-                        disabled={!discountCode}
-                        className="border-blue-500 text-blue-600 hover:bg-blue-50"
+                        disabled={!discountCode || discountApplied}
                       >
-                        {t("checkout:pricing.apply_discount", "Bruk")}
+                        {t("common:actions.apply", "Bruk")}
                       </Button>
                     </div>
                     {discountApplied && (
-                      <div className="flex items-center text-green-600 text-sm bg-green-50 p-2 rounded-lg">
-                        <Check className="h-4 w-4 mr-2" />
-                        <span className="font-medium">{t("checkout:pricing.discount_applied", "Rabatt påført!")}</span>
-                      </div>
+                      <p className="text-green-600 text-xs mt-1 flex items-center">
+                        <CheckCircle className="h-3 w-3 mr-1" />
+                        {t(
+                          "checkout:messages.discount_applied",
+                          "Rabattkode aktivert!"
+                        )}
+                      </p>
                     )}
                     {errors.discount && (
-                      <div className="text-red-600 text-sm bg-red-50 p-2 rounded-lg">
+                      <p className="text-red-500 text-xs mt-1">
                         {errors.discount}
-                      </div>
+                      </p>
                     )}
                   </div>
 
-                  {/* Discount */}
-                  {pricing.discountAmount > 0 && (
-                    <div className="flex justify-between items-center py-2 bg-green-50 rounded-lg px-3">
-                      <span className="text-green-700 font-medium">{t("checkout:pricing.discount", "Rabatt")}</span>
-                      <span className="font-bold text-lg text-green-600">
-                        -{pricing.discountAmount.toLocaleString("nb-NO")} kr
-                      </span>
+                  {/* Add-ons Selection */}
+                  <div className="pt-4 border-t">
+                    <Label className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-3 block">
+                      {t("checkout:addons.title", "Anbefalte tillegg")}
+                    </Label>
+                    <div className="space-y-3">
+                      {availableAddons.map((addon) => (
+                        <div
+                          key={addon.id}
+                          className={`flex items-start space-x-3 p-3 rounded-lg border transition-all cursor-pointer ${addons[addon.id]
+                              ? "border-blue-500 bg-blue-50"
+                              : "border-gray-200 hover:border-gray-300"
+                            }`}
+                          onClick={() => toggleAddon(addon.id)}
+                        >
+                          <Checkbox
+                            id={addon.id}
+                            checked={addons[addon.id] || false}
+                            onCheckedChange={() => toggleAddon(addon.id)}
+                            className="mt-1"
+                          />
+                          <div className="flex-1">
+                            <div className="flex justify-between items-center">
+                              <Label
+                                htmlFor={addon.id}
+                                className="font-medium cursor-pointer"
+                              >
+                                {t(addon.translationKey + ".name", addon.name)}
+                              </Label>
+                              <span className="text-sm font-semibold text-blue-600">
+                                +{addon.price} kr
+                              </span>
+                            </div>
+                            <p className="text-xs text-gray-500 mt-1">
+                              {t(addon.translationKey + ".details", addon.details)}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
                     </div>
-                  )}
-
-                  {/* Invoice Fee */}
-                  {selectedPaymentMethod === "invoice" && (
-                    <div className="flex justify-between items-center py-2">
-                      <span className="text-gray-700 font-medium">
-                        {t("checkout:pricing.invoice_fee", "Fakturagebyr")}
-                      </span>
-                      <span className="font-semibold">+50 kr</span>
-                    </div>
-                  )}
-
-                  <Separator className="my-4" />
-
-                  {/* Subtotal */}
-                  <div className="flex justify-between items-center py-2">
-                    <span className="text-gray-600">
-                      {t("checkout:pricing.subtotal_ex_vat", "Sum ekskl. MVA")}
-                    </span>
-                    <span className="font-medium">
-                      {(
-                        pricing.basePriceExcludingVat + pricing.addonPrice
-                      ).toLocaleString(currentLocale)}{" "}
-                      kr
-                    </span>
                   </div>
 
-                  {/* VAT */}
-                  <div className="flex justify-between items-center py-2">
-                    <span className="text-gray-600">
-                      {t("checkout:pricing.vat_25", "MVA (25%)")}
-                    </span>
-                    <span className="font-medium">
-                      {pricing.vatAmount.toLocaleString(currentLocale)} kr
-                    </span>
-                  </div>
-
-                  <Separator className="my-4" />
-
-                  {/* Total */}
-                  <div className="flex justify-between items-center py-4 bg-blue-50 rounded-lg px-4">
-                    <span className="text-xl font-bold text-gray-900">
-                      {t("checkout:pricing.total_incl_vat", "Totalt inkl. MVA")}
-                    </span>
-                    <span className="text-2xl font-bold text-blue-600">
-                      {pricing.total.toLocaleString(currentLocale)} kr
-                    </span>
-                  </div>
-
-                  {/* Consent Checkboxes - Moved from "Før du betaler" section */}
-                  <div className="bg-gray-50 rounded-lg p-4 space-y-4">
-                    <div className="flex items-start space-x-4">
+                  {/* Consents */}
+                  <div className="pt-4 border-t space-y-3">
+                    <div className="flex items-start space-x-2">
                       <Checkbox
                         id="terms"
                         checked={consents.terms}
                         onCheckedChange={() => handleConsentChange("terms")}
-                        className="h-5 w-5 mt-0.5"
+                        className="mt-1"
                       />
-                      <div className="flex-1">
-                        <Label
-                          htmlFor="terms"
-                          className="text-sm cursor-pointer flex items-start"
-                        >
-                          <span>
-                            {t(
-                              "checkout:consents.accept_prefix",
-                              "Jeg godtar "
-                            )}{" "}
-                          </span>
-                          <a
-                            href="/terms"
-                            target="_blank"
-                            className="text-blue-600 hover:underline mx-1 flex items-center"
-                          >
-                            {t("checkout:consents.terms", "vilkår for leie")}
-                            <ExternalLink className="h-3 w-3 ml-1" />
-                          </a>
-                        </Label>
-                      </div>
-                      {consents.terms && (
-                        <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0" />
-                      )}
+                      <Label
+                        htmlFor="terms"
+                        className="text-sm text-gray-600 leading-tight cursor-pointer"
+                      >
+                        {t("checkout:consents.accept", "Jeg godtar")}{" "}
+                        <a href="#" className="text-blue-600 hover:underline">
+                          {t("checkout:consents.terms", "vilkårene")}
+                        </a>
+                      </Label>
                     </div>
-
-                    <div className="flex items-start space-x-4">
+                    <div className="flex items-start space-x-2">
                       <Checkbox
                         id="cancellation"
                         checked={consents.cancellation}
                         onCheckedChange={() =>
                           handleConsentChange("cancellation")
                         }
-                        className="h-5 w-5 mt-0.5"
+                        className="mt-1"
                       />
-                      <div className="flex-1">
-                        <Label
-                          htmlFor="cancellation"
-                          className="text-sm cursor-pointer flex items-start"
-                        >
-                          <span>
-                            {t(
-                              "checkout:consents.read_prefix",
-                              "Jeg har lest "
-                            )}{" "}
-                          </span>
-                          <a
-                            href="/cancellation"
-                            target="_blank"
-                            className="text-blue-600 hover:underline mx-1 flex items-center"
-                          >
-                            {t(
-                              "checkout:consents.cancellation",
-                              "avbestillingsreglene"
-                            )}
-                            <ExternalLink className="h-3 w-3 ml-1" />
-                          </a>
-                        </Label>
-                      </div>
-                      {consents.cancellation && (
-                        <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0" />
-                      )}
+                      <Label
+                        htmlFor="cancellation"
+                        className="text-sm text-gray-600 leading-tight cursor-pointer"
+                      >
+                        {t("checkout:consents.accept", "Jeg godtar")}{" "}
+                        <a href="#" className="text-blue-600 hover:underline">
+                          {t(
+                            "checkout:consents.cancellation",
+                            "avbestillingsreglene"
+                          )}
+                        </a>
+                      </Label>
                     </div>
-
-                    <div className="flex items-start space-x-4">
+                    <div className="flex items-start space-x-2">
                       <Checkbox
                         id="privacy"
                         checked={consents.privacy}
                         onCheckedChange={() => handleConsentChange("privacy")}
-                        className="h-5 w-5 mt-0.5"
+                        className="mt-1"
                       />
-                      <div className="flex-1">
-                        <Label
-                          htmlFor="privacy"
-                          className="text-sm cursor-pointer"
-                        >
+                      <Label
+                        htmlFor="privacy"
+                        className="text-sm text-gray-600 leading-tight cursor-pointer"
+                      >
+                        {t("checkout:consents.accept", "Jeg godtar")}{" "}
+                        <a href="#" className="text-blue-600 hover:underline">
                           {t(
                             "checkout:consents.privacy",
-                            "Jeg samtykker til behandling av personopplysninger for denne bestillingen"
+                            "personvernerklæringen"
                           )}
-                        </Label>
-                      </div>
-                      {consents.privacy && (
-                        <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0" />
-                      )}
+                        </a>
+                      </Label>
                     </div>
+                    {errors.consents && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {errors.consents}
+                      </p>
+                    )}
                   </div>
 
-                  {/* Ready to pay indicator */}
-                  {consents.terms &&
-                    consents.cancellation &&
-                    consents.privacy && (
-                      <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                        <div className="flex items-center">
-                          <CheckCircle className="h-6 w-6 text-green-600 mr-3" />
-                          <div>
-                            <p className="font-semibold text-green-800">
-                              {t(
-                                "checkout:status.ready_to_pay",
-                                "Klar til betaling!"
-                              )}
-                            </p>
-                            <p className="text-sm text-green-700">
-                              {t(
-                                "checkout:status.all_consents",
-                                "Alle samtykker er godtatt."
-                              )}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                  {errors.consents && (
-                    <div className="flex items-center text-red-600 text-sm bg-red-50 p-3 rounded-lg">
-                      <AlertCircle className="h-4 w-4 mr-2" />
-                      {errors.consents}
-                    </div>
-                  )}
-
-                  {/* Enhanced Complete Payment Button */}
-                  <Button
-                    className="w-full h-14 text-xl font-bold bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
-                    disabled={isProcessing}
+                  {/* Action Button */}
+                  <PrimaryButton
+                    size="lg"
+                    className="w-full text-lg h-14 shadow-lg shadow-blue-200"
                     onClick={handleCompletePayment}
+                    isLoading={isProcessing}
+                    disabled={isProcessing}
                   >
                     {isProcessing ? (
                       <>
-                        <Loader2 className="h-6 w-6 mr-3 animate-spin" />
-                        {t(
-                          "checkout:actions.processing_payment",
-                          "Behandler betaling..."
-                        )}
+                        <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                        {t("checkout:actions.processing", "Behandler...")}
                       </>
                     ) : (
                       <>
-                        <CheckCircle className="h-6 w-6 mr-3" />
-                        {selectedPaymentMethod === "invoice"
-                          ? t(
-                              "checkout:actions.order_with_invoice",
-                              "Bestill med faktura"
-                            )
-                          : t(
-                              "checkout:actions.complete_and_pay",
-                              "Fullfør og betal"
-                            )}
-                        <ChevronRight className="h-5 w-5 ml-2" />
+                        {t("checkout:actions.pay", "Betal")}{" "}
+                        {pricing.total.toLocaleString()} kr
                       </>
                     )}
-                  </Button>
+                  </PrimaryButton>
 
-                  {/* Enhanced Trust Signals */}
-                  <div className="bg-gray-50 rounded-lg p-4 space-y-2">
-                    <div className="flex items-center justify-center space-x-4 text-xs text-gray-500">
-                      <div className="flex items-center">
-                        <Shield className="h-3 w-3 mr-1" />
-                        <span>{t("checkout:trust.ssl", "SSL-kryptert")}</span>
-                      </div>
-                      <div className="flex items-center">
-                        <Lock className="h-3 w-3 mr-1" />
-                        <span>
-                          {t(
-                            "checkout:trust.secure_payment",
-                            "Sikker betaling"
-                          )}
-                        </span>
-                      </div>
-                    </div>
-                    <p className="text-xs text-gray-500 text-center">
+                  <div className="text-center">
+                    <p className="text-xs text-gray-400 flex items-center justify-center">
+                      <Shield className="h-3 w-3 mr-1" />
                       {t(
-                        "checkout:trust.legal_prefix",
-                        "Ved å fullføre godtar du "
+                        "checkout:messages.secure_payment",
+                        "Sikker betaling via Nets/Vipps"
                       )}
-                      <a
-                        href="/terms"
-                        target="_blank"
-                        className="text-blue-600 hover:underline"
-                      >
-                        {t("checkout:trust.terms", "vilkår")}
-                      </a>{" "}
-                      {t("checkout:trust.and", "og")}{" "}
-                      <a
-                        href="/privacy"
-                        target="_blank"
-                        className="text-blue-600 hover:underline"
-                      >
-                        {t("checkout:trust.privacy", "personvernerklæring")}
-                      </a>
-                      .
                     </p>
                   </div>
                 </CardContent>
@@ -2235,57 +1073,6 @@ export const Checkout = (): JSX.Element => {
             </div>
           </div>
         </div>
-
-        {/* Mobile Pricing Summary - Fixed at bottom on mobile */}
-        <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t-2 border-gray-200 shadow-2xl z-50">
-          <div className="p-4">
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center">
-                <CreditCard className="h-5 w-5 mr-2 text-blue-600" />
-                <span className="font-bold text-lg">
-                  {t("checkout:pricing.title", "Prisoversikt")}
-                </span>
-              </div>
-              <div className="text-right">
-                <div className="text-2xl font-bold text-blue-600">
-                  {pricing.total.toLocaleString("nb-NO")} kr
-                </div>
-              </div>
-            </div>
-
-            <PrimaryButton
-              className="w-full h-12 text-lg font-bold shadow-lg"
-              disabled={isProcessing}
-              onClick={handleCompletePayment}
-            >
-              {isProcessing ? (
-                <>
-                  <Loader2 className="h-5 w-5 mr-2 animate-spin" />
-                  {t(
-                    "checkout:actions.processing_payment",
-                    "Behandler betaling..."
-                  )}
-                </>
-              ) : (
-                <>
-                  <CheckCircle className="h-5 w-5 mr-2" />
-                  {selectedPaymentMethod === "invoice"
-                    ? t(
-                        "checkout:actions.order_with_invoice",
-                        "Bestill med faktura"
-                      )
-                    : t(
-                        "checkout:actions.complete_and_pay",
-                        "Fullfør og betal"
-                      )}
-                </>
-              )}
-            </PrimaryButton>
-          </div>
-        </div>
-
-        {/* Mobile spacing to prevent content from being hidden behind fixed pricing */}
-        <div className="lg:hidden h-24"></div>
       </div>
     </div>
   );

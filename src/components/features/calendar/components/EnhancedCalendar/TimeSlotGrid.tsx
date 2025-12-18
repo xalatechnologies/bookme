@@ -10,6 +10,7 @@ import { useTranslation } from "react-i18next";
 import { useDragSelection } from "../../hooks";
 import { useAvailabilityStatus } from "@/components/features/bookings/hooks";
 import { useDragSlotSelection } from "@/hooks/features/calendar";
+import { Button } from "@/components/ui/button";
 
 // Types
 import { ICalendarGridProps, TimeSlotStatus } from "../../types";
@@ -254,8 +255,9 @@ export const TimeSlotGrid: React.FC<ICalendarGridProps> = ({
 
                 return (
                   <div key={dayIndex} className="relative">
-                    <button
-                      className={`w-full h-8 rounded border transition-all duration-200 text-sm select-none ${getSlotClasses(
+                    <Button
+                      variant="ghost"
+                      className={`w-full h-8 rounded border transition-all duration-200 text-sm select-none p-0 ${getSlotClasses(
                         status,
                         isInPreview
                       )} ${
@@ -293,7 +295,7 @@ export const TimeSlotGrid: React.FC<ICalendarGridProps> = ({
                           <span className="text-sm text-blue-800 ml-1">◯</span>
                         )}
                       </div>
-                    </button>
+                    </Button>
                   </div>
                 );
               })}

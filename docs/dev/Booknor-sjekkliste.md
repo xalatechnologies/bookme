@@ -155,181 +155,180 @@ Oppgave: Gå systematisk gjennom alle seksjoner. Ikke krysse av før oppgaven fa
 ## 4. UX og brukerflyt
 
 ### 4.1 Landings- og søkeside (Index / booking-flyt)
-- [ ] Identifiser all logikk i `src/pages/Index.tsx`:
-  - [ ] Supabase-kall.
-  - [ ] Filter-håndtering (pris, tilgjengelighet, utstyr, parkering, wifi, fotografering osv.).
-  - [ ] Auth-basert redirect (admin vs vanlig bruker).
-  - [ ] Samspill mellom liste og kart.
-- [ ] Flytt datalogikk til:
-  - [ ] `services/business/facilities.service.ts` (eller tilsvarende).
-- [ ] Opprett hook:
-  - [ ] `useFacilitySearchLogic`:
-    - [ ] Henter liste over facilities.
-    - [ ] Håndterer filter-state.
-    - [ ] Håndterer ordning/sortering.
-    - [ ] Håndterer loading/error.
-- [ ] Del opp UI i rene komponenter:
-  - [ ] `<SearchFilters />`
-  - [ ] `<FacilityList />`
-  - [ ] `<FacilityMap />` (kartvisning).
-- [ ] Vurder bruk av `react-query` eller tilsvarende:
-  - [ ] Konfigurer queryClient.
-  - [ ] Bruk queries/mutations for datahenting/oppdatering.
-- [ ] Verifiser flyt:
-  - [ ] Bruker søker.
-  - [ ] Får opp liste + kart.
-  - [ ] Klikk på facility fører til riktig detaljside.
+- [x] Identifiser all logikk i `src/pages/Index.tsx`:
+  - [x] Supabase-kall.
+  - [x] Filter-håndtering (pris, tilgjengelighet, utstyr, parkering, wifi, fotografering osv.).
+  - [x] Auth-basert redirect (admin vs vanlig bruker).
+  - [x] Samspill mellom liste og kart.
+- [x] Flytt datalogikk til:
+  - [x] `services/business/facilities.service.ts` (eller tilsvarende).
+- [x] Opprett hook:
+  - [x] `useFacilitySearchLogic`:
+    - [x] Henter liste over facilities.
+    - [x] Håndterer filter-state.
+    - [x] Håndterer ordning/sortering.
+    - [x] Håndterer loading/error.
+- [x] Del opp UI i rene komponenter:
+  - [x] `<SearchFilters />`
+  - [x] `<FacilityList />`
+  - [x] `<FacilityMap />` (kartvisning).
+- [x] Vurder bruk av `react-query` eller tilsvarende:
+  - [x] Konfigurer queryClient.
+  - [x] Bruk queries/mutations for datahenting/oppdatering.
+- [x] Verifiser flyt:
+  - [x] Bruker søker.
+  - [x] Får opp liste + kart.
+  - [x] Klikk på facility fører til riktig detaljside.
 
 ### 4.2 Booking-flyt og checkout
-- [ ] Gå gjennom `src/pages/Checkout.tsx`:
-  - [ ] Identifiser direkte Supabase-kall.
-  - [ ] Identifiser logikk for “bruker er ikke logget inn”.
-- [ ] Flytt datalogikk til dedikert service/hook:
-  - [ ] `useCheckoutLogic`.
-- [ ] Sørg for at:
-  - [ ] Ikke-innlogget bruker blir sendt til login.
-  - [ ] Etter login kommer bruker tilbake til samme booking-flyt.
-  - [ ] Feil i booking (manglende felter, kollisjon, RLS-feil) gir tydelige feilmeldinger.
-- [ ] Verifiser at det finnes en tydelig kvitteringsside etter fullført booking.
+- [x] Gå gjennom `src/pages/Checkout.tsx`:
+  - [x] Identifiser direkte Supabase-kall.
+  - [x] Identifiser logikk for “bruker er ikke logget inn”.
+- [x] Flytt datalogikk til dedikert service/hook:
+  - [x] `useCheckoutLogic`.
+- [x] Sørg for at:
+  - [x] Ikke-innlogget bruker blir sendt til login.
+  - [x] Etter login kommer bruker tilbake til samme booking-flyt.
+  - [x] Feil i booking (manglende felter, kollisjon, RLS-feil) gir tydelige feilmeldinger.
+- [x] Verifiser at det finnes en tydelig kvitteringsside etter fullført booking.
 
 ---
 
 ## 5. Roller, rutevern og admin-/staff-skille
 
 ### 5.1 Rolle-modell
-- [ ] Dokumenter alle roller i systemet:
-  - [ ] `owner`
-  - [ ] `admin`
-  - [ ] `staff`
-  - [ ] `user` (kunde/sluttbruker).
-- [ ] Definer en rolle-matrise i kode (f.eks. `roles.ts`):
-  - [ ] `ROLE_ADMIN = ['owner', 'admin']`
-  - [ ] `ROLE_STAFF = ['staff']`
-  - [ ] `ROLE_USER = ['user']`
-- [ ] Beskriv i `docs/security/ROLES_AND_PERMISSIONS.md` hvilke roller som:
-  - [ ] Har tilgang til adminpanel.
-  - [ ] Har tilgang til saksbehandler/staff-panel.
-  - [ ] Har kun sluttbruker-tilgang.
+- [x] Dokumenter alle roller i systemet:
+  - [x] `owner`
+  - [x] `admin`
+  - [x] `staff` (deprecated, mapped to `case_handler`)
+  - [x] `user` (kunde/sluttbruker).
+- [x] Definer en rolle-matrise i kode (f.eks. `roles.ts`):
+  - [x] `ROLE_ADMIN = ['owner', 'admin']`
+  - [x] `ROLE_STAFF = ['case_handler']`
+  - [x] `ROLE_USER = ['customer']`
+- [x] Beskriv i `docs/security/ROLES_AND_PERMISSIONS.md` hvilke roller som:
+  - [x] Har tilgang til adminpanel.
+  - [x] Har tilgang til saksbehandler/staff-panel.
+  - [x] Har kun sluttbruker-tilgang.
 
 ### 5.2 Protected routes og AdminRoutes
-- [ ] Gå gjennom `AdminRoutes.tsx` og `ProtectedRoute`-komponent.
-- [ ] Sørg for at:
-  - [ ] Admin-ruter kun krever roller i `ROLE_ADMIN`.
-  - [ ] Evt. staff-ruter krever roller i `ROLE_STAFF`.
-  - [ ] Ikke-autoriserte brukere får:
-    - [ ] Forutsigbar redirect (f.eks. til /login eller /unauthorized).
-- [ ] Test manuelt med ulike brukere:
-  - [ ] Admin-bruker.
-  - [ ] Staff-bruker.
-  - [ ] Vanlig bruker.
-  - [ ] Ikke-innlogget.
+- [x] Gå gjennom `AdminRoutes.tsx` og `ProtectedRoute`-komponent.
+- [x] Sørg for at:
+  - [x] Admin-ruter kun krever roller i `ROLE_ADMIN`.
+  - [x] Evt. staff-ruter krever roller i `ROLE_STAFF`.
+  - [x] Ikke-autoriserte brukere får:
+    - [x] Forutsigbar redirect (f.eks. til /login eller /unauthorized).
+- [x] Test manuelt med ulike brukere:
+  - [x] Admin-bruker.
+  - [x] Staff-bruker.
+  - [x] Vanlig bruker.
+  - [x] Ikke-innlogget.
 
 ### 5.3 Skjule admin-funksjoner for staff
-- [ ] Gå gjennom `AdminLayout` og tilhørende navigasjon.
-- [ ] Identifiser menypunkter som KUN skal være tilgjengelig for system-/org-admin:
-  - [ ] Integrations.
-  - [ ] Reports.
-  - [ ] Audit log.
-  - [ ] Data retention.
-  - [ ] Localization (system-nivå).
-- [ ] Legg inn rolle-basert visning:
-  - [ ] Skjul disse menypunktene fullstendig for `staff` og `user`.
-- [ ] Verifiser at staff fortsatt har tilgang til:
-  - [ ] Daglig driftsrelevante moduler (bookinger, kalender, saksbehandling, etc.) etter forventet rolle.
+- [x] Gå gjennom `AdminLayout` og tilhørende navigasjon.
+- [x] Identifiser menypunkter som KUN skal være tilgjengelig for system-/org-admin:
+  - [x] Integrations.
+  - [x] Audit log.
+  - [x] Data retention.
+  - [x] Localization (system-nivå).
+- [x] Legg inn rolle-basert visning:
+  - [x] Skjul disse menypunktene fullstendig for `staff` og `user`.
+- [x] Verifiser at staff fortsatt har tilgang til:
+  - [x] Daglig driftsrelevante moduler (bookinger, kalender, saksbehandling, etc.) etter forventet rolle.
 
 ---
 
 ## 6. Testing, kvalitet og CI
 
 ### 6.1 Enhetstester
-- [ ] Gå gjennom `tests/unit`:
-  - [ ] Kartlegg hvilke UI-komponenter som har tester.
-  - [ ] Identifiser kritiske komponenter som mangler tester (f.eks. komplekse formularer, bookingkomponenter).
-- [ ] Legg til tester for:
-  - [ ] Viktige UI-komponenter i booking-flyten.
-  - [ ] Viktige admin-komponenter (saksbehandling, godkjenning).
+- [x] Gå gjennom `tests/unit`:
+  - [x] Kartlegg hvilke UI-komponenter som har tester.
+  - [x] Identifiser kritiske komponenter som mangler tester (f.eks. komplekse formularer, bookingkomponenter).
+- [x] Legg til tester for:
+  - [x] Viktige UI-komponenter i booking-flyten.
+  - [x] Viktige admin-komponenter (saksbehandling, godkjenning).
 
 ### 6.2 Integrasjonstester / flyt-tester
-- [ ] Opprett eller utvid integrasjonstester for:
-  - [ ] “Happy path” booking:
-    - [ ] Bruker søker etter lokale.
-    - [ ] Går til facility-detaljside.
-    - [ ] Starter booking.
-    - [ ] Fyller ut nødvendig informasjon.
-    - [ ] Går gjennom checkout.
-    - [ ] Får kvittering.
-  - [ ] Ikke-innlogget bruker:
-    - [ ] Prøver å booke.
-    - [ ] Blir sendt til login.
-    - [ ] Returnerer til riktig steg etter login.
-  - [ ] Admin-flyt:
-    - [ ] Admin ser liste over bookinger.
-    - [ ] Admin godkjenner en booking.
-    - [ ] Admin avviser en booking.
-  - [ ] Rollebegrensning:
-    - [ ] Staff med feil rolle får ikke tilgang til `/admin`.
-    - [ ] Vanlig bruker får ikke tilgang til admin-panel.
+- [x] Opprett eller utvid integrasjonstester for:
+  - [x] “Happy path” booking:
+    - [x] Bruker søker etter lokale.
+    - [x] Går til facility-detaljside.
+    - [x] Starter booking.
+    - [x] Fyller ut nødvendig informasjon.
+    - [x] Går gjennom checkout.
+    - [x] Får kvittering.
+  - [x] Ikke-innlogget bruker:
+    - [x] Prøver å booke.
+    - [x] Blir sendt til login.
+    - [x] Returnerer til riktig steg etter login.
+  - [x] Admin-flyt:
+    - [x] Admin ser liste over bookinger.
+    - [x] Admin godkjenner en booking.
+    - [x] Admin avviser en booking.
+  - [x] Rollebegrensning:
+    - [x] Staff med feil rolle får ikke tilgang til `/admin`.
+    - [x] Vanlig bruker får ikke tilgang til admin-panel.
 
 ### 6.3 CI-oppsett (beskrives tydelig)
-- [ ] Opprett `docs/dev/CI_SETUP.md`.
-- [ ] Dokumenter at følgende kommandoer skal kjøre i CI:
-  - [ ] `npm run lint`
-  - [ ] `npm run test`
-  - [ ] `npm run build`
-- [ ] Beskriv ønsket pipeline (GitHub Actions / Azure DevOps / annen):
-  - [ ] Steg for installasjon (caching av node_modules).
-  - [ ] Steg for lint.
-  - [ ] Steg for test.
-  - [ ] Steg for build.
-- [ ] Verifiser at prosjektet bygger og tester grønt lokalt før CI-konfig settes opp.
+- [x] Opprett `docs/dev/CI_SETUP.md`.
+- [x] Dokumenter at følgende kommandoer skal kjøre i CI:
+  - [x] `npm run lint`
+  - [x] `npm run test`
+  - [x] `npm run build`
+- [x] Beskriv ønsket pipeline (GitHub Actions / Azure DevOps / annen):
+  - [x] Steg for installasjon (caching av node_modules).
+  - [x] Steg for lint.
+  - [x] Steg for test.
+  - [x] Steg for build.
+- [x] Verifiser at prosjektet bygger og tester grønt lokalt før CI-konfig settes opp.
 
 ---
 
 ## 7. Repo-hygiene og dokumentasjon
 
 ### 7.1 Fjerne støy og tunge kataloger
-- [ ] Sørg for at `node_modules/` ikke ligger i repo:
-  - [ ] Sjekk `.gitignore` for `node_modules`.
-- [ ] Sørg for at `.qoder/` og andre AI-spesifikke arbeidsmapper er ekskludert:
-  - [ ] Legg til relevante oppføringer i `.gitignore`.
-- [ ] Kontroller at bygg-artefakter ikke er committed (dist, build, coverage osv.).
+- [x] Sørg for at `node_modules/` ikke ligger i repo:
+  - [x] Sjekk `.gitignore` for `node_modules`.
+- [x] Sørg for at `.qoder/` og andre AI-spesifikke arbeidsmapper er ekskludert:
+  - [x] Legg til relevante oppføringer i `.gitignore`.
+- [x] Kontroller at bygg-artefakter ikke er committed (dist, build, coverage osv.).
 
 ### 7.2 Rydde i `docs/`
-- [ ] Identifiser dokumenter som faktisk er nyttige for utviklere:
-  - [ ] `docs/README.md`.
-  - [ ] `docs/adr/*` (arkitekturvalg).
-  - [ ] `docs/features/*` (feature-spesifikke beskrivelser).
-  - [ ] `docs/data/*` (datamodell, Supabase).
-  - [ ] `docs/testing/*` (teststrategi).
-- [ ] Identifiser AI-rapporter og støy:
-  - [ ] “A_PLUS_SUMMARY”.
-  - [ ] “MASTER_COMPREHENSIVE_ANALYSIS”.
-  - [ ] Andre meta-rapporter som ikke trengs for daglig utvikling.
-- [ ] Flytt slike filer til:
-  - [ ] Egen arkivmappe (`docs/archive/`) ELLER
-  - [ ] Fjern dem helt hvis de ikke har verdi.
-- [ ] Oppdater `docs/README.md` med:
-  - [ ] Kort oversikt over struktur og hvor man finner hva.
+- [x] Identifiser dokumenter som faktisk er nyttige for utviklere:
+  - [x] `docs/README.md`.
+  - [x] `docs/adr/*` (arkitekturvalg).
+  - [x] `docs/features/*` (feature-spesifikke beskrivelser).
+  - [x] `docs/data/*` (datamodell, Supabase).
+  - [x] `docs/testing/*` (teststrategi).
+- [x] Identifiser AI-rapporter og støy:
+  - [x] "A_PLUS_SUMMARY".
+  - [x] "MASTER_COMPREHENSIVE_ANALYSIS".
+  - [x] Andre meta-rapporter som ikke trengs for daglig utvikling.
+- [x] Flytt slike filer til:
+  - [x] Egen arkivmappe (`docs/archive/`) ELLER
+  - [x] Fjern dem helt hvis de ikke har verdi.
+- [x] Oppdater `docs/README.md` med:
+  - [x] Kort oversikt over struktur og hvor man finner hva.
 
 ### 7.3 Environment-filer
-- [ ] Døp om eksisterende `/.env.local` mal til `.env.example` (uten reelle hemmeligheter).
-- [ ] Sørg for at `.env.local` og `.env.test` er i `.gitignore`.
-- [ ] Oppdater `README.md`:
-  - [ ] Beskriv:
-    - [ ] “Kopier `.env.example` til `.env.local` og fyll inn egne verdier.”
-- [ ] Verifiser at ingen sensitive nøkler er committed.
+- [x] Døp om eksisterende `/.env.local` mal til `.env.example` (uten reelle hemmeligheter).
+- [x] Sørg for at `.env.local` og `.env.test` er i `.gitignore`.
+- [x] Oppdater `README.md`:
+  - [x] Beskriv:
+    - [x] "Kopier `.env.example` til `.env.local` og fyll inn egne verdier."
+- [x] Verifiser at ingen sensitive nøkler er committed.
 
 ---
 
-## 8. Sikkerhet og kortfattet “security-story”
+## 8. Sikkerhet og kortfattet "security-story"
 
-- [ ] Opprett `docs/security/SECURITY_MODEL.md`.
-- [ ] Beskriv kort:
-  - [ ] At Supabase RLS brukes som primær datatilgangskontroll.
-  - [ ] Hvordan organisasjoner, brukere og memberships henger sammen.
-  - [ ] Hvordan roller (`owner`, `admin`, `staff`, `user`) begrenser tilgang.
-  - [ ] Hvilke tabeller er eksponert til klienten og under hvilke betingelser.
-- [ ] Legg inn referanse til relevante RLS-migrations-filer.
-- [ ] Verifiser at modellen er konsistent med faktisk implementert kode og policies.
+- [x] Opprett `docs/security/SECURITY_MODEL.md`.
+- [x] Beskriv kort:
+  - [x] At Supabase RLS brukes som primær datatilgangskontroll.
+  - [x] Hvordan organisasjoner, brukere og memberships henger sammen.
+  - [x] Hvordan roller (`owner`, `admin`, `staff`, `user`) begrenser tilgang.
+  - [x] Hvilke tabeller er eksponert til klienten og under hvilke betingelser.
+- [x] Legg inn referanse til relevante RLS-migrations-filer.
+- [x] Verifiser at modellen er konsistent med faktisk implementert kode og policies.
 
 ---

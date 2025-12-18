@@ -339,7 +339,8 @@ describe('Storage Migration Utilities', () => {
     });
 
     it('should record migration timestamps', () => {
-      const startTime = new Date();
+      // Create startTime slightly in the past to ensure completedAt is greater
+      const startTime = new Date(Date.now() - 1000);
       const booking = createMockLocalStorageBooking();
 
       mockLocalStorage.setItem('bookings', JSON.stringify([booking]));
@@ -355,7 +356,7 @@ describe('Storage Migration Utilities', () => {
       };
 
       expect(status.completedAt).toBeTruthy();
-      expect(new Date(status.completedAt!)).toBeGreaterThan(startTime);
+      expect(new Date(status.completedAt!).getTime()).toBeGreaterThan(startTime.getTime());
     });
   });
 

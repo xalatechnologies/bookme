@@ -424,9 +424,31 @@ export class UsersService extends BaseService<
     }
   }
 
-// ==========================================================================
-// Validation Hooks
-// ==========================================================================
+  /**
+   * Update user's preferred portal
+   *
+   * @param userId - User ID
+   * @param portal - Portal preference ('admin' or 'user')
+   * @returns Updated user profile
+   */
+  async updatePreferredPortal(userId: string, portal: 'admin' | 'user'): Promise<UserProfile> {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .update({ preferred_portal: portal } as UserProfileUpdate)
+        .eq('id', userId)
+        .select()
+        .single();
+
+      if (error) {
+        throw handleSupabaseError(error, 'updatePreferredPortal');
+      }
+
+      return data as UserProfile;
+    } catch (error) {
+      throw handleSupabaseError(error, 'updatePreferredPortal');
+    }
+  }
 
   protected async validateInsert(data: UserProfileInsert): Promise<void> {
     if (!data.user_id) {

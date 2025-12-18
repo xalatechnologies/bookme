@@ -2,6 +2,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { Button } from "@/components/ui/button";
 import { BookingStep, IStepConfig } from "../../../hooks/useBookingSteps";
 import { Calendar, FileText, Clock, Shield, CheckCircle } from "lucide-react";
 
@@ -76,7 +77,7 @@ export const StepProgressIndicator = ({
               const isAccessible = isStepAccessible(index);
 
               return (
-                <button
+                <Button
                   key={step.id}
                   onClick={() => onStepClick(step.id)}
                   disabled={!isAccessible}
@@ -87,6 +88,7 @@ export const StepProgressIndicator = ({
                       ? "Completed"
                       : "Upcoming"
                   }`}
+                  variant="ghost"
                   className={`flex flex-col items-center space-y-2 p-2 rounded-lg transition-colors ${
                     isCurrent
                       ? "bg-blue-100 text-blue-700"
@@ -101,7 +103,7 @@ export const StepProgressIndicator = ({
                   <span className="text-xs font-medium text-center">
                     {step.title}
                   </span>
-                </button>
+                </Button>
               );
             })}
           </div>

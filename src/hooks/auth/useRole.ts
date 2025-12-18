@@ -65,11 +65,8 @@ export interface UseRoleReturn {
 const ROLE_PRIORITY: Record<OrgRole, number> = {
   owner: 100,
   admin: 80,
-  case_handler: 60,
-  editor: 40,
-  read_only: 20,
+  staff: 60,
   customer: 10,
-  staff: 60, // DEPRECATED - maps to case_handler level
 };
 
 /**

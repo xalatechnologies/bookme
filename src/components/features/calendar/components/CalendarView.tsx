@@ -14,6 +14,7 @@ import { Card } from "@/components/ui/card";
 import { ViewHeader } from "@/components/features/search/components/ViewHeader";
 import { Accordion } from "@/components/ui/accordion";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
+import { Button } from "@/components/ui/button";
 
 // Sibling imports
 import { FacilityAccordionContent } from "./FacilityCalendar/FacilityAccordionContent";
@@ -111,7 +112,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
           facilityId: facility.id,
           facilityName: facility.name,
           zoneName: zone.name,
-          pricePerHour: zone.pricePerHour,
+          pricePerHour: zone.price_per_hour_cents,
           duration: 60, // Default 1 hour in minutes
         };
 
@@ -154,7 +155,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
           facilityId: facility?.id || slot.facilityId,
           facilityName: facility?.name || slot.facilityName || "",
           zoneName: zone?.name || slot.zoneName || "",
-          pricePerHour: zone?.pricePerHour || slot.pricePerHour,
+          pricePerHour: zone?.price_per_hour_cents || slot.pricePerHour,
           duration: slot.duration || 60, // Default to 60 minutes if not specified
         };
       });
@@ -268,12 +269,13 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                     </p>
                   </div>
                   <div className="flex gap-2">
-                    <button
+                    <Button
                       onClick={clearSelection}
-                      className="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-md"
+                      variant="secondary"
+                      className="px-3 py-1 text-sm rounded-md"
                     >
                       {t("time_slots.select")}
-                    </button>
+                    </Button>
                     <PrimaryButton
                       onClick={() => navigate("/checkout")}
                       className="px-4 py-2 rounded-md font-medium"

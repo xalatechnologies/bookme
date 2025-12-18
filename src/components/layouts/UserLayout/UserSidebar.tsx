@@ -3,6 +3,7 @@
 import React from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { Button } from "@/components/ui/button";
 import {
   LayoutDashboard,
   Building2,
@@ -154,7 +155,8 @@ const UserSidebar = (
 
       {/* Collapse Toggle Button */}
       <div className="p-4 border-t border-gray-200 dark:border-gray-700">
-        <button
+        <Button
+          variant="ghost"
           onClick={toggleCollapse}
           className="w-full flex items-center justify-center p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
           aria-label={isCollapsed ? t('expand_sidebar') : t('collapse_sidebar')}
@@ -164,7 +166,7 @@ const UserSidebar = (
           ) : (
             <ChevronLeft className="w-5 h-5" />
           )}
-        </button>
+        </Button>
       </div>
     </div>
   );

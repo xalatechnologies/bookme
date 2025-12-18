@@ -32,6 +32,7 @@ coverage
 .env.local
 .env.*.local
 *.local
+.env.test
 
 # Editor directories and files
 .vscode/*
@@ -58,3 +59,9 @@ docs/reports/
 stats.html
 eslint-report.json
 lint-output.txt
+
+# AI-specific directories
+.qoder/
+.cursor/
+.aider*
+.gemini/

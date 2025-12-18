@@ -3,6 +3,7 @@
 import React, { useMemo } from "react";
 import { NavLink } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { Button } from "@/components/ui/button";
 import {
   LayoutDashboard,
   Building2,
@@ -77,7 +78,7 @@ const AdminSidebar = (
     {
       titleKey: "system",
       items: [
-        { id: "reports", labelKey: "reports", path: "/admin/reports", icon: BarChart3, requiredRole: 'staff' },
+        { id: "reports", labelKey: "reports", path: "/admin/reports", icon: BarChart3, requiredRole: 'admin' },
         { id: "integrations", labelKey: "integrations", path: "/admin/integrations", icon: Plug, requiredRole: 'admin' },
         { id: "audit", labelKey: "audit_log", path: "/admin/audit-logs", icon: FileText, requiredRole: 'admin' },
         { id: "data-retention", labelKey: "data_retention", path: "/admin/data-retention", icon: Trash2, requiredRole: 'admin' },
@@ -174,7 +175,8 @@ const AdminSidebar = (
 
       {/* Collapse Toggle Button */}
       <div className="p-4 border-t border-gray-200 dark:border-gray-700">
-        <button
+        <Button
+          variant="ghost"
           onClick={toggleCollapse}
           className="w-full flex items-center justify-center p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
           aria-label={isCollapsed ? t('expand_sidebar') : t('collapse_sidebar')}
@@ -184,7 +186,7 @@ const AdminSidebar = (
           ) : (
             <ChevronLeft className="w-5 h-5" />
           )}
-        </button>
+        </Button>
       </div>
     </div>
   );
