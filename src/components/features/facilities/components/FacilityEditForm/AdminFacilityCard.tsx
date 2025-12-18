@@ -53,7 +53,7 @@ const AdminFacilityCard = ({ facility, onDelete, onToggleStatus, onDuplicate }: 
 
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [editValue, setEditValue] = useState<string>("");
-  const [editField, setEditField] = useState<string>("");
+  const [_editField, setEditField] = useState<string>("");
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<boolean>(false);
   const [showEditModal, setShowEditModal] = useState<boolean>(false);
   const [showImageModal, setShowImageModal] = useState<boolean>(false);

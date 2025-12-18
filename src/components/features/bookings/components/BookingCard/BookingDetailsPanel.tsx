@@ -189,7 +189,7 @@ export const BookingDetailsPanel = ({
     if (booking.status === 'cancelled') {
       // If already cancelled, the action is to permanently delete
       return {
-        label: t("actions.delete_permanently" as any),
+        label: t("actions.delete_permanently"),
         iconColor: "text-red-600 border-red-600 hover:text-red-700 hover:border-red-700 hover:bg-red-50"
       };
     } else if (canCancel) {

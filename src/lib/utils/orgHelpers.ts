@@ -23,7 +23,7 @@
 import { supabase } from '@/lib/clients/supabase';
 import type { Database } from '@/types/database';
 
-type Profile = Database['public']['Tables']['profiles']['Row'];
+type _Profile = Database['public']['Tables']['profiles']['Row'];
 type Membership = Database['public']['Tables']['memberships']['Row'];
 type Organization = Database['public']['Tables']['organizations']['Row'];
 
@@ -165,7 +165,7 @@ export async function isUserOrgMember(
   requiredRole?: 'user' | 'staff' | 'admin' | 'owner'
 ): Promise<boolean> {
   try {
-    let query = supabase
+    const query = supabase
       .from('memberships')
       .select('role')
       .eq('user_id', userId)
