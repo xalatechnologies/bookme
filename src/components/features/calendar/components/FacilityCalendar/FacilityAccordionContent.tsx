@@ -1,19 +1,20 @@
 "use client";
 
 import React from "react";
-import type { SelectedTimeSlot, AvailabilityStatus } from '@/types/booking';
-import type { Database } from '@/types/database';
-import { useFacilityZoneData } from '@/hooks/features/facilities/useFacilityZoneData';
 import { AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { FacilityCalendar } from "./index";
+import { useFacilityZoneData } from '@/hooks/features/facilities/useFacilityZoneData';
+import type { Database } from '@/types/database';
+import type { ISelectedTimeSlot } from '@/components/features/bookings/types';
+import type { AvailabilityStatus } from '@/types/booking';
 
 type Facility = Database['public']['Tables']['facilities']['Row'];
 
 interface FacilityAccordionContentProps {
   readonly facility: Facility;
-  readonly selectedSlots: readonly SelectedTimeSlot[];
+  readonly selectedSlots: readonly ISelectedTimeSlot[];
   readonly onSlotClick: (zoneId: string, date: Date, timeSlot: string, availability: string) => void;
-  readonly onBulkSlotSelection?: (slots: readonly SelectedTimeSlot[]) => void;
+  readonly onBulkSlotSelection?: (slots: readonly ISelectedTimeSlot[]) => void;
   readonly getAvailabilityStatus: (zoneId: string, date: Date, timeSlot: string) => AvailabilityStatus;
   readonly isSlotSelected: (zoneId: string, date: Date, timeSlot: string) => boolean;
   readonly onClearSlots?: () => void;
@@ -54,9 +55,9 @@ export const FacilityAccordionContent: React.FC<FacilityAccordionContentProps> =
           facilityId={facility.id}
           facilityName={facility.name}
           zones={zones}
-          selectedSlots={selectedSlots as any}
+          selectedSlots={selectedSlots}
           onSlotClick={onSlotClick}
-          onBulkSlotSelection={onBulkSlotSelection as any}
+          onBulkSlotSelection={onBulkSlotSelection}
           getAvailabilityStatus={getAvailabilityStatus}
           isSlotSelected={isSlotSelected}
           isLoading={false}

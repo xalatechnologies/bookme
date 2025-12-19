@@ -219,7 +219,7 @@ export const FacilityCalendar: React.FC<IFacilityCalendarProps> = ({
     }));
 
     return enrichedSlots;
-  }, [selectedSlots, facilityName, selectedZone?.id, selectedZone?.name]);
+  }, [selectedSlots, facilityName, selectedZone]);
 
   // For step-by-step booking
   const stepByStepSelectedSlots = useStepByStepBooking

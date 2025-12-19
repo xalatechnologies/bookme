@@ -84,7 +84,7 @@ export const BaseModal: React.FC<BaseModalProps> = ({
   className,
   titleIcon
 }): JSX.Element => {
-  const { t } = useTranslation('common');
+  const { t: _t } = useTranslation('common');
 
   const handleOpenChange = (open: boolean): void => {
     if (!open && closeOnOverlayClick) {

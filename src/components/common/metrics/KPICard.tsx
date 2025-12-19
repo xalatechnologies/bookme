@@ -115,7 +115,7 @@ export const KPICard: React.FC<KPICardProps> = ({
   className = "",
   size = "md",
   loading = false}) => {
-  const { t, i18n } = useTranslation("common");
+  const { t: _t, i18n } = useTranslation("common");
 
   // Size configurations
   const sizeConfig = {

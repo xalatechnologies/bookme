@@ -54,6 +54,8 @@ vi.mock('lucide-react', () => ({
   Paperclip: () => <div data-testid="paperclip-icon" />,
   Smile: () => <div data-testid="smile-icon" />,
   Send: () => <div data-testid="send-icon" />,
+  X: () => <div data-testid="x-icon" />,
+  Users: () => <div data-testid="users-icon" />,
 }));
 
 // Mock UI components
@@ -76,6 +78,12 @@ vi.mock('@/components/ui/card', () => ({
     <div {...props}>{children}</div>
   ),
   CardContent: ({ children, ...props }: any) => (
+    <div {...props}>{children}</div>
+  ),
+  CardHeader: ({ children, ...props }: any) => (
+    <div {...props}>{children}</div>
+  ),
+  CardTitle: ({ children, ...props }: any) => (
     <div {...props}>{children}</div>
   ),
 }));
@@ -112,7 +120,7 @@ vi.mock('./MessageThread', () => ({
 }));
 
 vi.mock('./CreateThreadModal', () => ({
-  default: () => <div data-testid="create-thread-modal">Create Thread Modal</div>,
+  default: ({ isOpen }: any) => isOpen ? <div data-testid="create-thread-modal">Create Thread Modal</div> : null,
 }));
 
 // Mock the useUserProfile hook
@@ -146,6 +154,7 @@ const mockGetBookedFacilities = vi.fn();
 const mockGetThreadById = vi.fn();
 const mockUpdateThread = vi.fn();
 const mockDeleteThread = vi.fn();
+const mockMarkAllMessagesAsRead = vi.fn();
 
 vi.mock('@/stores/messageStore', () => ({
   useMessageStore: () => ({
@@ -156,8 +165,15 @@ vi.mock('@/stores/messageStore', () => ({
     getThreadById: mockGetThreadById,
     updateThread: mockUpdateThread,
     deleteThread: mockDeleteThread,
+    markAllMessagesAsRead: mockMarkAllMessagesAsRead,
   }),
 }));
+
+// Mock scrollIntoView
+Object.defineProperty(window.HTMLElement.prototype, 'scrollIntoView', {
+  writable: true,
+  value: vi.fn(),
+});
 
 describe('MessageInbox Component', () => {
   const mockThreads = [

@@ -1,7 +1,7 @@
 "use client";
 
 // External imports
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useCallback } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { useMapErrorHandling } from '@/hooks/features/facilities';
@@ -25,7 +25,7 @@ export const MapContainer: React.FC<MapContainerProps> = ({
   // Use map error handling hook
   const { parseMapError, validateToken } = useMapErrorHandling();
 
-  const initializeMap = async (): Promise<void> => {
+  const initializeMap = useCallback(async (): Promise<void> => {
     
     // Wait for next tick to ensure DOM is ready
     await new Promise(resolve => setTimeout(resolve, 100));
@@ -103,7 +103,7 @@ export const MapContainer: React.FC<MapContainerProps> = ({
       onMapError(errorMessage);
       onLoadingChange(false);
     }
-  };
+  }, [mapboxToken, onMapError, onLoadingChange, onMapLoad, parseMapError, validateToken]);
 
   useEffect((): (() => void) => {
     initializeMap();
@@ -115,7 +115,7 @@ export const MapContainer: React.FC<MapContainerProps> = ({
         map.current = null;
       }
     };
-  }, []); // Only run once on mount
+  }, [initializeMap]); // Add initializeMap as dependency
 
   return (
     <div className="relative w-full h-full">

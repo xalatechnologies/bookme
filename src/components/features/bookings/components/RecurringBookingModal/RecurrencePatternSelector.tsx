@@ -167,7 +167,7 @@ export function RecurrencePatternSelector({
   // Call onPatternChange when localPattern changes
   React.useEffect(() => {
     onPatternChange(localPattern);
-  }, [localPattern]); // Remove onPatternChange from dependencies to prevent infinite loop
+  }, [localPattern, onPatternChange]); // Add onPatternChange to dependencies
 
   const validation = recurrenceEngine.validatePattern(localPattern, t);
 
