@@ -9,7 +9,7 @@
  */
 
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
-import type { BookingWithDetails } from '@/services/supabase/bookings.service';
+import type { BookingWithDetails } from '../../../src/services/supabase/bookings.service';
 
 // Type definitions
 interface MigrationStatus {
@@ -95,19 +95,44 @@ const createMockSupabaseBooking = (
   notes: null,
   created_at: '2025-02-01T00:00:00Z',
   updated_at: '2025-02-01T00:00:00Z',
-  cancelled_at: null,
   recurring_booking_id: null,
-  approval_status: 'approved',
-  approved_by: null,
-  approved_at: null,
+  currency: 'NOK',
+  org_id: 'org-1',
+  is_recurring: false,
+  group_id: null,
+  price_breakdown: null,
+  processed_at: null,
+  processed_by: null,
+  zone_id: null,
   facility: {
     id: 'facility-1',
     name: 'Drammen Idrettshall',
     description: 'Sports hall',
     status: 'available',
+    accessibility_features: null,
+    address: 'Test Street 123',
+    amenities: null,
+    area_description: null,
+    capacity: 100,
+    city: 'Drammen',
+    contact_email: null,
+    contact_phone: null,
+    country: 'Norway',
+    created_at: '2025-01-01T00:00:00Z',
+    facility_type: 'sports',
+    images: null,
+    location: null,
+    org_id: 'org-1',
+    postal_code: '3000',
+    rating: 4.5,
+    review_count: 10,
+    slug: 'drammen-idrettshall',
+    updated_at: '2025-01-01T00:00:00Z',
   },
+  zone: null,
+  user_profile: null,
   ...overrides,
-});
+} as BookingWithDetails);
 
 describe('Storage Migration Utilities', () => {
   beforeEach(() => {
@@ -537,13 +562,13 @@ describe('Storage Migration Utilities', () => {
     });
 
     it('should handle missing required fields', () => {
-      const invalidBooking = { id: 'booking-1' }; // missing startDate
+      const invalidBooking: Partial<StoredBooking> = { id: 'booking-1' }; // missing startDate
 
       const errors: MigrationError[] = [];
 
-      if (!invalidBooking.startDate) {
+      if (!(invalidBooking as any).startDate) {
         errors.push({
-          recordId: invalidBooking.id,
+          recordId: invalidBooking.id || '',
           error: 'Missing required field: startDate',
           timestamp: new Date().toISOString(),
         });
