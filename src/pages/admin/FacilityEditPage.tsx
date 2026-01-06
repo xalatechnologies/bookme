@@ -22,6 +22,7 @@ import { Zone } from "@/types/booking";
 import { extractContactInfo, cleanDescription, formatContactInfo } from "@/utils/facility/contactUtils";
 import { toast } from "react-toastify";
 import { MAPBOX_TOKEN } from '@/lib/clients/mapbox';
+import { fetchAdditionalServicesByFacility, createAdditionalService, deleteAdditionalService, type AdditionalService } from "@/services/supabase/additionalServices.service";
 
 type Facility = Database['public']['Tables']['facilities']['Row'];
 
@@ -122,6 +123,54 @@ const FacilityEditPage = (): JSX.Element => {
     saturday: { start: "09:00", end: "20:00" },
     sunday: { start: "10:00", end: "18:00" }
   });
+  const [services, setServices] = useState<AdditionalService[]>([]);
+  const [newServiceName, setNewServiceName] = useState('');
+  const [newServicePrice, setNewServicePrice] = useState('');
+  const [isSavingService, setIsSavingService] = useState(false);
+
+  const handleAddService = async (): Promise<void> => {
+    if (!editedFacility?.id || !editedFacility.org_id) return;
+    if (!newServiceName.trim()) {
+      toast.error('Legg inn navn på tjenesten');
+      return;
+    }
+    const priceNumber = parseFloat(newServicePrice.replace(',', '.'));
+    if (Number.isNaN(priceNumber) || priceNumber < 0) {
+      toast.error('Ugyldig pris');
+      return;
+    }
+    setIsSavingService(true);
+    try {
+      const created = await createAdditionalService({
+        facilityId: editedFacility.id,
+        orgId: editedFacility.org_id,
+        name: newServiceName.trim(),
+        priceCents: Math.round(priceNumber * 100),
+        currency: 'NOK',
+      });
+      setServices((prev) => [...prev, created]);
+      setNewServiceName('');
+      setNewServicePrice('');
+      toast.success('Tilleggstjeneste lagret');
+    } catch (error) {
+      console.error(error);
+      toast.error('Kunne ikke lagre tilleggstjeneste');
+    } finally {
+      setIsSavingService(false);
+    }
+  };
+
+  const handleDeleteService = async (serviceId: string): Promise<void> => {
+    if (!serviceId) return;
+    try {
+      await deleteAdditionalService(serviceId);
+      setServices((prev) => prev.filter((s) => s.id !== serviceId));
+      toast.success('Tilleggstjeneste slettet');
+    } catch (error) {
+      console.error(error);
+      toast.error('Kunne ikke slette tilleggstjeneste');
+    }
+  };
 
   const [contactInfo, setContactInfo] = useState<{ email: string; phone: string }>({
     email: '',
@@ -191,6 +240,17 @@ const FacilityEditPage = (): JSX.Element => {
         supabaseFacility.contact_phone
       );
       setContactInfo({ email, phone });
+
+      // Load additional services for this facility
+      const loadServices = async (): Promise<void> => {
+        try {
+          const svc = await fetchAdditionalServicesByFacility(supabaseFacility.id);
+          setServices(svc);
+        } catch (error) {
+          console.error('Failed to load additional services', error);
+        }
+      };
+      void loadServices();
 
       // Update field configs with facility values
       fieldConfigs.forEach(field => {
@@ -1283,6 +1343,57 @@ const FacilityEditPage = (): JSX.Element => {
                               <option value="fotball">Fotball</option>
                               <option value="basketball">Basketball</option>
                             </select>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div>
+                        <h3 className="text-xl font-semibold mb-3">Tilleggstjenester</h3>
+                        <div className="space-y-4">
+                          {services.length > 0 ? (
+                            <div className="space-y-2">
+                              {services.map((svc) => (
+                                <div key={svc.id} className="flex items-center justify-between bg-gray-50 dark:bg-gray-800 rounded-lg px-3 py-2">
+                                  <div>
+                                    <p className="font-medium text-gray-900 dark:text-white">{svc.name}</p>
+                                    <p className="text-sm text-gray-600 dark:text-gray-300">
+                                      {(svc.price_cents / 100).toLocaleString('nb-NO')} kr/time
+                                    </p>
+                                  </div>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={() => handleDeleteService(svc.id)}
+                                    aria-label="Slett tjeneste"
+                                  >
+                                    <Trash2 className="h-4 w-4 text-red-500" />
+                                  </Button>
+                                </div>
+                              ))}
+                            </div>
+                          ) : (
+                            <p className="text-sm text-gray-600 dark:text-gray-400">Ingen tilleggstjenester lagt til ennå.</p>
+                          )}
+
+                          <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-2">
+                            <Input
+                              placeholder="Navn (f.eks. Vaktmester, Renhold)"
+                              value={newServiceName}
+                              onChange={(e) => setNewServiceName(e.target.value)}
+                            />
+                            <Input
+                              placeholder="Pris (kr/time)"
+                              value={newServicePrice}
+                              onChange={(e) => setNewServicePrice(e.target.value)}
+                            />
+                          </div>
+                          <div className="flex justify-end">
+                            <Button
+                              onClick={() => void handleAddService()}
+                              disabled={isSavingService}
+                            >
+                              {isSavingService ? 'Lagrer...' : 'Legg til tjeneste'}
+                            </Button>
                           </div>
                         </div>
                       </div>

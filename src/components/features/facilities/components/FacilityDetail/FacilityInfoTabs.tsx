@@ -28,6 +28,7 @@ interface FacilityInfoTabsProps {
   readonly equipment: readonly string[];
   readonly zones: readonly Zone[];
   readonly amenities: readonly string[];
+  readonly additionalServices?: readonly string[];
   readonly area: string;
   readonly suitableFor: readonly string[];
   readonly facilityId: string;
@@ -48,6 +49,7 @@ export const FacilityInfoTabs: React.FC<FacilityInfoTabsProps> = ({
   equipment: _equipment,
   zones,
   amenities,
+  additionalServices = [],
   area,
    
   suitableFor: _suitableFor,
@@ -184,6 +186,17 @@ export const FacilityInfoTabs: React.FC<FacilityInfoTabsProps> = ({
                     <h3 className="text-xl font-semibold mb-3">{t('facility:details.facilities')}</h3>
                     <AmenityGrid
                       items={amenities}
+                      variant="default"
+                      emptyMessage={t('facility:amenities.no_amenities')}
+                    />
+                  </div>
+                )}
+
+                {additionalServices.length > 0 && (
+                  <div>
+                    <h3 className="text-xl font-semibold mb-3">{t('facility:details.additional_services', 'Tilleggstjenester')}</h3>
+                    <AmenityGrid
+                      items={additionalServices}
                       variant="default"
                       emptyMessage={t('facility:amenities.no_amenities')}
                     />

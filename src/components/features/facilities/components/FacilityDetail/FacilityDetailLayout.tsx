@@ -10,6 +10,8 @@ type Facility = Database['public']['Tables']['facilities']['Row'];
 
 import GalleryHeader from "./GalleryHeader";
 import { FacilityInfoTabs } from "./FacilityInfoTabs";
+import { useEffect, useState } from "react";
+import { fetchAdditionalServicesByFacility, type AdditionalService } from "@/services/supabase/additionalServices.service";
 
 interface FacilityDetailLayoutProps {
   readonly facility: Facility;
@@ -26,6 +28,23 @@ export const FacilityDetailLayout = ({
   isFavorited,
   onToggleFavorite,
 }: FacilityDetailLayoutProps): JSX.Element => {
+  const [additionalServices, setAdditionalServices] = useState<AdditionalService[]>([]);
+
+  useEffect(() => {
+    const loadServices = async (): Promise<void> => {
+      try {
+        if (facility.id) {
+          const services = await fetchAdditionalServicesByFacility(facility.id);
+          setAdditionalServices(services);
+        }
+      } catch (error) {
+        console.error('Failed to load additional services', error);
+      }
+    };
+
+    void loadServices();
+  }, [facility.id]);
+
   return (
     <div className="container mx-auto px-4 md:px-6 max-w-7xl">
       <GalleryHeader
@@ -64,7 +83,8 @@ export const FacilityDetailLayout = ({
                 sunday: { start: "08:00", end: "22:00" }
               }
             }))}
-            amenities={(facility.amenities as string[] | null) || []}
+          amenities={(facility.amenities as string[] | null) || []}
+          additionalServices={additionalServices.map((s) => `${s.name} (${(s.price_cents / 100).toLocaleString('nb-NO')} kr/time)`)}
             area={`${facility.capacity || 0} personer`}
             suitableFor={[]}
             facilityId={facility.id}

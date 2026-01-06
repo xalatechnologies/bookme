@@ -41,6 +41,7 @@ export type Database = {
           created_at: string
           currency: string
           description: string | null
+          facility_id: string | null
           id: string
           image_url: string | null
           max_quantity: number | null
@@ -58,6 +59,7 @@ export type Database = {
           created_at?: string
           currency?: string
           description?: string | null
+          facility_id?: string | null
           id?: string
           image_url?: string | null
           max_quantity?: number | null
@@ -75,6 +77,7 @@ export type Database = {
           created_at?: string
           currency?: string
           description?: string | null
+          facility_id?: string | null
           id?: string
           image_url?: string | null
           max_quantity?: number | null
