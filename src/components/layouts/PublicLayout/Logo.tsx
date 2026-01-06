@@ -16,7 +16,7 @@ export const Logo = (): JSX.Element => {
 
   return (
     <div
-      className="flex items-center cursor-pointer"
+      className="flex items-center gap-0 cursor-pointer"
       onClick={handleClick}
       role="button"
       tabIndex={0}
@@ -28,11 +28,21 @@ export const Logo = (): JSX.Element => {
         }
       }}
     >
-      <img
-        src="/Booknor-logo.svg"
-        alt={t('aria.logo')}
-        className="h-9 w-auto"
-      />
+      <div className="h-10 flex items-center overflow-visible">
+        <img
+          src="/Design uten navn (1).png"
+          alt={t('aria.logo')}
+          className="h-20 w-auto"
+        />
+      </div>
+      <div className="flex flex-col leading-tight">
+        <span className="text-lg font-semibold text-gray-900 dark:text-white tracking-wide">
+          DIGILIST
+        </span>
+        <span className="text-sm text-gray-600 dark:text-gray-300 tracking-wide">
+          ENKEL LISTING
+        </span>
+      </div>
     </div>
   );
 };

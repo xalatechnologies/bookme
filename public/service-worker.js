@@ -1,4 +1,4 @@
-const CACHE_NAME = 'booknor-v1';
+const CACHE_NAME = 'digilist-v1';
 const urlsToCache = [
   '/',
   '/static/css/main.css',

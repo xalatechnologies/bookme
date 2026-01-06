@@ -292,7 +292,7 @@
     "book_now": "Book now"
   },
   "share": {
-    "check_out": "Check out {{name}} on Booknor - {{type}} with capacity for {{capacity}} people",
+    "check_out": "Check out {{name}} on Digilist - {{type}} with capacity for {{capacity}} people",
     "facility_shared": "Facility shared!",
     "link_copied": "Link copied to clipboard!",
     "share_failed": "Could not share facility. Try again."

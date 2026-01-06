@@ -32,7 +32,7 @@ export const ViewModeToggle: React.FC<ViewModeToggleProps> = ({ viewMode, setVie
             viewMode === key
               ? 'bg-slate-700 text-white shadow-md'
               : 'text-gray-600 hover:bg-slate-50 hover:text-slate-700'
-          }`}
+          } ${key === 'list' ? 'hidden sm:inline-flex' : ''}`}
           aria-label={label}
           title={label}
         >

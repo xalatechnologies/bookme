@@ -69,7 +69,7 @@ export const FacilityBooking = (): JSX.Element => {
     try {
       if (navigator.share) {
         await navigator.share({
-          title: facility?.name || "Booknor Facility",
+          title: facility?.name || "Digilist Facility",
           url: window.location.href});
       } else {
         await navigator.clipboard.writeText(window.location.href);

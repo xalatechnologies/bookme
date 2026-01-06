@@ -1,7 +1,7 @@
 {
-  "name": "Booknor - Lokalebookingssystem",
-  "short_name": "Booknor",
-  "description": "Book og administrer lokaler enkelt med avanserte funksjoner",
+  "name": "Digilist - Enkel booking",
+  "short_name": "Digilist",
+  "description": "Book og administrer lokaler enkelt med Digilist",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",

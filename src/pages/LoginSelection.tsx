@@ -30,7 +30,7 @@ export const LoginSelection = (): JSX.Element => {
         <div className="w-full max-w-7xl">
           <div className="text-center mb-12">
             <h1 className="text-4xl font-bold text-gray-900 mb-4">
-              {t('loginSelection.title', 'Velkommen til Booknor Portal')}
+              {t('loginSelection.title', 'Velkommen til Digilist Portal')}
             </h1>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
               {t('loginSelection.subtitle', 'Velg hvordan du vil logge inn på systemet for å få tilgang til våre tjenester')}
