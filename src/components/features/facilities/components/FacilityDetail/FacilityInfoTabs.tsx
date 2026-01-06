@@ -157,10 +157,25 @@ export const FacilityInfoTabs: React.FC<FacilityInfoTabsProps> = ({
   return (
     <>
       <Tabs defaultValue="general" className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="general">{t('facility:details.overview')}</TabsTrigger>
-          <TabsTrigger value="rules">{t('facility:details.policies')}</TabsTrigger>
-          <TabsTrigger value="faq">{t('common:faq.title')}</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-3 bg-slate-100">
+          <TabsTrigger
+            value="general"
+            className="data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:font-semibold"
+          >
+            {t('facility:details.overview')}
+          </TabsTrigger>
+          <TabsTrigger
+            value="rules"
+            className="data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:font-semibold"
+          >
+            {t('facility:details.policies')}
+          </TabsTrigger>
+          <TabsTrigger
+            value="faq"
+            className="data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:font-semibold"
+          >
+            {t('common:faq.title')}
+          </TabsTrigger>
         </TabsList>
 
       <TabsContent value="general" className="space-y-6 mt-6">
