@@ -32,6 +32,9 @@ interface FacilityInfoTabsProps {
   readonly suitableFor: readonly string[];
   readonly facilityId: string;
   readonly facilityName: string;
+  readonly address?: string;
+  readonly latitude?: number | null;
+  readonly longitude?: number | null;
   readonly showBookingInterface?: boolean;
   // Add contact fields
   readonly contactEmail?: string | null;
@@ -50,6 +53,9 @@ export const FacilityInfoTabs: React.FC<FacilityInfoTabsProps> = ({
   suitableFor: _suitableFor,
   facilityId,
   facilityName,
+  address,
+  latitude,
+  longitude,
   showBookingInterface = false,
   contactEmail,
   contactPhone
@@ -134,48 +140,26 @@ export const FacilityInfoTabs: React.FC<FacilityInfoTabsProps> = ({
     secondColumn: _secondColumn
   } = splitFieldsIntoColumns(visibleFields);
 
-  return (
-    <Tabs defaultValue="book" className="w-full">
-      <TabsList className="grid w-full grid-cols-5">
-        <TabsTrigger value="book">{t('facility:actions.book')}</TabsTrigger>
-        <TabsTrigger value="general">{t('facility:details.overview')}</TabsTrigger>
-        <TabsTrigger value="zones">{t('facility:zones.title')}</TabsTrigger>
-        <TabsTrigger value="rules">{t('facility:details.policies')}</TabsTrigger>
-        <TabsTrigger value="faq">{t('common:faq.title')}</TabsTrigger>
-      </TabsList>
+  const mapSrc = React.useMemo(() => {
+    const base = 'https://www.google.com/maps';
+    if (latitude && longitude) {
+      return `${base}?q=${latitude},${longitude}&z=15&output=embed`;
+    }
+    if (address && address.trim().length > 0) {
+      const q = encodeURIComponent(address);
+      return `${base}?q=${q}&z=15&output=embed`;
+    }
+    return null;
+  }, [address, latitude, longitude]);
 
-      <TabsContent value="book" className="space-y-6 mt-6">
-        <TabPanel>
-          <div>
-            {showBookingInterface && zones.length > 0 ? (
-              <FacilityCalendar
-                facilityId={facilityId}
-                facilityName={facilityName}
-                zones={zones}
-                isLoading={false}
-                error={undefined}
-                openingHoursStart={
-                  openingHours
-                    ? getEarliestOpeningHour(openingHours)
-                    : "08:00"
-                }
-                openingHoursEnd={
-                  openingHours
-                    ? getLatestClosingHour(openingHours)
-                    : "22:00"
-                }
-                useStepByStepBooking={true}
-                getAvailabilityStatus={getAvailabilityStatus}
-              />
-            ) : (
-              <div className="text-center py-12">
-                <h3 className="text-xl font-semibold mb-4">{t('facility:details.book_facility')}</h3>
-                <p className="text-gray-600">{t('facility:mobile_panel.booking_coming_soon')}</p>
-              </div>
-            )}
-          </div>
-        </TabPanel>
-      </TabsContent>
+  return (
+    <>
+      <Tabs defaultValue="general" className="w-full">
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="general">{t('facility:details.overview')}</TabsTrigger>
+          <TabsTrigger value="rules">{t('facility:details.policies')}</TabsTrigger>
+          <TabsTrigger value="faq">{t('common:faq.title')}</TabsTrigger>
+        </TabsList>
 
       <TabsContent value="general" className="space-y-6 mt-6">
         <TabPanel>
@@ -230,7 +214,25 @@ export const FacilityInfoTabs: React.FC<FacilityInfoTabsProps> = ({
                     </div>
                   </div>
                 </div>
-                
+
+                {/* Map */}
+                {mapSrc && (
+                  <div>
+                    <h3 className="text-xl font-semibold mb-3">{t('facility:details.location', 'Lokasjon')}</h3>
+                    <div className="w-full h-48 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
+                      <iframe
+                        title={facilityName}
+                        src={mapSrc}
+                        className="w-full h-full"
+                        style={{ border: 0 }}
+                        loading="lazy"
+                        referrerPolicy="no-referrer-when-downgrade"
+                        allowFullScreen
+                      />
+                    </div>
+                  </div>
+                )}
+
                 <div>
                   <h3 className="text-xl font-semibold mb-3">{t('facility:fields.opening_hours')}</h3>
                   <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
@@ -267,63 +269,6 @@ export const FacilityInfoTabs: React.FC<FacilityInfoTabsProps> = ({
           </div>
         </TabPanel>
       </TabsContent>
-
-      <TabsContent value="zones" className="space-y-6 mt-6">
-        <TabPanel>
-          <div>
-            <h3 className="text-xl font-semibold mb-4">{t('facility:zones.available_zones')}</h3>
-            {zones.length > 0 ? (
-              <div className="space-y-4">
-                {zones.map((zone) => (
-                  <div key={zone.id} className="bg-gray-50 rounded-lg p-6">
-                    <div className="flex items-center mb-4">
-                      <div className="w-3 h-3 bg-blue-500 rounded-full mr-3"></div>
-                      <h4 className="font-semibold text-lg">{zone.name}</h4>
-                    </div>
-                    <p className="text-gray-600 mb-4">{zone.description}</p>
-                    <div className="grid grid-cols-2 gap-4 text-sm">
-                      <div>
-                        <span className="font-medium">{t('facility:fields.capacity')}:</span>
-                        <span className="ml-2">{zone.capacity} {t('facility:card.people')}</span>
-                      </div>
-                      <div>
-                        <span className="font-medium">{t('facility:fields.price')}:</span>
-                        <span className="ml-2">{zone.pricePerHour} {t('facility:card.pricePerHour')}</span>
-                      </div>
-                      <div>
-                        <span className="font-medium">{t('facility:fields.area')}:</span>
-                        <span className="ml-2">{zone.area} {t('facility:card.squareMeters')}</span>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="bg-gray-50 rounded-lg p-6">
-                <div className="flex items-center mb-4">
-                  <div className="w-3 h-3 bg-blue-500 rounded-full mr-3"></div>
-                  <h4 className="font-semibold text-lg">{t('common:entire_facility')}</h4>
-                </div>
-                <p className="text-gray-600 mb-4">
-                  {t('common:book_entire_facility', { name: facilityName })}
-                </p>
-                <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div>
-                    <span className="font-medium">{t('facility:fields.capacity')}:</span>
-                    <span className="ml-2">{capacity} {t('facility:card.people')}</span>
-                  </div>
-                  <div>
-                    <span className="font-medium">{t('facility:fields.area')}:</span>
-                    <span className="ml-2">{area} {t('facility:card.squareMeters')}</span>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        </TabPanel>
-      </TabsContent>
-
-      
 
       <TabsContent value="rules" className="space-y-6 mt-6">
         <TabPanel>
@@ -535,5 +480,35 @@ export const FacilityInfoTabs: React.FC<FacilityInfoTabsProps> = ({
       </TabsContent>
 
     </Tabs>
+
+      <div className="mt-10">
+        {showBookingInterface && zones.length > 0 ? (
+          <FacilityCalendar
+            facilityId={facilityId}
+            facilityName={facilityName}
+            zones={zones}
+            isLoading={false}
+            error={undefined}
+            openingHoursStart={
+              openingHours
+                ? getEarliestOpeningHour(openingHours)
+                : "08:00"
+            }
+            openingHoursEnd={
+              openingHours
+                ? getLatestClosingHour(openingHours)
+                : "22:00"
+            }
+            useStepByStepBooking={true}
+            getAvailabilityStatus={getAvailabilityStatus}
+          />
+        ) : (
+          <div className="text-center py-12">
+            <h3 className="text-xl font-semibold mb-4">{t('facility:details.book_facility')}</h3>
+            <p className="text-gray-600">{t('facility:mobile_panel.booking_coming_soon')}</p>
+          </div>
+        )}
+      </div>
+    </>
   );
 };

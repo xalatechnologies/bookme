@@ -22,7 +22,7 @@ const AdminHeader = (): JSX.Element => {
       </a>
 
       {/* Logo */}
-      <div className="w-40">
+      <div className="flex items-center flex-shrink-0">
         <Logo />
       </div>
 
