@@ -35,7 +35,7 @@ export const Step2Details = ({
   isLoading = false
 }: IStep2DetailsProps): JSX.Element => {
   const { t } = useTranslation(['booking', 'common']);
-  const { fields, activityTypeOptions, actorTypeOptions } = useBookingDetailsForm();
+  const { fields, activityTypeOptions, actorTypeOptions, priceGroupOptions } = useBookingDetailsForm();
 
   return (
     <div className="space-y-6">
@@ -119,6 +119,34 @@ export const Step2Details = ({
             {errors.activityType && (
               <p id="activityType-error" className="text-sm text-red-600" role="alert">
                 {errors.activityType}
+              </p>
+            )}
+          </div>
+
+          {/* Price Group */}
+          <div className="space-y-2">
+            <Label htmlFor={fields.priceGroup.id} className="text-sm font-medium">
+              {fields.priceGroup.label} {fields.priceGroup.required && <span className="text-red-500">*</span>}
+            </Label>
+            <Select
+              value={formData.priceGroup}
+              onValueChange={(value) => onUpdateField('priceGroup', value)}
+              disabled={isLoading}
+            >
+              <SelectTrigger className="w-full" aria-invalid={!!errors.priceGroup}>
+                <SelectValue placeholder={fields.priceGroup.placeholder} />
+              </SelectTrigger>
+              <SelectContent>
+                {priceGroupOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {errors.priceGroup && (
+              <p id="priceGroup-error" className="text-sm text-red-600" role="alert">
+                {errors.priceGroup}
               </p>
             )}
           </div>

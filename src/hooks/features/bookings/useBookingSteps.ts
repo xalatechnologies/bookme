@@ -194,7 +194,9 @@ export const useBookingSteps = (options: IUseBookingStepsOptions): IUseBookingSt
           return (
             formData.purpose.trim().length > 0 &&
             formData.attendees > 0 &&
-            formData.activityType.trim().length > 0
+            formData.activityType.trim().length > 0 &&
+            formData.priceGroup !== undefined &&
+            formData.priceGroup.trim().length > 0
           );
 
         case 'calendar':

@@ -9,6 +9,7 @@ export interface IFormErrors {
   purpose?: string;
   attendees?: string;
   activityType?: string;
+  priceGroup?: string;
   actorType?: string;
   termsAccepted?: string;
 }
@@ -20,6 +21,7 @@ const initialFormData: IBookingFormData = {
   purpose: "",
   attendees: 1,
   activityType: "",
+  priceGroup: "",
   additionalInfo: "",
   actorType: "",
   termsAccepted: false,
@@ -75,6 +77,10 @@ export const useBookingForm = () => {
 
     if (!formData.activityType || formData.activityType.trim().length === 0) {
       newErrors.activityType = "Velg aktivitetstype";
+    }
+
+    if (!formData.priceGroup || formData.priceGroup.trim().length === 0) {
+      newErrors.priceGroup = "Velg prisgruppe";
     }
 
     if (!formData.actorType || formData.actorType.trim().length === 0) {

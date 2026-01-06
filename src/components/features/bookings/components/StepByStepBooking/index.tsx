@@ -126,6 +126,7 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
     purpose: "",
     attendees: 1,
     activityType: "",
+    priceGroup: "",
     additionalInfo: "",
     actorType: "",
     termsAccepted: false,
@@ -427,6 +428,43 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
 
             <Card className="w-full">
               <CardContent className="p-6 space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="priceGroup" className="text-sm font-medium">
+                    {t("booking:form.price_group_label", "Prisgruppe")}{" "}
+                    <span className="text-red-500">*</span>
+                  </Label>
+                  <Select
+                    value={formData.priceGroup}
+                    onValueChange={(value) =>
+                      handleFormDataUpdate({ priceGroup: value })
+                    }
+                    disabled={isLoading}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue
+                        placeholder={t(
+                          "booking:form.price_group_placeholder",
+                          "Velg prisgruppe"
+                        )}
+                      />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="privat">
+                        {t("booking:price_groups.privat", "Privat")}
+                      </SelectItem>
+                      <SelectItem value="lag-foreninger">
+                        {t("booking:price_groups.lag_foreninger", "Lag og foreninger")}
+                      </SelectItem>
+                      <SelectItem value="barn-u18">
+                        {t("booking:price_groups.barn_u18", "Barn u/18")}
+                      </SelectItem>
+                      <SelectItem value="utenbygds">
+                        {t("booking:price_groups.utenbygds", "Utenbygds")}
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
                 <div className="space-y-2">
                   <Label htmlFor="purpose" className="text-sm font-medium">
                     {t("booking:form.purpose_label")}{" "}
@@ -835,9 +873,15 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
                   {selectedSlots.length > 0
                     ? formData.bookingType === "recurring"
                       ? recurringSlots.length > 0
-                        ? t("booking:sidebar.recurring_slots_and_price")
+                        ? currentStep === "calendar"
+                          ? t("booking:sidebar.recurring_slots_only", "Valgte gjentakende tidspunkt")
+                          : t("booking:sidebar.recurring_slots_and_price")
                         : t("booking:sidebar.slots_and_price_select_pattern")
-                      : t("booking:sidebar.selected_slots_and_price")
+                      : currentStep === "calendar"
+                        ? t("booking:sidebar.selected_slots_only", "Valgte tidspunkt")
+                        : formData.priceGroup
+                          ? t("booking:sidebar.selected_slots_and_price")
+                          : t("booking:sidebar.selected_slots_only", "Valgte tidspunkt")
                     : t("booking:sidebar.select_slots_pricing")}
                 </CardTitle>
               </CardHeader>
@@ -851,13 +895,31 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
                       onClearAll={handleClearAllSlots}
                     />
 
-                    <PriceCalculation
-                      selectedSlots={selectedSlots}
-                      recurringSlots={recurringSlots}
-                      actorType={formData.actorType}
-                      activityType={formData.activityType}
-                      bookingType={formData.bookingType}
-                    />
+                    {currentStep !== "calendar" && formData.priceGroup ? (
+                      formData.priceGroup === "lag-foreninger" || formData.priceGroup === "barn-u18" ? (
+                        <div className="p-4 rounded-lg bg-blue-50 text-blue-900 border border-blue-200">
+                          <p className="font-semibold text-sm">
+                            {t("booking:price_groups.selected", "Prisgruppe")}:{" "}
+                            {formData.priceGroup === "lag-foreninger"
+                              ? t("booking:price_groups.lag_foreninger", "Lag og foreninger")
+                              : t("booking:price_groups.barn_u18", "Barn u/18")}
+                          </p>
+                          <p className="text-sm">{t("booking:pricing.free_for_group", "Pris: 0 kr (ingen kostnad for denne prisgruppen)")}</p>
+                        </div>
+                      ) : (
+                        <PriceCalculation
+                          selectedSlots={selectedSlots}
+                          recurringSlots={recurringSlots}
+                          actorType={formData.actorType}
+                          activityType={formData.activityType}
+                          bookingType={formData.bookingType}
+                        />
+                      )
+                    ) : currentStep !== "calendar" ? (
+                      <div className="p-4 rounded-lg bg-gray-50 text-gray-700 border border-gray-200 text-sm">
+                        {t("booking:pricing.select_price_group_first", "Velg prisgruppe for å se prisberegning.")}
+                      </div>
+                    ) : null}
                   </>
                 ) : (
                   <div className="text-center py-8">

@@ -36,6 +36,12 @@ export type ActivityType =
  */
 export type BookingType = 'one-time' | 'recurring';
 
+export type PriceGroup =
+  | "privat"
+  | "lag-foreninger"
+  | "barn-u18"
+  | "utenbygds";
+
 /**
  * Booking form data
  * Data collected from the booking form
@@ -45,6 +51,7 @@ export interface IBookingFormData {
   readonly purpose: string;
   readonly attendees: number;
   readonly activityType: ActivityType | "";
+  readonly priceGroup: PriceGroup | "";
   readonly additionalInfo?: string;
   readonly actorType: ActorType | "";
   readonly termsAccepted: boolean;

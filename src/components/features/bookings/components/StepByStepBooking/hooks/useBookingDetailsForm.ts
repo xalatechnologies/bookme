@@ -35,6 +35,7 @@ export interface FormFieldsConfig {
   readonly purpose: FormField;
   readonly attendees: FormField;
   readonly activityType: FormField;
+  readonly priceGroup: FormField;
   readonly actorType: FormField;
   readonly additionalInfo: FormField;
 }
@@ -46,6 +47,7 @@ export interface UseBookingDetailsFormReturn {
   readonly fields: FormFieldsConfig;
   readonly activityTypeOptions: readonly FieldOption[];
   readonly actorTypeOptions: readonly FieldOption[];
+  readonly priceGroupOptions: readonly FieldOption[];
 }
 
 /**
@@ -80,6 +82,13 @@ export const useBookingDetailsForm = (): UseBookingDetailsFormReturn => {
    * Actor type options
    */
   const actorTypeOptions = useMemo((): readonly FieldOption[] => [
+  const priceGroupOptions = useMemo((): readonly FieldOption[] => [
+    { value: 'privat', label: t('booking:price_groups.privat', 'Privat') },
+    { value: 'lag-foreninger', label: t('booking:price_groups.lag_foreninger', 'Lag og foreninger') },
+    { value: 'barn-u18', label: t('booking:price_groups.barn_u18', 'Barn u/18') },
+    { value: 'utenbygds', label: t('booking:price_groups.utenbygds', 'Utenbygds') },
+  ], [t]);
+
     { value: 'private-person', label: t('booking:actor_types.private_person', 'Privatperson') },
     { value: 'lag-foreninger', label: t('booking:actor_types.lag_foreninger', 'Lag/Foreninger') },
     { value: 'paraply', label: t('booking:actor_types.paraply', 'Paraply') },
@@ -117,6 +126,15 @@ export const useBookingDetailsForm = (): UseBookingDetailsFormReturn => {
       required: true,
       options: activityTypeOptions
     },
+    priceGroup: {
+      id: 'priceGroup',
+      name: 'priceGroup',
+      label: t('booking:fields.price_group', 'Prisgruppe'),
+      placeholder: t('booking:placeholders.price_group', 'Velg prisgruppe'),
+      type: 'select',
+      required: true,
+      options: priceGroupOptions
+    },
     actorType: {
       id: 'actorType',
       name: 'actorType',
@@ -139,6 +157,7 @@ export const useBookingDetailsForm = (): UseBookingDetailsFormReturn => {
   return {
     fields,
     activityTypeOptions,
-    actorTypeOptions
+    actorTypeOptions,
+    priceGroupOptions
   };
 };
