@@ -75,7 +75,7 @@
     "conflict_label": "Conflict",
     "conflict_description": "Booking conflict",
     "click_available": "Click on available slots to select",
-    "drag_select": "Drag to select multiple slots"
+    "drag_select": ""
   },
   "pricing": {
     "title": "Pricing Summary",

@@ -252,6 +252,21 @@ export const TimeSlotGrid: React.FC<ICalendarGridProps> = ({
                 const status = getSlotStatus(day.date, timeSlot);
                 const isInPreview = isSlotInPreview(zoneId, day.date, timeSlot);
                 // No need to generate slotId anymore since we pass parameters directly
+                const selectedSlot = selectedSlots.find((s) => {
+                  const slotDate =
+                    s.date instanceof Date ? s.date : new Date(s.date);
+                  return (
+                    s.zoneId === zoneId &&
+                    slotDate.toDateString() === day.date.toDateString() &&
+                    s.timeSlot === timeSlot
+                  );
+                });
+                const purposeTitle =
+                  selectedSlot &&
+                  selectedSlot.showPurposeInCalendar &&
+                  selectedSlot.purpose
+                    ? selectedSlot.purpose
+                    : undefined;
 
                 return (
                   <div key={dayIndex} className="relative">
@@ -275,11 +290,12 @@ export const TimeSlotGrid: React.FC<ICalendarGridProps> = ({
                       onTouchStart={(e) => handleTouchStart(day.date, timeSlot, e)}
                       onTouchMove={handleTouchMove}
                       onTouchEnd={handleTouchEnd}
-                      title={getStatusLabel(status)}
+                      title={purposeTitle || getStatusLabel(status)}
+                      aria-label={purposeTitle || getStatusLabel(status)}
                       data-slot={JSON.stringify({ day: day.date.toISOString(), timeSlot })}
                       style={{ userSelect: "none" }}
                     >
-                      <div className="flex items-center justify-center h-full">
+                      <div className="flex flex-col items-center justify-center h-full leading-tight">
                         <span
                           className={`text-sm font-medium ${
                             status === "selected"
@@ -291,6 +307,11 @@ export const TimeSlotGrid: React.FC<ICalendarGridProps> = ({
                         >
                           {timeSlot.split("-")[0]}
                         </span>
+                        {purposeTitle && (
+                          <span className="text-[10px] font-semibold text-white mt-0.5 text-center line-clamp-2 px-1">
+                            {purposeTitle}
+                          </span>
+                        )}
                         {isInPreview && status !== "selected" && (
                           <span className="text-sm text-blue-800 ml-1">◯</span>
                         )}

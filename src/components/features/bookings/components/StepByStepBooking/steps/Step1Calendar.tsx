@@ -147,7 +147,7 @@ export const Step1Calendar = ({
           {t('booking:steps.calendar.title', 'Velg tidspunkter')}
         </h3>
         <p className="text-gray-600 text-sm">
-          {t('booking:steps.calendar.description', 'Klikk på ledige tidspunkter for å velge dem. Du kan velge flere tidspunkter samtidig.')}
+          {t('booking:steps.calendar.description', '')}
         </p>
       </div>
 

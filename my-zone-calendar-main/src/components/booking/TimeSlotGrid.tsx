@@ -10,7 +10,7 @@ interface TimeSlotGridProps {
 }
 
 const getSlotClasses = (status: SlotStatus, isSelected: boolean) => {
-  const baseClasses = "py-1.5 px-2 text-xs font-medium rounded-md transition-all duration-200 text-center";
+  const baseClasses = "py-1.5 px-2 text-xs font-semibold rounded-lg transition-all duration-200 text-center shadow-[inset_0_0_0_1px_rgba(0,0,0,0.04)]";
   
   if (isSelected) {
     return cn(baseClasses, "slot-selected transform scale-105");
@@ -44,24 +44,24 @@ export function TimeSlotGrid({ days, selectedSlots, onSlotClick }: TimeSlotGridP
   };
 
   return (
-    <div className="bg-card rounded-xl border border-border overflow-hidden shadow-sm">
+    <div className="overflow-hidden">
       {/* Scrollable container for mobile */}
       <div className="overflow-x-auto">
-        <div className="min-w-[600px]">
+        <div className="min-w-[640px]">
           {/* Header with days */}
-          <div className="grid grid-cols-8 border-b border-border bg-muted/30">
-            <div className="p-2 sm:p-3 text-center text-xs sm:text-sm font-medium text-muted-foreground border-r border-border">
+          <div className="grid grid-cols-8 border-b border-border bg-[#f7f9fb]">
+            <div className="p-2 sm:p-3 text-center text-xs sm:text-sm font-semibold text-slate-600 border-r border-border bg-[#f1f3f6]">
               Tid
             </div>
             {days.map((day) => (
               <div
                 key={day.date.toISOString()}
                 className={cn(
-                  "p-2 sm:p-3 text-center border-r border-border last:border-r-0",
+                  "p-2 sm:p-3 text-center border-r border-border last:border-r-0 bg-white",
                   day.isToday && "bg-primary/5"
                 )}
               >
-                <div className="text-[10px] sm:text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                <div className="text-[10px] sm:text-xs font-semibold text-muted-foreground uppercase tracking-[0.08em]">
                   {format(day.date, 'EEE', { locale: nb })}
                 </div>
                 <div className={cn(
@@ -78,10 +78,10 @@ export function TimeSlotGrid({ days, selectedSlots, onSlotClick }: TimeSlotGridP
           </div>
 
           {/* Time slots grid */}
-          <div className="max-h-[400px] sm:max-h-[500px] overflow-y-auto">
+          <div className="overflow-y-auto">
             {hours.map((hour) => (
-              <div key={hour} className="grid grid-cols-8 border-b border-border last:border-b-0">
-                <div className="p-1.5 sm:p-2 text-center text-xs sm:text-sm font-medium text-muted-foreground border-r border-border bg-muted/20">
+              <div key={hour} className="grid grid-cols-8 border-b border-border last:border-b-0 bg-white">
+                <div className="p-1.5 sm:p-2 text-center text-xs sm:text-sm font-semibold text-slate-600 border-r border-border bg-[#f1f3f6]">
                   {hour.toString().padStart(2, '0')}:00
                 </div>
                 {days.map((day) => {

@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { Calendar, Clock, X } from "lucide-react";
+import { Calendar, Clock, X, Trash2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useTimeSlotGrouping } from "@/hooks/features/bookings";
@@ -13,10 +13,11 @@ export interface ITimeSlotDisplayProps {
   readonly slots: readonly ISelectedTimeSlot[];
   readonly recurringSlots?: readonly ISelectedTimeSlot[];
   readonly bookingType: "one-time" | "recurring";
-  readonly onRemoveSlot?: (slotId: string) => void;
+  readonly onRemoveSlot?: (slotIds: readonly string[]) => void;
   readonly onClearAll?: () => void;
   readonly showClearButton?: boolean;
   readonly maxPreviewSlots?: number;
+  readonly conflictNotice?: string | null;
 }
 
 /**
@@ -39,11 +40,11 @@ export const TimeSlotDisplay: React.FC<ITimeSlotDisplayProps> = ({
   slots,
   recurringSlots = [],
   bookingType,
-   
-  onRemoveSlot: _onRemoveSlot,
+  onRemoveSlot,
   onClearAll,
   showClearButton = true,
   maxPreviewSlots = 5,
+  conflictNotice = null,
 }): JSX.Element => {
   const { t } = useTranslation("bookings");
   const { groupedSlots } = useTimeSlotGrouping(slots);
@@ -67,7 +68,7 @@ export const TimeSlotDisplay: React.FC<ITimeSlotDisplayProps> = ({
       durationHours === 1 ? `1 ${t('time.hour', 'time')}` : `${durationHours} ${t('time.hours', 'timer')}`;
 
     return (
-      <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg border border-blue-200">
+      <div className="group flex items-center justify-between p-3 bg-blue-50 rounded-lg border border-blue-200 relative">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
             <Clock className="h-3 w-3 text-blue-600" />
@@ -80,6 +81,17 @@ export const TimeSlotDisplay: React.FC<ITimeSlotDisplayProps> = ({
             </span>
           </div>
         </div>
+        {onRemoveSlot && (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="opacity-0 group-hover:opacity-100 transition-opacity text-red-600 hover:text-red-700 hover:bg-red-50"
+            aria-label={t('sidebar.remove_slot', 'Fjern valgt tidspunkt')}
+            onClick={() => onRemoveSlot(group.slots.map((slot) => slot.id))}
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        )}
         {isRecurring && (
           <Badge variant="secondary" className="text-xs ml-2">
             {t('recurrence.recurring', 'Gjentakende')}
@@ -157,8 +169,13 @@ export const TimeSlotDisplay: React.FC<ITimeSlotDisplayProps> = ({
         </div>
       )}
 
-      {/* Clear All Button */}
-      {showClearButton &&
+      {/* Conflict notice or Clear All Button */}
+      {conflictNotice ? (
+        <div className="pt-2 border-t text-xs text-red-600">
+          {conflictNotice}
+        </div>
+      ) : (
+        showClearButton &&
         (slots.length > 1 || recurringSlots.length > 0) &&
         onClearAll && (
           <div className="pt-2 border-t">
@@ -173,7 +190,8 @@ export const TimeSlotDisplay: React.FC<ITimeSlotDisplayProps> = ({
               {t('sidebar.clear_all_slots', 'Fjern alle valgte tidspunkter')}
             </Button>
           </div>
-        )}
+        )
+      )}
     </div>
   );
 };

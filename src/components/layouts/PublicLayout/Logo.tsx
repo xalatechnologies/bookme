@@ -40,7 +40,7 @@ export const Logo = (): JSX.Element => {
           DIGILIST
         </span>
         <span className="text-sm text-gray-600 dark:text-gray-300 tracking-wide">
-          ENKEL LISTING
+          ENKEL BOOKING
         </span>
       </div>
     </div>

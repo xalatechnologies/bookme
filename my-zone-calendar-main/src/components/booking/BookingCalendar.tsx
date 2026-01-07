@@ -383,128 +383,128 @@ export function BookingCalendar() {
   const currentZoneSlots = selectedSlots.filter(s => s.zoneId === selectedZone);
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-foreground mb-2">Ledighetskalender</h1>
-          <p className="text-muted-foreground">
-            Legg inn din reservasjon raskt og enkelt på 4 steg.
-          </p>
-        </div>
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="space-y-2">
+        <h1 className="text-3xl font-bold text-foreground">Ledighetskalender</h1>
+        <p className="text-muted-foreground">
+          Legg inn din reservasjon raskt og enkelt på 4 steg.
+        </p>
+      </div>
 
-        {/* Stepper */}
-        <div className="mb-6">
-          <BookingStepper currentStep={currentStep} totalSteps={4} />
-        </div>
+      {/* Stepper */}
+      <BookingStepper currentStep={currentStep} totalSteps={4} />
 
-        {/* Main Content */}
-        {showLoginOverlay ? (
-          <BookingLogin 
-            onBack={handleLoginBack} 
-            onLoginSuccess={handleLoginSuccess} 
-          />
-        ) : currentStep === 3 ? (
-          <BookingReview
-            slots={currentZoneSlots}
-            checkoutData={checkoutData}
-            onBack={handleBack}
-            onSubmitForApproval={handleSubmitForApproval}
-          />
-        ) : currentStep === 4 ? (
-          <BookingConfirmation
-            slots={currentZoneSlots}
-            checkoutData={checkoutData}
-            onBackToHome={handleBackToHome}
-            onViewBookings={handleViewBookings}
-          />
-        ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Left Section */}
-            <div className="lg:col-span-2 space-y-4">
-              {currentStep === 1 ? (
-                <>
-                  <div className="bg-card rounded-xl p-4 border border-border shadow-sm">
-                    <div className="flex items-center justify-between mb-4">
+      {/* Main Content */}
+      {showLoginOverlay ? (
+        <BookingLogin 
+          onBack={handleLoginBack} 
+          onLoginSuccess={handleLoginSuccess} 
+        />
+      ) : currentStep === 3 ? (
+        <BookingReview
+          slots={currentZoneSlots}
+          checkoutData={checkoutData}
+          onBack={handleBack}
+          onSubmitForApproval={handleSubmitForApproval}
+        />
+      ) : currentStep === 4 ? (
+        <BookingConfirmation
+          slots={currentZoneSlots}
+          checkoutData={checkoutData}
+          onBackToHome={handleBackToHome}
+          onViewBookings={handleViewBookings}
+        />
+      ) : (
+        <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-6">
+          {/* Left Section */}
+          <div className="space-y-4">
+            {currentStep === 1 ? (
+              <>
+                <div className="bg-white rounded-xl border border-border shadow-sm overflow-hidden">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between px-4 py-4 border-b border-border">
+                    <div>
                       <h2 className="text-lg font-semibold text-foreground">Velg tidspunkter</h2>
-                      <WeekNavigation
-                        weekStart={weekStart}
-                        onPreviousWeek={handlePreviousWeek}
-                        onNextWeek={handleNextWeek}
-                      />
+                      <p className="text-sm text-muted-foreground">
+                        Klikk på ledige tidspunkter for å velge dem. Du kan velge flere tidspunkter samtidig.
+                      </p>
                     </div>
-                    <p className="text-sm text-muted-foreground mb-4">
-                      Klikk på ledige tidspunkter for å velge dem. Du kan velge flere tidspunkter samtidig.
-                    </p>
+                    <WeekNavigation
+                      weekStart={weekStart}
+                      onPreviousWeek={handlePreviousWeek}
+                      onNextWeek={handleNextWeek}
+                    />
                   </div>
 
-                  <TimeSlotGrid
-                    days={days}
-                    selectedSlots={currentZoneSlots}
-                    onSlotClick={handleSlotClick}
-                  />
+                  <div className="p-4">
+                    <TimeSlotGrid
+                      days={days}
+                      selectedSlots={currentZoneSlots}
+                      onSlotClick={handleSlotClick}
+                    />
+                  </div>
+                </div>
 
-                  <SlotLegend />
-                </>
-              ) : (
-                <BookingCheckout
-                  checkoutData={checkoutData}
-                  onCheckoutChange={setCheckoutData}
-                  onBack={handleBack}
-                  onAddToCart={handleAddToCart}
-                  onComplete={handleContinueToLogin}
-                />
+                <SlotLegend />
+              </>
+            ) : (
+              <BookingCheckout
+                checkoutData={checkoutData}
+                onCheckoutChange={setCheckoutData}
+                onBack={handleBack}
+                onAddToCart={handleAddToCart}
+                onComplete={handleContinueToLogin}
+              />
+            )}
+          </div>
+
+          {/* Summary Section */}
+          <div>
+            <div className="sticky top-4 space-y-4">
+              <SelectedSlotsSummary
+                slots={currentZoneSlots}
+                onRemoveSlot={handleRemoveSlot}
+                onContinue={handleContinue}
+                showPricing={currentStep === 2}
+                checkoutData={checkoutData}
+              />
+
+              {currentStep === 1 && (
+                <div className="p-4 bg-white rounded-lg border border-border shadow-sm">
+                  <h4 className="font-medium text-sm text-foreground mb-2">Tips</h4>
+                  <ul className="text-xs text-muted-foreground space-y-1.5">
+                    <li>• Klikk på ledige tidspunkter for å velge</li>
+                    <li>• Bruk "Book flere dager?" for sesongleie</li>
+                    <li>• Bytt mellom soner for å se tilgjengelighet</li>
+                  </ul>
+                </div>
               )}
             </div>
-
-            {/* Summary Section */}
-            <div className="lg:col-span-1">
-              <div className="sticky top-8">
-                <SelectedSlotsSummary
-                  slots={currentZoneSlots}
-                  onRemoveSlot={handleRemoveSlot}
-                  onContinue={handleContinue}
-                  showPricing={currentStep === 2}
-                  checkoutData={checkoutData}
-                />
-
-                {currentStep === 1 && (
-                  <div className="mt-4 p-4 bg-muted/50 rounded-lg border border-border">
-                    <h4 className="font-medium text-sm text-foreground mb-2">Tips</h4>
-                    <ul className="text-xs text-muted-foreground space-y-1.5">
-                      <li>• Klikk på ledige tidspunkter for å velge</li>
-                      <li>• Bruk "Book flere dager?" for sesongleie</li>
-                      <li>• Bytt mellom soner for å se tilgjengelighet</li>
-                    </ul>
-                  </div>
-                )}
-              </div>
-            </div>
           </div>
-        )}
+        </div>
+      )}
 
-        {/* Booking Dialog */}
-        <BookingDialog
-          isOpen={dialogOpen}
-          onClose={handleDialogClose}
-          onConfirm={handleDialogConfirm}
-          selectedDate={pendingSlot?.date || null}
-          selectedTime={pendingSlot?.slot.time || null}
-          zoneName={zones.find(z => z.id === selectedZone)?.name || ''}
-          initialFormData={pendingFormData}
-          onFormDataCleared={() => setPendingFormData(null)}
-        />
+      {/* Booking Dialog */}
+      <BookingDialog
+        isOpen={dialogOpen}
+        onClose={handleDialogClose}
+        onConfirm={handleDialogConfirm}
+        selectedDate={pendingSlot?.date || null}
+        selectedTime={pendingSlot?.slot.time || null}
+        zoneName={zones.find(z => z.id === selectedZone)?.name || ''}
+        initialFormData={pendingFormData}
+        onFormDataCleared={() => setPendingFormData(null)}
+      />
 
-        {/* Season Conflict Dialog */}
-        <SeasonConflictDialog
-          isOpen={conflictDialogOpen}
-          onClose={() => setConflictDialogOpen(false)}
-          onConfirmAvailable={handleConflictConfirm}
-          onChangeTime={handleConflictChangeTime}
-          availableSlots={pendingConflictResult?.availableSlots || []}
-          unavailableSlots={pendingConflictResult?.unavailableSlots || []}
-        />
-      </div>
+      {/* Season Conflict Dialog */}
+      <SeasonConflictDialog
+        isOpen={conflictDialogOpen}
+        onClose={() => setConflictDialogOpen(false)}
+        onConfirmAvailable={handleConflictConfirm}
+        onChangeTime={handleConflictChangeTime}
+        availableSlots={pendingConflictResult?.availableSlots || []}
+        unavailableSlots={pendingConflictResult?.unavailableSlots || []}
+      />
     </div>
   );
 }

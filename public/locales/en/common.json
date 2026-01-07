@@ -569,7 +569,7 @@
     "conflict_label": "Conflict",
     "conflict_description": "Time slot has a booking conflict",
     "click_available": "Click on available time slots to select",
-    "drag_select": "Drag to select multiple time slots"
+    "drag_select": ""
   },
   "permissions": {
     "access_denied": "Access denied",

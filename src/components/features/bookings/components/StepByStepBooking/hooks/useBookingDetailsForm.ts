@@ -83,11 +83,10 @@ export const useBookingDetailsForm = (): UseBookingDetailsFormReturn => {
    */
   const actorTypeOptions = useMemo((): readonly FieldOption[] => [
   const priceGroupOptions = useMemo((): readonly FieldOption[] => [
-    { value: 'privat', label: t('booking:price_groups.privat', 'Privat') },
-    { value: 'lag-foreninger', label: t('booking:price_groups.lag_foreninger', 'Lag og foreninger') },
-    { value: 'barn-u18', label: t('booking:price_groups.barn_u18', 'Barn u/18') },
-    { value: 'utenbygds', label: t('booking:price_groups.utenbygds', 'Utenbygds') },
-  ], [t]);
+    { value: 'kommunale-virksomheter', label: 'Kommunale virksomheter' },
+    { value: 'ikke-kommersielle-aktorer', label: 'Ikke-kommersielle aktører' },
+    { value: 'kommersielle-private', label: 'Kommersielle aktører og private arrangementer' },
+  ], []);
 
     { value: 'private-person', label: t('booking:actor_types.private_person', 'Privatperson') },
     { value: 'lag-foreninger', label: t('booking:actor_types.lag_foreninger', 'Lag/Foreninger') },

@@ -93,13 +93,6 @@ export const AvailabilityLegend: React.FC<IAvailabilityLegendProps> = ({
           ))}
         </div>
 
-        {/* Additional Information */}
-        <div className="mt-4 pt-3 border-t border-gray-100">
-          <div className="text-xs text-gray-500 flex flex-wrap gap-4">
-            <span>• {t('availability_legend.click_available')}</span>
-            <span>• {t('availability_legend.drag_select')}</span>
-          </div>
-        </div>
       </CardContent>
     </Card>
   );

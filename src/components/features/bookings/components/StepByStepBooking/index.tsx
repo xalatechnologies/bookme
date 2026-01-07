@@ -2,20 +2,9 @@
 
 import React, { useState, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  ChevronLeft,
-  ChevronRight,
-  Calendar as CalendarIcon,
-  Users,
-} from "lucide-react";
-import {
-  startOfWeek,
-  addWeeks,
-  subWeeks,
-  addDays,
-  format,
-} from "date-fns";
-import { nb, enUS } from "date-fns/locale";
+import { ChevronLeft, ChevronRight, Download, Users, ChevronDown, CalendarIcon } from "lucide-react";
+import { startOfWeek, addWeeks, subWeeks, addDays, format } from "date-fns";
+import { nb } from "date-fns/locale";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -23,13 +12,18 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
-  SelectContent,
-  SelectItem,
   SelectTrigger,
   SelectValue,
+  SelectContent,
+  SelectItem,
 } from "@/components/ui/select";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
+import type { CheckedState } from "@radix-ui/react-checkbox";
 
 import { BookingTypeSelector } from "../BookingForm/BookingTypeSelector";
 import { RecurrencePatternSelector } from "../RecurringBookingModal/RecurrencePatternSelector";
@@ -38,6 +32,7 @@ import { AvailabilityLegend } from "@/components/features/calendar/components/En
 import { PriceCalculation } from "../BookingForm/PriceCalculation";
 import { TimeSlotDisplay } from "./components/TimeSlotDisplay";
 import { Step5Actions } from "./steps/Step5Actions";
+import { SlotBookingDialog, SlotBookingFormData } from "../SlotBookingDialog";
 
 import { RecurrencePattern } from "@/components/features/bookings/utils/recurrence";
 
@@ -53,6 +48,7 @@ import type {
   IZone,
   BookingType,
   IBookingFormData,
+  PriceGroup,
 } from "../../types";
 
 export interface IStepByStepBookingProps {
@@ -118,8 +114,9 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
    
   isSlotSelected: _isSlotSelected,
 }) => {
-  const { t, i18n } = useTranslation(["booking", "common"]);
-  const currentLocale = i18n.language === "en" ? enUS : nb;
+  const { t } = useTranslation(["booking", "common"]);
+  // Force Norwegian locale and Monday as week start to match design
+  const currentLocale = nb;
 
   // Form data state
   const [formData, setFormData] = useState<IBookingFormData>({
@@ -143,11 +140,35 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
       maxOccurrences: 5,
     });
 
+  const priceGroupDescriptions: Record<PriceGroup, string> = {
+    "kommunale-virksomheter":
+      "For kommunens egne virksomheter, skoler og barnehager. Redusert pris gjelder.",
+    "ikke-kommersielle-aktorer":
+      "Disse aktørene låner lokaler gratis. Kategorien omfatter frivillige organisasjoner, frivillige enkeltpersoner og grupper. Andre aktører som har sosiale og ideelle mål, i motsetning til økonomisk gevinst, kan også falle inn under denne kategorien. Det er avdelingen som styrer bookingen som vurderer dette. Aktørene må ha base i Drammen kommune.",
+    "kommersielle-private":
+      "For virksomheter med kommersielle formål, private selskaper, bursdag og andre private arrangementer. Standard timepris gjelder.",
+  };
+
   // Week navigation state
   const [currentWeekStart, setCurrentWeekStart] = useState<Date>(() => {
     const now = new Date();
     return startOfWeek(now, { weekStartsOn: 1 });
   });
+
+  // Slot dialog state
+  const [slotDialogOpen, setSlotDialogOpen] = useState(false);
+  const [pendingSlot, setPendingSlot] = useState<{
+    zoneId: string;
+    date: Date;
+    timeSlot: string;
+    status: string;
+  } | null>(null);
+  const [recommendedServices, setRecommendedServices] = useState([
+    { id: "extra-time", name: "Ekstra tid", description: "Forleng bookingen med 30 minutter", price: 200, selected: false },
+    { id: "equipment", name: "Utstyr", description: "Inkluderer ballnett, musikanlegg og annet utstyr", price: 150, selected: false },
+    { id: "caretaker", name: "Vaktmesterhjelp", description: "Hjelp med oppsett og nedrigg av utstyr", price: 300, selected: false },
+    { id: "security", name: "Sikkerhet", description: "Vaktmester til stede under hele arrangementet", price: 500, selected: false },
+  ]);
 
   // Get selected zone
   const selectedZone = zones?.find((zone) => zone.id === selectedZoneId);
@@ -155,6 +176,7 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
   // Use hooks
   const {
     currentStep,
+    currentStepIndex,
     steps,
     progress,
     nextStep,
@@ -335,44 +357,33 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
           );
           onSlotsChange(updatedSlots);
         } else {
-          const localDateString = `${date.getFullYear()}-${String(
-            date.getMonth() + 1
-          ).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
-          const newSlot: ISelectedTimeSlot = {
-            id: `${facilityId}-${zoneId}-${localDateString}-${timeSlot}`,
-            facilityId,
-            zoneId,
-            date,
-            timeSlot,
-            duration: 1,
-            pricePerHour: selectedZone?.pricePerHour || 0,
-          };
-          onSlotsChange([...selectedSlots, newSlot]);
+          setPendingSlot({ zoneId, date, timeSlot, status });
+          setSlotDialogOpen(true);
         }
       }
-      onSlotClick?.(zoneId, date, timeSlot, status);
     },
-    [selectedSlots, onSlotsChange, facilityId, selectedZone, onSlotClick]
-  );
-
-  const handleBulkSelect = useCallback(
-    (slots: readonly ISelectedTimeSlot[]) => {
-      const enrichedSlots = slots.map((slot) => ({
-        ...slot,
-        facilityId,
-        zoneName: selectedZone?.name || "",
-        pricePerHour: selectedZone?.pricePerHour || 0,
-      }));
-      onSlotsChange([...selectedSlots, ...enrichedSlots]);
-      onBulkSlotSelection?.(slots);
-    },
-    [selectedSlots, onSlotsChange, facilityId, selectedZone, onBulkSlotSelection]
+    [selectedSlots, onSlotsChange]
   );
 
   const handleClearAllSlots = useCallback(() => {
     onSlotsChange([]);
     clearSlots();
   }, [onSlotsChange, clearSlots]);
+
+  const handleRemoveSlots = useCallback(
+    (slotIds: readonly string[]) => {
+      const filtered = selectedSlots.filter((s) => !slotIds.includes(s.id));
+      onSlotsChange(filtered);
+    },
+    [selectedSlots, onSlotsChange]
+  );
+
+  const [conflictNotice, setConflictNotice] = useState<string | null>(null);
+
+  const totalSelectedSlots = selectedSlots.length + recurringSlots.length;
+  const totalSelectedHours =
+    selectedSlots.reduce((sum, s) => sum + (s.duration || 0), 0) / 60 +
+    recurringSlots.reduce((sum, s) => sum + (s.duration || 0), 0) / 60;
 
   // Booking handlers
   const handleAddToCart = useCallback(() => {
@@ -416,133 +427,133 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
     switch (currentStep) {
       case "details":
         return (
-          <div className="space-y-6">
-            <div>
-              <h3 className="text-lg font-semibold mb-2">
-                {t("booking:steps.details.title")}
-              </h3>
-              <p className="text-gray-600 text-sm">
-                {t("booking:steps.details.description")}
-              </p>
-            </div>
+          <div className="space-y-4">
+            {/* Cards */}
+            <div className="space-y-4">
+              <Card className="w-full shadow-sm border-slate-200">
+                <CardContent className="p-6 space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-xs font-semibold text-slate-600 uppercase tracking-wide">
+                        Prisgruppe
+                      </p>
+                      <p className="text-sm text-slate-500">
+                        Utleier tilbyr egne priser til enkelte kundegrupper. Valg av prisgruppe medfører en godkjenningsprosess.
+                      </p>
+                    </div>
+                    <ChevronDown className="h-4 w-4 text-slate-400" />
+                  </div>
 
-            <Card className="w-full">
-              <CardContent className="p-6 space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="priceGroup" className="text-sm font-medium">
-                    {t("booking:form.price_group_label", "Prisgruppe")}{" "}
-                    <span className="text-red-500">*</span>
-                  </Label>
                   <Select
                     value={formData.priceGroup}
-                    onValueChange={(value) =>
+                    onValueChange={(value: PriceGroup | "") =>
                       handleFormDataUpdate({ priceGroup: value })
                     }
                     disabled={isLoading}
                   >
                     <SelectTrigger className="w-full">
-                      <SelectValue
-                        placeholder={t(
-                          "booking:form.price_group_placeholder",
-                          "Velg prisgruppe"
-                        )}
-                      />
+                      <SelectValue placeholder="Velg prisgruppe" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="privat">
-                        {t("booking:price_groups.privat", "Privat")}
+                      <SelectItem value="kommunale-virksomheter">
+                        Kommunale virksomheter
                       </SelectItem>
-                      <SelectItem value="lag-foreninger">
-                        {t("booking:price_groups.lag_foreninger", "Lag og foreninger")}
+                      <SelectItem value="ikke-kommersielle-aktorer">
+                        Ikke-kommersielle aktører
                       </SelectItem>
-                      <SelectItem value="barn-u18">
-                        {t("booking:price_groups.barn_u18", "Barn u/18")}
-                      </SelectItem>
-                      <SelectItem value="utenbygds">
-                        {t("booking:price_groups.utenbygds", "Utenbygds")}
+                      <SelectItem value="kommersielle-private">
+                        Kommersielle aktører og private arrangementer
                       </SelectItem>
                     </SelectContent>
                   </Select>
-                </div>
+                  {formData.priceGroup && (
+                    <div className="mt-3 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-900">
+                      {priceGroupDescriptions[formData.priceGroup as PriceGroup]}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
 
-                <div className="space-y-2">
-                  <Label htmlFor="purpose" className="text-sm font-medium">
-                    {t("booking:form.purpose_label")}{" "}
-                    <span className="text-red-500">*</span>
-                  </Label>
-                  <Input
-                    id="purpose"
-                    value={formData.purpose}
-                    onChange={(e) =>
-                      handleFormDataUpdate({ purpose: e.target.value })
-                    }
-                    placeholder={t("booking:form.purpose_placeholder")}
-                    disabled={isLoading}
-                    className="w-full"
-                  />
-                </div>
+              <Card className="w-full shadow-sm border-slate-200">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-semibold text-slate-700">
+                    Anbefalte tillegg
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="p-0 divide-y divide-slate-100">
+                  {recommendedServices.map((service) => (
+                    <button
+                      key={service.id}
+                      onClick={() =>
+                        setRecommendedServices((prev) =>
+                          prev.map((s) =>
+                            s.id === service.id ? { ...s, selected: !s.selected } : s
+                          )
+                        )
+                      }
+                      className="w-full flex items-center gap-3 px-5 py-4 text-left hover:bg-slate-50 transition-colors"
+                    >
+                      <Checkbox checked={service.selected} />
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between">
+                          <span className="font-medium text-sm text-slate-900">
+                            {service.name}
+                          </span>
+                          <span className="text-sm font-semibold text-slate-800">
+                            +{service.price} kr
+                          </span>
+                        </div>
+                        <p className="text-xs text-slate-600 mt-1">{service.description}</p>
+                      </div>
+                    </button>
+                  ))}
+                </CardContent>
+              </Card>
 
-                <div className="space-y-2">
-                  <Label htmlFor="attendees" className="text-sm font-medium">
-                    {t("booking:form.attendees_label")}{" "}
-                    <span className="text-red-500">*</span>
-                  </Label>
-                  <Input
-                    id="attendees"
-                    type="number"
-                    min="1"
-                    value={formData.attendees}
-                    onChange={(e) =>
-                      handleFormDataUpdate({
-                        attendees: parseInt(e.target.value) || 1,
-                      })
-                    }
-                    disabled={isLoading}
-                    className="w-full"
-                  />
-                </div>
+              <Card className="border border-red-200 bg-red-50 shadow-sm">
+                <CardContent className="p-5 space-y-3">
+                  <p className="text-xs font-semibold text-red-700">
+                    Utleier DRAMMEN KOMMUNE - Skolelokaler orgnr. 920125298 krever at du har lest og godkjent betingelser før forespørsel kan sendes.
+                  </p>
+                  <ul className="text-sm text-slate-700 space-y-2">
+                    <li className="flex items-center gap-2">
+                      <Download className="h-4 w-4 text-slate-500" />
+                      <span>Last ned Brannvervideo</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <Download className="h-4 w-4 text-slate-500" />
+                      <span>Last ned Ditt ansvar</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <Download className="h-4 w-4 text-slate-500" />
+                      <span>Last ned Overordnede retningslinjer for lån og leie av lokaler</span>
+                    </li>
+                  </ul>
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      checked={formData.termsAccepted}
+                      onCheckedChange={(v: CheckedState) =>
+                        handleFormDataUpdate({ termsAccepted: v === true })
+                      }
+                    />
+                    <span className="text-sm text-slate-800">
+                      Jeg har lest og godkjenner betingelsene
+                    </span>
+                  </div>
+                </CardContent>
+              </Card>
 
-                <div className="space-y-2">
-                  <Label htmlFor="activityType" className="text-sm font-medium">
-                    {t("booking:form.activity_type_label")}{" "}
-                    <span className="text-red-500">*</span>
-                  </Label>
-                  <Select
-                    value={formData.activityType}
-                    onValueChange={(value) =>
-                      handleFormDataUpdate({ activityType: value as ActivityType | "" })
-                    }
-                    disabled={isLoading}
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue
-                        placeholder={t(
-                          "booking:form.activity_type_placeholder"
-                        )}
-                      />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="sport">
-                        {t("booking:activity_types.sport")}
-                      </SelectItem>
-                      <SelectItem value="kultur">
-                        {t("booking:activity_types.culture")}
-                      </SelectItem>
-                      <SelectItem value="møte">
-                        {t("booking:activity_types.meeting")}
-                      </SelectItem>
-                      <SelectItem value="arrangement">
-                        {t("booking:activity_types.event")}
-                      </SelectItem>
-                      <SelectItem value="trening">
-                        {t("booking:activity_types.training")}
-                      </SelectItem>
-                      <SelectItem value="annet">{t("common:common.other")}</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </CardContent>
-            </Card>
+              <div className="flex justify-end">
+                <Button
+                  onClick={nextStep}
+                  disabled={
+                    !formData.priceGroup || !formData.termsAccepted || selectedSlots.length === 0
+                  }
+                >
+                  Fortsett til neste steg
+                </Button>
+              </div>
+            </div>
           </div>
         );
 
@@ -594,7 +605,6 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
                       week={currentWeek}
                       selectedSlots={selectedSlots}
                       onSlotClick={handleSlotClick}
-                      onBulkSelect={handleBulkSelect}
                       pricePerHour={selectedZone?.pricePerHour || 0}
                       isLoading={isLoading}
                       error={error}
@@ -743,101 +753,236 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
     }
   };
 
+  const progressWidth =
+    steps.length > 1 ? (currentStepIndex / (steps.length - 1)) * 100 : 0;
+
+  const handleDialogConfirm = (data: SlotBookingFormData) => {
+    if (!pendingSlot) return;
+
+    const buildHourlySegments = (start: string, end: string): string[] => {
+      const [sh, sm] = start.split(":").map((v) => parseInt(v, 10));
+      const [eh, em] = end.split(":").map((v) => parseInt(v, 10));
+      let cursorMinutes = sh * 60 + (sm || 0);
+      const endMinutesTotal = eh * 60 + (em || 0);
+      const segments: string[] = [];
+      const toHHMM = (m: number) =>
+        `${Math.floor(m / 60)
+          .toString()
+          .padStart(2, "0")}:${(m % 60).toString().padStart(2, "0")}`;
+      while (cursorMinutes < endMinutesTotal) {
+        const next = Math.min(cursorMinutes + 60, endMinutesTotal);
+        segments.push(`${toHHMM(cursorMinutes)}-${toHHMM(next)}`);
+        cursorMinutes = next;
+      }
+      return segments;
+    };
+
+    const expandToHourlySlots = (slot: ISelectedTimeSlot): ISelectedTimeSlot[] => {
+      const segments = buildHourlySegments(
+        slot.timeSlot.split("-")[0],
+        slot.timeSlot.split("-")[1]
+      );
+      const date = slot.date instanceof Date ? slot.date : new Date(slot.date);
+      const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+      return segments.map((segment) => ({
+        ...slot,
+        id: `${facilityId}-${slot.zoneId}-${dateStr}-${segment}`,
+        timeSlot: segment,
+        duration: 60,
+        date,
+      }));
+    };
+
+    const startParts = data.startTime.split(":");
+    const endParts = data.endTime.split(":");
+    const startMinutes = parseInt(startParts[0] || "0") * 60 + parseInt(startParts[1] || "0");
+    const endMinutes = parseInt(endParts[0] || "0") * 60 + parseInt(endParts[1] || "0");
+    if (endMinutes <= startMinutes) return;
+
+    const buildId = (d: Date) =>
+      `${facilityId}-${pendingSlot.zoneId}-${d.getFullYear()}-${String(
+        d.getMonth() + 1
+      ).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}-${data.startTime}-${data.endTime}`;
+
+    const baseSlot = (d: Date): ISelectedTimeSlot => ({
+      id: buildId(d),
+      facilityId,
+      facilityName: _facilityName,
+      zoneId: pendingSlot.zoneId,
+      zoneName: selectedZone?.name,
+      date: d,
+      timeSlot: `${data.startTime}-${data.endTime}`,
+      duration: endMinutes - startMinutes,
+      pricePerHour: selectedZone?.pricePerHour || 0,
+      purpose: data.purpose,
+      attendees: data.numberOfPeople,
+      activityType: data.activityType as ActivityType,
+      description: data.description,
+      showPurposeInCalendar: data.showPurposeInCalendar,
+    });
+
+    let candidateSlots: ISelectedTimeSlot[] = [baseSlot(pendingSlot.date)];
+
+    if (data.isSeasonBooking && data.endDate && data.weekdays && data.weekdays.length > 0) {
+      const end = data.endDate;
+      const interval = Math.max(1, data.repetitionInterval || 1);
+      const days: ISelectedTimeSlot[] = [];
+      let cursor = new Date(pendingSlot.date);
+      let weekCounter = 0;
+      while (cursor <= end && weekCounter < 104) {
+        const dayIdx = cursor.getDay(); // 0=Sun
+        const mapped = dayIdx === 0 ? 6 : dayIdx - 1; // 0=Mon
+        const weekIndex = Math.floor(
+          (cursor.getTime() - pendingSlot.date.getTime()) / (7 * 24 * 60 * 60 * 1000)
+        );
+        if (weekIndex % interval === 0 && data.weekdays.includes(mapped)) {
+          days.push(baseSlot(new Date(cursor)));
+        }
+        cursor = addDays(cursor, 1);
+        weekCounter++;
+      }
+      if (days.length > 0) {
+        candidateSlots = days;
+      }
+    }
+
+    // Expand to hourly slots for UI selection/visibility and conflict checking
+    const hourlySlots = candidateSlots.flatMap(expandToHourlySlots);
+
+    // Check conflicts against current availability
+    const conflicted = hourlySlots.filter((slot) => {
+      const status = getAvailabilityStatus?.(slot.zoneId, slot.date, slot.timeSlot);
+      const s = status?.status;
+      // Treat anything other than available/selected as conflict (busy, unavailable, conflict, occupied, etc.)
+      return s !== "available" && s !== "selected";
+    });
+
+    if (conflicted.length > 0) {
+      const skipped = Array.from(
+        new Set(
+          conflicted.map((slot) =>
+            `${format(slot.date, "dd.MM.yyyy", { locale: currentLocale })} ${slot.timeSlot}`
+          )
+        )
+      );
+      setConflictNotice(
+        `Følgende tid(er) er opptatt og ble hoppet over: ${skipped.join(", ")}`
+      );
+      // Filter out conflicting slots, keep available ones
+      const availableOnly = hourlySlots.filter(
+        (slot) => !conflicted.includes(slot)
+      );
+      if (availableOnly.length > 0) {
+        onSlotsChange([...selectedSlots, ...availableOnly]);
+      }
+      setSlotDialogOpen(false);
+      setPendingSlot(null);
+      // Abort if any conflicts were found
+      return;
+    }
+
+    setConflictNotice(null);
+    onSlotsChange([...selectedSlots, ...hourlySlots]);
+
+    setFormData((prev) => ({
+      ...prev,
+      purpose: data.purpose || prev.purpose,
+      attendees: data.numberOfPeople || prev.attendees,
+      activityType: (data.activityType as ActivityType) || prev.activityType,
+      additionalInfo: data.description || prev.additionalInfo || "",
+    }));
+
+    setSlotDialogOpen(false);
+    setPendingSlot(null);
+    goToStep("details");
+  };
+
+  const handleDialogClose = () => {
+    setSlotDialogOpen(false);
+    setPendingSlot(null);
+  };
+
+  const getSelectedSlotPurpose = useCallback(
+    (zoneId: string, date: Date, timeSlot: string) => {
+      const match = selectedSlots.find((slot) => {
+        const slotDate = slot.date instanceof Date ? slot.date : new Date(slot.date);
+        return (
+          slot.zoneId === zoneId &&
+          slotDate.toDateString() === date.toDateString() &&
+          slot.timeSlot === timeSlot
+        );
+      });
+      return match;
+    },
+    [selectedSlots]
+  );
+
   return (
-    <div className="space-y-6">
-      {/* Zone Selection and Booking Type */}
-      <Card className="w-full">
-        <CardContent className="p-4">
-          <div className="flex items-center justify-between gap-4">
-            <div className="flex flex-wrap gap-3 flex-1">
-              {zones?.map((zone) => (
-                <Button
-                  key={zone.id}
-                  variant={selectedZoneId === zone.id ? "default" : "outline"}
-                  onClick={() => onZoneChange(zone.id)}
-                  className="flex items-center gap-2 text-base px-4 py-2"
-                  size="lg"
-                >
-                  <Users className="h-4 w-4" />
-                  {zone.name}
-                  <Badge variant="secondary" className="ml-1 text-sm">
-                    {zone.area ? `${zone.area} m²` : "120 m²"}
-                  </Badge>
-                </Button>
-              ))}
-            </div>
+    <div className="space-y-6 bg-[#f5f7fb] p-4 sm:p-6 rounded-2xl border border-slate-200">
+      <div className="space-y-2">
+        <h1 className="text-3xl font-bold text-slate-900">Ledighetskalender</h1>
+        <p className="text-slate-600">
+          Legg inn din reservasjon raskt og enkelt på 4 steg.
+        </p>
+      </div>
 
-            <div className="flex gap-2">
-              <BookingTypeSelector
-                selectedType={formData.bookingType}
-                onTypeChange={handleBookingTypeChange}
-              />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Stepper */}
+      <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="font-semibold text-slate-900">Bookingprosess</h3>
+          <span className="text-sm text-slate-500">
+            Steg {currentStepIndex + 1} av {steps.length}
+          </span>
+        </div>
+        <div className="relative px-2">
+          <div className="absolute left-0 right-0 top-7 h-[2px] bg-slate-200" />
+          <div
+            className="absolute left-0 top-7 h-[2px] bg-[#3551a5] transition-all duration-500"
+            style={{ width: `${progressWidth}%` }}
+          />
+          <div className="relative grid grid-cols-4 gap-2">
+            {steps.slice(0, 4).map((step, index) => {
+              const Icon = step.icon;
+              const isCompleted = index < currentStepIndex;
+              const isActive = step.id === currentStep;
 
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-        {/* Left Column - Step Content */}
-        <div className="lg:col-span-3 space-y-6">
-          {/* Progress Indicator */}
-          <Card>
-            <CardContent className="p-4">
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <h3 className="font-semibold">
-                    {t("booking:progress.title")}
-                  </h3>
-                  <span className="text-sm text-gray-500">
-                    {t("booking:progress.step_of", {
-                      current: steps.findIndex((s) => s.id === currentStep) + 1,
-                      total: steps.length
-                    })}
+              return (
+                <div key={step.id} className="flex flex-col items-center text-center gap-2">
+                  <div className="relative">
+                    <span className="absolute -top-4 left-1/2 -translate-x-1/2 text-[11px] font-semibold text-slate-500">
+                      {index + 1}
+                    </span>
+                    <div
+                      className={cn(
+                        "w-14 h-14 rounded-full border-2 flex items-center justify-center transition-all duration-300",
+                        isCompleted && "bg-[#3551a5] text-white border-[#3551a5]",
+                        isActive &&
+                          "bg-[#3551a5] text-white border-[#3551a5] shadow-[0_8px_20px_-6px_rgba(53,81,165,0.4)]",
+                        !isCompleted && !isActive && "bg-slate-100 text-slate-500 border-slate-200"
+                      )}
+                    >
+                      <Icon className="w-5 h-5" />
+                    </div>
+                  </div>
+                  <span
+                    className={cn(
+                      "text-xs font-medium text-center leading-tight max-w-[110px]",
+                      isActive ? "text-slate-900" : "text-slate-500"
+                    )}
+                  >
+                    {step.title}
                   </span>
                 </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
 
-                <Progress value={progress} className="h-2" />
-
-                <div className="flex justify-between">
-                  {steps.map((step, index) => {
-                    const StepIcon = step.icon;
-                    const isCompleted =
-                      index <
-                      steps.findIndex((s) => s.id === currentStep);
-                    const isCurrent = step.id === currentStep;
-                    const isAccessible =
-                      index <=
-                      steps.findIndex((s) => s.id === currentStep);
-
-                    return (
-                      <Button
-                        key={step.id}
-                        onClick={() => isAccessible && goToStep(step.id)}
-                        disabled={!isAccessible}
-                        variant="ghost"
-                        className={`flex flex-col items-center space-y-2 p-2 rounded-lg transition-colors ${isCurrent
-                            ? "bg-blue-100 text-blue-700"
-                            : isCompleted
-                              ? "bg-green-100 text-green-700"
-                              : isAccessible
-                                ? "hover:bg-gray-100 text-gray-600"
-                                : "text-gray-400 cursor-not-allowed"
-                          }`}
-                      >
-                        <StepIcon className="h-5 w-5" />
-                        <span className="text-xs font-medium text-center">
-                          {step.title}
-                        </span>
-                      </Button>
-                    );
-                  })}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Step Content */}
-          <Card>
+      <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-6">
+        {/* Left Column - Step Content */}
+        <div className="space-y-4">
+          <Card className="shadow-sm border-slate-200">
             <CardContent className="p-6">{renderStepContent()}</CardContent>
           </Card>
 
@@ -865,11 +1010,11 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
         </div>
 
         {/* Right Column - Time Slots & Pricing */}
-        <div className="lg:col-span-2">
-          <div className="sticky top-20 h-[calc(100vh-8rem)] overflow-y-auto space-y-4">
-            <Card className="w-full">
+        <div>
+          <div className="sticky top-4 space-y-4">
+            <Card className="w-full shadow-sm border-slate-200">
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-medium text-gray-700">
+                <CardTitle className="text-sm font-medium text-slate-800">
                   {selectedSlots.length > 0
                     ? formData.bookingType === "recurring"
                       ? recurringSlots.length > 0
@@ -884,6 +1029,11 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
                           : t("booking:sidebar.selected_slots_only", "Valgte tidspunkt")
                     : t("booking:sidebar.select_slots_pricing")}
                 </CardTitle>
+                      {totalSelectedSlots > 0 && (
+                        <p className="text-xs text-slate-500">
+                          {totalSelectedSlots} valg · {totalSelectedHours} timer
+                        </p>
+                      )}
               </CardHeader>
               <CardContent className="pt-0 space-y-4">
                 {selectedSlots.length > 0 || recurringSlots.length > 0 ? (
@@ -892,48 +1042,60 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
                       slots={selectedSlots}
                       recurringSlots={recurringSlots}
                       bookingType={formData.bookingType}
+                      onRemoveSlot={handleRemoveSlots}
                       onClearAll={handleClearAllSlots}
+                      conflictNotice={conflictNotice}
                     />
 
                     {currentStep !== "calendar" && formData.priceGroup ? (
-                      formData.priceGroup === "lag-foreninger" || formData.priceGroup === "barn-u18" ? (
-                        <div className="p-4 rounded-lg bg-blue-50 text-blue-900 border border-blue-200">
-                          <p className="font-semibold text-sm">
-                            {t("booking:price_groups.selected", "Prisgruppe")}:{" "}
-                            {formData.priceGroup === "lag-foreninger"
-                              ? t("booking:price_groups.lag_foreninger", "Lag og foreninger")
-                              : t("booking:price_groups.barn_u18", "Barn u/18")}
-                          </p>
-                          <p className="text-sm">{t("booking:pricing.free_for_group", "Pris: 0 kr (ingen kostnad for denne prisgruppen)")}</p>
-                        </div>
-                      ) : (
-                        <PriceCalculation
-                          selectedSlots={selectedSlots}
-                          recurringSlots={recurringSlots}
-                          actorType={formData.actorType}
-                          activityType={formData.activityType}
-                          bookingType={formData.bookingType}
-                        />
-                      )
+                      <PriceCalculation
+                        selectedSlots={selectedSlots}
+                        recurringSlots={recurringSlots}
+                        actorType={formData.actorType}
+                        activityType={formData.activityType}
+                        bookingType={formData.bookingType}
+                      />
                     ) : currentStep !== "calendar" ? (
-                      <div className="p-4 rounded-lg bg-gray-50 text-gray-700 border border-gray-200 text-sm">
+                      <div className="p-4 rounded-lg bg-slate-50 text-slate-700 border border-slate-200 text-sm">
                         {t("booking:pricing.select_price_group_first", "Velg prisgruppe for å se prisberegning.")}
                       </div>
                     ) : null}
                   </>
                 ) : (
                   <div className="text-center py-8">
-                    <CalendarIcon className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-                    <p className="text-gray-500 text-sm">
+                    <CalendarIcon className="h-16 w-16 text-slate-300 mx-auto mb-4" />
+                    <p className="text-slate-500 text-sm">
                       {t("booking:sidebar.select_slots_pricing")}
                     </p>
                   </div>
                 )}
               </CardContent>
             </Card>
+
+            {/* Tips */}
+            <div className="p-4 bg-white rounded-lg border border-slate-200 shadow-sm">
+              <h4 className="font-medium text-sm text-slate-900 mb-2">Tips</h4>
+              <ul className="text-xs text-slate-600 space-y-1.5">
+                <li>• Klikk på ledige tidspunkter for å velge</li>
+                <li>• Bruk "Book flere dager?" for gjentakende booking</li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>
+
+      {/* Slot booking dialog */}
+      <SlotBookingDialog
+        isOpen={slotDialogOpen}
+        onClose={() => {
+          setSlotDialogOpen(false);
+          setPendingSlot(null);
+        }}
+        onConfirm={handleDialogConfirm}
+        selectedDate={pendingSlot?.date || null}
+        selectedTime={pendingSlot?.timeSlot.split("-")[0] || null}
+        zoneName={selectedZone?.name}
+      />
     </div>
   );
 };

@@ -583,7 +583,7 @@
     "conflict_label": "Konflikt",
     "conflict_description": "Tidspunktet har en bookingkonflikt",
     "click_available": "Klikk på ledige tidspunkter for å velge",
-    "drag_select": "Dra for å velge flere tidspunkter"
+    "drag_select": ""
   },
   "permissions": {
     "access_denied": "Ingen tilgang",

@@ -37,10 +37,9 @@ export type ActivityType =
 export type BookingType = 'one-time' | 'recurring';
 
 export type PriceGroup =
-  | "privat"
-  | "lag-foreninger"
-  | "barn-u18"
-  | "utenbygds";
+  | "kommunale-virksomheter"
+  | "ikke-kommersielle-aktorer"
+  | "kommersielle-private";
 
 /**
  * Booking form data
@@ -76,6 +75,11 @@ export interface ISelectedTimeSlot {
   readonly isRecurring?: boolean; // Whether this is part of a recurring booking
   readonly recurrencePattern?: RecurrencePattern; // Recurrence pattern if applicable
   readonly parentBookingId?: string; // ID of the parent recurring booking
+  readonly purpose?: string;
+  readonly attendees?: number;
+  readonly activityType?: ActivityType | "";
+  readonly description?: string;
+  readonly showPurposeInCalendar?: boolean;
 }
 
 /**

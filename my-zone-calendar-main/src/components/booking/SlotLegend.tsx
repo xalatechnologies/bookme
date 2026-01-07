@@ -7,15 +7,15 @@ interface LegendItem {
 }
 
 const legendItems: LegendItem[] = [
-  { label: "Ledig", colorClass: "bg-slot-available" },
-  { label: "Opptatt", colorClass: "bg-slot-booked" },
-  { label: "Valgt", colorClass: "bg-slot-selected", borderClass: "ring-2 ring-slot-selected ring-offset-1" },
-  { label: "Ikke tilgjengelig", colorClass: "bg-slot-unavailable" },
+  { label: "Ledig", colorClass: "bg-[hsl(var(--slot-available))]" },
+  { label: "Opptatt", colorClass: "bg-[hsl(var(--slot-booked))]" },
+  { label: "Valgt", colorClass: "bg-[hsl(var(--slot-selected))]", borderClass: "ring-2 ring-[hsl(var(--slot-selected))] ring-offset-1" },
+  { label: "Ikke tilgjengelig", colorClass: "bg-[hsl(var(--slot-unavailable))]" },
 ];
 
 export function SlotLegend() {
   return (
-    <div className="flex flex-wrap items-center gap-6 p-4 bg-card rounded-xl border border-border shadow-sm">
+    <div className="flex flex-wrap items-center gap-6 p-4 bg-white rounded-xl border border-border shadow-sm">
       <span className="text-sm font-semibold text-foreground">Forklaring</span>
       <div className="flex flex-wrap items-center gap-4">
         {legendItems.map((item) => (
