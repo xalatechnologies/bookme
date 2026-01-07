@@ -50,6 +50,8 @@ import {
   useRecurringSlotGeneration,
 } from "@/hooks/features/bookings";
 import { useAvailabilityStatus } from "../../hooks";
+import { useCreateBooking } from "@/services/supabase/bookings.service";
+import { facilitiesService } from "@/services/supabase/facilities.service";
 
 import type {
   ActivityType,
@@ -496,8 +498,10 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
                 </CardHeader>
                 <CardContent className="p-0 divide-y divide-slate-100">
                   {recommendedServices.map((service) => (
-                    <button
+                    <div
                       key={service.id}
+                      role="button"
+                      tabIndex={0}
                       onClick={() =>
                         setRecommendedServices((prev) =>
                           prev.map((s) =>
@@ -505,7 +509,17 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
                           )
                         )
                       }
-                      className="w-full flex items-center gap-3 px-5 py-4 text-left hover:bg-slate-50 transition-colors"
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          setRecommendedServices((prev) =>
+                            prev.map((s) =>
+                              s.id === service.id ? { ...s, selected: !s.selected } : s
+                            )
+                          );
+                        }
+                      }}
+                      className="w-full flex items-center gap-3 px-5 py-4 text-left hover:bg-slate-50 transition-colors cursor-pointer"
                     >
                       <Checkbox checked={service.selected} />
                       <div className="flex-1">
@@ -519,7 +533,7 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
                         </div>
                         <p className="text-xs text-slate-600 mt-1">{service.description}</p>
                       </div>
-                    </button>
+                    </div>
                   ))}
                 </CardContent>
               </Card>
@@ -797,12 +811,17 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
                     </p>
                   </div>
 
+                  {sendBookingError && (
+                    <div className="text-sm text-red-600 text-center">{sendBookingError}</div>
+                  )}
+
                   <div className="flex flex-col gap-3">
                     <Button
                       className="w-full bg-slate-800 hover:bg-slate-900 text-white rounded-full py-5 text-base font-medium"
-                      onClick={() => goToStepDirect("sent")}
+                      disabled={sendBookingLoading}
+                      onClick={handleSendForApproval}
                     >
-                      Send til godkjenning
+                      {sendBookingLoading ? "Sender..." : "Send til godkjenning"}
                     </Button>
                   </div>
                 </div>
@@ -1152,9 +1171,14 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
       setConflictConflictedSlots(conflicted);
       const skipped = Array.from(
         new Set(
-          conflicted.map((slot) =>
-            `${format(slot.date, "dd.MM.yyyy", { locale: currentLocale })} ${slot.timeSlot}`
-          )
+          conflicted
+            .map((slot) => {
+              const slotDate =
+                slot.date instanceof Date ? slot.date : new Date(slot.date);
+              if (Number.isNaN(slotDate.getTime())) return null;
+              return `${format(slotDate, "dd.MM.yyyy", { locale: currentLocale })} ${slot.timeSlot}`;
+            })
+            .filter(Boolean)
         )
       );
       setConflictNotice(
@@ -1214,7 +1238,10 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
   const [loginLoadingAdmin, setLoginLoadingAdmin] = useState(false);
   const [loginErrorUser, setLoginErrorUser] = useState<string | null>(null);
   const [loginErrorAdmin, setLoginErrorAdmin] = useState<string | null>(null);
-  const { signInWithPassword, user, loading: authLoading } = useAuth();
+  const { signInWithPassword, user, loading: authLoading, currentOrgId } = useAuth();
+  const createBookingMutation = useCreateBooking();
+  const [sendBookingLoading, setSendBookingLoading] = useState(false);
+  const [sendBookingError, setSendBookingError] = useState<string | null>(null);
   const navigate = useNavigate();
 
   const submitLogin = async (type: "user" | "admin") => {
@@ -1251,10 +1278,90 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
     }
   }, [authLoading, user]);
 
-  const handleSubmitForApproval = () => {
-    setConfirmLoggedIn(true);
-    goToStep("sent");
-  };
+  const handleSendForApproval = useCallback(async () => {
+    if (!user) {
+      setConfirmLoggedIn(false);
+      goToStep("confirm");
+      return;
+    }
+
+    if (!selectedZone || selectedSlots.length === 0) {
+      setSendBookingError("Ingen tidspunkter valgt.");
+      return;
+    }
+
+    try {
+      setSendBookingLoading(true);
+      setSendBookingError(null);
+
+      let orgId = currentOrgId || "00000000-0000-0000-0000-000000000000";
+      try {
+        const facility = await facilitiesService.getById(facilityId);
+        orgId = facility.org_id || orgId;
+      } catch (e) {
+        console.warn("Klarte ikke hente org_id for facility, bruker fallback.", e);
+      }
+
+      const bookingPromises = selectedSlots.map((slot) => {
+        const slotDate = slot.date instanceof Date ? slot.date : new Date(slot.date);
+        if (Number.isNaN(slotDate.getTime())) {
+          throw new Error("Ugyldig dato på valgt tidspunkt.");
+        }
+
+        const [startStr, endStr] = slot.timeSlot.split("-");
+        if (!startStr || !endStr) {
+          throw new Error("Ugyldig tidsformat på valgt tidspunkt.");
+        }
+
+        const dateStr = format(slotDate, "yyyy-MM-dd");
+        const starts_at = new Date(`${dateStr}T${startStr}`);
+        const ends_at = new Date(`${dateStr}T${endStr}`);
+
+        const total_cents = Math.round(
+          (slot.pricePerHour || 0) * ((slot.duration || 60) / 60) * 100
+        );
+
+        return createBookingMutation.mutateAsync({
+          facility_id: facilityId,
+          zone_id: slot.zoneId ?? null,
+          org_id: orgId,
+          user_id: user.id,
+          starts_at: starts_at.toISOString(),
+          ends_at: ends_at.toISOString(),
+          total_cents,
+          currency: "NOK",
+          status: "pending",
+          notes: formData.purpose || slot.purpose || "Booking",
+          is_recurring: false,
+          price_breakdown: null,
+          group_id: null,
+          recurring_booking_id: null,
+        });
+      });
+
+      await Promise.all(bookingPromises);
+      goToStepDirect("sent");
+    } catch (error) {
+      console.error("Kunne ikke sende booking:", error);
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Kunne ikke sende booking. Prøv igjen.";
+      setSendBookingError(message);
+    } finally {
+      setSendBookingLoading(false);
+    }
+  }, [
+    user,
+    selectedZone,
+    selectedSlots,
+    facilityId,
+    formData.purpose,
+    createBookingMutation,
+    currentOrgId,
+    goToStep,
+    goToStepDirect,
+  ]);
 
   const getSelectedSlotPurpose = useCallback(
     (zoneId: string, date: Date, timeSlot: string) => {

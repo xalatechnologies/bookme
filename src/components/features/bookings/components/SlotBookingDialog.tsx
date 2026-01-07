@@ -31,6 +31,29 @@ import {
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 
+const calendarClassNames = {
+  root:
+    "rdp-root p-3 pointer-events-auto rounded-xl border border-slate-200 shadow-sm bg-white",
+  months: "space-y-4",
+  month: "space-y-4",
+  caption: "flex items-center justify-between px-1",
+  caption_label: "text-sm font-semibold text-slate-900",
+  nav: "flex items-center gap-1",
+  button_previous:
+    "h-8 w-8 inline-flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-600",
+  button_next:
+    "h-8 w-8 inline-flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-600",
+  head_row: "grid grid-cols-7 text-xs font-medium text-slate-400",
+  head_cell: "text-center",
+  row: "grid grid-cols-7 gap-1",
+  cell: "h-9 w-9 text-center text-sm rounded-md hover:bg-slate-100 focus-within:bg-slate-100",
+  day: "h-9 w-9 p-0 font-normal",
+  day_selected: "bg-slate-300 text-slate-900 hover:bg-slate-300",
+  day_today: "border border-slate-200",
+  day_outside: "text-slate-300",
+  day_disabled: "text-slate-300 opacity-50",
+};
+
 export interface SlotBookingFormData {
   purpose: string;
   date: Date;
@@ -345,13 +368,14 @@ export function SlotBookingDialog({
                   <PopoverContent className="w-auto p-0" align="start">
                     <Calendar
                       mode="single"
+                      locale={nb}
                       selected={endDate}
                       onSelect={setEndDate}
                       disabled={(date) =>
                         date < (selectedDate ? addDays(selectedDate, 1) : new Date())
                       }
                       initialFocus
-                      className="p-3 pointer-events-auto"
+                      classNames={calendarClassNames}
                     />
                   </PopoverContent>
                 </Popover>
