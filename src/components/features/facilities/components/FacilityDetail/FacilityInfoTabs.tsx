@@ -2,6 +2,8 @@
 
 import React, { useState } from 'react';
 import { CheckCircle, XCircle, ChevronDown, ChevronRight } from 'lucide-react';
+import { format, startOfWeek, addWeeks, subWeeks, addDays, getWeek } from 'date-fns';
+import { nb } from 'date-fns/locale';
 
 import type { Zone } from '@/types/booking';
 import { useTranslation } from '@/i18n';
@@ -13,6 +15,8 @@ import { FacilityCalendar } from '@/components/features/calendar/components/Faci
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 
 
 import { AmenityGrid } from './components/AmenityGrid';
@@ -29,6 +33,15 @@ interface FacilityInfoTabsProps {
   readonly zones: readonly Zone[];
   readonly amenities: readonly string[];
   readonly additionalServices?: readonly string[];
+  readonly activities?: readonly {
+    readonly id: string;
+    readonly date: string; // ISO date
+    readonly startTime: string;
+    readonly endTime: string;
+    readonly organizer: string;
+    readonly description: string;
+    readonly status: 'booked' | 'reserved';
+  }[];
   readonly area: string;
   readonly suitableFor: readonly string[];
   readonly facilityId: string;
@@ -50,6 +63,7 @@ export const FacilityInfoTabs: React.FC<FacilityInfoTabsProps> = ({
   zones,
   amenities,
   additionalServices = [],
+  activities = [],
   area,
    
   suitableFor: _suitableFor,
@@ -154,15 +168,45 @@ export const FacilityInfoTabs: React.FC<FacilityInfoTabsProps> = ({
     return null;
   }, [address, latitude, longitude]);
 
+  const [weekStart, setWeekStart] = useState<Date>(() =>
+    startOfWeek(new Date(), { weekStartsOn: 1 })
+  );
+
+  const filteredActivities = React.useMemo(() => {
+    const end = addWeeks(weekStart, 1);
+    return activities.filter((act) => {
+      const d = new Date(act.date);
+      return d >= weekStart && d < end;
+    });
+  }, [activities, weekStart]);
+
+  const groupedActivities = React.useMemo(() => {
+    return filteredActivities.reduce((acc, act) => {
+      const key = format(new Date(act.date), 'yyyy-MM-dd');
+      const current = acc[key] ?? [];
+      acc[key] = [...current, act];
+      return acc;
+    }, {} as Record<string, typeof activities>);
+  }, [filteredActivities]);
+
+  const handlePrevWeek = () => setWeekStart((prev) => subWeeks(prev, 1));
+  const handleNextWeek = () => setWeekStart((prev) => addWeeks(prev, 1));
+
   return (
     <>
       <Tabs defaultValue="general" className="w-full">
-        <TabsList className="grid w-full grid-cols-3 bg-slate-100">
+        <TabsList className="grid w-full grid-cols-4 bg-slate-100">
           <TabsTrigger
             value="general"
             className="data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:font-semibold"
           >
             {t('facility:details.overview')}
+          </TabsTrigger>
+          <TabsTrigger
+            value="calendar"
+            className="data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:font-semibold"
+          >
+            {t('facility:details.calendar', 'Aktivitetskalender')}
           </TabsTrigger>
           <TabsTrigger
             value="rules"
@@ -294,6 +338,90 @@ export const FacilityInfoTabs: React.FC<FacilityInfoTabsProps> = ({
                 </div>
               </div>
             </div>
+          </div>
+        </TabPanel>
+      </TabsContent>
+
+      <TabsContent value="calendar" className="space-y-6 mt-6">
+        <TabPanel>
+          <div className="space-y-4">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <span className="text-sm text-gray-600">{t('facility:details.select_week', 'Velg uke')}</span>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={handlePrevWeek}
+                  className="h-9 w-9"
+                >
+                  <ChevronDown className="h-4 w-4 rotate-90" />
+                </Button>
+
+                <div className="px-3 py-2 border rounded-md bg-white shadow-sm">
+                  <span className="flex items-center gap-2 text-sm">
+                    {t('facility:details.week', 'Uke')} {getWeek(weekStart, { weekStartsOn: 1 })} / {format(weekStart, 'yyyy', { locale: nb })} ({format(weekStart, 'dd.MM', { locale: nb })} - {format(addDays(weekStart, 6), 'dd.MM', { locale: nb })})
+                  </span>
+                </div>
+
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={handleNextWeek}
+                  className="h-9 w-9"
+                >
+                  <ChevronDown className="h-4 w-4 -rotate-90" />
+                </Button>
+              </div>
+            </div>
+
+            {filteredActivities.length === 0 ? (
+              <div className="text-center py-10 text-gray-600">
+                <div className="text-lg font-medium mb-2">{t('facility:details.no_activities', 'Ingen aktiviteter denne uken')}</div>
+                <p className="text-sm text-gray-500">{t('facility:details.no_activities_hint', 'Bytt uke eller legg inn aktiviteter for å se dem her.')}</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {Object.entries(groupedActivities).map(([dateKey, dayActivities]) => {
+                  const date = new Date(dateKey);
+                  return (
+                    <Card key={dateKey} className="overflow-hidden">
+                      <div className="bg-blue-50 border-b border-gray-200 px-4 py-3">
+                        <h3 className="font-semibold text-gray-900 flex items-center gap-2">
+                          <ChevronRight className="h-4 w-4 text-blue-600" />
+                          {format(date, 'EEEE', { locale: nb })}
+                          <span className="text-gray-600 font-normal">
+                            {format(date, 'dd.MM.yyyy', { locale: nb })}
+                          </span>
+                        </h3>
+                      </div>
+                      <CardContent className="p-0 divide-y divide-gray-200">
+                        {dayActivities.map((act) => (
+                          <div key={act.id} className="flex items-start gap-4 p-4">
+                            <div className="flex-shrink-0 w-28">
+                              <div className="text-sm font-medium text-gray-900">
+                                {act.startTime}
+                              </div>
+                              <div className="text-xs text-gray-600">- {act.endTime}</div>
+                            </div>
+                            <div className="flex-1">
+                              <div className="flex items-center justify-between gap-2">
+                                <div>
+                                  <p className="text-sm font-semibold text-gray-900">{act.organizer}</p>
+                                  <p className="text-sm text-gray-700">{act.description}</p>
+                                </div>
+                                <Badge variant={act.status === 'reserved' ? 'secondary' : 'default'}>
+                                  {act.status === 'reserved' ? t('facility:details.reserved', 'Reservert') : t('facility:details.booked', 'Booket')}
+                                </Badge>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </TabPanel>
       </TabsContent>

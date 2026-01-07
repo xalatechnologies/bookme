@@ -1,0 +1,146 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Booking Calendar Design System */
+
+@layer base {
+  :root {
+    --background: 210 20% 98%;
+    --foreground: 215 25% 15%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 215 25% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 215 25% 15%;
+
+    --primary: 215 70% 25%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 210 25% 95%;
+    --secondary-foreground: 215 25% 25%;
+
+    --muted: 210 20% 94%;
+    --muted-foreground: 215 15% 45%;
+
+    --accent: 215 60% 50%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 214 25% 88%;
+    --input: 214 25% 88%;
+    --ring: 215 70% 25%;
+
+    --radius: 0.625rem;
+
+    /* Booking-specific colors - soft, accessible tones */
+    --slot-available: 152 45% 55%;
+    --slot-available-hover: 152 45% 48%;
+    --slot-booked: 0 45% 65%;
+    --slot-reserved: 40 55% 60%;
+    --slot-selected: 215 55% 55%;
+    --slot-unavailable: 215 10% 82%;
+    --slot-conflict: 0 50% 62%;
+
+    /* Zone colors - muted professional tones */
+    --zone-a: 215 50% 40%;
+    --zone-b: 172 40% 45%;
+    --zone-c: 28 50% 55%;
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 215 25% 9%;
+    --foreground: 210 20% 98%;
+
+    --card: 215 25% 12%;
+    --card-foreground: 210 20% 98%;
+
+    --popover: 215 25% 12%;
+    --popover-foreground: 210 20% 98%;
+
+    --primary: 215 60% 55%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 215 20% 18%;
+    --secondary-foreground: 210 20% 95%;
+
+    --muted: 215 20% 18%;
+    --muted-foreground: 215 15% 60%;
+
+    --accent: 215 60% 50%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 215 20% 20%;
+    --input: 215 20% 20%;
+    --ring: 215 60% 55%;
+
+    --slot-available: 152 40% 45%;
+    --slot-booked: 0 40% 55%;
+    --slot-reserved: 40 50% 50%;
+    --slot-selected: 215 50% 50%;
+    --slot-unavailable: 215 10% 35%;
+
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+}
+
+@layer components {
+  .slot-available {
+    @apply bg-[hsl(var(--slot-available))] text-white hover:bg-[hsl(var(--slot-available-hover))] cursor-pointer transition-all duration-200;
+  }
+
+  .slot-booked {
+    @apply bg-[hsl(var(--slot-booked))] text-white cursor-not-allowed opacity-90;
+  }
+
+  .slot-reserved {
+    @apply bg-[hsl(var(--slot-reserved))] text-white cursor-not-allowed;
+  }
+
+  .slot-selected {
+    @apply bg-[hsl(var(--slot-selected))] text-white ring-2 ring-offset-2 ring-[hsl(var(--slot-selected))];
+  }
+
+  .slot-unavailable {
+    @apply bg-[hsl(var(--slot-unavailable))] text-muted-foreground cursor-not-allowed opacity-60;
+  }
+
+  .slot-conflict {
+    @apply bg-[hsl(var(--slot-conflict))] text-white cursor-not-allowed;
+  }
+}
