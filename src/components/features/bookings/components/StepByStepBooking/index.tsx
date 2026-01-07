@@ -1600,52 +1600,54 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
 
       {/* Conflict Dialog */}
       <Dialog open={conflictDialogOpen} onOpenChange={setConflictDialogOpen}>
-        <DialogContent className="sm:max-w-[520px]">
-          <DialogHeader>
-            <DialogTitle>Endre eller bekreft tider</DialogTitle>
-          </DialogHeader>
-          {conflictConflictedSlots.length > 0 && (
-            <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-900">
-              Følgende tid(er) er opptatt og ble hoppet over:
-              <ul className="list-disc list-inside mt-1">
-                {Array.from(
-                  new Set(
-                    conflictConflictedSlots.map(
-                      (s) =>
-                        `${format(s.date, "dd.MM.yyyy", { locale: currentLocale })} ${s.timeSlot}`
+        <DialogContent className="sm:max-w-[520px] max-h-[85vh] overflow-hidden p-0">
+          <div className="max-h-[85vh] overflow-y-auto p-6 space-y-4">
+            <DialogHeader className="sticky top-0 bg-white pb-3">
+              <DialogTitle>Endre eller bekreft tider</DialogTitle>
+            </DialogHeader>
+            {conflictConflictedSlots.length > 0 && (
+              <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-900">
+                Følgende tid(er) er opptatt og ble hoppet over:
+                <ul className="list-disc list-inside mt-1">
+                  {Array.from(
+                    new Set(
+                      conflictConflictedSlots.map(
+                        (s) =>
+                          `${format(s.date, "dd.MM.yyyy", { locale: currentLocale })} ${s.timeSlot}`
+                      )
                     )
-                  )
-                ).map((txt) => (
-                  <li key={txt}>{txt}</li>
-                ))}
-              </ul>
-            </div>
-          )}
+                  ).map((txt) => (
+                    <li key={txt}>{txt}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
 
-          {conflictAvailableSlots.length > 0 && (
-            <div className="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-800 space-y-2">
-              <p className="font-medium">Disse dagene er ledige for booking</p>
-              <ul className="space-y-1">
-                {conflictAvailableSlots.map((s) => (
-                  <li
-                    key={`${s.id}-avail`}
-                    className="flex items-center justify-between rounded-md bg-white px-3 py-2 border border-slate-200"
-                  >
-                    <span>
-                      {format(s.date, "EEEE dd.MM.yyyy", { locale: currentLocale })} · {s.timeSlot}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
+            {conflictAvailableSlots.length > 0 && (
+              <div className="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-800 space-y-2">
+                <p className="font-medium">Disse dagene er ledige for booking</p>
+                <ul className="space-y-1">
+                  {conflictAvailableSlots.map((s) => (
+                    <li
+                      key={`${s.id}-avail`}
+                      className="flex items-center justify-between rounded-md bg-white px-3 py-2 border border-slate-200"
+                    >
+                      <span>
+                        {format(s.date, "EEEE dd.MM.yyyy", { locale: currentLocale })} · {s.timeSlot}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
 
-          <DialogFooter className="mt-4 gap-2">
-            <Button variant="outline" onClick={handleConflictChangeTime}>
-              Endre tidspunkt
-            </Button>
-            <Button onClick={handleConflictConfirm}>Book valgte tidspunkter</Button>
-          </DialogFooter>
+            <DialogFooter className="mt-2 gap-2">
+              <Button variant="outline" onClick={handleConflictChangeTime}>
+                Endre tidspunkt
+              </Button>
+              <Button onClick={handleConflictConfirm}>Book valgte tidspunkter</Button>
+            </DialogFooter>
+          </div>
         </DialogContent>
       </Dialog>
     </div>
