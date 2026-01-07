@@ -135,8 +135,15 @@ export interface IPriceCalculationProps {
   readonly recurringSlots?: readonly ISelectedTimeSlot[];
   readonly actorType: ActorType | "";
   readonly activityType: ActivityType | "";
+  readonly priceGroup?: PriceGroup | "";
   readonly isLoading?: boolean;
   readonly bookingType?: BookingType;
+  readonly recommendedServices?: readonly {
+    readonly id: string;
+    readonly name: string;
+    readonly price: number;
+    readonly selected?: boolean;
+  }[];
 }
 
 /**

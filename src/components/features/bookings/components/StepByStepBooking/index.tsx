@@ -1,15 +1,23 @@
 "use client";
 
-import React, { useState, useCallback, useMemo } from "react";
+import React, { useState, useCallback, useMemo, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { ChevronLeft, ChevronRight, Download, Users, ChevronDown, CalendarIcon } from "lucide-react";
 import { startOfWeek, addWeeks, subWeeks, addDays, format } from "date-fns";
 import { nb } from "date-fns/locale";
+import { useNavigate } from "react-router-dom";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -24,6 +32,7 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import type { CheckedState } from "@radix-ui/react-checkbox";
+import { useAuth } from "@/contexts/hooks";
 
 import { BookingTypeSelector } from "../BookingForm/BookingTypeSelector";
 import { RecurrencePatternSelector } from "../RecurringBookingModal/RecurrencePatternSelector";
@@ -163,6 +172,9 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
     timeSlot: string;
     status: string;
   } | null>(null);
+  const [conflictDialogOpen, setConflictDialogOpen] = useState(false);
+  const [conflictAvailableSlots, setConflictAvailableSlots] = useState<ISelectedTimeSlot[]>([]);
+  const [conflictConflictedSlots, setConflictConflictedSlots] = useState<ISelectedTimeSlot[]>([]);
   const [recommendedServices, setRecommendedServices] = useState([
     { id: "extra-time", name: "Ekstra tid", description: "Forleng bookingen med 30 minutter", price: 200, selected: false },
     { id: "equipment", name: "Utstyr", description: "Inkluderer ballnett, musikanlegg og annet utstyr", price: 150, selected: false },
@@ -186,6 +198,7 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
     isFirstStep,
     isLastStep,
     goToStep,
+    goToStepDirect,
   } = useBookingSteps({
     formData,
     selectedSlots,
@@ -379,6 +392,7 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
   );
 
   const [conflictNotice, setConflictNotice] = useState<string | null>(null);
+  const [confirmLoggedIn, setConfirmLoggedIn] = useState(false);
 
   const totalSelectedSlots = selectedSlots.length + recurringSlots.length;
   const totalSelectedHours =
@@ -543,16 +557,6 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
                 </CardContent>
               </Card>
 
-              <div className="flex justify-end">
-                <Button
-                  onClick={nextStep}
-                  disabled={
-                    !formData.priceGroup || !formData.termsAccepted || selectedSlots.length === 0
-                  }
-                >
-                  Fortsett til neste steg
-                </Button>
-              </div>
             </div>
           </div>
         );
@@ -647,107 +651,392 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
           </div>
         );
 
-      case "terms":
-        return (
-          <div className="space-y-6">
-            <div>
-              <h3 className="text-lg font-semibold mb-2">
-                {t("booking:steps.terms.title")}
-              </h3>
-              <p className="text-gray-600 text-sm">
-                {t("booking:steps.terms.description")}
-              </p>
-            </div>
+      case "confirm":
+        {
+          const priceGroupLabel =
+            formData.priceGroup === "kommunale-virksomheter"
+              ? "Kommunale virksomheter"
+              : formData.priceGroup === "ikke-kommersielle-aktorer"
+              ? "Ikke-kommersielle aktører"
+              : "Kommersielle/private";
 
-            <Card className="w-full">
-              <CardContent className="p-6">
-                <div className="space-y-4">
-                  <div className="space-y-3">
-                    <h4 className="font-medium">
-                      {t("booking:terms.rules_title")}
-                    </h4>
-                    <ul className="text-sm text-gray-600 space-y-2">
-                      <li>
-                        •{" "}
-                        {t(
-                          "booking:terms.rules.cleaning"
-                        )}
-                      </li>
-                      <li>
-                        •{" "}
-                        {t(
-                          "booking:terms.rules.key_pickup"
-                        )}
-                      </li>
-                      <li>
-                        •{" "}
-                        {t(
-                          "booking:terms.rules.free_cancellation"
-                        )}
-                      </li>
-                      <li>
-                        •{" "}
-                        {t(
-                          "booking:terms.rules.no_show_fee"
-                        )}
-                      </li>
-                    </ul>
+          const baseTotal =
+            selectedSlots.reduce(
+              (sum, s) => sum + (s.pricePerHour || 0) * ((s.duration || 60) / 60),
+              0
+            ) +
+            recommendedServices
+              .filter((s) => s.selected)
+              .reduce((sum, s) => sum + s.price, 0);
+
+          const adjustedTotal =
+            formData.priceGroup === "kommunale-virksomheter"
+              ? baseTotal * 0.5
+              : formData.priceGroup === "ikke-kommersielle-aktorer"
+                ? 0
+                : baseTotal;
+          const finalTotalInclVat = adjustedTotal * 1.25;
+
+          const isLoggedIn = confirmLoggedIn || (!!user && !authLoading);
+
+          if (!isLoggedIn) {
+            return (
+              <div className="space-y-6">
+                <div className="bg-[#0f172a] rounded-2xl text-white p-6 shadow-lg">
+                  <h3 className="text-xl font-semibold mb-2">Logg inn for å fullføre</h3>
+                  <p className="text-sm text-slate-200 mb-4">
+                    For å sende din bookingforespørsel må du være innlogget. Vi bruker sikker
+                    autentisering for å verifisere din identitet.
+                  </p>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <Card className="border-0 shadow-md">
+                      <CardContent className="p-4 space-y-2">
+                        <div className="flex items-center gap-3">
+                          <div className="h-10 w-10 rounded-lg bg-orange-500 text-white flex items-center justify-center font-semibold">
+                            V
+                          </div>
+                          <div>
+                            <p className="text-sm font-semibold text-slate-900">Privatperson</p>
+                            <p className="text-xs text-slate-500">Anbefalt</p>
+                          </div>
+                        </div>
+                        <p className="text-xs text-slate-600">
+                          Rask og enkel innlogging med Vipps. Ingen passord nødvendig.
+                        </p>
+                        <Button
+                          className="w-full bg-orange-500 hover:bg-orange-600 text-white"
+                          onClick={() => {
+                            setUserLoginOpen(true);
+                          }}
+                        >
+                          Logg inn med Vipps
+                        </Button>
+                      </CardContent>
+                    </Card>
+
+                    <Card className="border-0 shadow-md">
+                      <CardContent className="p-4 space-y-2">
+                        <div className="flex items-center gap-3">
+                          <div className="h-10 w-10 rounded-lg bg-slate-800 text-white flex items-center justify-center">
+                            <span className="font-semibold">ID</span>
+                          </div>
+                          <div>
+                            <p className="text-sm font-semibold text-slate-900">Organisasjon</p>
+                            <p className="text-xs text-slate-500">For ansatte</p>
+                          </div>
+                        </div>
+                        <p className="text-xs text-slate-600">
+                          For kommunalt ansatte og bedrifter med organisasjonskonto.
+                        </p>
+                        <Button
+                          variant="outline"
+                          className="w-full text-slate-900 border-slate-300"
+                          onClick={() => {
+                            setAdminLoginOpen(true);
+                          }}
+                        >
+                          Logg inn som ansatt
+                        </Button>
+                      </CardContent>
+                    </Card>
                   </div>
 
-                  <div className="flex items-start space-x-3 pt-4 border-t">
-                    <input
-                      type="checkbox"
-                      id="terms"
-                      checked={formData.termsAccepted}
-                      onChange={(e) =>
-                        handleFormDataUpdate({
-                          termsAccepted: e.target.checked,
-                        })
-                      }
-                      className="mt-1"
-                    />
-                    <label htmlFor="terms" className="text-sm cursor-pointer">
-                      {t("booking:terms.accept_label")}{" "}
-                      <a
-                        href="/terms"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-600 hover:text-blue-800 underline font-medium"
-                      >
-                        {t("booking:terms.accept_terms_and_privacy")}
-                      </a>
-                      {" "}{t("booking:terms.and")}{" "}
-                      <a
-                        href="/privacy"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-600 hover:text-blue-800 underline font-medium"
-                      >
-                        {t("booking:terms.privacy_policy")}
-                      </a>
-                      {" "}{t("booking:terms.for_use")}
-                    </label>
+                  <div className="mt-4 text-xs text-slate-200 flex items-start gap-2">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                      className="h-4 w-4 text-emerald-400 mt-0.5"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm4.28 6.97a.75.75 0 00-1.06-1.06l-4.72 4.72-1.72-1.72a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.06 0l5.25-5.25z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    <span>
+                      Din informasjon behandles sikkert og i henhold til personvernlovgivningen. Ved å logge inn
+                      godtar du at vi lagrer nødvendige opplysninger for å behandle din booking.
+                    </span>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-          </div>
-        );
+              </div>
+            );
+          }
 
-      case "actions":
-        return (
-          <Step5Actions
-            isValid={
-              validateStep("details") &&
-              validateStep("calendar") &&
-              validateStep("terms")
-            }
-            isLoading={isLoading}
-            onAddToCart={handleAddToCart}
-            onCompleteBooking={handleCompleteBooking}
-          />
-        );
+          return (
+            <div className="flex items-center justify-center py-6">
+              <div className="w-full max-w-xl">
+                <div className="bg-white rounded-2xl border border-slate-200 p-8 shadow-lg">
+                  <div className="text-center mb-6">
+                    <h2 className="text-2xl font-bold text-slate-900">Forespørsel...</h2>
+                  </div>
 
+                  <div className="bg-cyan-50 border border-cyan-200 rounded-xl p-4 mb-6">
+                    <div className="flex flex-col items-center text-center">
+                      <div className="w-10 h-10 bg-cyan-100 rounded-full flex items-center justify-center mb-3">
+                        <span className="text-cyan-600 text-lg">i</span>
+                      </div>
+                      <p className="text-sm text-slate-800 mb-2">
+                        Dette lokalet krever godkjenning før leie. Når forespørselen er behandlet, kan du betale via Min side
+                      </p>
+                      {formData.priceGroup && (
+                        <p className="text-xs text-slate-700">
+                          Du har valgt pris-/kundegruppe: <strong>{priceGroupLabel}</strong>. Utleier må
+                          godkjenne at du kvalifiserer for denne kundegruppen.
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="text-center mb-6">
+                    <p className="text-sm text-slate-500 mb-1">Estimert pris</p>
+                    <p className="text-3xl font-bold text-slate-900">
+                      {Math.round(finalTotalInclVat)},-
+                    </p>
+                  </div>
+
+                  <div className="flex flex-col gap-3">
+                    <Button
+                      className="w-full bg-slate-800 hover:bg-slate-900 text-white rounded-full py-5 text-base font-medium"
+                      onClick={() => goToStepDirect("sent")}
+                    >
+                      Send til godkjenning
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        }
+
+      case "sent":
+        {
+          const priceGroupLabel =
+            formData.priceGroup === "kommunale-virksomheter"
+              ? "Kommunale virksomheter"
+              : formData.priceGroup === "ikke-kommersielle-aktorer"
+              ? "Ikke-kommersielle aktører"
+              : "Kommersielle/private";
+
+          const baseTotal =
+            selectedSlots.reduce(
+              (sum, s) => sum + (s.pricePerHour || 0) * ((s.duration || 60) / 60),
+              0
+            ) +
+            recommendedServices
+              .filter((s) => s.selected)
+              .reduce((sum, s) => sum + s.price, 0);
+
+          const adjustedTotal =
+            formData.priceGroup === "kommunale-virksomheter"
+              ? baseTotal * 0.5
+              : formData.priceGroup === "ikke-kommersielle-aktorer"
+              ? 0
+              : baseTotal;
+
+          const firstSlot = selectedSlots[0];
+          const firstSlotDate =
+            firstSlot && firstSlot.date ? new Date(firstSlot.date) : null;
+          const formattedDate =
+            firstSlotDate && !Number.isNaN(firstSlotDate.getTime())
+              ? format(firstSlotDate, "EEEE dd. MMMM", { locale: currentLocale })
+              : null;
+
+          return (
+            <div className="flex items-center justify-center py-6">
+              <div className="w-full max-w-xl">
+                <div className="bg-white rounded-2xl border border-slate-200 p-8 shadow-lg">
+                  <div className="flex flex-col items-center text-center mb-6">
+                    <div className="w-12 h-12 rounded-full bg-emerald-100 flex items-center justify-center mb-3">
+                      <span className="text-emerald-600 text-xl">✓</span>
+                    </div>
+                    <h2 className="text-2xl font-bold text-slate-900">Reservasjon sendt!</h2>
+                    <p className="text-sm text-slate-600 mt-2">
+                      Din forespørsel er sendt til godkjenning. Du vil motta en bekreftelse på e-post når
+                      saksbehandler har behandlet den.
+                    </p>
+                  </div>
+
+                  <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 mb-6 space-y-3">
+                    <p className="text-sm font-semibold text-slate-800">Oppsummering</p>
+                    {firstSlot && formattedDate && (
+                      <div className="rounded-lg border border-slate-200 bg-white p-3 text-sm text-slate-700 space-y-1">
+                        <div className="flex items-center gap-2 font-semibold text-slate-900">
+                          {formattedDate}
+                        </div>
+                        <div className="flex items-center gap-2 text-slate-600 text-xs">
+                          <span>🕒 {firstSlot.timeSlot}</span>
+                          <span>•</span>
+                          <span>Zone {firstSlot.zoneName || selectedZone?.name || "-"}</span>
+                        </div>
+                      </div>
+                    )}
+                    <div className="text-xs text-slate-700">
+                      <div className="flex justify-between py-1">
+                        <span>Prisgruppe:</span>
+                        <span className="font-medium">{priceGroupLabel}</span>
+                      </div>
+                      <div className="flex justify-between py-1">
+                        <span>Tilleggstjenester:</span>
+                        <span className="font-medium">
+                          {recommendedServices.filter((s) => s.selected).length > 0
+                            ? `${recommendedServices
+                                .filter((s) => s.selected)
+                                .map((s) => s.name)
+                                .join(", ")}`
+                            : "Ingen"}
+                        </span>
+                      </div>
+                      <div className="flex justify-between py-1 border-t border-slate-200 mt-2 pt-2">
+                        <span>Tillegg totalt:</span>
+                        <span className="font-semibold text-slate-900">
+                          {Math.round(
+                            recommendedServices
+                              .filter((s) => s.selected)
+                              .reduce((sum, s) => sum + s.price, 0)
+                          )}{" "}
+                          kr
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 mb-6 text-xs text-slate-700">
+                    <p className="font-semibold mb-1">Hva skjer nå?</p>
+                    <p>
+                      En saksbehandler vil se over din forespørsel. Når den er godkjent, vil du få beskjed
+                      om å betale via “Min side”. Behandlingstid er vanligvis 1-2 virkedager.
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <Button variant="ghost" className="w-full">
+                      Tilbake til forsiden
+                    </Button>
+                    <Button
+                      className="w-full bg-slate-800 hover:bg-slate-900 text-white"
+                      onClick={() => navigate("/user/bookings")}
+                    >
+                      Se mine bookinger
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        }
+
+        if (currentStep === "sent") {
+          const priceGroupLabel =
+            formData.priceGroup === "kommunale-virksomheter"
+              ? "Kommunale virksomheter"
+              : formData.priceGroup === "ikke-kommersielle-aktorer"
+              ? "Ikke-kommersielle aktører"
+              : "Kommersielle/private";
+
+          const baseTotal =
+            selectedSlots.reduce(
+              (sum, s) => sum + (s.pricePerHour || 0) * ((s.duration || 60) / 60),
+              0
+            ) +
+            recommendedServices
+              .filter((s) => s.selected)
+              .reduce((sum, s) => sum + s.price, 0);
+
+          const adjustedTotal =
+            formData.priceGroup === "kommunale-virksomheter"
+              ? baseTotal * 0.5
+              : formData.priceGroup === "ikke-kommersielle-aktorer"
+              ? 0
+              : baseTotal;
+
+          const firstSlot = selectedSlots[0];
+
+          return (
+            <div className="flex items-center justify-center py-6">
+              <div className="w-full max-w-xl">
+                <div className="bg-white rounded-2xl border border-slate-200 p-8 shadow-lg">
+                  <div className="flex flex-col items-center text-center mb-6">
+                    <div className="w-12 h-12 rounded-full bg-emerald-100 flex items-center justify-center mb-3">
+                      <span className="text-emerald-600 text-xl">✓</span>
+                    </div>
+                    <h2 className="text-2xl font-bold text-slate-900">Reservasjon sendt!</h2>
+                    <p className="text-sm text-slate-600 mt-2">
+                      Din forespørsel er sendt til godkjenning. Du vil motta en bekreftelse på e-post når
+                      saksbehandler har behandlet den.
+                    </p>
+                  </div>
+
+                  <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 mb-6 space-y-3">
+                    <p className="text-sm font-semibold text-slate-800">Oppsummering</p>
+                    {firstSlot && (
+                      <div className="rounded-lg border border-slate-200 bg-white p-3 text-sm text-slate-700 space-y-1">
+                        <div className="flex items-center gap-2 font-semibold text-slate-900">
+                          {format(firstSlot.date, "EEEE dd. MMMM", { locale: currentLocale })}
+                        </div>
+                        <div className="flex items-center gap-2 text-slate-600 text-xs">
+                          <span>🕒 {firstSlot.timeSlot}</span>
+                          <span>•</span>
+                          <span>Zone {firstSlot.zoneName || selectedZone?.name || "-"}</span>
+                        </div>
+                      </div>
+                    )}
+                    <div className="text-xs text-slate-700">
+                      <div className="flex justify-between py-1">
+                        <span>Prisgruppe:</span>
+                        <span className="font-medium">{priceGroupLabel}</span>
+                      </div>
+                      <div className="flex justify-between py-1">
+                        <span>Tilleggstjenester:</span>
+                        <span className="font-medium">
+                          {recommendedServices.filter((s) => s.selected).length > 0
+                            ? `${recommendedServices
+                                .filter((s) => s.selected)
+                                .map((s) => s.name)
+                                .join(", ")}`
+                            : "Ingen"}
+                        </span>
+                      </div>
+                      <div className="flex justify-between py-1 border-t border-slate-200 mt-2 pt-2">
+                        <span>Tillegg totalt:</span>
+                        <span className="font-semibold text-slate-900">
+                          {Math.round(
+                            recommendedServices
+                              .filter((s) => s.selected)
+                              .reduce((sum, s) => sum + s.price, 0)
+                          )}{" "}
+                          kr
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 mb-6 text-xs text-slate-700">
+                    <p className="font-semibold mb-1">Hva skjer nå?</p>
+                    <p>
+                      En saksbehandler vil se over din forespørsel. Når den er godkjent, vil du få beskjed
+                      om å betale via “Min side”. Behandlingstid er vanligvis 1-2 virkedager.
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <Button variant="ghost" className="w-full">
+                      Tilbake til forsiden
+                    </Button>
+                    <Button
+                      className="w-full bg-slate-800 hover:bg-slate-900 text-white"
+                      onClick={() => navigate("/user/bookings")}
+                    >
+                      Se mine bookinger
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        }
       default:
         return null;
     }
@@ -858,6 +1147,9 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
     });
 
     if (conflicted.length > 0) {
+      const availableOnly = hourlySlots.filter((slot) => !conflicted.includes(slot));
+      setConflictAvailableSlots(availableOnly);
+      setConflictConflictedSlots(conflicted);
       const skipped = Array.from(
         new Set(
           conflicted.map((slot) =>
@@ -868,20 +1160,14 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
       setConflictNotice(
         `Følgende tid(er) er opptatt og ble hoppet over: ${skipped.join(", ")}`
       );
-      // Filter out conflicting slots, keep available ones
-      const availableOnly = hourlySlots.filter(
-        (slot) => !conflicted.includes(slot)
-      );
-      if (availableOnly.length > 0) {
-        onSlotsChange([...selectedSlots, ...availableOnly]);
-      }
       setSlotDialogOpen(false);
-      setPendingSlot(null);
-      // Abort if any conflicts were found
+      setConflictDialogOpen(true);
       return;
     }
 
     setConflictNotice(null);
+    setConflictAvailableSlots([]);
+    setConflictConflictedSlots([]);
     onSlotsChange([...selectedSlots, ...hourlySlots]);
 
     setFormData((prev) => ({
@@ -900,6 +1186,74 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
   const handleDialogClose = () => {
     setSlotDialogOpen(false);
     setPendingSlot(null);
+  };
+
+  const handleConflictConfirm = () => {
+    if (conflictAvailableSlots.length > 0) {
+      onSlotsChange([...selectedSlots, ...conflictAvailableSlots]);
+    }
+    setConflictDialogOpen(false);
+    setConflictAvailableSlots([]);
+    setConflictConflictedSlots([]);
+    setConflictNotice(null);
+    setPendingSlot(null);
+  };
+
+  const handleConflictChangeTime = () => {
+    setConflictDialogOpen(false);
+    setSlotDialogOpen(true);
+  };
+
+  const [userLoginOpen, setUserLoginOpen] = useState(false);
+  const [adminLoginOpen, setAdminLoginOpen] = useState(false);
+  const [userLoginEmail, setUserLoginEmail] = useState("");
+  const [userLoginPassword, setUserLoginPassword] = useState("");
+  const [adminLoginEmail, setAdminLoginEmail] = useState("");
+  const [adminLoginPassword, setAdminLoginPassword] = useState("");
+  const [loginLoadingUser, setLoginLoadingUser] = useState(false);
+  const [loginLoadingAdmin, setLoginLoadingAdmin] = useState(false);
+  const [loginErrorUser, setLoginErrorUser] = useState<string | null>(null);
+  const [loginErrorAdmin, setLoginErrorAdmin] = useState<string | null>(null);
+  const { signInWithPassword, user, loading: authLoading } = useAuth();
+  const navigate = useNavigate();
+
+  const submitLogin = async (type: "user" | "admin") => {
+    const email = type === "user" ? userLoginEmail : adminLoginEmail;
+    const password = type === "user" ? userLoginPassword : adminLoginPassword;
+    const setErr = type === "user" ? setLoginErrorUser : setLoginErrorAdmin;
+    const setLoading = type === "user" ? setLoginLoadingUser : setLoginLoadingAdmin;
+    if (!email || !password) {
+      setErr("Vennligst fyll ut både e-post og passord");
+      return;
+    }
+    setErr(null);
+    setLoading(true);
+    try {
+      await signInWithPassword(email, password);
+      setConfirmLoggedIn(true);
+      if (type === "user") {
+        setUserLoginOpen(false);
+      } else {
+        setAdminLoginOpen(false);
+      }
+    } catch (err) {
+      console.error("Login failed", err);
+      setErr("Innlogging feilet. Sjekk e-post og passord.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Sett innloggingsstatus automatisk hvis bruker allerede er innlogget
+  useEffect(() => {
+    if (!authLoading && user) {
+      setConfirmLoggedIn(true);
+    }
+  }, [authLoading, user]);
+
+  const handleSubmitForApproval = () => {
+    setConfirmLoggedIn(true);
+    goToStep("sent");
   };
 
   const getSelectedSlotPurpose = useCallback(
@@ -979,15 +1333,15 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-6">
-        {/* Left Column - Step Content */}
-        <div className="space-y-4">
-          <Card className="shadow-sm border-slate-200">
-            <CardContent className="p-6">{renderStepContent()}</CardContent>
-          </Card>
+      {currentStep === "confirm" || currentStep === "sent" ? (
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-full max-w-4xl">
+            <Card className="shadow-sm border-slate-200">
+              <CardContent className="p-6">{renderStepContent()}</CardContent>
+            </Card>
+          </div>
 
-          {/* Navigation Buttons */}
-          <div className="flex justify-between">
+          <div className="flex justify-between w-full max-w-4xl">
             <Button
               onClick={previousStep}
               variant="outline"
@@ -1008,81 +1362,114 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
             </Button>
           </div>
         </div>
-
-        {/* Right Column - Time Slots & Pricing */}
-        <div>
-          <div className="sticky top-4 space-y-4">
-            <Card className="w-full shadow-sm border-slate-200">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-medium text-slate-800">
-                  {selectedSlots.length > 0
-                    ? formData.bookingType === "recurring"
-                      ? recurringSlots.length > 0
-                        ? currentStep === "calendar"
-                          ? t("booking:sidebar.recurring_slots_only", "Valgte gjentakende tidspunkt")
-                          : t("booking:sidebar.recurring_slots_and_price")
-                        : t("booking:sidebar.slots_and_price_select_pattern")
-                      : currentStep === "calendar"
-                        ? t("booking:sidebar.selected_slots_only", "Valgte tidspunkt")
-                        : formData.priceGroup
-                          ? t("booking:sidebar.selected_slots_and_price")
-                          : t("booking:sidebar.selected_slots_only", "Valgte tidspunkt")
-                    : t("booking:sidebar.select_slots_pricing")}
-                </CardTitle>
-                      {totalSelectedSlots > 0 && (
-                        <p className="text-xs text-slate-500">
-                          {totalSelectedSlots} valg · {totalSelectedHours} timer
-                        </p>
-                      )}
-              </CardHeader>
-              <CardContent className="pt-0 space-y-4">
-                {selectedSlots.length > 0 || recurringSlots.length > 0 ? (
-                  <>
-                    <TimeSlotDisplay
-                      slots={selectedSlots}
-                      recurringSlots={recurringSlots}
-                      bookingType={formData.bookingType}
-                      onRemoveSlot={handleRemoveSlots}
-                      onClearAll={handleClearAllSlots}
-                      conflictNotice={conflictNotice}
-                    />
-
-                    {currentStep !== "calendar" && formData.priceGroup ? (
-                      <PriceCalculation
-                        selectedSlots={selectedSlots}
-                        recurringSlots={recurringSlots}
-                        actorType={formData.actorType}
-                        activityType={formData.activityType}
-                        bookingType={formData.bookingType}
-                      />
-                    ) : currentStep !== "calendar" ? (
-                      <div className="p-4 rounded-lg bg-slate-50 text-slate-700 border border-slate-200 text-sm">
-                        {t("booking:pricing.select_price_group_first", "Velg prisgruppe for å se prisberegning.")}
-                      </div>
-                    ) : null}
-                  </>
-                ) : (
-                  <div className="text-center py-8">
-                    <CalendarIcon className="h-16 w-16 text-slate-300 mx-auto mb-4" />
-                    <p className="text-slate-500 text-sm">
-                      {t("booking:sidebar.select_slots_pricing")}
-                    </p>
-                  </div>
-                )}
-              </CardContent>
+      ) : (
+        <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-6">
+          {/* Left Column - Step Content */}
+          <div className="space-y-4">
+            <Card className="shadow-sm border-slate-200">
+              <CardContent className="p-6">{renderStepContent()}</CardContent>
             </Card>
 
-            {/* Tips */}
-            <div className="p-4 bg-white rounded-lg border border-slate-200 shadow-sm">
-              <h4 className="font-medium text-sm text-slate-900 mb-2">Tips</h4>
-              <ul className="text-xs text-slate-600 space-y-1.5">
-                <li>• Klikk på ledige tidspunkter for å velge</li>
-                <li>• Bruk "Book flere dager?" for gjentakende booking</li>
-              </ul>
+            {/* Navigation Buttons */}
+            <div className="flex justify-between">
+              <Button
+                onClick={previousStep}
+                variant="outline"
+                disabled={isFirstStep}
+                className="flex items-center gap-2"
+              >
+                <ChevronLeft className="h-4 w-4" />
+                {t("common:navigation.previous")}
+              </Button>
+
+              <Button
+                onClick={nextStep}
+                disabled={isLastStep || !canProceedToNext}
+                className="flex items-center gap-2"
+              >
+                {t("common:navigation.next")}
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+
+          {/* Right Column - Time Slots & Pricing */}
+          <div>
+            <div className="sticky top-4 space-y-4">
+              <Card className="w-full shadow-sm border-slate-200">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm font-medium text-slate-800">
+                    {selectedSlots.length > 0
+                      ? formData.bookingType === "recurring"
+                        ? recurringSlots.length > 0
+                          ? currentStep === "calendar"
+                            ? t("booking:sidebar.recurring_slots_only", "Valgte gjentakende tidspunkt")
+                            : t("booking:sidebar.recurring_slots_and_price")
+                          : t("booking:sidebar.slots_and_price_select_pattern")
+                        : currentStep === "calendar"
+                          ? t("booking:sidebar.selected_slots_only", "Valgte tidspunkt")
+                          : formData.priceGroup
+                            ? t("booking:sidebar.selected_slots_and_price")
+                            : t("booking:sidebar.selected_slots_only", "Valgte tidspunkt")
+                      : t("booking:sidebar.select_slots_pricing")}
+                  </CardTitle>
+                  {totalSelectedSlots > 0 && (
+                    <p className="text-xs text-slate-500">
+                      {totalSelectedSlots} valg · {totalSelectedHours} timer
+                    </p>
+                  )}
+                </CardHeader>
+                <CardContent className="pt-0 space-y-4">
+                  {selectedSlots.length > 0 || recurringSlots.length > 0 ? (
+                    <>
+                      <TimeSlotDisplay
+                        slots={selectedSlots}
+                        recurringSlots={recurringSlots}
+                        bookingType={formData.bookingType}
+                        onRemoveSlot={handleRemoveSlots}
+                        onClearAll={handleClearAllSlots}
+                        conflictNotice={conflictNotice}
+                      />
+
+                      {currentStep !== "calendar" && formData.priceGroup ? (
+                        <PriceCalculation
+                          selectedSlots={selectedSlots}
+                          recurringSlots={recurringSlots}
+                          actorType={formData.actorType}
+                          activityType={formData.activityType}
+                          priceGroup={formData.priceGroup}
+                          bookingType={formData.bookingType}
+                          recommendedServices={recommendedServices}
+                        />
+                      ) : currentStep !== "calendar" ? (
+                        <div className="p-4 rounded-lg bg-slate-50 text-slate-700 border border-slate-200 text-sm">
+                          {t("booking:pricing.select_price_group_first", "Velg prisgruppe for å se prisberegning.")}
+                        </div>
+                      ) : null}
+                    </>
+                  ) : (
+                    <div className="text-center py-8">
+                      <CalendarIcon className="h-16 w-16 text-slate-300 mx-auto mb-4" />
+                      <p className="text-slate-500 text-sm">
+                        {t("booking:sidebar.select_slots_pricing")}
+                      </p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Tips */}
+              <div className="p-4 bg-white rounded-lg border border-slate-200 shadow-sm">
+                <h4 className="font-medium text-sm text-slate-900 mb-2">Tips</h4>
+                <ul className="text-xs text-slate-600 space-y-1.5">
+                  <li>• Klikk på ledige tidspunkter for å velge</li>
+                  <li>• Bruk "Book flere dager?" for gjentakende booking</li>
+                </ul>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* Slot booking dialog */}
       <SlotBookingDialog
@@ -1096,6 +1483,171 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
         selectedTime={pendingSlot?.timeSlot.split("-")[0] || null}
         zoneName={selectedZone?.name}
       />
+
+      {/* User login modal (embedded form) */}
+      <Dialog open={userLoginOpen} onOpenChange={setUserLoginOpen}>
+        <DialogContent className="sm:max-w-[520px]">
+          <div className="flex flex-col rounded-lg overflow-hidden border border-slate-200">
+            <div className="flex flex-col space-y-1.5 p-6 pb-4 pt-6 bg-gradient-to-r from-slate-600 to-slate-700 text-white">
+              <p className="text-xs uppercase tracking-wide">Bruker</p>
+              <DialogTitle className="text-lg font-semibold text-white p-0">Innlogging</DialogTitle>
+              <p className="text-sm text-slate-100">Logg inn med e-post og passord</p>
+            </div>
+            <div className="p-6 pt-4 space-y-3">
+              <Label className="text-sm font-medium text-slate-700">E-postadresse</Label>
+              <Input
+                value={userLoginEmail}
+                onChange={(e) => setUserLoginEmail(e.target.value)}
+                placeholder="E-postadresse"
+                disabled={loginLoadingUser}
+                type="text"
+                name="user-email"
+                autoComplete="new-email"
+              />
+              <Label className="text-sm font-medium text-slate-700">Passord</Label>
+              <Input
+                type="password"
+                value={userLoginPassword}
+                onChange={(e) => setUserLoginPassword(e.target.value)}
+                placeholder="Passord"
+                disabled={loginLoadingUser}
+                name="user-password"
+                autoComplete="new-password"
+              />
+              {loginErrorUser && (
+                <p className="text-xs text-red-600 font-medium">{loginErrorUser}</p>
+              )}
+              <p className="text-xs text-slate-500">
+                Test-kontoer:
+                <br />• test.user@drammen.kommune.no
+                <br />• staff@drammen.kommune.no
+                <br />• admin@drammen.kommune.no
+                <br />• owner@drammen.kommune.no
+                <br />• superadmin@booknor.no
+                <br />
+                Passord: Test123!
+              </p>
+            </div>
+          </div>
+          <DialogFooter className="mt-3 gap-2">
+            <Button variant="outline" onClick={() => setUserLoginOpen(false)}>
+              Lukk
+            </Button>
+            <Button
+              disabled={loginLoadingUser}
+              onClick={() => submitLogin("user")}
+            >
+              {loginLoadingUser ? "Logger inn..." : "Logg inn"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Admin login modal (embedded form) */}
+      <Dialog open={adminLoginOpen} onOpenChange={setAdminLoginOpen}>
+        <DialogContent className="sm:max-w-[520px]">
+          <DialogHeader>
+            <DialogTitle>Logg inn som ansatt</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <Label className="text-sm font-medium text-slate-700">Ansatt-ID / e-post</Label>
+            <Input
+              value={adminLoginEmail}
+              onChange={(e) => setAdminLoginEmail(e.target.value)}
+              placeholder="Ansatt-ID / e-post"
+              disabled={loginLoadingAdmin}
+              type="text"
+              name="admin-email"
+              autoComplete="new-email"
+            />
+            <Label className="text-sm font-medium text-slate-700">Passord</Label>
+            <Input
+              type="password"
+              value={adminLoginPassword}
+              onChange={(e) => setAdminLoginPassword(e.target.value)}
+              placeholder="Passord"
+              disabled={loginLoadingAdmin}
+              name="admin-password"
+              autoComplete="new-password"
+            />
+            {loginErrorAdmin && (
+              <p className="text-xs text-red-600 font-medium">{loginErrorAdmin}</p>
+            )}
+            <p className="text-xs text-slate-500">
+              Test-kontoer:
+              <br />• test.user@drammen.kommune.no
+              <br />• staff@drammen.kommune.no
+              <br />• admin@drammen.kommune.no
+              <br />• owner@drammen.kommune.no
+              <br />• superadmin@booknor.no
+              <br />
+              Passord: Test123!
+            </p>
+          </div>
+          <DialogFooter className="mt-3 gap-2">
+            <Button variant="outline" onClick={() => setAdminLoginOpen(false)}>
+              Avbryt
+            </Button>
+            <Button
+              disabled={loginLoadingAdmin}
+              onClick={() => submitLogin("admin")}
+            >
+              {loginLoadingAdmin ? "Logger inn..." : "Logg inn"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Conflict Dialog */}
+      <Dialog open={conflictDialogOpen} onOpenChange={setConflictDialogOpen}>
+        <DialogContent className="sm:max-w-[520px]">
+          <DialogHeader>
+            <DialogTitle>Endre eller bekreft tider</DialogTitle>
+          </DialogHeader>
+          {conflictConflictedSlots.length > 0 && (
+            <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-900">
+              Følgende tid(er) er opptatt og ble hoppet over:
+              <ul className="list-disc list-inside mt-1">
+                {Array.from(
+                  new Set(
+                    conflictConflictedSlots.map(
+                      (s) =>
+                        `${format(s.date, "dd.MM.yyyy", { locale: currentLocale })} ${s.timeSlot}`
+                    )
+                  )
+                ).map((txt) => (
+                  <li key={txt}>{txt}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {conflictAvailableSlots.length > 0 && (
+            <div className="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-800 space-y-2">
+              <p className="font-medium">Disse dagene er ledige for booking</p>
+              <ul className="space-y-1">
+                {conflictAvailableSlots.map((s) => (
+                  <li
+                    key={`${s.id}-avail`}
+                    className="flex items-center justify-between rounded-md bg-white px-3 py-2 border border-slate-200"
+                  >
+                    <span>
+                      {format(s.date, "EEEE dd.MM.yyyy", { locale: currentLocale })} · {s.timeSlot}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          <DialogFooter className="mt-4 gap-2">
+            <Button variant="outline" onClick={handleConflictChangeTime}>
+              Endre tidspunkt
+            </Button>
+            <Button onClick={handleConflictConfirm}>Book valgte tidspunkter</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

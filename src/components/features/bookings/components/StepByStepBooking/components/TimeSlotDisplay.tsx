@@ -191,7 +191,7 @@ export const TimeSlotDisplay: React.FC<ITimeSlotDisplayProps> = ({
             </Button>
           </div>
         )
-      )}
+        )}
     </div>
   );
 };

@@ -324,43 +324,43 @@ export const useBookingCoordination = ({
         }
 
         // Update external slots (non step-by-step)
-        const updatedSlots = [...stepByStepSelectedSlots];
-        const existingIndex = updatedSlots.findIndex((slot) => {
-          const slotDate =
-            slot.date instanceof Date ? slot.date : new Date(slot.date);
-          return (
-            slot.zoneId === zoneId &&
-            slotDate.toDateString() === date.toDateString() &&
-            slot.timeSlot === timeSlot
-          );
-        });
+          const updatedSlots = [...stepByStepSelectedSlots];
+          const existingIndex = updatedSlots.findIndex((slot) => {
+            const slotDate =
+              slot.date instanceof Date ? slot.date : new Date(slot.date);
+            return (
+              slot.zoneId === zoneId &&
+              slotDate.toDateString() === date.toDateString() &&
+              slot.timeSlot === timeSlot
+            );
+          });
 
-        if (existingIndex >= 0) {
-          updatedSlots.splice(existingIndex, 1);
-        } else {
-          // Calculate duration
-          const [startTime, endTime] = timeSlot.split("-");
-          const startMinutes =
-            parseInt(startTime.split(":")[0]) * 60 +
-            parseInt(startTime.split(":")[1]);
-          const endMinutes =
-            parseInt(endTime.split(":")[0]) * 60 +
-            parseInt(endTime.split(":")[1]);
-          const duration = endMinutes - startMinutes;
+          if (existingIndex >= 0) {
+            updatedSlots.splice(existingIndex, 1);
+          } else {
+            // Calculate duration
+            const [startTime, endTime] = timeSlot.split("-");
+            const startMinutes =
+              parseInt(startTime.split(":")[0]) * 60 +
+              parseInt(startTime.split(":")[1]);
+            const endMinutes =
+              parseInt(endTime.split(":")[0]) * 60 +
+              parseInt(endTime.split(":")[1]);
+            const duration = endMinutes - startMinutes;
 
-          const newSlot: ISelectedTimeSlot = {
+            const newSlot: ISelectedTimeSlot = {
             id: `${facilityId}-${zoneId}-${date.toISOString().split("T")[0]}-${timeSlot}`,
-            facilityId,
-            zoneId,
-            date,
-            timeSlot,
-            duration,
-            pricePerHour: selectedZonePricePerHour,
-          };
-          updatedSlots.push(newSlot);
-        }
+              facilityId,
+              zoneId,
+              date,
+              timeSlot,
+              duration,
+              pricePerHour: selectedZonePricePerHour,
+            };
+            updatedSlots.push(newSlot);
+          }
 
-        handleSlotsChange(updatedSlots);
+          handleSlotsChange(updatedSlots);
       }
     },
     [facilityId]

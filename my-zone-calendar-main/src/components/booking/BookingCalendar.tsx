@@ -384,43 +384,43 @@ export function BookingCalendar() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
+        {/* Header */}
       <div className="space-y-2">
         <h1 className="text-3xl font-bold text-foreground">Ledighetskalender</h1>
-        <p className="text-muted-foreground">
-          Legg inn din reservasjon raskt og enkelt på 4 steg.
-        </p>
-      </div>
+          <p className="text-muted-foreground">
+            Legg inn din reservasjon raskt og enkelt på 4 steg.
+          </p>
+        </div>
 
-      {/* Stepper */}
-      <BookingStepper currentStep={currentStep} totalSteps={4} />
+        {/* Stepper */}
+          <BookingStepper currentStep={currentStep} totalSteps={4} />
 
-      {/* Main Content */}
-      {showLoginOverlay ? (
-        <BookingLogin 
-          onBack={handleLoginBack} 
-          onLoginSuccess={handleLoginSuccess} 
-        />
-      ) : currentStep === 3 ? (
-        <BookingReview
-          slots={currentZoneSlots}
-          checkoutData={checkoutData}
-          onBack={handleBack}
-          onSubmitForApproval={handleSubmitForApproval}
-        />
-      ) : currentStep === 4 ? (
-        <BookingConfirmation
-          slots={currentZoneSlots}
-          checkoutData={checkoutData}
-          onBackToHome={handleBackToHome}
-          onViewBookings={handleViewBookings}
-        />
-      ) : (
+        {/* Main Content */}
+        {showLoginOverlay ? (
+          <BookingLogin 
+            onBack={handleLoginBack} 
+            onLoginSuccess={handleLoginSuccess} 
+          />
+        ) : currentStep === 3 ? (
+          <BookingReview
+            slots={currentZoneSlots}
+            checkoutData={checkoutData}
+            onBack={handleBack}
+            onSubmitForApproval={handleSubmitForApproval}
+          />
+        ) : currentStep === 4 ? (
+          <BookingConfirmation
+            slots={currentZoneSlots}
+            checkoutData={checkoutData}
+            onBackToHome={handleBackToHome}
+            onViewBookings={handleViewBookings}
+          />
+        ) : (
         <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-6">
-          {/* Left Section */}
+            {/* Left Section */}
           <div className="space-y-4">
-            {currentStep === 1 ? (
-              <>
+              {currentStep === 1 ? (
+                <>
                 <div className="bg-white rounded-xl border border-border shadow-sm overflow-hidden">
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between px-4 py-4 border-b border-border">
                     <div>
@@ -429,82 +429,82 @@ export function BookingCalendar() {
                         Klikk på ledige tidspunkter for å velge dem. Du kan velge flere tidspunkter samtidig.
                       </p>
                     </div>
-                    <WeekNavigation
-                      weekStart={weekStart}
-                      onPreviousWeek={handlePreviousWeek}
-                      onNextWeek={handleNextWeek}
-                    />
+                      <WeekNavigation
+                        weekStart={weekStart}
+                        onPreviousWeek={handlePreviousWeek}
+                        onNextWeek={handleNextWeek}
+                      />
                   </div>
 
                   <div className="p-4">
-                    <TimeSlotGrid
-                      days={days}
-                      selectedSlots={currentZoneSlots}
-                      onSlotClick={handleSlotClick}
-                    />
+                  <TimeSlotGrid
+                    days={days}
+                    selectedSlots={currentZoneSlots}
+                    onSlotClick={handleSlotClick}
+                  />
                   </div>
                 </div>
 
-                <SlotLegend />
-              </>
-            ) : (
-              <BookingCheckout
-                checkoutData={checkoutData}
-                onCheckoutChange={setCheckoutData}
-                onBack={handleBack}
-                onAddToCart={handleAddToCart}
-                onComplete={handleContinueToLogin}
-              />
-            )}
-          </div>
-
-          {/* Summary Section */}
-          <div>
-            <div className="sticky top-4 space-y-4">
-              <SelectedSlotsSummary
-                slots={currentZoneSlots}
-                onRemoveSlot={handleRemoveSlot}
-                onContinue={handleContinue}
-                showPricing={currentStep === 2}
-                checkoutData={checkoutData}
-              />
-
-              {currentStep === 1 && (
-                <div className="p-4 bg-white rounded-lg border border-border shadow-sm">
-                  <h4 className="font-medium text-sm text-foreground mb-2">Tips</h4>
-                  <ul className="text-xs text-muted-foreground space-y-1.5">
-                    <li>• Klikk på ledige tidspunkter for å velge</li>
-                    <li>• Bruk "Book flere dager?" for sesongleie</li>
-                    <li>• Bytt mellom soner for å se tilgjengelighet</li>
-                  </ul>
-                </div>
+                  <SlotLegend />
+                </>
+              ) : (
+                <BookingCheckout
+                  checkoutData={checkoutData}
+                  onCheckoutChange={setCheckoutData}
+                  onBack={handleBack}
+                  onAddToCart={handleAddToCart}
+                  onComplete={handleContinueToLogin}
+                />
               )}
             </div>
+
+            {/* Summary Section */}
+          <div>
+            <div className="sticky top-4 space-y-4">
+                <SelectedSlotsSummary
+                  slots={currentZoneSlots}
+                  onRemoveSlot={handleRemoveSlot}
+                  onContinue={handleContinue}
+                  showPricing={currentStep === 2}
+                  checkoutData={checkoutData}
+                />
+
+                {currentStep === 1 && (
+                <div className="p-4 bg-white rounded-lg border border-border shadow-sm">
+                    <h4 className="font-medium text-sm text-foreground mb-2">Tips</h4>
+                    <ul className="text-xs text-muted-foreground space-y-1.5">
+                      <li>• Klikk på ledige tidspunkter for å velge</li>
+                      <li>• Bruk "Book flere dager?" for sesongleie</li>
+                      <li>• Bytt mellom soner for å se tilgjengelighet</li>
+                    </ul>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Booking Dialog */}
-      <BookingDialog
-        isOpen={dialogOpen}
-        onClose={handleDialogClose}
-        onConfirm={handleDialogConfirm}
-        selectedDate={pendingSlot?.date || null}
-        selectedTime={pendingSlot?.slot.time || null}
-        zoneName={zones.find(z => z.id === selectedZone)?.name || ''}
-        initialFormData={pendingFormData}
-        onFormDataCleared={() => setPendingFormData(null)}
-      />
+        {/* Booking Dialog */}
+        <BookingDialog
+          isOpen={dialogOpen}
+          onClose={handleDialogClose}
+          onConfirm={handleDialogConfirm}
+          selectedDate={pendingSlot?.date || null}
+          selectedTime={pendingSlot?.slot.time || null}
+          zoneName={zones.find(z => z.id === selectedZone)?.name || ''}
+          initialFormData={pendingFormData}
+          onFormDataCleared={() => setPendingFormData(null)}
+        />
 
-      {/* Season Conflict Dialog */}
-      <SeasonConflictDialog
-        isOpen={conflictDialogOpen}
-        onClose={() => setConflictDialogOpen(false)}
-        onConfirmAvailable={handleConflictConfirm}
-        onChangeTime={handleConflictChangeTime}
-        availableSlots={pendingConflictResult?.availableSlots || []}
-        unavailableSlots={pendingConflictResult?.unavailableSlots || []}
-      />
+        {/* Season Conflict Dialog */}
+        <SeasonConflictDialog
+          isOpen={conflictDialogOpen}
+          onClose={() => setConflictDialogOpen(false)}
+          onConfirmAvailable={handleConflictConfirm}
+          onChangeTime={handleConflictChangeTime}
+          availableSlots={pendingConflictResult?.availableSlots || []}
+          unavailableSlots={pendingConflictResult?.unavailableSlots || []}
+        />
     </div>
   );
 }

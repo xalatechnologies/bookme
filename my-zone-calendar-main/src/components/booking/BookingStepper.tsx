@@ -44,36 +44,36 @@ export function BookingStepper({ currentStep, totalSteps }: BookingStepperProps)
           Steg {currentStep} av {totalSteps}
         </span>
       </div>
-
+      
       <div className="relative px-2">
         <div className="absolute left-0 right-0 top-7 h-[2px] bg-border" />
-        <div
+        <div 
           className="absolute left-0 top-7 h-[2px] bg-primary transition-all duration-500"
           style={{ width: `${((currentStep - 1) / (totalSteps - 1)) * 100}%` }}
         />
-
+        
         <div className="relative grid grid-cols-4">
           {steps.map((step) => {
             const Icon = getStepIcon(step.id);
             const isCompleted = step.id < currentStep;
             const isActive = step.id === currentStep;
-
+            
             return (
               <div key={step.id} className="flex flex-col items-center text-center gap-3">
                 <div className="relative">
                   <span className="absolute -top-4 left-1/2 -translate-x-1/2 text-[11px] font-semibold text-muted-foreground">
                     {step.id}
                   </span>
-                  <div
-                    className={cn(
+                <div
+                  className={cn(
                       "w-14 h-14 rounded-full border-2 flex items-center justify-center transition-all duration-300",
                       isCompleted && "bg-primary text-primary-foreground border-primary",
                       isActive &&
                         "bg-primary text-primary-foreground border-primary shadow-[0_8px_20px_-6px_rgba(51,81,165,0.5)]",
                       !isCompleted && !isActive && "bg-muted text-muted-foreground border-border"
-                    )}
-                  >
-                    <Icon className="w-5 h-5" />
+                  )}
+                >
+                  <Icon className="w-5 h-5" />
                   </div>
                 </div>
                 <span

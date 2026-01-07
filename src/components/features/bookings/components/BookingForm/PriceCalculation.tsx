@@ -38,8 +38,10 @@ export const PriceCalculation: React.FC<IPriceCalculationProps> = ({
   recurringSlots = [],
   actorType,
   activityType,
+  priceGroup = "",
   isLoading = false,
   bookingType = 'one-time',
+  recommendedServices = [],
 }): JSX.Element | null => {
   const { t } = useTranslation(['booking','common']);
   const {
@@ -84,11 +86,29 @@ export const PriceCalculation: React.FC<IPriceCalculationProps> = ({
 
     // Apply activity type adjustments
     const activityAdjustment = getActivityAdjustment(activityType);
-    const finalBasePrice = adjustedPrice + activityAdjustment;
+    const afterActivity = adjustedPrice + activityAdjustment;
+
+    // Apply price group adjustments
+    let priceGroupAdjustment = 0;
+    let priceGroupLabel: string | null = null;
+    if (priceGroup === "kommunale-virksomheter") {
+      priceGroupAdjustment = -0.5 * afterActivity; // 50% rabatt
+      priceGroupLabel = "Kommunale virksomheter (50% rabatt)";
+    } else if (priceGroup === "ikke-kommersielle-aktorer") {
+      priceGroupAdjustment = -1 * afterActivity; // Gratis
+      priceGroupLabel = "Ikke-kommersielle aktører (gratis)";
+    }
+
+    const finalBasePrice = afterActivity + priceGroupAdjustment;
+
+    // Add selected services
+    const selectedServices = recommendedServices.filter((s) => s.selected);
+    const servicesTotal = selectedServices.reduce((sum, s) => sum + (s.price || 0), 0);
+    const subtotal = finalBasePrice + servicesTotal;
 
     // Calculate VAT (25%)
-    const vatAmount = finalBasePrice * 0.25;
-    const finalPrice = finalBasePrice + vatAmount;
+    const vatAmount = subtotal * 0.25;
+    const finalPrice = subtotal + vatAmount;
 
     // Create breakdown
     const breakdown: PriceBreakdownItem[] = [
@@ -115,19 +135,37 @@ export const PriceCalculation: React.FC<IPriceCalculationProps> = ({
       });
     }
 
+    if (priceGroupLabel && priceGroupAdjustment !== 0) {
+      breakdown.push({
+        description: priceGroupLabel,
+        amount: priceGroupAdjustment,
+        type: priceGroupAdjustment < 0 ? "discount" : "surcharge",
+      });
+    }
+
+    if (servicesTotal > 0) {
+      selectedServices.forEach((svc) => {
+        breakdown.push({
+          description: svc.name,
+          amount: svc.price,
+          type: "surcharge",
+        });
+      });
+    }
+
     // Check if approval is required
     const requiresApproval = actorType === "kommunale-enheter" || finalPrice > 5000;
 
     return {
-      basePrice: finalBasePrice,
-      totalPrice: finalBasePrice,
+      basePrice: subtotal,
+      totalPrice: subtotal,
       vatAmount,
       finalPrice,
       breakdown: breakdown as readonly PriceBreakdownItem[],
       requiresApproval,
       totalOccurrences: allSlots.length,
     };
-  }, [selectedSlots, recurringSlots, actorType, activityType, bookingType, t, getActorDescription, getActivityDescription, getActorMultiplier, getActivityAdjustment]);
+  }, [selectedSlots, recurringSlots, actorType, activityType, priceGroup, bookingType, t, getActorDescription, getActivityDescription, getActorMultiplier, getActivityAdjustment, recommendedServices]);
 
   if (bookingType === 'recurring' ? recurringSlots.length === 0 : selectedSlots.length === 0) {
     return null;

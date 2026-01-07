@@ -11,7 +11,7 @@ import { Calendar, FileText, Clock, Shield, CheckCircle } from 'lucide-react';
 import type { IBookingFormData, ISelectedTimeSlot } from '@/components/features/bookings/types';
 import type { RecurrencePattern } from '@/components/features/bookings/utils/recurrence';
 
-export type BookingStep = 'details' | 'calendar' | 'recurrence' | 'terms' | 'actions';
+export type BookingStep = 'details' | 'calendar' | 'recurrence' | 'confirm' | 'sent';
 
 export interface IStepDefinition {
   readonly id: BookingStep;
@@ -36,6 +36,7 @@ export interface IUseBookingStepsReturn {
 
   // Navigation
   readonly goToStep: (step: BookingStep) => void;
+  readonly goToStepDirect: (step: BookingStep) => void;
   readonly nextStep: () => void;
   readonly previousStep: () => void;
   readonly canGoToStep: (step: BookingStep) => boolean;
@@ -146,20 +147,20 @@ export const useBookingSteps = (options: IUseBookingStepsOptions): IUseBookingSt
 
     baseSteps.push(
       {
-        id: 'terms' as BookingStep,
-        title: t('bookings:steps.terms.title', 'Vilkår og betingelser'),
+        id: 'confirm' as BookingStep,
+        title: t('bookings:steps.confirm.title', 'Bekreft'),
         description: t(
-          'bookings:steps.terms.description',
-          'Les og godta vilkårene'
+          'bookings:steps.confirm.description',
+          'Logg inn og bekreft bookingen'
         ),
         icon: Shield,
       },
       {
-        id: 'actions' as BookingStep,
-        title: t('bookings:steps.actions.title', 'Fullfør booking'),
+        id: 'sent' as BookingStep,
+        title: t('bookings:steps.sent.title', 'Sendt'),
         description: t(
-          'bookings:steps.actions.description',
-          'Legg i kurv eller fullfør direkte'
+          'bookings:steps.sent.description',
+          'Reservasjonen er sendt til godkjenning'
         ),
         icon: CheckCircle,
       }
@@ -191,10 +192,10 @@ export const useBookingSteps = (options: IUseBookingStepsOptions): IUseBookingSt
     (step: BookingStep): boolean => {
       switch (step) {
         case 'details':
+          // Etter flytting av formål/antall/aktivitet inn i dialogen,
+          // valider hovedsakelig at prisgruppe er valgt og at det finnes slots.
           return (
-            formData.purpose.trim().length > 0 &&
-            formData.attendees > 0 &&
-            formData.activityType.trim().length > 0 &&
+            selectedSlots.length > 0 &&
             formData.priceGroup !== undefined &&
             formData.priceGroup.trim().length > 0
           );
@@ -207,11 +208,11 @@ export const useBookingSteps = (options: IUseBookingStepsOptions): IUseBookingSt
             formData.bookingType === 'one-time' || recurrencePattern !== null
           );
 
-        case 'terms':
-          return formData.termsAccepted;
+        case 'confirm':
+          return true; // Login/confirm step, handled i UI
 
-        case 'actions':
-          return true; // Always valid, just action buttons
+        case 'sent':
+          return true; // Oppsummering etter innsending
 
         default:
           return false;
@@ -260,6 +261,14 @@ export const useBookingSteps = (options: IUseBookingStepsOptions): IUseBookingSt
       }
     },
     [canGoToStep]
+  );
+
+  // Direct navigation (bypass access checks) for explicit transitions
+  const goToStepDirect = useCallback(
+    (step: BookingStep): void => {
+      setCurrentStep(step);
+    },
+    []
   );
 
   /**
@@ -311,6 +320,7 @@ export const useBookingSteps = (options: IUseBookingStepsOptions): IUseBookingSt
 
     // Navigation
     goToStep,
+    goToStepDirect,
     nextStep,
     previousStep,
     canGoToStep,
