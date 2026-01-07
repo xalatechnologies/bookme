@@ -1302,6 +1302,11 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
         console.warn("Klarte ikke hente org_id for facility, bruker fallback.", e);
       }
 
+      const selectedServices = recommendedServices.filter((s) => s.selected);
+      const servicesTotal = selectedServices.reduce((sum, s) => sum + (s.price || 0), 0);
+      const servicesSharePerSlot =
+        selectedSlots.length > 0 ? servicesTotal / selectedSlots.length : 0;
+
       const bookingPromises = selectedSlots.map((slot) => {
         const slotDate = slot.date instanceof Date ? slot.date : new Date(slot.date);
         if (Number.isNaN(slotDate.getTime())) {
@@ -1317,9 +1322,16 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
         const starts_at = new Date(`${dateStr}T${startStr}`);
         const ends_at = new Date(`${dateStr}T${endStr}`);
 
-        const total_cents = Math.round(
-          (slot.pricePerHour || 0) * ((slot.duration || 60) / 60) * 100
-        );
+        const base = (slot.pricePerHour || 0) * ((slot.duration || 60) / 60);
+        const discountMultiplier =
+          formData.priceGroup === "kommunale-virksomheter"
+            ? 0.5
+            : formData.priceGroup === "ikke-kommersielle-aktorer"
+              ? 0
+              : 1;
+        const slotSubtotal = base * discountMultiplier + servicesSharePerSlot;
+        const totalWithVat = slotSubtotal * 1.25;
+        const total_cents = Math.round(totalWithVat * 100);
 
         return createBookingMutation.mutateAsync({
           facility_id: facilityId,
