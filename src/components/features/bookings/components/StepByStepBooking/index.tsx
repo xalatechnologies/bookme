@@ -1719,10 +1719,19 @@ export const StepByStepBooking: React.FC<IStepByStepBookingProps> = ({
 
       {/* Conflict Dialog */}
       <Dialog open={conflictDialogOpen} onOpenChange={setConflictDialogOpen}>
-        <DialogContent className="sm:max-w-[520px] max-h-[85vh] overflow-hidden p-0">
+        <DialogContent
+          className="sm:max-w-[520px] max-h-[85vh] overflow-hidden p-0"
+          aria-describedby="conflict-dialog-description"
+        >
           <div className="max-h-[85vh] overflow-y-auto p-6 space-y-4">
             <DialogHeader className="sticky top-0 bg-white pb-3">
               <DialogTitle>Endre eller bekreft tider</DialogTitle>
+              <p
+                id="conflict-dialog-description"
+                className="text-sm text-slate-600"
+              >
+                Noen valgte tider er opptatt. Du kan endre tidspunkt eller bekrefte de ledige tidene under.
+              </p>
             </DialogHeader>
             {conflictConflictedSlots.length > 0 && (
               <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-900">

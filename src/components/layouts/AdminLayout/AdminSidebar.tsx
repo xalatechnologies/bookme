@@ -22,13 +22,18 @@ import {
 import { useSidebar } from "./useSidebar";
 import { useRole } from "@/hooks/auth/useRole";
 import { useAuth } from "@/contexts/hooks/useAuth";
+import {
+  BackofficeRole,
+  hasBackofficeMinimumRole,
+  mapOrgRoleToBackofficeRole,
+} from "@/lib/rbac/backoffice";
 
 interface IMenuItem {
   readonly id: string;
   readonly labelKey: string;
   readonly path: string;
   readonly icon: React.ComponentType<{ className?: string }>;
-  readonly requiredRole?: 'staff' | 'admin' | 'owner'; // Minimum role required to see this item
+  readonly requiredRole?: BackofficeRole;
 }
 
 interface IMenuGroup {
@@ -47,7 +52,7 @@ const AdminSidebar = (
   const { isCollapsed, toggleCollapse } = useSidebar();
   const { t } = useTranslation('navigation');
   const { currentOrgId } = useAuth();
-  const { role } = useRole(currentOrgId || undefined);
+  const { role, isPlatformAdmin } = useRole(currentOrgId || undefined);
 
   // Helper to safely translate dynamic keys
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -57,60 +62,52 @@ const AdminSidebar = (
     {
       titleKey: "overview",
       items: [
-        { id: "overview", labelKey: "dashboard", path: "/admin/overview", icon: LayoutDashboard, requiredRole: 'staff' },
+        { id: "overview", labelKey: "dashboard", path: "/admin/overview", icon: LayoutDashboard, requiredRole: "booking-manager" },
       ]
     },
     {
       titleKey: "administration",
       items: [
-        { id: "facilities", labelKey: "rooms", path: "/admin/facilities", icon: Building2, requiredRole: 'admin' },
-        { id: "bookings", labelKey: "bookings", path: "/admin/bookings", icon: Calendar, requiredRole: 'staff' },
-        { id: "users-roles", labelKey: "users_and_roles", path: "/admin/users-roles", icon: Users, requiredRole: 'admin' },
+        { id: "facilities", labelKey: "rooms", path: "/admin/facilities", icon: Building2, requiredRole: "org-admin" },
+        { id: "bookings", labelKey: "bookings", path: "/admin/bookings", icon: Calendar, requiredRole: "booking-manager" },
+        { id: "users-roles", labelKey: "users_and_roles", path: "/admin/users-roles", icon: Users, requiredRole: "org-admin" },
       ]
     },
     {
       titleKey: "communication",
       items: [
-        { id: "messages", labelKey: "messages", path: "/admin/messages", icon: MessageCircle, requiredRole: 'staff' },
-        { id: "notifications", labelKey: "alerts", path: "/admin/notifications", icon: Bell, requiredRole: 'staff' },
+        { id: "messages", labelKey: "messages", path: "/admin/messages", icon: MessageCircle, requiredRole: "booking-manager" },
+        { id: "notifications", labelKey: "alerts", path: "/admin/notifications", icon: Bell, requiredRole: "booking-manager" },
       ]
     },
     {
       titleKey: "system",
       items: [
-        { id: "reports", labelKey: "reports", path: "/admin/reports", icon: BarChart3, requiredRole: 'admin' },
-        { id: "integrations", labelKey: "integrations", path: "/admin/integrations", icon: Plug, requiredRole: 'admin' },
-        { id: "audit", labelKey: "audit_log", path: "/admin/audit-logs", icon: FileText, requiredRole: 'admin' },
-        { id: "data-retention", labelKey: "data_retention", path: "/admin/data-retention", icon: Trash2, requiredRole: 'admin' },
-        { id: "localization", labelKey: "localization", path: "/admin/localization", icon: Globe, requiredRole: 'admin' },
+        { id: "reports", labelKey: "reports", path: "/admin/reports", icon: BarChart3, requiredRole: "booking-manager" },
+        { id: "integrations", labelKey: "integrations", path: "/admin/integrations", icon: Plug, requiredRole: "org-admin" },
+        { id: "audit", labelKey: "audit_log", path: "/admin/audit-logs", icon: FileText, requiredRole: "org-admin" },
+        { id: "data-retention", labelKey: "data_retention", path: "/admin/data-retention", icon: Trash2, requiredRole: "org-admin" },
+        { id: "localization", labelKey: "localization", path: "/admin/localization", icon: Globe, requiredRole: "org-admin" },
+        { id: "tenants", labelKey: "tenants", path: "/admin/tenants", icon: Building2, requiredRole: "super-admin" },
+        { id: "licensing", labelKey: "licensing", path: "/admin/licensing", icon: FileText, requiredRole: "super-admin" },
+        { id: "feature-flags", labelKey: "feature_flags", path: "/admin/feature-flags", icon: Plug, requiredRole: "tenant-admin" },
       ]
     }
   ];
-
-  // Role hierarchy for filtering
-  const roleHierarchy: Record<string, number> = {
-    owner: 100,
-    admin: 80,
-    staff: 60,
-    customer: 10,
-  };
-
-  // Filter menu items based on user's role
   const filteredMenuGroups = useMemo(() => {
-    if (!role) return [];
-
-    const userRoleLevel = roleHierarchy[role] || 0;
+    const mapped = mapOrgRoleToBackofficeRole({ orgRole: role, isPlatformAdmin });
+    if (!mapped) return [];
 
     return menuGroups
       .map(group => ({
         ...group,
         items: group.items.filter(item => {
-          const requiredRoleLevel = roleHierarchy[item.requiredRole || 'staff'] || 0;
-          return userRoleLevel >= requiredRoleLevel;
+          if (!item.requiredRole) return true;
+          return hasBackofficeMinimumRole(mapped, item.requiredRole);
         })
       }))
-      .filter(group => group.items.length > 0); // Only show groups that have visible items
-  }, [role]);
+      .filter(group => group.items.length > 0);
+  }, [role, isPlatformAdmin, menuGroups]);
 
 
   return (

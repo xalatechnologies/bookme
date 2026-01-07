@@ -21,15 +21,22 @@ import { useAuth } from "@/contexts/hooks";
 import { useRole } from '@/hooks/auth/useRole';
 import { PrimaryButton } from '@/components/ui/PrimaryButton';
 import type { Database } from '@/types/database';
+import {
+  BackofficeRole,
+  hasBackofficeMinimumRole,
+  isBackofficeRole,
+  mapOrgRoleToBackofficeRole,
+} from "@/lib/rbac/backoffice";
 
 type OrgRole = Database['public']['Enums']['org_role'];
+type RequiredRole = OrgRole | BackofficeRole;
 
 interface ProtectedRouteProps {
   /** Children to render if access is granted */
   readonly children: React.ReactNode;
 
   /** Required minimum role (optional) */
-  readonly requiredRole?: OrgRole;
+  readonly requiredRole?: RequiredRole;
 
   /** Organization ID to check role for (uses current org if not specified) */
   readonly orgId?: string;
@@ -147,7 +154,7 @@ export const ProtectedRoute = ({
 }: ProtectedRouteProps): JSX.Element => {
   const location = useLocation();
   const { user, loading: authLoading } = useAuth();
-  const { loading: roleLoading, hasMinimumRole } = useRole(orgId);
+  const { loading: roleLoading, hasMinimumRole, isPlatformAdmin, role } = useRole(orgId);
 
   // Show loading state while checking authentication
   if (authLoading) {
@@ -172,8 +179,17 @@ export const ProtectedRoute = ({
       return <>{loadingComponent || <DefaultLoadingComponent />}</>;
     }
 
-    // Check if user has required role
-    const hasPermission = hasMinimumRole(requiredRole);
+    let hasPermission = false;
+
+    if (isBackofficeRole(requiredRole)) {
+      const mapped = mapOrgRoleToBackofficeRole({
+        orgRole: role,
+        isPlatformAdmin,
+      });
+      hasPermission = hasBackofficeMinimumRole(mapped, requiredRole);
+    } else {
+      hasPermission = hasMinimumRole(requiredRole);
+    }
 
     if (!hasPermission) {
       // Use custom unauthorized path if provided
